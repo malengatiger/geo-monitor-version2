@@ -1,0 +1,3117 @@
+{
+  "photos": [
+    {
+      "_partitionKey": null,
+      "projectId": "454df53c-b716-4d0e-920f-0802659a90de",
+      "projectPositionId": "2bde5d74-6a66-4667-836b-4654d0fd979d",
+      "projectName": "Pecanwood Crescent Dam Works",
+      "photoId": "a6c9085c-5d0e-4ff2-8ad5-519d505ec1e4",
+      "organizationId": "f742a1f6-9e0f-4a7f-a5cd-07a3d929cea1",
+      "projectPosition": {
+        "type": "Point",
+        "coordinates": [
+          27.8545,
+          -25.762438
+        ]
+      },
+      "distanceFromProjectPosition": 285.0614802143859,
+      "url": "https://firebasestorage.googleapis.com/v0/b/thermal-effort-366015.appspot.com/o/monitorPhotos%2Fmedia@454df53c-b716-4d0e-920f-0802659a90de@2023-01-06T02:26:00.236114Z.jpg?alt=media&token=9ffa87a2-2ab5-4bb1-a2e8-0fb6dac17b3c",
+      "thumbnailUrl": "https://firebasestorage.googleapis.com/v0/b/thermal-effort-366015.appspot.com/o/monitorPhotos%2Fthumb@454df53c-b716-4d0e-920f-0802659a90de@2023-01-06T02:26:02.912948Z.jpg?alt=media&token=0ca8bbfc-b6de-4441-aaa3-9c207973eb30",
+      "caption": "tbd",
+      "userId": "CoGnfxOf8dTEIFMhLB1gjpFFkQF3",
+      "userName": "Lesley Makhubo",
+      "created": "2023-01-06T04:26:04.984727",
+      "height": 480,
+      "width": 640
+    },
+    {
+      "_partitionKey": null,
+      "projectId": "454df53c-b716-4d0e-920f-0802659a90de",
+      "projectPositionId": "2bde5d74-6a66-4667-836b-4654d0fd979d",
+      "projectName": "Pecanwood Crescent Dam Works",
+      "photoId": "5b068518-9682-4ea7-b611-f5899ff9089b",
+      "organizationId": "f742a1f6-9e0f-4a7f-a5cd-07a3d929cea1",
+      "projectPosition": {
+        "type": "Point",
+        "coordinates": [
+          27.8545,
+          -25.762438
+        ]
+      },
+      "distanceFromProjectPosition": 284.90718984962774,
+      "url": "https://firebasestorage.googleapis.com/v0/b/thermal-effort-366015.appspot.com/o/monitorPhotos%2Fmedia@454df53c-b716-4d0e-920f-0802659a90de@2023-01-06T02:26:51.684146Z.jpg?alt=media&token=3ea1768b-9739-4d8b-baf1-75d3712abd4b",
+      "thumbnailUrl": "https://firebasestorage.googleapis.com/v0/b/thermal-effort-366015.appspot.com/o/monitorPhotos%2Fthumb@454df53c-b716-4d0e-920f-0802659a90de@2023-01-06T02:26:53.806944Z.jpg?alt=media&token=dd2ae68f-fbb0-4a16-b350-f2020397dade",
+      "caption": "tbd",
+      "userId": "CoGnfxOf8dTEIFMhLB1gjpFFkQF3",
+      "userName": "Lesley Makhubo",
+      "created": "2023-01-06T04:26:55.611372",
+      "height": 480,
+      "width": 640
+    },
+    {
+      "_partitionKey": null,
+      "projectId": "454df53c-b716-4d0e-920f-0802659a90de",
+      "projectPositionId": "2bde5d74-6a66-4667-836b-4654d0fd979d",
+      "projectName": "Pecanwood Crescent Dam Works",
+      "photoId": "b2f69f1d-a7de-43b6-934c-14e54741982c",
+      "organizationId": "f742a1f6-9e0f-4a7f-a5cd-07a3d929cea1",
+      "projectPosition": {
+        "type": "Point",
+        "coordinates": [
+          27.8545,
+          -25.762438
+        ]
+      },
+      "distanceFromProjectPosition": 284.90718984962774,
+      "url": "https://firebasestorage.googleapis.com/v0/b/thermal-effort-366015.appspot.com/o/monitorPhotos%2Fmedia@454df53c-b716-4d0e-920f-0802659a90de@2023-01-06T02:27:05.725977Z.jpg?alt=media&token=3b963bca-e3ff-4b30-9d1b-105ab0244407",
+      "thumbnailUrl": "https://firebasestorage.googleapis.com/v0/b/thermal-effort-366015.appspot.com/o/monitorPhotos%2Fthumb@454df53c-b716-4d0e-920f-0802659a90de@2023-01-06T02:27:09.832604Z.jpg?alt=media&token=df749ff6-c856-4d63-a367-113c23b6aa78",
+      "caption": "tbd",
+      "userId": "CoGnfxOf8dTEIFMhLB1gjpFFkQF3",
+      "userName": "Lesley Makhubo",
+      "created": "2023-01-06T04:27:11.523690",
+      "height": 480,
+      "width": 640
+    }
+  ],
+  "videos": [],
+  "fieldMonitorSchedules": [
+    {
+      "adminId": null,
+      "projectId": "5ce18b9e-6539-4b4c-a82d-e16f4904d96c",
+      "fieldMonitorScheduleId": "b879288f-155a-4c8a-aeee-47775f6c92c5",
+      "date": "2023-01-03T17:45:29.233+02:00",
+      "organizationId": "f742a1f6-9e0f-4a7f-a5cd-07a3d929cea1",
+      "fieldMonitorId": "CoGnfxOf8dTEIFMhLB1gjpFFkQF3",
+      "fieldMonitorName": "Lesley Makhubo",
+      "projectName": "Lanseria Road Upgrades",
+      "organizationName": "Roberts InfraCon Lt",
+      "perDay": 3,
+      "perWeek": 0,
+      "perMonth": 0
+    },
+    {
+      "adminId": null,
+      "projectId": "c41c5e58-692e-44c0-ba32-7970b20eb1fc",
+      "fieldMonitorScheduleId": "a6104fa1-181c-4642-979a-e5b9854174de",
+      "date": "2023-01-03T17:45:29.234+02:00",
+      "organizationId": "f742a1f6-9e0f-4a7f-a5cd-07a3d929cea1",
+      "fieldMonitorId": "CoGnfxOf8dTEIFMhLB1gjpFFkQF3",
+      "fieldMonitorName": "Lesley Makhubo",
+      "projectName": "Rosebank Education Complex",
+      "organizationName": "Roberts InfraCon Lt",
+      "perDay": 3,
+      "perWeek": 0,
+      "perMonth": 0
+    },
+    {
+      "adminId": null,
+      "projectId": "422da63f-59b2-473c-b310-ee622333e158",
+      "fieldMonitorScheduleId": "8e0b869b-ecb0-4da0-ac03-f1110dcc2416",
+      "date": "2023-01-03T17:45:29.235+02:00",
+      "organizationId": "f742a1f6-9e0f-4a7f-a5cd-07a3d929cea1",
+      "fieldMonitorId": "CoGnfxOf8dTEIFMhLB1gjpFFkQF3",
+      "fieldMonitorName": "Lesley Makhubo",
+      "projectName": "Sandton Sanitation Project",
+      "organizationName": "Roberts InfraCon Lt",
+      "perDay": 3,
+      "perWeek": 0,
+      "perMonth": 0
+    },
+    {
+      "adminId": null,
+      "projectId": "15eda0c5-6abe-4171-b809-4d8df840d3ca",
+      "fieldMonitorScheduleId": "c5a6c08e-b05c-45f1-b887-0277fcfa8cdc",
+      "date": "2023-01-03T17:45:29.235+02:00",
+      "organizationId": "f742a1f6-9e0f-4a7f-a5cd-07a3d929cea1",
+      "fieldMonitorId": "CoGnfxOf8dTEIFMhLB1gjpFFkQF3",
+      "fieldMonitorName": "Lesley Makhubo",
+      "projectName": "Pretoria Road Upgrades",
+      "organizationName": "Roberts InfraCon Lt",
+      "perDay": 3,
+      "perWeek": 0,
+      "perMonth": 0
+    },
+    {
+      "adminId": null,
+      "projectId": "e88c7c46-1100-4fba-ad31-775cb96e9788",
+      "fieldMonitorScheduleId": "0d62e6ad-638d-417a-b9a5-d7130aa91e62",
+      "date": "2023-01-03T17:45:29.236+02:00",
+      "organizationId": "f742a1f6-9e0f-4a7f-a5cd-07a3d929cea1",
+      "fieldMonitorId": "CoGnfxOf8dTEIFMhLB1gjpFFkQF3",
+      "fieldMonitorName": "Lesley Makhubo",
+      "projectName": "Fourways University Construction",
+      "organizationName": "Roberts InfraCon Lt",
+      "perDay": 3,
+      "perWeek": 0,
+      "perMonth": 0
+    },
+    {
+      "adminId": null,
+      "projectId": "db2f076c-a2e5-462b-a11f-8b4ab6463afb",
+      "fieldMonitorScheduleId": "074f97b3-e56a-4117-9a3d-50e80336d852",
+      "date": "2023-01-03T17:45:29.236+02:00",
+      "organizationId": "f742a1f6-9e0f-4a7f-a5cd-07a3d929cea1",
+      "fieldMonitorId": "CoGnfxOf8dTEIFMhLB1gjpFFkQF3",
+      "fieldMonitorName": "Lesley Makhubo",
+      "projectName": "Krugersdorp Water & Sanitation Project",
+      "organizationName": "Roberts InfraCon Lt",
+      "perDay": 3,
+      "perWeek": 0,
+      "perMonth": 0
+    },
+    {
+      "adminId": null,
+      "projectId": "39c1f2b3-15f8-401e-8d92-405f45f95257",
+      "fieldMonitorScheduleId": "f161bb07-9a6d-4716-ab20-c0cc2235434b",
+      "date": "2023-01-03T17:45:29.237+02:00",
+      "organizationId": "f742a1f6-9e0f-4a7f-a5cd-07a3d929cea1",
+      "fieldMonitorId": "CoGnfxOf8dTEIFMhLB1gjpFFkQF3",
+      "fieldMonitorName": "Lesley Makhubo",
+      "projectName": "Tembisa Education Complex",
+      "organizationName": "Roberts InfraCon Lt",
+      "perDay": 3,
+      "perWeek": 0,
+      "perMonth": 0
+    },
+    {
+      "adminId": null,
+      "projectId": "d48a897e-23f9-4f7f-93dd-ce4faa00d51f",
+      "fieldMonitorScheduleId": "142506ab-8291-457b-8b9c-5ab2311c5bdf",
+      "date": "2023-01-03T17:45:29.237+02:00",
+      "organizationId": "f742a1f6-9e0f-4a7f-a5cd-07a3d929cea1",
+      "fieldMonitorId": "CoGnfxOf8dTEIFMhLB1gjpFFkQF3",
+      "fieldMonitorName": "Lesley Makhubo",
+      "projectName": "Soweto Water & Sanitation",
+      "organizationName": "Roberts InfraCon Lt",
+      "perDay": 3,
+      "perWeek": 0,
+      "perMonth": 0
+    },
+    {
+      "adminId": null,
+      "projectId": "454df53c-b716-4d0e-920f-0802659a90de",
+      "fieldMonitorScheduleId": "cac4e962-7435-4a66-b2a9-2346eb6e8a19",
+      "date": "2023-01-03T17:45:29.238+02:00",
+      "organizationId": "f742a1f6-9e0f-4a7f-a5cd-07a3d929cea1",
+      "fieldMonitorId": "CoGnfxOf8dTEIFMhLB1gjpFFkQF3",
+      "fieldMonitorName": "Lesley Makhubo",
+      "projectName": "Pecanwood Crescent Dam Works",
+      "organizationName": "Roberts InfraCon Lt",
+      "perDay": 3,
+      "perWeek": 0,
+      "perMonth": 0
+    },
+    {
+      "adminId": null,
+      "projectId": "5ce18b9e-6539-4b4c-a82d-e16f4904d96c",
+      "fieldMonitorScheduleId": "4dd85ca1-ef98-4901-a068-a2e14d344e24",
+      "date": "2023-01-03T17:45:29.238+02:00",
+      "organizationId": "f742a1f6-9e0f-4a7f-a5cd-07a3d929cea1",
+      "fieldMonitorId": "l9PAZVKY6pVtUZy0yLVzhVyuoko1",
+      "fieldMonitorName": "Vusi Mavuso",
+      "projectName": "Lanseria Road Upgrades",
+      "organizationName": "Roberts InfraCon Lt",
+      "perDay": 3,
+      "perWeek": 0,
+      "perMonth": 0
+    },
+    {
+      "adminId": null,
+      "projectId": "c41c5e58-692e-44c0-ba32-7970b20eb1fc",
+      "fieldMonitorScheduleId": "42decf13-b339-4542-87e2-369a579bb1da",
+      "date": "2023-01-03T17:45:29.239+02:00",
+      "organizationId": "f742a1f6-9e0f-4a7f-a5cd-07a3d929cea1",
+      "fieldMonitorId": "l9PAZVKY6pVtUZy0yLVzhVyuoko1",
+      "fieldMonitorName": "Vusi Mavuso",
+      "projectName": "Rosebank Education Complex",
+      "organizationName": "Roberts InfraCon Lt",
+      "perDay": 3,
+      "perWeek": 0,
+      "perMonth": 0
+    },
+    {
+      "adminId": null,
+      "projectId": "422da63f-59b2-473c-b310-ee622333e158",
+      "fieldMonitorScheduleId": "d7e539b9-0d5f-4914-b0e0-bf39b79f2987",
+      "date": "2023-01-03T17:45:29.240+02:00",
+      "organizationId": "f742a1f6-9e0f-4a7f-a5cd-07a3d929cea1",
+      "fieldMonitorId": "l9PAZVKY6pVtUZy0yLVzhVyuoko1",
+      "fieldMonitorName": "Vusi Mavuso",
+      "projectName": "Sandton Sanitation Project",
+      "organizationName": "Roberts InfraCon Lt",
+      "perDay": 3,
+      "perWeek": 0,
+      "perMonth": 0
+    },
+    {
+      "adminId": null,
+      "projectId": "15eda0c5-6abe-4171-b809-4d8df840d3ca",
+      "fieldMonitorScheduleId": "03f9493e-7245-4a67-955c-e8e7b19f6ab5",
+      "date": "2023-01-03T17:45:29.241+02:00",
+      "organizationId": "f742a1f6-9e0f-4a7f-a5cd-07a3d929cea1",
+      "fieldMonitorId": "l9PAZVKY6pVtUZy0yLVzhVyuoko1",
+      "fieldMonitorName": "Vusi Mavuso",
+      "projectName": "Pretoria Road Upgrades",
+      "organizationName": "Roberts InfraCon Lt",
+      "perDay": 3,
+      "perWeek": 0,
+      "perMonth": 0
+    },
+    {
+      "adminId": null,
+      "projectId": "e88c7c46-1100-4fba-ad31-775cb96e9788",
+      "fieldMonitorScheduleId": "6559cd43-77c0-430c-af07-3e44b8709242",
+      "date": "2023-01-03T17:45:29.241+02:00",
+      "organizationId": "f742a1f6-9e0f-4a7f-a5cd-07a3d929cea1",
+      "fieldMonitorId": "l9PAZVKY6pVtUZy0yLVzhVyuoko1",
+      "fieldMonitorName": "Vusi Mavuso",
+      "projectName": "Fourways University Construction",
+      "organizationName": "Roberts InfraCon Lt",
+      "perDay": 3,
+      "perWeek": 0,
+      "perMonth": 0
+    },
+    {
+      "adminId": null,
+      "projectId": "db2f076c-a2e5-462b-a11f-8b4ab6463afb",
+      "fieldMonitorScheduleId": "c8086925-f23b-4a2a-8a5a-1695d1b2449f",
+      "date": "2023-01-03T17:45:29.242+02:00",
+      "organizationId": "f742a1f6-9e0f-4a7f-a5cd-07a3d929cea1",
+      "fieldMonitorId": "l9PAZVKY6pVtUZy0yLVzhVyuoko1",
+      "fieldMonitorName": "Vusi Mavuso",
+      "projectName": "Krugersdorp Water & Sanitation Project",
+      "organizationName": "Roberts InfraCon Lt",
+      "perDay": 3,
+      "perWeek": 0,
+      "perMonth": 0
+    },
+    {
+      "adminId": null,
+      "projectId": "39c1f2b3-15f8-401e-8d92-405f45f95257",
+      "fieldMonitorScheduleId": "d4441ad5-4bd4-428d-9d79-dbdc2faa95aa",
+      "date": "2023-01-03T17:45:29.242+02:00",
+      "organizationId": "f742a1f6-9e0f-4a7f-a5cd-07a3d929cea1",
+      "fieldMonitorId": "l9PAZVKY6pVtUZy0yLVzhVyuoko1",
+      "fieldMonitorName": "Vusi Mavuso",
+      "projectName": "Tembisa Education Complex",
+      "organizationName": "Roberts InfraCon Lt",
+      "perDay": 3,
+      "perWeek": 0,
+      "perMonth": 0
+    },
+    {
+      "adminId": null,
+      "projectId": "d48a897e-23f9-4f7f-93dd-ce4faa00d51f",
+      "fieldMonitorScheduleId": "81889671-fa33-4cb3-ba12-0979ac0dfd13",
+      "date": "2023-01-03T17:45:29.242+02:00",
+      "organizationId": "f742a1f6-9e0f-4a7f-a5cd-07a3d929cea1",
+      "fieldMonitorId": "l9PAZVKY6pVtUZy0yLVzhVyuoko1",
+      "fieldMonitorName": "Vusi Mavuso",
+      "projectName": "Soweto Water & Sanitation",
+      "organizationName": "Roberts InfraCon Lt",
+      "perDay": 3,
+      "perWeek": 0,
+      "perMonth": 0
+    },
+    {
+      "adminId": null,
+      "projectId": "454df53c-b716-4d0e-920f-0802659a90de",
+      "fieldMonitorScheduleId": "578aec66-455b-4dd4-88c6-d26b15147bd7",
+      "date": "2023-01-03T17:45:29.248+02:00",
+      "organizationId": "f742a1f6-9e0f-4a7f-a5cd-07a3d929cea1",
+      "fieldMonitorId": "l9PAZVKY6pVtUZy0yLVzhVyuoko1",
+      "fieldMonitorName": "Vusi Mavuso",
+      "projectName": "Pecanwood Crescent Dam Works",
+      "organizationName": "Roberts InfraCon Lt",
+      "perDay": 3,
+      "perWeek": 0,
+      "perMonth": 0
+    },
+    {
+      "adminId": null,
+      "projectId": "5ce18b9e-6539-4b4c-a82d-e16f4904d96c",
+      "fieldMonitorScheduleId": "00c6d1bd-a4d3-45fa-87f3-06c7f7cc8117",
+      "date": "2023-01-03T17:45:29.252+02:00",
+      "organizationId": "f742a1f6-9e0f-4a7f-a5cd-07a3d929cea1",
+      "fieldMonitorId": "Vi2cXlLp5RTBXYiEJDzXIk0WcLu2",
+      "fieldMonitorName": "Thandiwe Ngobese",
+      "projectName": "Lanseria Road Upgrades",
+      "organizationName": "Roberts InfraCon Lt",
+      "perDay": 3,
+      "perWeek": 0,
+      "perMonth": 0
+    },
+    {
+      "adminId": null,
+      "projectId": "c41c5e58-692e-44c0-ba32-7970b20eb1fc",
+      "fieldMonitorScheduleId": "0af6f844-cac5-40a5-a09e-c6b94cccf023",
+      "date": "2023-01-03T17:45:29.253+02:00",
+      "organizationId": "f742a1f6-9e0f-4a7f-a5cd-07a3d929cea1",
+      "fieldMonitorId": "Vi2cXlLp5RTBXYiEJDzXIk0WcLu2",
+      "fieldMonitorName": "Thandiwe Ngobese",
+      "projectName": "Rosebank Education Complex",
+      "organizationName": "Roberts InfraCon Lt",
+      "perDay": 3,
+      "perWeek": 0,
+      "perMonth": 0
+    },
+    {
+      "adminId": null,
+      "projectId": "422da63f-59b2-473c-b310-ee622333e158",
+      "fieldMonitorScheduleId": "892ca1f6-3926-4196-aa91-6466cc6b7201",
+      "date": "2023-01-03T17:45:29.253+02:00",
+      "organizationId": "f742a1f6-9e0f-4a7f-a5cd-07a3d929cea1",
+      "fieldMonitorId": "Vi2cXlLp5RTBXYiEJDzXIk0WcLu2",
+      "fieldMonitorName": "Thandiwe Ngobese",
+      "projectName": "Sandton Sanitation Project",
+      "organizationName": "Roberts InfraCon Lt",
+      "perDay": 3,
+      "perWeek": 0,
+      "perMonth": 0
+    },
+    {
+      "adminId": null,
+      "projectId": "15eda0c5-6abe-4171-b809-4d8df840d3ca",
+      "fieldMonitorScheduleId": "e1502a62-bcd2-4404-b147-dfe5967160a0",
+      "date": "2023-01-03T17:45:29.254+02:00",
+      "organizationId": "f742a1f6-9e0f-4a7f-a5cd-07a3d929cea1",
+      "fieldMonitorId": "Vi2cXlLp5RTBXYiEJDzXIk0WcLu2",
+      "fieldMonitorName": "Thandiwe Ngobese",
+      "projectName": "Pretoria Road Upgrades",
+      "organizationName": "Roberts InfraCon Lt",
+      "perDay": 3,
+      "perWeek": 0,
+      "perMonth": 0
+    },
+    {
+      "adminId": null,
+      "projectId": "e88c7c46-1100-4fba-ad31-775cb96e9788",
+      "fieldMonitorScheduleId": "3ec8c0e0-d3a3-4cca-9c25-5807e1fbab4d",
+      "date": "2023-01-03T17:45:29.254+02:00",
+      "organizationId": "f742a1f6-9e0f-4a7f-a5cd-07a3d929cea1",
+      "fieldMonitorId": "Vi2cXlLp5RTBXYiEJDzXIk0WcLu2",
+      "fieldMonitorName": "Thandiwe Ngobese",
+      "projectName": "Fourways University Construction",
+      "organizationName": "Roberts InfraCon Lt",
+      "perDay": 3,
+      "perWeek": 0,
+      "perMonth": 0
+    },
+    {
+      "adminId": null,
+      "projectId": "db2f076c-a2e5-462b-a11f-8b4ab6463afb",
+      "fieldMonitorScheduleId": "86df863f-153c-49e3-b60a-15bb796cab54",
+      "date": "2023-01-03T17:45:29.255+02:00",
+      "organizationId": "f742a1f6-9e0f-4a7f-a5cd-07a3d929cea1",
+      "fieldMonitorId": "Vi2cXlLp5RTBXYiEJDzXIk0WcLu2",
+      "fieldMonitorName": "Thandiwe Ngobese",
+      "projectName": "Krugersdorp Water & Sanitation Project",
+      "organizationName": "Roberts InfraCon Lt",
+      "perDay": 3,
+      "perWeek": 0,
+      "perMonth": 0
+    },
+    {
+      "adminId": null,
+      "projectId": "39c1f2b3-15f8-401e-8d92-405f45f95257",
+      "fieldMonitorScheduleId": "79a61fb8-1ed3-4f20-9a63-9fa947b6ee01",
+      "date": "2023-01-03T17:45:29.256+02:00",
+      "organizationId": "f742a1f6-9e0f-4a7f-a5cd-07a3d929cea1",
+      "fieldMonitorId": "Vi2cXlLp5RTBXYiEJDzXIk0WcLu2",
+      "fieldMonitorName": "Thandiwe Ngobese",
+      "projectName": "Tembisa Education Complex",
+      "organizationName": "Roberts InfraCon Lt",
+      "perDay": 3,
+      "perWeek": 0,
+      "perMonth": 0
+    },
+    {
+      "adminId": null,
+      "projectId": "d48a897e-23f9-4f7f-93dd-ce4faa00d51f",
+      "fieldMonitorScheduleId": "788413c8-e1e1-41f9-b879-548039af122d",
+      "date": "2023-01-03T17:45:29.259+02:00",
+      "organizationId": "f742a1f6-9e0f-4a7f-a5cd-07a3d929cea1",
+      "fieldMonitorId": "Vi2cXlLp5RTBXYiEJDzXIk0WcLu2",
+      "fieldMonitorName": "Thandiwe Ngobese",
+      "projectName": "Soweto Water & Sanitation",
+      "organizationName": "Roberts InfraCon Lt",
+      "perDay": 3,
+      "perWeek": 0,
+      "perMonth": 0
+    },
+    {
+      "adminId": null,
+      "projectId": "454df53c-b716-4d0e-920f-0802659a90de",
+      "fieldMonitorScheduleId": "fba6e62a-f2cb-4a61-bd93-17b94a6770da",
+      "date": "2023-01-03T17:45:29.263+02:00",
+      "organizationId": "f742a1f6-9e0f-4a7f-a5cd-07a3d929cea1",
+      "fieldMonitorId": "Vi2cXlLp5RTBXYiEJDzXIk0WcLu2",
+      "fieldMonitorName": "Thandiwe Ngobese",
+      "projectName": "Pecanwood Crescent Dam Works",
+      "organizationName": "Roberts InfraCon Lt",
+      "perDay": 3,
+      "perWeek": 0,
+      "perMonth": 0
+    },
+    {
+      "adminId": null,
+      "projectId": "5ce18b9e-6539-4b4c-a82d-e16f4904d96c",
+      "fieldMonitorScheduleId": "02efdfe1-9182-46ac-ac3f-3367629b611d",
+      "date": "2023-01-03T17:45:29.263+02:00",
+      "organizationId": "f742a1f6-9e0f-4a7f-a5cd-07a3d929cea1",
+      "fieldMonitorId": "mb7G5r77LmWcEdei4Dme2xaGwgn1",
+      "fieldMonitorName": "Philemon Pereira",
+      "projectName": "Lanseria Road Upgrades",
+      "organizationName": "Roberts InfraCon Lt",
+      "perDay": 3,
+      "perWeek": 0,
+      "perMonth": 0
+    },
+    {
+      "adminId": null,
+      "projectId": "c41c5e58-692e-44c0-ba32-7970b20eb1fc",
+      "fieldMonitorScheduleId": "94d4ee73-e76d-4da2-94d9-27ad2ac9266d",
+      "date": "2023-01-03T17:45:29.264+02:00",
+      "organizationId": "f742a1f6-9e0f-4a7f-a5cd-07a3d929cea1",
+      "fieldMonitorId": "mb7G5r77LmWcEdei4Dme2xaGwgn1",
+      "fieldMonitorName": "Philemon Pereira",
+      "projectName": "Rosebank Education Complex",
+      "organizationName": "Roberts InfraCon Lt",
+      "perDay": 3,
+      "perWeek": 0,
+      "perMonth": 0
+    },
+    {
+      "adminId": null,
+      "projectId": "422da63f-59b2-473c-b310-ee622333e158",
+      "fieldMonitorScheduleId": "b46ee6bb-7dda-458b-a0af-b9f6dc836408",
+      "date": "2023-01-03T17:45:29.265+02:00",
+      "organizationId": "f742a1f6-9e0f-4a7f-a5cd-07a3d929cea1",
+      "fieldMonitorId": "mb7G5r77LmWcEdei4Dme2xaGwgn1",
+      "fieldMonitorName": "Philemon Pereira",
+      "projectName": "Sandton Sanitation Project",
+      "organizationName": "Roberts InfraCon Lt",
+      "perDay": 3,
+      "perWeek": 0,
+      "perMonth": 0
+    },
+    {
+      "adminId": null,
+      "projectId": "15eda0c5-6abe-4171-b809-4d8df840d3ca",
+      "fieldMonitorScheduleId": "1a700478-9606-4e3b-8ec8-4bf67f11ed54",
+      "date": "2023-01-03T17:45:29.265+02:00",
+      "organizationId": "f742a1f6-9e0f-4a7f-a5cd-07a3d929cea1",
+      "fieldMonitorId": "mb7G5r77LmWcEdei4Dme2xaGwgn1",
+      "fieldMonitorName": "Philemon Pereira",
+      "projectName": "Pretoria Road Upgrades",
+      "organizationName": "Roberts InfraCon Lt",
+      "perDay": 3,
+      "perWeek": 0,
+      "perMonth": 0
+    },
+    {
+      "adminId": null,
+      "projectId": "e88c7c46-1100-4fba-ad31-775cb96e9788",
+      "fieldMonitorScheduleId": "7ec1af69-a6b6-4d54-be8d-333237169f67",
+      "date": "2023-01-03T17:45:29.266+02:00",
+      "organizationId": "f742a1f6-9e0f-4a7f-a5cd-07a3d929cea1",
+      "fieldMonitorId": "mb7G5r77LmWcEdei4Dme2xaGwgn1",
+      "fieldMonitorName": "Philemon Pereira",
+      "projectName": "Fourways University Construction",
+      "organizationName": "Roberts InfraCon Lt",
+      "perDay": 3,
+      "perWeek": 0,
+      "perMonth": 0
+    },
+    {
+      "adminId": null,
+      "projectId": "db2f076c-a2e5-462b-a11f-8b4ab6463afb",
+      "fieldMonitorScheduleId": "3dfc0b83-b152-4d4d-b741-bc3e9d886927",
+      "date": "2023-01-03T17:45:29.266+02:00",
+      "organizationId": "f742a1f6-9e0f-4a7f-a5cd-07a3d929cea1",
+      "fieldMonitorId": "mb7G5r77LmWcEdei4Dme2xaGwgn1",
+      "fieldMonitorName": "Philemon Pereira",
+      "projectName": "Krugersdorp Water & Sanitation Project",
+      "organizationName": "Roberts InfraCon Lt",
+      "perDay": 3,
+      "perWeek": 0,
+      "perMonth": 0
+    },
+    {
+      "adminId": null,
+      "projectId": "39c1f2b3-15f8-401e-8d92-405f45f95257",
+      "fieldMonitorScheduleId": "8cca2354-2c30-46ea-b4cc-59bd76c26848",
+      "date": "2023-01-03T17:45:29.267+02:00",
+      "organizationId": "f742a1f6-9e0f-4a7f-a5cd-07a3d929cea1",
+      "fieldMonitorId": "mb7G5r77LmWcEdei4Dme2xaGwgn1",
+      "fieldMonitorName": "Philemon Pereira",
+      "projectName": "Tembisa Education Complex",
+      "organizationName": "Roberts InfraCon Lt",
+      "perDay": 3,
+      "perWeek": 0,
+      "perMonth": 0
+    },
+    {
+      "adminId": null,
+      "projectId": "d48a897e-23f9-4f7f-93dd-ce4faa00d51f",
+      "fieldMonitorScheduleId": "5f047c05-d2a9-4fb7-ab35-bc16e37abdb5",
+      "date": "2023-01-03T17:45:29.267+02:00",
+      "organizationId": "f742a1f6-9e0f-4a7f-a5cd-07a3d929cea1",
+      "fieldMonitorId": "mb7G5r77LmWcEdei4Dme2xaGwgn1",
+      "fieldMonitorName": "Philemon Pereira",
+      "projectName": "Soweto Water & Sanitation",
+      "organizationName": "Roberts InfraCon Lt",
+      "perDay": 3,
+      "perWeek": 0,
+      "perMonth": 0
+    },
+    {
+      "adminId": null,
+      "projectId": "454df53c-b716-4d0e-920f-0802659a90de",
+      "fieldMonitorScheduleId": "4afe28fb-80f0-4442-83c5-b9ed2229a633",
+      "date": "2023-01-03T17:45:29.275+02:00",
+      "organizationId": "f742a1f6-9e0f-4a7f-a5cd-07a3d929cea1",
+      "fieldMonitorId": "mb7G5r77LmWcEdei4Dme2xaGwgn1",
+      "fieldMonitorName": "Philemon Pereira",
+      "projectName": "Pecanwood Crescent Dam Works",
+      "organizationName": "Roberts InfraCon Lt",
+      "perDay": 3,
+      "perWeek": 0,
+      "perMonth": 0
+    },
+    {
+      "adminId": null,
+      "projectId": "5ce18b9e-6539-4b4c-a82d-e16f4904d96c",
+      "fieldMonitorScheduleId": "26e0c876-d115-448e-a568-ae0b909ec762",
+      "date": "2023-01-03T17:45:29.275+02:00",
+      "organizationId": "f742a1f6-9e0f-4a7f-a5cd-07a3d929cea1",
+      "fieldMonitorId": "Ao9Ns1PeSDdydtbTlmtqxVI8So23",
+      "fieldMonitorName": "David Maepa",
+      "projectName": "Lanseria Road Upgrades",
+      "organizationName": "Roberts InfraCon Lt",
+      "perDay": 3,
+      "perWeek": 0,
+      "perMonth": 0
+    },
+    {
+      "adminId": null,
+      "projectId": "c41c5e58-692e-44c0-ba32-7970b20eb1fc",
+      "fieldMonitorScheduleId": "d6f4bb53-f745-440e-ae65-9ca82ca78b43",
+      "date": "2023-01-03T17:45:29.276+02:00",
+      "organizationId": "f742a1f6-9e0f-4a7f-a5cd-07a3d929cea1",
+      "fieldMonitorId": "Ao9Ns1PeSDdydtbTlmtqxVI8So23",
+      "fieldMonitorName": "David Maepa",
+      "projectName": "Rosebank Education Complex",
+      "organizationName": "Roberts InfraCon Lt",
+      "perDay": 3,
+      "perWeek": 0,
+      "perMonth": 0
+    },
+    {
+      "adminId": null,
+      "projectId": "422da63f-59b2-473c-b310-ee622333e158",
+      "fieldMonitorScheduleId": "3ca7576b-8b5c-4145-a196-215aefffa205",
+      "date": "2023-01-03T17:45:29.277+02:00",
+      "organizationId": "f742a1f6-9e0f-4a7f-a5cd-07a3d929cea1",
+      "fieldMonitorId": "Ao9Ns1PeSDdydtbTlmtqxVI8So23",
+      "fieldMonitorName": "David Maepa",
+      "projectName": "Sandton Sanitation Project",
+      "organizationName": "Roberts InfraCon Lt",
+      "perDay": 3,
+      "perWeek": 0,
+      "perMonth": 0
+    },
+    {
+      "adminId": null,
+      "projectId": "15eda0c5-6abe-4171-b809-4d8df840d3ca",
+      "fieldMonitorScheduleId": "71335f7b-91db-4713-ba5d-7c400d267d15",
+      "date": "2023-01-03T17:45:29.277+02:00",
+      "organizationId": "f742a1f6-9e0f-4a7f-a5cd-07a3d929cea1",
+      "fieldMonitorId": "Ao9Ns1PeSDdydtbTlmtqxVI8So23",
+      "fieldMonitorName": "David Maepa",
+      "projectName": "Pretoria Road Upgrades",
+      "organizationName": "Roberts InfraCon Lt",
+      "perDay": 3,
+      "perWeek": 0,
+      "perMonth": 0
+    },
+    {
+      "adminId": null,
+      "projectId": "e88c7c46-1100-4fba-ad31-775cb96e9788",
+      "fieldMonitorScheduleId": "746e4c45-3ef9-40c4-9bbc-ba3a0ac3c8ee",
+      "date": "2023-01-03T17:45:29.277+02:00",
+      "organizationId": "f742a1f6-9e0f-4a7f-a5cd-07a3d929cea1",
+      "fieldMonitorId": "Ao9Ns1PeSDdydtbTlmtqxVI8So23",
+      "fieldMonitorName": "David Maepa",
+      "projectName": "Fourways University Construction",
+      "organizationName": "Roberts InfraCon Lt",
+      "perDay": 3,
+      "perWeek": 0,
+      "perMonth": 0
+    },
+    {
+      "adminId": null,
+      "projectId": "db2f076c-a2e5-462b-a11f-8b4ab6463afb",
+      "fieldMonitorScheduleId": "1416aa50-0b55-43c6-86a0-58f667b89d29",
+      "date": "2023-01-03T17:45:29.282+02:00",
+      "organizationId": "f742a1f6-9e0f-4a7f-a5cd-07a3d929cea1",
+      "fieldMonitorId": "Ao9Ns1PeSDdydtbTlmtqxVI8So23",
+      "fieldMonitorName": "David Maepa",
+      "projectName": "Krugersdorp Water & Sanitation Project",
+      "organizationName": "Roberts InfraCon Lt",
+      "perDay": 3,
+      "perWeek": 0,
+      "perMonth": 0
+    },
+    {
+      "adminId": null,
+      "projectId": "39c1f2b3-15f8-401e-8d92-405f45f95257",
+      "fieldMonitorScheduleId": "3ef0185c-31b1-44cc-8944-d35ea5397b7c",
+      "date": "2023-01-03T17:45:29.282+02:00",
+      "organizationId": "f742a1f6-9e0f-4a7f-a5cd-07a3d929cea1",
+      "fieldMonitorId": "Ao9Ns1PeSDdydtbTlmtqxVI8So23",
+      "fieldMonitorName": "David Maepa",
+      "projectName": "Tembisa Education Complex",
+      "organizationName": "Roberts InfraCon Lt",
+      "perDay": 3,
+      "perWeek": 0,
+      "perMonth": 0
+    },
+    {
+      "adminId": null,
+      "projectId": "d48a897e-23f9-4f7f-93dd-ce4faa00d51f",
+      "fieldMonitorScheduleId": "6b7ed296-f26c-48fa-85e0-59cbad352bb6",
+      "date": "2023-01-03T17:45:29.283+02:00",
+      "organizationId": "f742a1f6-9e0f-4a7f-a5cd-07a3d929cea1",
+      "fieldMonitorId": "Ao9Ns1PeSDdydtbTlmtqxVI8So23",
+      "fieldMonitorName": "David Maepa",
+      "projectName": "Soweto Water & Sanitation",
+      "organizationName": "Roberts InfraCon Lt",
+      "perDay": 3,
+      "perWeek": 0,
+      "perMonth": 0
+    },
+    {
+      "adminId": null,
+      "projectId": "454df53c-b716-4d0e-920f-0802659a90de",
+      "fieldMonitorScheduleId": "595287cd-756f-4a6e-aa46-c9c7642438e6",
+      "date": "2023-01-03T17:45:29.284+02:00",
+      "organizationId": "f742a1f6-9e0f-4a7f-a5cd-07a3d929cea1",
+      "fieldMonitorId": "Ao9Ns1PeSDdydtbTlmtqxVI8So23",
+      "fieldMonitorName": "David Maepa",
+      "projectName": "Pecanwood Crescent Dam Works",
+      "organizationName": "Roberts InfraCon Lt",
+      "perDay": 3,
+      "perWeek": 0,
+      "perMonth": 0
+    }
+  ],
+  "projectPositions": [
+    {
+      "projectId": "5ce18b9e-6539-4b4c-a82d-e16f4904d96c",
+      "projectPositionId": "604e009f-6010-4e98-a532-627b2c9447d5",
+      "organizationId": null,
+      "position": {
+        "type": "Point",
+        "coordinates": [
+          27.929928,
+          -25.934042
+        ]
+      },
+      "projectName": "Lanseria Road Upgrades",
+      "caption": "Project Position Caption",
+      "created": null,
+      "placemark": null,
+      "nearestCities": []
+    },
+    {
+      "projectId": "c41c5e58-692e-44c0-ba32-7970b20eb1fc",
+      "projectPositionId": "54d31929-499a-4be4-863b-24ceded89c43",
+      "organizationId": null,
+      "position": {
+        "type": "Point",
+        "coordinates": [
+          28.037666516,
+          -26.140499438
+        ]
+      },
+      "projectName": "Rosebank Education Complex",
+      "caption": "Project Position Caption",
+      "created": null,
+      "placemark": null,
+      "nearestCities": [
+        {
+          "_partitionKey": null,
+          "name": "Dunkeld",
+          "cityId": "e0b17611-9aa2-4c65-bee7-df8f4871bb95",
+          "country": "South Africa",
+          "province": "Gauteng",
+          "cityLocation": {
+            "type": "Point",
+            "coordinates": [
+              28.041183,
+              -26.137843
+            ]
+          }
+        },
+        {
+          "_partitionKey": null,
+          "name": "Parkhurst",
+          "cityId": "59c6d63b-100d-49dc-a093-0f4396819993",
+          "country": "South Africa",
+          "province": "Gauteng",
+          "cityLocation": {
+            "type": "Point",
+            "coordinates": [
+              28.018238,
+              -26.138139
+            ]
+          }
+        },
+        {
+          "_partitionKey": null,
+          "name": "Craighall Park",
+          "cityId": "4d26ae38-f6c4-40fd-a9a7-d26e2bff5584",
+          "country": "South Africa",
+          "province": "Gauteng",
+          "cityLocation": {
+            "type": "Point",
+            "coordinates": [
+              28.023821,
+              -26.125284
+            ]
+          }
+        },
+        {
+          "_partitionKey": null,
+          "name": "Hyde Park",
+          "cityId": "81fd1c71-2c45-4a24-8f10-cbd0e948c784",
+          "country": "South Africa",
+          "province": "Gauteng",
+          "cityLocation": {
+            "type": "Point",
+            "coordinates": [
+              28.03788,
+              -26.120694
+            ]
+          }
+        },
+        {
+          "_partitionKey": null,
+          "name": "Houghton",
+          "cityId": "f7452b7c-cc55-4cc4-8c05-fb10ff3659ce",
+          "country": "South Africa",
+          "province": "Gauteng",
+          "cityLocation": {
+            "type": "Point",
+            "coordinates": [
+              28.051305,
+              -26.16242
+            ]
+          }
+        },
+        {
+          "_partitionKey": null,
+          "name": "Houghton Estate",
+          "cityId": "6685900b-ff5c-4c5f-8a58-eb81966d5155",
+          "country": "South Africa",
+          "province": "Gauteng",
+          "cityLocation": {
+            "type": "Point",
+            "coordinates": [
+              28.051305,
+              -26.16242
+            ]
+          }
+        },
+        {
+          "_partitionKey": null,
+          "name": "Parkview",
+          "cityId": "ce5bc2a5-f0fa-4b0a-8ec8-1c53a8649821",
+          "country": "South Africa",
+          "province": "Gauteng",
+          "cityLocation": {
+            "type": "Point",
+            "coordinates": [
+              28.024387,
+              -26.165288
+            ]
+          }
+        },
+        {
+          "_partitionKey": null,
+          "name": "Inanda",
+          "cityId": "a894872d-36af-4192-a1cb-3f4cf0ecab86",
+          "country": "South Africa",
+          "province": "Gauteng",
+          "cityLocation": {
+            "type": "Point",
+            "coordinates": [
+              28.058779,
+              -26.119772
+            ]
+          }
+        },
+        {
+          "_partitionKey": null,
+          "name": "Craighall",
+          "cityId": "f7c224aa-17f5-41a3-b994-fc8d4c99b23c",
+          "country": "South Africa",
+          "province": "Gauteng",
+          "cityLocation": {
+            "type": "Point",
+            "coordinates": [
+              28.016667,
+              -26.116667
+            ]
+          }
+        },
+        {
+          "_partitionKey": null,
+          "name": "Sandhurst",
+          "cityId": "7b76208d-574b-4d9c-a0d2-0c7950edecbe",
+          "country": "South Africa",
+          "province": "Gauteng",
+          "cityLocation": {
+            "type": "Point",
+            "coordinates": [
+              28.043438,
+              -26.109865
+            ]
+          }
+        },
+        {
+          "_partitionKey": null,
+          "name": "Westcliff",
+          "cityId": "7cd72ab2-baf9-4d23-a449-31ea6799d4b0",
+          "country": "South Africa",
+          "province": "Gauteng",
+          "cityLocation": {
+            "type": "Point",
+            "coordinates": [
+              28.026845,
+              -26.172102
+            ]
+          }
+        },
+        {
+          "_partitionKey": null,
+          "name": "Westcliffe",
+          "cityId": "c9f72d8f-9d43-4411-86e0-555773ddeb2f",
+          "country": "South Africa",
+          "province": "Gauteng",
+          "cityLocation": {
+            "type": "Point",
+            "coordinates": [
+              28.026845,
+              -26.172102
+            ]
+          }
+        },
+        {
+          "_partitionKey": null,
+          "name": "Emmarentia",
+          "cityId": "170e5cf7-37f1-41be-bd56-7695c46b2c76",
+          "country": "South Africa",
+          "province": "Gauteng",
+          "cityLocation": {
+            "type": "Point",
+            "coordinates": [
+              28.011657,
+              -26.166003
+            ]
+          }
+        },
+        {
+          "_partitionKey": null,
+          "name": "Waverly",
+          "cityId": "40c7773b-ded7-4c04-9712-0ad71efbaeb5",
+          "country": "South Africa",
+          "province": "Gauteng",
+          "cityLocation": {
+            "type": "Point",
+            "coordinates": [
+              28.078383,
+              -26.135274
+            ]
+          }
+        },
+        {
+          "_partitionKey": null,
+          "name": "Linden",
+          "cityId": "81aa1ada-51c4-45ed-862e-6558968cf936",
+          "country": "South Africa",
+          "province": "Gauteng",
+          "cityLocation": {
+            "type": "Point",
+            "coordinates": [
+              27.996152,
+              -26.130879
+            ]
+          }
+        },
+        {
+          "_partitionKey": null,
+          "name": "Parktown",
+          "cityId": "056928a6-a34a-4ae8-91c1-e7273f2506f6",
+          "country": "South Africa",
+          "province": "Gauteng",
+          "cityLocation": {
+            "type": "Point",
+            "coordinates": [
+              28.026709,
+              -26.182052
+            ]
+          }
+        },
+        {
+          "_partitionKey": null,
+          "name": "Melville",
+          "cityId": "17581ff8-15a0-4554-a0e0-1c5e6b91dd45",
+          "country": "South Africa",
+          "province": "Gauteng",
+          "cityLocation": {
+            "type": "Point",
+            "coordinates": [
+              28.008953,
+              -26.176038
+            ]
+          }
+        },
+        {
+          "_partitionKey": null,
+          "name": "Parkmore",
+          "cityId": "0c4f6d83-540e-4954-b7c8-324981b0e2e8",
+          "country": "South Africa",
+          "province": "Gauteng",
+          "cityLocation": {
+            "type": "Point",
+            "coordinates": [
+              28.037448,
+              -26.095959
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "projectId": "422da63f-59b2-473c-b310-ee622333e158",
+      "projectPositionId": "df1fe90d-5cbf-418a-95e8-0b3bcebb9eda",
+      "organizationId": null,
+      "position": {
+        "type": "Point",
+        "coordinates": [
+          28.052499,
+          -26.10499958
+        ]
+      },
+      "projectName": "Sandton Sanitation Project",
+      "caption": "Project Position Caption",
+      "created": null,
+      "placemark": null,
+      "nearestCities": [
+        {
+          "_partitionKey": null,
+          "name": "Sandhurst",
+          "cityId": "7b76208d-574b-4d9c-a0d2-0c7950edecbe",
+          "country": "South Africa",
+          "province": "Gauteng",
+          "cityLocation": {
+            "type": "Point",
+            "coordinates": [
+              28.043438,
+              -26.109865
+            ]
+          }
+        },
+        {
+          "_partitionKey": null,
+          "name": "Sandown",
+          "cityId": "19a6c50c-2038-461a-9484-2c06f4932812",
+          "country": "South Africa",
+          "province": "Gauteng",
+          "cityLocation": {
+            "type": "Point",
+            "coordinates": [
+              28.066667,
+              -26.1
+            ]
+          }
+        },
+        {
+          "_partitionKey": null,
+          "name": "Strathavon",
+          "cityId": "4d1c6bae-7980-4f35-89ed-a214ecec94ae",
+          "country": "South Africa",
+          "province": "Gauteng",
+          "cityLocation": {
+            "type": "Point",
+            "coordinates": [
+              28.066667,
+              -26.1
+            ]
+          }
+        },
+        {
+          "_partitionKey": null,
+          "name": "Inanda",
+          "cityId": "a894872d-36af-4192-a1cb-3f4cf0ecab86",
+          "country": "South Africa",
+          "province": "Gauteng",
+          "cityLocation": {
+            "type": "Point",
+            "coordinates": [
+              28.058779,
+              -26.119772
+            ]
+          }
+        },
+        {
+          "_partitionKey": null,
+          "name": "Parkmore",
+          "cityId": "0c4f6d83-540e-4954-b7c8-324981b0e2e8",
+          "country": "South Africa",
+          "province": "Gauteng",
+          "cityLocation": {
+            "type": "Point",
+            "coordinates": [
+              28.037448,
+              -26.095959
+            ]
+          }
+        },
+        {
+          "_partitionKey": null,
+          "name": "Hyde Park",
+          "cityId": "81fd1c71-2c45-4a24-8f10-cbd0e948c784",
+          "country": "South Africa",
+          "province": "Gauteng",
+          "cityLocation": {
+            "type": "Point",
+            "coordinates": [
+              28.03788,
+              -26.120694
+            ]
+          }
+        },
+        {
+          "_partitionKey": null,
+          "name": "Wynberg",
+          "cityId": "cddd4a73-c97f-4442-a2da-cb90db3a8b1b",
+          "country": "South Africa",
+          "province": "Gauteng",
+          "cityLocation": {
+            "type": "Point",
+            "coordinates": [
+              28.083333,
+              -26.1
+            ]
+          }
+        },
+        {
+          "_partitionKey": null,
+          "name": "Morningside",
+          "cityId": "ff31c0ee-6074-4cf4-9051-1eaa5c2b71fa",
+          "country": "South Africa",
+          "province": "Gauteng",
+          "cityLocation": {
+            "type": "Point",
+            "coordinates": [
+              28.062456,
+              -26.077456
+            ]
+          }
+        },
+        {
+          "_partitionKey": null,
+          "name": "Duxberry",
+          "cityId": "deeac655-e337-4459-a341-f3dcafa30b88",
+          "country": "South Africa",
+          "province": "Gauteng",
+          "cityLocation": {
+            "type": "Point",
+            "coordinates": [
+              28.053129,
+              -26.073543
+            ]
+          }
+        },
+        {
+          "_partitionKey": null,
+          "name": "Craighall Park",
+          "cityId": "4d26ae38-f6c4-40fd-a9a7-d26e2bff5584",
+          "country": "South Africa",
+          "province": "Gauteng",
+          "cityLocation": {
+            "type": "Point",
+            "coordinates": [
+              28.023821,
+              -26.125284
+            ]
+          }
+        },
+        {
+          "_partitionKey": null,
+          "name": "Craighall",
+          "cityId": "f7c224aa-17f5-41a3-b994-fc8d4c99b23c",
+          "country": "South Africa",
+          "province": "Gauteng",
+          "cityLocation": {
+            "type": "Point",
+            "coordinates": [
+              28.016667,
+              -26.116667
+            ]
+          }
+        },
+        {
+          "_partitionKey": null,
+          "name": "Dunkeld",
+          "cityId": "e0b17611-9aa2-4c65-bee7-df8f4871bb95",
+          "country": "South Africa",
+          "province": "Gauteng",
+          "cityLocation": {
+            "type": "Point",
+            "coordinates": [
+              28.041183,
+              -26.137843
+            ]
+          }
+        },
+        {
+          "_partitionKey": null,
+          "name": "Waverly",
+          "cityId": "40c7773b-ded7-4c04-9712-0ad71efbaeb5",
+          "country": "South Africa",
+          "province": "Gauteng",
+          "cityLocation": {
+            "type": "Point",
+            "coordinates": [
+              28.078383,
+              -26.135274
+            ]
+          }
+        },
+        {
+          "_partitionKey": null,
+          "name": "Alexandra",
+          "cityId": "3ff5b303-a547-4673-8192-9e4d1e1b9290",
+          "country": "South Africa",
+          "province": "Gauteng",
+          "cityLocation": {
+            "type": "Point",
+            "coordinates": [
+              28.098836,
+              -26.105284
+            ]
+          }
+        },
+        {
+          "_partitionKey": null,
+          "name": "Kew",
+          "cityId": "38e55d7b-4b27-418f-bdde-2606fb808b68",
+          "country": "South Africa",
+          "province": "Gauteng",
+          "cityLocation": {
+            "type": "Point",
+            "coordinates": [
+              28.095734,
+              -26.121325
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "projectId": "422da63f-59b2-473c-b310-ee622333e158",
+      "projectPositionId": "c1d55fd5-d952-45e4-a22b-cd5809f2fad8",
+      "organizationId": "f742a1f6-9e0f-4a7f-a5cd-07a3d929cea1",
+      "position": {
+        "type": "Point",
+        "coordinates": [
+          27.852577765328448,
+          -25.760552968415677
+        ]
+      },
+      "projectName": "Sandton Sanitation Project",
+      "caption": "tbd",
+      "created": "2023-01-05T00:30:02.460805",
+      "placemark": {
+        "name": "30 Kingfisher Drive",
+        "street": "30 Kingfisher Drive",
+        "isoCountryCode": "ZA",
+        "country": "South Africa",
+        "postalCode": "",
+        "administrativeArea": "North West",
+        "locality": "Hartbeespoort",
+        "subLocality": "Pecanwood Estate",
+        "subThoroughfare": "30",
+        "thoroughfare": "Kingfisher Drive"
+      },
+      "nearestCities": [
+        {
+          "_partitionKey": null,
+          "name": "Kosmos",
+          "cityId": "e922d0a3-7278-4326-8cbe-f1050a83a3f7",
+          "country": null,
+          "province": null,
+          "cityLocation": null
+        },
+        {
+          "_partitionKey": null,
+          "name": "Hartebeestpoort",
+          "cityId": "d6a853a6-1880-4115-9a99-8ce95879517d",
+          "country": null,
+          "province": null,
+          "cityLocation": null
+        },
+        {
+          "_partitionKey": null,
+          "name": "Hartbeespoort",
+          "cityId": "df08e526-a506-4316-8415-a0ae6b51f068",
+          "country": null,
+          "province": null,
+          "cityLocation": null
+        },
+        {
+          "_partitionKey": null,
+          "name": "Schoemanville",
+          "cityId": "1689f6d1-4151-4438-8a03-f8fc3e830e5d",
+          "country": null,
+          "province": null,
+          "cityLocation": null
+        },
+        {
+          "_partitionKey": null,
+          "name": "Schoemansville",
+          "cityId": "3f276b89-1325-4f86-b4c7-8636edbd052a",
+          "country": null,
+          "province": null,
+          "cityLocation": null
+        },
+        {
+          "_partitionKey": null,
+          "name": "Lone Star Texas",
+          "cityId": "e616c2fa-b825-4ee5-9499-612fc0b6508a",
+          "country": null,
+          "province": null,
+          "cityLocation": null
+        },
+        {
+          "_partitionKey": null,
+          "name": "Pelindaba",
+          "cityId": "3d9e72b3-44ce-4fd2-8227-920cd608eff3",
+          "country": null,
+          "province": null,
+          "cityLocation": null
+        },
+        {
+          "_partitionKey": null,
+          "name": "Sandfontein",
+          "cityId": "5cecc4e1-52e7-4019-a650-d311d2fca5ab",
+          "country": null,
+          "province": null,
+          "cityLocation": null
+        }
+      ]
+    },
+    {
+      "projectId": "15eda0c5-6abe-4171-b809-4d8df840d3ca",
+      "projectPositionId": "56663879-6b94-4817-adeb-643ebaf6897c",
+      "organizationId": null,
+      "position": {
+        "type": "Point",
+        "coordinates": [
+          28.21837,
+          -25.73134
+        ]
+      },
+      "projectName": "Pretoria Road Upgrades",
+      "caption": "Project Position Caption",
+      "created": null,
+      "placemark": null,
+      "nearestCities": [
+        {
+          "_partitionKey": null,
+          "name": "Innesdale",
+          "cityId": "312f324b-2805-4976-ac64-17e0f0316d5f",
+          "country": "South Africa",
+          "province": "Gauteng",
+          "cityLocation": {
+            "type": "Point",
+            "coordinates": [
+              28.216667,
+              -25.716667
+            ]
+          }
+        },
+        {
+          "_partitionKey": null,
+          "name": "Gezina",
+          "cityId": "0068083f-2f1a-4fd4-946d-9ca462f403c5",
+          "country": "South Africa",
+          "province": "Gauteng",
+          "cityLocation": {
+            "type": "Point",
+            "coordinates": [
+              28.206734,
+              -25.718667
+            ]
+          }
+        },
+        {
+          "_partitionKey": null,
+          "name": "Villieria",
+          "cityId": "87d2f8c4-f1d2-4b5a-a6fc-14f36a2376f6",
+          "country": "South Africa",
+          "province": "Gauteng",
+          "cityLocation": {
+            "type": "Point",
+            "coordinates": [
+              28.232176,
+              -25.717364
+            ]
+          }
+        },
+        {
+          "_partitionKey": null,
+          "name": "Rietfontein",
+          "cityId": "10c4174f-1c13-4632-abbf-445f161d5945",
+          "country": "South Africa",
+          "province": "Gauteng",
+          "cityLocation": {
+            "type": "Point",
+            "coordinates": [
+              28.224287,
+              -25.706865
+            ]
+          }
+        },
+        {
+          "_partitionKey": null,
+          "name": "Pretoria",
+          "cityId": "46314495-20c8-4196-9b04-cd6df3147820",
+          "country": "South Africa",
+          "province": "Gauteng",
+          "cityLocation": {
+            "type": "Point",
+            "coordinates": [
+              28.229444,
+              -25.706944
+            ]
+          }
+        },
+        {
+          "_partitionKey": null,
+          "name": "Sunnyside",
+          "cityId": "3b9a9bd9-72f8-433f-9625-053e44e4f37f",
+          "country": "South Africa",
+          "province": "Gauteng",
+          "cityLocation": {
+            "type": "Point",
+            "coordinates": [
+              28.211326,
+              -25.757459
+            ]
+          }
+        },
+        {
+          "_partitionKey": null,
+          "name": "Capital Park",
+          "cityId": "836ac4ef-d9f8-49b1-be57-a55f05755b86",
+          "country": "South Africa",
+          "province": "Gauteng",
+          "cityLocation": {
+            "type": "Point",
+            "coordinates": [
+              28.188835,
+              -25.725136
+            ]
+          }
+        },
+        {
+          "_partitionKey": null,
+          "name": "Hatfield",
+          "cityId": "9cea3921-056a-48f3-875f-c3189fa9f5ea",
+          "country": "South Africa",
+          "province": "Gauteng",
+          "cityLocation": {
+            "type": "Point",
+            "coordinates": [
+              28.243141,
+              -25.749728
+            ]
+          }
+        },
+        {
+          "_partitionKey": null,
+          "name": "Queenswood",
+          "cityId": "f4ce0e2c-8d33-49ef-b0ce-f3be66ba11c5",
+          "country": "South Africa",
+          "province": "Gauteng",
+          "cityLocation": {
+            "type": "Point",
+            "coordinates": [
+              28.25323,
+              -25.729691
+            ]
+          }
+        },
+        {
+          "_partitionKey": null,
+          "name": "Brooklyn",
+          "cityId": "f6571f5b-9029-4287-8c64-4a22c188ad3d",
+          "country": "South Africa",
+          "province": "Gauteng",
+          "cityLocation": {
+            "type": "Point",
+            "coordinates": [
+              28.241388,
+              -25.765387
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "projectId": "e88c7c46-1100-4fba-ad31-775cb96e9788",
+      "projectPositionId": "e2279135-2776-4426-839d-b339ea5eabb7",
+      "organizationId": null,
+      "position": {
+        "type": "Point",
+        "coordinates": [
+          27.983,
+          -26.033
+        ]
+      },
+      "projectName": "Fourways University Construction",
+      "caption": "Project Position Caption",
+      "created": null,
+      "placemark": null,
+      "nearestCities": [
+        {
+          "_partitionKey": null,
+          "name": "Four Ways",
+          "cityId": "24cc57f1-2f3f-4b18-8141-48d544efef97",
+          "country": "South Africa",
+          "province": "Gauteng",
+          "cityLocation": {
+            "type": "Point",
+            "coordinates": [
+              27.999382,
+              -26.029018
+            ]
+          }
+        },
+        {
+          "_partitionKey": null,
+          "name": "Sandton",
+          "cityId": "2613812f-6ef9-46d8-a536-b6e80a422d37",
+          "country": "South Africa",
+          "province": "Gauteng",
+          "cityLocation": {
+            "type": "Point",
+            "coordinates": [
+              27.966667,
+              -26.05
+            ]
+          }
+        },
+        {
+          "_partitionKey": null,
+          "name": "Inadan",
+          "cityId": "2817b33a-7ef1-4215-bd7e-5d53c47baf64",
+          "country": "South Africa",
+          "province": "Gauteng",
+          "cityLocation": {
+            "type": "Point",
+            "coordinates": [
+              27.957208,
+              -26.014097
+            ]
+          }
+        },
+        {
+          "_partitionKey": null,
+          "name": "Trevallyn",
+          "cityId": "9607bfdb-74be-40d4-a325-1d227243eb02",
+          "country": "South Africa",
+          "province": "Gauteng",
+          "cityLocation": {
+            "type": "Point",
+            "coordinates": [
+              27.951687,
+              -26.019605
+            ]
+          }
+        },
+        {
+          "_partitionKey": null,
+          "name": "Farmall",
+          "cityId": "90e6bf4e-19b4-412d-a711-47846cff6ea1",
+          "country": "South Africa",
+          "province": "Gauteng",
+          "cityLocation": {
+            "type": "Point",
+            "coordinates": [
+              27.957902,
+              -25.999011
+            ]
+          }
+        },
+        {
+          "_partitionKey": null,
+          "name": "Bryanston",
+          "cityId": "d70f6cf9-5842-4bf2-8f43-a7a214382338",
+          "country": "South Africa",
+          "province": "Gauteng",
+          "cityLocation": {
+            "type": "Point",
+            "coordinates": [
+              28.028051,
+              -26.052106
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "projectId": "db2f076c-a2e5-462b-a11f-8b4ab6463afb",
+      "projectPositionId": "97ca0841-01b5-40cc-8ee5-83e708cdb201",
+      "organizationId": null,
+      "position": {
+        "type": "Point",
+        "coordinates": [
+          27.77515,
+          -26.08577
+        ]
+      },
+      "projectName": "Krugersdorp Water & Sanitation Project",
+      "caption": "Project Position Caption",
+      "created": null,
+      "placemark": null,
+      "nearestCities": [
+        {
+          "_partitionKey": null,
+          "name": "Krugersdorp",
+          "cityId": "ad50475f-df88-4626-b0f5-7bb1029dab9f",
+          "country": "South Africa",
+          "province": "Gauteng",
+          "cityLocation": {
+            "type": "Point",
+            "coordinates": [
+              27.790701,
+              -26.092835
+            ]
+          }
+        },
+        {
+          "_partitionKey": null,
+          "name": "Noordheuwel",
+          "cityId": "d2e8f55a-64d7-42da-860e-8a19a7554a0a",
+          "country": "South Africa",
+          "province": "Gauteng",
+          "cityLocation": {
+            "type": "Point",
+            "coordinates": [
+              27.802779,
+              -26.08665
+            ]
+          }
+        },
+        {
+          "_partitionKey": null,
+          "name": "Krugersdorp West",
+          "cityId": "825e8a27-1295-43bc-9da8-01ff02fb737d",
+          "country": "South Africa",
+          "province": "Gauteng",
+          "cityLocation": {
+            "type": "Point",
+            "coordinates": [
+              27.748411,
+              -26.097905
+            ]
+          }
+        },
+        {
+          "_partitionKey": null,
+          "name": "Kings Kloof",
+          "cityId": "6037294a-cdf3-4419-acd5-68f7592cff0e",
+          "country": "South Africa",
+          "province": "Gauteng",
+          "cityLocation": {
+            "type": "Point",
+            "coordinates": [
+              27.783333,
+              -26.05
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "projectId": "39c1f2b3-15f8-401e-8d92-405f45f95257",
+      "projectPositionId": "91376791-5306-469b-8cc4-b362172c5529",
+      "organizationId": null,
+      "position": {
+        "type": "Point",
+        "coordinates": [
+          28.2268,
+          -25.9964
+        ]
+      },
+      "projectName": "Tembisa Education Complex",
+      "caption": "Project Position Caption",
+      "created": null,
+      "placemark": null,
+      "nearestCities": [
+        {
+          "_partitionKey": null,
+          "name": "Tembisa",
+          "cityId": "7b15e590-7c9d-4a0d-81b3-25ac3949990b",
+          "country": "South Africa",
+          "province": "Gauteng",
+          "cityLocation": {
+            "type": "Point",
+            "coordinates": [
+              28.226802,
+              -25.996363
+            ]
+          }
+        },
+        {
+          "_partitionKey": null,
+          "name": "Clayville",
+          "cityId": "764c180e-a0f7-4f0a-8a13-c9437cbaf6bf",
+          "country": "South Africa",
+          "province": "Gauteng",
+          "cityLocation": {
+            "type": "Point",
+            "coordinates": [
+              28.220653,
+              -25.956156
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "projectId": "d48a897e-23f9-4f7f-93dd-ce4faa00d51f",
+      "projectPositionId": "ea653ed7-b995-41a9-b1be-f419084a172d",
+      "organizationId": null,
+      "position": {
+        "type": "Point",
+        "coordinates": [
+          27.865833,
+          -26.26611
+        ]
+      },
+      "projectName": "Soweto Water & Sanitation",
+      "caption": "Project Position Caption",
+      "created": null,
+      "placemark": null,
+      "nearestCities": [
+        {
+          "_partitionKey": null,
+          "name": "Mpanzaville",
+          "cityId": "decf0844-9d18-46f8-8773-224cd99873db",
+          "country": "South Africa",
+          "province": "Gauteng",
+          "cityLocation": {
+            "type": "Point",
+            "coordinates": [
+              27.858492,
+              -26.267812
+            ]
+          }
+        },
+        {
+          "_partitionKey": null,
+          "name": "Soweto",
+          "cityId": "42688183-064e-4f6c-b64e-e10d6bb3de52",
+          "country": "South Africa",
+          "province": "Gauteng",
+          "cityLocation": {
+            "type": "Point",
+            "coordinates": [
+              27.858492,
+              -26.267812
+            ]
+          }
+        },
+        {
+          "_partitionKey": null,
+          "name": "Moroka",
+          "cityId": "1a043e72-021c-406b-bf15-6d4c8de982a5",
+          "country": "South Africa",
+          "province": "Gauteng",
+          "cityLocation": {
+            "type": "Point",
+            "coordinates": [
+              27.876816,
+              -26.259422
+            ]
+          }
+        },
+        {
+          "_partitionKey": null,
+          "name": "Albertynsville",
+          "cityId": "d3a6c841-42c6-42e2-9a10-853a903c71c7",
+          "country": "South Africa",
+          "province": "Gauteng",
+          "cityLocation": {
+            "type": "Point",
+            "coordinates": [
+              27.85,
+              -26.266667
+            ]
+          }
+        },
+        {
+          "_partitionKey": null,
+          "name": "Mofolo",
+          "cityId": "a44ff8be-7338-4010-9e6c-39d35c6ec227",
+          "country": "South Africa",
+          "province": "Gauteng",
+          "cityLocation": {
+            "type": "Point",
+            "coordinates": [
+              27.888295,
+              -26.253018
+            ]
+          }
+        },
+        {
+          "_partitionKey": null,
+          "name": "Protea",
+          "cityId": "9fdf3f8d-0e2e-4516-94c4-456642fef495",
+          "country": "South Africa",
+          "province": "Gauteng",
+          "cityLocation": {
+            "type": "Point",
+            "coordinates": [
+              27.840991,
+              -26.286102
+            ]
+          }
+        },
+        {
+          "_partitionKey": null,
+          "name": "Fordsburg",
+          "cityId": "b262cde9-8342-4fd9-ab61-ddceb5659953",
+          "country": "South Africa",
+          "province": "Gauteng",
+          "cityLocation": {
+            "type": "Point",
+            "coordinates": [
+              27.833333,
+              -26.25
+            ]
+          }
+        },
+        {
+          "_partitionKey": null,
+          "name": "Pimville",
+          "cityId": "59262fe3-0242-447d-874b-4a5bd3a06e12",
+          "country": "South Africa",
+          "province": "Gauteng",
+          "cityLocation": {
+            "type": "Point",
+            "coordinates": [
+              27.906818,
+              -26.272301
+            ]
+          }
+        },
+        {
+          "_partitionKey": null,
+          "name": "Eldoradopark",
+          "cityId": "8a19568e-0c86-4548-ab04-11d027731db3",
+          "country": "South Africa",
+          "province": "Gauteng",
+          "cityLocation": {
+            "type": "Point",
+            "coordinates": [
+              27.897841,
+              -26.297115
+            ]
+          }
+        },
+        {
+          "_partitionKey": null,
+          "name": "Dobsonville",
+          "cityId": "e72fe272-22d1-457b-a03f-aecd1ddaf71d",
+          "country": "South Africa",
+          "province": "Gauteng",
+          "cityLocation": {
+            "type": "Point",
+            "coordinates": [
+              27.867242,
+              -26.22342
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "projectId": "454df53c-b716-4d0e-920f-0802659a90de",
+      "projectPositionId": "2bde5d74-6a66-4667-836b-4654d0fd979d",
+      "organizationId": null,
+      "position": {
+        "type": "Point",
+        "coordinates": [
+          27.8545,
+          -25.762438
+        ]
+      },
+      "projectName": "Pecanwood Crescent Dam Works",
+      "caption": "Project Position Caption",
+      "created": null,
+      "placemark": null,
+      "nearestCities": [
+        {
+          "_partitionKey": null,
+          "name": "Kosmos",
+          "cityId": "e922d0a3-7278-4326-8cbe-f1050a83a3f7",
+          "country": "South Africa",
+          "province": "North West",
+          "cityLocation": {
+            "type": "Point",
+            "coordinates": [
+              27.852025,
+              -25.739123
+            ]
+          }
+        },
+        {
+          "_partitionKey": null,
+          "name": "Hartbeespoort",
+          "cityId": "df08e526-a506-4316-8415-a0ae6b51f068",
+          "country": "South Africa",
+          "province": "North West",
+          "cityLocation": {
+            "type": "Point",
+            "coordinates": [
+              27.85,
+              -25.733333
+            ]
+          }
+        },
+        {
+          "_partitionKey": null,
+          "name": "Hartebeestpoort",
+          "cityId": "d6a853a6-1880-4115-9a99-8ce95879517d",
+          "country": "South Africa",
+          "province": "North West",
+          "cityLocation": {
+            "type": "Point",
+            "coordinates": [
+              27.85,
+              -25.733333
+            ]
+          }
+        },
+        {
+          "_partitionKey": null,
+          "name": "Schoemansville",
+          "cityId": "3f276b89-1325-4f86-b4c7-8636edbd052a",
+          "country": "South Africa",
+          "province": "North West",
+          "cityLocation": {
+            "type": "Point",
+            "coordinates": [
+              27.873882,
+              -25.728685
+            ]
+          }
+        },
+        {
+          "_partitionKey": null,
+          "name": "Schoemanville",
+          "cityId": "1689f6d1-4151-4438-8a03-f8fc3e830e5d",
+          "country": "South Africa",
+          "province": "North West",
+          "cityLocation": {
+            "type": "Point",
+            "coordinates": [
+              27.873882,
+              -25.728685
+            ]
+          }
+        }
+      ]
+    }
+  ],
+  "projects": [
+    {
+      "_partitionKey": null,
+      "projectId": "5ce18b9e-6539-4b4c-a82d-e16f4904d96c",
+      "name": "Lanseria Road Upgrades",
+      "organizationId": "f742a1f6-9e0f-4a7f-a5cd-07a3d929cea1",
+      "description": "This is the description of a truly transformational project that will change the lives of thousands of people. The infrastructure built will enhance quality of life and provide opportunities for entrepreneurs and job seekers",
+      "organizationName": "Roberts InfraCon Lt",
+      "monitorMaxDistanceInMetres": 500.0,
+      "created": "2023-01-03T17:44:55.763+02:00",
+      "nearestCities": []
+    },
+    {
+      "_partitionKey": null,
+      "projectId": "c41c5e58-692e-44c0-ba32-7970b20eb1fc",
+      "name": "Rosebank Education Complex",
+      "organizationId": "f742a1f6-9e0f-4a7f-a5cd-07a3d929cea1",
+      "description": "This is the description of a truly transformational project that will change the lives of thousands of people. The infrastructure built will enhance quality of life and provide opportunities for entrepreneurs and job seekers",
+      "organizationName": "Roberts InfraCon Lt",
+      "monitorMaxDistanceInMetres": 500.0,
+      "created": "2023-01-03T17:44:55.965+02:00",
+      "nearestCities": [
+        {
+          "_partitionKey": null,
+          "name": "Dunkeld",
+          "cityId": "e0b17611-9aa2-4c65-bee7-df8f4871bb95",
+          "country": "South Africa",
+          "province": "Gauteng",
+          "cityLocation": {
+            "type": "Point",
+            "coordinates": [
+              28.041183,
+              -26.137843
+            ]
+          }
+        },
+        {
+          "_partitionKey": null,
+          "name": "Parkhurst",
+          "cityId": "59c6d63b-100d-49dc-a093-0f4396819993",
+          "country": "South Africa",
+          "province": "Gauteng",
+          "cityLocation": {
+            "type": "Point",
+            "coordinates": [
+              28.018238,
+              -26.138139
+            ]
+          }
+        },
+        {
+          "_partitionKey": null,
+          "name": "Craighall Park",
+          "cityId": "4d26ae38-f6c4-40fd-a9a7-d26e2bff5584",
+          "country": "South Africa",
+          "province": "Gauteng",
+          "cityLocation": {
+            "type": "Point",
+            "coordinates": [
+              28.023821,
+              -26.125284
+            ]
+          }
+        },
+        {
+          "_partitionKey": null,
+          "name": "Hyde Park",
+          "cityId": "81fd1c71-2c45-4a24-8f10-cbd0e948c784",
+          "country": "South Africa",
+          "province": "Gauteng",
+          "cityLocation": {
+            "type": "Point",
+            "coordinates": [
+              28.03788,
+              -26.120694
+            ]
+          }
+        },
+        {
+          "_partitionKey": null,
+          "name": "Houghton",
+          "cityId": "f7452b7c-cc55-4cc4-8c05-fb10ff3659ce",
+          "country": "South Africa",
+          "province": "Gauteng",
+          "cityLocation": {
+            "type": "Point",
+            "coordinates": [
+              28.051305,
+              -26.16242
+            ]
+          }
+        },
+        {
+          "_partitionKey": null,
+          "name": "Houghton Estate",
+          "cityId": "6685900b-ff5c-4c5f-8a58-eb81966d5155",
+          "country": "South Africa",
+          "province": "Gauteng",
+          "cityLocation": {
+            "type": "Point",
+            "coordinates": [
+              28.051305,
+              -26.16242
+            ]
+          }
+        },
+        {
+          "_partitionKey": null,
+          "name": "Parkview",
+          "cityId": "ce5bc2a5-f0fa-4b0a-8ec8-1c53a8649821",
+          "country": "South Africa",
+          "province": "Gauteng",
+          "cityLocation": {
+            "type": "Point",
+            "coordinates": [
+              28.024387,
+              -26.165288
+            ]
+          }
+        },
+        {
+          "_partitionKey": null,
+          "name": "Inanda",
+          "cityId": "a894872d-36af-4192-a1cb-3f4cf0ecab86",
+          "country": "South Africa",
+          "province": "Gauteng",
+          "cityLocation": {
+            "type": "Point",
+            "coordinates": [
+              28.058779,
+              -26.119772
+            ]
+          }
+        },
+        {
+          "_partitionKey": null,
+          "name": "Craighall",
+          "cityId": "f7c224aa-17f5-41a3-b994-fc8d4c99b23c",
+          "country": "South Africa",
+          "province": "Gauteng",
+          "cityLocation": {
+            "type": "Point",
+            "coordinates": [
+              28.016667,
+              -26.116667
+            ]
+          }
+        },
+        {
+          "_partitionKey": null,
+          "name": "Sandhurst",
+          "cityId": "7b76208d-574b-4d9c-a0d2-0c7950edecbe",
+          "country": "South Africa",
+          "province": "Gauteng",
+          "cityLocation": {
+            "type": "Point",
+            "coordinates": [
+              28.043438,
+              -26.109865
+            ]
+          }
+        },
+        {
+          "_partitionKey": null,
+          "name": "Westcliff",
+          "cityId": "7cd72ab2-baf9-4d23-a449-31ea6799d4b0",
+          "country": "South Africa",
+          "province": "Gauteng",
+          "cityLocation": {
+            "type": "Point",
+            "coordinates": [
+              28.026845,
+              -26.172102
+            ]
+          }
+        },
+        {
+          "_partitionKey": null,
+          "name": "Westcliffe",
+          "cityId": "c9f72d8f-9d43-4411-86e0-555773ddeb2f",
+          "country": "South Africa",
+          "province": "Gauteng",
+          "cityLocation": {
+            "type": "Point",
+            "coordinates": [
+              28.026845,
+              -26.172102
+            ]
+          }
+        },
+        {
+          "_partitionKey": null,
+          "name": "Emmarentia",
+          "cityId": "170e5cf7-37f1-41be-bd56-7695c46b2c76",
+          "country": "South Africa",
+          "province": "Gauteng",
+          "cityLocation": {
+            "type": "Point",
+            "coordinates": [
+              28.011657,
+              -26.166003
+            ]
+          }
+        },
+        {
+          "_partitionKey": null,
+          "name": "Waverly",
+          "cityId": "40c7773b-ded7-4c04-9712-0ad71efbaeb5",
+          "country": "South Africa",
+          "province": "Gauteng",
+          "cityLocation": {
+            "type": "Point",
+            "coordinates": [
+              28.078383,
+              -26.135274
+            ]
+          }
+        },
+        {
+          "_partitionKey": null,
+          "name": "Linden",
+          "cityId": "81aa1ada-51c4-45ed-862e-6558968cf936",
+          "country": "South Africa",
+          "province": "Gauteng",
+          "cityLocation": {
+            "type": "Point",
+            "coordinates": [
+              27.996152,
+              -26.130879
+            ]
+          }
+        },
+        {
+          "_partitionKey": null,
+          "name": "Parktown",
+          "cityId": "056928a6-a34a-4ae8-91c1-e7273f2506f6",
+          "country": "South Africa",
+          "province": "Gauteng",
+          "cityLocation": {
+            "type": "Point",
+            "coordinates": [
+              28.026709,
+              -26.182052
+            ]
+          }
+        },
+        {
+          "_partitionKey": null,
+          "name": "Melville",
+          "cityId": "17581ff8-15a0-4554-a0e0-1c5e6b91dd45",
+          "country": "South Africa",
+          "province": "Gauteng",
+          "cityLocation": {
+            "type": "Point",
+            "coordinates": [
+              28.008953,
+              -26.176038
+            ]
+          }
+        },
+        {
+          "_partitionKey": null,
+          "name": "Parkmore",
+          "cityId": "0c4f6d83-540e-4954-b7c8-324981b0e2e8",
+          "country": "South Africa",
+          "province": "Gauteng",
+          "cityLocation": {
+            "type": "Point",
+            "coordinates": [
+              28.037448,
+              -26.095959
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "_partitionKey": null,
+      "projectId": "422da63f-59b2-473c-b310-ee622333e158",
+      "name": "Sandton Sanitation Project",
+      "organizationId": "f742a1f6-9e0f-4a7f-a5cd-07a3d929cea1",
+      "description": "This is the description of a truly transformational project that will change the lives of thousands of people. The infrastructure built will enhance quality of life and provide opportunities for entrepreneurs and job seekers",
+      "organizationName": "Roberts InfraCon Lt",
+      "monitorMaxDistanceInMetres": 500.0,
+      "created": "2023-01-03T17:44:55.983+02:00",
+      "nearestCities": [
+        {
+          "_partitionKey": null,
+          "name": "Sandhurst",
+          "cityId": "7b76208d-574b-4d9c-a0d2-0c7950edecbe",
+          "country": "South Africa",
+          "province": "Gauteng",
+          "cityLocation": {
+            "type": "Point",
+            "coordinates": [
+              28.043438,
+              -26.109865
+            ]
+          }
+        },
+        {
+          "_partitionKey": null,
+          "name": "Sandown",
+          "cityId": "19a6c50c-2038-461a-9484-2c06f4932812",
+          "country": "South Africa",
+          "province": "Gauteng",
+          "cityLocation": {
+            "type": "Point",
+            "coordinates": [
+              28.066667,
+              -26.1
+            ]
+          }
+        },
+        {
+          "_partitionKey": null,
+          "name": "Strathavon",
+          "cityId": "4d1c6bae-7980-4f35-89ed-a214ecec94ae",
+          "country": "South Africa",
+          "province": "Gauteng",
+          "cityLocation": {
+            "type": "Point",
+            "coordinates": [
+              28.066667,
+              -26.1
+            ]
+          }
+        },
+        {
+          "_partitionKey": null,
+          "name": "Inanda",
+          "cityId": "a894872d-36af-4192-a1cb-3f4cf0ecab86",
+          "country": "South Africa",
+          "province": "Gauteng",
+          "cityLocation": {
+            "type": "Point",
+            "coordinates": [
+              28.058779,
+              -26.119772
+            ]
+          }
+        },
+        {
+          "_partitionKey": null,
+          "name": "Parkmore",
+          "cityId": "0c4f6d83-540e-4954-b7c8-324981b0e2e8",
+          "country": "South Africa",
+          "province": "Gauteng",
+          "cityLocation": {
+            "type": "Point",
+            "coordinates": [
+              28.037448,
+              -26.095959
+            ]
+          }
+        },
+        {
+          "_partitionKey": null,
+          "name": "Hyde Park",
+          "cityId": "81fd1c71-2c45-4a24-8f10-cbd0e948c784",
+          "country": "South Africa",
+          "province": "Gauteng",
+          "cityLocation": {
+            "type": "Point",
+            "coordinates": [
+              28.03788,
+              -26.120694
+            ]
+          }
+        },
+        {
+          "_partitionKey": null,
+          "name": "Wynberg",
+          "cityId": "cddd4a73-c97f-4442-a2da-cb90db3a8b1b",
+          "country": "South Africa",
+          "province": "Gauteng",
+          "cityLocation": {
+            "type": "Point",
+            "coordinates": [
+              28.083333,
+              -26.1
+            ]
+          }
+        },
+        {
+          "_partitionKey": null,
+          "name": "Morningside",
+          "cityId": "ff31c0ee-6074-4cf4-9051-1eaa5c2b71fa",
+          "country": "South Africa",
+          "province": "Gauteng",
+          "cityLocation": {
+            "type": "Point",
+            "coordinates": [
+              28.062456,
+              -26.077456
+            ]
+          }
+        },
+        {
+          "_partitionKey": null,
+          "name": "Duxberry",
+          "cityId": "deeac655-e337-4459-a341-f3dcafa30b88",
+          "country": "South Africa",
+          "province": "Gauteng",
+          "cityLocation": {
+            "type": "Point",
+            "coordinates": [
+              28.053129,
+              -26.073543
+            ]
+          }
+        },
+        {
+          "_partitionKey": null,
+          "name": "Craighall Park",
+          "cityId": "4d26ae38-f6c4-40fd-a9a7-d26e2bff5584",
+          "country": "South Africa",
+          "province": "Gauteng",
+          "cityLocation": {
+            "type": "Point",
+            "coordinates": [
+              28.023821,
+              -26.125284
+            ]
+          }
+        },
+        {
+          "_partitionKey": null,
+          "name": "Craighall",
+          "cityId": "f7c224aa-17f5-41a3-b994-fc8d4c99b23c",
+          "country": "South Africa",
+          "province": "Gauteng",
+          "cityLocation": {
+            "type": "Point",
+            "coordinates": [
+              28.016667,
+              -26.116667
+            ]
+          }
+        },
+        {
+          "_partitionKey": null,
+          "name": "Dunkeld",
+          "cityId": "e0b17611-9aa2-4c65-bee7-df8f4871bb95",
+          "country": "South Africa",
+          "province": "Gauteng",
+          "cityLocation": {
+            "type": "Point",
+            "coordinates": [
+              28.041183,
+              -26.137843
+            ]
+          }
+        },
+        {
+          "_partitionKey": null,
+          "name": "Waverly",
+          "cityId": "40c7773b-ded7-4c04-9712-0ad71efbaeb5",
+          "country": "South Africa",
+          "province": "Gauteng",
+          "cityLocation": {
+            "type": "Point",
+            "coordinates": [
+              28.078383,
+              -26.135274
+            ]
+          }
+        },
+        {
+          "_partitionKey": null,
+          "name": "Alexandra",
+          "cityId": "3ff5b303-a547-4673-8192-9e4d1e1b9290",
+          "country": "South Africa",
+          "province": "Gauteng",
+          "cityLocation": {
+            "type": "Point",
+            "coordinates": [
+              28.098836,
+              -26.105284
+            ]
+          }
+        },
+        {
+          "_partitionKey": null,
+          "name": "Kew",
+          "cityId": "38e55d7b-4b27-418f-bdde-2606fb808b68",
+          "country": "South Africa",
+          "province": "Gauteng",
+          "cityLocation": {
+            "type": "Point",
+            "coordinates": [
+              28.095734,
+              -26.121325
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "_partitionKey": null,
+      "projectId": "15eda0c5-6abe-4171-b809-4d8df840d3ca",
+      "name": "Pretoria Road Upgrades",
+      "organizationId": "f742a1f6-9e0f-4a7f-a5cd-07a3d929cea1",
+      "description": "This is the description of a truly transformational project that will change the lives of thousands of people. The infrastructure built will enhance quality of life and provide opportunities for entrepreneurs and job seekers",
+      "organizationName": "Roberts InfraCon Lt",
+      "monitorMaxDistanceInMetres": 500.0,
+      "created": "2023-01-03T17:44:56.007+02:00",
+      "nearestCities": [
+        {
+          "_partitionKey": null,
+          "name": "Innesdale",
+          "cityId": "312f324b-2805-4976-ac64-17e0f0316d5f",
+          "country": "South Africa",
+          "province": "Gauteng",
+          "cityLocation": {
+            "type": "Point",
+            "coordinates": [
+              28.216667,
+              -25.716667
+            ]
+          }
+        },
+        {
+          "_partitionKey": null,
+          "name": "Gezina",
+          "cityId": "0068083f-2f1a-4fd4-946d-9ca462f403c5",
+          "country": "South Africa",
+          "province": "Gauteng",
+          "cityLocation": {
+            "type": "Point",
+            "coordinates": [
+              28.206734,
+              -25.718667
+            ]
+          }
+        },
+        {
+          "_partitionKey": null,
+          "name": "Villieria",
+          "cityId": "87d2f8c4-f1d2-4b5a-a6fc-14f36a2376f6",
+          "country": "South Africa",
+          "province": "Gauteng",
+          "cityLocation": {
+            "type": "Point",
+            "coordinates": [
+              28.232176,
+              -25.717364
+            ]
+          }
+        },
+        {
+          "_partitionKey": null,
+          "name": "Rietfontein",
+          "cityId": "10c4174f-1c13-4632-abbf-445f161d5945",
+          "country": "South Africa",
+          "province": "Gauteng",
+          "cityLocation": {
+            "type": "Point",
+            "coordinates": [
+              28.224287,
+              -25.706865
+            ]
+          }
+        },
+        {
+          "_partitionKey": null,
+          "name": "Pretoria",
+          "cityId": "46314495-20c8-4196-9b04-cd6df3147820",
+          "country": "South Africa",
+          "province": "Gauteng",
+          "cityLocation": {
+            "type": "Point",
+            "coordinates": [
+              28.229444,
+              -25.706944
+            ]
+          }
+        },
+        {
+          "_partitionKey": null,
+          "name": "Sunnyside",
+          "cityId": "3b9a9bd9-72f8-433f-9625-053e44e4f37f",
+          "country": "South Africa",
+          "province": "Gauteng",
+          "cityLocation": {
+            "type": "Point",
+            "coordinates": [
+              28.211326,
+              -25.757459
+            ]
+          }
+        },
+        {
+          "_partitionKey": null,
+          "name": "Capital Park",
+          "cityId": "836ac4ef-d9f8-49b1-be57-a55f05755b86",
+          "country": "South Africa",
+          "province": "Gauteng",
+          "cityLocation": {
+            "type": "Point",
+            "coordinates": [
+              28.188835,
+              -25.725136
+            ]
+          }
+        },
+        {
+          "_partitionKey": null,
+          "name": "Hatfield",
+          "cityId": "9cea3921-056a-48f3-875f-c3189fa9f5ea",
+          "country": "South Africa",
+          "province": "Gauteng",
+          "cityLocation": {
+            "type": "Point",
+            "coordinates": [
+              28.243141,
+              -25.749728
+            ]
+          }
+        },
+        {
+          "_partitionKey": null,
+          "name": "Queenswood",
+          "cityId": "f4ce0e2c-8d33-49ef-b0ce-f3be66ba11c5",
+          "country": "South Africa",
+          "province": "Gauteng",
+          "cityLocation": {
+            "type": "Point",
+            "coordinates": [
+              28.25323,
+              -25.729691
+            ]
+          }
+        },
+        {
+          "_partitionKey": null,
+          "name": "Brooklyn",
+          "cityId": "f6571f5b-9029-4287-8c64-4a22c188ad3d",
+          "country": "South Africa",
+          "province": "Gauteng",
+          "cityLocation": {
+            "type": "Point",
+            "coordinates": [
+              28.241388,
+              -25.765387
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "_partitionKey": null,
+      "projectId": "e88c7c46-1100-4fba-ad31-775cb96e9788",
+      "name": "Fourways University Construction",
+      "organizationId": "f742a1f6-9e0f-4a7f-a5cd-07a3d929cea1",
+      "description": "This is the description of a truly transformational project that will change the lives of thousands of people. The infrastructure built will enhance quality of life and provide opportunities for entrepreneurs and job seekers",
+      "organizationName": "Roberts InfraCon Lt",
+      "monitorMaxDistanceInMetres": 500.0,
+      "created": "2023-01-03T17:44:56.028+02:00",
+      "nearestCities": [
+        {
+          "_partitionKey": null,
+          "name": "Four Ways",
+          "cityId": "24cc57f1-2f3f-4b18-8141-48d544efef97",
+          "country": "South Africa",
+          "province": "Gauteng",
+          "cityLocation": {
+            "type": "Point",
+            "coordinates": [
+              27.999382,
+              -26.029018
+            ]
+          }
+        },
+        {
+          "_partitionKey": null,
+          "name": "Sandton",
+          "cityId": "2613812f-6ef9-46d8-a536-b6e80a422d37",
+          "country": "South Africa",
+          "province": "Gauteng",
+          "cityLocation": {
+            "type": "Point",
+            "coordinates": [
+              27.966667,
+              -26.05
+            ]
+          }
+        },
+        {
+          "_partitionKey": null,
+          "name": "Inadan",
+          "cityId": "2817b33a-7ef1-4215-bd7e-5d53c47baf64",
+          "country": "South Africa",
+          "province": "Gauteng",
+          "cityLocation": {
+            "type": "Point",
+            "coordinates": [
+              27.957208,
+              -26.014097
+            ]
+          }
+        },
+        {
+          "_partitionKey": null,
+          "name": "Trevallyn",
+          "cityId": "9607bfdb-74be-40d4-a325-1d227243eb02",
+          "country": "South Africa",
+          "province": "Gauteng",
+          "cityLocation": {
+            "type": "Point",
+            "coordinates": [
+              27.951687,
+              -26.019605
+            ]
+          }
+        },
+        {
+          "_partitionKey": null,
+          "name": "Farmall",
+          "cityId": "90e6bf4e-19b4-412d-a711-47846cff6ea1",
+          "country": "South Africa",
+          "province": "Gauteng",
+          "cityLocation": {
+            "type": "Point",
+            "coordinates": [
+              27.957902,
+              -25.999011
+            ]
+          }
+        },
+        {
+          "_partitionKey": null,
+          "name": "Bryanston",
+          "cityId": "d70f6cf9-5842-4bf2-8f43-a7a214382338",
+          "country": "South Africa",
+          "province": "Gauteng",
+          "cityLocation": {
+            "type": "Point",
+            "coordinates": [
+              28.028051,
+              -26.052106
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "_partitionKey": null,
+      "projectId": "db2f076c-a2e5-462b-a11f-8b4ab6463afb",
+      "name": "Krugersdorp Water & Sanitation Project",
+      "organizationId": "f742a1f6-9e0f-4a7f-a5cd-07a3d929cea1",
+      "description": "This is the description of a truly transformational project that will change the lives of thousands of people. The infrastructure built will enhance quality of life and provide opportunities for entrepreneurs and job seekers",
+      "organizationName": "Roberts InfraCon Lt",
+      "monitorMaxDistanceInMetres": 500.0,
+      "created": "2023-01-03T17:44:56.052+02:00",
+      "nearestCities": [
+        {
+          "_partitionKey": null,
+          "name": "Krugersdorp",
+          "cityId": "ad50475f-df88-4626-b0f5-7bb1029dab9f",
+          "country": "South Africa",
+          "province": "Gauteng",
+          "cityLocation": {
+            "type": "Point",
+            "coordinates": [
+              27.790701,
+              -26.092835
+            ]
+          }
+        },
+        {
+          "_partitionKey": null,
+          "name": "Noordheuwel",
+          "cityId": "d2e8f55a-64d7-42da-860e-8a19a7554a0a",
+          "country": "South Africa",
+          "province": "Gauteng",
+          "cityLocation": {
+            "type": "Point",
+            "coordinates": [
+              27.802779,
+              -26.08665
+            ]
+          }
+        },
+        {
+          "_partitionKey": null,
+          "name": "Krugersdorp West",
+          "cityId": "825e8a27-1295-43bc-9da8-01ff02fb737d",
+          "country": "South Africa",
+          "province": "Gauteng",
+          "cityLocation": {
+            "type": "Point",
+            "coordinates": [
+              27.748411,
+              -26.097905
+            ]
+          }
+        },
+        {
+          "_partitionKey": null,
+          "name": "Kings Kloof",
+          "cityId": "6037294a-cdf3-4419-acd5-68f7592cff0e",
+          "country": "South Africa",
+          "province": "Gauteng",
+          "cityLocation": {
+            "type": "Point",
+            "coordinates": [
+              27.783333,
+              -26.05
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "_partitionKey": null,
+      "projectId": "39c1f2b3-15f8-401e-8d92-405f45f95257",
+      "name": "Tembisa Education Complex",
+      "organizationId": "f742a1f6-9e0f-4a7f-a5cd-07a3d929cea1",
+      "description": "This is the description of a truly transformational project that will change the lives of thousands of people. The infrastructure built will enhance quality of life and provide opportunities for entrepreneurs and job seekers",
+      "organizationName": "Roberts InfraCon Lt",
+      "monitorMaxDistanceInMetres": 500.0,
+      "created": "2023-01-03T17:44:56.062+02:00",
+      "nearestCities": [
+        {
+          "_partitionKey": null,
+          "name": "Tembisa",
+          "cityId": "7b15e590-7c9d-4a0d-81b3-25ac3949990b",
+          "country": "South Africa",
+          "province": "Gauteng",
+          "cityLocation": {
+            "type": "Point",
+            "coordinates": [
+              28.226802,
+              -25.996363
+            ]
+          }
+        },
+        {
+          "_partitionKey": null,
+          "name": "Clayville",
+          "cityId": "764c180e-a0f7-4f0a-8a13-c9437cbaf6bf",
+          "country": "South Africa",
+          "province": "Gauteng",
+          "cityLocation": {
+            "type": "Point",
+            "coordinates": [
+              28.220653,
+              -25.956156
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "_partitionKey": null,
+      "projectId": "d48a897e-23f9-4f7f-93dd-ce4faa00d51f",
+      "name": "Soweto Water & Sanitation",
+      "organizationId": "f742a1f6-9e0f-4a7f-a5cd-07a3d929cea1",
+      "description": "This is the description of a truly transformational project that will change the lives of thousands of people. The infrastructure built will enhance quality of life and provide opportunities for entrepreneurs and job seekers",
+      "organizationName": "Roberts InfraCon Lt",
+      "monitorMaxDistanceInMetres": 500.0,
+      "created": "2023-01-03T17:44:56.166+02:00",
+      "nearestCities": [
+        {
+          "_partitionKey": null,
+          "name": "Mpanzaville",
+          "cityId": "decf0844-9d18-46f8-8773-224cd99873db",
+          "country": "South Africa",
+          "province": "Gauteng",
+          "cityLocation": {
+            "type": "Point",
+            "coordinates": [
+              27.858492,
+              -26.267812
+            ]
+          }
+        },
+        {
+          "_partitionKey": null,
+          "name": "Soweto",
+          "cityId": "42688183-064e-4f6c-b64e-e10d6bb3de52",
+          "country": "South Africa",
+          "province": "Gauteng",
+          "cityLocation": {
+            "type": "Point",
+            "coordinates": [
+              27.858492,
+              -26.267812
+            ]
+          }
+        },
+        {
+          "_partitionKey": null,
+          "name": "Moroka",
+          "cityId": "1a043e72-021c-406b-bf15-6d4c8de982a5",
+          "country": "South Africa",
+          "province": "Gauteng",
+          "cityLocation": {
+            "type": "Point",
+            "coordinates": [
+              27.876816,
+              -26.259422
+            ]
+          }
+        },
+        {
+          "_partitionKey": null,
+          "name": "Albertynsville",
+          "cityId": "d3a6c841-42c6-42e2-9a10-853a903c71c7",
+          "country": "South Africa",
+          "province": "Gauteng",
+          "cityLocation": {
+            "type": "Point",
+            "coordinates": [
+              27.85,
+              -26.266667
+            ]
+          }
+        },
+        {
+          "_partitionKey": null,
+          "name": "Mofolo",
+          "cityId": "a44ff8be-7338-4010-9e6c-39d35c6ec227",
+          "country": "South Africa",
+          "province": "Gauteng",
+          "cityLocation": {
+            "type": "Point",
+            "coordinates": [
+              27.888295,
+              -26.253018
+            ]
+          }
+        },
+        {
+          "_partitionKey": null,
+          "name": "Protea",
+          "cityId": "9fdf3f8d-0e2e-4516-94c4-456642fef495",
+          "country": "South Africa",
+          "province": "Gauteng",
+          "cityLocation": {
+            "type": "Point",
+            "coordinates": [
+              27.840991,
+              -26.286102
+            ]
+          }
+        },
+        {
+          "_partitionKey": null,
+          "name": "Fordsburg",
+          "cityId": "b262cde9-8342-4fd9-ab61-ddceb5659953",
+          "country": "South Africa",
+          "province": "Gauteng",
+          "cityLocation": {
+            "type": "Point",
+            "coordinates": [
+              27.833333,
+              -26.25
+            ]
+          }
+        },
+        {
+          "_partitionKey": null,
+          "name": "Pimville",
+          "cityId": "59262fe3-0242-447d-874b-4a5bd3a06e12",
+          "country": "South Africa",
+          "province": "Gauteng",
+          "cityLocation": {
+            "type": "Point",
+            "coordinates": [
+              27.906818,
+              -26.272301
+            ]
+          }
+        },
+        {
+          "_partitionKey": null,
+          "name": "Eldoradopark",
+          "cityId": "8a19568e-0c86-4548-ab04-11d027731db3",
+          "country": "South Africa",
+          "province": "Gauteng",
+          "cityLocation": {
+            "type": "Point",
+            "coordinates": [
+              27.897841,
+              -26.297115
+            ]
+          }
+        },
+        {
+          "_partitionKey": null,
+          "name": "Dobsonville",
+          "cityId": "e72fe272-22d1-457b-a03f-aecd1ddaf71d",
+          "country": "South Africa",
+          "province": "Gauteng",
+          "cityLocation": {
+            "type": "Point",
+            "coordinates": [
+              27.867242,
+              -26.22342
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "_partitionKey": null,
+      "projectId": "454df53c-b716-4d0e-920f-0802659a90de",
+      "name": "Pecanwood Crescent Dam Works",
+      "organizationId": "f742a1f6-9e0f-4a7f-a5cd-07a3d929cea1",
+      "description": "This is the description of a truly transformational project that will change the lives of thousands of people. The infrastructure built will enhance quality of life and provide opportunities for entrepreneurs and job seekers",
+      "organizationName": "Roberts InfraCon Lt",
+      "monitorMaxDistanceInMetres": 500.0,
+      "created": "2023-01-03T17:44:56.195+02:00",
+      "nearestCities": [
+        {
+          "_partitionKey": null,
+          "name": "Kosmos",
+          "cityId": "e922d0a3-7278-4326-8cbe-f1050a83a3f7",
+          "country": "South Africa",
+          "province": "North West",
+          "cityLocation": {
+            "type": "Point",
+            "coordinates": [
+              27.852025,
+              -25.739123
+            ]
+          }
+        },
+        {
+          "_partitionKey": null,
+          "name": "Hartbeespoort",
+          "cityId": "df08e526-a506-4316-8415-a0ae6b51f068",
+          "country": "South Africa",
+          "province": "North West",
+          "cityLocation": {
+            "type": "Point",
+            "coordinates": [
+              27.85,
+              -25.733333
+            ]
+          }
+        },
+        {
+          "_partitionKey": null,
+          "name": "Hartebeestpoort",
+          "cityId": "d6a853a6-1880-4115-9a99-8ce95879517d",
+          "country": "South Africa",
+          "province": "North West",
+          "cityLocation": {
+            "type": "Point",
+            "coordinates": [
+              27.85,
+              -25.733333
+            ]
+          }
+        },
+        {
+          "_partitionKey": null,
+          "name": "Schoemansville",
+          "cityId": "3f276b89-1325-4f86-b4c7-8636edbd052a",
+          "country": "South Africa",
+          "province": "North West",
+          "cityLocation": {
+            "type": "Point",
+            "coordinates": [
+              27.873882,
+              -25.728685
+            ]
+          }
+        },
+        {
+          "_partitionKey": null,
+          "name": "Schoemanville",
+          "cityId": "1689f6d1-4151-4438-8a03-f8fc3e830e5d",
+          "country": "South Africa",
+          "province": "North West",
+          "cityLocation": {
+            "type": "Point",
+            "coordinates": [
+              27.873882,
+              -25.728685
+            ]
+          }
+        }
+      ]
+    }
+  ],
+  "users": [
+    {
+      "_partitionKey": null,
+      "_id": "63b44d84ff704f09c6435306",
+      "name": "Vusi Mavuso",
+      "gender": null,
+      "email": "monitor.ffg@monitor.com",
+      "cellphone": "4604800427",
+      "userId": "l9PAZVKY6pVtUZy0yLVzhVyuoko1",
+      "organizationId": "f742a1f6-9e0f-4a7f-a5cd-07a3d929cea1",
+      "organizationName": "Roberts InfraCon Lt",
+      "created": "2023-01-03T17:45:06.963+02:00",
+      "fcmRegistration": null,
+      "userType": "FIELD_MONITOR",
+      "password": null,
+      "position": null
+    },
+    {
+      "_partitionKey": null,
+      "_id": "63b44d85ff704f09c6435307",
+      "name": "Thandiwe Ngobese",
+      "gender": null,
+      "email": "monitor.dob@monitor.com",
+      "cellphone": "0800286681",
+      "userId": "Vi2cXlLp5RTBXYiEJDzXIk0WcLu2",
+      "organizationId": "f742a1f6-9e0f-4a7f-a5cd-07a3d929cea1",
+      "organizationName": "Roberts InfraCon Lt",
+      "created": "2023-01-03T17:45:08.678+02:00",
+      "fcmRegistration": null,
+      "userType": "FIELD_MONITOR",
+      "password": null,
+      "position": null
+    },
+    {
+      "_partitionKey": null,
+      "_id": "63b44d87ff704f09c6435308",
+      "name": "Philemon Pereira",
+      "gender": null,
+      "email": "monitor.nsm@monitor.com",
+      "cellphone": "5271714138",
+      "userId": "mb7G5r77LmWcEdei4Dme2xaGwgn1",
+      "organizationId": "f742a1f6-9e0f-4a7f-a5cd-07a3d929cea1",
+      "organizationName": "Roberts InfraCon Lt",
+      "created": "2023-01-03T17:45:10.315+02:00",
+      "fcmRegistration": null,
+      "userType": "FIELD_MONITOR",
+      "password": null,
+      "position": null
+    },
+    {
+      "_partitionKey": null,
+      "_id": "63b44d88ff704f09c6435309",
+      "name": "David Maepa",
+      "gender": null,
+      "email": "exec.wub@monitor.com",
+      "cellphone": "2487150677",
+      "userId": "Ao9Ns1PeSDdydtbTlmtqxVI8So23",
+      "organizationId": "f742a1f6-9e0f-4a7f-a5cd-07a3d929cea1",
+      "organizationName": "Roberts InfraCon Lt",
+      "created": "2023-01-03T17:45:11.863+02:00",
+      "fcmRegistration": null,
+      "userType": "EXECUTIVE",
+      "password": null,
+      "position": null
+    },
+    {
+      "_partitionKey": null,
+      "_id": "63b7545f7130301666345d4a",
+      "name": "Lesley Makhubo",
+      "gender": null,
+      "email": "org.kis@monitor.com",
+      "cellphone": "5305860468",
+      "userId": "CoGnfxOf8dTEIFMhLB1gjpFFkQF3",
+      "organizationId": "f742a1f6-9e0f-4a7f-a5cd-07a3d929cea1",
+      "organizationName": "Roberts InfraCon Lt",
+      "created": "2023-01-03T17:45:05.061+02:00",
+      "fcmRegistration": "ej9FHGLrRQS6T5Q08h82vo:APA91bEUviRJMb6n0qf7MF1EObdOeVwiBPl1pJDiLaqnYVFUWVwaOx4G7sQ-iwcjeJY0MXzGg_ZqEUZCaH7iTPorDBOAD6m5O-buu0T9ICZC4gbjScthqFEjoq7d3YfdGseg1mkuQN7S",
+      "userType": "ORG_ADMINISTRATOR",
+      "password": null,
+      "position": null
+    }
+  ],
+  "date": "2023-01-06T14:43:38.920+02:00"
+}
