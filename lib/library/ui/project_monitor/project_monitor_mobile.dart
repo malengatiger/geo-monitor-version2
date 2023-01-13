@@ -103,7 +103,7 @@ class ProjectMonitorMobileState extends State<ProjectMonitorMobile>
             ),
             IconButton(
               icon: Icon(Icons.directions,
-                  size: 18, color: Theme.of(context).primaryColor),
+                  size: 24, color: Theme.of(context).primaryColor),
               onPressed: () {
                 setState(() {
                   _showPositionChooser = true;
@@ -112,7 +112,7 @@ class ProjectMonitorMobileState extends State<ProjectMonitorMobile>
             )
           ],
           bottom: PreferredSize(
-            preferredSize: const Size.fromHeight(200),
+            preferredSize: const Size.fromHeight(220),
             child: Padding(
               padding: const EdgeInsets.all(20.0),
               child: Column(
@@ -324,7 +324,8 @@ class ProjectMonitorMobileState extends State<ProjectMonitorMobile>
             ),
             _showPositionChooser
                 ? Positioned(
-                    left: 4, top: 4,
+                    left: 4,
+                    top: 4,
                     child: ProjectLocationChooser(
                       onSelected: _onPositionSelected,
                       onClose: _onClose,
@@ -546,7 +547,8 @@ class ProjectLocationChooser extends StatelessWidget {
 
     return Container(
       color: Theme.of(context).primaryColorDark,
-      width: 320, height: 400,
+      width: 320,
+      height: 400,
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16.0),
         child: Column(
@@ -561,9 +563,13 @@ class ProjectLocationChooser extends StatelessWidget {
                     icon: const Icon(Icons.close))
               ],
             ),
-            const SizedBox(
-              height: 16,
+            SizedBox(
+              child: Text(
+                'Tap to select location for directions',
+                style: myTextStyleSmall(context),
+              ),
             ),
+            const SizedBox(height: 8,),
             Expanded(
               child: ListView.builder(
                   itemCount: positions.length,
@@ -579,25 +585,29 @@ class ProjectLocationChooser extends StatelessWidget {
                         shape: getRoundedBorder(radius: 16),
                         elevation: 8,
                         child: ListTile(
-
                           dense: true,
                           title: Row(
                             children: [
-                               Text('Project Location', style: myTextStyleMedium(context),),
-                              const SizedBox(
-                                width: 8,
+                              Text(
+                                'Project Location',
+                                style: myTextStyleMedium(context),
                               ),
                               const SizedBox(
                                 width: 8,
                               ),
-                              Text('# ${index+1}', style: myNumberStyleSmall(context),),
+                              const SizedBox(
+                                width: 8,
+                              ),
+                              Text(
+                                '# ${index + 1}',
+                                style: myNumberStyleSmall(context),
+                              ),
                             ],
                           ),
                           leading: Icon(
                             Icons.location_on,
                             color: Theme.of(context).primaryColor,
                           ),
-
                         ),
                       ),
                     );

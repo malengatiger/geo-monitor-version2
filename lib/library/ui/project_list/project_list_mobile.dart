@@ -2,8 +2,11 @@ import 'package:badges/badges.dart';
 import 'package:flutter/material.dart';
 import 'package:focused_menu/focused_menu.dart';
 import 'package:focused_menu/modals.dart';
+import 'package:geo_monitor/library/data/project_position.dart';
 import 'package:geo_monitor/library/ui/maps/project_polygon_map_mobile.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:map_launcher/map_launcher.dart';
 
 import 'package:page_transition/page_transition.dart';
 import '../../api/data_api.dart';
@@ -11,7 +14,8 @@ import '../../api/sharedprefs.dart';
 import '../../bloc/fcm_bloc.dart';
 import '../../bloc/organization_bloc.dart';
 import '../../bloc/project_bloc.dart';
-import '../../bloc/user_bloc.dart';
+import '../../data/position.dart';
+import '../../data/project_polygon.dart';
 import '../../data/user.dart';
 import '../../functions.dart';
 import '../../hive_util.dart';
@@ -232,9 +236,69 @@ class ProjectListMobileState extends State<ProjectListMobile>
               )));
     }
   }
+  bool _showPositionChooser = false;
+  void _navigateToDirections(
+      {required double latitude, required double longitude}) async {
+    pp('$mm 🍎 🍎 🍎 start Google Maps Directions .....');
 
+    final availableMaps = await MapLauncher.installedMaps;
+    pp('$mm 🍎 🍎 🍎 availableMaps: $availableMaps'); // [AvailableMap { mapName: Google Maps, mapType: google }, ...]
+
+    var coordinates = Coords(latitude, longitude);
+    await availableMaps.first.showDirections(destination: coordinates);
+  }
+  _onPositionSelected(Position p1) {
+    setState(() {
+      _showPositionChooser = false;
+    });
+
+    _navigateToDirections(
+        latitude: p1.coordinates[1], longitude: p1.coordinates[0]);
+  }
+
+  _onClose() {
+    setState(() {
+      _showPositionChooser = false;
+    });
+  }
+
+  Project? _selectedProject;
+  var positions = <ProjectPosition>[];
+  var polygons = <ProjectPolygon>[];
+
+  void _startDirections(Project project) async {
+    setState(() {
+      isBusy = true;
+    });
+    _selectedProject = project;
+    positions = await projectBloc.getProjectPositions(
+        projectId: project.projectId!, forceRefresh: false);
+    polygons = await projectBloc.getProjectPolygons(
+        projectId: project.projectId!, forceRefresh: false);
+    setState(() {
+      isBusy = false;
+      _showPositionChooser = true;
+    });
+  }
   List<FocusedMenuItem> getPopUpMenuItems(Project project) {
     List<FocusedMenuItem> menuItems = [];
+    menuItems.add(
+      FocusedMenuItem(
+          title: Text(
+            'Project Directions',
+            style: GoogleFonts.lato(
+                textStyle: Theme.of(context).textTheme.bodyMedium,
+                fontWeight: FontWeight.normal,
+                color: Colors.black),
+          ),
+          trailingIcon: Icon(
+            Icons.directions,
+            color: Theme.of(context).primaryColor,
+          ),
+          onPressed: () {
+           _startDirections(project);
+          }),
+    );
     menuItems.add(
       FocusedMenuItem(
           title: Text(
@@ -624,6 +688,12 @@ class ProjectListMobileState extends State<ProjectListMobile>
                                       },
                                     ),
                                   ),
+                                  _showPositionChooser? Positioned(child: ProjectLocationChooser(
+                                    onSelected: _onPositionSelected,
+                                    onClose: _onClose,
+                                    projectPositions: positions,
+                                    polygons: polygons,
+                                  ),):const SizedBox(),
                                 ],
                               )));
           }),
