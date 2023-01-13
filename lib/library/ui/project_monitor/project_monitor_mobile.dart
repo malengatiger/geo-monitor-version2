@@ -2,10 +2,12 @@ import 'package:android_intent/android_intent.dart';
 import 'package:flutter/material.dart';
 import 'package:geo_monitor/library/ui/project_location/project_location_mobile.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:map_launcher/map_launcher.dart';
 
 import 'package:page_transition/page_transition.dart';
 
 import '../../bloc/project_bloc.dart';
+import '../../data/position.dart';
 import '../../data/project_polygon.dart';
 import '../../emojis.dart';
 import '../../functions.dart';
@@ -70,6 +72,7 @@ class ProjectMonitorMobileState extends State<ProjectMonitorMobile>
     super.dispose();
   }
 
+  bool _showPositionChooser = false;
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -96,6 +99,15 @@ class ProjectMonitorMobileState extends State<ProjectMonitorMobile>
                   size: 18, color: Theme.of(context).primaryColor),
               onPressed: () {
                 _getProjectData(true);
+              },
+            ),
+            IconButton(
+              icon: Icon(Icons.directions,
+                  size: 18, color: Theme.of(context).primaryColor),
+              onPressed: () {
+                setState(() {
+                  _showPositionChooser = true;
+                });
               },
             )
           ],
@@ -140,168 +152,188 @@ class ProjectMonitorMobileState extends State<ProjectMonitorMobile>
             ),
           ),
         ),
-        body: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Card(
-            elevation: 2,
-            shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(16.0)),
-            child: Padding(
-              padding: const EdgeInsets.all(20.0),
-              child: Column(
-                children: [
-                  const SizedBox(
-                    height: 8,
-                  ),
-                  isWithinDistance
-                      ? SizedBox(
-                          height: 180,
-                          child: Column(
-                            children: [
-                              ElevatedButton(
-                                style: ButtonStyle(
-                                    shape: MaterialStateProperty.all(
-                                      RoundedRectangleBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(16.0)),
-                                    ),
-                                    elevation: MaterialStateProperty.all(8),
-                                    backgroundColor: MaterialStateProperty.all(
-                                        Theme.of(context).primaryColor)),
-                                onPressed: () async {
-                                  isWithinDistance =
-                                      await _checkProjectDistance();
-                                  if (isWithinDistance) {
-                                    _startPhotoMonitoring();
-                                  } else {
-                                    setState(() {});
-                                    _showError();
-                                  }
-                                },
-                                child: Padding(
-                                  padding: const EdgeInsets.all(12.0),
-                                  child: Text(
-                                    'Start Photo Monitor',
-                                    style: GoogleFonts.lato(
-                                      textStyle: Theme.of(context)
-                                          .textTheme
-                                          .bodyMedium,
-                                      fontWeight: FontWeight.normal,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                              const SizedBox(
-                                height: 12,
-                              ),
-                              ElevatedButton(
-                                style: ButtonStyle(
-                                    shape: MaterialStateProperty.all(
-                                      RoundedRectangleBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(16.0)),
-                                    ),
-                                    elevation: MaterialStateProperty.all(8),
-                                    backgroundColor: MaterialStateProperty.all(
-                                        Theme.of(context).primaryColor)),
-                                onPressed: () async {
-                                  isWithinDistance =
-                                      await _checkProjectDistance();
-                                  if (isWithinDistance) {
-                                    _startVideoMonitoring();
-                                  } else {
-                                    setState(() {});
-                                    _showError();
-                                  }
-                                },
-                                child: Padding(
-                                  padding: const EdgeInsets.all(12.0),
-                                  child: Text(
-                                    'Start Video Monitor',
-                                    style: GoogleFonts.lato(
-                                      textStyle: Theme.of(context)
-                                          .textTheme
-                                          .bodyMedium,
-                                      fontWeight: FontWeight.normal,
+        body: Stack(
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Card(
+                elevation: 2,
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(16.0)),
+                child: Padding(
+                  padding: const EdgeInsets.all(20.0),
+                  child: Column(
+                    children: [
+                      const SizedBox(
+                        height: 8,
+                      ),
+                      isWithinDistance
+                          ? SizedBox(
+                              height: 180,
+                              child: Column(
+                                children: [
+                                  ElevatedButton(
+                                    style: ButtonStyle(
+                                        shape: MaterialStateProperty.all(
+                                          RoundedRectangleBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(16.0)),
+                                        ),
+                                        elevation: MaterialStateProperty.all(8),
+                                        backgroundColor:
+                                            MaterialStateProperty.all(
+                                                Theme.of(context)
+                                                    .primaryColor)),
+                                    onPressed: () async {
+                                      isWithinDistance =
+                                          await _checkProjectDistance();
+                                      if (isWithinDistance) {
+                                        _startPhotoMonitoring();
+                                      } else {
+                                        setState(() {});
+                                        _showError();
+                                      }
+                                    },
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(12.0),
+                                      child: Text(
+                                        'Start Photo Monitor',
+                                        style: GoogleFonts.lato(
+                                          textStyle: Theme.of(context)
+                                              .textTheme
+                                              .bodyMedium,
+                                          fontWeight: FontWeight.normal,
+                                        ),
+                                      ),
                                     ),
                                   ),
-                                ),
+                                  const SizedBox(
+                                    height: 12,
+                                  ),
+                                  ElevatedButton(
+                                    style: ButtonStyle(
+                                        shape: MaterialStateProperty.all(
+                                          RoundedRectangleBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(16.0)),
+                                        ),
+                                        elevation: MaterialStateProperty.all(8),
+                                        backgroundColor:
+                                            MaterialStateProperty.all(
+                                                Theme.of(context)
+                                                    .primaryColor)),
+                                    onPressed: () async {
+                                      isWithinDistance =
+                                          await _checkProjectDistance();
+                                      if (isWithinDistance) {
+                                        _startVideoMonitoring();
+                                      } else {
+                                        setState(() {});
+                                        _showError();
+                                      }
+                                    },
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(12.0),
+                                      child: Text(
+                                        'Start Video Monitor',
+                                        style: GoogleFonts.lato(
+                                          textStyle: Theme.of(context)
+                                              .textTheme
+                                              .bodyMedium,
+                                          fontWeight: FontWeight.normal,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                  const SizedBox(
+                                    height: 12,
+                                  ),
+                                  TextButton(
+                                      onPressed: () {
+                                        Navigator.of(context).pop();
+                                      },
+                                      child: const Text('Cancel')),
+                                ],
                               ),
-                              const SizedBox(
-                                height: 12,
-                              ),
-                              TextButton(
-                                  onPressed: () {
-                                    Navigator.of(context).pop();
-                                  },
-                                  child: const Text('Cancel')),
-                            ],
-                          ),
-                        )
-                      : Container(),
-                  const SizedBox(
-                    height: 4,
-                  ),
-                  isBusy
-                      ? Row(
-                          children: [
-                            const SizedBox(
-                              width: 16,
-                              height: 16,
-                              child: CircularProgressIndicator(
-                                strokeWidth: 2,
-                                backgroundColor: Colors.pink,
-                              ),
-                            ),
-                            const SizedBox(
-                              width: 8,
-                            ),
-                            Text(
-                              'Checking project location',
-                              style: Styles.blackTiny,
                             )
-                          ],
-                        )
-                      : Container(),
-                  const SizedBox(
-                    height: 4,
-                  ),
-                  isWithinDistance
-                      ? Text(
-                          'We are ready to start creating photos and videos for ${widget.project.name} \n🍎',
-                          style: GoogleFonts.lato(
-                            textStyle: myTextStyleSmall(context),
-                          ))
-                      : Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Column(
-                            children: [
-                              const SizedBox(
-                                height: 60,
-                              ),
-                              Text(
-                                'Device is too far from ${widget.project.name} for monitoring capabilities. Please move closer!',
-                                style: GoogleFonts.lato(
-                                  textStyle:
-                                      Theme.of(context).textTheme.bodyMedium,
-                                  fontWeight: FontWeight.normal,
+                          : Container(),
+                      const SizedBox(
+                        height: 4,
+                      ),
+                      isBusy
+                          ? Row(
+                              children: [
+                                const SizedBox(
+                                  width: 16,
+                                  height: 16,
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2,
+                                    backgroundColor: Colors.pink,
+                                  ),
                                 ),
+                                const SizedBox(
+                                  width: 8,
+                                ),
+                                Text(
+                                  'Checking project location',
+                                  style: Styles.blackTiny,
+                                )
+                              ],
+                            )
+                          : Container(),
+                      const SizedBox(
+                        height: 4,
+                      ),
+                      isWithinDistance
+                          ? Text(
+                              'We are ready to start creating photos and videos for ${widget.project.name} \n🍎',
+                              style: GoogleFonts.lato(
+                                textStyle: myTextStyleSmall(context),
+                              ))
+                          : Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Column(
+                                children: [
+                                  const SizedBox(
+                                    height: 60,
+                                  ),
+                                  Text(
+                                    'Device is too far from ${widget.project.name} for monitoring capabilities. Please move closer!',
+                                    style: GoogleFonts.lato(
+                                      textStyle: Theme.of(context)
+                                          .textTheme
+                                          .bodyMedium,
+                                      fontWeight: FontWeight.normal,
+                                    ),
+                                  ),
+                                  const SizedBox(
+                                    height: 32,
+                                  ),
+                                  TextButton(
+                                      onPressed: () {
+                                        Navigator.of(context).pop();
+                                      },
+                                      child: const Text('Cancel')),
+                                ],
                               ),
-                              const SizedBox(
-                                height: 32,
-                              ),
-                              TextButton(
-                                  onPressed: () {
-                                    Navigator.of(context).pop();
-                                  },
-                                  child: const Text('Cancel')),
-                            ],
-                          ),
-                        ),
-                ],
+                            ),
+                    ],
+                  ),
+                ),
               ),
             ),
-          ),
+            _showPositionChooser
+                ? Positioned(
+                    left: 4, top: 4,
+                    child: ProjectLocationChooser(
+                      onSelected: _onPositionSelected,
+                      onClose: _onClose,
+                      projectPositions: positions,
+                      polygons: polygons,
+                    ),
+                  )
+                : const SizedBox(),
+          ],
         ),
       ),
     );
@@ -361,8 +393,8 @@ class ProjectMonitorMobileState extends State<ProjectMonitorMobile>
             '... will check if user in any of the polygons');
         isWithinDistance = await _checkUserWithinPolygon();
       }
-
-    } else {        // nearestProjectPosition is NULL
+    } else {
+      // nearestProjectPosition is NULL
       isWithinDistance = await _checkUserWithinPolygon();
     }
     if (mounted) {
@@ -378,9 +410,7 @@ class ProjectMonitorMobileState extends State<ProjectMonitorMobile>
         ' if > zero check if user within polygon ...');
     var loc = await locationBloc.getLocation();
     var isOK = checkIfLocationIsWithinPolygons(
-        latitude: loc.latitude,
-        longitude: loc.longitude,
-        polygons: polygons);
+        latitude: loc.latitude, longitude: loc.longitude, polygons: polygons);
     isWithinDistance = isOK;
     if (isOK) {
       pp('$mm _checkProjectDistance ... 🚾🚾🚾 WE ARE INSIDE ONE OF THIS PROJECT POLYGONS!');
@@ -431,33 +461,15 @@ class ProjectMonitorMobileState extends State<ProjectMonitorMobile>
     });
   }
 
-  void _navigateToDirections() async {
-    /*
+  void _navigateToDirections(
+      {required double latitude, required double longitude}) async {
+    pp('$mm 🍎 🍎 🍎 start Google Maps Directions .....');
+
     final availableMaps = await MapLauncher.installedMaps;
-print(availableMaps); // [AvailableMap { mapName: Google Maps, mapType: google }, ...]
+    pp('$mm 🍎 🍎 🍎 availableMaps: $availableMaps'); // [AvailableMap { mapName: Google Maps, mapType: google }, ...]
 
-await availableMaps.first.showMarker(
-  coords: Coords(37.759392, -122.5107336),
-  title: "Ocean Beach",
-);
-     */
-    pp('🏖 🍎 🍎 🍎 start Google Maps Directions .....');
-    nearestProjectPosition = await _findNearestProjectPosition();
-    if (nearestProjectPosition != null) {
-      pp('🏖 🍎 🍎 🍎 start Google Maps Directions ..... '
-          'nearestProjectPosition: ${nearestProjectPosition!.toJson()}');
-      var destination =
-          '${nearestProjectPosition!.position!.coordinates[1]},${nearestProjectPosition!.position!.coordinates[0]}';
-      var position = await locationBloc.getLocation();
-      var origin = '${position.latitude},${position.longitude}';
-
-      final AndroidIntent intent = AndroidIntent(
-          action: 'action_view',
-          data: Uri.encodeFull(
-              "https://www.google.com/maps/dir/?api=1&origin=$origin&destination=$destination&travelmode=driving&dir_action=navigate"),
-          package: 'com.google.android.apps.maps');
-      intent.launch();
-    }
+    var coordinates = Coords(latitude, longitude);
+    await availableMaps.first.showDirections(destination: coordinates);
   }
 
   void _navigateToProjectLocation() async {
@@ -477,6 +489,21 @@ await availableMaps.first.showMarker(
       }
     }
   }
+
+  _onPositionSelected(Position p1) {
+    setState(() {
+      _showPositionChooser = false;
+    });
+
+    _navigateToDirections(
+        latitude: p1.coordinates[1], longitude: p1.coordinates[0]);
+  }
+
+  _onClose() {
+    setState(() {
+      _showPositionChooser = false;
+    });
+  }
 }
 
 class BagX {
@@ -484,4 +511,101 @@ class BagX {
   ProjectPosition position;
 
   BagX(this.distance, this.position);
+}
+
+/// choose projectPosition or one of the polygon points
+///
+///
+class ProjectLocationChooser extends StatelessWidget {
+  const ProjectLocationChooser(
+      {Key? key,
+      this.projectPositions,
+      this.polygons,
+      required this.onSelected,
+      required this.onClose})
+      : super(key: key);
+
+  final List<ProjectPosition>? projectPositions;
+  final List<ProjectPolygon>? polygons;
+  final Function(Position) onSelected;
+  final Function() onClose;
+
+  @override
+  Widget build(BuildContext context) {
+    var positions = <Position>[];
+    if (projectPositions != null) {
+      for (var p in projectPositions!) {
+        positions.add(p.position!);
+      }
+    }
+    if (polygons != null) {
+      for (var p in polygons!) {
+        positions.addAll(p.positions);
+      }
+    }
+
+    return Container(
+      color: Theme.of(context).primaryColorDark,
+      width: 320, height: 400,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16.0),
+        child: Column(
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                IconButton(
+                    onPressed: () {
+                      onClose();
+                    },
+                    icon: const Icon(Icons.close))
+              ],
+            ),
+            const SizedBox(
+              height: 16,
+            ),
+            Expanded(
+              child: ListView.builder(
+                  itemCount: positions.length,
+                  itemBuilder: (context, index) {
+                    var pos = positions.elementAt(index);
+                    double lat = pos.coordinates[1];
+                    double lng = pos.coordinates[0];
+                    return GestureDetector(
+                      onTap: () {
+                        onSelected(positions.elementAt(index));
+                      },
+                      child: Card(
+                        shape: getRoundedBorder(radius: 16),
+                        elevation: 8,
+                        child: ListTile(
+
+                          dense: true,
+                          title: Row(
+                            children: [
+                               Text('Project Location', style: myTextStyleMedium(context),),
+                              const SizedBox(
+                                width: 8,
+                              ),
+                              const SizedBox(
+                                width: 8,
+                              ),
+                              Text('# ${index+1}', style: myNumberStyleSmall(context),),
+                            ],
+                          ),
+                          leading: Icon(
+                            Icons.location_on,
+                            color: Theme.of(context).primaryColor,
+                          ),
+
+                        ),
+                      ),
+                    );
+                  }),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
 }
