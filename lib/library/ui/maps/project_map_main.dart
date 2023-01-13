@@ -5,6 +5,7 @@ import 'package:responsive_builder/responsive_builder.dart';
 import '../../bloc/project_bloc.dart';
 import '../../data/photo.dart';
 import '../../data/project.dart';
+import '../../data/project_polygon.dart';
 import '../../data/project_position.dart';
 import '../../functions.dart';
 import 'project_map_desktop.dart';
@@ -26,6 +27,7 @@ class ProjectMapMain extends StatefulWidget {
 class ProjectMapMainState extends State<ProjectMapMain> {
   var isBusy = false;
   var _positions = <ProjectPosition>[];
+  var _polygons = <ProjectPolygon>[];
   final _key = GlobalKey<ScaffoldState>();
   @override
   void initState() {
@@ -39,6 +41,8 @@ class ProjectMapMainState extends State<ProjectMapMain> {
     });
     try {
       _positions = await projectBloc.getProjectPositions(
+          projectId: widget.project.projectId!, forceRefresh: false);
+      _polygons = await projectBloc.getProjectPolygons(
           projectId: widget.project.projectId!, forceRefresh: false);
     } catch (e) {
       pp(e);
@@ -78,6 +82,7 @@ class ProjectMapMainState extends State<ProjectMapMain> {
             mobile: ProjectMapMobile(
               project: widget.project,
               projectPositions: _positions,
+              projectPolygons: _polygons,
               photo: widget.photo,
             ),
             tablet: ProjectMapTablet(

@@ -1,3 +1,4 @@
+import 'package:animations/animations.dart';
 import 'package:badges/badges.dart';
 import 'package:flutter/material.dart';
 import 'package:focused_menu/focused_menu.dart';
@@ -41,16 +42,21 @@ class ProjectListMobile extends StatefulWidget {
 
 class ProjectListMobileState extends State<ProjectListMobile>
     with SingleTickerProviderStateMixin {
-  late AnimationController _controller;
+  late AnimationController _animationController;
   var projects = <Project>[];
   mon.User? user;
   bool isBusy = false;
   bool isProjectsByLocation = false;
   var userTypeLabel = 'Unknown User Type';
+  final mm = '🔵🔵🔵🔵 ProjectListMobile:  ';
 
   @override
   void initState() {
-    _controller = AnimationController(vsync: this);
+    _animationController = AnimationController(
+        value: 0.0,
+        duration: const Duration(milliseconds: 3000),
+        reverseDuration: const Duration(milliseconds: 2000),
+        vsync: this);
     super.initState();
     user = widget.user;
     if (user == null) {
@@ -100,7 +106,7 @@ class ProjectListMobileState extends State<ProjectListMobile>
 
   @override
   void dispose() {
-    _controller.dispose();
+    _animationController.dispose();
     super.dispose();
   }
 
@@ -131,6 +137,7 @@ class ProjectListMobileState extends State<ProjectListMobile>
       setState(() {
         isBusy = false;
       });
+      _animationController.forward();
     }
   }
 
@@ -203,10 +210,11 @@ class ProjectListMobileState extends State<ProjectListMobile>
 
   void _navigateToProjectMap(Project p) async {
     pp('.................. _navigateToProjectMap: ');
-    var pos = await hiveUtil.getProjectPositions(p.projectId!);
-    if (pos.isEmpty) {
-      pos = await DataAPI.getProjectPositions(p.projectId!);
-    }
+
+    var positions = await projectBloc.getProjectPositions(projectId: p.projectId!,
+        forceRefresh: false);
+    var polygons = await projectBloc.getProjectPolygons(projectId: p.projectId!,
+        forceRefresh: false);
     if (mounted) {
       Navigator.push(
           context,
@@ -216,7 +224,8 @@ class ProjectListMobileState extends State<ProjectListMobile>
               duration: const Duration(milliseconds: 1000),
               child: ProjectMapMobile(
                 project: p,
-                projectPositions: pos,
+                projectPositions: positions,
+                projectPolygons: polygons,
               )));
     }
   }
@@ -251,7 +260,6 @@ class ProjectListMobileState extends State<ProjectListMobile>
     setState(() {
       _showPositionChooser = false;
     });
-
     _navigateToDirections(
         latitude: p1.coordinates[1], longitude: p1.coordinates[0]);
   }
@@ -262,7 +270,6 @@ class ProjectListMobileState extends State<ProjectListMobile>
     });
   }
 
-  Project? _selectedProject;
   var positions = <ProjectPosition>[];
   var polygons = <ProjectPolygon>[];
 
@@ -270,15 +277,31 @@ class ProjectListMobileState extends State<ProjectListMobile>
     setState(() {
       isBusy = true;
     });
-    _selectedProject = project;
-    positions = await projectBloc.getProjectPositions(
-        projectId: project.projectId!, forceRefresh: false);
-    polygons = await projectBloc.getProjectPolygons(
-        projectId: project.projectId!, forceRefresh: false);
+    try {
+      positions = await projectBloc.getProjectPositions(
+          projectId: project.projectId!, forceRefresh: false);
+      polygons = await projectBloc.getProjectPolygons(
+          projectId: project.projectId!, forceRefresh: false);
+      if (positions.length == 1 && polygons.isEmpty) {
+        _onPositionSelected(positions.first.position!);
+        setState(() {
+          isBusy = false;
+          _showPositionChooser = false;
+        });
+        return;
+      }
+    } catch (e) {
+      pp(e);
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          duration: const Duration(seconds: 10),
+          content: Text('$e')));
+    }
     setState(() {
       isBusy = false;
       _showPositionChooser = true;
     });
+    _animationController.forward();
+
   }
   List<FocusedMenuItem> getPopUpMenuItems(Project project) {
     List<FocusedMenuItem> menuItems = [];
@@ -618,81 +641,94 @@ class ProjectListMobileState extends State<ProjectListMobile>
                                     ),
                                     badgeColor: Theme.of(context).primaryColor,
                                     elevation: 8,
-                                    child: ListView.builder(
-                                      itemCount: projects.length,
-                                      itemBuilder:
-                                          (BuildContext context, int index) {
-                                        var selectedProject =
-                                            projects.elementAt(index);
+                                    child: AnimatedBuilder(
+                                      animation: _animationController,
+                                      builder: (BuildContext context, Widget? child) {
+                                        return FadeScaleTransition(animation: _animationController, child: child,);
+                                      },
+                                      child: ListView.builder(
+                                        itemCount: projects.length,
+                                        itemBuilder:
+                                            (BuildContext context, int index) {
+                                          var selectedProject =
+                                              projects.elementAt(index);
 
-                                        return FocusedMenuHolder(
-                                          menuOffset: 20,
-                                          duration:
-                                              const Duration(milliseconds: 300),
-                                          menuItems: getPopUpMenuItems(
-                                              selectedProject),
-                                          animateMenuItems: true,
-                                          openWithTap: true,
-                                          onPressed: () {
-                                            pp('.... 💛️ 💛️ 💛️ not sure what I pressed ...');
-                                          },
-                                          child: Card(
-                                            elevation: 4,
-                                            shape: RoundedRectangleBorder(
-                                                borderRadius:
-                                                    BorderRadius.circular(
-                                                        16.0)),
-                                            child: Padding(
-                                              padding:
-                                                  const EdgeInsets.all(12.0),
-                                              child: Column(
-                                                children: [
-                                                  const SizedBox(
-                                                    height: 12,
-                                                  ),
-                                                  Row(
-                                                    children: [
-                                                      Opacity(
-                                                        opacity: 0.5,
-                                                        child: Icon(
-                                                          Icons.water_damage,
-                                                          color:
-                                                              Theme.of(context)
-                                                                  .primaryColor,
+                                          return FocusedMenuHolder(
+                                            menuOffset: 20,
+                                            duration:
+                                                const Duration(milliseconds: 300),
+                                            menuItems: getPopUpMenuItems(
+                                                selectedProject),
+                                            animateMenuItems: true,
+                                            openWithTap: true,
+                                            onPressed: () {
+                                              pp('.... 💛️ 💛️ 💛️ not sure what I pressed ...');
+                                            },
+                                            child: Card(
+                                              elevation: 4,
+                                              shape: RoundedRectangleBorder(
+                                                  borderRadius:
+                                                      BorderRadius.circular(
+                                                          16.0)),
+                                              child: Padding(
+                                                padding:
+                                                    const EdgeInsets.all(12.0),
+                                                child: Column(
+                                                  children: [
+                                                    const SizedBox(
+                                                      height: 12,
+                                                    ),
+                                                    Row(
+                                                      children: [
+                                                        Opacity(
+                                                          opacity: 0.5,
+                                                          child: Icon(
+                                                            Icons.water_damage,
+                                                            color:
+                                                                Theme.of(context)
+                                                                    .primaryColor,
+                                                          ),
                                                         ),
-                                                      ),
-                                                      const SizedBox(
-                                                        width: 8,
-                                                      ),
-                                                      Flexible(
-                                                        child: Text(selectedProject.name!,
-                                                            style: GoogleFonts.lato(
-                                                                textStyle: Theme.of(
-                                                                        context)
-                                                                    .textTheme
-                                                                    .bodySmall,
-                                                                fontWeight:
-                                                                    FontWeight
-                                                                        .bold)),
-                                                      )
-                                                    ],
-                                                  ),
-                                                  const SizedBox(
-                                                    height: 12,
-                                                  ),
-                                                ],
+                                                        const SizedBox(
+                                                          width: 8,
+                                                        ),
+                                                        Flexible(
+                                                          child: Text(selectedProject.name!,
+                                                              style: GoogleFonts.lato(
+                                                                  textStyle: Theme.of(
+                                                                          context)
+                                                                      .textTheme
+                                                                      .bodySmall,
+                                                                  fontWeight:
+                                                                      FontWeight
+                                                                          .bold)),
+                                                        )
+                                                      ],
+                                                    ),
+                                                    const SizedBox(
+                                                      height: 12,
+                                                    ),
+                                                  ],
+                                                ),
                                               ),
                                             ),
-                                          ),
-                                        );
-                                      },
+                                          );
+                                        },
+                                      ),
                                     ),
                                   ),
-                                  _showPositionChooser? Positioned(child: ProjectLocationChooser(
-                                    onSelected: _onPositionSelected,
-                                    onClose: _onClose,
-                                    projectPositions: positions,
-                                    polygons: polygons,
+                                  _showPositionChooser? Positioned(child: AnimatedBuilder(
+                                    animation: _animationController,
+                                    builder: (BuildContext context, Widget? child) {
+                                      return FadeScaleTransition(animation: _animationController,
+                                      child: child,);
+                                    },
+                                    child: ProjectLocationChooser(
+                                      onSelected: _onPositionSelected,
+                                      onClose: _onClose,
+                                      projectPositions: positions,
+                                      polygons: polygons,
+                                    ),
                                   ),):const SizedBox(),
                                 ],
                               )));

@@ -1,7 +1,5 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-import 'package:flutter/rendering.dart';
 import 'package:focused_menu/focused_menu.dart';
 import 'package:focused_menu/modals.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -47,6 +45,7 @@ class SchedulesListMobileState extends State<SchedulesListMobile>
   }
   void _navigateToProjectMapMobile(FieldMonitorSchedule sched) async {
     var pos = await hiveUtil.getProjectPositions(sched.projectId!);
+    var pol = await hiveUtil.getProjectPolygons(sched.projectId!);
     var proj = await hiveUtil.getProjectById(projectId: sched.projectId!);
     if (mounted) {
       Navigator.push(
@@ -55,7 +54,10 @@ class SchedulesListMobileState extends State<SchedulesListMobile>
               type: PageTransitionType.scale,
               alignment: Alignment.topLeft,
               duration: const Duration(seconds: 1),
-              child: ProjectMapMobile(projectPositions: pos, project: proj!,)));
+              child: ProjectMapMobile(
+                projectPositions: pos,
+                projectPolygons: pol,
+                project: proj!,)));
     }
   }
   void _navigateToUserMediaListMobile() {

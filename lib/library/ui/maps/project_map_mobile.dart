@@ -1,9 +1,11 @@
 import 'dart:async';
+import 'dart:collection';
 import 'dart:math';
 
 import 'package:animations/animations.dart';
 import 'package:badges/badges.dart';
 import 'package:flutter/material.dart';
+import 'package:geo_monitor/library/api/sharedprefs.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:uuid/uuid.dart';
 
@@ -12,22 +14,24 @@ import '../../data/city.dart';
 import '../../data/photo.dart';
 import '../../data/project.dart';
 import '../../data/position.dart' as local;
+import '../../data/project_polygon.dart';
 import '../../data/project_position.dart';
+import '../../data/user.dart';
 import '../../emojis.dart';
 import '../../functions.dart';
 import '../../location/loc_bloc.dart';
-import 'map_utils.dart';
 
 class ProjectMapMobile extends StatefulWidget {
   final Project project;
   final List<ProjectPosition> projectPositions;
+  final List<ProjectPolygon> projectPolygons;
   final Photo? photo;
 
   const ProjectMapMobile(
       {super.key,
       required this.project,
       required this.projectPositions,
-      this.photo});
+      this.photo, required this.projectPolygons});
 
   @override
   ProjectMapMobileState createState() => ProjectMapMobileState();
@@ -43,11 +47,14 @@ class ProjectMapMobileState extends State<ProjectMapMobile>
   final _key = GlobalKey<ScaffoldState>();
   bool _showNewPositionUI = false;
   bool busy = false;
-
+  User? user;
   static const CameraPosition _kGooglePlex = CameraPosition(
     target: LatLng(37.42796133580664, -122.085749655962),
     zoom: 14.4746,
   );
+  final Set<Polygon> _polygons = HashSet<Polygon>();
+  var projectPolygons = <ProjectPolygon>[];
+  var projectPositions = <ProjectPosition>[];
 
   @override
   void initState() {
@@ -57,6 +64,13 @@ class ProjectMapMobileState extends State<ProjectMapMobile>
         reverseDuration: const Duration(milliseconds: 1500),
         vsync: this);
     super.initState();
+    projectPolygons = widget.projectPolygons;
+    projectPositions = widget.projectPositions;
+    _getUser();
+  }
+
+  void _getUser() async {
+    user = await Prefs.getUser();
   }
 
   @override
@@ -112,6 +126,29 @@ class ProjectMapMobileState extends State<ProjectMapMobile>
     //             1)));
 
   }
+  void _buildProjectPolygons() {
+    pp('$mm _buildProjectPolygons happening ... projectPolygons: ${projectPolygons.length}');
+    _polygons.clear();
+    for (var polygon in projectPolygons) {
+      var points = <LatLng>[];
+      for (var position in polygon.positions) {
+        points.add(LatLng(position.coordinates[1], position.coordinates[0]));
+      }
+      _polygons.add(Polygon(
+        polygonId: PolygonId(polygon.projectPolygonId!),
+        points: points,
+        fillColor: Colors.black26,
+        strokeColor: Colors.pink,
+        geodesic: true,
+        strokeWidth: 4,
+      ));
+    }
+
+    pp('$mm _buildProjectPolygons: 🍏project polygons created.: '
+        '🔵 ${_polygons.length} points in polygon ...');
+    _animateCamera();
+    setState(() {});
+  }
 
   void _onMarkerTapped(ProjectPosition projectPosition) {
     pp('💜 💜 💜 💜 💜 💜 ProjectMapMobile: _onMarkerTapped ....... ${projectPosition.projectName}');
@@ -119,6 +156,10 @@ class ProjectMapMobileState extends State<ProjectMapMobile>
 
   void _onLongPress(LatLng argument) {
     pp('$mm Map detected a long press! at $argument');
+    if (user!.userType == UserType.fieldMonitor) {
+      pp('$mm Field Monitor not allowed to create new project position; 🔶 quitting!');
+      return;
+    }
     setState(() {
       _latitude = argument.latitude;
       _longitude = argument.longitude;
@@ -231,6 +272,18 @@ class ProjectMapMobileState extends State<ProjectMapMobile>
             widget.project.name!,
             style: myTextStyleMedium(context),
           ),
+          bottom: PreferredSize(preferredSize: const Size.fromHeight(20),
+          child: Column(
+            children: [
+              Row(mainAxisAlignment: MainAxisAlignment.center,
+              children:  [
+                Text('Project Locations', style: myTextStyleSmall(context),),
+              ],
+            ),
+              const SizedBox(height: 8,)
+            ],
+
+          ),),
         ),
         body: Stack(
           children: [
@@ -240,10 +293,11 @@ class ProjectMapMobileState extends State<ProjectMapMobile>
               },
               child: Badge(
                 badgeColor: Colors.pink,
-                badgeContent: Text('${widget.projectPositions.length}'),
+                badgeContent: Text('${widget.projectPositions.length + widget.projectPolygons.length}'),
                 padding: const EdgeInsets.all(8.0),
                 position: BadgePosition.topEnd(top: 8, end: 8),
                 elevation: 8,
+
                 child: GoogleMap(
                   mapType: MapType.hybrid,
                   mapToolbarEnabled: true,
@@ -253,14 +307,16 @@ class ProjectMapMobileState extends State<ProjectMapMobile>
                     _mapController.complete(controller);
                     googleMapController = controller;
                     _addMarkers();
+                    _buildProjectPolygons();
                     setState(() {});
                   },
-                  myLocationEnabled: true,
+                  // myLocationEnabled: true,
                   markers: Set<Marker>.of(markers.values),
                   compassEnabled: true,
                   buildingsEnabled: true,
                   zoomControlsEnabled: true,
                   onLongPress: _onLongPress,
+                  polygons: _polygons,
                 ),
               ),
             ),

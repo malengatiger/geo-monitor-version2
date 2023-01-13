@@ -13,12 +13,14 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:uuid/uuid.dart';
 
 import '../../api/data_api.dart';
+import '../../api/sharedprefs.dart';
 import '../../bloc/project_bloc.dart';
 import '../../data/city.dart';
 import '../../data/photo.dart';
 import '../../data/project.dart';
 import '../../data/position.dart' as local;
 import '../../data/project_position.dart';
+import '../../data/user.dart';
 import '../../emojis.dart';
 import '../../functions.dart';
 import '../../location/loc_bloc.dart';
@@ -44,7 +46,6 @@ class ProjectPolygonMapMobileState extends State<ProjectPolygonMapMobile>
   Map<MarkerId, Marker> markers = <MarkerId, Marker>{};
   var random = Random(DateTime.now().millisecondsSinceEpoch);
   final _key = GlobalKey<ScaffoldState>();
-  bool _showNewPositionUI = false;
   bool busy = false;
 
   static const CameraPosition _kGooglePlex = CameraPosition(
@@ -53,12 +54,14 @@ class ProjectPolygonMapMobileState extends State<ProjectPolygonMapMobile>
   );
   final Set<Polygon> _polygons = HashSet<Polygon>();
   var projectPolygons = <ProjectPolygon>[];
+  User? user;
 
   void _getData() async {
     setState(() {
       busy = true;
     });
     try {
+      user = await Prefs.getUser();
       projectPolygons = await projectBloc.getProjectPolygons(
           projectId: widget.project.projectId!, forceRefresh: true);
       if (projectPolygons.isEmpty) {
@@ -91,10 +94,10 @@ class ProjectPolygonMapMobileState extends State<ProjectPolygonMapMobile>
       _polygons.add(Polygon(
         polygonId: PolygonId(polygon.projectPolygonId!),
         points: points,
-        fillColor: Colors.transparent,
+        fillColor: Colors.black26,
         strokeColor: Colors.pink,
         geodesic: true,
-        strokeWidth: 6,
+        strokeWidth: 4,
       ));
     }
 
@@ -131,10 +134,10 @@ class ProjectPolygonMapMobileState extends State<ProjectPolygonMapMobile>
     _polygons.add(Polygon(
       polygonId: PolygonId(DateTime.now().toIso8601String()),
       points: _myPoints,
-      fillColor: Colors.transparent.withOpacity(0.3),
+      fillColor: Colors.black26,
       strokeColor: Colors.pink,
       geodesic: true,
-      strokeWidth: 6,
+      strokeWidth: 4,
     ));
     setState(() {});
   }
@@ -149,6 +152,10 @@ class ProjectPolygonMapMobileState extends State<ProjectPolygonMapMobile>
 
   void _onMapTap(LatLng argument) {
     pp('$mm Map detected a tap! at $argument');
+    if (user!.userType == UserType.fieldMonitor) {
+      pp('$mm FieldMonitor not allowed to create polygon, 🔶 quitting!');
+      return;
+    }
     _myPoints.add(argument);
     pp('$mm Polygon has collected ${_myPoints.length} ');
     if (_myPoints.length > 1) {
@@ -287,7 +294,7 @@ class ProjectPolygonMapMobileState extends State<ProjectPolygonMapMobile>
                     // _addMarkers();
                     setState(() {});
                   },
-                  myLocationEnabled: true,
+                  // myLocationEnabled: true,
                   markers: Set<Marker>.of(markers.values),
                   polygons: Set<Polygon>.of(_polygons),
                   compassEnabled: true,

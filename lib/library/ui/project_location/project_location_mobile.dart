@@ -1,7 +1,9 @@
 import 'package:animations/animations.dart';
 import 'package:badges/badges.dart';
 import 'package:flutter/material.dart';
+import 'package:geo_monitor/library/data/project_polygon.dart';
 import 'package:geo_monitor/library/ui/maps/project_map_mobile.dart';
+import 'package:geo_monitor/library/ui/maps/project_polygon_map_mobile.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
 
@@ -14,11 +16,11 @@ import '../../api/data_api.dart';
 
 import '../../api/sharedprefs.dart';
 import '../../bloc/project_bloc.dart';
-import '../../bloc/user_bloc.dart';
 import '../../data/city.dart';
 import '../../data/place_mark.dart';
 import '../../data/position.dart' as mon;
 
+import '../../data/user.dart';
 import '../../functions.dart';
 import '../../data/project.dart';
 import '../../data/project_position.dart';
@@ -38,8 +40,10 @@ class ProjectLocationMobileState extends State<ProjectLocationMobile>
   late AnimationController _animationController;
   var busy = false;
   List<ProjectPosition> _projectPositions = [];
+  List<ProjectPolygon> _projectPolygons = [];
   final _key = GlobalKey<ScaffoldState>();
-  static const mx = '💙💙💙ProjectLocation Mobile: 💙 : ';
+  static const mx = '💙💙💙ProjectLocationMobile: 💙 ';
+  User? user;
 
   @override
   void initState() {
@@ -72,19 +76,20 @@ class ProjectLocationMobileState extends State<ProjectLocationMobile>
       map[dist] = projPos;
       pp('$mx Distance: 🌶 $dist metres 🌶 projectId: ${projPos.projectId} 🐊 projectPositionId: ${projPos.projectPositionId}');
     }
-    if (map.isEmpty) {
-      return false;
-    }
 
-    var list = map.keys.toList();
-    list.sort();
-    pp('$mx Distances in list, length: : ${list.length} $list');
-    if (list.elementAt(0) <=
-        widget.project.monitorMaxDistanceInMetres!.toInt()) {
-      return true;
-    } else {
-      return false;
+    if (map.isNotEmpty) {
+      var list = map.keys.toList();
+      list.sort();
+      pp('$mx Distances in list, length: : ${list.length} $list');
+      if (list.elementAt(0) <=
+          widget.project.monitorMaxDistanceInMetres!.toInt()) {
+        return true;
+      }
     }
+    var loc = await locationBloc.getLocation();
+    var mOK = checkIfLocationIsWithinPolygons(
+        polygons: _projectPolygons, latitude: loc.latitude, longitude: loc.longitude);
+    return mOK;
   }
 
   bool isWithin = false;
@@ -107,29 +112,21 @@ class ProjectLocationMobileState extends State<ProjectLocationMobile>
   }
 
   void _getProjectPositions(bool forceRefresh) async {
+    pp('$mx _getProjectPositions .... refresh project data ... ');
     setState(() {
       busy = true;
     });
 
     try {
+      user = await Prefs.getUser();
+      await _getLocation();
       _projectPositions = await projectBloc.getProjectPositions(
           projectId: widget.project.projectId!, forceRefresh: forceRefresh);
+      _projectPolygons = await projectBloc.getProjectPolygons(
+          projectId: widget.project.projectId!, forceRefresh: forceRefresh);
+
       pp('$mx _projectPositions found: ${_projectPositions.length}; checking location within project monitorDistance...');
-      await _getLocation();
-      isWithin = await _isLocationWithinProjectMonitorDistance();
-      pp('$mx _isLocationWithinProjectMonitorDistance: $isWithin, if true, we cannot do this ...');
-      if (!isWithin) {
-        if (mounted) {
-          setState(() {
-            busy = false;
-          });
-          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-              duration: Duration(seconds: 3),
-              content: Text(
-                  'A Project location exists already for where you are!')));
-          return;
-        }
-      }
+
     } catch (e) {
       pp(e);
       if (mounted) {
@@ -147,27 +144,21 @@ class ProjectLocationMobileState extends State<ProjectLocationMobile>
   }
 
   void _submit() async {
-    pp('$mx submit new project position ... ');
+    pp('$mx submit new project position .. check first .... ');
+    var isOK = await _isLocationWithinProjectMonitorDistance();
+    if (isOK) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+            duration: const Duration(seconds: 5),
+            content: Text('There is a project location here already for ${widget.project.name}',
+              style: myTextStyleMedium(context),)));
+      }
+      return;
+    }
     setState(() {
       busy = true;
     });
-    await _getLocation();
-    if (_position == null) {
-      return;
-    }
-    isWithin = await _isLocationWithinProjectMonitorDistance();
-    if (isWithin) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-            duration: const Duration(seconds: 10),
-            content: Text(
-                'This location is already recorded for ${widget.project.name}. There is no need for another monitoring location here.')));
-      }
-      setState(() {
-        busy = false;
-      });
-      return;
-    }
+
     pp('$mx getting possible place marks  ..........');
 
     List<Placemark>? placeMarks;
@@ -232,18 +223,21 @@ class ProjectLocationMobileState extends State<ProjectLocationMobile>
 
   Position? _position;
 
-  void _navigateToProjectMap() {
-    pp('... about to navigate after waiting 100 ms');
-    Navigator.push(
-        context,
-        PageTransition(
-            type: PageTransitionType.leftToRightWithFade,
-            alignment: Alignment.topLeft,
-            duration: const Duration(milliseconds: 1000),
-            child: ProjectMapMobile(
-              project: widget.project,
-              projectPositions: _projectPositions,
-            )));
+  Future<void> _navigateToProjectMap() async {
+    pp('... _navigateToProjectMap: about to navigate ');
+
+    if (mounted) {
+      Navigator.push(
+          context,
+          PageTransition(
+              type: PageTransitionType.leftToRightWithFade,
+              alignment: Alignment.topLeft,
+              duration: const Duration(milliseconds: 1000),
+              child: ProjectPolygonMapMobile(
+                project: widget.project,
+
+              )));
+    }
   }
 
   @override
@@ -255,7 +249,7 @@ class ProjectLocationMobileState extends State<ProjectLocationMobile>
           leading: const SizedBox(),
           title: Text(
             'Project Locations',
-            style: myTextStyleMedium(context),
+            style: myTextStyleSmall(context),
           ),
           actions: [
             IconButton(
@@ -283,7 +277,7 @@ class ProjectLocationMobileState extends State<ProjectLocationMobile>
             )
           ],
           bottom: PreferredSize(
-            preferredSize: const Size.fromHeight(200),
+            preferredSize: const Size.fromHeight(240),
             child: Padding(
               padding: const EdgeInsets.all(20.0),
               child: Column(
@@ -303,6 +297,14 @@ class ProjectLocationMobileState extends State<ProjectLocationMobile>
                   const SizedBox(
                     height: 12,
                   ),
+                  Text(
+                    'If you want to create a new Project Area tap the map icon at top right '
+                        'to go to a map that will help you do that',
+                    style: myTextStyleMedium(context),
+                  ),
+                  const SizedBox(
+                    height: 12,
+                  ),
                   Row(
                     children: [
                       Text(
@@ -313,13 +315,13 @@ class ProjectLocationMobileState extends State<ProjectLocationMobile>
                         width: 8,
                       ),
                       Text(
-                        '${_projectPositions.length}',
+                        '${_projectPositions.length + _projectPolygons.length}',
                         style: myNumberStyleMedium(context),
                       )
                     ],
                   ),
                   const SizedBox(
-                    height: 24,
+                    height: 12,
                   ),
                 ],
               ),
@@ -337,7 +339,7 @@ class ProjectLocationMobileState extends State<ProjectLocationMobile>
               );
             },
             child: Badge(
-              badgeContent: Text('${_projectPositions.length}'),
+              badgeContent: Text('${_projectPositions.length + _projectPolygons.length}'),
               badgeColor: Colors.pink,
               elevation: 8,
               position: BadgePosition.topEnd(top: -8, end: 16),
@@ -351,15 +353,13 @@ class ProjectLocationMobileState extends State<ProjectLocationMobile>
                     const SizedBox(
                       height: 48,
                     ),
-                    _position == null
-                        ? Container()
-                        : Padding(
+                     Padding(
                             padding: const EdgeInsets.all(16.0),
                             child: Column(
                               children: [
                                 Text(
                                   'Current Location',
-                                  style: Styles.greyLabelMedium,
+                                  style: myTextStyleLarge(context),
                                 ),
                                 const SizedBox(
                                   height: 32,
@@ -373,23 +373,15 @@ class ProjectLocationMobileState extends State<ProjectLocationMobile>
                                         width: 80,
                                         child: Text(
                                           'Latitude',
-                                          style: GoogleFonts.lato(
-                                              textStyle: Theme.of(context)
-                                                  .textTheme
-                                                  .bodyMedium,
-                                              fontWeight: FontWeight.normal),
+                                          style: myTextStyleSmall(context),
                                         ),
                                       ),
                                       const SizedBox(
                                         width: 12,
                                       ),
-                                      Text(
+                                      _position == null? const SizedBox(): Text(
                                         _position!.latitude.toStringAsFixed(6),
-                                        style: GoogleFonts.secularOne(
-                                            textStyle: Theme.of(context)
-                                                .textTheme
-                                                .headline6,
-                                            fontWeight: FontWeight.bold),
+                                        style: myNumberStyleLarge(context),
                                       ),
                                     ],
                                   ),
@@ -406,23 +398,15 @@ class ProjectLocationMobileState extends State<ProjectLocationMobile>
                                         width: 80,
                                         child: Text(
                                           'Longitude',
-                                          style: GoogleFonts.lato(
-                                              textStyle: Theme.of(context)
-                                                  .textTheme
-                                                  .bodyMedium,
-                                              fontWeight: FontWeight.normal),
+                                          style: myTextStyleSmall(context),
                                         ),
                                       ),
                                       const SizedBox(
                                         width: 12,
                                       ),
-                                      Text(
+                                      _position == null? const SizedBox() :Text(
                                         _position!.longitude.toStringAsFixed(6),
-                                        style: GoogleFonts.lato(
-                                            textStyle: Theme.of(context)
-                                                .textTheme
-                                                .headline6,
-                                            fontWeight: FontWeight.w900),
+                                        style: myNumberStyleLarge(context),
                                       ),
                                     ],
                                   ),
@@ -444,6 +428,15 @@ class ProjectLocationMobileState extends State<ProjectLocationMobile>
                           )
                         : ElevatedButton(
                             onPressed: _submit,
+                            style: ButtonStyle(
+                              shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                                  RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(16.0),
+                                      // side: const BorderSide(color: Colors.pink)
+                                  ),
+                              ),
+                              elevation: MaterialStateProperty.all<double>(8.0),
+                            ),
                             child: Padding(
                               padding: const EdgeInsets.only(
                                   left: 20, right: 20, top: 12, bottom: 12),
