@@ -84,12 +84,17 @@ class ProjectMonitorMobileState extends State<ProjectMonitorMobile>
               )),
           actions: [
             IconButton(
-              icon: Icon(Icons.ac_unit_rounded, size: 18, color: Theme.of(context).primaryColor,),
+              icon: Icon(
+                Icons.ac_unit_rounded,
+                size: 18,
+                color: Theme.of(context).primaryColor,
+              ),
               onPressed: _checkProjectDistance,
             ),
             IconButton(
-              icon: Icon(Icons.refresh_rounded,size: 18, color: Theme.of(context).primaryColor),
-              onPressed: (){
+              icon: Icon(Icons.refresh_rounded,
+                  size: 18, color: Theme.of(context).primaryColor),
+              onPressed: () {
                 _getProjectData(true);
               },
             )
@@ -155,8 +160,11 @@ class ProjectMonitorMobileState extends State<ProjectMonitorMobile>
                             children: [
                               ElevatedButton(
                                 style: ButtonStyle(
-                                  shape: MaterialStateProperty.all(RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(16.0)),),
+                                    shape: MaterialStateProperty.all(
+                                      RoundedRectangleBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(16.0)),
+                                    ),
                                     elevation: MaterialStateProperty.all(8),
                                     backgroundColor: MaterialStateProperty.all(
                                         Theme.of(context).primaryColor)),
@@ -188,8 +196,11 @@ class ProjectMonitorMobileState extends State<ProjectMonitorMobile>
                               ),
                               ElevatedButton(
                                 style: ButtonStyle(
-                                    shape: MaterialStateProperty.all(RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(16.0)),),
+                                    shape: MaterialStateProperty.all(
+                                      RoundedRectangleBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(16.0)),
+                                    ),
                                     elevation: MaterialStateProperty.all(8),
                                     backgroundColor: MaterialStateProperty.all(
                                         Theme.of(context).primaryColor)),
@@ -219,9 +230,11 @@ class ProjectMonitorMobileState extends State<ProjectMonitorMobile>
                               const SizedBox(
                                 height: 12,
                               ),
-                              TextButton(onPressed: (){
-                                Navigator.of(context).pop();
-                              }, child: const Text('Cancel')),
+                              TextButton(
+                                  onPressed: () {
+                                    Navigator.of(context).pop();
+                                  },
+                                  child: const Text('Cancel')),
                             ],
                           ),
                         )
@@ -258,23 +271,30 @@ class ProjectMonitorMobileState extends State<ProjectMonitorMobile>
                           'We are ready to start creating photos and videos for ${widget.project.name} \n🍎',
                           style: GoogleFonts.lato(
                             textStyle: myTextStyleSmall(context),
-                        ))
+                          ))
                       : Padding(
                           padding: const EdgeInsets.all(8.0),
                           child: Column(
                             children: [
-                              const SizedBox(height: 60,),
+                              const SizedBox(
+                                height: 60,
+                              ),
                               Text(
                                 'Device is too far from ${widget.project.name} for monitoring capabilities. Please move closer!',
                                 style: GoogleFonts.lato(
-                                  textStyle: Theme.of(context).textTheme.bodyMedium,
+                                  textStyle:
+                                      Theme.of(context).textTheme.bodyMedium,
                                   fontWeight: FontWeight.normal,
                                 ),
                               ),
-                              const SizedBox(height: 32,),
-                              TextButton(onPressed: (){
-                                Navigator.of(context).pop();
-                              }, child: const Text('Cancel')),
+                              const SizedBox(
+                                height: 32,
+                              ),
+                              TextButton(
+                                  onPressed: () {
+                                    Navigator.of(context).pop();
+                                  },
+                                  child: const Text('Cancel')),
                             ],
                           ),
                         ),
@@ -286,6 +306,7 @@ class ProjectMonitorMobileState extends State<ProjectMonitorMobile>
       ),
     );
   }
+
   // ignore: missing_return
   Future<ProjectPosition?> _findNearestProjectPosition() async {
     var bags = <BagX>[];
@@ -313,7 +334,7 @@ class ProjectMonitorMobileState extends State<ProjectMonitorMobile>
   static const mm = '🍏 🍏 🍏 ProjectMonitorMobile: 🍏 : ';
 
   Future<bool> _checkProjectDistance() async {
-    pp('$mm _checkProjectDistance ... ');
+    pp('\n\n$mm _checkProjectDistance or residence in a polygon ... ');
     setState(() {
       isBusy = true;
     });
@@ -326,39 +347,47 @@ class ProjectMonitorMobileState extends State<ProjectMonitorMobile>
       pp("$mm App is ${distance.toStringAsFixed(1)} metres from the project point; widget.project.monitorMaxDistanceInMetres: "
           "${widget.project.monitorMaxDistanceInMetres}");
 
-      isWithinDistance = await isLocationValid(projectPosition: nearestProjectPosition!,
+      isWithinDistance = await isLocationValid(
+          projectPosition: nearestProjectPosition!,
           validDistance: widget.project.monitorMaxDistanceInMetres!);
       if (isWithinDistance) {
-        pp('🌸 🌸 🌸 The app is within the allowable project.monitorMaxDistanceInMetres of '
-            '${widget.project.monitorMaxDistanceInMetres} metres');
+        pp('🌸 🌸 🌸 The user is within the allowable '
+            'project.monitorMaxDistanceInMetres of '
+            '${widget.project.monitorMaxDistanceInMetres} metres: $distance metres');
       } else {
-        pp(' 🌺 The app is NOT within the allowable project.monitorMaxDistanceInMetres of '
-            '${widget.project.monitorMaxDistanceInMetres} metres');
-      }
-      pp ('$mm check if project has polygons - and then check if within polygon ...');
-      var loc = await locationBloc.getLocation();
-
-      if (!isWithinDistance) {
-        var isOK = checkIfLocationIsWithinPolygons(
-            latitude: loc.latitude, longitude: loc.longitude, polygons: polygons);
-        isWithinDistance = isOK;
+        pp('🌺 The user is NOT within the allowable '
+            'project.monitorMaxDistanceInMetres of '
+            '${widget.project.monitorMaxDistanceInMetres} metres: $distance metres, '
+            '... will check if user in any of the polygons');
+        isWithinDistance = await _checkUserWithinPolygon();
       }
 
-      if (mounted) {
-        setState(() {
-          isBusy = false;
-        });
-      }
-
-      return isWithinDistance;
-    } else {
-      pp('$mm _checkProjectDistance ... 🚾 🚾 🚾 WE ARE NOT CLOSE TO THIS PROJECT POSITIONS!');
-      isWithinDistance = false;
+    } else {        // nearestProjectPosition is NULL
+      isWithinDistance = await _checkUserWithinPolygon();
     }
-    setState(() {
-      isBusy = false;
-    });
-    return false;
+    if (mounted) {
+      setState(() {
+        isBusy = false;
+      });
+    }
+    return isWithinDistance;
+  }
+
+  Future<bool> _checkUserWithinPolygon() async {
+    pp('$mm project has ${polygons.length} polygons - '
+        ' if > zero check if user within polygon ...');
+    var loc = await locationBloc.getLocation();
+    var isOK = checkIfLocationIsWithinPolygons(
+        latitude: loc.latitude,
+        longitude: loc.longitude,
+        polygons: polygons);
+    isWithinDistance = isOK;
+    if (isOK) {
+      pp('$mm _checkProjectDistance ... 🚾🚾🚾 WE ARE INSIDE ONE OF THIS PROJECT POLYGONS!');
+    } else {
+      pp('$mm _checkProjectDistance ... 🔴🔴🔴 WE ARE NOT INSIDE ANY OF THIS PROJECT POLYGONS!');
+    }
+    return isWithinDistance;
   }
 
   void _startPhotoMonitoring() async {
@@ -403,6 +432,15 @@ class ProjectMonitorMobileState extends State<ProjectMonitorMobile>
   }
 
   void _navigateToDirections() async {
+    /*
+    final availableMaps = await MapLauncher.installedMaps;
+print(availableMaps); // [AvailableMap { mapName: Google Maps, mapType: google }, ...]
+
+await availableMaps.first.showMarker(
+  coords: Coords(37.759392, -122.5107336),
+  title: "Ocean Beach",
+);
+     */
     pp('🏖 🍎 🍎 🍎 start Google Maps Directions .....');
     nearestProjectPosition = await _findNearestProjectPosition();
     if (nearestProjectPosition != null) {

@@ -7,6 +7,7 @@
 import 'dart:async';
 import 'dart:io';
 import 'dart:isolate';
+import 'package:geo_monitor/library/data/position.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:image/image.dart' as img;
 import 'package:camera/camera.dart';
@@ -17,11 +18,12 @@ import 'package:path_provider/path_provider.dart';
 
 import 'package:video_player/video_player.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart' as dot;
 import 'package:video_thumbnail/video_thumbnail.dart' as vt;
 import '../../api/sharedprefs.dart';
 import '../../bloc/cloud_storage_bloc.dart';
+import '../../bloc/project_bloc.dart';
 import '../../data/project.dart';
+import '../../data/project_polygon.dart';
 import '../../data/project_position.dart';
 import '../../data/user.dart';
 import '../../data/video.dart';
@@ -29,16 +31,15 @@ import '../../emojis.dart';
 import '../../functions.dart';
 import '../../generic_functions.dart';
 import '../../location/loc_bloc.dart';
-import '../media/list/media_list_main.dart';
 import '../media/list/project_media_list_mobile.dart';
 import '../media/user_media_list/user_media_list_mobile.dart';
 
 class FieldPhotoCamera extends StatefulWidget {
   final Project project;
-  final ProjectPosition projectPosition;
+  final ProjectPosition? projectPosition;
 
   const FieldPhotoCamera(
-      {super.key, required this.project, required this.projectPosition});
+      {super.key, required this.project, this.projectPosition});
 
   @override
   FieldPhotoCameraState createState() {
@@ -69,7 +70,8 @@ void logError(String code, String? message) {
 }
 
 class FieldPhotoCameraState extends State<FieldPhotoCamera>
-    with WidgetsBindingObserver, TickerProviderStateMixin implements StorageBlocListener {
+    with WidgetsBindingObserver, TickerProviderStateMixin
+    implements StorageBlocListener {
   CameraController? _cameraController;
   XFile? imageFile;
   XFile? videoFile;
@@ -84,7 +86,8 @@ class FieldPhotoCameraState extends State<FieldPhotoCamera>
   double _currentScale = 1.0;
   double _baseScale = 1.0;
   User? user;
-  static const mm = '🍎🍎🍎 FieldCamera 🍎 : ';
+  var polygons = <ProjectPolygon>[];
+  static const mm = '🍎🍎🍎 FieldPhotoCamera 🍎 : ';
 
   // Counting pointers (number of user fingers on screen)
   int _pointers = 0;
@@ -95,6 +98,7 @@ class FieldPhotoCameraState extends State<FieldPhotoCamera>
     _observeOrientation();
     _getCameras();
     _getUser();
+    _getPolygons();
 
     _flashModeControlRowAnimationController = AnimationController(
       duration: const Duration(milliseconds: 300),
@@ -108,6 +112,11 @@ class FieldPhotoCameraState extends State<FieldPhotoCamera>
 
   void _getUser() async {
     user = await Prefs.getUser();
+  }
+
+  void _getPolygons() async {
+    polygons = await projectBloc.getProjectPolygons(
+        projectId: widget.project.projectId!, forceRefresh: false);
   }
 
   @override
@@ -242,7 +251,10 @@ class FieldPhotoCameraState extends State<FieldPhotoCamera>
       mainAxisSize: MainAxisSize.max,
       children: <Widget>[
         IconButton(
-          icon: const Icon(Icons.camera_alt, size: 32,),
+          icon: const Icon(
+            Icons.camera_alt,
+            size: 32,
+          ),
           color: Colors.blue,
           onPressed: cameraController != null &&
                   cameraController.value.isInitialized &&
@@ -376,23 +388,55 @@ class FieldPhotoCameraState extends State<FieldPhotoCamera>
       pp('$mm onTakePictureButtonPressed; last saved orientation: 🔵 '
           '${_deviceOrientation!.name}');
     }
-    bool isValid = await isLocationValid(projectPosition: widget.projectPosition,
-        validDistance: widget.project.monitorMaxDistanceInMetres!);
-    if (!isValid) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-            duration: Duration(seconds: 10),
-            content: Text(
-                'You are no longer in range of one of the project location(s). Photos of the project cannot be taken from here')));
-
-        showToast(message: 'Cannot do this, Boss! ${Emoji.peach}',
-            textStyle: const TextStyle(color: Colors.white),
-            duration: const Duration(seconds: 10),backgroundColor: Colors.pink,
-            context: context);
+    if (widget.projectPosition == null) {
+      bool isWithin = await _doThePolygonCheck();
+      if (isWithin) {
+        _doThePicture();
+        return;
+      } else {
+        _doTheMessage();
       }
-      return;
+    } else {
+      bool isValid = await isLocationValid(
+          projectPosition: widget.projectPosition!,
+          validDistance: widget.project.monitorMaxDistanceInMetres!);
+      if (!isValid) {
+        bool isWithin = await _doThePolygonCheck();
+        if (!isWithin) {
+          _doTheMessage();
+        } else {
+          _doThePicture();
+        }
+      } else {
+        _doThePicture();
+      }
     }
+  }
 
+  void _doTheMessage() {
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+          duration: Duration(seconds: 10),
+          content: Text(
+              'You are no longer in range of one of the project location(s). Photos of the project cannot be taken from here')));
+
+      showToast(
+          message: 'Cannot do this, Boss! ${Emoji.peach}',
+          textStyle: const TextStyle(color: Colors.white),
+          duration: const Duration(seconds: 10),
+          backgroundColor: Colors.pink,
+          context: context);
+    }
+  }
+
+  Future<bool> _doThePolygonCheck() async {
+    var loc = await locationBloc.getLocation();
+    var isWithin = checkIfLocationIsWithinPolygons(
+        polygons: polygons, latitude: loc.latitude, longitude: loc.longitude);
+    return isWithin;
+  }
+
+  void _doThePicture() async {
     takePicture().then((XFile? file) async {
       if (videoController != null) {
         videoController!.dispose();
@@ -407,10 +451,11 @@ class FieldPhotoCameraState extends State<FieldPhotoCamera>
           File mImageFile = File(file.path);
           pp('$mm onTakePictureButtonPressed 🔵🔵🔵 file to upload, size: ${await mImageFile.length()} bytes🔵');
 
-          var thumbnailFile = await getThumbnail(file: mImageFile, isVideo: false);
+          var thumbnailFile =
+              await getThumbnail(file: mImageFile, isVideo: false);
           bool isLandscape = false;
           if (_deviceOrientation != null) {
-            switch(_deviceOrientation!.name) {
+            switch (_deviceOrientation!.name) {
               case 'landscapeLeft':
                 isLandscape = true;
                 break;
@@ -425,21 +470,44 @@ class FieldPhotoCameraState extends State<FieldPhotoCamera>
           //can i force
           File? mFile;
           if (_deviceOrientation != null) {
-            mFile = await _processOrientation(
-                mImageFile, _deviceOrientation!);
+            mFile = await _processOrientation(mImageFile, _deviceOrientation!);
           } else {
             mFile = mImageFile;
           }
 
-          cloudStorageBloc.uploadPhotoOrVideo(
-              listener: this, file: mFile, thumbnailFile: thumbnailFile,
-              project: widget.project, projectPositionId: widget.projectPosition.projectPositionId!,
-              projectPosition: widget.projectPosition.position!,
-              isVideo: false, isLandscape: isLandscape);
+          if (widget.projectPosition != null) {
+            cloudStorageBloc.uploadPhotoOrVideo(
+                listener: this,
+                file: mFile,
+                thumbnailFile: thumbnailFile,
+                project: widget.project,
+                projectPositionId: widget.projectPosition!.projectPositionId!,
+                projectPosition: widget.projectPosition!.position!,
+                isVideo: false,
+                isLandscape: isLandscape);
+          } else {
+            //todo - user location ....
+            var loc = await locationBloc.getLocation();
+            var position = Position(
+                type: 'Point', coordinates: [loc.longitude, loc.latitude]);
+            var polygon = getPolygonUserIsWithin(
+                polygons: polygons,
+                latitude: loc.latitude,
+                longitude: loc.longitude);
+            cloudStorageBloc.uploadPhotoOrVideo(
+                listener: this,
+                file: mFile,
+                thumbnailFile: thumbnailFile,
+                project: widget.project,
+                projectPolygonId: polygon?.projectPolygonId,
+                projectPosition: position,
+                isVideo: false,
+                isLandscape: isLandscape);
+          }
 
           var size = await mFile.length();
-          var m = (size/1024/1024).toStringAsFixed(2);
-          pp('$mm Picture taken is $m MB in size' );
+          var m = (size / 1024 / 1024).toStringAsFixed(2);
+          pp('$mm Picture taken is $m MB in size');
           showToast(
               context: context,
               message: 'Picture file saved on device, size: $m MB',
@@ -463,7 +531,8 @@ class FieldPhotoCameraState extends State<FieldPhotoCamera>
     final data = await vt.VideoThumbnail.thumbnailData(
       video: file.path,
       imageFormat: vt.ImageFormat.JPEG,
-      maxWidth: 128, // specify the width of the thumbnail, let the height auto-scaled to keep the source aspect ratio
+      maxWidth:
+          128, // specify the width of the thumbnail, let the height auto-scaled to keep the source aspect ratio
       quality: 25,
     );
     await thumbFile.writeAsBytes(data!);
@@ -589,7 +658,6 @@ class FieldPhotoCameraState extends State<FieldPhotoCamera>
                     ),
                     _getCaptureControlRowWidget(),
                     // _modeControlRowWidget(),
-
                   ],
                 ),
         ],
@@ -619,7 +687,8 @@ class FieldPhotoCameraState extends State<FieldPhotoCamera>
     }
   }
 
-  Future<File> _processOrientation(File file, NativeDeviceOrientation deviceOrientation) async {
+  Future<File> _processOrientation(
+      File file, NativeDeviceOrientation deviceOrientation) async {
     pp('$mm _processOrientation: attempt to rotate image file ...');
     switch (deviceOrientation.name) {
       case 'landscapeLeft':
@@ -653,16 +722,13 @@ class FieldPhotoCameraState extends State<FieldPhotoCamera>
     return mFile;
   }
 
-   @override
+  @override
   onError(String message) {
     throw UnimplementedError();
   }
 
-
   @override
-  onVideoReady(Video video) {
-
-  }
+  onVideoReady(Video video) {}
 }
 
 List<CameraDescription> cameras = [];
@@ -688,7 +754,9 @@ class UploadParameters {
       required this.isVideo,
       required this.deviceOrientation,
       required this.urlPrefix,
-      required this.token, required this.user, required this.distanceFromProjectPosition});
+      required this.token,
+      required this.user,
+      required this.distanceFromProjectPosition});
 }
 
 heavyTask(UploadParameters parameters) async {
@@ -730,5 +798,3 @@ class UploadMessage {
     return map;
   }
 }
-
-

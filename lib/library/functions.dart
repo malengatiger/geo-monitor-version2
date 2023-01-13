@@ -853,10 +853,33 @@ const lorem =
 abstract class SnackBarListener {
   onActionPressed(int action);
 }
+ProjectPolygon? getPolygonUserIsWithin({required List<ProjectPolygon> polygons,
+  required double latitude,required double longitude}) {
+  pp('🍎🍎 getPolygonUserIsWithin: location: 🍎 lat: $latitude lng: $longitude ' );
+
+  ProjectPolygon? polygon;
+  for (var p in polygons) {
+    var isWithinPolygon = checkIfLocationIsWithinPolygon(
+        positions: p.positions,
+        latitude: latitude,
+        longitude: longitude);
+    if (isWithinPolygon) {
+      polygon = p;
+    }
+  }
+
+  if (polygon != null) {
+    pp('🍎🍎 project p FOUND! 🥬🥬🥬 ');
+  } else {
+    pp('🍎🍎 project p NOT FOUND!  🔴🔴🔴 ');
+  }
+
+  return polygon;
+}
 
 bool checkIfLocationIsWithinPolygons({required List<ProjectPolygon> polygons,
   required double latitude,required double longitude}) {
-  pp('🍎🍎 checkIfLocationIsWithinPolygons: long pressed location: 🍎 lat: $latitude lng: $longitude ' );
+  pp('🍎🍎 checkIfLocationIsWithinPolygons: location: 🍎 lat: $latitude lng: $longitude ' );
   int positiveCount = 0;
   for (var polygon in polygons) {
     var isWithinPolygon = checkIfLocationIsWithinPolygon(

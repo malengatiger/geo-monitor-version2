@@ -97,6 +97,7 @@ dependencies:
   google_maps_cluster_manager: ^3.0.0+1
   stream_channel: ^2.1.0
   badges: ^2.0.3
+  map_launcher: ^2.4.0
 
 
 

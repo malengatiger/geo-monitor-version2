@@ -80,7 +80,7 @@ class HiveUtil {
             'users',
             'reports',
             'geofenceEvents',
-            'dataBags'
+            // 'dataBags'
             'polygons'
           },
           // Names of your boxes
@@ -146,10 +146,7 @@ class HiveUtil {
         Hive.registerAdapter(PlaceMarkAdapter());
         p('${Emoji.peach}${Emoji.peach}${Emoji.peach} Hive PlaceMarkAdapter registered');
       }
-      if (!Hive.isAdapterRegistered(18)) {
-        Hive.registerAdapter(DataBagAdapter());
-        p('${Emoji.peach}${Emoji.peach}${Emoji.peach} Hive DataBagAdapter registered');
-      }
+
       if (!Hive.isAdapterRegistered(11)) {
         Hive.registerAdapter(UserAdapter());
         p('${Emoji.peach}${Emoji.peach}${Emoji.peach} Hive UserAdapter registered');
@@ -158,6 +155,11 @@ class HiveUtil {
         Hive.registerAdapter(ProjectPolygonAdapter());
         p('${Emoji.peach}${Emoji.peach}${Emoji.peach} Hive ProjectPolygonAdapter registered');
       }
+
+      // if (!Hive.isAdapterRegistered(18)) {
+      //   Hive.registerAdapter(DataBagAdapter());
+      //   p('${Emoji.peach}${Emoji.peach}${Emoji.peach} Hive DataBagAdapter registered');
+      // }
 
       p('${Emoji.peach}${Emoji.peach}${Emoji.peach}${Emoji.peach} Hive box collection created and types registered');
 
@@ -177,16 +179,16 @@ class HiveUtil {
         _orgMessageBox = await _boxCollection!.openBox<OrgMessage>('messages');
         _reportBox = await _boxCollection!.openBox<MonitorReport>('reports');
         _geofenceEventBox = await _boxCollection!.openBox<GeofenceEvent>('geofenceEvents');
-        _dataBagBox = await _boxCollection!.openBox<DataBag>('dataBags');
+
         _userBox = await _boxCollection!.openBox<User>('users');
         _polygonBox = await _boxCollection!.openBox<ProjectPolygon>('polygons');
-
-
+        // _dataBagBox = await _boxCollection!.openBox<DataBag>('dataBags');
+        //
         _isInitialized = true;
         p('${Emoji.peach}${Emoji.peach}${Emoji.peach}${Emoji.peach}'
-            ' Hive has been initialized and boxes opened');
+            ' Hive has been initialized and boxes opened ${Emoji.leaf}${Emoji.leaf}${Emoji.leaf}');
       } catch (e) {
-        p('🔴🔴 We have a problem 🔴 opening Hive boxes');
+        p('🔴🔴 We have a problem 🔴 opening Hive boxes: $e');
       }
     }
   }

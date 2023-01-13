@@ -54,7 +54,8 @@ class CloudStorageBloc {
 
   final photoStorageName = 'geoPhotos';
   final videoStorageName = 'geoVideos';
-  final StreamController<Photo> _photoStreamController = StreamController.broadcast();
+  final StreamController<Photo> _photoStreamController =
+      StreamController.broadcast();
   Stream<Photo> get photoStream => _photoStreamController.stream;
   late StorageBlocListener storageBlocListener;
 
@@ -63,21 +64,23 @@ class CloudStorageBloc {
       required File file,
       required File thumbnailFile,
       required Project project,
-      required String projectPositionId,
       required Position projectPosition,
       required bool isVideo,
+      String? projectPositionId,
+      String? projectPolygonId,
       required bool isLandscape}) async {
-
     pp('\n\n\n$mm️ uploadPhotoOrVideo ☕️ file path: ${file.path} - isLandscape: $isLandscape');
     storageBlocListener = listener;
     rand = Random(DateTime.now().millisecondsSinceEpoch);
     var name = '';
     if (isVideo) {
       name =
-          'video@${project.projectId}@${DateTime.now().toUtc().toIso8601String()}.${'mp4'}';
+          'video@${project.projectId}@${DateTime.now().toUtc()
+              .toIso8601String()}.${'mp4'}';
     } else {
       name =
-          'photo@${project.projectId}@${DateTime.now().toUtc().toIso8601String()}.${'jpg'}';
+          'photo@${project.projectId}@${DateTime.now().toUtc()
+              .toIso8601String()}.${'jpg'}';
     }
     try {
       pp('$mm️ uploadPhotoOrVideo ☕️ file path: ${file.path}');
@@ -116,6 +119,7 @@ class CloudStorageBloc {
             isVideo: isVideo,
             fileUrl: fileUrl,
             projectPositionId: projectPositionId,
+            projectPolygonId: projectPolygonId,
             project: project,
             isLandscape: isLandscape);
 
@@ -153,7 +157,8 @@ class CloudStorageBloc {
       required Project project,
       required Position position,
       required bool isVideo,
-      required String projectPositionId,
+      String? projectPositionId,
+      String? projectPolygonId,
       required String fileUrl,
       required bool isLandscape}) async {
     rand = Random(DateTime.now().millisecondsSinceEpoch);
@@ -193,9 +198,11 @@ class CloudStorageBloc {
             thumbnailUrl, snap.totalBytes, snap.bytesTransferred);
 
         if (isVideo) {
-          _writeVideo(project: project,
+          _writeVideo(
+              project: project,
               projectPosition: position,
               projectPositionId: projectPositionId,
+              projectPolygonId: projectPolygonId,
               fileUrl: fileUrl,
               thumbnailUrl: thumbnailUrl);
         } else {
@@ -205,11 +212,11 @@ class CloudStorageBloc {
               fileUrl: fileUrl,
               thumbnailUrl: thumbnailUrl,
               projectPositionId: projectPositionId,
+              projectPolygonId: projectPolygonId,
               height: size.height,
               width: size.width,
               isLandscape: isLandscape);
         }
-
 
         var mediaBag = StorageMediaBag(
             url: fileUrl,
@@ -278,15 +285,16 @@ class CloudStorageBloc {
       required Position projectPosition,
       required String fileUrl,
       required String thumbnailUrl,
-      required String projectPositionId,
+      String? projectPositionId,
+      String? projectPolygonId,
       required int height,
       required int width,
       required bool isLandscape}) async {
-
     pp('\n🎽🎽🎽🎽 StorageBloc: _writePhoto : 🎽 🎽 adding photo - isLandscape: $isLandscape');
     if (_user == null) {
       await getUser();
     }
+
     var distance = await locationBloc.getDistanceFromCurrentPosition(
         latitude: projectPosition.coordinates[1],
         longitude: projectPosition.coordinates[0]);
@@ -309,8 +317,9 @@ class CloudStorageBloc {
         height: height,
         width: width,
         projectPositionId: projectPositionId,
+        projectPolygonId: projectPolygonId,
         photoId: u.v4(),
-        landscape: isLandscape? 0:1);
+        landscape: isLandscape ? 0 : 1);
 
     var result = await DataAPI.addPhoto(photo);
     _photoStreamController.sink.add(photo);
@@ -321,7 +330,8 @@ class CloudStorageBloc {
   void _writeVideo(
       {required Project project,
       required Position projectPosition,
-      required String projectPositionId,
+      String? projectPositionId,
+      String? projectPolygonId,
       required String fileUrl,
       required String thumbnailUrl}) async {
     pp('🎽🎽🎽🎽 StorageBloc: _writeVideo : 🎽🎽 adding video .....');
@@ -346,6 +356,7 @@ class CloudStorageBloc {
         thumbnailUrl: thumbnailUrl,
         projectName: project.name,
         projectPositionId: projectPositionId,
+        projectPolygonId: projectPolygonId,
         organizationId: _user!.organizationId,
         videoId: u.v4());
 

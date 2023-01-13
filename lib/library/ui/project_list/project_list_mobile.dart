@@ -233,12 +233,12 @@ class ProjectListMobileState extends State<ProjectListMobile>
     }
   }
 
-  List<FocusedMenuItem> getPopUpMenuItems(Project p) {
+  List<FocusedMenuItem> getPopUpMenuItems(Project project) {
     List<FocusedMenuItem> menuItems = [];
     menuItems.add(
       FocusedMenuItem(
           title: Text(
-            'Project Map',
+            'Project Locations Map',
             style: GoogleFonts.lato(
                 textStyle: Theme.of(context).textTheme.bodyMedium,
                 fontWeight: FontWeight.normal,
@@ -249,13 +249,13 @@ class ProjectListMobileState extends State<ProjectListMobile>
             color: Theme.of(context).primaryColor,
           ),
           onPressed: () {
-            _navigateToProjectMap(p);
+            _navigateToProjectMap(project);
           }),
     );
     menuItems.add(
       FocusedMenuItem(
           title: Text(
-            'Project Areas',
+            'Project Areas Map',
             style: GoogleFonts.lato(
                 textStyle: Theme.of(context).textTheme.bodyMedium,
                 fontWeight: FontWeight.normal,
@@ -266,7 +266,7 @@ class ProjectListMobileState extends State<ProjectListMobile>
             color: Theme.of(context).primaryColor,
           ),
           onPressed: () {
-            _navigateToProjectPolygonMap(p);
+            _navigateToProjectPolygonMap(project);
           }),
     );
 
@@ -283,7 +283,7 @@ class ProjectListMobileState extends State<ProjectListMobile>
           ),
           onPressed: () {
             pp('...... going to ProjectMedia ...');
-            _navigateToProjectMedia(p);
+            _navigateToProjectMedia(project);
           }),
     );
     menuItems.add(
@@ -298,7 +298,7 @@ class ProjectListMobileState extends State<ProjectListMobile>
             color: Theme.of(context).primaryColor,
           ),
           onPressed: () {
-            _navigateToMonitorStart(p);
+            _navigateToMonitorStart(project);
           }),
     );
     if (user!.userType == ORG_ADMINISTRATOR) {
@@ -313,7 +313,7 @@ class ProjectListMobileState extends State<ProjectListMobile>
             color: Theme.of(context).primaryColor,
           ),
           onPressed: () {
-            _navigateToProjectLocation(p);
+            _navigateToProjectLocation(project);
           }));
       menuItems.add(FocusedMenuItem(
           title: Text('Edit Project',
@@ -326,7 +326,7 @@ class ProjectListMobileState extends State<ProjectListMobile>
             color: Theme.of(context).primaryColor,
           ),
           onPressed: () {
-            _navigateToDetail(p);
+            _navigateToDetail(project);
           }));
     }
 

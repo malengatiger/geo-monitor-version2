@@ -39,6 +39,9 @@ class Photo {
 
   @HiveField(15)
   int? landscape;
+  @HiveField(16)
+  String? projectPolygonId;
+
 
   Photo(
       {required this.url,
@@ -47,14 +50,15 @@ class Photo {
       required this.userId,
       required this.userName,
       required this.projectPosition,
-      required this.distanceFromProjectPosition,
+      this.distanceFromProjectPosition,
       required this.projectId,
       required this.thumbnailUrl,
       required this.photoId,
       required this.organizationId,
       required this.projectName,
       required this.height,
-      required this.projectPositionId,
+      this.projectPositionId,
+        this.projectPolygonId,
       required this.width,
       required this.landscape});
 
@@ -62,6 +66,8 @@ class Photo {
     // pp('😡 😡 😡😡 😡 😡😡 😡 😡');
     // prettyPrint(data, "Photo from json");
     projectPositionId = data['projectPositionId'];
+    projectPolygonId = data['projectPolygonId'];
+
     url = data['url'];
     thumbnailUrl = data['thumbnailUrl'];
     caption = data['caption'];
@@ -88,6 +94,7 @@ class Photo {
       'url': url,
       'landscape': landscape,
       'projectPositionId': projectPositionId,
+      'projectPolygonId': projectPolygonId,
       'caption': caption,
       'created': created,
       'width': width,

@@ -1,5 +1,3 @@
-
-
 import 'dart:async';
 import 'dart:io';
 import 'dart:isolate';
@@ -16,24 +14,27 @@ import 'package:path_provider/path_provider.dart';
 import 'package:video_player/video_player.dart';
 import 'package:video_thumbnail/video_thumbnail.dart' as vt;
 import '../../bloc/cloud_storage_bloc.dart';
+import '../../bloc/project_bloc.dart';
+import '../../data/position.dart';
 import '../../data/project.dart';
+import '../../data/project_polygon.dart';
 import '../../data/project_position.dart';
 import '../../data/user.dart';
 import '../../data/video.dart';
 import '../../emojis.dart';
 import '../../functions.dart';
 import '../../generic_functions.dart';
-import '../media/list/media_list_main.dart';
+import '../../location/loc_bloc.dart';
 import '../media/list/project_media_list_mobile.dart';
 import '../media/user_media_list/user_media_list_mobile.dart';
 import 'play_video.dart';
 
 class FieldVideoCamera extends StatefulWidget {
   final Project project;
-  final ProjectPosition projectPosition;
+  final ProjectPosition? projectPosition;
 
   const FieldVideoCamera(
-      {super.key, required this.project, required this.projectPosition});
+      {super.key, required this.project, this.projectPosition});
 
   @override
   FieldVideoCameraState createState() {
@@ -79,6 +80,8 @@ class FieldVideoCameraState extends State<FieldVideoCamera>
   final double _maxAvailableZoom = 1.0;
   double _currentScale = 1.0;
   double _baseScale = 1.0;
+  var polygons = <ProjectPolygon>[];
+
   static const mm = '🍎🍎🍎 FieldVideoCamera 🍎 : ';
 
   // Counting pointers (number of user fingers on screen)
@@ -91,6 +94,7 @@ class FieldVideoCameraState extends State<FieldVideoCamera>
     _observeOrientation();
     _getCameras();
     _getUser();
+    _getPolygons();
 
     _flashModeControlRowAnimationController = AnimationController(
       duration: const Duration(milliseconds: 300),
@@ -104,6 +108,11 @@ class FieldVideoCameraState extends State<FieldVideoCamera>
 
   void _getUser() async {
     user = await Prefs.getUser();
+  }
+
+  void _getPolygons() async {
+    polygons = await projectBloc.getProjectPolygons(
+        projectId: widget.project.projectId!, forceRefresh: false);
   }
 
   @override
@@ -213,7 +222,8 @@ class FieldVideoCameraState extends State<FieldVideoCamera>
                         ? Image.file(File(imageFile!.path))
                         : Container(
                             decoration: BoxDecoration(
-                                border: Border.all(color: Theme.of(context).primaryColor)),
+                                border: Border.all(
+                                    color: Theme.of(context).primaryColor)),
                             child: Center(
                               child: AspectRatio(
                                   aspectRatio:
@@ -422,21 +432,55 @@ class FieldVideoCameraState extends State<FieldVideoCamera>
 
   Future<void> _onVideoRecordButtonPressed() async {
     pp('$mm onVideoRecordButtonPressed 🥏 🥏 🥏 ....');
-    bool isValid = await isLocationValid(projectPosition: widget.projectPosition,
-        validDistance: widget.project.monitorMaxDistanceInMetres!);
-    if (!isValid) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-            duration: Duration(seconds: 30),
-            content: Text(
-                'You are no longer in range of one of the project location(s). Videos of the project cannot be made from here')));
+
+    if (widget.projectPosition == null) {
+      bool isWithin = await _doThePolygonCheck();
+      if (isWithin) {
+        _doTheVideo();
+        return;
+      } else {
+        _doTheMessage();
       }
+    } else {
+      bool isValid = await isLocationValid(
+          projectPosition: widget.projectPosition!,
+          validDistance: widget.project.monitorMaxDistanceInMetres!);
+      if (!isValid) {
+        bool isWithin = await _doThePolygonCheck();
+        if (!isWithin) {
+          _doTheMessage();
+        } else {
+          _doTheVideo();
+        }
+      } else {
+        _doTheVideo();
+      }
+    }
+  }
+  void _doTheMessage() {
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+          duration: Duration(seconds: 10),
+          content: Text(
+              'You are no longer in range of one of the project location(s). Photos of the project cannot be taken from here')));
+
       showToast(message: 'Cannot do this, Boss! ${Emoji.peach}',
           textStyle: const TextStyle(color: Colors.white),
-          duration: const Duration(seconds: 10),backgroundColor: Colors.pink,
+          duration: const Duration(seconds: 10),
+          backgroundColor: Colors.pink,
           context: context);
-      return;
     }
+  }
+
+  Future<bool> _doThePolygonCheck() async {
+    var loc = await locationBloc.getLocation();
+    var isWithin = checkIfLocationIsWithinPolygons(polygons: polygons,
+        latitude: loc.latitude,
+        longitude: loc.longitude);
+    return isWithin;
+  }
+
+  void _doTheVideo() async {
     _startVideoRecording().then((_) {
       if (mounted) setState(() {});
     });
@@ -456,20 +500,39 @@ class FieldVideoCameraState extends State<FieldVideoCamera>
         var mFile = File(file.path);
         var thumb = await _getThumbnail(file: mFile, isVideo: true);
 
-        //_startVideoPlayer();
-        cloudStorageBloc.uploadPhotoOrVideo(
-            listener: this,
-            file: mFile,
-            thumbnailFile: thumb,
-            project: widget.project,
-            projectPositionId: widget.projectPosition.projectPositionId!,
-            projectPosition: widget.projectPosition.position!,
-            isVideo: true,
-            isLandscape: false);
+        if (widget.projectPosition != null) {
+          cloudStorageBloc.uploadPhotoOrVideo(
+              listener: this,
+              file: mFile,
+              thumbnailFile: thumb,
+              project: widget.project,
+              projectPositionId: widget.projectPosition!.projectPositionId!,
+              projectPosition: widget.projectPosition!.position!,
+              isVideo: true,
+              isLandscape: false);
+        } else {
+          //todo - user location ....
+          var loc = await locationBloc.getLocation();
+          var position = Position(
+              type: 'Point', coordinates: [loc.longitude, loc.latitude]);
+          var polygon = getPolygonUserIsWithin(
+              polygons: polygons,
+              latitude: loc.latitude,
+              longitude: loc.longitude);
+          cloudStorageBloc.uploadPhotoOrVideo(
+              listener: this,
+              file: mFile,
+              thumbnailFile: thumb,
+              project: widget.project,
+              projectPolygonId: polygon?.projectPolygonId,
+              projectPosition: position,
+              isVideo: true,
+              isLandscape: false);
+        }
 
         var size = await mFile.length();
-        var m = (size/1024/1024).toStringAsFixed(2);
-        pp('$mm Video taken is $m MB in size' );
+        var m = (size / 1024 / 1024).toStringAsFixed(2);
+        pp('$mm Video taken is $m MB in size');
 
         showToast(
             context: context,
@@ -649,7 +712,12 @@ class FieldVideoCameraState extends State<FieldVideoCamera>
                 fontWeight: FontWeight.w900)),
         actions: [
           IconButton(
-              onPressed: onListButtonPressed, icon:  Icon(Icons.list, size: 20, color: Theme.of(context).primaryColor,)),
+              onPressed: onListButtonPressed,
+              icon: Icon(
+                Icons.list,
+                size: 20,
+                color: Theme.of(context).primaryColor,
+              )),
         ],
       ),
       body: Stack(
@@ -691,7 +759,6 @@ class FieldVideoCameraState extends State<FieldVideoCamera>
                 )
               : Column(
                   children: <Widget>[
-
                     Expanded(
                       child: Container(
                         decoration: BoxDecoration(

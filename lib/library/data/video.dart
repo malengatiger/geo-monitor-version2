@@ -30,11 +30,14 @@ class Video {
   String? projectId;
   @HiveField(12)
   String? projectName;
+  @HiveField(13)
+  String? projectPolygonId;
 
   Video(
       {required this.url,
         this.caption,
-        required this.projectPositionId,
+        this.projectPositionId,
+        this.projectPolygonId,
         required this.created,
         required this.userId,
         required this.userName,
@@ -47,26 +50,28 @@ class Video {
         required this.projectName}); // Video({required this.url, this.userId, required this.created});
 
   Video.fromJson(Map data) {
-    this.url = data['url'];
-    this.projectPositionId = data['projectPositionId'];
-    this.caption = data['caption'];
-    this.created = data['created'];
-    this.userId = data['userId'];
-    this.organizationId = data['organizationId'];
-    this.thumbnailUrl = data['thumbnailUrl'];
-    this.videoId = data['videoId'];
-    this.userName = data['userName'];
-    this.distanceFromProjectPosition = data['distanceFromProjectPosition'];
-    this.projectId = data['projectId'];
-    this.projectName = data['projectName'];
+    url = data['url'];
+    projectPositionId = data['projectPositionId'];
+    projectPolygonId = data['projectPolygonId'];
+    caption = data['caption'];
+    created = data['created'];
+    userId = data['userId'];
+    organizationId = data['organizationId'];
+    thumbnailUrl = data['thumbnailUrl'];
+    videoId = data['videoId'];
+    userName = data['userName'];
+    distanceFromProjectPosition = data['distanceFromProjectPosition'];
+    projectId = data['projectId'];
+    projectName = data['projectName'];
     if (data['projectPosition'] != null) {
-      this.projectPosition = Position.fromJson(data['projectPosition']);
+      projectPosition = Position.fromJson(data['projectPosition']);
     }
   }
   Map<String, dynamic> toJson() {
     Map<String, dynamic> map = {
       'url': url,
       'projectPositionId': projectPositionId,
+      'projectPolygonId': projectPolygonId,
       'caption': caption,
       'created': created,
       'userId': userId,
