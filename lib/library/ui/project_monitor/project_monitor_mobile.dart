@@ -6,6 +6,8 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:page_transition/page_transition.dart';
 
 import '../../bloc/project_bloc.dart';
+import '../../data/project_polygon.dart';
+import '../../emojis.dart';
 import '../../functions.dart';
 import '../../hive_util.dart';
 import '../../data/project.dart';
@@ -31,21 +33,24 @@ class ProjectMonitorMobileState extends State<ProjectMonitorMobile>
   var isBusy = false;
   final _key = GlobalKey<ScaffoldState>();
   var positions = <ProjectPosition>[];
+  var polygons = <ProjectPolygon>[];
 
   @override
   void initState() {
     _controller = AnimationController(vsync: this);
     super.initState();
-    _getProjectPositions();
+    _getProjectData(false);
   }
 
-  void _getProjectPositions() async {
+  void _getProjectData(bool forceRefresh) async {
     setState(() {
       isBusy = true;
     });
     try {
       positions = await projectBloc.getProjectPositions(
-          projectId: widget.project.projectId!, forceRefresh: false);
+          projectId: widget.project.projectId!, forceRefresh: forceRefresh);
+      polygons = await projectBloc.getProjectPolygons(
+          projectId: widget.project.projectId!, forceRefresh: forceRefresh);
     } catch (e) {
       pp(e);
       ScaffoldMessenger.of(context)
@@ -79,13 +84,15 @@ class ProjectMonitorMobileState extends State<ProjectMonitorMobile>
               )),
           actions: [
             IconButton(
-              icon:  Icon(Icons.refresh, size: 18, color: Theme.of(context).primaryColor,),
+              icon: Icon(Icons.ac_unit_rounded, size: 18, color: Theme.of(context).primaryColor,),
               onPressed: _checkProjectDistance,
             ),
-            // IconButton(
-            //   icon: const Icon(Icons.directions),
-            //   onPressed: _navigateToDirections,
-            // )
+            IconButton(
+              icon: Icon(Icons.refresh_rounded,size: 18, color: Theme.of(context).primaryColor),
+              onPressed: (){
+                _getProjectData(true);
+              },
+            )
           ],
           bottom: PreferredSize(
             preferredSize: const Size.fromHeight(200),
@@ -328,6 +335,15 @@ class ProjectMonitorMobileState extends State<ProjectMonitorMobile>
         pp(' 🌺 The app is NOT within the allowable project.monitorMaxDistanceInMetres of '
             '${widget.project.monitorMaxDistanceInMetres} metres');
       }
+      pp ('$mm check if project has polygons - and then check if within polygon ...');
+      var loc = await locationBloc.getLocation();
+
+      if (!isWithinDistance) {
+        var isOK = checkIfLocationIsWithinPolygons(
+            latitude: loc.latitude, longitude: loc.longitude, polygons: polygons);
+        isWithinDistance = isOK;
+      }
+
       if (mounted) {
         setState(() {
           isBusy = false;

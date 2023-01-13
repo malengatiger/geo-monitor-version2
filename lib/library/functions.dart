@@ -2,6 +2,7 @@ import 'dart:io';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:geo_monitor/library/data/project_polygon.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:intl/intl.dart';
@@ -851,6 +852,31 @@ const lorem =
 
 abstract class SnackBarListener {
   onActionPressed(int action);
+}
+
+bool checkIfLocationIsWithinPolygons({required List<ProjectPolygon> polygons,
+  required double latitude,required double longitude}) {
+  pp('🍎🍎 checkIfLocationIsWithinPolygons: long pressed location: 🍎 lat: $latitude lng: $longitude ' );
+  int positiveCount = 0;
+  for (var polygon in polygons) {
+    var isWithinPolygon = checkIfLocationIsWithinPolygon(
+        positions: polygon.positions,
+        latitude: latitude,
+        longitude: longitude);
+    if (isWithinPolygon) {
+      positiveCount++;
+    }
+  }
+  pp('🍎🍎 location found in any of the projects 🍎 '
+      'polygons; positiveCount: $positiveCount - 🍎 expects to be 1 if things are cool!');
+
+  if (positiveCount == 1) {
+    pp('🍎🍎 location found within one of the projects polygons 🥬🥬🥬 ');
+    return true;
+  }
+  pp('🍎🍎 location NOT found within any of the projects polygons 🔴🔴🔴 ');
+
+  return false;
 }
 
 bool checkIfLocationIsWithinPolygon({required List<Position> positions, required double latitude, required double longitude}) {

@@ -336,19 +336,11 @@ class ProjectPolygonMapMobileState extends State<ProjectPolygonMapMobile>
 
   void _onLongPress(LatLng latLng) {
     pp('$mm long pressed location: 🍎 $latLng');
-    int positiveCount = 0;
-    for (var polygon in projectPolygons) {
-      var isWithinPolygon = checkIfLocationIsWithinPolygon(
-          positions: polygon.positions,
-          latitude: latLng.latitude,
-          longitude: latLng.longitude);
-      if (isWithinPolygon) {
-        positiveCount++;
-      }
-    }
+    var isOK = checkIfLocationIsWithinPolygons(
+        latitude: latLng.latitude, longitude: latLng.longitude, polygons: projectPolygons);
     pp('$mm long pressed location found in any of the project\s 🍎 '
-        'polygons; positiveCount: $positiveCount - ${Emoji.leaf} expects to be 1 if things are cool!');
-    if (positiveCount == 1) {
+        'polygons; isWithin the polygons: $isOK - ${isOK? Emoji.leaf: Emoji.redDot}');
+    if (isOK) {
       showToast(
           duration: const Duration(seconds: 3),
           backgroundColor: Colors.teal,

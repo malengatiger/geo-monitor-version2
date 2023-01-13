@@ -637,6 +637,6 @@ class ProjectListMobileState extends State<ProjectListMobile>
       sliderValue = value;
     });
 
-    refreshProjects(false);
+    refreshProjects(true);
   }
 }
