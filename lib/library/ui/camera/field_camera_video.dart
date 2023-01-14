@@ -501,6 +501,11 @@ class FieldVideoCameraState extends State<FieldVideoCamera>
         var thumb = await _getThumbnail(file: mFile, isVideo: true);
 
         if (widget.projectPosition != null) {
+          cloudStorageBloc.errorStream.listen((event) {
+            if (mounted) {
+              ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(event)));
+            }
+          });
           cloudStorageBloc.uploadPhotoOrVideo(
               listener: this,
               file: mFile,

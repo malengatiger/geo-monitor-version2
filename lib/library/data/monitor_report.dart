@@ -31,6 +31,8 @@ class MonitorReport {
   List<Video> videos = [];
   @HiveField(7)
   mon.User? user;
+  String? organizationId;
+  @HiveField(8)
 
   MonitorReport(
       {required this.projectId,
@@ -40,11 +42,12 @@ class MonitorReport {
       required this.user,
       required this.photos,
       required this.videos,
-      required this.rating});
+      required this.rating, required this.organizationId});
 
   MonitorReport.fromJson(Map data) {
     monitorReportId = data['monitorReportId'];
     projectId = data['projectId'];
+    organizationId = data['organizationId'];
     rating = data['rating'];
     created = data['created'];
     description = data['description'];
@@ -74,6 +77,7 @@ class MonitorReport {
     //todo - handle the photos and videos!!!
     Map<String, dynamic> map = {
       'projectId': projectId,
+      'organizationId': organizationId,
       'rating': rating,
       'created': created,
       'description': description,

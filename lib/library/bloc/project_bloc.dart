@@ -1,4 +1,3 @@
-
 import 'dart:async';
 
 import 'package:geolocator/geolocator.dart' as loc;
@@ -23,61 +22,63 @@ import '../hive_util.dart';
 import '../location/loc_bloc.dart';
 
 final ProjectBloc projectBloc = ProjectBloc();
-class ProjectBloc {
 
-  ProjectBloc(){
+class ProjectBloc {
+  ProjectBloc() {
     pp('$mm ProjectBloc constructed');
   }
-  final  mm = '${Emoji.blueDot}${Emoji.blueDot}${Emoji.blueDot} '
+  final mm = '${Emoji.blueDot}${Emoji.blueDot}${Emoji.blueDot} '
       'ProjectBloc';
   final StreamController<List<MonitorReport>> _reportController =
-  StreamController.broadcast();
+      StreamController.broadcast();
   final StreamController<List<User>> _userController =
-  StreamController.broadcast();
+      StreamController.broadcast();
   final StreamController<List<Community>> _communityController =
-  StreamController.broadcast();
+      StreamController.broadcast();
   final StreamController<List<Questionnaire>> _questController =
-  StreamController.broadcast();
+      StreamController.broadcast();
   final StreamController<List<Project>> _projController =
-  StreamController.broadcast();
+      StreamController.broadcast();
   final StreamController<List<Photo>> _photoController =
-  StreamController.broadcast();
+      StreamController.broadcast();
   final StreamController<List<Video>> _videoController =
-  StreamController.broadcast();
+      StreamController.broadcast();
 
   final StreamController<List<Photo>> _projectPhotoController =
-  StreamController.broadcast();
+      StreamController.broadcast();
   final StreamController<List<Video>> _projectVideoController =
-  StreamController.broadcast();
+      StreamController.broadcast();
 
   final StreamController<List<ProjectPosition>> _projPositionsController =
-  StreamController.broadcast();
+      StreamController.broadcast();
   final StreamController<List<ProjectPolygon>> _polygonController =
-  StreamController.broadcast();
+      StreamController.broadcast();
   final StreamController<List<ProjectPosition>> _projectPositionsController =
-  StreamController.broadcast();
+      StreamController.broadcast();
   final StreamController<List<FieldMonitorSchedule>>
-  _fieldMonitorScheduleController = StreamController.broadcast();
+      _fieldMonitorScheduleController = StreamController.broadcast();
   final StreamController<List<Country>> _countryController =
-  StreamController.broadcast();
+      StreamController.broadcast();
 
   final StreamController<Questionnaire> _activeQuestionnaireController =
-  StreamController.broadcast();
+      StreamController.broadcast();
   final StreamController<User> _activeUserController =
-  StreamController.broadcast();
+      StreamController.broadcast();
 
   Stream<List<MonitorReport>> get reportStream => _reportController.stream;
 
   Stream<List<Community>> get communityStream => _communityController.stream;
 
-  Stream<List<Questionnaire>> get questionnaireStream => _questController.stream;
+  Stream<List<Questionnaire>> get questionnaireStream =>
+      _questController.stream;
 
   Stream<List<Project>> get projectStream => _projController.stream;
 
-  Stream<List<ProjectPosition>> get projectPositionsStream => _projPositionsController.stream;
+  Stream<List<ProjectPosition>> get projectPositionsStream =>
+      _projPositionsController.stream;
 
-  Stream<List<ProjectPolygon>> get projectPolygonsStream => _polygonController.stream;
-
+  Stream<List<ProjectPolygon>> get projectPolygonsStream =>
+      _polygonController.stream;
 
   Stream get countryStream => _countryController.stream;
 
@@ -108,7 +109,6 @@ class ProjectBloc {
     return projectPositions;
   }
 
-
   Future<List<ProjectPolygon>> getProjectPolygons(
       {required String projectId, required bool forceRefresh}) async {
     var projectPolygons = await hiveUtil.getProjectPolygons(projectId);
@@ -128,7 +128,6 @@ class ProjectBloc {
       {required String projectId, required bool forceRefresh}) async {
 
     List<Photo> photos = await hiveUtil.getProjectPhotos(projectId);
-
     if (photos.isEmpty || forceRefresh) {
       photos = await DataAPI.findPhotosByProject(projectId);
       await hiveUtil.addPhotos(photos: photos);
@@ -169,7 +168,6 @@ class ProjectBloc {
     return schedules;
   }
 
-
   Future<List<Video>> getProjectVideos(
       {required String projectId, required bool forceRefresh}) async {
     List<Video> videos = await hiveUtil.getProjectVideos(projectId);
@@ -186,46 +184,55 @@ class ProjectBloc {
     return videos;
   }
 
-  Future refreshProjectData(
+  Future<DataBag> refreshProjectData(
       {required String projectId, required bool forceRefresh}) async {
-    pp('$mm refreshing project data ... photos, videos and schedules ...');
-    var bag = await hiveUtil.getLatestDataBag();
+    pp('$mm refreshing project data ... photos, videos and schedules '
+        '... forceRefresh: $forceRefresh');
 
-    if (forceRefresh || bag == null) {
+    var bag = await _loadBag(projectId);
+
+    if (forceRefresh) {
       bag = await DataAPI.getProjectData(projectId);
     }
-    _processProjectBag(bag);
+    _putBagContentsToStreams(bag);
     return bag;
   }
-  void _processProjectBag(DataBag bag) {
+
+  Future<DataBag> _loadBag(String projectId) async {
+    var positions = await hiveUtil.getProjectPositions(projectId);
+    var polygons = await hiveUtil.getProjectPolygons(projectId);
+    var photos = await hiveUtil.getProjectPhotos(projectId);
+    var videos = await hiveUtil.getProjectVideos(projectId);
+    var schedules = await hiveUtil.getProjectMonitorSchedules(projectId);
+
+    var bag = DataBag(
+        photos: photos,
+        videos: videos,
+        fieldMonitorSchedules: schedules,
+        projectPositions: positions,
+        projects: [],
+        date: DateTime.now().toIso8601String(),
+        users: [],
+        projectPolygons: polygons);
+    pp('$mm project data bag loaded: ... photos: ${photos.length}, videos: ${videos.length} and schedules: ${schedules.length} ...');
+    return bag;
+  }
+
+  void _putBagContentsToStreams(DataBag bag) {
     pp('$mm _processBag: send data to project streams ...');
     if (bag.photos != null) {
       if (bag.photos!.isNotEmpty) {
-        bag.photos?.sort((a,b) => b.created!.compareTo(a.created!));
+        bag.photos?.sort((a, b) => b.created!.compareTo(a.created!));
         _photoController.sink.add(bag.photos!);
       }
     }
     if (bag.videos != null) {
       if (bag.videos!.isNotEmpty) {
-        bag.videos?.sort((a,b) => b.created!.compareTo(a.created!));
+        bag.videos?.sort((a, b) => b.created!.compareTo(a.created!));
         _videoController.sink.add(bag.videos!);
       }
     }
-    // if (bag.fieldMonitorSchedules != null) {
-    //   if (bag.fieldMonitorSchedules!.isNotEmpty) {
-    //     projectPositionsStream.sink.add(bag.fieldMonitorSchedules!);
-    //   }
-    // }
-    // if (bag.users != null) {
-    //   if (bag.users!.isNotEmpty) {
-    //     _userController.sink.add(bag.users!);
-    //   }
-    // }
-    // if (bag.projects != null) {
-    //   if (bag.projects!.isNotEmpty) {
-    //     _projController.sink.add(bag.projects!);
-    //   }
-    // }
+
     if (bag.projectPositions != null) {
       if (bag.projectPositions!.isNotEmpty) {
         _projectPositionsController.sink.add(bag.projectPositions!);
@@ -272,7 +279,4 @@ class ProjectBloc {
       return projects;
     }
   }
-
-
-
 }

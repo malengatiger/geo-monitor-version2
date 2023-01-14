@@ -24,7 +24,7 @@ class MonitorReportAdapter extends TypeAdapter<MonitorReport> {
       user: fields[7] as User?,
       photos: (fields[5] as List).cast<Photo>(),
       videos: (fields[6] as List).cast<Video>(),
-      rating: fields[3] as Rating?,
+      rating: fields[3] as Rating?, organizationId: fields[8] as String?,
     );
   }
 

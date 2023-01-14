@@ -88,18 +88,46 @@ class OrganizationBloc {
   //
   Future<DataBag> refreshOrganizationData(
       {required String organizationId, required bool forceRefresh}) async {
-    pp('$mm refreshing organization data ... photos, videos and schedules ...');
+    pp('$mm refreshing organization data ... photos, videos and schedules'
+        ' ...forceRefresh: $forceRefresh');
 
-    var bag = await hiveUtil.getLatestDataBag();
-    if (forceRefresh || bag == null) {
+    DataBag bag = await _fillDataBagFromCache(organizationId);
+
+    if (forceRefresh) {
       bag = await DataAPI.getOrganizationData(organizationId);
     }
-    _processBag(bag);
+    if (bag.users!.isEmpty) {
+      bag = await DataAPI.getOrganizationData(organizationId);
+    }
+    _putContentsOfBagIntoStreams(bag);
     return bag;
   }
 
-  void _processBag(DataBag bag) {
-    pp('$mm _processBag: send data to streams ...');
+  Future<DataBag> _fillDataBagFromCache(String organizationId) async {
+    var projects = await hiveUtil.getProjects(organizationId);
+    var users =  await hiveUtil.getUsers(organizationId: organizationId);
+    var photos = await hiveUtil.getOrganizationPhotos(organizationId);
+    var videos = await hiveUtil.getOrganizationVideos(organizationId);
+    var schedules = await hiveUtil.getOrganizationMonitorSchedules(organizationId);
+    var positions = await hiveUtil.getOrganizationProjectPositions(organizationId: organizationId);
+    var polygons = await hiveUtil.getOrganizationProjectPolygons(organizationId: organizationId);
+
+    var bag = DataBag(photos: photos, videos: videos, fieldMonitorSchedules: schedules,
+        projectPositions: positions, projects: projects, projectPolygons: polygons,
+        date: DateTime.now().toUtc().toIso8601String(), users: users);
+
+    pp('$mm _fillDataBagFromCache: projects: ${projects.length} '
+        'users: ${users.length} photos: ${photos.length}'
+        ' videos: ${videos.length} schedules: ${schedules.length} '
+        'positions: ${positions.length} polygons: ${polygons.length}');
+    // if (users.isEmpty) {
+    //   throw Exception('No users here, Boss!');
+    // }
+    return bag;
+  }
+
+  void _putContentsOfBagIntoStreams(DataBag bag) {
+    pp('$mm _putContentsOfBagIntoStreams: ... send data to streams ...');
     if (bag.photos != null) {
         _photoController.sink.add(bag.photos!);
 
@@ -181,16 +209,10 @@ class OrganizationBloc {
       {required String organizationId, required bool forceRefresh}) async {
     var photos = <Photo>[];
     try {
-      var android = UniversalPlatform.isAndroid;
-      if (android) {
-        photos = await hiveUtil.getPhotos();
-      } else {
-        photos.clear();
-      }
-
+        photos = await hiveUtil.getOrganizationPhotos(organizationId);
       if (photos.isEmpty || forceRefresh) {
         photos = await DataAPI.getOrganizationPhotos(organizationId);
-        if (android) await hiveUtil.addPhotos(photos: photos);
+        await hiveUtil.addPhotos(photos: photos);
       }
       _photoController.sink.add(photos);
       pp('$mm getPhotos found: 💜 ${photos.length} photos 💜 ');

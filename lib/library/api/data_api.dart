@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter_dotenv/flutter_dotenv.dart' as dot;
+import 'package:geo_monitor/library/bloc/connection_check.dart';
 import 'package:geo_monitor/library/data/project_polygon.dart';
 import 'package:http/http.dart' as http;
 import '../auth/app_auth.dart';
@@ -14,7 +15,6 @@ import '../data/country.dart';
 import '../data/data_bag.dart';
 import '../data/field_monitor_schedule.dart';
 import '../data/geofence_event.dart';
-import '../data/monitor_report.dart';
 import '../data/org_message.dart';
 import '../data/organization.dart';
 import '../data/photo.dart';
@@ -25,14 +25,12 @@ import '../data/section.dart';
 import '../data/user.dart';
 import '../data/video.dart';
 
-import '../data/condition.dart';
-import '../data/org_message.dart';
-import '../data/video.dart';
 import '../functions.dart';
 import '../generic_functions.dart' as gen;
 import '../hive_util.dart';
 
 class DataAPI {
+
   static Map<String, String> headers = {
     'Content-type': 'application/json',
     'Accept': 'application/json',
@@ -43,19 +41,23 @@ class DataAPI {
   static String? url;
 
   static Future<String?> getUrl() async {
+    var conn = await connectionCheck.internetAvailable();
+    if (!conn) {
+      throw Exception('Internet connection not available');
+    }
     if (url == null) {
-      pp('🐤🐤🐤🐤 Getting url via .env settings: ${url ?? 'NO URL YET'}');
+      pp('$mm 🐤🐤🐤🐤 Getting url via .env settings: ${url ?? 'NO URL YET'}');
       String? status = dot.dotenv.env['CURRENT_STATUS'];
-      pp('🐤🐤🐤🐤 DataAPI: getUrl: Status from .env: $status');
+      pp('$mm 🐤🐤🐤🐤 DataAPI: getUrl: Status from .env: $status');
       if (status == 'dev') {
         isDevelopmentStatus = true;
         url = dot.dotenv.env['DEV_URL'];
-        pp(' 🌎 🌎 🌎 DataAPI: Status of the app is  DEVELOPMENT 🌎 🌎 🌎 $url');
+        pp('$mm Status of the app is  DEVELOPMENT 🌎 🌎 🌎 $url');
         return url!;
       } else {
         isDevelopmentStatus = false;
         url = dot.dotenv.env['PROD_URL'];
-        pp(' 🌎 🌎 🌎 DataAPI: Status of the app is PRODUCTION 🌎 🌎 🌎 $url');
+        pp('$mm Status of the app is PRODUCTION 🌎 🌎 🌎 $url');
         return url!;
       }
     } else {
@@ -114,6 +116,7 @@ class DataAPI {
       rethrow;
     }
   }
+
   static Future<List<FieldMonitorSchedule>> getUserFieldMonitorSchedules(
       String userId) async {
     String? mURL = await getUrl();
@@ -132,12 +135,12 @@ class DataAPI {
       rethrow;
     }
   }
+
   static Future<String> testUploadPhoto() async {
     String? mURL = await getUrl();
     dynamic result;
     try {
-      result = await _sendHttpGET(
-          '${mURL!}testUploadPhoto');
+      result = await _sendHttpGET('${mURL!}testUploadPhoto');
 
       pp('$mm 🌿🌿🌿 testUploadPhoto returned: 🌿 $result');
       return result["url"];
@@ -283,8 +286,8 @@ class DataAPI {
     String? mURL = await getUrl();
 
     try {
-      var result = await _sendHttpGET(
-          '${mURL!}getProjectPolygons?projectId=$projectId');
+      var result =
+          await _sendHttpGET('${mURL!}getProjectPolygons?projectId=$projectId');
       List<ProjectPolygon> list = [];
       result.forEach((m) {
         list.add(ProjectPolygon.fromJson(m));
@@ -324,6 +327,7 @@ class DataAPI {
         fieldMonitorSchedules: [],
         projects: [],
         projectPositions: [],
+        projectPolygons: [],
         users: [],
         date: DateTime.now().toIso8601String());
     try {
@@ -331,14 +335,21 @@ class DataAPI {
           '${mURL!}getOrganizationData?organizationId=$organizationId');
 
       bag = DataBag.fromJson(result);
-      await hiveUtil.addDataBag(dataBag: bag);
+      await hiveUtil.addProjects(projects: bag.projects!);
+      await hiveUtil.addProjectPolygons(polygons: bag.projectPolygons!);
+      await hiveUtil.addProjectPositions(positions: bag.projectPositions!);
+      await hiveUtil.addUsers(users: bag.users!);
+      await hiveUtil.addPhotos(photos: bag.photos!);
+      await hiveUtil.addVideos(videos: bag.videos!);
+      await hiveUtil.addFieldMonitorSchedules(schedules: bag.fieldMonitorSchedules!);
 
       return bag;
     } catch (e) {
-      pp(e);
+      pp('$mm getOrganizationData: $e');
       rethrow;
     }
   }
+
   static Future<DataBag> getUserData(String userId) async {
     String? mURL = await getUrl();
     var bag = DataBag(
@@ -347,19 +358,26 @@ class DataAPI {
         fieldMonitorSchedules: [],
         projects: [],
         projectPositions: [],
+        projectPolygons: [],
         users: [],
         date: DateTime.now().toIso8601String());
     try {
-      var result = await _sendHttpGET(
-          '${mURL!}getUserData?userId=$userId');
+      var result = await _sendHttpGET('${mURL!}getUserData?userId=$userId');
 
       bag = DataBag.fromJson(result);
-      await hiveUtil.addDataBag(dataBag: bag);
+      await hiveUtil.addProjects(projects: bag.projects!);
+      await hiveUtil.addProjectPolygons(polygons: bag.projectPolygons!);
+      await hiveUtil.addProjectPositions(positions: bag.projectPositions!);
+      await hiveUtil.addUsers(users: bag.users!);
+      await hiveUtil.addPhotos(photos: bag.photos!);
+      await hiveUtil.addVideos(videos: bag.videos!);
+      await hiveUtil.addFieldMonitorSchedules(schedules: bag.fieldMonitorSchedules!);
+
 
       return bag;
     } catch (e) {
       pp(e);
-      rethrow;
+      throw Exception('User data refresh fell down!: $e');
     }
   }
 
@@ -428,17 +446,26 @@ class DataAPI {
         projects: [],
         users: [],
         projectPositions: [],
+        projectPolygons: [],
         date: DateTime.now().toIso8601String());
     try {
       var result =
           await _sendHttpGET('${mURL!}getProjectData?projectId=$projectId');
+
       bag = DataBag.fromJson(result);
-      await hiveUtil.addDataBag(dataBag: bag);
-      return bag;
+      await hiveUtil.addProjects(projects: bag.projects!);
+      await hiveUtil.addProjectPolygons(polygons: bag.projectPolygons!);
+      await hiveUtil.addProjectPositions(positions: bag.projectPositions!);
+      await hiveUtil.addUsers(users: bag.users!);
+      await hiveUtil.addPhotos(photos: bag.photos!);
+      await hiveUtil.addVideos(videos: bag.videos!);
+      await hiveUtil.addFieldMonitorSchedules(schedules: bag.fieldMonitorSchedules!);
+
     } catch (e) {
       pp(e);
       rethrow;
     }
+    return bag;
   }
 
   static Future<List<Video>> getUserProjectVideos(String userId) async {
@@ -531,7 +558,7 @@ class DataAPI {
     try {
       var result = await _sendHttpGET(url);
       pp('$mm findOrganizationById: 🍏 result: $result ');
-      Organization?  org = Organization.fromJson(result);
+      Organization? org = Organization.fromJson(result);
       await hiveUtil.addOrganization(organization: org);
       return org;
     } catch (e) {
@@ -1158,8 +1185,8 @@ class DataAPI {
         return resp.body;
       }
     } on SocketException {
-      pp('$xz 😑 Monitor Backend not available. Possible Internet Connection issue 😑 😑 😑');
-      throw 'Monitor Backend not available. Possible Internet Connection issue';
+      pp('$xz 😑GeoMonitor Server not available. Possible Internet Connection issue 😑 😑 😑');
+      throw 'GeoMonitor Server not available. Possible Internet Connection issue';
     } on HttpException {
       pp("$xz Couldn't find the post 😱");
       throw 'Could not find the post';
@@ -1198,8 +1225,8 @@ class DataAPI {
       var mJson = json.decode(resp.body);
       return mJson;
     } on SocketException {
-      pp('$xz No Internet connection 😑');
-      throw 'No Internet Connection';
+      pp('$xz No Internet connection, really means that server cannot be reached 😑');
+      throw 'GeoMonitor server cannot be reached at this time. Please try later';
     } on HttpException {
       pp("$xz Couldn't find the post 😱");
       throw 'Could not find the post';

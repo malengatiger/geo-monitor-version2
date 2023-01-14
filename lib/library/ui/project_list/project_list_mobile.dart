@@ -339,23 +339,7 @@ class ProjectListMobileState extends State<ProjectListMobile>
             _navigateToProjectMap(project);
           }),
     );
-    menuItems.add(
-      FocusedMenuItem(
-          title: Text(
-            'Project Areas Map',
-            style: GoogleFonts.lato(
-                textStyle: Theme.of(context).textTheme.bodyMedium,
-                fontWeight: FontWeight.normal,
-                color: Colors.black),
-          ),
-          trailingIcon: Icon(
-            Icons.map,
-            color: Theme.of(context).primaryColor,
-          ),
-          onPressed: () {
-            _navigateToProjectPolygonMap(project);
-          }),
-    );
+
 
     menuItems.add(
       FocusedMenuItem(
@@ -402,6 +386,23 @@ class ProjectListMobileState extends State<ProjectListMobile>
           onPressed: () {
             _navigateToProjectLocation(project);
           }));
+      menuItems.add(
+        FocusedMenuItem(
+            title: Text(
+              'Project Areas Map',
+              style: GoogleFonts.lato(
+                  textStyle: Theme.of(context).textTheme.bodyMedium,
+                  fontWeight: FontWeight.normal,
+                  color: Colors.black),
+            ),
+            trailingIcon: Icon(
+              Icons.map,
+              color: Theme.of(context).primaryColor,
+            ),
+            onPressed: () {
+              _navigateToProjectPolygonMap(project);
+            }),
+      );
       menuItems.add(FocusedMenuItem(
           title: Text('Edit Project',
               style: GoogleFonts.lato(

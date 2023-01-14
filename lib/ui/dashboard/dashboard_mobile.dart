@@ -1,8 +1,10 @@
 import 'dart:async';
 
 import 'package:animations/animations.dart';
-import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
+import 'package:geo_monitor/library/bloc/connection_check.dart';
+import 'package:geo_monitor/library/data/data_bag.dart';
+import 'package:geo_monitor/library/data/project_polygon.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:universal_platform/universal_platform.dart';
@@ -51,10 +53,9 @@ class DashboardMobileState extends State<DashboardMobile>
   var _photos = <Photo>[];
   var _videos = <Video>[];
   var _projectPositions = <ProjectPosition>[];
+  var _projectPolygons = <ProjectPolygon>[];
   var _schedules = <FieldMonitorSchedule>[];
   User? user;
-
-  late StreamSubscription<ConnectivityResult> subscription;
 
   static const nn = '🎽🎽🎽🎽🎽🎽 DashboardMobile: 🎽';
   static const mm = '🎽🎽🎽🎽🎽🎽 DashboardMobile: 🎽';
@@ -79,7 +80,7 @@ class DashboardMobileState extends State<DashboardMobile>
         vsync: this);
     super.initState();
     _setItems();
-    _listenToStreams();
+    //_listenToStreams();
     _listenForFCM();
     _refreshData(false);
     _subscribeToConnectivity();
@@ -87,31 +88,44 @@ class DashboardMobileState extends State<DashboardMobile>
     _buildGeofences();
   }
 
+  // void _listenToStreams() async {
+  //   var user = await Prefs.getUser();
+  //   if (user == null) return;
+  //   switch(user.userType) {
+  //     case UserType.orgExecutive:
+  //       _listenToOrgStreams();
+  //       break;
+  //     case UserType.orgAdministrator:
+  //       _listenToOrgStreams();
+  //       break;
+  //     case UserType.fieldMonitor:
+  //       _listenToMonitorStreams();
+  //       break;
+  //   }
+  //
+  // }
+
   void _buildGeofences() async {
     pp('\n\n$nn _buildGeofences starting ........................');
     await geofencerTwo.buildGeofences();
     pp('$nn _buildGeofences done.\n');
   }
 
-  void _subscribeToConnectivity() {
-    subscription = Connectivity()
-        .onConnectivityChanged
-        .listen((ConnectivityResult result) {
-      pp('$nn onConnectivityChanged: result index: ${result.index}');
-      if (result.index == ConnectivityResult.mobile.index) {
-        pp('$nn ConnectivityResult.mobile.index: ${result.index} - 🍎 MOBILE NETWORK is on!');
-        networkAvailable = true;
+  late StreamSubscription<bool> subscription;
+
+  Future<void> _subscribeToConnectivity() async {
+    subscription = connectionCheck.connectivityStream.listen((bool connected) {
+      if (connected) {
+        pp('$mm We have a connection! - $connected');
+      } else {
+        pp('$mm We DO NOT have a connection! - show snackbar ...');
+        if (mounted) {
+          //showConnectionProblemSnackBar(context: context);
+        }
       }
-      if (result.index == ConnectivityResult.wifi.index) {
-        pp('$nn ConnectivityResult.wifi.index:  ${result.index} - 🍎 WIFI is on!');
-        networkAvailable = true;
-      }
-      if (result.index == ConnectivityResult.none.index) {
-        pp('ConnectivityResult.none.index: ${result.index} = 🍎 NONE - AIRPLANE MODE?');
-        networkAvailable = false;
-      }
-      setState(() {});
     });
+    var isConnected = await connectionCheck.internetAvailable();
+    pp('$mm Are we connected? answer: $isConnected');
   }
 
   void _subscribeToGeofenceStream() async {
@@ -120,31 +134,13 @@ class DashboardMobileState extends State<DashboardMobile>
       if (mounted) {
         showToast(
             message:
-            'Geofence triggered: ${event.projectName} projectPositionId: ${event.projectPositionId}',
+                'Geofence triggered: ${event.projectName} projectPositionId: ${event.projectPositionId}',
             context: context);
       }
     });
   }
 
-  void _listenToStreams() async {
-    var user = await Prefs.getUser();
-    if (user == null) return;
-    switch(user.userType) {
-      case UserType.orgExecutive:
-        _listenToOrgStreams();
-        break;
-      case UserType.orgAdministrator:
-        _listenToOrgStreams();
-        break;
-      case UserType.fieldMonitor:
-        _listenToMonitorStreams();
-        break;
-    }
-
-  }
-
   void _listenToOrgStreams() async {
-
     organizationBloc.projectStream.listen((event) {
       if (mounted) {
         setState(() {
@@ -173,7 +169,6 @@ class DashboardMobileState extends State<DashboardMobile>
       }
       // _controller.reset();
       _photoAnimationController.forward();
-
     });
     organizationBloc.videoStream.listen((event) {
       if (mounted) {
@@ -208,7 +203,6 @@ class DashboardMobileState extends State<DashboardMobile>
   }
 
   void _listenToMonitorStreams() async {
-
     organizationBloc.projectStream.listen((event) {
       if (mounted) {
         setState(() {
@@ -295,41 +289,54 @@ class DashboardMobileState extends State<DashboardMobile>
   }
 
   void _refreshData(bool forceRefresh) async {
-    pp('$mm ............... Refreshing data ....');
+    pp('$mm ............................................Refreshing data ....');
     setState(() {
       isBusy = true;
     });
+
+    Future.delayed(const Duration(milliseconds: 500), () async {
+      await _doWork(forceRefresh);
+    });
+
+  }
+
+  Future<void> _doWork(bool forceRefresh) async {
     try {
       user = await Prefs.getUser();
-      //todo what kind of user is this? if monitor or admin or executive
-      if (user != null) {
-        switch (user!.userType) {
-          case UserType.orgAdministrator:
-            organizationBloc.refreshOrganizationData(
-                organizationId: user!.organizationId!, forceRefresh: forceRefresh);
-            break;
-          case UserType.fieldMonitor:
-            userBloc.refreshUserData(
-                userId: user!.userId!,
-                forceRefresh: forceRefresh);
-
-            organizationBloc.refreshOrganizationData(
-                organizationId: user!.organizationId!, forceRefresh: forceRefresh);
-
-            break;
-          case UserType.orgExecutive:
-            organizationBloc.refreshOrganizationData(
-                organizationId: user!.organizationId!, forceRefresh: true);
-            break;
-        }
-      }
+      var bag = await organizationBloc.refreshOrganizationData(
+          organizationId: user!.organizationId!,
+          forceRefresh: forceRefresh);
+      await _extractData(bag);
     } catch (e) {
-      pp(e);
-      AppSnackbar.showErrorSnackbar(
-          scaffoldKey: _key, message: 'Dashboard refresh failed: $e');
+      pp('$mm $e - will show snackbar ..');
+      showConnectionProblemSnackBar(
+          context: context,
+          message: 'Data refresh failed. Possible network problem - $e');
     }
     setState(() {
       isBusy = false;
+    });
+    _projectAnimationController.forward().then((value) {
+      _userAnimationController.forward().then((value) {
+        _photoAnimationController.forward().then((value) {
+          _videoAnimationController.forward();
+        });
+      });
+    });
+  }
+
+  Future _extractData(DataBag bag) async {
+    pp('Extracting org data from bag');
+    _projects = bag.projects!;
+    _projectPositions = bag.projectPositions!;
+    _projectPolygons = bag.projectPolygons!;
+    _users = bag.users!;
+    _photos = bag.photos!;
+    _videos = bag.videos!;
+    _schedules = bag.fieldMonitorSchedules!;
+    pp('setting state extracting org data from bag');
+    setState(() {
+
     });
   }
 
@@ -371,6 +378,7 @@ class DashboardMobileState extends State<DashboardMobile>
       pp('App is running on the Web 👿 👿 👿  firebase messaging is OFF 👿 👿 👿');
     }
   }
+
   final _key = GlobalKey<ScaffoldState>();
 
   void _handleBottomNav(int value) {
@@ -425,7 +433,6 @@ class DashboardMobileState extends State<DashboardMobile>
   }
 
   void _navigateToUserMediaList() async {
-
     if (mounted) {
       Navigator.push(
           context,
@@ -462,7 +469,6 @@ class DashboardMobileState extends State<DashboardMobile>
             child: const UserListMain()));
   }
 
-
   @override
   Widget build(BuildContext context) {
     var type = 'Field Monitor';
@@ -487,24 +493,27 @@ class DashboardMobileState extends State<DashboardMobile>
         ),
         actions: [
           IconButton(
-              icon:  Icon(
+              icon: Icon(
                 Icons.info_outline,
-                size: 18, color: Theme.of(context).primaryColor,
+                size: 18,
+                color: Theme.of(context).primaryColor,
               ),
               onPressed: _navigateToIntro),
           IconButton(
-            icon:  Icon(
+            icon: Icon(
               Icons.settings,
-              size: 18, color: Theme.of(context).primaryColor,
+              size: 18,
+              color: Theme.of(context).primaryColor,
             ),
             onPressed: () {
               themeBloc.changeToRandomTheme();
             },
           ),
           IconButton(
-            icon:  Icon(
+            icon: Icon(
               Icons.refresh,
-              size: 18, color: Theme.of(context).primaryColor,
+              size: 18,
+              color: Theme.of(context).primaryColor,
             ),
             onPressed: () {
               _refreshData(true);
@@ -521,20 +530,25 @@ class DashboardMobileState extends State<DashboardMobile>
                   widget.user.organizationName!,
                   style: GoogleFonts.lato(
                     textStyle: Theme.of(context).textTheme.bodySmall,
-                    fontWeight: FontWeight.w900,),
+                    fontWeight: FontWeight.w900,
+                  ),
                 ),
                 const SizedBox(
                   height: 8,
                 ),
-                Text(
-                   widget.user.name!,
-                  style: GoogleFonts.lato(
-                      textStyle: Theme.of(context).textTheme.headline6,
-                      fontWeight: FontWeight.normal)
-                ),
-                user == null? const Text(''):Text(type, style: GoogleFonts.lato(
-                  textStyle: Theme.of(context).textTheme.bodySmall,
-                  fontWeight: FontWeight.normal,),),
+                Text(widget.user.name!,
+                    style: GoogleFonts.lato(
+                        textStyle: Theme.of(context).textTheme.headline6,
+                        fontWeight: FontWeight.normal)),
+                user == null
+                    ? const Text('')
+                    : Text(
+                        type,
+                        style: GoogleFonts.lato(
+                          textStyle: Theme.of(context).textTheme.bodySmall,
+                          fontWeight: FontWeight.normal,
+                        ),
+                      ),
                 const SizedBox(
                   height: 12,
                 ),
@@ -546,7 +560,8 @@ class DashboardMobileState extends State<DashboardMobile>
       // backgroundColor: Colors.brown[100],
       bottomNavigationBar: BottomNavigationBar(
         items: items,
-        onTap: _handleBottomNav,elevation: 8,
+        onTap: _handleBottomNav,
+        elevation: 8,
       ),
       body: isBusy
           ? const Center(
@@ -571,22 +586,22 @@ class DashboardMobileState extends State<DashboardMobile>
                         child: AnimatedBuilder(
                           animation: _projectAnimationController,
                           builder: (BuildContext context, Widget? child) {
-
-                            return FadeScaleTransition(animation: _projectAnimationController, child: child,);
+                            return FadeScaleTransition(
+                              animation: _projectAnimationController,
+                              child: child,
+                            );
                           },
                           child: Card(
                             // color: Colors.brown[50],
                             elevation: 8,
                             shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(16.0)),
+                                borderRadius: BorderRadius.circular(16.0)),
                             child: Column(
                               children: [
                                 const SizedBox(
                                   height: 32,
                                 ),
-                                Text(
-                                  '${_projects.length}',
-                                    style: style),
+                                Text('${_projects.length}', style: style),
                                 const SizedBox(
                                   height: 8,
                                 ),
@@ -604,7 +619,10 @@ class DashboardMobileState extends State<DashboardMobile>
                         child: AnimatedBuilder(
                           animation: _userAnimationController,
                           builder: (BuildContext context, Widget? child) {
-                            return FadeScaleTransition(animation: _userAnimationController, child: child,);
+                            return FadeScaleTransition(
+                              animation: _userAnimationController,
+                              child: child,
+                            );
                           },
                           child: Card(
                             // color: Colors.brown[50],
@@ -635,7 +653,10 @@ class DashboardMobileState extends State<DashboardMobile>
                       AnimatedBuilder(
                         animation: _photoAnimationController,
                         builder: (BuildContext context, Widget? child) {
-                          return FadeScaleTransition(animation: _photoAnimationController, child: child,);
+                          return FadeScaleTransition(
+                            animation: _photoAnimationController,
+                            child: child,
+                          );
                         },
                         child: Card(
                           elevation: 8,
@@ -646,9 +667,7 @@ class DashboardMobileState extends State<DashboardMobile>
                               const SizedBox(
                                 height: 32,
                               ),
-                              Text(
-                                '${_photos.length}',
-                                style: style),
+                              Text('${_photos.length}', style: style),
                               const SizedBox(
                                 height: 8,
                               ),
@@ -663,7 +682,10 @@ class DashboardMobileState extends State<DashboardMobile>
                       AnimatedBuilder(
                         animation: _videoAnimationController,
                         builder: (BuildContext context, Widget? child) {
-                          return FadeScaleTransition(animation: _videoAnimationController, child: child,);
+                          return FadeScaleTransition(
+                            animation: _videoAnimationController,
+                            child: child,
+                          );
                         },
                         child: Card(
                           elevation: 8,
@@ -674,14 +696,41 @@ class DashboardMobileState extends State<DashboardMobile>
                               const SizedBox(
                                 height: 32,
                               ),
-                              Text(
-                                '${_videos.length}',
-                                  style: style),
+                              Text('${_videos.length}', style: style),
                               const SizedBox(
                                 height: 8,
                               ),
                               Text(
                                 'Videos',
+                                style: Styles.greyLabelSmall,
+                              )
+                            ],
+                          ),
+                        ),
+                      ),
+                      AnimatedBuilder(
+                        animation: _videoAnimationController,
+                        builder: (BuildContext context, Widget? child) {
+                          return FadeScaleTransition(
+                            animation: _videoAnimationController,
+                            child: child,
+                          );
+                        },
+                        child: Card(
+                          elevation: 8,
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(16.0)),
+                          child: Column(
+                            children: [
+                              const SizedBox(
+                                height: 32,
+                              ),
+                              Text('${_projectPolygons.length}', style: style),
+                              const SizedBox(
+                                height: 8,
+                              ),
+                              Text(
+                                'Areas',
                                 style: Styles.greyLabelSmall,
                               )
                             ],
@@ -697,9 +746,7 @@ class DashboardMobileState extends State<DashboardMobile>
                             const SizedBox(
                               height: 32,
                             ),
-                            Text(
-                                '${_projectPositions.length}',
-                                style: style),
+                            Text('${_projectPositions.length}', style: style),
                             const SizedBox(
                               height: 8,
                             ),
@@ -719,9 +766,7 @@ class DashboardMobileState extends State<DashboardMobile>
                             const SizedBox(
                               height: 32,
                             ),
-                            Text(
-                                '${_schedules.length}',
-                                style: style),
+                            Text('${_schedules.length}', style: style),
                             const SizedBox(
                               height: 8,
                             ),
@@ -739,6 +784,4 @@ class DashboardMobileState extends State<DashboardMobile>
             ),
     ));
   }
-
-
 }

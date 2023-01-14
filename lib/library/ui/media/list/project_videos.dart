@@ -39,8 +39,9 @@ class _ProjectPhotosState extends State<ProjectVideos> {
     setState(() {
       loading = true;
     });
-    videos = await projectBloc.getProjectVideos(
+    var bag = await projectBloc.refreshProjectData(
         projectId: widget.project.projectId!, forceRefresh: widget.refresh);
+    videos = bag.videos!;
     videos.sort((a, b) => b.created!.compareTo(a.created!));
     setState(() {
       loading = false;
@@ -62,21 +63,26 @@ class _ProjectPhotosState extends State<ProjectVideos> {
           )
         : Column(
             children: [
-              Container(
-                color: Colors.blue,
-                height: 2,
+              SizedBox(
+                height: 48,
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 16.0),
+                  child: Text(widget.project.name!, style: myTextStyleSmall(context),),
+                ),
               ),
               Expanded(
                   child: Badge(
-                position: BadgePosition.topEnd(top: 8, end: 12),
-                badgeContent: Text(
+                position: BadgePosition.topEnd(top: 4, end: 4),
+                    padding: const EdgeInsets.all(12.0),
+
+                    badgeContent: Text(
                   '${videos.length}',
                   style: GoogleFonts.lato(
                       textStyle: Theme.of(context).textTheme.bodySmall,
                       fontWeight: FontWeight.normal,
-                      color: Colors.white),
+                      color: Colors.white, fontSize: 10),
                 ),
-                badgeColor: Colors.indigo,
+                badgeColor: Colors.black,
                 elevation: 16,
                 child: GridView.builder(
                     gridDelegate:

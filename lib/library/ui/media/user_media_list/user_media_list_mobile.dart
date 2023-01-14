@@ -109,14 +109,15 @@ class MediaListMobileState extends State<UserMediaListMobile>
   Future<void> _refresh(bool forceRefresh) async {
     pp('$mm _MediaListMobileState: .......... _refresh ...forceRefresh: $forceRefresh');
     setState(() {
-      isBusy = true;
+      busy = true;
     });
 
-    await userBloc.refreshUserData(
-        userId: widget.user.userId!, forceRefresh: forceRefresh);
+    //todo - refactor userBloc.refreshUserData ....
+    // await userBloc.refreshUserData(
+    //     userId: widget.user.userId!, forceRefresh: forceRefresh);
 
     setState(() {
-      isBusy = false;
+      busy = false;
     });
   }
 

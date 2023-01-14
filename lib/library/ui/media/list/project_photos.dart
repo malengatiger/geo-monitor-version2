@@ -36,9 +36,15 @@ class ProjectPhotosState extends State<ProjectPhotos> {
     setState(() {
       loading = true;
     });
-    photos = await projectBloc.getPhotos(
-        projectId: widget.project!.projectId!, forceRefresh: widget.refresh);
-    photos.sort((a,b) => b.created!.compareTo(a.created!));
+    try {
+      var bag = await projectBloc.refreshProjectData(
+          projectId: widget.project.projectId!, forceRefresh: widget.refresh);
+      photos = bag.photos!;
+      photos.sort((a, b) => b.created!.compareTo(a.created!));
+    } catch (e) {
+      pp(e);
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('$e')));
+    }
     setState(() {
       loading = false;
     });
@@ -57,16 +63,20 @@ class ProjectPhotosState extends State<ProjectPhotos> {
           )),
     ) :Column(
       children: [
-        Container(
-          color: Colors.blue,
-          height: 1,
+        SizedBox(
+          height: 48,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 16.0),
+            child: Text(widget.project.name!, style: myTextStyleSmall(context),),
+          ),
         ),
          Expanded(
             child: Badge(
-              position: BadgePosition.topEnd(top: 8, end: 12),
+              position: BadgePosition.topEnd(top: 4, end: 4),
+              padding: const EdgeInsets.all(12.0),
               badgeContent: Text('${photos.length}', style: GoogleFonts.lato(
                 textStyle: Theme.of(context).textTheme.bodySmall,
-                fontWeight: FontWeight.normal, color: Colors.white
+                fontWeight: FontWeight.normal, color: Colors.white, fontSize: 10
               ),),
               badgeColor: Colors.pink,
               elevation: 16,
@@ -93,45 +103,6 @@ class ProjectPhotosState extends State<ProjectPhotos> {
                             ),
                           ),
                         ),
-                        // Positioned(
-                        //   child: Container(
-                        //     color: Colors.black38,
-                        //     child: Padding(
-                        //       padding: const EdgeInsets.all(8.0),
-                        //       child: Text(
-                        //         dt,
-                        //         style: GoogleFonts.lato(
-                        //             textStyle:
-                        //                 Theme.of(context).textTheme.bodySmall,
-                        //             fontWeight: FontWeight.normal,
-                        //             fontSize: 10),
-                        //       ),
-                        //     ),
-                        //   ),
-                        // ),
-                        // Positioned(
-                        //   bottom: 8, left: 0,
-                        //   child: Container(
-                        //     color: Colors.black38,
-                        //     child: Row(
-                        //       mainAxisAlignment: MainAxisAlignment.center,
-                        //       children: [
-                        //         Padding(
-                        //           padding: const EdgeInsets.all(8.0),
-                        //           child: Text(
-                        //             photo.projectName!,
-                        //             overflow: TextOverflow.ellipsis,
-                        //             style: GoogleFonts.lato(
-                        //                 textStyle:
-                        //                 Theme.of(context).textTheme.bodySmall,
-                        //                 fontWeight: FontWeight.normal,
-                        //                 fontSize: 11),
-                        //           ),
-                        //         ),
-                        //       ],
-                        //     ),
-                        //   ),
-                        // ),
                       ],
                     );
                   }),

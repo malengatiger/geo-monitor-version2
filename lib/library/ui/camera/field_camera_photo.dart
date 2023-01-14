@@ -476,6 +476,14 @@ class FieldPhotoCameraState extends State<FieldPhotoCamera>
           }
 
           if (widget.projectPosition != null) {
+            cloudStorageBloc.errorStream.listen((event) {
+              if (mounted) {
+                ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                    duration: const Duration(seconds: 20),
+                    backgroundColor: Theme.of(context).errorColor,
+                    content: Text(event)));
+              }
+            });
             cloudStorageBloc.uploadPhotoOrVideo(
                 listener: this,
                 file: mFile,

@@ -18,19 +18,8 @@ import '../data/video.dart';
 import '../emojis.dart';
 import '../functions.dart';
 import '../location/loc_bloc.dart';
-import '../data/city.dart';
-import '../data/community.dart';
-import '../data/condition.dart';
-import '../data/field_monitor_schedule.dart';
-import '../data/monitor_report.dart';
-import '../data/org_message.dart';
-import '../data/organization.dart';
 import '../data/photo.dart';
 import '../data/project.dart';
-import '../data/project_position.dart';
-import '../data/section.dart';
-import '../data/user.dart';
-import '../data/video.dart';
 
 final CloudStorageBloc cloudStorageBloc = CloudStorageBloc();
 
@@ -56,7 +45,11 @@ class CloudStorageBloc {
   final videoStorageName = 'geoVideos';
   final StreamController<Photo> _photoStreamController =
       StreamController.broadcast();
+  final StreamController<String> _errorStreamController =
+  StreamController.broadcast();
   Stream<Photo> get photoStream => _photoStreamController.stream;
+  Stream<String> get errorStream => _errorStreamController.stream;
+
   late StorageBlocListener storageBlocListener;
 
   void uploadPhotoOrVideo(
@@ -321,10 +314,16 @@ class CloudStorageBloc {
         photoId: u.v4(),
         landscape: isLandscape ? 0 : 1);
 
-    var result = await DataAPI.addPhoto(photo);
-    _photoStreamController.sink.add(photo);
-    pp('🎽🎽🎽🎽 🎁 🎁 StorageBloc: Photo has been added to database, result photo: 🎁 $result - 🎁 isLandscape: $isLandscape');
-    pp('🎽🎽🎽🎽 🎁 🎁 StorageBloc: Photo has been added to photoStream ...');
+    try {
+      var result = await DataAPI.addPhoto(photo);
+      _photoStreamController.sink.add(photo);
+      pp(
+          '🎽🎽🎽🎽 🎁 🎁 StorageBloc: Photo has been added to database, result photo: 🎁 $result - 🎁 isLandscape: $isLandscape');
+      pp('🎽🎽🎽🎽 🎁 🎁 StorageBloc: Photo has been added to photoStream ...');
+    } catch (e) {
+      pp('$mm Photo problem: $e');
+      _errorStreamController.sink.add("Photo upload failed: $e");
+    }
   }
 
   void _writeVideo(
@@ -360,9 +359,14 @@ class CloudStorageBloc {
         organizationId: _user!.organizationId,
         videoId: u.v4());
 
+    try {
     var result = await DataAPI.addVideo(video);
     pp('🎽🎽🎽🎽 🎁 🎁 Video has been added to database: 🎁 $result');
     storageBlocListener.onVideoReady(video);
+    } catch (e) {
+      pp('$mm Video upload problem: $e');
+      _errorStreamController.sink.add("Video upload failed: $e");
+    }
   }
 
   Future<File> downloadFile(String url) async {

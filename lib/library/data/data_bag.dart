@@ -1,3 +1,4 @@
+import 'package:geo_monitor/library/data/project_polygon.dart';
 import 'package:hive/hive.dart';
 
 import '../data/position.dart';
@@ -26,6 +27,8 @@ class DataBag {
   String? date;
   @HiveField(6)
   List<User>? users;
+  @HiveField(7)
+  List<ProjectPolygon>? projectPolygons;
 
   DataBag({
     required this.photos,
@@ -34,6 +37,7 @@ class DataBag {
     required this.projectPositions,
     required this.projects,
     required this.date, required this.users,
+    required this.projectPolygons,
   });
 
   DataBag.fromJson(Map data) {
@@ -44,6 +48,14 @@ class DataBag {
       for (var element in m) {
         var pos = User.fromJson(element);
         users?.add(pos);
+      }
+    }
+    projectPolygons = [];
+    if (data['projectPolygons'] != null) {
+      List m = data['projectPolygons'];
+      for (var element in m) {
+        var pos = ProjectPolygon.fromJson(element);
+        projectPolygons?.add(pos);
       }
     }
     projectPositions = [];
@@ -118,6 +130,12 @@ class DataBag {
         mPositions.add(r.toJson());
       }
     }
+    List mPolygons = [];
+    if (projectPolygons != null) {
+      for (var r in projectPolygons!) {
+        mPolygons.add(r.toJson());
+      }
+    }
     List mUsers = [];
     if (users != null) {
       for (var r in users!) {
@@ -130,6 +148,7 @@ class DataBag {
       'videos': mVideos,
       'fieldMonitorSchedules': mSchedules,
       'projectPositions': mPositions,
+      'projectPolygons': mPolygons,
       'projects': mProjects,
       'users': mUsers,
       'date': date,

@@ -83,7 +83,7 @@ dependencies:
   get:
   crypto:
   hive: ^2.2.3
-  connectivity: ^3.0.6
+#  connectivity: ^3.0.6
   fluttertoast: ^8.1.2
   georange: ^1.0.0
   geofence_service: ^3.5.0
@@ -98,6 +98,7 @@ dependencies:
   stream_channel: ^2.1.0
   badges: ^2.0.3
   map_launcher: ^2.4.0
+  connectivity_plus: ^3.0.2
 
 
 

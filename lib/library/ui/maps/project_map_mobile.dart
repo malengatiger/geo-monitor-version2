@@ -6,6 +6,7 @@ import 'package:animations/animations.dart';
 import 'package:badges/badges.dart';
 import 'package:flutter/material.dart';
 import 'package:geo_monitor/library/api/sharedprefs.dart';
+import 'package:geo_monitor/library/bloc/project_bloc.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:uuid/uuid.dart';
 
@@ -72,6 +73,26 @@ class ProjectMapMobileState extends State<ProjectMapMobile>
   void _getUser() async {
     user = await Prefs.getUser();
   }
+  void _refreshData() async {
+    setState(() {
+      busy = true;
+    });
+    try {
+      projectPolygons = await projectBloc.getProjectPolygons(
+          projectId: widget.project.projectId!, forceRefresh: true);
+      projectPositions = await projectBloc.getProjectPositions(
+          projectId: widget.project.projectId!, forceRefresh: true);
+    } catch (e) {
+      pp(e);
+      if (mounted) {
+        ScaffoldMessenger.of(context)
+            .showSnackBar(SnackBar(content: Text('$e')));
+      }
+    }
+    setState(() {
+      busy = false;
+    });
+  }
 
   @override
   void dispose() {
@@ -83,17 +104,16 @@ class ProjectMapMobileState extends State<ProjectMapMobile>
   double _latitude = 0.0, _longitude = 0.0;
 
   Future<void> _addMarkers() async {
-    pp('💜 💜 💜 💜 💜 💜 ProjectMapMobile: _addMarkers: ....... 🍎 ${widget
+    pp('$mm _addMarkers: ....... 🍎 ${widget
         .projectPositions.length}');
-    if (widget.projectPositions.isEmpty) {
+    if (projectPositions.isEmpty) {
       pp('There are no positions found ${Emoji.redDot}');
       return;
     }
     markers.clear();
     var latLongs = <LatLng>[];
     var cnt = 0;
-    // widget.projectPositions.sort((a,b) => a.created!.compareTo(b.created!));
-    for (var projectPosition in widget.projectPositions) {
+    for (var projectPosition in projectPositions) {
       var latLng = LatLng(projectPosition.position!.coordinates[1],
           projectPosition.position!.coordinates[0]);
       latLongs.add(latLng);
@@ -109,7 +129,7 @@ class ProjectMapMobileState extends State<ProjectMapMobile>
         ),
         infoWindow: InfoWindow(
             title: projectPosition.projectName,
-            snippet: 'Project Location #$cnt of ${widget.projectPositions.length} Here'),
+            snippet: 'Project Location #$cnt of ${projectPositions.length} Here'),
         onTap: () {
           _onMarkerTapped(projectPosition);
         },
@@ -117,13 +137,11 @@ class ProjectMapMobileState extends State<ProjectMapMobile>
       markers[markerId] = marker;
     }
     googleMapController = await _mapController.future;
-    _animateCamera();
-    // Future.delayed(
-    //     const Duration(milliseconds: 200),
-    //         () =>
-    //         googleMapController!.animateCamera(CameraUpdate.newLatLngBounds(
-    //             MapUtils.boundsFromLatLngList(latLongs),
-    //             1)));
+    if (projectPositions.isNotEmpty) {
+      var lat = projectPositions.first.position!.coordinates[1];
+      var lng = projectPositions.first.position!.coordinates[0];
+      _animateCamera(latitude: lat, longitude: lng);
+    }
 
   }
   void _buildProjectPolygons() {
@@ -146,7 +164,12 @@ class ProjectMapMobileState extends State<ProjectMapMobile>
 
     pp('$mm _buildProjectPolygons: 🍏project polygons created.: '
         '🔵 ${_polygons.length} points in polygon ...');
-    _animateCamera();
+    if (projectPolygons.isNotEmpty) {
+      var p = projectPolygons.first.positions.first;
+      var lat = p.coordinates[1];
+      var lng = p.coordinates[0];
+      _animateCamera(latitude: lat, longitude: lng);
+    }
     setState(() {});
   }
 
@@ -272,15 +295,24 @@ class ProjectMapMobileState extends State<ProjectMapMobile>
             widget.project.name!,
             style: myTextStyleMedium(context),
           ),
+          actions: [
+            IconButton(onPressed: _refreshData, icon: Icon(Icons.refresh_rounded,
+              size: 18, color: Theme.of(context).primaryColor,))
+          ],
           bottom: PreferredSize(preferredSize: const Size.fromHeight(20),
           child: Column(
             children: [
               Row(mainAxisAlignment: MainAxisAlignment.center,
               children:  [
                 Text('Project Locations', style: myTextStyleSmall(context),),
+                busy? const SizedBox(width: 48,):const SizedBox(),
+                busy? const SizedBox(width: 12, height: 12,
+                child: CircularProgressIndicator(
+                  strokeWidth: 3, backgroundColor: Colors.pink,
+                ),):const SizedBox(),
               ],
             ),
-              const SizedBox(height: 8,)
+              const SizedBox(height: 16,)
             ],
 
           ),),
@@ -288,12 +320,13 @@ class ProjectMapMobileState extends State<ProjectMapMobile>
         body: Stack(
           children: [
             GestureDetector(
-              onTap: () {
-                _animateCamera();
+              onTap: () async {
+                var loc = await locationBloc.getLocation();
+                _animateCamera(latitude: loc.latitude, longitude: loc.longitude);
               },
               child: Badge(
                 badgeColor: Colors.pink,
-                badgeContent: Text('${widget.projectPositions.length + widget.projectPolygons.length}'),
+                badgeContent: Text('${projectPositions.length + projectPolygons.length}'),
                 padding: const EdgeInsets.all(8.0),
                 position: BadgePosition.topEnd(top: 8, end: 8),
                 elevation: 8,
@@ -466,21 +499,15 @@ class ProjectMapMobileState extends State<ProjectMapMobile>
     );
   }
 
-  void _animateCamera() {
-    final CameraPosition first = CameraPosition(
-      target: LatLng(
-          widget.projectPositions
-              .elementAt(0)
-              .position!
-              .coordinates
-              .elementAt(1),
-          widget.projectPositions
-              .elementAt(0)
-              .position!
-              .coordinates
-              .elementAt(0)),
-      zoom: 8.0,
-    );
-    googleMapController!.animateCamera(CameraUpdate.newCameraPosition(first));
+  void _animateCamera({required double latitude, required double longitude}) {
+      final CameraPosition cameraPosition = CameraPosition(
+        target: LatLng(
+            latitude,
+            longitude),
+        zoom: 10.0,
+      );
+      googleMapController!.animateCamera(
+          CameraUpdate.newCameraPosition(cameraPosition));
+
   }
 }

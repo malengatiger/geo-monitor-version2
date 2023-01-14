@@ -4,6 +4,7 @@ import 'package:animations/animations.dart';
 import 'package:badges/badges.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:get/utils.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:page_transition/page_transition.dart';
 
@@ -28,7 +29,6 @@ class ProjectMediaListMobile extends StatefulWidget {
   final Project project;
 
   const ProjectMediaListMobile({super.key, required this.project});
-
 
   @override
   ProjectMediaListMobileState createState() => ProjectMediaListMobileState();
@@ -60,6 +60,7 @@ class ProjectMediaListMobileState extends State<ProjectMediaListMobile>
     _tabController = TabController(length: 2, vsync: this);
     super.initState();
     _listen();
+    _refresh(false);
   }
 
   Future<void> _listen() async {
@@ -68,9 +69,6 @@ class ProjectMediaListMobileState extends State<ProjectMediaListMobile>
     _listenToProjectStreams();
     _listenToPhotoStream();
     //
-    if (mounted) {
-      _refresh(false);
-    }
   }
 
   void _listenToProjectStreams() async {
@@ -81,15 +79,19 @@ class ProjectMediaListMobileState extends State<ProjectMediaListMobile>
       _photos = value;
       if (mounted) {
         setState(() {});
+      } else {
+        pp(' 😡😡😡 what the fuck? this thing is not mounted  😡😡😡');
       }
       _animationController.forward();
     });
 
     videoStreamSubscription = projectBloc.videoStream.listen((value) {
-      pp('$mm:Videos received from projectVideoStream: 🏈 ${value.length}');
+      pp('$mm Videos received from projectVideoStream: 🏈 ${value.length}');
       _videos = value;
       if (mounted) {
         setState(() {});
+      }else {
+        pp(' 😡😡😡 what the fuck? this thing is not mounted  😡😡😡');
       }
       _animationController.forward();
     });
@@ -101,9 +103,7 @@ class ProjectMediaListMobileState extends State<ProjectMediaListMobile>
           'New photo arrived from newPhotoStreamSubscription: ${mPhoto.toJson()} ${Emoji.blueDot}');
       _photos.add(mPhoto);
       if (mounted) {
-        setState(() {
-
-        });
+        setState(() {});
       }
     });
   }
@@ -111,14 +111,29 @@ class ProjectMediaListMobileState extends State<ProjectMediaListMobile>
   Future<void> _refresh(bool forceRefresh) async {
     pp('$mm _MediaListMobileState: .......... _refresh ...forceRefresh: $forceRefresh');
     setState(() {
-      isBusy = true;
+      busy = true;
     });
 
-    await projectBloc.refreshProjectData(
-        projectId: widget.project.projectId!, forceRefresh: forceRefresh);
+    try {
+      var bag = await projectBloc.refreshProjectData(
+          projectId: widget.project.projectId!, forceRefresh: forceRefresh);
+      pp('$mm bag has arrived safely! Yeah!! photos: ${bag.photos!.length} videos: ${bag.videos!.length}');
+      _photos = bag.photos!;
+      _videos = bag.videos!;
+      setState(() {
+
+      });
+      _animationController.forward();
+    } catch (e) {
+      pp('$mm ...... refresh problem: $e');
+      if (mounted) {
+        ScaffoldMessenger.of(context)
+            .showSnackBar(SnackBar(content: Text('$e')));
+      }
+    }
 
     setState(() {
-      isBusy = false;
+      busy = false;
     });
   }
 
@@ -132,19 +147,24 @@ class ProjectMediaListMobileState extends State<ProjectMediaListMobile>
     super.dispose();
   }
 
-
   @override
   Widget build(BuildContext context) {
-    _photos.sort((a,b) => b.created!.compareTo(a.created!));
+    _photos.sort((a, b) => b.created!.compareTo(a.created!));
     return SafeArea(
         child: Scaffold(
       appBar: AppBar(
-        title: Text(
-          'Photos & Videos',
-          style: GoogleFonts.lato(
-            textStyle: Theme.of(context).textTheme.bodyMedium,
-            fontWeight: FontWeight.w900,
-          ),
+        title: Column(
+          children: [
+            Text(
+              'Photos & Videos',
+              style: GoogleFonts.lato(
+                textStyle: Theme.of(context).textTheme.bodyMedium,
+                fontWeight: FontWeight.w900,
+              ),
+            ),
+            // const SizedBox(height: 4,),
+            // Text('${widget.project.name}', style: myTextStyleSmall(context),),
+          ],
         ),
         actions: [
           IconButton(
@@ -152,13 +172,20 @@ class ProjectMediaListMobileState extends State<ProjectMediaListMobile>
                 pp('...... navigate to take photos');
                 _navigateToMonitor();
               },
-              icon:  Icon(Icons.camera_alt, size: 18, color: Theme.of(context).primaryColor,)),
+              icon: Icon(
+                Icons.camera_alt,
+                size: 18,
+                color: Theme.of(context).primaryColor,
+              )),
           IconButton(
               onPressed: () {
-                pp('...... refresh photos');
                 _refresh(true);
               },
-              icon:  Icon(Icons.refresh, size: 18, color: Theme.of(context).primaryColor,)),
+              icon: Icon(
+                Icons.refresh,
+                size: 18,
+                color: Theme.of(context).primaryColor,
+              )),
         ],
         bottom: TabBar(
           controller: _tabController,
@@ -169,7 +196,7 @@ class ProjectMediaListMobileState extends State<ProjectMediaListMobile>
                     borderRadius: BorderRadius.circular(24.0)),
                 child: Padding(
                   padding: const EdgeInsets.only(
-                      left: 12.0, right: 12.0, top: 8, bottom: 8),
+                      left: 24.0, right: 24.0, top: 8, bottom: 8),
                   child: Text(
                     'Photos',
                     style: GoogleFonts.lato(
@@ -184,7 +211,7 @@ class ProjectMediaListMobileState extends State<ProjectMediaListMobile>
                     borderRadius: BorderRadius.circular(24.0)),
                 child: Padding(
                   padding: const EdgeInsets.only(
-                      left: 12.0, right: 12.0, top: 8, bottom: 8),
+                      left: 24.0, right: 24.0, top: 8, bottom: 8),
                   child: Text(
                     'Videos',
                     style: GoogleFonts.lato(
@@ -198,46 +225,83 @@ class ProjectMediaListMobileState extends State<ProjectMediaListMobile>
       ),
       body: Stack(
         children: [
-          TabBarView(
-            controller: _tabController,
-            children: [
-              AnimatedBuilder(
-                animation: _animationController,
-                builder: (BuildContext context, Widget? child) {
-                  return FadeScaleTransition(animation: _animationController, child: child,);
-                },
-                child: ProjectPhotos(
-                  project: widget.project,
-                  refresh: true,
-                  onPhotoTapped: (Photo photo) {
-                    pp('🔷🔷🔷Photo has been tapped: ${photo.created!}');
-                    selectedPhoto = photo;
-                    setState(() {
-                      _showPhotoDetail = true;
-                    });
-                    _animationController.forward();
-                  },
+          busy
+              ? Center(
+                  child: Card(
+                    shape: getRoundedBorder(radius: 16),
+                    elevation: 8,
+                    child: SizedBox(height: 200, width: 200,
+                      child: Padding(
+                        padding: const EdgeInsets.all(12.0),
+                        child: Column(
+                          children: const [
+                            SizedBox(
+                              height: 40,
+                            ),
+                            Text('Loading ...'),
+                            SizedBox(
+                              height: 48,
+                            ),
+                            SizedBox(
+                              height: 24,
+                              width: 24,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 4,
+                                backgroundColor: Colors.pink,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                )
+              : TabBarView(
+                  controller: _tabController,
+                  children: [
+                    AnimatedBuilder(
+                      animation: _animationController,
+                      builder: (BuildContext context, Widget? child) {
+                        return FadeScaleTransition(
+                          animation: _animationController,
+                          child: child,
+                        );
+                      },
+                      child: ProjectPhotos(
+                        project: widget.project,
+                        refresh: false,
+                        onPhotoTapped: (Photo photo) {
+                          pp('🔷🔷🔷Photo has been tapped: ${photo.created!}');
+                          selectedPhoto = photo;
+                          setState(() {
+                            _showPhotoDetail = true;
+                          });
+                          _animationController.forward();
+                        },
+                      ),
+                    ),
+                    AnimatedBuilder(
+                      animation: _animationController,
+                      builder: (BuildContext context, Widget? child) {
+                        return FadeScaleTransition(
+                          animation: _animationController,
+                          child: child,
+                        );
+                      },
+                      child: ProjectVideos(
+                        project: widget.project,
+                        refresh: false,
+                        onVideoTapped: (Video video) {
+                          pp('🍎🍎🍎Video has been tapped: ${video.created!}');
+                          setState(() {
+                            selectedVideo = video;
+                          });
+                          _navigateToPlayVideo();
+                        },
+                      ),
+                    ),
+                  ],
                 ),
-              ),
-              AnimatedBuilder(
-                animation: _animationController,
-                builder: (BuildContext context, Widget? child) {
-                  return FadeScaleTransition(animation: _animationController, child: child,);
-                },
-                child: ProjectVideos(
-                  project: widget.project,
-                  refresh: true,
-                  onVideoTapped: (Video video) {
-                    pp('🍎🍎🍎Video has been tapped: ${video.created!}');
-                    setState(() {
-                      selectedVideo = video;
-                    });
-                    _navigateToPlayVideo();
-                  },
-                ),
-              ),
-            ],
-          ),
           _showPhotoDetail
               ? Positioned(
                   left: 28,
@@ -253,7 +317,6 @@ class ProjectMediaListMobileState extends State<ProjectMediaListMobile>
                           });
                           _navigateToFullPhoto();
                         });
-
                       },
                       child: AnimatedBuilder(
                         animation: _animationController,
@@ -281,6 +344,7 @@ class ProjectMediaListMobileState extends State<ProjectMediaListMobile>
       ),
     ));
   }
+
   Video? selectedVideo;
   void _navigateToPlayVideo() {
     pp('... about to navigate after waiting 100 ms');
@@ -292,6 +356,7 @@ class ProjectMediaListMobileState extends State<ProjectMediaListMobile>
             duration: const Duration(milliseconds: 1000),
             child: PlayVideo(video: selectedVideo!)));
   }
+
   void _navigateToFullPhoto() {
     pp('... about to navigate after waiting 100 ms');
     Navigator.push(
@@ -307,19 +372,17 @@ class ProjectMediaListMobileState extends State<ProjectMediaListMobile>
   void _navigateToMonitor() {
     pp('... about to navigate after waiting 100 ms - should select project if null');
 
-
-      Future.delayed(const Duration(milliseconds: 100), () {
-        Navigator.push(
-            context,
-            PageTransition(
-                type: PageTransitionType.leftToRightWithFade,
-                alignment: Alignment.topLeft,
-                duration: const Duration(milliseconds: 1500),
-                child: ProjectMonitorMobile(
-                  project: widget.project,
-                )));
-      });
-
+    Future.delayed(const Duration(milliseconds: 100), () {
+      Navigator.push(
+          context,
+          PageTransition(
+              type: PageTransitionType.leftToRightWithFade,
+              alignment: Alignment.topLeft,
+              duration: const Duration(milliseconds: 1500),
+              child: ProjectMonitorMobile(
+                project: widget.project,
+              )));
+    });
   }
 
   @override
@@ -328,6 +391,5 @@ class ProjectMediaListMobileState extends State<ProjectMediaListMobile>
     throw UnimplementedError();
   }
 }
-
 
 void heavyTask() {}

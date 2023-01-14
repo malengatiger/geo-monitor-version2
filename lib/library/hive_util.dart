@@ -61,11 +61,11 @@ class HiveUtil {
     if (!_isInitialized) {
       p('${Emoji.peach}${Emoji.peach}${Emoji.peach} ... Creating a Hive box collection');
       var appDir = await getApplicationDocumentsDirectory();
-      File file = File('${appDir.path}/db1d.file');
+      File file = File('${appDir.path}/db1f.file');
 
       try {
         _boxCollection = await BoxCollection.open(
-          'DataBoxOneA03', // Name of your database
+          'DataBoxOneA05', // Name of your database
           {
             'organizations',
             'projects',
@@ -193,7 +193,7 @@ class HiveUtil {
     }
   }
 
-  final mm = '${Emoji.appleRed}${Emoji.appleRed}${Emoji.appleRed}';
+  final mm = '${Emoji.appleRed}${Emoji.appleRed}${Emoji.appleRed} HiveUtil: ';
   var random = Random(DateTime.now().millisecondsSinceEpoch);
   //
   Future addDataBag({required DataBag dataBag}) async {
@@ -202,17 +202,6 @@ class HiveUtil {
     await _dataBagBox?.put(key, dataBag);
 
     pp('$mm DataBag added to local cache: ${dataBag.date}');
-  }
-  Future<DataBag?> getLatestDataBag() async {
-    DataBag? bag;
-    var keys = await _dataBagBox?.getAllKeys();
-    if (keys != null) {
-      keys.sort((a, b) => b.compareTo(a));
-      if (keys.isNotEmpty) {
-        bag = await _dataBagBox?.get(keys.first);
-      }
-    }
-    return bag;
   }
 
   Future addCondition({required Condition condition}) async {
@@ -223,12 +212,13 @@ class HiveUtil {
     pp('$mm Condition added to local cache: ${condition.projectName}');
   }
 
-
   Future addFieldMonitorSchedules(
       {required List<FieldMonitorSchedule> schedules}) async {
     for (var s in schedules) {
       await addFieldMonitorSchedule(schedule: s);
     }
+    pp('$mm FieldMonitorSchedules added to local cache: 🔵 🔵  ${schedules.length} ');
+
     return 0;
   }
 
@@ -243,6 +233,8 @@ class HiveUtil {
     for (var v in photos) {
       await addPhoto(photo: v);
     }
+    pp('$mm Photos added to local cache: 🔵 🔵  ${photos.length} ');
+
     return photos.length;
   }
 
@@ -250,6 +242,8 @@ class HiveUtil {
     for (var v in positions) {
       await addProjectPosition(projectPosition: v);
     }
+    pp('$mm ProjectPositions added to local cache: 🔵 🔵  ${positions.length} ');
+
     return positions.length;
   }
 
@@ -257,6 +251,8 @@ class HiveUtil {
     for (var v in polygons) {
       await addProjectPolygon(projectPolygon: v);
     }
+    pp('$mm ProjectPolygons added to local cache: 🔵 🔵  ${polygons.length} ');
+
     return polygons.length;
   }
 
@@ -264,6 +260,8 @@ class HiveUtil {
     for (var v in projects) {
       await addProject(project: v);
     }
+    pp('$mm Projects added to local cache: 🔵 🔵  ${projects.length} ');
+
     return projects.length;
   }
 
@@ -272,6 +270,8 @@ class HiveUtil {
     for (var v in users) {
       await addUser(user: v);
     }
+    pp('$mm Users added to local cache: 🔵 🔵  ${users.length} ');
+
     return users.length;
   }
 
@@ -279,6 +279,8 @@ class HiveUtil {
     for (var v in videos) {
       await addVideo(video: v);
     }
+    pp('$mm Videos added to local cache: 🔵 🔵  ${videos.length} ');
+
     return videos.length;
   }
 
@@ -319,7 +321,9 @@ class HiveUtil {
   Future<List<FieldMonitorSchedule>> getOrganizationMonitorSchedules(
       String organizationId) async {
     var keys = await _scheduleBox?.getAllKeys();
-
+    if (keys != null) {
+      pp('$mm getOrganizationSchedules: keys found ...');
+    }
     List<FieldMonitorSchedule> schedules = [];
     if (keys != null) {
       for (var r in keys) {
@@ -329,6 +333,8 @@ class HiveUtil {
         }
       }
     }
+    pp('$mm ${schedules.length} schedules found in cache 🔵');
+
     return schedules;
   }
 
@@ -364,9 +370,22 @@ class HiveUtil {
     return mList;
   }
 
-  Future<List<Photo>> getPhotos() async {
-
-    return [];
+  Future<List<Photo>> getOrganizationPhotos(String organizationId) async {
+    var keys = await _photoBox?.getAllKeys();
+    if (keys != null) {
+      pp('$mm getOrganizationPhotos: keys found ...');
+    }
+    List<Photo> mList = [];
+    if (keys != null) {
+      for (var key in keys) {
+        if (key.contains(organizationId)) {
+          var photo = await _photoBox?.get(key);
+          mList.add(photo!);
+        }
+      }
+    }
+    pp('$mm ${mList.length} photos found in cache');
+    return mList;
   }
 
   Future<List<FieldMonitorSchedule>> getProjectMonitorSchedules(
@@ -423,6 +442,25 @@ class HiveUtil {
     return mList;
   }
 
+  Future<List<Video>> getOrganizationVideos(String organizationId) async {
+    var keys = await _videoBox?.getAllKeys();
+    if (keys != null) {
+      pp('$mm getOrganizationVideos: keys found ...');
+    }
+    List<Video> mList = [];
+    if (keys != null) {
+      for (var key in keys) {
+        if (key.contains(organizationId)) {
+          var video = await _videoBox?.get(key);
+          mList.add(video!);
+
+        }
+      }
+    }
+    pp('$mm ${mList.length} videos found in cache');
+    return mList;
+  }
+
   Future<List<Photo>> getUserPhotos(String userId) async {
     var keys = await _photoBox?.getAllKeys();
     List<Photo> mList = [];
@@ -442,6 +480,9 @@ class HiveUtil {
   Future<List<User>> getUsers({required String organizationId}) async {
 
     var keys = await _userBox?.getAllKeys();
+    if (keys != null) {
+      pp('$mm keys found in userBox: ${keys.length}');
+    }
     var mList = <User>[];
     if (keys != null) {
       for (var key in keys) {
@@ -451,9 +492,8 @@ class HiveUtil {
         }
       }
     }
-    List<User> users = [];
-
-    return users;
+    pp('$mm ${mList.length} users found in cache');
+    return mList;
   }
 
   Future<List<Video>> getVideos() async {
@@ -465,52 +505,53 @@ class HiveUtil {
 
   Future addFieldMonitorSchedule(
       {required FieldMonitorSchedule schedule}) async {
-    pp('$mm .... addFieldMonitorSchedule .....');
     var key = '${schedule.projectId}_${schedule.fieldMonitorScheduleId}';
     await _scheduleBox?.put(key, schedule);
-    pp('$mm FieldMonitorSchedule added to local cache:  🔵 🔵 ${schedule.projectName}');
+    // pp('$mm FieldMonitorSchedule added to local cache:  🔵 🔵 ${schedule.projectName}');
   }
 
   Future addPhoto({required Photo photo}) async {
-    var key = '${photo.projectId}_${photo.organizationId}_${photo.userId}';
+    var key = '${photo.organizationId}_${photo.projectId}_${photo.userId}_${photo.created}';
     await _photoBox?.put(key, photo);
     // pp('$mm Photo added to local cache:  🔵 🔵 ${photo.projectName}');
   }
 
   Future addProject({required Project project}) async {
-    var key = '${project.projectId}_${project.organizationId}';
+    var key = '${project.organizationId}_${project.projectId}';
     await _projectBox?.put(key, project);
-    pp('$mm Project added to local cache:  🔵 🔵 ${project.name} ');
+    // pp('$mm Project added to local cache:  🔵 🔵 ${project.name} ');
   }
 
   Future addProjectPosition({required ProjectPosition projectPosition}) async {
     var key = '${projectPosition.organizationId}_${projectPosition.projectId}_${projectPosition.projectPositionId}';
     await _positionBox?.put(key, projectPosition);
-    pp('$mm ProjectPosition added to local cache:  🔵 🔵 ${projectPosition.projectName} organizationId: ${projectPosition.organizationId} ');
+    // pp('$mm ProjectPosition added to local cache:  🔵 🔵 ${projectPosition.projectName} organizationId: ${projectPosition.organizationId} ');
   }
 
   Future addProjectPolygon({required ProjectPolygon projectPolygon}) async {
     var key = '${projectPolygon.organizationId}_${projectPolygon.projectId}_${projectPolygon.projectPolygonId}';
     await _polygonBox?.put(key, projectPolygon);
-    pp('$mm ProjectPolygon added to local cache:  🔵 🔵 ${projectPolygon.projectName} organizationId: ${projectPolygon.organizationId} ');
+    // pp('$mm ProjectPolygon added to local cache:  🔵 🔵 ${projectPolygon.projectName} organizationId: ${projectPolygon.organizationId} ');
   }
 
 
   Future addUser({required User user}) async {
     var key = '${user.organizationId}_${user.userId}';
     await _userBox?.put(key, user);
-    pp('$mm User added to local cache: 🔵 🔵  ${user.name} ');
   }
 
   Future addVideo({required Video video}) async {
-    var key = '${video.projectId}_${video.videoId}';
+    var key = '${video.organizationId}_${video.projectId}_${video.userId}_${video.created}';
     await _videoBox?.put(key, video);
-    pp('$mm Video added to local cache:  🔵 🔵 ${video.projectName}');
+    // pp('$mm Video added to local cache:  🔵 🔵 ${video.projectName}');
   }
 
   Future<List<Project>> getProjects(String organizationId) async {
-    pp('$mm .... getProjects ..... organizationId: $organizationId');
     var keys = await _projectBox?.getAllKeys();
+    if (keys != null) {
+      pp('$mm getProjects: keys found ...');
+    }
+
     var mList = <Project>[];
     if (keys != null) {
       for (var key in keys) {
@@ -520,7 +561,7 @@ class HiveUtil {
         }
       }
     }
-    pp('$mm .... getProjects ..... found:  🌼 ${mList.length}  🌼');
+    pp('$mm ${mList.length} projects found in cache');
     return mList;
   }
 
@@ -539,7 +580,7 @@ class HiveUtil {
   }
 
   Future addMonitorReport({required MonitorReport monitorReport}) async {
-    var key = '${monitorReport.projectId}_${monitorReport.monitorReportId}';
+    var key = '${monitorReport.organizationId}_${monitorReport.projectId}_${monitorReport.monitorReportId}';
     await _reportBox?.put(key, monitorReport);
     pp('$mm MonitorReport added to local cache: 🌿 ${monitorReport.projectId}');
   }
@@ -634,8 +675,10 @@ class HiveUtil {
   }
 
   Future<List<ProjectPosition>> getOrganizationProjectPositions({required String organizationId}) async {
-    pp('$mm .... getOrganizationProjectPositions ..... ');
     var keys = await _positionBox?.getAllKeys();
+    if (keys != null) {
+      pp('$mm getOrganizationPositions: keys found ...');
+    }
     var mList = <ProjectPosition>[];
     if (keys != null) {
       for (var key in keys) {
@@ -646,7 +689,26 @@ class HiveUtil {
       }
     }
 
-    pp('$mm .... getOrganizationProjectPositions ..... 🌺 found:  🌼 ${mList.length}  🌼');
+    pp('$mm ${mList.length} ProjectPositions found in cache');
+    return mList;
+  }
+
+  Future<List<ProjectPolygon>> getOrganizationProjectPolygons({required String organizationId}) async {
+    var keys = await _polygonBox?.getAllKeys();
+    if (keys != null) {
+      pp('$mm getOrganizationPolygons: keys found ...');
+    }
+    var mList = <ProjectPolygon>[];
+    if (keys != null) {
+      for (var key in keys) {
+        if (key.contains(organizationId)) {
+          var pos = await _polygonBox?.get(key);
+          mList.add(pos!);
+        }
+      }
+    }
+
+    pp('$mm ${mList.length} ProjectPolygons found in cache');
     return mList;
   }
 
@@ -662,7 +724,7 @@ class HiveUtil {
         }
       }
     }
-    pp('$mm .... getProjectPositions ..... 🌺 found:  🌼 ${mList.length}  🌼');
+    pp('$mm ProjectPositions found: ${mList.length} ');
     return mList;
   }
 
@@ -680,7 +742,6 @@ class HiveUtil {
     pp('$mm .... getProjectPosition ..... 🌺 found:  🌼 ${position == null ? 'Not Found' : position.projectPositionId}  🌼');
     return position;
   }
-
 
   Future<List<Video>> getUserVideos(String userId) async {
     var keys = await _videoBox?.getAllKeys();

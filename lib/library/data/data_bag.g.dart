@@ -24,13 +24,14 @@ class DataBagAdapter extends TypeAdapter<DataBag> {
       projects: (fields[4] as List?)?.cast<Project>(),
       date: fields[5] as String?,
       users: (fields[6] as List?)?.cast<User>(),
+      projectPolygons: (fields[7] as List?)?.cast<ProjectPolygon>(),
     );
   }
 
   @override
   void write(BinaryWriter writer, DataBag obj) {
     writer
-      ..writeByte(7)
+      ..writeByte(8)
       ..writeByte(0)
       ..write(obj.photos)
       ..writeByte(1)
@@ -44,7 +45,9 @@ class DataBagAdapter extends TypeAdapter<DataBag> {
       ..writeByte(5)
       ..write(obj.date)
       ..writeByte(6)
-      ..write(obj.users);
+      ..write(obj.users)
+      ..writeByte(7)
+      ..write(obj.projectPolygons);
   }
 
   @override

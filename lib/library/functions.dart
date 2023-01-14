@@ -13,7 +13,7 @@ import 'data/project_position.dart';
 import 'location/loc_bloc.dart';
 
 List<String> logs = [];
-bool isBusy = false;
+bool busy = false;
 List<Color> _colors = [];
 Random _rand = Random(DateTime.now().millisecondsSinceEpoch);
 Color getRandomColor() {
