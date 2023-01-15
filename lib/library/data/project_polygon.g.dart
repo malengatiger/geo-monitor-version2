@@ -21,7 +21,7 @@ class ProjectPolygonAdapter extends TypeAdapter<ProjectPolygon> {
       projectPolygonId: fields[3] as String?,
       created: fields[2] as String?,
       positions: (fields[5] as List).cast<Position>(),
-      nearestCities: (fields[6] as List?)?.cast<City>(),
+      nearestCities: (fields[6] as List).cast<City>(),
       organizationId: fields[4] as String?,
       projectId: fields[1] as String?,
     );

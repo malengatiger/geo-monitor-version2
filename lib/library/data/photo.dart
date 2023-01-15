@@ -5,7 +5,7 @@ import '../functions.dart';
 part 'photo.g.dart';
 
 @HiveType(typeId: 4)
-class Photo {
+class Photo extends HiveObject {
   @HiveField(0)
   String? url;
   @HiveField(1)

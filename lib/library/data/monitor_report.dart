@@ -1,5 +1,3 @@
-
-
 import 'package:geo_monitor/library/data/user.dart';
 import 'package:hive/hive.dart';
 
@@ -8,13 +6,10 @@ import '../data/photo.dart';
 import '../data/video.dart';
 import '../data/user.dart' as mon;
 
-
-
-
 part 'monitor_report.g.dart';
 
 @HiveType(typeId: 9)
-class MonitorReport {
+class MonitorReport extends HiveObject {
   @HiveField(0)
   String? projectId;
   @HiveField(1)
@@ -31,8 +26,9 @@ class MonitorReport {
   List<Video> videos = [];
   @HiveField(7)
   mon.User? user;
-  String? organizationId;
+
   @HiveField(8)
+  String? organizationId;
 
   MonitorReport(
       {required this.projectId,
@@ -42,7 +38,8 @@ class MonitorReport {
       required this.user,
       required this.photos,
       required this.videos,
-      required this.rating, required this.organizationId});
+      required this.rating,
+      required this.organizationId});
 
   MonitorReport.fromJson(Map data) {
     monitorReportId = data['monitorReportId'];

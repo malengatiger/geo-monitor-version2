@@ -12,7 +12,7 @@ import '../data/monitor_report.dart';
 part 'project.g.dart';
 
 @HiveType(typeId: 5)
-class Project {
+class Project extends HiveObject {
   @HiveField(0)
   String? name;
   @HiveField(1)

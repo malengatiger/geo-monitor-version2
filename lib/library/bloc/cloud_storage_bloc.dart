@@ -3,6 +3,7 @@ import 'dart:io';
 import 'dart:math';
 
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:geo_monitor/library/hive_util.dart';
 import 'package:http/http.dart' as http;
 import 'package:image_size_getter/file_input.dart';
 import 'package:image_size_getter/image_size_getter.dart';
@@ -323,6 +324,7 @@ class CloudStorageBloc {
     } catch (e) {
       pp('$mm Photo problem: $e');
       _errorStreamController.sink.add("Photo upload failed: $e");
+      await hiveUtil.addFailedPhoto(photo: photo);
     }
   }
 
@@ -366,6 +368,7 @@ class CloudStorageBloc {
     } catch (e) {
       pp('$mm Video upload problem: $e');
       _errorStreamController.sink.add("Video upload failed: $e");
+      await hiveUtil.addFailedVideo(video: video);
     }
   }
 

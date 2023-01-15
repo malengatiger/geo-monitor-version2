@@ -4,7 +4,7 @@ import '../data/user.dart';
 part 'geofence_event.g.dart';
 
 @HiveType(typeId: 3)
-class GeofenceEvent {
+class GeofenceEvent extends HiveObject {
   @HiveField(0)
   String? status;
 

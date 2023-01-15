@@ -4,7 +4,7 @@ import 'package:meta/meta.dart';
 part 'organization.g.dart';
 
 @HiveType(typeId: 8)
-class Organization {
+class Organization extends HiveObject {
   @HiveField(0)
   String? name;
   @HiveField(1)

@@ -111,7 +111,7 @@ class ProjectBloc {
 
   Future<List<ProjectPolygon>> getProjectPolygons(
       {required String projectId, required bool forceRefresh}) async {
-    var projectPolygons = await hiveUtil.getProjectPolygons(projectId);
+    var projectPolygons = await hiveUtil.getProjectPolygons(projectId: projectId);
     pp('$mm getProjectPolygons found ${projectPolygons.length} positions in local cache ');
 
     if (projectPolygons.isEmpty || forceRefresh) {
@@ -200,7 +200,7 @@ class ProjectBloc {
 
   Future<DataBag> _loadBag(String projectId) async {
     var positions = await hiveUtil.getProjectPositions(projectId);
-    var polygons = await hiveUtil.getProjectPolygons(projectId);
+    var polygons = await hiveUtil.getProjectPolygons(projectId: projectId);
     var photos = await hiveUtil.getProjectPhotos(projectId);
     var videos = await hiveUtil.getProjectVideos(projectId);
     var schedules = await hiveUtil.getProjectMonitorSchedules(projectId);

@@ -3,7 +3,7 @@ import '../data/position.dart';
 part 'video.g.dart';
 
 @HiveType(typeId: 10)
-class Video {
+class Video extends HiveObject {
   @HiveField(0)
   String? url;
   @HiveField(1)

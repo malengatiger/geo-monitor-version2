@@ -3,7 +3,7 @@ import 'package:hive/hive.dart';
 part 'country.g.dart';
 
 @HiveType(typeId: 1)
-class Country {
+class Country extends HiveObject {
   @HiveField(0)
   String? name;
 

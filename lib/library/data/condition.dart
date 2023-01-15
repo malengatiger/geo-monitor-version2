@@ -4,7 +4,7 @@ import '../data/position.dart';
 part 'condition.g.dart';
 
 @HiveType(typeId: 12)
-class Condition {
+class Condition extends HiveObject {
   @HiveField(0)
   String? url;
   @HiveField(1)

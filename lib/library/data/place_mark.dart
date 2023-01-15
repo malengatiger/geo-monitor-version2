@@ -4,7 +4,7 @@ import '../data/position.dart';
 part 'place_mark.g.dart';
 
 @HiveType(typeId: 17)
-class PlaceMark {
+class PlaceMark extends HiveObject  {
   @HiveField(0)
   String? administrativeArea;
   @HiveField(1)

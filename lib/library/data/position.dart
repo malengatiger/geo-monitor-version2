@@ -4,7 +4,7 @@ import 'package:hive/hive.dart';
 part 'position.g.dart';
 
 @HiveType(typeId: 16)
-class Position {
+class Position extends HiveObject {
 
   @HiveField(0)
   String? type = 'Point';

@@ -8,7 +8,7 @@ import 'place_mark.dart';
 part 'project_position.g.dart';
 
 @HiveType(typeId: 6)
-class ProjectPosition {
+class ProjectPosition extends HiveObject {
   @HiveField(0)
   String? projectName;
   @HiveField(1)

@@ -9,8 +9,8 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:go_router/go_router.dart';
-
+import 'package:hive/hive.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import 'firebase_options.dart';
 import 'library/api/sharedprefs.dart';
 import 'library/bloc/theme_bloc.dart';
@@ -43,8 +43,9 @@ Future<void> _setup() async {
     p('${Emoji.heartGreen}${Emoji.heartGreen} Firebase App has been initialized: ${firebaseApp.name}');
 
     // Prefs.deleteUser();
-
+    await Hive.initFlutter();
     hiveUtil.initialize();
+    p('${Emoji.heartGreen}${Emoji.heartGreen} Hive initialized');
   } catch (e) {
     p('$redDot problem with Firebase? or Hive? : $e');
   }

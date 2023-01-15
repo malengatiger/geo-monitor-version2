@@ -24,14 +24,15 @@ class MonitorReportAdapter extends TypeAdapter<MonitorReport> {
       user: fields[7] as User?,
       photos: (fields[5] as List).cast<Photo>(),
       videos: (fields[6] as List).cast<Video>(),
-      rating: fields[3] as Rating?, organizationId: fields[8] as String?,
+      rating: fields[3] as Rating?,
+      organizationId: fields[8] as String?,
     );
   }
 
   @override
   void write(BinaryWriter writer, MonitorReport obj) {
     writer
-      ..writeByte(8)
+      ..writeByte(9)
       ..writeByte(0)
       ..write(obj.projectId)
       ..writeByte(1)
@@ -47,7 +48,9 @@ class MonitorReportAdapter extends TypeAdapter<MonitorReport> {
       ..writeByte(6)
       ..write(obj.videos)
       ..writeByte(7)
-      ..write(obj.user);
+      ..write(obj.user)
+      ..writeByte(8)
+      ..write(obj.organizationId);
   }
 
   @override

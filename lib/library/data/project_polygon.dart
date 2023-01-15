@@ -8,22 +8,28 @@ import 'place_mark.dart';
 part 'project_polygon.g.dart';
 
 @HiveType(typeId: 19)
-class ProjectPolygon {
+
+class ProjectPolygon extends HiveObject {
   @HiveField(0)
   String? projectName;
+
   @HiveField(1)
   String? projectId;
+
   @HiveField(2)
   String? created;
+
   @HiveField(3)
   String? projectPolygonId;
+
   @HiveField(4)
   String? organizationId;
+
   @HiveField(5)
   List<Position> positions = <Position>[];
 
   @HiveField(6)
-  List<City>? nearestCities;
+  List<City> nearestCities = <City>[];
 
   ProjectPolygon(
       {required this.projectName,
@@ -62,7 +68,7 @@ class ProjectPolygon {
 
   Map<String, dynamic> toJson() {
     var cityList = [];
-    for (var c in nearestCities!) {
+    for (var c in nearestCities) {
       cityList.add(c.toJson());
     }
     var positionList = [];

@@ -3,7 +3,7 @@ import 'package:hive/hive.dart';
 part 'field_monitor_schedule.g.dart';
 
 @HiveType(typeId: 2)
-class FieldMonitorSchedule {
+class FieldMonitorSchedule extends HiveObject {
   @HiveField(0)
   String? fieldMonitorScheduleId;
   @HiveField(1)

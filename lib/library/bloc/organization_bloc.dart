@@ -96,9 +96,7 @@ class OrganizationBloc {
     if (forceRefresh) {
       bag = await DataAPI.getOrganizationData(organizationId);
     }
-    if (bag.users!.isEmpty) {
-      bag = await DataAPI.getOrganizationData(organizationId);
-    }
+
     _putContentsOfBagIntoStreams(bag);
     return bag;
   }

@@ -8,7 +8,6 @@ import 'package:path_provider/path_provider.dart';
 import 'data/city.dart';
 import 'data/community.dart';
 import 'data/condition.dart';
-import 'data/data_bag.dart';
 import 'data/field_monitor_schedule.dart';
 import 'data/geofence_event.dart';
 import 'data/monitor_report.dart';
@@ -52,8 +51,9 @@ class HiveUtil {
   CollectionBox<User>? _userBox;
   CollectionBox<MonitorReport>? _reportBox;
   CollectionBox<GeofenceEvent>? _geofenceEventBox;
-  CollectionBox<DataBag>? _dataBagBox;
-  CollectionBox<ProjectPolygon>? _polygonBox;
+  CollectionBox<ProjectPolygon>? _projectPolygonBox;
+  CollectionBox<Photo>? _failedPhotoBox;
+  CollectionBox<Video>? _failedVideoBox;
 
   bool _isInitialized = false;
 
@@ -61,11 +61,11 @@ class HiveUtil {
     if (!_isInitialized) {
       p('${Emoji.peach}${Emoji.peach}${Emoji.peach} ... Creating a Hive box collection');
       var appDir = await getApplicationDocumentsDirectory();
-      File file = File('${appDir.path}/db1f.file');
+      File file = File('${appDir.path}/db1g.file');
 
       try {
         _boxCollection = await BoxCollection.open(
-          'DataBoxOneA05', // Name of your database
+          'DataBoxOneA06', // Name of your database
           {
             'organizations',
             'projects',
@@ -80,8 +80,9 @@ class HiveUtil {
             'users',
             'reports',
             'geofenceEvents',
-            // 'dataBags'
-            'polygons'
+            'failedPhotos',
+            'failedVideos',
+            'projectPolygons',
           },
           // Names of your boxes
           path: file
@@ -156,15 +157,9 @@ class HiveUtil {
         p('${Emoji.peach}${Emoji.peach}${Emoji.peach} Hive ProjectPolygonAdapter registered');
       }
 
-      // if (!Hive.isAdapterRegistered(18)) {
-      //   Hive.registerAdapter(DataBagAdapter());
-      //   p('${Emoji.peach}${Emoji.peach}${Emoji.peach} Hive DataBagAdapter registered');
-      // }
-
       p('${Emoji.peach}${Emoji.peach}${Emoji.peach}${Emoji.peach} Hive box collection created and types registered');
 
       try {
-        // Open your boxes. Optional: Give it a type.
         _orgBox = await _boxCollection!.openBox<Organization>('organizations');
         _projectBox = await _boxCollection!.openBox<Project>('projects');
         _positionBox =
@@ -181,8 +176,10 @@ class HiveUtil {
         _geofenceEventBox = await _boxCollection!.openBox<GeofenceEvent>('geofenceEvents');
 
         _userBox = await _boxCollection!.openBox<User>('users');
-        _polygonBox = await _boxCollection!.openBox<ProjectPolygon>('polygons');
-        // _dataBagBox = await _boxCollection!.openBox<DataBag>('dataBags');
+        _projectPolygonBox = await _boxCollection!.openBox<ProjectPolygon>('projectPolygons');
+
+        _failedPhotoBox = await _boxCollection!.openBox<Photo>('failedPhotos');
+        _failedVideoBox = await _boxCollection!.openBox<Video>('failedVideos');
         //
         _isInitialized = true;
         p('${Emoji.peach}${Emoji.peach}${Emoji.peach}${Emoji.peach}'
@@ -196,13 +193,13 @@ class HiveUtil {
   final mm = '${Emoji.appleRed}${Emoji.appleRed}${Emoji.appleRed} HiveUtil: ';
   var random = Random(DateTime.now().millisecondsSinceEpoch);
   //
-  Future addDataBag({required DataBag dataBag}) async {
-    pp('$mm .... addDataBag .....');
-    var key = '${dataBag.date}';
-    await _dataBagBox?.put(key, dataBag);
-
-    pp('$mm DataBag added to local cache: ${dataBag.date}');
-  }
+  // Future addDataBag({required DataBag dataBag}) async {
+  //   pp('$mm .... addDataBag .....');
+  //   var key = '${dataBag.date}';
+  //   await _dataBagBox?.put(key, dataBag);
+  //
+  //   pp('$mm DataBag added to local cache: ${dataBag.date}');
+  // }
 
   Future addCondition({required Condition condition}) async {
     pp('$mm .... addCondition .....');
@@ -248,8 +245,8 @@ class HiveUtil {
   }
 
   Future addProjectPolygons({required List<ProjectPolygon> polygons}) async {
-    for (var v in polygons) {
-      await addProjectPolygon(projectPolygon: v);
+    for (var polygon in polygons) {
+      await addProjectPolygon(projectPolygon: polygon);
     }
     pp('$mm ProjectPolygons added to local cache: 🔵 🔵  ${polygons.length} ');
 
@@ -320,18 +317,11 @@ class HiveUtil {
 
   Future<List<FieldMonitorSchedule>> getOrganizationMonitorSchedules(
       String organizationId) async {
-    var keys = await _scheduleBox?.getAllKeys();
-    if (keys != null) {
-      pp('$mm getOrganizationSchedules: keys found ...');
-    }
     List<FieldMonitorSchedule> schedules = [];
-    if (keys != null) {
-      for (var r in keys) {
-        var x = await _scheduleBox?.get(r);
-        if (x?.organizationId == organizationId) {
-          schedules.add(x!);
-        }
-      }
+
+    var map = await _scheduleBox?.getAllValues();
+    if (map != null) {
+      schedules = map.values.toList();
     }
     pp('$mm ${schedules.length} schedules found in cache 🔵');
 
@@ -371,56 +361,46 @@ class HiveUtil {
   }
 
   Future<List<Photo>> getOrganizationPhotos(String organizationId) async {
-    var keys = await _photoBox?.getAllKeys();
-    if (keys != null) {
-      pp('$mm getOrganizationPhotos: keys found ...');
-    }
     List<Photo> mList = [];
-    if (keys != null) {
-      for (var key in keys) {
-        if (key.contains(organizationId)) {
-          var photo = await _photoBox?.get(key);
-          mList.add(photo!);
-        }
-      }
+    var photoMap = await _photoBox?.getAllValues();
+    if (photoMap != null) {
+      mList = photoMap.values.toList();
     }
+
     pp('$mm ${mList.length} photos found in cache');
     return mList;
   }
 
   Future<List<FieldMonitorSchedule>> getProjectMonitorSchedules(
       String projectId) async {
-
-    return [];
+    var keys = await _scheduleBox?.getAllValues();
+    List<FieldMonitorSchedule> mList = [];
+    if (keys != null) {
+      keys.values.where((item) => item.projectId == projectId)
+          .forEach((item) => mList.add(item));
+    }
+    pp('$mm Project schedules found: ${mList.length}');
+    return mList;
   }
 
   Future<List<Photo>> getProjectPhotos(String projectId) async {
-    var keys = await _photoBox?.getAllKeys();
+    var keys = await _photoBox?.getAllValues();
     List<Photo> mList = [];
     if (keys != null) {
-      for (var key in keys) {
-        if (key.contains(projectId)) {
-          var photo = await _photoBox?.get(key);
-            mList.add(photo!);
-
-        }
-      }
+      keys.values.where((item) => item.projectId == projectId)
+          .forEach((item) => mList.add(item));
     }
     pp('$mm Project photos found: ${mList.length}');
     return mList;
   }
 
-  Future<List<ProjectPolygon>> getProjectPolygons(String projectId) async {
-    var keys = await _polygonBox?.getAllKeys();
+  Future<List<ProjectPolygon>> getProjectPolygons({required String projectId}) async {
+    var keys = await _projectPolygonBox?.getAllValues();
     List<ProjectPolygon> mList = [];
-    if (keys != null) {
-      for (var key in keys) {
-        if (key.contains(projectId)) {
-          var polygon = await _polygonBox?.get(key);
-          mList.add(polygon!);
 
-        }
-      }
+    if (keys != null) {
+      keys.values.where((item) => item.projectId == projectId)
+          .forEach((item) => mList.add(item));
     }
     pp('$mm ProjectPolygons found: ${mList.length}');
     return mList;
@@ -443,19 +423,10 @@ class HiveUtil {
   }
 
   Future<List<Video>> getOrganizationVideos(String organizationId) async {
-    var keys = await _videoBox?.getAllKeys();
-    if (keys != null) {
-      pp('$mm getOrganizationVideos: keys found ...');
-    }
     List<Video> mList = [];
-    if (keys != null) {
-      for (var key in keys) {
-        if (key.contains(organizationId)) {
-          var video = await _videoBox?.get(key);
-          mList.add(video!);
-
-        }
-      }
+    var videoMap = await _videoBox?.getAllValues();
+    if (videoMap != null) {
+      mList = videoMap.values.toList();
     }
     pp('$mm ${mList.length} videos found in cache');
     return mList;
@@ -479,18 +450,10 @@ class HiveUtil {
 
   Future<List<User>> getUsers({required String organizationId}) async {
 
-    var keys = await _userBox?.getAllKeys();
-    if (keys != null) {
-      pp('$mm keys found in userBox: ${keys.length}');
-    }
+    var keys = await _userBox?.getAllValues();
     var mList = <User>[];
     if (keys != null) {
-      for (var key in keys) {
-        if (key.contains(organizationId)) {
-          var u = await _userBox?.get(key);
-          mList.add(u!);
-        }
-      }
+      mList = keys.values.toList();
     }
     pp('$mm ${mList.length} users found in cache');
     return mList;
@@ -515,6 +478,16 @@ class HiveUtil {
     await _photoBox?.put(key, photo);
     // pp('$mm Photo added to local cache:  🔵 🔵 ${photo.projectName}');
   }
+  Future addFailedPhoto({required Photo photo}) async {
+    var key = '${photo.organizationId}_${photo.projectId}_${photo.userId}_${photo.created}';
+    await _failedPhotoBox?.put(key, photo);
+    pp('$mm Failed Photo added to local cache:  🔵 🔵 ${photo.projectName}');
+  }
+  Future removeFailedPhoto({required Photo photo}) async {
+    var key = '${photo.organizationId}_${photo.projectId}_${photo.userId}_${photo.created}';
+    await _failedPhotoBox?.delete(key);
+    pp('$mm Failed Photo deleted from local cache:  🔵 🔵 ${photo.projectName}');
+  }
 
   Future addProject({required Project project}) async {
     var key = '${project.organizationId}_${project.projectId}';
@@ -528,13 +501,6 @@ class HiveUtil {
     // pp('$mm ProjectPosition added to local cache:  🔵 🔵 ${projectPosition.projectName} organizationId: ${projectPosition.organizationId} ');
   }
 
-  Future addProjectPolygon({required ProjectPolygon projectPolygon}) async {
-    var key = '${projectPolygon.organizationId}_${projectPolygon.projectId}_${projectPolygon.projectPolygonId}';
-    await _polygonBox?.put(key, projectPolygon);
-    // pp('$mm ProjectPolygon added to local cache:  🔵 🔵 ${projectPolygon.projectName} organizationId: ${projectPolygon.organizationId} ');
-  }
-
-
   Future addUser({required User user}) async {
     var key = '${user.organizationId}_${user.userId}';
     await _userBox?.put(key, user);
@@ -546,11 +512,18 @@ class HiveUtil {
     // pp('$mm Video added to local cache:  🔵 🔵 ${video.projectName}');
   }
 
-  Future<List<Project>> getProjects(String organizationId) async {
+  Future addFailedVideo({required Video video}) async {
+    var key = '${video.organizationId}_${video.projectId}_${video.userId}_${video.created}';
+    await _failedVideoBox?.put(key, video);
+    pp('$mm failed Video added to local cache:  🔵 🔵 ${video.projectName}');
+  }
+
+  Future removeFailedVideo({required Video video}) async {
+    var key = '${video.organizationId}_${video.projectId}_${video.userId}_${video.created}';
+    await _failedVideoBox?.delete(key);
+    pp('$mm failed Video deleted from local cache:  🔵 🔵 ${video.projectName}');
+  }  Future<List<Project>> getProjects(String organizationId) async {
     var keys = await _projectBox?.getAllKeys();
-    if (keys != null) {
-      pp('$mm getProjects: keys found ...');
-    }
 
     var mList = <Project>[];
     if (keys != null) {
@@ -562,6 +535,40 @@ class HiveUtil {
       }
     }
     pp('$mm ${mList.length} projects found in cache');
+    return mList;
+  }
+
+  Future<List<Photo>> getFailedPhotos() async {
+    var keys = await _failedPhotoBox?.getAllKeys();
+    if (keys != null) {
+      pp('$mm getFailedPhotos: keys found ... ${keys.length}');
+    }
+
+    var mList = <Photo>[];
+    if (keys != null) {
+      for (var key in keys) {
+          var p = await _failedPhotoBox?.get(key);
+          mList.add(p!);
+      }
+    }
+    pp('$mm ${mList.length} failed Photos found in cache');
+    return mList;
+  }
+
+  Future<List<Video>> getFailedVideos() async {
+    var keys = await _failedVideoBox?.getAllKeys();
+    if (keys != null) {
+      pp('$mm getFailedVideos: keys found ... ${keys.length}');
+    }
+
+    var mList = <Video>[];
+    if (keys != null) {
+      for (var key in keys) {
+        var p = await _failedVideoBox?.get(key);
+        mList.add(p!);
+      }
+    }
+    pp('$mm ${mList.length} failed Videos found in cache');
     return mList;
   }
 
@@ -675,40 +682,34 @@ class HiveUtil {
   }
 
   Future<List<ProjectPosition>> getOrganizationProjectPositions({required String organizationId}) async {
-    var keys = await _positionBox?.getAllKeys();
-    if (keys != null) {
-      pp('$mm getOrganizationPositions: keys found ...');
-    }
+
     var mList = <ProjectPosition>[];
-    if (keys != null) {
-      for (var key in keys) {
-        if (key.contains(organizationId)) {
-          var pos = await _positionBox?.get(key);
-          mList.add(pos!);
-        }
-      }
+    var map = await _positionBox?.getAllValues();
+    if (map != null) {
+      mList = map.values.toList();
     }
 
     pp('$mm ${mList.length} ProjectPositions found in cache');
     return mList;
   }
 
+  Future addProjectPolygon({required ProjectPolygon projectPolygon}) async {
+
+    var key = '${projectPolygon.organizationId}_${projectPolygon.projectId}_${projectPolygon.projectPolygonId}';
+    await _projectPolygonBox?.put(key, projectPolygon);
+    pp('$mm ProjectPolygon added to local cache:  🔵 🔵 ${projectPolygon.projectName} '
+        'key: $key ');
+  }
   Future<List<ProjectPolygon>> getOrganizationProjectPolygons({required String organizationId}) async {
-    var keys = await _polygonBox?.getAllKeys();
-    if (keys != null) {
-      pp('$mm getOrganizationPolygons: keys found ...');
-    }
     var mList = <ProjectPolygon>[];
-    if (keys != null) {
-      for (var key in keys) {
-        if (key.contains(organizationId)) {
-          var pos = await _polygonBox?.get(key);
-          mList.add(pos!);
-        }
-      }
+    var polygonMap = await _projectPolygonBox?.getAllValues();
+    if (polygonMap != null) {
+      mList = polygonMap.values.toList();
+    } else {
+      pp('$mm _projectPolygonBox?.getAllValues() returns null! 🔴🔴🔴🔴 wtf??');
     }
 
-    pp('$mm ${mList.length} ProjectPolygons found in cache');
+    pp('$mm ${mList.length} ProjectPolygons (all) found in cache');
     return mList;
   }
 

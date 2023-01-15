@@ -4,7 +4,7 @@ import 'package:hive/hive.dart';
 part 'org_message.g.dart';
 
 @HiveType(typeId: 14)
-class OrgMessage {
+class OrgMessage extends HiveObject {
   @HiveField(0)
   String? name;
   @HiveField(1)

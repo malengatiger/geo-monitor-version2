@@ -8,7 +8,7 @@ import '../data/video.dart';
 part 'community.g.dart';
 
 @HiveType(typeId: 13)
-class Community {
+class Community extends HiveObject {
   @HiveField(0)
   String? name;
   @HiveField(1)
