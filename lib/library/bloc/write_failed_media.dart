@@ -15,10 +15,10 @@ class WriteFailedMedia {
   bool isStarted = false;
 
   void startTimer() {
-    _timer = Timer.periodic(const Duration(minutes: 5), (timer) {
+    _timer = Timer.periodic(const Duration(minutes: 3), (timer) async {
       pp('$mm Timer tick: ${timer.tick} at ${DateTime.now().toIso8601String()}');
-      writeFailedPhotos();
-      writeFailedVideos();
+      await writeFailedPhotos();
+      await writeFailedVideos();
     });
     isStarted = true;
   }

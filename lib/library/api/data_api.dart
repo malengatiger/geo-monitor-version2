@@ -900,10 +900,10 @@ class DataAPI {
 
   static Future addPhoto(Photo photo) async {
     String? mURL = await getUrl();
-    pp('$mm check isLandscape: ${photo.toJson()}');
     try {
       var result = await _callWebAPIPost('${mURL!}addPhoto', photo.toJson());
-      await hiveUtil.addPhoto(photo: photo);
+      var px = Photo.fromJson(result);
+      await hiveUtil.addPhoto(photo: px);
       pp('$mm addPhoto has added photo to DB and to Hive cache');
       return result;
     } catch (e) {
@@ -912,13 +912,15 @@ class DataAPI {
     }
   }
 
+
   static Future addVideo(Video video) async {
     String? mURL = await getUrl();
 
     try {
       var result = await _callWebAPIPost('${mURL!}addVideo', video.toJson());
-      pp(result);
-      await hiveUtil.addVideo(video: video);
+      pp('$mm addVideo has added photo to DB and to Hive cache');
+      var vx = Video.fromJson(result);
+      await hiveUtil.addVideo(video: vx);
       return result;
     } catch (e) {
       pp(e);

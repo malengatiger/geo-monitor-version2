@@ -14,6 +14,7 @@ import 'package:hive_flutter/hive_flutter.dart';
 import 'firebase_options.dart';
 import 'library/api/sharedprefs.dart';
 import 'library/bloc/theme_bloc.dart';
+import 'library/bloc/write_failed_media.dart';
 import 'library/emojis.dart';
 import 'library/functions.dart';
 import 'library/generic_functions.dart';
@@ -46,6 +47,10 @@ Future<void> _setup() async {
     await Hive.initFlutter();
     hiveUtil.initialize();
     p('${Emoji.heartGreen}${Emoji.heartGreen} Hive initialized');
+
+    writeFailedMedia.startTimer();
+    p('${Emoji.heartGreen}${Emoji.heartGreen} writeFailedMedia timer started ...');
+
   } catch (e) {
     p('$redDot problem with Firebase? or Hive? : $e');
   }
