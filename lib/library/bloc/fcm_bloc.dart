@@ -98,7 +98,9 @@ class FCMBloc {
       FirebaseMessaging.onMessage.listen((RemoteMessage message) {
         RemoteNotification? notification = message.notification;
         AndroidNotification? android = message.notification?.android;
-        pp("$mm onMessage: 🍎 🍎 data: ${message.data} ... 🍎 🍎 ");
+        pp("\n\n$mm onMessage: 🍎 🍎 data: ${message.data} ... 🍎 🍎 ");
+        //todo - save photo or video in cache if not yours ...
+        processFCMMessage(message);
       });
 
       FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
@@ -136,17 +138,6 @@ class FCMBloc {
     p('User granted permission: ${settings.authorizationStatus}');
   }
 
-  // Future listenForMessages() async {
-  //   fb.FirebaseMessaging.onMessage.listen((fb.RemoteMessage message) {
-  //     print('Got a message whilst in the foreground!');
-  //     print('Message data: ${message.data}');
-  //
-  //     if (message.notification != null) {
-  //       print('Message also contained a notification: ${message.notification}');
-  //     }
-  //   });
-  // }
-
   Future subscribeToTopics() async {
     var user = await Prefs.getUser();
     if (user != null) {
@@ -165,7 +156,9 @@ class FCMBloc {
   }
 
   Future processFCMMessage(fb.RemoteMessage message) async {
+    pp('$mm processing newly arrived FCM message from: ${message.senderId}');
     Map data = message.data;
+    User? user = await Prefs.getUser();
 
     if (data['user'] != null) {
       pp("$mm processFCMMessage  🔵 🔵 🔵 ........................... cache USER  🍎  🍎 ");
@@ -185,15 +178,23 @@ class FCMBloc {
       pp("$mm processFCMMessage  🔵 🔵 🔵 ........................... cache PHOTO  🍎  🍎");
       var m = jsonDecode(data['photo']);
       var photo = Photo.fromJson(m);
-      await hiveUtil.addPhoto(photo: photo);
-      _photoController.sink.add(photo);
+      if (photo.userId == user!.userId) {
+        pp('$mm This message is about my own photo - not caching');
+      } else {
+        await hiveUtil.addPhoto(photo: photo);
+        _photoController.sink.add(photo);
+      }
     }
     if (data['video'] != null) {
       pp("$mm processFCMMessage  🔵 🔵 🔵 ........................... cache VIDEO  🍎  🍎");
       var m = jsonDecode(data['video']);
       var video = Video.fromJson(m);
-      await hiveUtil.addVideo(video: video);
-      _videoController.sink.add(video);
+      if (video.userId == user!.userId) {
+        pp('$mm This message is about my own video - not caching');
+      } else {
+        await hiveUtil.addVideo(video: video);
+        _videoController.sink.add(video);
+      }
     }
     if (data['condition'] != null) {
       pp("$mm processFCMMessage  🔵 🔵 🔵 ........................... cache CONDITION  🍎  🍎");
@@ -228,8 +229,6 @@ class FCMBloc {
   pp('$mm onDidReceiveNotificationResponse ... details: ${details.payload}');
 }
 
-
-
   void onDidReceiveLocalNotification(int id, String? title, String? body, String? payload) {
     pp(
         '$mm onDidReceiveLocalNotification:  🍎 maybe display a dialog with the notification details - maybe put this on a stream ...');
@@ -237,6 +236,8 @@ class FCMBloc {
     pp('$mm payload: $payload  🍎');
   }
 }
+
+
 
 Future<dynamic> myBackgroundMessageHandler(Map<String, dynamic> message) async {
   pp("$mm  🦠 🦠 🦠 🦠 🦠 myBackgroundMessageHandler   🦠 🦠 🦠 🦠 🦠 ........................... $message");

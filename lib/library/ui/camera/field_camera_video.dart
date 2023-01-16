@@ -241,13 +241,6 @@ class FieldVideoCameraState extends State<FieldVideoCamera>
   /// Display the control bar with buttons to take pictures and record videos.
   String timestamp() => DateTime.now().millisecondsSinceEpoch.toString();
 
-  void showInSnackBar(String message) {
-    // ignore: deprecated_member_use
-    //_scaffoldKey.currentState?.showSnackBar(SnackBar(content: Text(message)));
-    ScaffoldMessenger.of(context)
-        .showSnackBar(SnackBar(content: Text(message)));
-  }
-
   final zoomLevels = [1.0, 2.0, 3.0, 4.0, 5.0];
   int currentZoomIndex = 0;
 
@@ -327,8 +320,13 @@ class FieldVideoCameraState extends State<FieldVideoCamera>
     _cameraController!.addListener(() {
       if (mounted) setState(() {});
       if (_cameraController!.value.hasError) {
-        showInSnackBar(
-            'Camera error ${_cameraController!.value.errorDescription}');
+
+        showToast(
+            message: 'Camera error ${_cameraController!.value.errorDescription}',
+            textStyle: const TextStyle(color: Colors.white),
+            duration: const Duration(seconds: 10),
+            backgroundColor: Colors.pink,
+            context: context);
       }
     });
 
@@ -458,13 +456,13 @@ class FieldVideoCameraState extends State<FieldVideoCamera>
     }
   }
   void _doTheMessage() {
+    const msg = 'You are no longer in range of one of the project location(s). Videos of the project cannot be made from here';
     if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
           duration: Duration(seconds: 10),
-          content: Text(
-              'You are no longer in range of one of the project location(s). Photos of the project cannot be taken from here')));
+          content: Text( msg)));
 
-      showToast(message: 'Cannot do this, Boss! ${Emoji.peach}',
+      showToast(message: msg,
           textStyle: const TextStyle(color: Colors.white),
           duration: const Duration(seconds: 10),
           backgroundColor: Colors.pink,
@@ -494,21 +492,31 @@ class FieldVideoCameraState extends State<FieldVideoCamera>
       if (file != null) {
         var length = await file.length();
         pp('$mm onStopButtonPressed 🥏 🥏 🥏 maybe we should start uploading the video file ...');
-        showInSnackBar(
-            'Video has been recorded; size: ${(length / 1024 / 1024).toStringAsFixed(1)} MB ');
+
+        showToast(
+            message: 'Video has been recorded; size: ${(length / 1024 / 1024).toStringAsFixed(1)} MB ',
+            textStyle: const TextStyle(color: Colors.white),
+            duration: const Duration(seconds: 2),
+            toastGravity: ToastGravity.TOP,
+            backgroundColor: Colors.teal.shade600,
+            context: context);
+
         videoFile = file;
         var mFile = File(file.path);
         var thumb = await _getThumbnail(file: mFile, isVideo: true);
 
+        cloudStorageBloc.errorStream.listen((event) {
+          if (mounted) {
+            showToast(
+                message: event,
+                textStyle: const TextStyle(color: Colors.white),
+                duration: const Duration(seconds: 3),
+                backgroundColor: Colors.pink.shade400,
+                context: context);
+          }
+        });
         if (widget.projectPosition != null) {
-          cloudStorageBloc.errorStream.listen((event) {
-            if (mounted) {
-              ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                  duration: const Duration(seconds: 20),
-                  backgroundColor: Theme.of(context).errorColor,
-                  content: Text(event)));
-            }
-          });
+
           cloudStorageBloc.uploadPhotoOrVideo(
               listener: this,
               file: mFile,
@@ -519,7 +527,6 @@ class FieldVideoCameraState extends State<FieldVideoCamera>
               isVideo: true,
               isLandscape: false);
         } else {
-          //todo - user location ....
           var loc = await locationBloc.getLocation();
           var position = Position(
               type: 'Point', coordinates: [loc.longitude, loc.latitude]);
@@ -545,10 +552,10 @@ class FieldVideoCameraState extends State<FieldVideoCamera>
         showToast(
             context: context,
             message: 'Video file saved on device, size: $m MB',
-            backgroundColor: Colors.teal,
+            backgroundColor: Colors.teal.shade600,
             textStyle: Styles.whiteSmall,
             toastGravity: ToastGravity.CENTER,
-            duration: const Duration(seconds: 3));
+            duration: const Duration(seconds: 2));
       }
     });
   }
@@ -557,7 +564,12 @@ class FieldVideoCameraState extends State<FieldVideoCamera>
     final CameraController? cameraController = _cameraController;
 
     if (cameraController == null || !cameraController.value.isInitialized) {
-      showInSnackBar('Error: select a camera first.');
+      showToast(
+          message: 'Please select a camera',
+          textStyle: const TextStyle(color: Colors.white),
+          duration: const Duration(seconds: 3),
+          backgroundColor: Colors.pink,
+          context: context);
       return;
     }
 
@@ -574,14 +586,25 @@ class FieldVideoCameraState extends State<FieldVideoCamera>
     pp('$mm onPauseButtonPressed 🥏 🥏 🥏 ');
     _pauseVideoRecording().then((_) {
       if (mounted) setState(() {});
-      showInSnackBar('Video recording paused');
+      showToast(
+          message: 'Video recording paused',
+          textStyle: const TextStyle(color: Colors.white),
+          duration: const Duration(seconds: 3),
+          backgroundColor: Colors.black,
+          context: context);
     });
   }
 
   void _onResumeButtonPressed() {
     _resumeVideoRecording().then((_) {
       if (mounted) setState(() {});
-      showInSnackBar('Video recording resumed');
+      showToast(
+          message: 'Video recording resumed',
+          textStyle: const TextStyle(color: Colors.white),
+          duration: const Duration(seconds: 3),
+          backgroundColor: Colors.teal
+          ,
+          context: context);
     });
   }
 
@@ -590,7 +613,12 @@ class FieldVideoCameraState extends State<FieldVideoCamera>
     final CameraController? cameraController = _cameraController;
 
     if (cameraController == null || !cameraController.value.isInitialized) {
-      showInSnackBar('Error: please select a camera first.');
+      showToast(
+          message: 'Please select a camera',
+          textStyle: const TextStyle(color: Colors.white),
+          duration: const Duration(seconds: 10),
+          backgroundColor: Colors.pink,
+          context: context);
       return;
     }
     pp('$mm startVideoRecording ....');
@@ -654,7 +682,12 @@ class FieldVideoCameraState extends State<FieldVideoCamera>
 
   void _showCameraException(CameraException e) {
     logError(e.code, e.description);
-    showInSnackBar('Error: ${e.code}\n${e.description}');
+    showToast(
+        message: 'Error: ${e.code}\n${e.description}',
+        textStyle: const TextStyle(color: Colors.white),
+        duration: const Duration(seconds: 10),
+        backgroundColor: Colors.pink,
+        context: context);
   }
 
   String? totalByteCount, bytesTransferred;
@@ -664,18 +697,20 @@ class FieldVideoCameraState extends State<FieldVideoCamera>
   onFileProgress(int totalByteCount, int bytesTransferred) {
     pp('$mm 🍏file Upload progress: bytesTransferred: ${(bytesTransferred / 1024).toStringAsFixed(1)} KB '
         'of totalByteCount: ${(totalByteCount / 1024).toStringAsFixed(1)} KB');
-    setState(() {
-      this.totalByteCount = '${(totalByteCount / 1024).toStringAsFixed(1)} KB';
-      this.bytesTransferred =
-          '${(bytesTransferred / 1024).toStringAsFixed(1)} KB';
-    });
+    if (mounted) {
+      setState(() {
+        this.totalByteCount =
+        '${(totalByteCount / 1024).toStringAsFixed(1)} KB';
+        this.bytesTransferred =
+        '${(bytesTransferred / 1024).toStringAsFixed(1)} KB';
+      });
+    }
   }
 
   @override
   onFileUploadComplete(String url, int totalByteCount, int bytesTransferred) {
-    pp('$mm 🍏😡 file Upload has been completed 😡 bytesTransferred: ${(bytesTransferred / 1024).toStringAsFixed(1)} KB '
+    pp('$mm 😡 file Upload has been completed 😡 bytesTransferred: ${(bytesTransferred / 1024).toStringAsFixed(1)} KB '
         'of totalByteCount: ${(totalByteCount / 1024).toStringAsFixed(1)} KB');
-    pp('$mm 😡😡😡 this file url should be saved in DB .... 😡😡 $url 😡😡');
     if (mounted) {
       setState(() {});
     }
@@ -692,7 +727,9 @@ class FieldVideoCameraState extends State<FieldVideoCamera>
       String url, int totalByteCount, int bytesTransferred) async {
     pp('$mm 🍏thumbnail Upload has been completed 😡 bytesTransferred: ${(bytesTransferred / 1024).toStringAsFixed(1)} KB '
         'of totalByteCount: ${(totalByteCount / 1024).toStringAsFixed(1)} KB');
-    setState(() {});
+    if (mounted) {
+      setState(() {});
+    }
   }
 
   Video? _currentVideo;
@@ -884,10 +921,13 @@ class FieldVideoCameraState extends State<FieldVideoCamera>
   onError(String message) {
     pp('$mm $message');
     if (mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          duration: const Duration(seconds: 5),
-          backgroundColor: Theme.of(context).errorColor,
-          content: Text(message)));
+      showToast(
+          message: message,
+          textStyle: const TextStyle(color: Colors.white),
+          duration: const Duration(seconds: 3),
+          toastGravity: ToastGravity.TOP,
+          backgroundColor: Colors.pink.shade600,
+          context: context);
     }
   }
 

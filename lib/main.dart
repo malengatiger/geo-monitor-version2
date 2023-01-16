@@ -46,11 +46,14 @@ Future<void> _setup() async {
 
     // Prefs.deleteUser();
     await Hive.initFlutter();
-    hiveUtil.initialize();
-    pp('${Emoji.heartGreen}${Emoji.heartGreen} Hive initialized');
+    await hiveUtil.initialize();
+    pp('${Emoji.heartGreen}${Emoji.heartGreen}}${Emoji.heartGreen} '
+        'Hive initialized and boxCollection set up');
 
-    writeFailedMedia.startTimer(const Duration(minutes: 5));
-    uploadFailedMedia.startTimer(const Duration(minutes: 3));
+    writeFailedMedia.startTimer(const Duration(minutes: 10));
+    uploadFailedMedia.startTimer(const Duration(minutes: 15));
+    writeFailedMedia.writeFailedPhotos();
+    writeFailedMedia.writeFailedVideos();
     pp('${Emoji.heartGreen}${Emoji.heartGreen} writeFailedMedia/uploadFailedMedia '
         'timers started with 🍎 5 minute duration per tick ...');
 

@@ -86,7 +86,7 @@ class CloudStorageBloc {
       var uploadTask = firebaseStorageRef.putFile(file);
       _reportProgress(uploadTask, listener);
       var taskSnapshot = await uploadTask.whenComplete(() {
-        pp('$mm This is like a finally block - consider this ...');
+        // pp('$mm This is like a finally block - consider this ...');
       });
       final url = await taskSnapshot.ref.getDownloadURL();
       pp('$mm file url is available, meaning that upload is complete: \n$url');
@@ -99,7 +99,7 @@ class CloudStorageBloc {
       final thumbUploadTask = firebaseStorageRef2.putFile(thumbnailFile);
       _reportProgress(thumbUploadTask, listener);
       final thumbTaskSnapshot = await thumbUploadTask.whenComplete(() {
-        pp('$mm This is like a finally block - consider this ...');
+        // pp('$mm This is like a finally block - consider this ...');
       });
       final thumbUrl = await thumbTaskSnapshot.ref.getDownloadURL();
       pp('$mm thumbnail file url is available, meaning that upload is complete: \n$thumbUrl');
@@ -118,7 +118,7 @@ class CloudStorageBloc {
           file,
           isLandscape);
 
-      pp('\n$mm upload process completed, tell the faithful listener!.\n\n');
+      pp('\n\n$mm upload process completed, tell the faithful listener!.\n\n');
       listener.onFileUploadComplete(
           url, taskSnapshot.totalBytes, taskSnapshot.bytesTransferred);
       return uploadFinished;
@@ -221,7 +221,7 @@ class CloudStorageBloc {
       var bytesTransferred = event.bytesTransferred;
       var bt = '${(bytesTransferred / 1024).toStringAsFixed(2)} KB';
       var tot = '${(totalByteCount / 1024).toStringAsFixed(2)} KB';
-      pp('️$mm _reportProgress:  💚 progress ******* 🧩 $bt KB of $tot KB 🧩 transferred');
+      //pp('️$mm _reportProgress:  💚 progress ******* 🧩 $bt KB of $tot KB 🧩 transferred');
       listener.onFileProgress(event.totalBytes, event.bytesTransferred);
     });
   }
@@ -247,7 +247,7 @@ class CloudStorageBloc {
       required int height,
       required int width,
       required bool isLandscape}) async {
-    pp('\n$mm 🎽🎽🎽🎽 _writePhoto : 🎽 🎽 adding photo - isLandscape: $isLandscape');
+    pp('$mm _writePhoto : 🎽🎽 adding photo - isLandscape: $isLandscape');
     if (_user == null) {
       await getUser();
     }
@@ -282,7 +282,7 @@ class CloudStorageBloc {
       var result = await DataAPI.addPhoto(photo);
       _photoStreamController.sink.add(photo);
       pp('$mm Photo has been added to database, result photo: 🎁 $result - 🎁 isLandscape: $isLandscape');
-      pp('$mm  Photo has been added to photoStream ...');
+      pp('$mm Photo has been added to photoStream ...');
     } catch (e) {
       pp('$mm Photo problem: $e');
       _errorStreamController.sink.add("Photo database write failed: $e");

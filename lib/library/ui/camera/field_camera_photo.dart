@@ -309,13 +309,6 @@ class FieldPhotoCameraState extends State<FieldPhotoCamera>
 
   String timestamp() => DateTime.now().millisecondsSinceEpoch.toString();
 
-  void showInSnackBar(String message) {
-    // ignore: deprecated_member_use
-    //_scaffoldKey.currentState?.showSnackBar(SnackBar(content: Text(message)));
-    ScaffoldMessenger.of(context)
-        .showSnackBar(SnackBar(content: Text(message)));
-  }
-
   void onViewFinderTap(TapDownDetails details, BoxConstraints constraints) {
     pp('$mm ... onViewFinderTap ....');
     if (_cameraController == null) {
@@ -352,8 +345,12 @@ class FieldPhotoCameraState extends State<FieldPhotoCamera>
     _cameraController!.addListener(() {
       if (mounted) setState(() {});
       if (_cameraController!.value.hasError) {
-        showInSnackBar(
-            'Camera error ${_cameraController!.value.errorDescription}');
+        showToast(
+            message: 'Camera error ${_cameraController!.value.errorDescription}',
+            textStyle: const TextStyle(color: Colors.white),
+            duration: const Duration(seconds: 5),
+            backgroundColor: Colors.pink,
+            context: context);
       }
     });
 
@@ -414,16 +411,17 @@ class FieldPhotoCameraState extends State<FieldPhotoCamera>
   }
 
   void _doTheMessage() {
+    const msg = 'You are no longer in range of one of the project location(s). Photos of the project cannot be taken from here';
     if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-          duration: Duration(seconds: 10),
+          duration: Duration(seconds: 5),
           content: Text(
-              'You are no longer in range of one of the project location(s). Photos of the project cannot be taken from here')));
+              msg)));
 
       showToast(
-          message: 'Cannot do this, Boss! ${Emoji.peach}',
+          message: msg,
           textStyle: const TextStyle(color: Colors.white),
-          duration: const Duration(seconds: 10),
+          duration: const Duration(seconds: 5),
           backgroundColor: Colors.pink,
           context: context);
     }
@@ -476,15 +474,18 @@ class FieldPhotoCameraState extends State<FieldPhotoCamera>
             mFile = mImageFile;
           }
 
+          cloudStorageBloc.errorStream.listen((event) {
+            if (mounted) {
+              showToast(
+                  message: event,toastGravity: ToastGravity.TOP,
+                  textStyle: const TextStyle(color: Colors.white),
+                  duration: const Duration(seconds: 3),
+                  backgroundColor: Colors.pink.shade400,
+                  context: context);
+            }
+          });
+
           if (widget.projectPosition != null) {
-            cloudStorageBloc.errorStream.listen((event) {
-              if (mounted) {
-                ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                    duration: const Duration(seconds: 20),
-                    backgroundColor: Theme.of(context).errorColor,
-                    content: Text(event)));
-              }
-            });
             cloudStorageBloc.uploadPhotoOrVideo(
                 listener: this,
                 file: mFile,
@@ -495,7 +496,6 @@ class FieldPhotoCameraState extends State<FieldPhotoCamera>
                 isVideo: false,
                 isLandscape: isLandscape);
           } else {
-            //todo - user location ....
             var loc = await locationBloc.getLocation();
             var position = Position(
                 type: 'Point', coordinates: [loc.longitude, loc.latitude]);
@@ -569,7 +569,12 @@ class FieldPhotoCameraState extends State<FieldPhotoCamera>
   Future<XFile?> takePicture() async {
     final CameraController? cameraController = _cameraController;
     if (cameraController == null || !cameraController.value.isInitialized) {
-      showInSnackBar('Error: select a camera first.');
+      showToast(
+          message:'Error: please select a camera first',
+          textStyle: const TextStyle(color: Colors.white),
+          duration: const Duration(seconds: 10),
+          backgroundColor: Colors.pink,
+          context: context);
       return null;
     }
     if (cameraController.value.isTakingPicture) {
@@ -588,7 +593,12 @@ class FieldPhotoCameraState extends State<FieldPhotoCamera>
 
   void _showCameraException(CameraException e) {
     logError(e.code, e.description);
-    showInSnackBar('Error: ${e.code}\n${e.description}');
+    showToast(
+        message: 'Error: ${e.code}\n${e.description}',
+        textStyle: const TextStyle(color: Colors.white),
+        duration: const Duration(seconds: 5),
+        backgroundColor: Colors.pink,
+        context: context);
   }
 
   String? totalByteCount, bytesTransferred;
@@ -607,9 +617,8 @@ class FieldPhotoCameraState extends State<FieldPhotoCamera>
 
   @override
   onFileUploadComplete(String url, int totalByteCount, int bytesTransferred) {
-    pp('$mm 🍏😡 file Upload has been completed 😡 bytesTransferred: ${(bytesTransferred / 1024).toStringAsFixed(1)} KB '
+    pp('$mm 😡 file Upload has been completed 😡 bytesTransferred: ${(bytesTransferred / 1024).toStringAsFixed(1)} KB '
         'of totalByteCount: ${(totalByteCount / 1024).toStringAsFixed(1)} KB');
-    pp('$mm 😡😡😡 this file url should be saved in DB .... 😡😡 $url 😡😡');
     if (mounted) {
       setState(() {});
     }
@@ -733,12 +742,15 @@ class FieldPhotoCameraState extends State<FieldPhotoCamera>
 
   @override
   onError(String message) {
-    pp('$mm $message');
+    pp('$mm onError fired - $message');
     if (mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          duration: const Duration(seconds: 5),
-          backgroundColor: Theme.of(context).errorColor,
-          content: Text(message)));
+      showToast(
+          message: message,
+          textStyle: const TextStyle(color: Colors.white),
+          duration: const Duration(seconds: 3),
+          toastGravity: ToastGravity.TOP,
+          backgroundColor: Colors.pink,
+          context: context);
     }
   }
 

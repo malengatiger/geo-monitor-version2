@@ -27,6 +27,7 @@ class WriteFailedMedia {
       _timer.cancel();
     }
   }
+
   Future writeFailedPhotos() async {
     var photos = await hiveUtil.getFailedPhotos();
     for (var photo in photos) {

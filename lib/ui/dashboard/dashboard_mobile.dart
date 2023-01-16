@@ -48,6 +48,8 @@ class DashboardMobileState extends State<DashboardMobile>
   late AnimationController _userAnimationController;
   late AnimationController _photoAnimationController;
   late AnimationController _videoAnimationController;
+  late AnimationController _positionAnimationController;
+  late AnimationController _polygonAnimationController;
   var isBusy = false;
   var _projects = <Project>[];
   var _users = <User>[];
@@ -61,23 +63,32 @@ class DashboardMobileState extends State<DashboardMobile>
   static const nn = '🎽🎽🎽🎽🎽🎽 DashboardMobile: 🎽';
   static const mm = '🎽🎽🎽🎽🎽🎽 DashboardMobile: 🎽';
   bool networkAvailable = false;
+  final dur = 1000;
   @override
   void initState() {
     _projectAnimationController = AnimationController(
-        duration: const Duration(milliseconds: 1000),
-        reverseDuration: const Duration(milliseconds: 200),
+        duration: Duration(milliseconds: dur),
+        reverseDuration: Duration(milliseconds: dur),
         vsync: this);
     _userAnimationController = AnimationController(
-        duration: const Duration(milliseconds: 1500),
-        reverseDuration: const Duration(milliseconds: 200),
+        duration: Duration(milliseconds: dur),
+        reverseDuration: Duration(milliseconds: dur),
         vsync: this);
     _photoAnimationController = AnimationController(
-        duration: const Duration(milliseconds: 2000),
-        reverseDuration: const Duration(milliseconds: 200),
+        duration: Duration(milliseconds: dur),
+        reverseDuration: Duration(milliseconds: dur),
         vsync: this);
     _videoAnimationController = AnimationController(
-        duration: const Duration(milliseconds: 2500),
-        reverseDuration: const Duration(milliseconds: 200),
+        duration: Duration(milliseconds: dur),
+        reverseDuration: Duration(milliseconds: dur),
+        vsync: this);
+    _polygonAnimationController = AnimationController(
+        duration: Duration(milliseconds: dur),
+        reverseDuration: Duration(milliseconds: dur),
+        vsync: this);
+    _positionAnimationController = AnimationController(
+        duration: Duration(milliseconds: dur),
+        reverseDuration: Duration(milliseconds: dur),
         vsync: this);
     super.initState();
     _setItems();
@@ -327,10 +338,22 @@ class DashboardMobileState extends State<DashboardMobile>
     setState(() {
       isBusy = false;
     });
+
+    _projectAnimationController.reset();
+    _userAnimationController.reset();
+    _photoAnimationController.reset();
+    _videoAnimationController.reset();
+    _positionAnimationController.reset();
+    _polygonAnimationController.reset();
+
     _projectAnimationController.forward().then((value) {
       _userAnimationController.forward().then((value) {
         _photoAnimationController.forward().then((value) {
-          _videoAnimationController.forward();
+          _videoAnimationController.forward().then((value) {
+            _positionAnimationController.forward().then((value) {
+              _polygonAnimationController.forward();
+            });
+          });
         });
       });
     });
@@ -722,10 +745,10 @@ class DashboardMobileState extends State<DashboardMobile>
                         ),
                       ),
                       AnimatedBuilder(
-                        animation: _videoAnimationController,
+                        animation: _polygonAnimationController,
                         builder: (BuildContext context, Widget? child) {
                           return FadeScaleTransition(
-                            animation: _videoAnimationController,
+                            animation: _polygonAnimationController,
                             child: child,
                           );
                         },
@@ -750,44 +773,56 @@ class DashboardMobileState extends State<DashboardMobile>
                           ),
                         ),
                       ),
-                      Card(
-                        elevation: 8,
-                        shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(16.0)),
-                        child: Column(
-                          children: [
-                            const SizedBox(
-                              height: 32,
-                            ),
-                            Text('${_projectPositions.length}', style: style),
-                            const SizedBox(
-                              height: 8,
-                            ),
-                            Text(
-                              'Locations',
-                              style: Styles.greyLabelSmall,
-                            )
-                          ],
+                      AnimatedBuilder(
+                        animation: _positionAnimationController,
+                        builder: (BuildContext context, Widget? child) {
+                          return FadeScaleTransition(animation: _positionAnimationController, child: child,);
+                        },
+                        child: Card(
+                          elevation: 8,
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(16.0)),
+                          child: Column(
+                            children: [
+                              const SizedBox(
+                                height: 32,
+                              ),
+                              Text('${_projectPositions.length}', style: style),
+                              const SizedBox(
+                                height: 8,
+                              ),
+                              Text(
+                                'Locations',
+                                style: Styles.greyLabelSmall,
+                              )
+                            ],
+                          ),
                         ),
                       ),
-                      Card(
-                        elevation: 8,
-                        shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(16.0)),
-                        child: Column(
-                          children: [
-                            const SizedBox(
-                              height: 32,
-                            ),
-                            Text('${_schedules.length}', style: style),
-                            const SizedBox(
-                              height: 8,
-                            ),
-                            Text(
-                              'Schedules',
-                              style: Styles.greyLabelSmall,
-                            )
-                          ],
+                      AnimatedBuilder(
+                        animation: _polygonAnimationController,
+                        builder: (BuildContext context, Widget? child) {
+                          return FadeScaleTransition(animation: _polygonAnimationController, child: child,);
+                        },
+                        child: Card(
+                          elevation: 8,
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(16.0)),
+                          child: Column(
+                            children: [
+                              const SizedBox(
+                                height: 32,
+                              ),
+                              Text('${_schedules.length}', style: style),
+                              const SizedBox(
+                                height: 8,
+                              ),
+                              Text(
+                                'Schedules',
+                                style: Styles.greyLabelSmall,
+                              )
+                            ],
+                          ),
                         ),
                       ),
                     ],

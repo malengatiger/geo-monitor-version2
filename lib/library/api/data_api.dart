@@ -5,6 +5,7 @@ import 'dart:io';
 import 'package:flutter_dotenv/flutter_dotenv.dart' as dot;
 import 'package:geo_monitor/library/bloc/connection_check.dart';
 import 'package:geo_monitor/library/data/project_polygon.dart';
+import 'package:geo_monitor/library/emojis.dart';
 import 'package:http/http.dart' as http;
 import '../auth/app_auth.dart';
 import '../data/city.dart';
@@ -1180,7 +1181,9 @@ class DataAPI {
         return resp.body;
       }
     } on SocketException {
-      pp('$xz 😑GeoMonitor Server not available. Possible Internet Connection issue 😑 😑 😑');
+      pp('\n\n$xz ${Emoji.redDot}${Emoji.redDot} ${Emoji.redDot} '
+          'GeoMonitor Server not available. ${Emoji.redDot} Possible Internet Connection issue '
+          '${Emoji.redDot} ${Emoji.redDot} ${Emoji.redDot}\n');
       throw 'GeoMonitor Server not available. Possible Internet Connection issue';
     } on HttpException {
       pp("$xz Couldn't find the post 😱");
