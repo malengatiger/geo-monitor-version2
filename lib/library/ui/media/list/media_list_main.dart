@@ -50,18 +50,18 @@ class MediaListMainState extends State<MediaListMain>
         case UserType.fieldMonitor:
           // await userBloc.refreshUserData(
           //     userId: user.userId!, forceRefresh: true,);
-          await organizationBloc.refreshOrganizationData(
+          await organizationBloc.getOrganizationData(
               organizationId: user.organizationId!,
               forceRefresh: true);
 
           break;
         case UserType.orgAdministrator:
-          await organizationBloc.refreshOrganizationData(
+          await organizationBloc.getOrganizationData(
               organizationId: user.organizationId!,
               forceRefresh: true);
           break;
         case UserType.orgExecutive:
-          await organizationBloc.refreshOrganizationData(
+          await organizationBloc.getOrganizationData(
               organizationId: user.organizationId!,
               forceRefresh: true);
           break;

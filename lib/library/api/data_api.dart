@@ -321,20 +321,13 @@ class DataAPI {
 
   static Future<DataBag> getOrganizationData(String organizationId) async {
     String? mURL = await getUrl();
-    var bag = DataBag(
-        photos: [],
-        videos: [],
-        fieldMonitorSchedules: [],
-        projects: [],
-        projectPositions: [],
-        projectPolygons: [],
-        users: [],
-        date: DateTime.now().toIso8601String());
+
     try {
       var result = await _sendHttpGET(
           '${mURL!}getOrganizationData?organizationId=$organizationId');
 
-      bag = DataBag.fromJson(result);
+      final bag = DataBag.fromJson(result);
+      pp('\n$mm Data returned from server, adding to Hive cache ...');
       await hiveUtil.addProjects(projects: bag.projects!);
       await hiveUtil.addProjectPolygons(polygons: bag.projectPolygons!);
       await hiveUtil.addProjectPositions(positions: bag.projectPositions!);
@@ -342,7 +335,7 @@ class DataAPI {
       await hiveUtil.addPhotos(photos: bag.photos!);
       await hiveUtil.addVideos(videos: bag.videos!);
       await hiveUtil.addFieldMonitorSchedules(schedules: bag.fieldMonitorSchedules!);
-
+      pp('\n$mm Data returned from server, sending to caller ...');
       return bag;
     } catch (e) {
       pp('$mm getOrganizationData: $e');
@@ -360,7 +353,7 @@ class DataAPI {
         projectPositions: [],
         projectPolygons: [],
         users: [],
-        date: DateTime.now().toIso8601String());
+        date: DateTime.now().toUtc().toIso8601String());
     try {
       var result = await _sendHttpGET('${mURL!}getUserData?userId=$userId');
 

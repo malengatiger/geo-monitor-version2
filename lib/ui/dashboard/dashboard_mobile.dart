@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:geo_monitor/library/bloc/connection_check.dart';
 import 'package:geo_monitor/library/data/data_bag.dart';
 import 'package:geo_monitor/library/data/project_polygon.dart';
+import 'package:geo_monitor/library/hive_util.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:universal_platform/universal_platform.dart';
@@ -293,20 +294,30 @@ class DashboardMobileState extends State<DashboardMobile>
     setState(() {
       isBusy = true;
     });
+    //todo - REMOVE after test
+    var failedBags = await hiveUtil.getFailedBags();
+    var failedPhotos = await hiveUtil.getFailedPhotos();
+    var failedVideos = await hiveUtil.getFailedVideos();
+    pp('\n\n$mm failedBags; ${failedBags.length} 🔵failedPhotos: ${failedPhotos.length} '
+        '🔵 failedVideos: ${failedVideos.length} \n\n');
 
-    Future.delayed(const Duration(milliseconds: 500), () async {
-      await _doWork(forceRefresh);
+    await _doTheWork(forceRefresh);
+    setState(() {
+
     });
-
   }
 
-  Future<void> _doWork(bool forceRefresh) async {
+  Future<void> _doTheWork(bool forceRefresh) async {
     try {
       user = await Prefs.getUser();
-      var bag = await organizationBloc.refreshOrganizationData(
+      var bag = await organizationBloc.getOrganizationData(
           organizationId: user!.organizationId!,
           forceRefresh: forceRefresh);
+      pp('$mm  result: users found ${bag.users!.length}');
       await _extractData(bag);
+      setState(() {
+
+      });
     } catch (e) {
       pp('$mm $e - will show snackbar ..');
       showConnectionProblemSnackBar(
@@ -325,8 +336,9 @@ class DashboardMobileState extends State<DashboardMobile>
     });
   }
 
+  // int _refreshCnt = 0;
   Future _extractData(DataBag bag) async {
-    pp('Extracting org data from bag');
+    pp('$mm ............ Extracting org data from bag');
     _projects = bag.projects!;
     _projectPositions = bag.projectPositions!;
     _projectPolygons = bag.projectPolygons!;
@@ -334,7 +346,8 @@ class DashboardMobileState extends State<DashboardMobile>
     _photos = bag.photos!;
     _videos = bag.videos!;
     _schedules = bag.fieldMonitorSchedules!;
-    pp('setting state extracting org data from bag');
+
+    pp('$mm ..... setting state extracting org data from bag');
     setState(() {
 
     });

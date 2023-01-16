@@ -258,7 +258,7 @@ class QuestionnaireEditorState extends State<QuestionnaireEditor>
         name: 'Questionnaire name', organizationId: user!.organizationId!,
         description: description!,
         organizationName: user!.organizationName!,
-         created: DateTime.now().toIso8601String(),
+         created: DateTime.now().toUtc().toIso8601String(),
         countryName: '', sections: []);
 
 

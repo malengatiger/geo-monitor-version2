@@ -352,7 +352,7 @@ class FrequencyEditorState extends State<FrequencyEditor> {
           fieldMonitorId: widget.fieldUser.userId,
           adminId: widget.adminUser.userId,
           projectId: widget.project.projectId,
-          date: DateTime.now().toIso8601String(),
+          date: DateTime.now().toUtc().toIso8601String(),
           organizationId: widget.project.organizationId,
           perDay: mPerDay,
           perWeek: mPerWeek,

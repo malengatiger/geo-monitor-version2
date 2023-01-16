@@ -449,7 +449,8 @@ class FieldPhotoCameraState extends State<FieldPhotoCamera>
 
         if (file != null) {
           File mImageFile = File(file.path);
-          pp('$mm onTakePictureButtonPressed 🔵🔵🔵 file to upload, size: ${await mImageFile.length()} bytes🔵');
+          pp('$mm onTakePictureButtonPressed 🔵🔵🔵 file to upload, '
+              'size: ${await mImageFile.length()} bytes🔵');
 
           var thumbnailFile =
               await getThumbnail(file: mImageFile, isVideo: false);
@@ -533,7 +534,7 @@ class FieldPhotoCameraState extends State<FieldPhotoCamera>
   Future<File> _getVideoThumbnail(File file) async {
     final Directory directory = await getApplicationDocumentsDirectory();
 
-    var path = 'possibleVideoThumb.${DateTime.now().toIso8601String()}.jpg';
+    var path = 'possibleVideoThumb_${DateTime.now().toIso8601String()}.jpg';
     final thumbFile = File('${directory.path}/$path');
 
     final data = await vt.VideoThumbnail.thumbnailData(
@@ -558,7 +559,7 @@ class FieldPhotoCameraState extends State<FieldPhotoCamera>
     img.Image? image = img.decodeImage(file.readAsBytesSync());
     var thumbnail = img.copyResize(image!, width: 160);
     final File mFile = File(
-        '${directory.path}/thumbnail${DateTime.now().millisecondsSinceEpoch}.jpg');
+        '${directory.path}/thumbnail_${DateTime.now().millisecondsSinceEpoch}.jpg');
     var thumb = mFile..writeAsBytesSync(img.encodeJpg(thumbnail, quality: 90));
     var len = await thumb.length();
     pp('$mm ....... 💜 .... thumbnail generated: 😡 ${(len / 1024).toStringAsFixed(1)} KB');
@@ -732,7 +733,13 @@ class FieldPhotoCameraState extends State<FieldPhotoCamera>
 
   @override
   onError(String message) {
-    throw UnimplementedError();
+    pp('$mm $message');
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          duration: const Duration(seconds: 5),
+          backgroundColor: Theme.of(context).errorColor,
+          content: Text(message)));
+    }
   }
 
   @override

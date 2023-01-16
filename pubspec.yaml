@@ -79,6 +79,7 @@ dependencies:
   transparent_image: ^2.0.0
   image_size_getter: ^2.1.2
   hive_flutter: ^1.1.0
+  flutter_local_notifications: ^13.0.0
   image_picker:
   animations:
   get:

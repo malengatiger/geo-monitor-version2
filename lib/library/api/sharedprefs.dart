@@ -22,7 +22,6 @@ class Prefs {
       pp('🔵🔵🔵 Prefs: theme index does not exist. default to 0 🍏🍏 ');
       return 0;
     } else {
-      pp('🔵🔵🔵 Prefs: theme index retrieved: $b 🍏🍏 ');
       return b;
     }
   }

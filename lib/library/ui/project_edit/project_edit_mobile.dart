@@ -75,7 +75,7 @@ class ProjectEditMobileState extends State<ProjectEditMobile>
               description: descController.text,
               organizationId: admin!.organizationId!,
               organizationName: admin!.organizationName!,
-              created: DateTime.now().toIso8601String(),
+              created: DateTime.now().toUtc().toIso8601String(),
               monitorMaxDistanceInMetres: double.parse(maxController.text),
               photos: [],
               videos: [],

@@ -211,7 +211,7 @@ class ProjectBloc {
         fieldMonitorSchedules: schedules,
         projectPositions: positions,
         projects: [],
-        date: DateTime.now().toIso8601String(),
+        date: DateTime.now().toUtc().toIso8601String(),
         users: [],
         projectPolygons: polygons);
     pp('$mm project data bag loaded: ... photos: ${photos.length}, videos: ${videos.length} and schedules: ${schedules.length} ...');

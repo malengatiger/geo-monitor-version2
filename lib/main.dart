@@ -14,6 +14,7 @@ import 'package:hive_flutter/hive_flutter.dart';
 import 'firebase_options.dart';
 import 'library/api/sharedprefs.dart';
 import 'library/bloc/theme_bloc.dart';
+import 'library/bloc/upload_failed_media.dart';
 import 'library/bloc/write_failed_media.dart';
 import 'library/emojis.dart';
 import 'library/functions.dart';
@@ -41,40 +42,33 @@ Future<void> _setup() async {
   try {
     firebaseApp = await Firebase.initializeApp(
         options: DefaultFirebaseOptions.currentPlatform);
-    p('${Emoji.heartGreen}${Emoji.heartGreen} Firebase App has been initialized: ${firebaseApp.name}');
+    pp('${Emoji.heartGreen}${Emoji.heartGreen} Firebase App has been initialized: ${firebaseApp.name}');
 
     // Prefs.deleteUser();
     await Hive.initFlutter();
     hiveUtil.initialize();
-    p('${Emoji.heartGreen}${Emoji.heartGreen} Hive initialized');
+    pp('${Emoji.heartGreen}${Emoji.heartGreen} Hive initialized');
 
-    writeFailedMedia.startTimer();
-    p('${Emoji.heartGreen}${Emoji.heartGreen} writeFailedMedia timer started ...');
+    writeFailedMedia.startTimer(const Duration(minutes: 5));
+    uploadFailedMedia.startTimer(const Duration(minutes: 3));
+    pp('${Emoji.heartGreen}${Emoji.heartGreen} writeFailedMedia/uploadFailedMedia '
+        'timers started with 🍎 5 minute duration per tick ...');
 
   } catch (e) {
-    p('$redDot problem with Firebase? or Hive? : $e');
+    pp('$redDot problem with Firebase? or Hive? : $e');
   }
 
   await dotenv.load(fileName: ".env");
-  p('$heartBlue DotEnv has been loaded');
+  pp('$heartBlue DotEnv has been loaded');
 
   // setup();
-  p('${Emoji.brocolli} Checking for current user : FirebaseAuth');
+  pp('${Emoji.brocolli} Checking for current user : FirebaseAuth');
   var user = FirebaseAuth.instance.currentUser;
   if (user == null) {
-    p('${Emoji.redDot}${Emoji.redDot} Ding Dong! new Firebase user, sign in! - check that we dont create user every time $appleGreen  $appleGreen');
+    pp('${Emoji.redDot}${Emoji.redDot} Ding Dong! new Firebase user, sign in! - check that we do not create user every time $appleGreen  $appleGreen');
     //await DataService.signInAnonymously();
   } else {
-    p('${Emoji.blueDot}${Emoji.blueDot} User already exists. $blueDot Cool!');
-    try {
-      // FirebaseAuth.instance.signOut();
-      var token = await user.getIdToken();
-      pp(token);
-    } catch (e) {
-      pp('${Emoji.redDot}Problem with Firebase Auth: $e 🎽 🎽 🎽');
-      pp(e);
-    }
-
+    pp('${Emoji.blueDot}${Emoji.blueDot}${Emoji.blueDot}${Emoji.blueDot} User already exists. $blueDot Cool!');
   }
 }
 

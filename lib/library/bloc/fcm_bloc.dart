@@ -3,6 +3,9 @@ import 'dart:convert';
 
 import 'package:firebase_messaging/firebase_messaging.dart' as fb;
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:universal_platform/universal_platform.dart';
 
 import '../api/data_api.dart';
@@ -72,10 +75,30 @@ class FCMBloc {
         _updateUser(newToken);
       });
 
+      // initialise the plugin. app_icon needs to be a added as a drawable resource to the Android head project
+      const AndroidInitializationSettings initializationSettingsAndroid =
+          AndroidInitializationSettings('app_icon');
+
+      final DarwinInitializationSettings initializationSettingsDarwin =
+          DarwinInitializationSettings(
+              onDidReceiveLocalNotification: onDidReceiveLocalNotification);
+
+      const LinuxInitializationSettings initializationSettingsLinux =
+          LinuxInitializationSettings(defaultActionName: 'Open notification');
+
+      final InitializationSettings initializationSettings =
+          InitializationSettings(
+              android: initializationSettingsAndroid,
+              iOS: initializationSettingsDarwin,
+              linux: initializationSettingsLinux);
+
+      FlutterLocalNotificationsPlugin().initialize(initializationSettings,
+          onDidReceiveNotificationResponse: onDidReceiveNotificationResponse);
+
       FirebaseMessaging.onMessage.listen((RemoteMessage message) {
         RemoteNotification? notification = message.notification;
         AndroidNotification? android = message.notification?.android;
-        pp("$mm onMessage: 🍎 🍎  data: ${message.data} ... 🍎 🍎 ");
+        pp("$mm onMessage: 🍎 🍎 data: ${message.data} ... 🍎 🍎 ");
       });
 
       FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
@@ -200,47 +223,59 @@ class FCMBloc {
       await Prefs.saveUser(user!);
     }
   }
+
+  void onDidReceiveNotificationResponse(NotificationResponse details) {
+  pp('$mm onDidReceiveNotificationResponse ... details: ${details.payload}');
+}
+
+
+
+  void onDidReceiveLocalNotification(int id, String? title, String? body, String? payload) {
+    pp(
+        '$mm onDidReceiveLocalNotification:  🍎 maybe display a dialog with the notification details - maybe put this on a stream ...');
+    pp('$mm title: $title  🍎 body: $body with some payload ...');
+    pp('$mm payload: $payload  🍎');
+  }
 }
 
 Future<dynamic> myBackgroundMessageHandler(Map<String, dynamic> message) async {
   pp("$mm  🦠 🦠 🦠 🦠 🦠 myBackgroundMessageHandler   🦠 🦠 🦠 🦠 🦠 ........................... $message");
   Map data = message['data'];
 
-    pp("$mm myBackgroundMessageHandler   🦠 🦠 🦠........................... cache USER  🍎  🍎 string data: $data");
-    if (data['user'] != null) {
-      var m = jsonDecode(data['user']);
-      var user = User.fromJson(m);
-      hiveUtil.addUser(user: user);
-    }
-    if (data['project'] != null) {
-      pp("$mm myBackgroundMessageHandler   🦠 🦠 🦠 ........................... cache PROJECT  🍎  🍎");
-      var m = jsonDecode(data['project']);
-      var project = Project.fromJson(m);
-      hiveUtil.addProject(project: project);
-    }
-    if (data['photo'] != null) {
-      pp("$mm myBackgroundMessageHandler   🦠 🦠 🦠 ........................... cache PHOTO  🍎  🍎");
-      var m = jsonDecode(data['photo']);
-      var photo = Photo.fromJson(m);
-      hiveUtil.addPhoto(photo: photo);
-    }
-    if (data['video'] != null) {
-      pp("$mm myBackgroundMessageHandler   🦠 🦠 🦠 ........................... cache VIDEO  🍎  🍎");
-      var m = jsonDecode(data['video']);
-      var video = Video.fromJson(m);
-      hiveUtil.addVideo(video: video);
-    }
-    if (data['condition'] != null) {
-      pp("$mm myBackgroundMessageHandler   🦠 🦠 🦠 ........................... cache CONDITION  🍎  🍎");
-      var m = jsonDecode(data['condition']);
-      var condition = Condition.fromJson(m);
-      hiveUtil.addCondition(condition: condition);
-    }
-    if (data['message'] != null) {
-      pp("$mm myBackgroundMessageHandler  🦠 🦠 🦠 ........................... cache ORG MESSAGE  🍎  🍎");
-      var m = jsonDecode(data['message']);
-      var msg = OrgMessage.fromJson(m);
-      hiveUtil.addOrgMessage(message: msg);
-    }
-
+  pp("$mm myBackgroundMessageHandler   🦠 🦠 🦠........................... cache USER  🍎  🍎 string data: $data");
+  if (data['user'] != null) {
+    var m = jsonDecode(data['user']);
+    var user = User.fromJson(m);
+    hiveUtil.addUser(user: user);
+  }
+  if (data['project'] != null) {
+    pp("$mm myBackgroundMessageHandler   🦠 🦠 🦠 ........................... cache PROJECT  🍎  🍎");
+    var m = jsonDecode(data['project']);
+    var project = Project.fromJson(m);
+    hiveUtil.addProject(project: project);
+  }
+  if (data['photo'] != null) {
+    pp("$mm myBackgroundMessageHandler   🦠 🦠 🦠 ........................... cache PHOTO  🍎  🍎");
+    var m = jsonDecode(data['photo']);
+    var photo = Photo.fromJson(m);
+    hiveUtil.addPhoto(photo: photo);
+  }
+  if (data['video'] != null) {
+    pp("$mm myBackgroundMessageHandler   🦠 🦠 🦠 ........................... cache VIDEO  🍎  🍎");
+    var m = jsonDecode(data['video']);
+    var video = Video.fromJson(m);
+    hiveUtil.addVideo(video: video);
+  }
+  if (data['condition'] != null) {
+    pp("$mm myBackgroundMessageHandler   🦠 🦠 🦠 ........................... cache CONDITION  🍎  🍎");
+    var m = jsonDecode(data['condition']);
+    var condition = Condition.fromJson(m);
+    hiveUtil.addCondition(condition: condition);
+  }
+  if (data['message'] != null) {
+    pp("$mm myBackgroundMessageHandler  🦠 🦠 🦠 ........................... cache ORG MESSAGE  🍎  🍎");
+    var m = jsonDecode(data['message']);
+    var msg = OrgMessage.fromJson(m);
+    hiveUtil.addOrgMessage(message: msg);
+  }
 }

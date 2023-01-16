@@ -39,7 +39,6 @@ class ThemeBloc {
   }
 
   ThemeBag getTheme(int index) {
-    pp('$mm getTheme: getting and setting current stream ....');
     return SchemeUtil.getTheme(themeIndex: index);
   }
 
@@ -80,7 +79,6 @@ class SchemeUtil {
     return _themeBags.length;
   }
   static ThemeBag getTheme({required int themeIndex}) {
-    pp('$mm getting theme with index: 🌈 $themeIndex');
     if (_themeBags.isEmpty) {
       _setThemes();
     }
@@ -211,7 +209,6 @@ class SchemeUtil {
         lightTheme: FlexThemeData.light(scheme: FlexScheme.blumineBlue),
         darkTheme: FlexThemeData.dark(scheme: FlexScheme.blumineBlue)));
 
-    p('$mm ThemeBags set up; number of themes: ${_themeBags.length} 🍎');
   }
 }
 

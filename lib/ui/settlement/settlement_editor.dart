@@ -214,7 +214,7 @@ class SettlementEditorState extends State<SettlementEditor>
           countryName: _country!.name!,
           name: name,
           population: pop,
-          email: email, created: DateTime.now().toIso8601String(),
+          email: email, created: DateTime.now().toUtc().toIso8601String(),
         );
         await adminBloc.addCommunity(community!);
       } else {

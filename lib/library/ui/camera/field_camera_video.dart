@@ -882,7 +882,13 @@ class FieldVideoCameraState extends State<FieldVideoCamera>
 
   @override
   onError(String message) {
-    throw UnimplementedError();
+    pp('$mm $message');
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          duration: const Duration(seconds: 5),
+          backgroundColor: Theme.of(context).errorColor,
+          content: Text(message)));
+    }
   }
 
   String? url;

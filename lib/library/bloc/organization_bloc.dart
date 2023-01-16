@@ -27,7 +27,7 @@ class OrganizationBloc {
     pp('$mm OrganizationBloc constructed');
   }
   final  mm = '${Emoji.blueDot}${Emoji.blueDot}${Emoji.blueDot} '
-      'OrganizationBloc';
+      'OrganizationBloc: ';
   final StreamController<List<MonitorReport>> _reportController =
   StreamController.broadcast();
   final StreamController<List<User>> _userController =
@@ -84,43 +84,26 @@ class OrganizationBloc {
   Stream<List<Photo>> get photoStream => _photoController.stream;
 
   Stream<List<Video>> get videoStream => _videoController.stream;
-
   //
-  Future<DataBag> refreshOrganizationData(
+  Future<DataBag> getOrganizationData(
       {required String organizationId, required bool forceRefresh}) async {
     pp('$mm refreshing organization data ... photos, videos and schedules'
         ' ...forceRefresh: $forceRefresh');
 
-    DataBag bag = await _fillDataBagFromCache(organizationId);
+    DataBag bag = await hiveUtil.getOrganizationData(organizationId: organizationId);
 
     if (forceRefresh) {
+      pp('$mm get data from server; forceRefresh: $forceRefresh');
       bag = await DataAPI.getOrganizationData(organizationId);
+    } else {
+      if (bag.isEmpty()) {
+        pp('$mm bag is empty. No organization data anywhere yet? ... '
+            'will force refresh, forceRefresh: $forceRefresh');
+        bag = await DataAPI.getOrganizationData(organizationId);
+      }
     }
 
     _putContentsOfBagIntoStreams(bag);
-    return bag;
-  }
-
-  Future<DataBag> _fillDataBagFromCache(String organizationId) async {
-    var projects = await hiveUtil.getProjects(organizationId);
-    var users =  await hiveUtil.getUsers(organizationId: organizationId);
-    var photos = await hiveUtil.getOrganizationPhotos(organizationId);
-    var videos = await hiveUtil.getOrganizationVideos(organizationId);
-    var schedules = await hiveUtil.getOrganizationMonitorSchedules(organizationId);
-    var positions = await hiveUtil.getOrganizationProjectPositions(organizationId: organizationId);
-    var polygons = await hiveUtil.getOrganizationProjectPolygons(organizationId: organizationId);
-
-    var bag = DataBag(photos: photos, videos: videos, fieldMonitorSchedules: schedules,
-        projectPositions: positions, projects: projects, projectPolygons: polygons,
-        date: DateTime.now().toUtc().toIso8601String(), users: users);
-
-    pp('$mm _fillDataBagFromCache: projects: ${projects.length} '
-        'users: ${users.length} photos: ${photos.length}'
-        ' videos: ${videos.length} schedules: ${schedules.length} '
-        'positions: ${positions.length} polygons: ${polygons.length}');
-    // if (users.isEmpty) {
-    //   throw Exception('No users here, Boss!');
-    // }
     return bag;
   }
 

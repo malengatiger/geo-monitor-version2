@@ -189,7 +189,7 @@ class ProjectLocationMobileState extends State<ProjectLocationMobile>
           projectName: widget.project.name,
           caption: 'tbd',
           organizationId: org!.organizationId,
-          created: DateTime.now().toIso8601String(),
+          created: DateTime.now().toUtc().toIso8601String(),
           position: mon.Position(
               type: 'Point',
               coordinates: [_position!.longitude, _position!.latitude]),

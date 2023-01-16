@@ -113,7 +113,7 @@ class GeofencerTwo {
         geofenceEventId: const Uuid().v4(),
         projectPositionId: geofence.id,
         projectName: projectPosition.projectName,
-        date: DateTime.now().toIso8601String());
+        date: DateTime.now().toUtc().toIso8601String());
     _geofenceStreamController.sink.add(event);
     String status = geofenceStatus.toString();
     switch (status) {

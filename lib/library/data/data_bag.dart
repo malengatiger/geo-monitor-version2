@@ -2,6 +2,7 @@ import 'package:geo_monitor/library/data/project_polygon.dart';
 import 'package:hive/hive.dart';
 
 import '../data/position.dart';
+import '../functions.dart';
 import 'user.dart';
 import 'field_monitor_schedule.dart';
 import 'photo.dart';
@@ -155,4 +156,37 @@ class DataBag {
     };
     return map;
   }
+  bool isEmpty() {
+    int count = 0;
+    if (users!.isNotEmpty) {
+     count++;
+    }
+    if (projects!.isNotEmpty) {
+     count++;
+    }
+    if (projectPositions!.isNotEmpty) {
+     count++;
+    }
+    if (projectPolygons!.isNotEmpty) {
+     count++;
+    }
+    if (photos!.isNotEmpty) {
+     count++;
+    }
+    if (videos!.isNotEmpty) {
+     count++;
+    }
+    if (fieldMonitorSchedules!.isNotEmpty) {
+     count++;
+    }
+    if (count == 0) {
+      pp('💙💙💙 DataBag is empty, barren and no can do, Boss!');
+      return true;
+    }
+
+    return false;
+  }
+
+
+
 }

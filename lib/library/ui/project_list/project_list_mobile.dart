@@ -130,8 +130,9 @@ class ProjectListMobileState extends State<ProjectListMobile>
       projects.sort((a, b) => a.name!.compareTo(b.name!));
     } catch (e) {
       pp(e);
-      AppSnackbar.showErrorSnackbar(
-          scaffoldKey: _key, message: 'Data refresh failed: $e');
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('$e')));
+      }
     }
     if (mounted) {
       setState(() {
