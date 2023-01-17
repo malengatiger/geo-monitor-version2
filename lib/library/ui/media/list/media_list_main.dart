@@ -67,7 +67,7 @@ class MediaListMainState extends State<MediaListMain>
           break;
       }
     }
-      pp('MediaListMain: 💜 💜 💜 getting media for PROJECT: ${widget.project!.name!}');
+      pp('MediaListMain: 💜 💜 💜 getting media for PROJECT: ${widget.project.name!}');
 
     setState(() {
       isBusy = false;

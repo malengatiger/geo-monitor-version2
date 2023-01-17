@@ -106,7 +106,7 @@ class UserEditMobileState extends State<UserEditMobile>
               userType: type,
               gender: gender,
               created: DateTime.now().toUtc().toIso8601String(),
-              fcmRegistration: 'tbd',
+              fcmRegistration: 'tbd', password: passwordController.text,
               userId: 'tbd');
           pp('😡 😡 😡 _submit new user ......... ${user.toJson()}');
           try {

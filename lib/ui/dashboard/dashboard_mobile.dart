@@ -305,12 +305,6 @@ class DashboardMobileState extends State<DashboardMobile>
     setState(() {
       isBusy = true;
     });
-    //todo - REMOVE after test
-    var failedBags = await hiveUtil.getFailedBags();
-    var failedPhotos = await hiveUtil.getFailedPhotos();
-    var failedVideos = await hiveUtil.getFailedVideos();
-    pp('\n\n$mm failedBags; ${failedBags.length} 🔵failedPhotos: ${failedPhotos.length} '
-        '🔵 failedVideos: ${failedVideos.length} \n\n');
 
     await _doTheWork(forceRefresh);
     setState(() {

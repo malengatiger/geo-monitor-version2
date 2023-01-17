@@ -2,6 +2,7 @@ import 'dart:io';
 import 'dart:math';
 
 import 'package:geo_monitor/library/bloc/failed_bag.dart';
+import 'package:geo_monitor/library/data/organization_registration_bag.dart';
 import 'package:geo_monitor/library/data/project_polygon.dart';
 import 'package:hive/hive.dart';
 import 'package:path_provider/path_provider.dart';
@@ -9,6 +10,7 @@ import 'package:path_provider/path_provider.dart';
 import 'data/city.dart';
 import 'data/community.dart';
 import 'data/condition.dart';
+import 'data/country.dart';
 import 'data/data_bag.dart';
 import 'data/field_monitor_schedule.dart';
 import 'data/geofence_event.dart';
@@ -57,6 +59,8 @@ class HiveUtil {
   CollectionBox<Photo>? _failedPhotoBox;
   CollectionBox<Video>? _failedVideoBox;
   CollectionBox<FailedBag>? _failedBagBox;
+  CollectionBox<Country>? _countryBox;
+  CollectionBox<OrganizationRegistrationBag>? _registrationBox;
 
   bool _isInitialized = false;
 
@@ -64,11 +68,11 @@ class HiveUtil {
     if (!_isInitialized) {
       p('${Emoji.peach}${Emoji.peach}${Emoji.peach} ... Creating a Hive box collection');
       var appDir = await getApplicationDocumentsDirectory();
-      File file = File('${appDir.path}/db002.file');
+      File file = File('${appDir.path}/db008.file');
 
       try {
         _boxCollection = await BoxCollection.open(
-          'DataBoxOne002', // Name of your database
+          'DataBoxOne008', // Name of your database
           {
             'organizations',
             'projects',
@@ -87,6 +91,8 @@ class HiveUtil {
             'failedVideos',
             'projectPolygons',
             'failedBags',
+            'registrations',
+            'countries',
           },
           // Names of your boxes
           path: file
@@ -164,6 +170,18 @@ class HiveUtil {
         Hive.registerAdapter(FailedBagAdapter());
         p('${Emoji.peach}${Emoji.peach}${Emoji.peach} Hive FailedBagAdapter registered');
       }
+      if (!Hive.isAdapterRegistered(21)) {
+        Hive.registerAdapter(OrganizationRegistrationBagAdapter());
+        p('${Emoji.peach}${Emoji.peach}${Emoji.peach} Hive OrganizationRegistrationBagAdapter registered');
+      }
+      if (!Hive.isAdapterRegistered(21)) {
+        Hive.registerAdapter(OrganizationRegistrationBagAdapter());
+        p('${Emoji.peach}${Emoji.peach}${Emoji.peach} Hive OrganizationRegistrationBagAdapter registered');
+      }
+      if (!Hive.isAdapterRegistered(1)) {
+        Hive.registerAdapter(CountryAdapter());
+        p('${Emoji.peach}${Emoji.peach}${Emoji.peach} Hive CountryAdapter registered');
+      }
 
       p('${Emoji.peach}${Emoji.peach}${Emoji.peach}${Emoji.peach} Hive box collection created and types registered');
 
@@ -177,6 +195,7 @@ class HiveUtil {
         _videoBox = await _boxCollection!.openBox<Video>('videos');
         _communityBox = await _boxCollection!.openBox<Community>('communities');
         _conditionBox = await _boxCollection!.openBox<Condition>('conditions');
+        _countryBox = await _boxCollection!.openBox<Country>('countries');
         _scheduleBox =
             await _boxCollection!.openBox<FieldMonitorSchedule>('schedules');
         _orgMessageBox = await _boxCollection!.openBox<OrgMessage>('messages');
@@ -191,6 +210,8 @@ class HiveUtil {
         _failedPhotoBox = await _boxCollection!.openBox<Photo>('failedPhotos');
         _failedVideoBox = await _boxCollection!.openBox<Video>('failedVideos');
         _failedBagBox = await _boxCollection!.openBox<FailedBag>('failedBags');
+        _registrationBox = await _boxCollection!.openBox<OrganizationRegistrationBag>('registrations');
+
         //
         _isInitialized = true;
         p('${Emoji.peach}${Emoji.peach}${Emoji.peach}${Emoji.peach}'
@@ -203,6 +224,14 @@ class HiveUtil {
 
   final mm = '${Emoji.appleRed}${Emoji.appleRed}${Emoji.appleRed} HiveUtil: ';
   var random = Random(DateTime.now().millisecondsSinceEpoch);
+
+  Future addRegistration({required OrganizationRegistrationBag bag}) async {
+    pp('$mm .... addRegistration .....');
+    var key = '${bag.date}';
+    await _registrationBox?.put(key, bag);
+
+    pp('$mm OrganizationRegistrationBag added to local cache: ${bag.organization!.name}');
+  }
 
   Future addCondition({required Condition condition}) async {
     pp('$mm .... addCondition .....');
@@ -636,6 +665,11 @@ class HiveUtil {
     await _cityBox?.put(key, city);
     pp('$mm City added to local cache: 🌿 ${city.name}');
   }
+  Future addCountry({required Country country}) async {
+    var key = '${country.countryId}';
+    await _countryBox?.put(key, country);
+    pp('$mm Country added to local cache: 🌿 ${country.name}');
+  }
 
   Future addMonitorReport({required MonitorReport monitorReport}) async {
     var key =
@@ -689,6 +723,18 @@ class HiveUtil {
     pp('$mm .... getCommunities ..... found:  🌼 ${mList.length} 🌼');
     return mList;
   }
+
+  Future<List<Country>> getCountries() async {
+    var keys = await _countryBox?.getAllValues();
+    var mList = <Country>[];
+
+    if (keys != null) {
+      mList = keys.values.toList();
+    }
+    pp('$mm .... getCountries ..... found:  🌼 ${mList.length} 🌼');
+    return mList;
+  }
+
 
   Future<List<Organization>> getOrganizations() async {
     var keys = await _orgBox?.getAllKeys();

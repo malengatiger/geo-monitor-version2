@@ -29,6 +29,8 @@ class User extends HiveObject {
   String? organizationId;
   @HiveField(11)
   Position? position;
+  @HiveField(12)
+  String? password;
 
   User(
       {required this.name,
@@ -42,11 +44,12 @@ class User extends HiveObject {
       required this.organizationId,
       required this.countryId,
       this.position,
-      this.fcmRegistration});
+      this.fcmRegistration, required this.password});
 
   User.fromJson(Map data) {
     name = data['name'];
     userId = data['userId'];
+    password = data['password'];
     countryId = data['countryId'];
     gender = data['gender'];
     fcmRegistration = data['fcmRegistration'];
@@ -66,6 +69,7 @@ class User extends HiveObject {
       'userId': userId,
       'countryId': countryId,
       'gender': gender,
+      'password': password,
       'fcmRegistration': fcmRegistration,
       'email': email,
       'cellphone': cellphone,

@@ -4,6 +4,7 @@ import 'dart:io';
 
 import 'package:flutter_dotenv/flutter_dotenv.dart' as dot;
 import 'package:geo_monitor/library/bloc/connection_check.dart';
+import 'package:geo_monitor/library/data/organization_registration_bag.dart';
 import 'package:geo_monitor/library/data/project_polygon.dart';
 import 'package:geo_monitor/library/emojis.dart';
 import 'package:http/http.dart' as http;
@@ -31,7 +32,6 @@ import '../generic_functions.dart' as gen;
 import '../hive_util.dart';
 
 class DataAPI {
-
   static Map<String, String> headers = {
     'Content-type': 'application/json',
     'Accept': 'application/json',
@@ -205,6 +205,28 @@ class DataAPI {
     }
   }
 
+  static Future<OrganizationRegistrationBag> registerOrganization(
+      OrganizationRegistrationBag orgBag) async {
+    String? mURL = await getUrl();
+    Map bag = orgBag.toJson();
+    pp('$mm️ OrganizationRegistrationBag about to be sent to backend: check name: ☕️ $bag');
+    try {
+      var result = await _callWebAPIPost('${mURL!}registerOrganization', bag);
+      var u = OrganizationRegistrationBag.fromJson(result);
+      await hiveUtil.addRegistration(bag: u);
+      await hiveUtil.addUsers(users: u.sampleUsers!);
+      await hiveUtil.addProject(project: u.sampleProject!);
+      await hiveUtil.addProjectPosition(
+          projectPosition: u.sampleProjectPosition!);
+      pp('$mm️ Organization RegistrationBag complete: org:: ☕️ ${u.organization!.name!}');
+
+      return u;
+    } catch (e) {
+      pp(e);
+      rethrow;
+    }
+  }
+
   static Future<User> updateUser(User user) async {
     String? mURL = await getUrl();
     Map bag = user.toJson();
@@ -335,7 +357,8 @@ class DataAPI {
       await hiveUtil.addUsers(users: bag.users!);
       await hiveUtil.addPhotos(photos: bag.photos!);
       await hiveUtil.addVideos(videos: bag.videos!);
-      await hiveUtil.addFieldMonitorSchedules(schedules: bag.fieldMonitorSchedules!);
+      await hiveUtil.addFieldMonitorSchedules(
+          schedules: bag.fieldMonitorSchedules!);
       pp('\n$mm Data returned from server, sending to caller ...');
       return bag;
     } catch (e) {
@@ -365,8 +388,8 @@ class DataAPI {
       await hiveUtil.addUsers(users: bag.users!);
       await hiveUtil.addPhotos(photos: bag.photos!);
       await hiveUtil.addVideos(videos: bag.videos!);
-      await hiveUtil.addFieldMonitorSchedules(schedules: bag.fieldMonitorSchedules!);
-
+      await hiveUtil.addFieldMonitorSchedules(
+          schedules: bag.fieldMonitorSchedules!);
 
       return bag;
     } catch (e) {
@@ -453,8 +476,8 @@ class DataAPI {
       await hiveUtil.addUsers(users: bag.users!);
       await hiveUtil.addPhotos(photos: bag.photos!);
       await hiveUtil.addVideos(videos: bag.videos!);
-      await hiveUtil.addFieldMonitorSchedules(schedules: bag.fieldMonitorSchedules!);
-
+      await hiveUtil.addFieldMonitorSchedules(
+          schedules: bag.fieldMonitorSchedules!);
     } catch (e) {
       pp(e);
       rethrow;
@@ -906,7 +929,6 @@ class DataAPI {
     }
   }
 
-
   static Future addVideo(Video video) async {
     String? mURL = await getUrl();
 
@@ -1122,9 +1144,14 @@ class DataAPI {
       List result = await _sendHttpGET(url);
       List<Country> list = [];
       for (var m in result) {
-        list.add(Country.fromJson(m));
+        var entry = Country.fromJson(m);
+        list.add(entry);
       }
       pp('🐤🐤🐤🐤 ${list.length} Countries found 🥏');
+      list.sort((a, b) => a.name!.compareTo(b.name!));
+      for (var value in list) {
+        await hiveUtil.addCountry(country: value);
+      }
       return list;
     } catch (e) {
       pp(e);
@@ -1168,6 +1195,7 @@ class DataAPI {
         pp('$xz http POST call RESPONSE: 💙💙 statusCode: 👌👌👌 ${resp.statusCode} 👌👌👌 💙 for $mUrl');
       } else {
         pp('👿👿👿 DataAPI._callWebAPIPost: 🔆 statusCode: 👿👿👿 ${resp.statusCode} 🔆🔆🔆 for $mUrl');
+        pp(resp.body);
         throw Exception(
             '🚨 🚨 Status Code 🚨 ${resp.statusCode} 🚨 ${resp.body}');
       }

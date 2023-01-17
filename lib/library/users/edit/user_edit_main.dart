@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:geo_monitor/library/functions.dart';
 
 import 'package:responsive_builder/responsive_builder.dart';
 
 import '../../api/data_api.dart';
 import '../../data/country.dart';
 import '../../data/user.dart';
+import '../../hive_util.dart';
 import 'user_edit_desktop.dart';
 import 'user_edit_mobile.dart';
 import 'user_edit_tablet.dart';
@@ -30,10 +32,10 @@ class CountryChooser extends StatefulWidget {
   final Function(Country) onSelected;
 
   @override
-  State<CountryChooser> createState() => _CountryChooserState();
+  State<CountryChooser> createState() => CountryChooserState();
 }
 
-class _CountryChooserState extends State<CountryChooser> {
+class CountryChooserState extends State<CountryChooser> {
   List<Country> countries = <Country>[];
   bool loading = false;
   @override
@@ -45,7 +47,10 @@ class _CountryChooserState extends State<CountryChooser> {
     setState(() {
       loading = true;
     });
-    countries = await DataAPI.getCountries();
+    countries = await hiveUtil.getCountries();
+    if (countries.isEmpty) {
+      countries = await DataAPI.getCountries();
+    }
     _buildDropDown();
     setState(() {
       loading = false;
@@ -56,7 +61,7 @@ class _CountryChooserState extends State<CountryChooser> {
     for (var entry in countries) {
       list.add(DropdownMenuItem<Country>(
         value: entry,
-        child: Text(entry.name!),
+        child: Text(entry.name!, style: myTextStyleSmall(context),),
       ));
     }
   }
@@ -64,7 +69,10 @@ class _CountryChooserState extends State<CountryChooser> {
   @override
   Widget build(BuildContext context) {
 
-    return  DropdownButton(items: list, onChanged: onChanged);
+    return  DropdownButton(
+        elevation: 4, hint:  Text('Countries', style: myTextStyleSmall(context),),
+
+        items: list, onChanged: onChanged);
   }
 
   void onChanged(value) {

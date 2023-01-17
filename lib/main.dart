@@ -9,6 +9,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:geo_monitor/library/users/custom_phone_auth.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'firebase_options.dart';
@@ -85,7 +86,9 @@ class MyApp extends StatelessWidget {
     themeBloc.start();
     return GestureDetector(
       onTap: () {
-
+        pp('🌀🌀🌀🌀 Tap detected; should dismiss keyboard');
+        // FocusScope.of(context).requestFocus(FocusNode());
+        FocusManager.instance.primaryFocus?.unfocus();
       },
       child: StreamBuilder(
         stream: themeBloc.newThemeStream,
@@ -101,7 +104,8 @@ class MyApp extends StatelessWidget {
             theme: themeBloc.getTheme(themeIndex).darkTheme,
             darkTheme: themeBloc.getTheme(themeIndex).darkTheme,
             themeMode: ThemeMode.system,
-            home: const IntroMain(),
+            home: const OrgRegistrationPage(),
+            // home: const IntroMain(),
           );
         },
       ),

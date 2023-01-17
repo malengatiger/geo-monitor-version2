@@ -61,7 +61,7 @@ class ProjectPolygon extends HiveObject {
     if (data['nearestCities'] != null) {
       List list = data['nearestCities'];
       for (var c in list) {
-        nearestCities!.add(City.fromJson(c));
+        nearestCities.add(City.fromJson(c));
       }
     }
   }
