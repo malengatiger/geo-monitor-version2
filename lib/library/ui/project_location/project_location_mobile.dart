@@ -150,6 +150,7 @@ class ProjectLocationMobileState extends State<ProjectLocationMobile>
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
             duration: const Duration(seconds: 5),
+            backgroundColor: Theme.of(context).errorColor,
             content: Text('There is a project location here already for ${widget.project.name}',
               style: myTextStyleMedium(context),)));
       }
@@ -279,7 +280,7 @@ class ProjectLocationMobileState extends State<ProjectLocationMobile>
           bottom: PreferredSize(
             preferredSize: const Size.fromHeight(240),
             child: Padding(
-              padding: const EdgeInsets.all(20.0),
+              padding: const EdgeInsets.all(8.0),
               child: Column(
                 children: [
                   Text(
@@ -287,7 +288,7 @@ class ProjectLocationMobileState extends State<ProjectLocationMobile>
                     style: myTextStyleLarge(context),
                   ),
                   const SizedBox(
-                    height: 36,
+                    height: 24,
                   ),
                   Text(
                     'Add a Project Location at this location that you are at. '
@@ -303,7 +304,7 @@ class ProjectLocationMobileState extends State<ProjectLocationMobile>
                     style: myTextStyleMedium(context),
                   ),
                   const SizedBox(
-                    height: 12,
+                    height: 4,
                   ),
                   Row(
                     children: [
@@ -351,10 +352,10 @@ class ProjectLocationMobileState extends State<ProjectLocationMobile>
                 child: Column(
                   children: [
                     const SizedBox(
-                      height: 48,
+                      height: 24,
                     ),
                      Padding(
-                            padding: const EdgeInsets.all(16.0),
+                            padding: const EdgeInsets.all(8.0),
                             child: Column(
                               children: [
                                 Text(
@@ -362,7 +363,7 @@ class ProjectLocationMobileState extends State<ProjectLocationMobile>
                                   style: myTextStyleLarge(context),
                                 ),
                                 const SizedBox(
-                                  height: 32,
+                                  height: 24,
                                 ),
                                 Padding(
                                   padding: const EdgeInsets.symmetric(
@@ -415,7 +416,7 @@ class ProjectLocationMobileState extends State<ProjectLocationMobile>
                             ),
                           ),
                     const SizedBox(
-                      height: 32,
+                      height: 12,
                     ),
                     busy
                         ? const SizedBox(

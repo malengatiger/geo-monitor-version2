@@ -6,11 +6,9 @@ import 'package:focused_menu/modals.dart';
 import 'package:geo_monitor/library/data/project_position.dart';
 import 'package:geo_monitor/library/ui/maps/project_polygon_map_mobile.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:map_launcher/map_launcher.dart';
 
 import 'package:page_transition/page_transition.dart';
-import '../../api/data_api.dart';
 import '../../api/sharedprefs.dart';
 import '../../bloc/fcm_bloc.dart';
 import '../../bloc/organization_bloc.dart';
@@ -19,7 +17,6 @@ import '../../data/position.dart';
 import '../../data/project_polygon.dart';
 import '../../data/user.dart';
 import '../../functions.dart';
-import '../../hive_util.dart';
 import '../../snack.dart';
 import '../../data/user.dart' as mon;
 import '../../data/project.dart';
@@ -32,9 +29,7 @@ import '../project_location/project_location_main.dart';
 import '../project_monitor/project_monitor_mobile.dart';
 
 class ProjectListMobile extends StatefulWidget {
-  final mon.User user;
-
-  const ProjectListMobile(this.user, {super.key});
+  const ProjectListMobile({super.key});
 
   @override
   ProjectListMobileState createState() => ProjectListMobileState();
@@ -58,14 +53,8 @@ class ProjectListMobileState extends State<ProjectListMobile>
         reverseDuration: const Duration(milliseconds: 2000),
         vsync: this);
     super.initState();
-    user = widget.user;
-    if (user == null) {
-      _getUser();
-    } else {
-      _setUserType();
-    }
+    _getUser();
     _listen();
-    refreshProjects(false);
   }
 
   void _listen() {
@@ -85,7 +74,15 @@ class ProjectListMobileState extends State<ProjectListMobile>
       isBusy = true;
     });
     user = await Prefs.getUser();
-    _setUserType();
+    if (user != null) {
+      pp('$mm user found: ${user!.toJson()}');
+      _setUserType();
+      await refreshProjects(false);
+    } else {
+      pp('$mm user NOT found!!! 🥏 🥏 🥏');
+
+      throw Exception('$mm Fucked! we are! user is null???');
+    }
     setState(() {
       isBusy = false;
     });
@@ -98,7 +95,10 @@ class ProjectListMobileState extends State<ProjectListMobile>
           userTypeLabel = 'Field Monitor';
           break;
         case ORG_ADMINISTRATOR:
-          userTypeLabel = 'Team Administrator';
+          userTypeLabel = 'Administrator';
+          break;
+        case ORG_EXECUTIVE:
+          userTypeLabel = 'Executive';
           break;
       }
     });
@@ -111,8 +111,8 @@ class ProjectListMobileState extends State<ProjectListMobile>
   }
 
   Future refreshProjects(bool forceRefresh) async {
-    if (isBusy) return;
-    pp('$mm ........... refresh projects');
+
+    pp('$mm 🥏 🥏 🥏 .................... refresh projects: forceRefresh: $forceRefresh');
     if (mounted) {
       setState(() {
         isBusy = true;
@@ -124,14 +124,16 @@ class ProjectListMobileState extends State<ProjectListMobile>
         projects = await projectBloc.getProjectsWithinRadius(
             radiusInKM: sliderValue, checkUserOrg: true);
       } else {
-        projects = await organizationBloc.getProjects(
+        pp('$mm  🥏 🥏 🥏 getOrganizationProjects, orgId: ${user!.organizationId} k 🥏');
+        projects = await organizationBloc.getOrganizationProjects(
             organizationId: user!.organizationId!, forceRefresh: forceRefresh);
       }
       projects.sort((a, b) => a.name!.compareTo(b.name!));
     } catch (e) {
       pp(e);
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('$e')));
+        ScaffoldMessenger.of(context)
+            .showSnackBar(SnackBar(content: Text('$e')));
       }
     }
     if (mounted) {
@@ -212,10 +214,10 @@ class ProjectListMobileState extends State<ProjectListMobile>
   void _navigateToProjectMap(Project p) async {
     pp('.................. _navigateToProjectMap: ');
 
-    var positions = await projectBloc.getProjectPositions(projectId: p.projectId!,
-        forceRefresh: false);
-    var polygons = await projectBloc.getProjectPolygons(projectId: p.projectId!,
-        forceRefresh: false);
+    var positions = await projectBloc.getProjectPositions(
+        projectId: p.projectId!, forceRefresh: false);
+    var polygons = await projectBloc.getProjectPolygons(
+        projectId: p.projectId!, forceRefresh: false);
     if (mounted) {
       Navigator.push(
           context,
@@ -246,6 +248,7 @@ class ProjectListMobileState extends State<ProjectListMobile>
               )));
     }
   }
+
   bool _showPositionChooser = false;
   void _navigateToDirections(
       {required double latitude, required double longitude}) async {
@@ -257,6 +260,7 @@ class ProjectListMobileState extends State<ProjectListMobile>
     var coordinates = Coords(latitude, longitude);
     await availableMaps.first.showDirections(destination: coordinates);
   }
+
   _onPositionSelected(Position p1) {
     setState(() {
       _showPositionChooser = false;
@@ -293,17 +297,16 @@ class ProjectListMobileState extends State<ProjectListMobile>
       }
     } catch (e) {
       pp(e);
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          duration: const Duration(seconds: 10),
-          content: Text('$e')));
+      ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(duration: const Duration(seconds: 10), content: Text('$e')));
     }
     setState(() {
       isBusy = false;
       _showPositionChooser = true;
     });
     _animationController.forward();
-
   }
+
   List<FocusedMenuItem> getPopUpMenuItems(Project project) {
     List<FocusedMenuItem> menuItems = [];
     menuItems.add(
@@ -320,7 +323,7 @@ class ProjectListMobileState extends State<ProjectListMobile>
             color: Theme.of(context).primaryColor,
           ),
           onPressed: () {
-           _startDirections(project);
+            _startDirections(project);
           }),
     );
     menuItems.add(
@@ -340,7 +343,6 @@ class ProjectListMobileState extends State<ProjectListMobile>
             _navigateToProjectMap(project);
           }),
     );
-
 
     menuItems.add(
       FocusedMenuItem(
@@ -423,6 +425,7 @@ class ProjectListMobileState extends State<ProjectListMobile>
   }
 
   final _key = GlobalKey<ScaffoldState>();
+
   List<IconButton> _getActions() {
     List<IconButton> list = [];
     list.add(IconButton(
@@ -456,7 +459,8 @@ class ProjectListMobileState extends State<ProjectListMobile>
       list.add(
         IconButton(
           icon: Icon(
-            Icons.map, size: 20,
+            Icons.map,
+            size: 20,
             color: Theme.of(context).primaryColor,
           ),
           onPressed: () {
@@ -465,30 +469,21 @@ class ProjectListMobileState extends State<ProjectListMobile>
         ),
       );
     }
-    if (user!.userType == ORG_ADMINISTRATOR) {
-      list.add(
-        IconButton(
-          icon: Icon(
-            Icons.add,
-            size: 20,
-            color: Theme.of(context).primaryColor,
+    if (user != null) {
+      if (user!.userType == ORG_ADMINISTRATOR) {
+        list.add(
+          IconButton(
+            icon: Icon(
+              Icons.add,
+              size: 20,
+              color: Theme.of(context).primaryColor,
+            ),
+            onPressed: () {
+              _navigateToDetail(null);
+            },
           ),
-          onPressed: () {
-            _navigateToDetail(null);
-          },
-        ),
-      );
-      // list.add(
-      //   IconButton(
-      //     icon: Icon(
-      //       Icons.location_pin,
-      //       size: 20,
-      //     ),
-      //     onPressed: () {
-      //       _navigateToDetail(null);
-      //     },
-      //   ),
-      // );
+        );
+      }
     }
     return list;
   }
@@ -496,245 +491,252 @@ class ProjectListMobileState extends State<ProjectListMobile>
   @override
   Widget build(BuildContext context) {
     return SafeArea(
-      child: StreamBuilder<List<Project>>(
-          stream: organizationBloc.projectStream,
-          builder: (context, snapshot) {
-            if (snapshot.hasData) {
-              projects = snapshot.data!;
-            }
-            return Scaffold(
-                key: _key,
-                appBar: AppBar(
-                  title: Text('Projects',
+      child: Scaffold(
+          key: _key,
+          appBar: AppBar(
+            actions: _getActions(),
+            bottom: PreferredSize(
+              preferredSize:
+              Size.fromHeight(isProjectsByLocation ? 160 : 100),
+              child: Column(
+                children: [
+                  Text(
+                      user == null
+                          ? 'Unknown User'
+                          : user!.organizationName!,
                       style: GoogleFonts.lato(
-                          textStyle: Theme.of(context).textTheme.bodyMedium,
-                          fontWeight: FontWeight.normal)),
-                  actions: _getActions(),
-                  bottom: PreferredSize(
-                    preferredSize:
-                        Size.fromHeight(isProjectsByLocation ? 160 : 60),
-                    child: Column(
-                      children: [
-                        Text(
-                            user == null
-                                ? 'Unknown User'
-                                : user!.organizationName!,
-                            style: GoogleFonts.lato(
-                                textStyle:
-                                    Theme.of(context).textTheme.bodyLarge,
-                                fontWeight: FontWeight.w600)),
-                        const SizedBox(
-                          height: 8,
-                        ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.end,
-                          children: [
-                            isProjectsByLocation
-                                ? Row(
-                                    children: [
-                                      SliderTheme(
-                                        data: SliderTheme.of(context).copyWith(
-                                          activeTrackColor: Colors.pink[700],
-                                          inactiveTrackColor: Colors.pink[100],
-                                          trackShape:
-                                              const RoundedRectSliderTrackShape(),
-                                          trackHeight: 4.0,
-                                          thumbShape:
-                                              const RoundSliderThumbShape(
-                                                  enabledThumbRadius: 12.0),
-                                          thumbColor: Colors.pinkAccent,
-                                          overlayColor:
-                                              Colors.pink.withAlpha(32),
-                                          overlayShape:
-                                              const RoundSliderOverlayShape(
-                                                  overlayRadius: 28.0),
-                                          tickMarkShape:
-                                              const RoundSliderTickMarkShape(),
-                                          activeTickMarkColor: Colors.pink[700],
-                                          inactiveTickMarkColor:
-                                              Colors.pink[100],
-                                          valueIndicatorShape:
-                                              const PaddleSliderValueIndicatorShape(),
-                                          valueIndicatorColor:
-                                              Colors.pinkAccent,
-                                          valueIndicatorTextStyle:
-                                              const TextStyle(
-                                            color: Colors.white,
-                                          ),
-                                        ),
-                                        child: Slider(
-                                          value: sliderValue,
-                                          min: 10,
-                                          max: 50,
-                                          divisions: 5,
-                                          label: '$sliderValue',
-                                          onChanged: _onSliderChanged,
-                                        ),
-                                      ),
-                                      // SizedBox(
-                                      //   width: 8,
-                                      // ),
-                                      Text(
-                                        '$sliderValue',
-                                        style: Styles.whiteBoldSmall,
-                                      )
-                                    ],
-                                  )
-                                : Container(),
-                            const SizedBox(
-                              width: 24,
-                            ),
-                          ],
-                        ),
-                        const SizedBox(
-                          height: 20,
-                        ),
-                      ],
-                    ),
+                          textStyle:
+                          Theme.of(context).textTheme.bodyLarge,
+                          fontWeight: FontWeight.w600)),
+                  const SizedBox(
+                    height: 8,
                   ),
-                ),
-                // backgroundColor: Colors.brown[100],
-                body: isBusy
-                    ? Center(
-                        child: Column(
-                          children: [
-                            const SizedBox(
-                              height: 100,
-                            ),
-                            const SizedBox(
-                              width: 20,
-                              height: 20,
-                              child: CircularProgressIndicator(
-                                strokeWidth: 4,
-                                backgroundColor: Colors.pink,
+                  Text('Organization Projects', style: myTextStyleSmall(context),),
+                  const SizedBox(
+                    height: 8,
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      isProjectsByLocation
+                          ? Row(
+                        children: [
+                          SliderTheme(
+                            data: SliderTheme.of(context).copyWith(
+                              activeTrackColor: Colors.pink[700],
+                              inactiveTrackColor: Colors.pink[100],
+                              trackShape:
+                              const RoundedRectSliderTrackShape(),
+                              trackHeight: 4.0,
+                              thumbShape:
+                              const RoundSliderThumbShape(
+                                  enabledThumbRadius: 12.0),
+                              thumbColor: Colors.pinkAccent,
+                              overlayColor:
+                              Colors.pink.withAlpha(32),
+                              overlayShape:
+                              const RoundSliderOverlayShape(
+                                  overlayRadius: 28.0),
+                              tickMarkShape:
+                              const RoundSliderTickMarkShape(),
+                              activeTickMarkColor: Colors.pink[700],
+                              inactiveTickMarkColor:
+                              Colors.pink[100],
+                              valueIndicatorShape:
+                              const PaddleSliderValueIndicatorShape(),
+                              valueIndicatorColor:
+                              Colors.pinkAccent,
+                              valueIndicatorTextStyle:
+                              const TextStyle(
+                                color: Colors.white,
                               ),
                             ),
-                            const SizedBox(
-                              height: 20,
+                            child: Slider(
+                              value: sliderValue,
+                              min: 10,
+                              max: 50,
+                              divisions: 5,
+                              label: '$sliderValue',
+                              onChanged: _onSliderChanged,
                             ),
-                            Text(isProjectsByLocation
-                                ? 'Finding Projects within $sliderValue KM'
-                                : 'Finding Organization Projects ...', style: myTextStyleMedium(context),),
-                          ],
-                        ),
+                          ),
+                          // SizedBox(
+                          //   width: 8,
+                          // ),
+                          Text(
+                            '$sliderValue',
+                            style: Styles.whiteBoldSmall,
+                          )
+                        ],
                       )
-                    : Padding(
-                        padding: const EdgeInsets.all(12.0),
-                        child: projects.isEmpty
-                            ? Center(
-                                child: Text('Projects Not Found',
-                                    style: GoogleFonts.lato(
-                                        textStyle: Theme.of(context)
-                                            .textTheme
-                                            .bodyLarge,
-                                        fontWeight: FontWeight.w900)),
-                              )
-                            : Stack(
-                                children: [
-                                  Badge(
-                                    position:
-                                        BadgePosition.topEnd(top: -8, end: -2),
-                                    badgeContent: Padding(
-                                      padding: const EdgeInsets.all(4.0),
-                                      child: Text(
-                                        '${projects.length}',
-                                        style: myNumberStyleSmall(context)
-                                      ),
-                                    ),
-                                    badgeColor: Theme.of(context).primaryColor,
-                                    elevation: 8,
-                                    child: AnimatedBuilder(
-                                      animation: _animationController,
-                                      builder: (BuildContext context, Widget? child) {
-                                        return FadeScaleTransition(animation: _animationController, child: child,);
-                                      },
-                                      child: ListView.builder(
-                                        itemCount: projects.length,
-                                        itemBuilder:
-                                            (BuildContext context, int index) {
-                                          var selectedProject =
-                                              projects.elementAt(index);
+                          : Container(),
+                      const SizedBox(
+                        width: 24,
+                      ),
+                    ],
+                  ),
+                  const SizedBox(
+                    height: 20,
+                  ),
+                ],
+              ),
+            ),
+          ),
+          // backgroundColor: Colors.brown[100],
+          body: isBusy
+              ? Center(
+            child: Column(
+              children: [
+                const SizedBox(
+                  height: 100,
+                ),
+                const SizedBox(
+                  width: 20,
+                  height: 20,
+                  child: CircularProgressIndicator(
+                    strokeWidth: 4,
+                    backgroundColor: Colors.pink,
+                  ),
+                ),
+                const SizedBox(
+                  height: 20,
+                ),
+                Text(
+                  isProjectsByLocation
+                      ? 'Finding Projects within $sliderValue KM'
+                      : 'Finding Organization Projects ...',
+                  style: myTextStyleMedium(context),
+                ),
+              ],
+            ),
+          )
+              : Padding(
+              padding: const EdgeInsets.all(12.0),
+              child: projects.isEmpty
+                  ? Center(
+                child: Text('Projects Not Found',
+                    style: GoogleFonts.lato(
+                        textStyle: Theme.of(context)
+                            .textTheme
+                            .bodyLarge,
+                        fontWeight: FontWeight.w900)),
+              )
+                  : Stack(
+                children: [
+                  Badge(
+                    position:
+                    BadgePosition.topEnd(top: -8, end: -2),
+                    badgeContent: Padding(
+                      padding: const EdgeInsets.all(4.0),
+                      child: Text('${projects.length}',
+                          style: myNumberStyleSmall(context)),
+                    ),
+                    badgeColor: Theme.of(context).primaryColor,
+                    elevation: 8,
+                    child: AnimatedBuilder(
+                      animation: _animationController,
+                      builder: (BuildContext context,
+                          Widget? child) {
+                        return FadeScaleTransition(
+                          animation: _animationController,
+                          child: child,
+                        );
+                      },
+                      child: ListView.builder(
+                        itemCount: projects.length,
+                        itemBuilder:
+                            (BuildContext context, int index) {
+                          var selectedProject =
+                          projects.elementAt(index);
 
-                                          return FocusedMenuHolder(
-                                            menuOffset: 20,
-                                            duration:
-                                                const Duration(milliseconds: 300),
-                                            menuItems: getPopUpMenuItems(
-                                                selectedProject),
-                                            animateMenuItems: true,
-                                            openWithTap: true,
-                                            onPressed: () {
-                                              pp('.... 💛️ 💛️ 💛️ not sure what I pressed ...');
-                                            },
-                                            child: Card(
-                                              elevation: 4,
-                                              shape: RoundedRectangleBorder(
-                                                  borderRadius:
-                                                      BorderRadius.circular(
-                                                          16.0)),
-                                              child: Padding(
-                                                padding:
-                                                    const EdgeInsets.all(12.0),
-                                                child: Column(
-                                                  children: [
-                                                    const SizedBox(
-                                                      height: 12,
-                                                    ),
-                                                    Row(
-                                                      children: [
-                                                        Opacity(
-                                                          opacity: 0.5,
-                                                          child: Icon(
-                                                            Icons.water_damage,
-                                                            color:
-                                                                Theme.of(context)
-                                                                    .primaryColor,
-                                                          ),
-                                                        ),
-                                                        const SizedBox(
-                                                          width: 8,
-                                                        ),
-                                                        Flexible(
-                                                          child: Text(selectedProject.name!,
-                                                              style: GoogleFonts.lato(
-                                                                  textStyle: Theme.of(
-                                                                          context)
-                                                                      .textTheme
-                                                                      .bodySmall,
-                                                                  fontWeight:
-                                                                      FontWeight
-                                                                          .bold)),
-                                                        )
-                                                      ],
-                                                    ),
-                                                    const SizedBox(
-                                                      height: 12,
-                                                    ),
-                                                  ],
-                                                ),
-                                              ),
-                                            ),
-                                          );
-                                        },
-                                      ),
+                          return FocusedMenuHolder(
+                            menuOffset: 20,
+                            duration: const Duration(
+                                milliseconds: 300),
+                            menuItems: getPopUpMenuItems(
+                                selectedProject),
+                            animateMenuItems: true,
+                            openWithTap: true,
+                            onPressed: () {
+                              pp('.... 💛️ 💛️ 💛️ not sure what I pressed ...');
+                            },
+                            child: Card(
+                              elevation: 4,
+                              shape: RoundedRectangleBorder(
+                                  borderRadius:
+                                  BorderRadius.circular(
+                                      16.0)),
+                              child: Padding(
+                                padding:
+                                const EdgeInsets.all(12.0),
+                                child: Column(
+                                  children: [
+                                    const SizedBox(
+                                      height: 12,
                                     ),
-                                  ),
-                                  _showPositionChooser? Positioned(child: AnimatedBuilder(
-                                    animation: _animationController,
-                                    builder: (BuildContext context, Widget? child) {
-                                      return FadeScaleTransition(animation: _animationController,
-                                      child: child,);
-                                    },
-                                    child: ProjectLocationChooser(
-                                      onSelected: _onPositionSelected,
-                                      onClose: _onClose,
-                                      projectPositions: positions,
-                                      polygons: polygons,
+                                    Row(
+                                      children: [
+                                        Opacity(
+                                          opacity: 0.5,
+                                          child: Icon(
+                                            Icons.water_damage,
+                                            color: Theme.of(
+                                                context)
+                                                .primaryColor,
+                                          ),
+                                        ),
+                                        const SizedBox(
+                                          width: 8,
+                                        ),
+                                        Flexible(
+                                          child: Text(
+                                              selectedProject
+                                                  .name!,
+                                              style: GoogleFonts.lato(
+                                                  textStyle: Theme.of(
+                                                      context)
+                                                      .textTheme
+                                                      .bodySmall,
+                                                  fontWeight:
+                                                  FontWeight
+                                                      .bold)),
+                                        )
+                                      ],
                                     ),
-                                  ),):const SizedBox(),
-                                ],
-                              )));
-          }),
+                                    const SizedBox(
+                                      height: 12,
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+                  ),
+                  _showPositionChooser
+                      ? Positioned(
+                    child: AnimatedBuilder(
+                      animation: _animationController,
+                      builder: (BuildContext context,
+                          Widget? child) {
+                        return FadeScaleTransition(
+                          animation: _animationController,
+                          child: child,
+                        );
+                      },
+                      child: ProjectLocationChooser(
+                        onSelected: _onPositionSelected,
+                        onClose: _onClose,
+                        projectPositions: positions,
+                        polygons: polygons,
+                      ),
+                    ),
+                  )
+                      : const SizedBox(),
+                ],
+              )))
     );
   }
 

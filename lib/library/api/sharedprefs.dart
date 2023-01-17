@@ -26,6 +26,23 @@ class Prefs {
     }
   }
 
+  static void setFileCounter(int index) async {
+    final preferences = await SharedPreferences.getInstance();
+    await preferences.setInt('fileCounter', index);
+    pp('🔵🔵🔵 Prefs: fileCounter set to: $index 🍎🍎 ');
+  }
+
+  static Future<int> getFileCounter() async {
+    final preferences = await SharedPreferences.getInstance();
+    var b = preferences.getInt('fileCounter');
+    if (b == null) {
+      pp('🔵🔵🔵 Prefs: fileCounter does not exist. default to 0 🍏🍏 ');
+      return 0;
+    } else {
+      return b;
+    }
+  }
+
   static Future saveUser(User user) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
 
@@ -45,7 +62,7 @@ class Prefs {
     }
     var jx = json.decode(string);
     var user = User.fromJson(jx);
-    pp("🌽 🌽 🌽 Prefs.getUser 🧩  ${user.name} retrieved");
+    pp("🌽🌽🌽 Prefs.getUser 🧩  ${user.name} retrieved");
     return user;
   }
 

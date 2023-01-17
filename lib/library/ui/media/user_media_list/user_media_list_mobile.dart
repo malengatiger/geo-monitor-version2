@@ -365,7 +365,7 @@ class _ProjectChooserState extends State<ProjectChooser> with SingleTickerProvid
       loading = true;
     });
     user = await Prefs.getUser();
-    _projects = await organizationBloc.getProjects(
+    _projects = await organizationBloc.getOrganizationProjects(
         organizationId: user!.organizationId!, forceRefresh: forceRefresh);
 
     setState(() {

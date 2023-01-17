@@ -1,11 +1,12 @@
 import 'dart:async';
 
 import 'package:animations/animations.dart';
+import 'package:firebase_auth/firebase_auth.dart' as fb;
 import 'package:flutter/material.dart';
 import 'package:geo_monitor/library/bloc/connection_check.dart';
 import 'package:geo_monitor/library/data/data_bag.dart';
 import 'package:geo_monitor/library/data/project_polygon.dart';
-import 'package:geo_monitor/library/hive_util.dart';
+import 'package:geo_monitor/ui/intro_page_viewer.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:universal_platform/universal_platform.dart';
@@ -13,7 +14,6 @@ import 'package:universal_platform/universal_platform.dart';
 import '../../library/api/sharedprefs.dart';
 import '../../library/bloc/fcm_bloc.dart';
 import '../../library/bloc/organization_bloc.dart';
-import '../../library/bloc/user_bloc.dart';
 import '../../library/bloc/theme_bloc.dart';
 import '../../library/data/field_monitor_schedule.dart';
 import '../../library/data/org_message.dart';
@@ -25,19 +25,17 @@ import '../../library/data/video.dart';
 import '../../library/functions.dart';
 import '../../library/generic_functions.dart';
 import '../../library/geofence/geofencer_two.dart';
-import '../../library/snack.dart';
 import '../../library/ui/media/user_media_list/user_media_list_main.dart';
 import '../../library/ui/media/user_media_list/user_media_list_mobile.dart';
 import '../../library/ui/message/message_main.dart';
 import '../../library/ui/project_list/project_list_mobile.dart';
 import '../../library/users/list/user_list_main.dart';
 import '../intro/intro_mobile.dart';
-import '../schedules/schedules_list_main.dart';
 
 class DashboardMobile extends StatefulWidget {
-  final User user;
-  const DashboardMobile({Key? key, required this.user}) : super(key: key);
 
+  const DashboardMobile({Key? key, this.user,}) : super(key: key);
+  final User? user;
   @override
   DashboardMobileState createState() => DashboardMobileState();
 }
@@ -63,7 +61,7 @@ class DashboardMobileState extends State<DashboardMobile>
   static const nn = '🎽🎽🎽🎽🎽🎽 DashboardMobile: 🎽';
   static const mm = '🎽🎽🎽🎽🎽🎽 DashboardMobile: 🎽';
   bool networkAvailable = false;
-  final dur = 1000;
+  final dur = 600;
   @override
   void initState() {
     _projectAnimationController = AnimationController(
@@ -92,30 +90,51 @@ class DashboardMobileState extends State<DashboardMobile>
         vsync: this);
     super.initState();
     _setItems();
-    //_listenToStreams();
+    _listenToStreams();
     _listenForFCM();
-    _refreshData(false);
+    if (widget.user != null) {
+      _refreshData(true);
+    } else {
+      _refreshData(false);
+    }
     _subscribeToConnectivity();
     _subscribeToGeofenceStream();
     _buildGeofences();
+
+
+  }
+  void _checkAuth() async {
+    _getAuthenticationStatus();
   }
 
-  // void _listenToStreams() async {
-  //   var user = await Prefs.getUser();
-  //   if (user == null) return;
-  //   switch(user.userType) {
-  //     case UserType.orgExecutive:
-  //       _listenToOrgStreams();
-  //       break;
-  //     case UserType.orgAdministrator:
-  //       _listenToOrgStreams();
-  //       break;
-  //     case UserType.fieldMonitor:
-  //       _listenToMonitorStreams();
-  //       break;
-  //   }
-  //
-  // }
+  final fb.FirebaseAuth firebaseAuth = fb.FirebaseAuth.instance;
+  bool authed = false;
+  void _getAuthenticationStatus() async {
+    var cUser = firebaseAuth.currentUser;
+    if (cUser == null) {
+      Future.delayed(const Duration(milliseconds: 200), () {
+        _navigateToIntro();
+      });
+      //
+    }
+  }
+
+  void _listenToStreams() async {
+    var user = await Prefs.getUser();
+    if (user == null) return;
+    switch(user.userType) {
+      case UserType.orgExecutive:
+        _listenToOrgStreams();
+        break;
+      case UserType.orgAdministrator:
+        _listenToOrgStreams();
+        break;
+      case UserType.fieldMonitor:
+        _listenToMonitorStreams();
+        break;
+    }
+
+  }
 
   void _buildGeofences() async {
     pp('\n\n$nn _buildGeofences starting ........................');
@@ -353,7 +372,6 @@ class DashboardMobileState extends State<DashboardMobile>
     });
   }
 
-  // int _refreshCnt = 0;
   Future _extractData(DataBag bag) async {
     pp('$mm ............ Extracting org data from bag');
     _projects = bag.projects!;
@@ -379,13 +397,13 @@ class DashboardMobileState extends State<DashboardMobile>
       fcmBloc.projectStream.listen((Project project) async {
         if (mounted) {
           pp('DashboardMobile: 🍎 🍎 showProjectSnackbar: ${project.name} ... 🍎 🍎');
-          _projects = await organizationBloc.getProjects(
+          _projects = await organizationBloc.getOrganizationProjects(
               organizationId: user!.organizationId!, forceRefresh: false);
           setState(() {});
         }
       });
 
-      fcmBloc.userStream.listen((User user) async {
+      fcmBloc.userStream.listen((user) async {
         if (mounted) {
           pp('DashboardMobile: 🍎 🍎 showUserSnackbar: ${user.name} ... 🍎 🍎');
           _users = await organizationBloc.getUsers(
@@ -437,7 +455,7 @@ class DashboardMobileState extends State<DashboardMobile>
             type: PageTransitionType.scale,
             alignment: Alignment.topLeft,
             duration: const Duration(seconds: 1),
-            child: ProjectListMobile(widget.user)));
+            child: const ProjectListMobile()));
   }
 
   void _navigateToMessageSender() {
@@ -475,7 +493,7 @@ class DashboardMobileState extends State<DashboardMobile>
   }
 
   void _navigateToIntro() {
-    pp('$mm _navigateToIntro to Intro ....');
+    pp('$mm .................. _navigateToIntro to Intro ....');
     if (mounted) {
       Navigator.push(
           context,
@@ -483,8 +501,7 @@ class DashboardMobileState extends State<DashboardMobile>
               type: PageTransitionType.scale,
               alignment: Alignment.topLeft,
               duration: const Duration(seconds: 1),
-              child: IntroMobile(
-                user: widget.user,
+              child: const IntroPageViewer(
               )));
     }
   }
@@ -517,10 +534,7 @@ class DashboardMobileState extends State<DashboardMobile>
         child: Scaffold(
       key: _key,
       appBar: AppBar(
-        title: Text(
-          'Digital Monitor',
-          style: Styles.whiteTiny,
-        ),
+
         actions: [
           IconButton(
               icon: Icon(
@@ -551,25 +565,28 @@ class DashboardMobileState extends State<DashboardMobile>
           )
         ],
         bottom: PreferredSize(
-          preferredSize: const Size.fromHeight(72),
+          preferredSize: const Size.fromHeight(100),
           child: Padding(
             padding: const EdgeInsets.all(8.0),
             child: Column(
               children: [
-                Text(
-                  widget.user.organizationName!,
+                user == null? const SizedBox(): Text(
+                  user!.organizationName!,
                   style: GoogleFonts.lato(
                     textStyle: Theme.of(context).textTheme.bodySmall,
                     fontWeight: FontWeight.w900,
                   ),
                 ),
                 const SizedBox(
-                  height: 8,
+                  height: 16,
                 ),
-                Text(widget.user.name!,
+                user == null? const SizedBox(): Text(user!.name!,
                     style: GoogleFonts.lato(
                         textStyle: Theme.of(context).textTheme.headline6,
                         fontWeight: FontWeight.normal)),
+                const SizedBox(
+                  height: 12,
+                ),
                 user == null
                     ? const Text('')
                     : Text(

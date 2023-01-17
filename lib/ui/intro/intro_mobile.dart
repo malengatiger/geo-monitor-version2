@@ -1,20 +1,23 @@
 
+import 'package:firebase_auth/firebase_auth.dart' as fb;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:geo_monitor/library/users/org_registration.dart';
+import 'package:geo_monitor/library/users/phone_login.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:introduction_screen/introduction_screen.dart';
 
 import 'package:page_transition/page_transition.dart';
 
 import '../../library/api/sharedprefs.dart';
-import '../../library/data/user.dart';
+import '../../library/data/user.dart' as ur;
 import '../../library/functions.dart';
 import '../../library/ui/signin.dart';
 import '../dashboard/dashboard_main.dart';
 
 class IntroMobile extends StatefulWidget {
-  final User? user;
-  const IntroMobile({Key? key, this.user}) : super(key: key);
+
+  const IntroMobile({Key? key, }) : super(key: key);
   @override
   IntroMobileState createState() => IntroMobileState();
 }
@@ -22,26 +25,28 @@ class IntroMobile extends StatefulWidget {
 class IntroMobileState extends State<IntroMobile>
     with SingleTickerProviderStateMixin {
   late AnimationController _controller;
-  User? user;
+  ur.User? user;
   var lorem =
       'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed ac sagittis lectus. Aliquam dictum elementum massa, '
       'eget mollis elit rhoncus ut.';
+  bool authed = false;
+  fb.FirebaseAuth firebaseAuth = fb.FirebaseAuth.instance;
 
   @override
   void initState() {
     _controller = AnimationController(vsync: this);
-    user = widget.user;
     super.initState();
-    _getUser();
+    _getAuthenticationStatus();
 
   }
-  void _getUser() async {
-    if (widget.user == null) {
-      user = await Prefs.getUser();
-      if (user != null) {
-        _navigateToDashboard();
+  void _getAuthenticationStatus() async {
+      var cUser = firebaseAuth.currentUser;
+      if (cUser != null) {
+        setState(() {
+          authed = true;
+        });
       }
-    }
+
   }
 
   @override
@@ -57,11 +62,11 @@ class IntroMobileState extends State<IntroMobile>
       child: Scaffold(
         key: _key,
         appBar: AppBar(
-          leading: widget.user == null? IconButton(icon: const Icon(Icons.arrow_back_ios), onPressed: () {
+          leading: user == null? IconButton(icon: const Icon(Icons.arrow_back_ios), onPressed: () {
             Navigator.pop(context);
           },) : Container(),
           title: Text(
-            'The Digital Monitor Platform',
+            'The Digital Monitor',
             style: GoogleFonts.lato(
               textStyle: Theme.of(context).textTheme.bodyMedium,
               fontWeight: FontWeight.w900,),
@@ -71,18 +76,24 @@ class IntroMobileState extends State<IntroMobile>
             child: Column(
               children: [
                 // user == null
-                     Row(
+                     authed? const SizedBox(): Row(
                         mainAxisAlignment: MainAxisAlignment.end,
                         children: [
                           const SizedBox(
-                            width: 48,
+                            width: 12,
                           ),
                           TextButton(
                             onPressed: _navigateToSignIn,
                             child:
-                                Text('Sign In', style: GoogleFonts.lato(
-                                  textStyle: Theme.of(context).textTheme.bodyMedium,
-                                  fontWeight: FontWeight.w900,),),
+                                Text('Sign In', style: myTextStyleSmall(context),),
+                          ),
+                          const SizedBox(
+                            width: 16,
+                          ),
+                          TextButton(
+                            onPressed: _navigateToOrgRegistration,
+                            child:
+                            Text('Register Organization', style: myTextStyleSmall(context),),
                           ),
                           const SizedBox(
                             width: 24,
@@ -187,7 +198,7 @@ class IntroMobileState extends State<IntroMobile>
               type: PageTransitionType.scale,
               alignment: Alignment.topLeft,
               duration: const Duration(seconds: 1),
-              child: DashboardMain(user: user!,)));
+              child: const DashboardMain()));
     } else {
       pp('User is null,  🔆 🔆 🔆 🔆 cannot navigate to Dashboard');
     }
@@ -200,9 +211,29 @@ class IntroMobileState extends State<IntroMobile>
             type: PageTransitionType.scale,
             alignment: Alignment.topLeft,
             duration: const Duration(seconds: 1),
-            child: const SignIn()));
+            child: const PhoneLogin()));
 
-    if (result is User) {
+    if (result is ur.User) {
+      pp(' 👌👌👌 Returned from sign in; will navigate to Dashboard :  👌👌👌 ${result.toJson()}');
+      setState(() {
+        user = result;
+      });
+      _navigateToDashboard();
+    } else {
+      pp(' 😡  😡  Returned from sign in is NOT a user :  😡 $result');
+    }
+  }
+
+  Future<void> _navigateToOrgRegistration() async {
+    var result = await Navigator.push(
+        context,
+        PageTransition(
+            type: PageTransitionType.scale,
+            alignment: Alignment.topLeft,
+            duration: const Duration(seconds: 1),
+            child: const OrgRegistrationPage()));
+
+    if (result is ur.User) {
       pp(' 👌👌👌 Returned from sign in; will navigate to Dashboard :  👌👌👌 ${result.toJson()}');
       setState(() {
         user = result;

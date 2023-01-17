@@ -97,7 +97,7 @@ class ProjectEditMobileState extends State<ProjectEditMobile>
         setState(() {
           isBusy = false;
         });
-        organizationBloc.getProjects(
+        organizationBloc.getOrganizationProjects(
             organizationId: mProject.organizationId!, forceRefresh: true);
         _navigateToProjectLocation(mProject);
       } catch (e) {

@@ -7,6 +7,7 @@ import 'package:geo_monitor/library/data/project_polygon.dart';
 import 'package:hive/hive.dart';
 import 'package:path_provider/path_provider.dart';
 
+import 'api/sharedprefs.dart';
 import 'data/city.dart';
 import 'data/community.dart';
 import 'data/condition.dart';
@@ -31,6 +32,10 @@ import 'generic_functions.dart';
 
 const stillWorking = 201, doneCaching = 200;
 HiveUtil hiveUtil = HiveUtil._instance;
+
+var fileCounter = 0;
+const databaseFileName = 'db';
+const boxCollection = 'BoxCollection';
 
 class HiveUtil {
   static final HiveUtil _instance = HiveUtil._internal();
@@ -64,165 +69,202 @@ class HiveUtil {
 
   bool _isInitialized = false;
 
-  initialize() async {
+  initialize({bool? forceInitialization = false}) async {
+    fileCounter = await Prefs.getFileCounter();
+    if (forceInitialization != null) {
+      if (forceInitialization) {
+        pp('\n\n$mm Setting Hive files to new suffix: $fileCounter');
+        await _clearAllBoxes();
+        await _doTheInitializationWork();
+        return;
+      }
+    }
     if (!_isInitialized) {
-      p('${Emoji.peach}${Emoji.peach}${Emoji.peach} ... Creating a Hive box collection');
-      var appDir = await getApplicationDocumentsDirectory();
-      File file = File('${appDir.path}/db008.file');
-
-      try {
-        _boxCollection = await BoxCollection.open(
-          'DataBoxOne008', // Name of your database
-          {
-            'organizations',
-            'projects',
-            'positions',
-            'cities',
-            'photos',
-            'videos',
-            'communities',
-            'conditions',
-            'schedules',
-            'messages',
-            'users',
-            'reports',
-            'geofenceEvents',
-            'failedPhotos',
-            'failedVideos',
-            'projectPolygons',
-            'failedBags',
-            'registrations',
-            'countries',
-          },
-          // Names of your boxes
-          path: file
-              .path, // Path where to store your boxes (Only used in Flutter / Dart IO)
-        );
-      } catch (e) {
-        pp('🔴🔴 There is some problem with 🔴initialization 🔴');
-      }
-
-      p('Registering Hive object adapters ...');
-      if (!Hive.isAdapterRegistered(8)) {
-        Hive.registerAdapter(OrganizationAdapter());
-        p('${Emoji.peach}${Emoji.peach}${Emoji.peach} Hive OrganizationAdapter registered');
-      }
-      if (!Hive.isAdapterRegistered(5)) {
-        Hive.registerAdapter(ProjectAdapter());
-        p('${Emoji.peach}${Emoji.peach}${Emoji.peach} Hive ProjectAdapter registered');
-      }
-      if (!Hive.isAdapterRegistered(6)) {
-        Hive.registerAdapter(ProjectPositionAdapter());
-        p('${Emoji.peach}${Emoji.peach}${Emoji.peach} Hive ProjectPositionAdapter registered');
-      }
-      if (!Hive.isAdapterRegistered(7)) {
-        Hive.registerAdapter(CityAdapter());
-        p('${Emoji.peach}${Emoji.peach}${Emoji.peach} Hive CityAdapter registered');
-      }
-
-      if (!Hive.isAdapterRegistered(4)) {
-        Hive.registerAdapter(PhotoAdapter());
-        p('${Emoji.peach}${Emoji.peach}${Emoji.peach} Hive PhotoAdapter registered');
-      }
-      if (!Hive.isAdapterRegistered(10)) {
-        Hive.registerAdapter(VideoAdapter());
-        p('${Emoji.peach}${Emoji.peach}${Emoji.peach} Hive VideoAdapter registered');
-      }
-      if (!Hive.isAdapterRegistered(13)) {
-        Hive.registerAdapter(CommunityAdapter());
-        p('${Emoji.peach}${Emoji.peach}${Emoji.peach} Hive CommunityAdapter registered');
-      }
-      if (!Hive.isAdapterRegistered(2)) {
-        Hive.registerAdapter(FieldMonitorScheduleAdapter());
-        p('${Emoji.peach}${Emoji.peach}${Emoji.peach} Hive FieldMonitorScheduleAdapter registered');
-      }
-      if (!Hive.isAdapterRegistered(14)) {
-        Hive.registerAdapter(OrgMessageAdapter());
-        p('${Emoji.peach}${Emoji.peach}${Emoji.peach} Hive OrgMessageAdapter registered');
-      }
-
-      if (!Hive.isAdapterRegistered(9)) {
-        Hive.registerAdapter(MonitorReportAdapter());
-        p('${Emoji.peach}${Emoji.peach}${Emoji.peach} Hive MonitorReportAdapter registered');
-      }
-      if (!Hive.isAdapterRegistered(3)) {
-        Hive.registerAdapter(GeofenceEventAdapter());
-        p('${Emoji.peach}${Emoji.peach}${Emoji.peach} Hive GeofenceEventAdapter registered');
-      }
-      if (!Hive.isAdapterRegistered(16)) {
-        Hive.registerAdapter(PositionAdapter());
-        p('${Emoji.peach}${Emoji.peach}${Emoji.peach} Hive PositionAdapter registered');
-      }
-      if (!Hive.isAdapterRegistered(17)) {
-        Hive.registerAdapter(PlaceMarkAdapter());
-        p('${Emoji.peach}${Emoji.peach}${Emoji.peach} Hive PlaceMarkAdapter registered');
-      }
-
-      if (!Hive.isAdapterRegistered(11)) {
-        Hive.registerAdapter(UserAdapter());
-        p('${Emoji.peach}${Emoji.peach}${Emoji.peach} Hive UserAdapter registered');
-      }
-      if (!Hive.isAdapterRegistered(19)) {
-        Hive.registerAdapter(ProjectPolygonAdapter());
-        p('${Emoji.peach}${Emoji.peach}${Emoji.peach} Hive ProjectPolygonAdapter registered');
-      }
-      if (!Hive.isAdapterRegistered(20)) {
-        Hive.registerAdapter(FailedBagAdapter());
-        p('${Emoji.peach}${Emoji.peach}${Emoji.peach} Hive FailedBagAdapter registered');
-      }
-      if (!Hive.isAdapterRegistered(21)) {
-        Hive.registerAdapter(OrganizationRegistrationBagAdapter());
-        p('${Emoji.peach}${Emoji.peach}${Emoji.peach} Hive OrganizationRegistrationBagAdapter registered');
-      }
-      if (!Hive.isAdapterRegistered(21)) {
-        Hive.registerAdapter(OrganizationRegistrationBagAdapter());
-        p('${Emoji.peach}${Emoji.peach}${Emoji.peach} Hive OrganizationRegistrationBagAdapter registered');
-      }
-      if (!Hive.isAdapterRegistered(1)) {
-        Hive.registerAdapter(CountryAdapter());
-        p('${Emoji.peach}${Emoji.peach}${Emoji.peach} Hive CountryAdapter registered');
-      }
-
-      p('${Emoji.peach}${Emoji.peach}${Emoji.peach}${Emoji.peach} Hive box collection created and types registered');
-
-      try {
-        _orgBox = await _boxCollection!.openBox<Organization>('organizations');
-        _projectBox = await _boxCollection!.openBox<Project>('projects');
-        _positionBox =
-            await _boxCollection!.openBox<ProjectPosition>('positions');
-        _cityBox = await _boxCollection!.openBox<City>('cities');
-        _photoBox = await _boxCollection!.openBox<Photo>('photos');
-        _videoBox = await _boxCollection!.openBox<Video>('videos');
-        _communityBox = await _boxCollection!.openBox<Community>('communities');
-        _conditionBox = await _boxCollection!.openBox<Condition>('conditions');
-        _countryBox = await _boxCollection!.openBox<Country>('countries');
-        _scheduleBox =
-            await _boxCollection!.openBox<FieldMonitorSchedule>('schedules');
-        _orgMessageBox = await _boxCollection!.openBox<OrgMessage>('messages');
-        _reportBox = await _boxCollection!.openBox<MonitorReport>('reports');
-        _geofenceEventBox =
-            await _boxCollection!.openBox<GeofenceEvent>('geofenceEvents');
-
-        _userBox = await _boxCollection!.openBox<User>('users');
-        _projectPolygonBox =
-            await _boxCollection!.openBox<ProjectPolygon>('projectPolygons');
-
-        _failedPhotoBox = await _boxCollection!.openBox<Photo>('failedPhotos');
-        _failedVideoBox = await _boxCollection!.openBox<Video>('failedVideos');
-        _failedBagBox = await _boxCollection!.openBox<FailedBag>('failedBags');
-        _registrationBox = await _boxCollection!.openBox<OrganizationRegistrationBag>('registrations');
-
-        //
-        _isInitialized = true;
-        p('${Emoji.peach}${Emoji.peach}${Emoji.peach}${Emoji.peach}'
-            ' Hive has been initialized and boxes opened ${Emoji.leaf}${Emoji.leaf}${Emoji.leaf}');
-      } catch (e) {
-        p('🔴🔴 We have a problem 🔴 opening Hive boxes: $e');
-      }
+      pp('\n\n$mm Setting Hive files to existing suffix: $fileCounter');
+      await _doTheInitializationWork();
+      return;
     }
   }
 
-  final mm = '${Emoji.appleRed}${Emoji.appleRed}${Emoji.appleRed} HiveUtil: ';
+  Future _clearAllBoxes() async {
+    pp('$mm clearing all Hive boxes ....');
+    _countryBox?.clear();
+    _registrationBox?.clear();
+    _failedBagBox?.clear();
+    _failedVideoBox?.clear();
+    _failedPhotoBox?.clear();
+    _scheduleBox?.clear();
+    _projectPolygonBox?.clear();
+    _projectBox?.clear();
+    _positionBox?.clear();
+    _userBox?.clear();
+    _geofenceEventBox?.clear();
+    _orgBox?.clear();
+    _photoBox?.clear();
+    _reportBox?.clear();
+    _cityBox?.clear();
+    _conditionBox?.clear();
+    pp('$mm all Hive boxes cleared 💚💚');
+
+  }
+  static final xx = '${Emoji.peach}${Emoji.peach}${Emoji.peach}${Emoji.peach} HiveUtil: ';
+  Future<void> _doTheInitializationWork() async {
+    p('$mm ... Creating a Hive box collection');
+    var appDir = await getApplicationDocumentsDirectory();
+    File file = File('${appDir.path}/$databaseFileName$fileCounter.file');
+
+    try {
+      _boxCollection = await BoxCollection.open(
+        '$boxCollection$fileCounter', // Name of your database
+        {
+          'organizations',
+          'projects',
+          'positions',
+          'cities',
+          'photos',
+          'videos',
+          'communities',
+          'conditions',
+          'schedules',
+          'messages',
+          'users',
+          'reports',
+          'geofenceEvents',
+          'failedPhotos',
+          'failedVideos',
+          'projectPolygons',
+          'failedBags',
+          'registrations',
+          'countries',
+        },
+        // Names of your boxes
+        path: file.path, // Path where to store your boxes (Only used in Flutter / Dart IO)
+      );
+    } catch (e) {
+      pp('$mm 🔴🔴 There is some problem with 🔴initialization 🔴');
+    }
+    p('$xx Registering Hive object adapters ...');
+    if (!Hive.isAdapterRegistered(8)) {
+      Hive.registerAdapter(OrganizationAdapter());
+      p('$xx Hive OrganizationAdapter registered');
+    }
+    if (!Hive.isAdapterRegistered(5)) {
+      Hive.registerAdapter(ProjectAdapter());
+      p('$xx Hive ProjectAdapter registered');
+    }
+    if (!Hive.isAdapterRegistered(6)) {
+      Hive.registerAdapter(ProjectPositionAdapter());
+      p('$xx Hive ProjectPositionAdapter registered');
+    }
+    if (!Hive.isAdapterRegistered(7)) {
+      Hive.registerAdapter(CityAdapter());
+      p('$xx Hive CityAdapter registered');
+    }
+    if (!Hive.isAdapterRegistered(4)) {
+      Hive.registerAdapter(PhotoAdapter());
+      p('$xx Hive PhotoAdapter registered');
+    }
+    if (!Hive.isAdapterRegistered(10)) {
+      Hive.registerAdapter(VideoAdapter());
+      p('$xx Hive VideoAdapter registered');
+    }
+    if (!Hive.isAdapterRegistered(13)) {
+      Hive.registerAdapter(CommunityAdapter());
+      p('$xx Hive CommunityAdapter registered');
+    }
+    if (!Hive.isAdapterRegistered(2)) {
+      Hive.registerAdapter(FieldMonitorScheduleAdapter());
+      p('$xx Hive FieldMonitorScheduleAdapter registered');
+    }
+    if (!Hive.isAdapterRegistered(14)) {
+      Hive.registerAdapter(OrgMessageAdapter());
+      p('$xx Hive OrgMessageAdapter registered');
+    }
+
+    if (!Hive.isAdapterRegistered(9)) {
+      Hive.registerAdapter(MonitorReportAdapter());
+      p('$xx Hive MonitorReportAdapter registered');
+    }
+    if (!Hive.isAdapterRegistered(3)) {
+      Hive.registerAdapter(GeofenceEventAdapter());
+      p('$xx Hive GeofenceEventAdapter registered');
+    }
+    if (!Hive.isAdapterRegistered(16)) {
+      Hive.registerAdapter(PositionAdapter());
+      p('$xx Hive PositionAdapter registered');
+    }
+    if (!Hive.isAdapterRegistered(17)) {
+      Hive.registerAdapter(PlaceMarkAdapter());
+      p('$xx Hive PlaceMarkAdapter registered');
+    }
+
+    if (!Hive.isAdapterRegistered(11)) {
+      Hive.registerAdapter(UserAdapter());
+      p('$xx Hive UserAdapter registered');
+    }
+    if (!Hive.isAdapterRegistered(19)) {
+      Hive.registerAdapter(ProjectPolygonAdapter());
+      p('$xx Hive ProjectPolygonAdapter registered');
+    }
+    if (!Hive.isAdapterRegistered(20)) {
+      Hive.registerAdapter(FailedBagAdapter());
+      p('$xx Hive FailedBagAdapter registered');
+    }
+    if (!Hive.isAdapterRegistered(21)) {
+      Hive.registerAdapter(OrganizationRegistrationBagAdapter());
+      p('$xx Hive OrganizationRegistrationBagAdapter registered');
+    }
+    if (!Hive.isAdapterRegistered(21)) {
+      Hive.registerAdapter(OrganizationRegistrationBagAdapter());
+      p('$xx Hive OrganizationRegistrationBagAdapter registered');
+    }
+    if (!Hive.isAdapterRegistered(1)) {
+      Hive.registerAdapter(CountryAdapter());
+      p('$xx Hive CountryAdapter registered');
+    }
+
+    var bb = file.path.lastIndexOf("/");
+    var cc = file.path.substring(bb+1);
+    p('$mm Hive box collection created and types registered; 🍎file: $cc '
+        '🍎_boxCollection: ${_boxCollection!.name}');
+
+    try {
+      _orgBox = await _boxCollection!.openBox<Organization>('organizations');
+      _projectBox = await _boxCollection!.openBox<Project>('projects');
+      _positionBox =
+          await _boxCollection!.openBox<ProjectPosition>('positions');
+      _cityBox = await _boxCollection!.openBox<City>('cities');
+      _photoBox = await _boxCollection!.openBox<Photo>('photos');
+      _videoBox = await _boxCollection!.openBox<Video>('videos');
+      _communityBox = await _boxCollection!.openBox<Community>('communities');
+      _conditionBox = await _boxCollection!.openBox<Condition>('conditions');
+      _countryBox = await _boxCollection!.openBox<Country>('countries');
+      _scheduleBox =
+          await _boxCollection!.openBox<FieldMonitorSchedule>('schedules');
+      _orgMessageBox = await _boxCollection!.openBox<OrgMessage>('messages');
+      _reportBox = await _boxCollection!.openBox<MonitorReport>('reports');
+      _geofenceEventBox =
+          await _boxCollection!.openBox<GeofenceEvent>('geofenceEvents');
+
+      _userBox = await _boxCollection!.openBox<User>('users');
+      _projectPolygonBox =
+          await _boxCollection!.openBox<ProjectPolygon>('projectPolygons');
+
+      _failedPhotoBox = await _boxCollection!.openBox<Photo>('failedPhotos');
+      _failedVideoBox = await _boxCollection!.openBox<Video>('failedVideos');
+      _failedBagBox = await _boxCollection!.openBox<FailedBag>('failedBags');
+      _registrationBox = await _boxCollection!.openBox<OrganizationRegistrationBag>('registrations');
+
+      //
+      _isInitialized = true;
+      p('$mm'
+          ' Hive has been initialized and boxes opened ${Emoji.leaf}${Emoji.leaf}${Emoji.leaf}');
+    } catch (e) {
+      p('🔴🔴 We have a problem 🔴 opening Hive boxes: $e');
+    }
+  }
+
+  final mm = '${Emoji.appleRed}${Emoji.appleRed}${Emoji.appleRed}${Emoji.appleRed} HiveUtil: ';
   var random = Random(DateTime.now().millisecondsSinceEpoch);
 
   Future addRegistration({required OrganizationRegistrationBag bag}) async {
@@ -391,7 +433,7 @@ class HiveUtil {
 
   Future<DataBag> getOrganizationData({required String organizationId}) async {
     pp('\mm$mm getOrganizationData starting ...');
-    final projects = await getProjects(organizationId);
+    final projects = await getOrganizationProjects();
     final users = await getUsers(organizationId: organizationId);
     final photos = await getOrganizationPhotos(organizationId);
     final videos = await getOrganizationVideos(organizationId);
@@ -570,19 +612,21 @@ class HiveUtil {
   Future addProject({required Project project}) async {
     var key = '${project.organizationId}_${project.projectId}';
     await _projectBox?.put(key, project);
-    // pp('$mm Project added to local cache:  🔵 🔵 ${project.name} ');
+    pp('$mm Project added to local cache:  🔵 🔵 ${project.name} ');
   }
 
   Future addProjectPosition({required ProjectPosition projectPosition}) async {
     var key =
         '${projectPosition.organizationId}_${projectPosition.projectId}_${projectPosition.projectPositionId}';
     await _positionBox?.put(key, projectPosition);
-    // pp('$mm ProjectPosition added to local cache:  🔵 🔵 ${projectPosition.projectName} organizationId: ${projectPosition.organizationId} ');
+    pp('$mm ProjectPosition added to local cache:  🔵 🔵 ${projectPosition.projectName} organizationId: ${projectPosition.organizationId} ');
   }
 
   Future addUser({required User user}) async {
     var key = '${user.organizationId}_${user.userId}';
     await _userBox?.put(key, user);
+    pp('$mm User added to local cache:  🔵 🔵 ${user.name} organizationId: ${user.organizationId} ');
+
   }
 
   Future addVideo({required Video video}) async {
@@ -606,17 +650,12 @@ class HiveUtil {
     pp('$mm failed Video deleted from local cache:  🔵 🔵 ${video.projectName}');
   }
 
-  Future<List<Project>> getProjects(String organizationId) async {
-    var keys = await _projectBox?.getAllKeys();
+  Future<List<Project>> getOrganizationProjects() async {
+    var keys = await _projectBox?.getAllValues();
 
     var mList = <Project>[];
     if (keys != null) {
-      for (var key in keys) {
-        if (key.contains(organizationId)) {
-          var p = await _projectBox?.get(key);
-          mList.add(p!);
-        }
-      }
+      mList = keys.values.toList();
     }
     pp('$mm ${mList.length} projects found in cache');
     return mList;

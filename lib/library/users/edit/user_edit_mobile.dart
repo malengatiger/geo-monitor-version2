@@ -194,17 +194,17 @@ class UserEditMobileState extends State<UserEditMobile>
         appBar: AppBar(
           title: Text(
             'User Editor',
-            style: Styles.whiteSmall,
+            style: myTextStyleSmall(context),
           ),
           bottom: PreferredSize(
-            preferredSize: const Size.fromHeight(100),
+            preferredSize: const Size.fromHeight(60),
             child: Column(
               children: [
                 Text(
                   widget.user == null
                       ? 'New Monitor User'
                       : 'Edit Monitor User',
-                  style: Styles.blackBoldMedium,
+                  style: myTextStyleSmall(context),
                 ),
                 admin == null
                     ? Container()
@@ -213,7 +213,7 @@ class UserEditMobileState extends State<UserEditMobile>
                       ),
                 Text(
                   admin == null ? '' : admin!.organizationName!,
-                  style: Styles.whiteSmall,
+                  style: myTextStyleLarge(context),
                 ),
                 const SizedBox(
                   height: 20,
@@ -222,14 +222,14 @@ class UserEditMobileState extends State<UserEditMobile>
             ),
           ),
         ),
-        backgroundColor: Colors.brown[100],
         body: Padding(
           padding: const EdgeInsets.all(8.0),
-          child: SingleChildScrollView(
-            child: Card(
-              elevation: 4,
-              child: Padding(
-                padding: const EdgeInsets.all(12.0),
+          child: Card(
+            elevation: 4,
+            shape: getRoundedBorder(radius: 16),
+            child: Padding(
+              padding: const EdgeInsets.all(12.0),
+              child: SingleChildScrollView(
                 child: Form(
                   key: _formKey,
                   child: Column(
@@ -237,15 +237,24 @@ class UserEditMobileState extends State<UserEditMobile>
                       const SizedBox(
                         height: 8,
                       ),
+                      CountryChooser(onSelected: (c) {
+                        setState(() {
+                          country = c;
+                        });
+                      }),
+                      const SizedBox(
+                        height: 8,
+                      ),
                       TextFormField(
                         controller: nameController,
                         keyboardType: TextInputType.text,
+                        style: myTextStyleSmall(context),
                         decoration: InputDecoration(
                             icon: Icon(
-                              Icons.person,
+                              Icons.person, size: 18,
                               color: Theme.of(context).primaryColor,
                             ),
-                            labelText: 'Name',
+                            labelText: 'Name', hintStyle: myTextStyleSmall(context),
                             hintText: 'Enter Full Name'),
                         validator: (value) {
                           if (value!.isEmpty) {
@@ -260,12 +269,13 @@ class UserEditMobileState extends State<UserEditMobile>
                       TextFormField(
                         controller: emailController,
                         keyboardType: TextInputType.emailAddress,
+                        style: myTextStyleSmall(context),
                         decoration: InputDecoration(
                             icon: Icon(
-                              Icons.email_outlined,
+                              Icons.email_outlined, size: 18,
                               color: Theme.of(context).primaryColor,
                             ),
-                            labelText: 'Email Address',
+                            labelText: 'Email Address', hintStyle: myTextStyleSmall(context),
                             hintText: 'Enter Email Address'),
                         validator: (value) {
                           if (value!.isEmpty) {
@@ -280,12 +290,13 @@ class UserEditMobileState extends State<UserEditMobile>
                       TextFormField(
                         controller: cellphoneController,
                         keyboardType: TextInputType.phone,
+                        style: myTextStyleSmall(context),
                         decoration: InputDecoration(
                             icon: Icon(
-                              Icons.phone,
+                              Icons.phone, size: 18,
                               color: Theme.of(context).primaryColor,
                             ),
-                            labelText: 'Cellphone',
+                            labelText: 'Cellphone', hintStyle: myTextStyleSmall(context),
                             hintText: 'Cellphone'),
                         validator: (value) {
                           if (value!.isEmpty) {
@@ -298,79 +309,61 @@ class UserEditMobileState extends State<UserEditMobile>
                       const SizedBox(
                         height: 16,
                       ),
-                      Container(
-                        color: Colors.amber[50],
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: <Widget>[
-                            Radio(
-                              value: 0,
-                              groupValue: genderType,
-                              onChanged: _handleGenderValueChange,
-                            ),
-                            Text(
-                              'Male',
-                              style: Styles.blackTiny,
-                            ),
-                            Radio(
-                              value: 1,
-                              groupValue: genderType,
-                              onChanged: _handleGenderValueChange,
-                            ),
-                            Text('Female', style: Styles.blackTiny),
-                          ],
-                        ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: <Widget>[
+                          Radio(
+                            value: 0,
+                            groupValue: genderType,
+                            onChanged: _handleGenderValueChange,
+                          ),
+                          Text(
+                            'Male',
+                            style: myTextStyleSmall(context),
+                          ),
+                          Radio(
+                            value: 1,
+                            groupValue: genderType,
+                            onChanged: _handleGenderValueChange,
+                          ),
+                          Text('Female', style: myTextStyleSmall(context)),
+                        ],
                       ),
-                      // Text(
-                      //   gender == null ? '' : gender!,
-                      //   style: Styles.greyLabelSmall,
-                      // ),
                       const SizedBox(
                         height: 16,
                       ),
-                      Container(
-                        color: Colors.brown[50],
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: <Widget>[
-                            Radio(
-                              value: 0,
-                              groupValue: userType,
-                              onChanged: _handleRadioValueChange,
-                            ),
-                            Text(
-                              'Monitor',
-                              style: Styles.blackTiny,
-                            ),
-                            Radio(
-                              value: 1,
-                              groupValue: userType,
-                              onChanged: _handleRadioValueChange,
-                            ),
-                            Text('Admin', style: Styles.blackTiny),
-                            Radio(
-                              value: 2,
-                              groupValue: userType,
-                              onChanged: _handleRadioValueChange,
-                            ),
-                            Text(
-                              'Executive',
-                              style: Styles.blackTiny,
-                            ),
-                          ],
-                        ),
+                      Row(
+                        children: <Widget>[
+                          Radio(
+                            value: 0,
+                            groupValue: userType,
+                            onChanged: _handleRadioValueChange,
+                          ),
+                          Text(
+                            'Monitor',
+                            style: myTextStyleSmall(context),
+                          ),
+                          Radio(
+                            value: 1,
+                            groupValue: userType,
+                            onChanged: _handleRadioValueChange,
+                          ),
+                          Text('Admin', style: myTextStyleSmall(context)),
+                          Radio(
+                            value: 2,
+                            groupValue: userType,
+                            onChanged: _handleRadioValueChange,
+                          ),
+                          Text(
+                            'Exec',
+                            style: myTextStyleSmall(context),
+                          ),
+                        ],
                       ),
                       const SizedBox(
-                        height: 28,
+                        height: 16,
                       ),
-                      CountryChooser(onSelected: (c) {
-                        setState(() {
-                          country = c;
-                        });
-                      }),
-                      const SizedBox(
-                        height: 28,
-                      ),
+
                       isBusy
                           ? const SizedBox(
                               width: 48,

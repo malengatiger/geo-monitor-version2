@@ -2,14 +2,13 @@ import 'package:flutter/material.dart';
 import '../../library/data/user.dart';
 
 class DashboardTablet extends StatefulWidget {
-  final User user;
-  DashboardTablet({Key? key, required this.user}) : super(key: key);
+  const DashboardTablet({Key? key, }) : super(key: key);
 
   @override
-  _DashboardTabletState createState() => _DashboardTabletState();
+  DashboardTabletState createState() => DashboardTabletState();
 }
 
-class _DashboardTabletState extends State<DashboardTablet>
+class DashboardTabletState extends State<DashboardTablet>
     with SingleTickerProviderStateMixin {
   late AnimationController _controller;
 

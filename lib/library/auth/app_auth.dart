@@ -101,7 +101,10 @@ class AppAuth {
 
   static Future<String?> getAuthToken() async {
     _auth = FirebaseAuth.instance;
-    var token = await _auth!.currentUser!.getIdToken();
+    String? token;
+    if (_auth!.currentUser != null) {
+      token = await _auth!.currentUser!.getIdToken();
+    }
     // pp('🌸🌸 Current user Firebase token: $token ');
     return token;
   }

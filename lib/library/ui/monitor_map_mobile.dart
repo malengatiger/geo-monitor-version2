@@ -72,7 +72,7 @@ class MonitorMapMobileState extends State<MonitorMapMobile>
     });
     try {
       user = await Prefs.getUser();
-      projects = await organizationBloc.getProjects(
+      projects = await organizationBloc.getOrganizationProjects(
           organizationId: user!.organizationId!, forceRefresh: forceRefresh);
 
       for (var i = 0; i < projects.length; i++) {

@@ -44,7 +44,7 @@ class MessageMobileState extends State<MessageMobile>
     setState(() {
       busy = true;
     });
-    _projects = await organizationBloc.getProjects(
+    _projects = await organizationBloc.getOrganizationProjects(
         organizationId: widget.user!.organizationId!, forceRefresh: force);
     setState(() {
       busy = false;

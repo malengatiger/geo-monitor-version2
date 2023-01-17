@@ -5,6 +5,7 @@ import 'package:geo_monitor/library/api/sharedprefs.dart';
 import 'package:geo_monitor/library/data/country.dart';
 import 'package:geo_monitor/library/data/organization.dart';
 import 'package:geo_monitor/library/data/organization_registration_bag.dart';
+import 'package:geo_monitor/library/hive_util.dart';
 import 'package:geo_monitor/library/location/loc_bloc.dart';
 import 'package:geo_monitor/library/users/edit/user_edit_main.dart';
 import 'package:geo_monitor/ui/dashboard/dashboard_mobile.dart';
@@ -12,34 +13,34 @@ import 'package:page_transition/page_transition.dart';
 import 'package:uuid/uuid.dart';
 
 import '../api/data_api.dart';
+import '../data/data_bag.dart';
 import '../data/user.dart' as ur;
 import '../functions.dart';
 import '../generic_functions.dart';
 
-class OrgRegistrationPage extends StatefulWidget {
-  const OrgRegistrationPage({Key? key}) : super(key: key);
+class PhoneLogin extends StatefulWidget {
+  const PhoneLogin({Key? key}) : super(key: key);
 
   @override
-  OrgRegistrationPageState createState() => OrgRegistrationPageState();
+  PhoneLoginState createState() => PhoneLoginState();
 }
 
-class OrgRegistrationPageState extends State<OrgRegistrationPage>
+class PhoneLoginState extends State<PhoneLogin>
     with SingleTickerProviderStateMixin {
   late AnimationController _animationController;
   bool _codeHasBeenSent = false;
   FirebaseAuth firebaseAuth = FirebaseAuth.instance;
-  final mm = '🥬🥬🥬🥬🥬🥬 CustomPhoneAuth: ';
+  final mm = '🥬🥬🥬🥬🥬🥬 PhoneLogin: ';
   String? phoneVerificationId;
   String? code;
   final phoneController = TextEditingController(text: "+27659990000");
-  final codeController = TextEditingController();
+  final codeController = TextEditingController(text:'123456');
   final orgNameController = TextEditingController();
   final adminController = TextEditingController();
   bool verificationFailed = false;
   bool busy = false;
   final _formKey = GlobalKey<FormState>();
   ur.User? user;
-  Country? country;
 
   @override
   void initState() {
@@ -49,7 +50,9 @@ class OrgRegistrationPageState extends State<OrgRegistrationPage>
         reverseDuration: const Duration(milliseconds: 2000),
         vsync: this);
     super.initState();
-    //_start();
+    firebaseAuth.authStateChanges().listen((user) {
+      pp('$mm firebaseAuth.authStateChanges: 🍎 $user');
+    });
   }
 
   void _start() async {
@@ -108,17 +111,7 @@ class OrgRegistrationPageState extends State<OrgRegistrationPage>
       busy = true;
     });
     code = codeController.value.text;
-    if (country == null) {
-      showToast(
-          duration: const Duration(seconds: 2),
-          backgroundColor: Theme.of(context).errorColor,
-          message: 'Please select country',
-          context: context);
-      setState(() {
-        busy = false;
-      });
-      return;
-    }
+
     if (code == null || code!.isEmpty) {
       showToast(
           duration: const Duration(seconds: 2),
@@ -134,48 +127,41 @@ class OrgRegistrationPageState extends State<OrgRegistrationPage>
     }
 
     try {
-        pp('$mm .... start building registration artifacts ...');
+        pp('$mm .... start getting auth artifacts ...');
         PhoneAuthCredential authCredential = PhoneAuthProvider.credential(
             verificationId: phoneVerificationId!, smsCode: code!);
         var userCred = await firebaseAuth.signInWithCredential(authCredential);
-        pp('$mm firebase user credential obtained:  🍎 $userCred');
-
-        user = ur.User(
-            name: adminController.value.text,
-            email: '',
-            userId: userCred.user!.uid,
-            cellphone: phoneController.value.text,
-            created: DateTime.now().toUtc().toIso8601String(),
-            userType: ur.UserType.orgAdministrator,
-            gender: '',
-            organizationName: orgNameController.value.text,
-            organizationId: const Uuid().v4(),
-            countryId: country!.countryId, password: const Uuid().v4());
-
-        var m = await DataAPI.addUser(user!);
-        await Prefs.saveUser(m);
-
-        var org = Organization(
-            name: orgNameController.value.text,
-            countryId: country!.countryId,
-            email: '',
-            created: DateTime.now().toUtc().toIso8601String(),
-            countryName: country!.name,
-            organizationId: const Uuid().v4());
-
-        var loc = await locationBloc.getLocation();
-
-        var bag = OrganizationRegistrationBag(
-            organization: org,
-            sampleProjectPosition: null,
-            sampleUsers: [],
-            sampleProject: null,
-            date: DateTime.now().toUtc().toIso8601String(),
-            latitude: loc.latitude,
-            longitude: loc.longitude);
-
-        var result = await DataAPI.registerOrganization(bag);
-        pp('\n\n$mm Organization registered:  🍎 ${result.toJson()} \n\n');
+        pp('$mm firebase user credential obtained:  🍎 $userCred 🍎');
+        if (userCred.user?.metadata != null ) {
+          var createDate = userCred.user?.metadata.creationTime;
+          var now = DateTime.now().toUtc();
+          var diffMs = now.millisecondsSinceEpoch - createDate!.millisecondsSinceEpoch;
+          var seconds = Duration(milliseconds: diffMs).inSeconds;
+          if (seconds < 120) {
+            pp('$mm this is a new user - 🍎🍎🍎 they should not be here; 🍎 seconds: $seconds');
+            return;
+          } else {
+            pp('$mm this is an existing user - 🌀🌀🌀 they should here, maybe because of a '
+                'new phone but same number; 🍎 seconds: $seconds}');
+          }
+        }
+        user = await DataAPI.getUser(userId: userCred.user!.uid);
+        if (user != null) {
+          await Prefs.saveUser(user!);
+          await hiveUtil.addUser(user: user!);
+          setState(() {
+            busy = false;
+          });
+          if (mounted) {
+            showToast(
+                toastGravity: ToastGravity.TOP,
+                backgroundColor: Theme.of(context).primaryColor,
+                textStyle: myTextStyleSmall(context),
+                message: '${user!.name} has been signed in', context: context);
+          }
+          _navigateToDashboard();
+          return;
+        }
 
     } catch (e) {
       pp(e);
@@ -183,8 +169,12 @@ class OrgRegistrationPageState extends State<OrgRegistrationPage>
       if (msg.contains('dup key')) {
         msg = 'Duplicate organization name';
       }
+      if (msg.contains('Bad response format')) {
+        msg = 'This user does not exist in the database';
+      }
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          backgroundColor: Theme.of(context).errorColor,
             duration: const Duration(seconds: 5), content: Text(msg)));
         setState(() {
           busy = false;
@@ -192,32 +182,14 @@ class OrgRegistrationPageState extends State<OrgRegistrationPage>
       }
       return;
     }
-    setState(() {
-      busy = false;
-    });
+
     _navigateToDashboard();
   }
 
   void _navigateToDashboard() {
     if (user == null) return;
     if (mounted) {
-      Navigator.push(
-          context,
-          PageTransition(
-              type: PageTransitionType.leftToRightWithFade,
-              alignment: Alignment.topLeft,
-              duration: const Duration(milliseconds: 1000),
-              child: DashboardMobile(
-                user: user!,
-              )));
-    }
-  }
-
-  _onCountrySelected(Country p1) {
-    if (mounted) {
-      setState(() {
-        country = p1;
-      });
+      Navigator.of(context).pop(user);
     }
   }
 
@@ -227,7 +199,7 @@ class OrgRegistrationPageState extends State<OrgRegistrationPage>
         child: Scaffold(
       appBar: AppBar(
         title: Text(
-          'Organization Registration',
+          'Phone Login',
           style: myTextStyleSmall(context),
         ),
       ),
@@ -269,58 +241,16 @@ class OrgRegistrationPageState extends State<OrgRegistrationPage>
                       style: myTextStyleLarge(context),
                     ),
                     const SizedBox(
-                      height: 8,
+                      height: 28,
                     ),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 28.0),
-                      child: Row(
-                        children: [
 
-                          CountryChooser(onSelected: _onCountrySelected),
-                          country == null
-                              ? const SizedBox()
-                              : Text(
-                                  '${country!.name}',
-                                  style: myTextStyleSmall(context),
-                                ),
-                        ],
-                      ),
-                    ),
                     Padding(
                       padding: const EdgeInsets.all(16.0),
                       child: Form(
                           key: _formKey,
                           child: Column(
                             children: [
-                              TextFormField(
-                                controller: orgNameController,
-                                keyboardType: TextInputType.text,
-                                decoration:  InputDecoration(
-                                    hintText: 'Enter Organization Name', hintStyle: myTextStyleSmall(context),
-                                    label: Text('Organization Name', style: myTextStyleSmall(context),)),
-                                validator: (value) {
-                                  if (value == null || value.isEmpty) {
-                                    return 'Please enter Organization Name';
-                                  }
-                                  return null;
-                                },
-                              ),
-                              const SizedBox(
-                                height: 8,
-                              ),
-                              TextFormField(
-                                controller: adminController,
-                                keyboardType: TextInputType.text,
-                                decoration:  InputDecoration(
-                                    hintText: 'Enter Administrator Name', hintStyle: myTextStyleSmall(context),
-                                    label: Text('Administrator Name', style: myTextStyleSmall(context),)),
-                                validator: (value) {
-                                  if (value == null || value.isEmpty) {
-                                    return 'Please enter Administrator Name';
-                                  }
-                                  return null;
-                                },
-                              ),
+
                               const SizedBox(
                                 height: 8,
                               ),
@@ -338,7 +268,7 @@ class OrgRegistrationPageState extends State<OrgRegistrationPage>
                                 },
                               ),
                               const SizedBox(
-                                height: 20,
+                                height: 48,
                               ),
                               _codeHasBeenSent
                                   ? const SizedBox()

@@ -229,9 +229,9 @@ class OrganizationBloc {
     return videos;
   }
 
-  Future<List<Project>> getProjects(
+  Future<List<Project>> getOrganizationProjects(
       {required String organizationId, required bool forceRefresh}) async {
-    var projects = await hiveUtil.getProjects(organizationId);
+    var projects = await hiveUtil.getOrganizationProjects();
 
     try {
       if (projects.isEmpty || forceRefresh) {

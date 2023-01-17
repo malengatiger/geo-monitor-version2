@@ -9,8 +9,8 @@ import 'intro_mobile.dart';
 import 'intro_tablet.dart';
 
 class IntroMain extends StatefulWidget {
-  final User? user;
-  const IntroMain({Key? key, this.user}) : super(key: key);
+
+  const IntroMain({Key? key, }) : super(key: key);
 
   @override
   IntroMainState createState() => IntroMainState();
@@ -23,7 +23,6 @@ class IntroMainState extends State<IntroMain> {
   @override
   void initState() {
     super.initState();
-      user = widget.user;
 
   }
 
@@ -35,10 +34,10 @@ class IntroMainState extends State<IntroMain> {
         ? SafeArea(
             child: Scaffold(
               appBar: AppBar(
-                title: Text(('Loading User ..')),
+                title: const Text(('Loading User ..')),
               ),
-              body: Center(
-                child: Container(
+              body: const Center(
+                child: SizedBox(
                   width: 200,
                   height: 200,
                   child: CircularProgressIndicator(
@@ -50,7 +49,7 @@ class IntroMainState extends State<IntroMain> {
             ),
           )
         : ScreenTypeLayout(
-            mobile: IntroMobile(user: user),
+            mobile: const IntroMobile(),
             tablet: IntroTablet(user: user),
             desktop: IntroDesktop(user: user),
           );

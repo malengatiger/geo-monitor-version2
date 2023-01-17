@@ -8,9 +8,8 @@ import '../../library/data/user.dart';
 
 
 class DashboardMain extends StatefulWidget {
-  final User user;
 
-  const DashboardMain({Key? key, required this.user}) : super(key: key);
+  const DashboardMain({Key? key, }) : super(key: key);
   @override
   DashboardMainState createState() => DashboardMainState();
 }
@@ -35,14 +34,11 @@ class DashboardMainState extends State<DashboardMain>
   @override
   Widget build(BuildContext context) {
     return ScreenTypeLayout(
-      mobile: DashboardMobile(
-        user: widget.user,
+      mobile: const DashboardMobile(
       ),
-      tablet: DashboardTablet(
-        user: widget.user,
+      tablet: const DashboardTablet(
       ),
-      desktop: DashboardDesktop(
-        user: widget.user,
+      desktop: const DashboardDesktop(
       ),
     );
   }

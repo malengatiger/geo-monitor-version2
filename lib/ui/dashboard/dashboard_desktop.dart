@@ -4,8 +4,7 @@ import '../../library/data/user.dart';
 // import 'package:monitorlibrary/data/user.dart';
 
 class DashboardDesktop extends StatefulWidget {
-  final User user;
-  const DashboardDesktop({Key? key, required this.user}) : super(key: key);
+  const DashboardDesktop({Key? key, }) : super(key: key);
   @override
   DashboardDesktopState createState() => DashboardDesktopState();
 }

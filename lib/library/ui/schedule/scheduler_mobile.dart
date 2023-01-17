@@ -49,7 +49,7 @@ class SchedulerMobileState extends State<SchedulerMobile>
     });
     try {
       _adminUser = await Prefs.getUser();
-      _projects = await organizationBloc.getProjects(
+      _projects = await organizationBloc.getOrganizationProjects(
           organizationId: widget.user.organizationId!, forceRefresh: refresh);
       pp('$mm ${_projects.length} projects ...');
     } catch (e) {

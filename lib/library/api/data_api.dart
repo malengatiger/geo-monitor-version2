@@ -367,17 +367,17 @@ class DataAPI {
     }
   }
 
-  static Future<DataBag> getUserData(String userId) async {
+  static Future<User?> getUser({required String userId}) async {
     String? mURL = await getUrl();
-    var bag = DataBag(
-        photos: [],
-        videos: [],
-        fieldMonitorSchedules: [],
-        projects: [],
-        projectPositions: [],
-        projectPolygons: [],
-        users: [],
-        date: DateTime.now().toUtc().toIso8601String());
+    User? user;
+    var result = await _sendHttpGET('${mURL!}getUserById?userId=$userId');
+    user = User.fromJson(result);
+    return user;
+  }
+
+  static Future<DataBag?> getUserData(String userId) async {
+    String? mURL = await getUrl();
+    DataBag? bag;
     try {
       var result = await _sendHttpGET('${mURL!}getUserData?userId=$userId');
 

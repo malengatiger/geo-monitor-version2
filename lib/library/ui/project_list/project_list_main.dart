@@ -68,7 +68,7 @@ class ProjectListMainState extends State<ProjectListMain>
             ),
           )
         : ScreenTypeLayout(
-            mobile: ProjectListMobile(widget.user),
+            mobile: const ProjectListMobile(),
             tablet: ProjectListTablet(widget.user),
             desktop: ProjectListDesktop(widget.user),
           );

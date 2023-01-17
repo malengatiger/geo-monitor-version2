@@ -101,7 +101,7 @@ dependencies:
   badges: ^2.0.3
   map_launcher: ^2.4.0
   connectivity_plus: ^3.0.2
-
+  dots_indicator: ^2.1.0
 
 
 
