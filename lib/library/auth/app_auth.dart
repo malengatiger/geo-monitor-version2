@@ -39,11 +39,11 @@ class AppAuth {
     }
   }
 
-  static Future<mon.User> createUser(
+  static Future<mon.User> createUserxx(
       {required mon.User user,
-      required String password,
-      required bool isLocalAdmin}) async {
+      required String password,}) async {
     pp('AppAuth: 💜 💜 createUser: auth record to be created ... ${user.toJson()}');
+
 
     UserCredential? fbUser = await _auth!
         .createUserWithEmailAndPassword(email: user.email!, password: password)
@@ -53,7 +53,6 @@ class AppAuth {
     });
 
     mon.User? mUser;
-
     user.userId = fbUser.user!.uid;
     var fcm = await fbUser.user!.getIdToken();
     user.fcmRegistration = fcm;
@@ -67,6 +66,7 @@ class AppAuth {
     } else {
       url = dot.dotenv.env['prodURL'];
     }
+    //update auth user
     if (url != null) {
       var suffix = '/verify?userId=${user.userId}';
       var finalUrl = 'https://fieldmonitor3.page.link/fieldmonitor$suffix';
@@ -74,24 +74,12 @@ class AppAuth {
       await _auth!.sendSignInLinkToEmail(
           email: user.email!,
           actionCodeSettings: ActionCodeSettings(
-              androidPackageName: 'com.boha.fieldmonitorb',
+              androidPackageName: 'com.boha.geo_monitor',
               url: finalUrl,
               androidInstallApp: true,
               handleCodeInApp: true));
-      pp('AppAuth: 💜 💜 createUser: auth!.sendSignInLinkToEmail has executed ... email link should be sent ??? ');
-    }
 
-    if (isLocalAdmin) {
-      pp('AppAuth: 💜 💜 createUser: saving user to local cache: '
-          '💛️ 💛️ isLocalAdmin: $isLocalAdmin 💛️ 💛️');
-      await Prefs.saveUser(mUser);
-      var countries = await DataAPI.getCountries();
-      if (countries.isNotEmpty) {
-        await Prefs.saveCountry(countries.elementAt(0));
-      }
-    } else {
-      pp('AppAuth: 💜 💜 createUser:  '
-          '💛️ 💛️ isLocalAdmin: $isLocalAdmin 💛️ 💛️ normal user (non-original user)');
+      pp('AppAuth: 💜 💜 createUser: auth!.sendSignInLinkToEmail has executed ... email link should be sent ??? ');
     }
 
     pp('AppAuth:  💜 💜 💜 💜 createUser, after adding to Mongo database ....... ${mUser.toJson()}');

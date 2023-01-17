@@ -10,6 +10,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart' as dot;
+import 'package:flutter_libphonenumber/flutter_libphonenumber.dart';
 
 import 'package:geo_monitor/ui/dashboard/dashboard_main.dart';
 import 'package:hive_flutter/hive_flutter.dart';
@@ -59,6 +60,8 @@ Future<void> _setup() async {
     writeFailedMedia.writeFailedVideos();
     pp('${Emoji.heartGreen}${Emoji.heartGreen} writeFailedMedia/uploadFailedMedia '
         'timers started with 🍎 5 minute duration per tick ...');
+
+    await FlutterLibphonenumber().init();
 
   } catch (e) {
     pp('$redDot problem with Firebase? or Hive? : $e');

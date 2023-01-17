@@ -250,6 +250,7 @@ class ProjectListMobileState extends State<ProjectListMobile>
   }
 
   bool _showPositionChooser = false;
+
   void _navigateToDirections(
       {required double latitude, required double longitude}) async {
     pp('$mm 🍎 🍎 🍎 start Google Maps Directions .....');
@@ -646,7 +647,7 @@ class ProjectListMobileState extends State<ProjectListMobile>
                         itemCount: projects.length,
                         itemBuilder:
                             (BuildContext context, int index) {
-                          var selectedProject =
+                          var mProject =
                           projects.elementAt(index);
 
                           return FocusedMenuHolder(
@@ -654,7 +655,7 @@ class ProjectListMobileState extends State<ProjectListMobile>
                             duration: const Duration(
                                 milliseconds: 300),
                             menuItems: getPopUpMenuItems(
-                                selectedProject),
+                                mProject),
                             animateMenuItems: true,
                             openWithTap: true,
                             onPressed: () {
@@ -668,16 +669,16 @@ class ProjectListMobileState extends State<ProjectListMobile>
                                       16.0)),
                               child: Padding(
                                 padding:
-                                const EdgeInsets.all(12.0),
+                                const EdgeInsets.all(4.0),
                                 child: Column(
                                   children: [
                                     const SizedBox(
-                                      height: 12,
+                                      height: 8,
                                     ),
                                     Row(
                                       children: [
                                         Opacity(
-                                          opacity: 0.5,
+                                          opacity: 0.9,
                                           child: Icon(
                                             Icons.water_damage,
                                             color: Theme.of(
@@ -690,7 +691,7 @@ class ProjectListMobileState extends State<ProjectListMobile>
                                         ),
                                         Flexible(
                                           child: Text(
-                                              selectedProject
+                                              mProject
                                                   .name!,
                                               style: GoogleFonts.lato(
                                                   textStyle: Theme.of(
@@ -699,12 +700,12 @@ class ProjectListMobileState extends State<ProjectListMobile>
                                                       .bodySmall,
                                                   fontWeight:
                                                   FontWeight
-                                                      .bold)),
+                                                      .normal)),
                                         )
                                       ],
                                     ),
                                     const SizedBox(
-                                      height: 12,
+                                      height: 4,
                                     ),
                                   ],
                                 ),

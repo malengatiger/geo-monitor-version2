@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:uuid/uuid.dart';
 
+import '../../api/data_api.dart';
 import '../../api/sharedprefs.dart';
 import '../../auth/app_auth.dart';
 import '../../bloc/admin_bloc.dart';
@@ -64,6 +67,7 @@ class UserEditMobileState extends State<UserEditMobile>
   void _submit() async {
     if (_formKey.currentState!.validate()) {
       //todo - validate
+      pp('🔵🔵 ....... Submitting user data to create a new User!');
       if (type == null) {
         showToast(
             context: context,
@@ -106,16 +110,12 @@ class UserEditMobileState extends State<UserEditMobile>
               userType: type,
               gender: gender,
               created: DateTime.now().toUtc().toIso8601String(),
-              fcmRegistration: 'tbd', password: passwordController.text,
+              fcmRegistration: 'tbd', password: const Uuid().v4(),
               userId: 'tbd');
-          pp('😡 😡 😡 _submit new user ......... ${user.toJson()}');
+          pp('\n\n\n😡😡😡 _submit new user ......... ${user.toJson()}');
           try {
-            var mUser = await AppAuth.createUser(
-              user: user,
-              password: 'pass123',
-              isLocalAdmin: admin == null ? true : false,
-            );
-            pp('🍎 🍎 🍎 🍎 UserEditMobile: 🍎 A user has been created:  🍎 ${mUser.toJson()}');
+            var mUser = await DataAPI.registerUser(user);
+            pp('\n🍎🍎🍎🍎 UserEditMobile: 🍎 A user has been created:  🍎 ${mUser.toJson()}\b');
             gender = null;
             type = null;
             showToast(
@@ -123,6 +123,7 @@ class UserEditMobileState extends State<UserEditMobile>
                 context: context,
                 backgroundColor: Colors.teal,
                 textStyle: Styles.whiteSmall,
+                toastGravity: ToastGravity.TOP,
                 duration: const Duration(seconds: 5));
 
             await organizationBloc.getUsers(
@@ -237,11 +238,17 @@ class UserEditMobileState extends State<UserEditMobile>
                       const SizedBox(
                         height: 8,
                       ),
-                      CountryChooser(onSelected: (c) {
-                        setState(() {
-                          country = c;
-                        });
-                      }),
+                      Row(
+                        children: [
+                          CountryChooser(onSelected: (c) {
+                            setState(() {
+                              country = c;
+                            });
+                          }),
+                          const SizedBox(width: 12,),
+                          country == null? const SizedBox(): Text('${country!.name}', style: myTextStyleMedium(context),),
+                        ],
+                      ),
                       const SizedBox(
                         height: 8,
                       ),

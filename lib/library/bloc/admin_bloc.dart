@@ -186,9 +186,10 @@ class AdminBloc {
   }
 
   Future updateUser(User user) async {
-    var res = await DataAPI.addUser(user);
-    _users.add(res);
-    _userController.sink.add(_users);
+    //todo - sort out user update - check backend api
+    // var res = await DataAPI.addUser(user);
+    // _users.add(res);
+    // _userController.sink.add(_users);
   }
 
   Future<List<User>> findUsersByOrganization(String organizationId) async {

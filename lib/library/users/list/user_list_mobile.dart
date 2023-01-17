@@ -1,23 +1,23 @@
+import 'package:animations/animations.dart';
 import 'package:badges/badges.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_libphonenumber/flutter_libphonenumber.dart';
 import 'package:focused_menu/focused_menu.dart';
 import 'package:focused_menu/modals.dart';
-import 'package:geo_monitor/library/emojis.dart';
-import 'package:geo_monitor/library/users/edit/user_edit_mobile.dart';
 
 import 'package:page_transition/page_transition.dart';
 
 import '../../api/sharedprefs.dart';
 import '../../bloc/fcm_bloc.dart';
 import '../../bloc/organization_bloc.dart';
+import '../../emojis.dart';
 import '../../functions.dart';
 import '../../hive_util.dart';
-import '../../snack.dart';
 import '../../ui/maps_field_monitor/field_monitor_map_main.dart';
 import '../../ui/message/message_main.dart';
 import '../../ui/schedule/scheduler_main.dart';
-import '../edit/user_edit_main.dart';
 import '../../data/user.dart';
+import '../edit/user_edit_mobile.dart';
 import '../report/user_rpt_main.dart';
 
 class UserListMobile extends StatefulWidget {
@@ -30,16 +30,21 @@ class UserListMobile extends StatefulWidget {
 
 class UserListMobileState extends State<UserListMobile>
     with SingleTickerProviderStateMixin {
-  late AnimationController _controller;
+  late AnimationController _animationController;
   bool isBusy = false;
   var _users = <User>[];
   final _key = GlobalKey<ScaffoldState>();
   User? _user;
-  final mm = '${Emoji.diamond}${Emoji.diamond}${Emoji.diamond}${Emoji.diamond} UserListMobile: ';
+  final mm =
+      '${Emoji.diamond}${Emoji.diamond}${Emoji.diamond}${Emoji.diamond} UserListMobile: ';
 
   @override
   void initState() {
-    _controller = AnimationController(vsync: this);
+    _animationController = AnimationController(
+        value: 0.0,
+        duration: const Duration(milliseconds: 3000),
+        reverseDuration: const Duration(milliseconds: 2000),
+        vsync: this);
     super.initState();
     _getData(false);
     _listen();
@@ -48,11 +53,8 @@ class UserListMobileState extends State<UserListMobile>
   void _listen() {
     fcmBloc.userStream.listen((User user) {
       if (mounted) {
-        AppSnackbar.showSnackbar(
-            scaffoldKey: _key,
-            message: 'User has been added OK',
-            textColor: Colors.white,
-            backgroundColor: Theme.of(context).primaryColor);
+        ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('User has been added OK')));
       }
     });
   }
@@ -68,19 +70,20 @@ class UserListMobileState extends State<UserListMobile>
           forceRefresh: forceRefresh);
       _users.sort((a, b) => (a.name!.compareTo(b.name!)));
       pp('.......................... users to work with: ${_users.length}');
-
     } catch (e) {
-      AppSnackbar.showErrorSnackbar(
-          scaffoldKey: _key, message: 'Organization user refresh failed: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Organization user refresh failed: $e')));
     }
     setState(() {
       isBusy = false;
     });
+    _animationController.reset();
+    _animationController.forward();
   }
 
   @override
   void dispose() {
-    _controller.dispose();
+    _animationController.dispose();
     super.dispose();
   }
 
@@ -89,7 +92,8 @@ class UserListMobileState extends State<UserListMobile>
     list.add(IconButton(
       icon: Icon(
         Icons.refresh,
-        size: 20, color: Theme.of(context).primaryColor,
+        size: 20,
+        color: Theme.of(context).primaryColor,
       ),
       onPressed: () {
         _getData(true);
@@ -97,10 +101,7 @@ class UserListMobileState extends State<UserListMobile>
     ));
     if (widget.user.userType == ORG_ADMINISTRATOR) {
       list.add(IconButton(
-        icon: Icon(
-          Icons.add,
-          size: 20, color: Theme.of(context).primaryColor
-        ),
+        icon: Icon(Icons.add, size: 20, color: Theme.of(context).primaryColor),
         onPressed: () {
           _navigateToUserEdit(null);
         },
@@ -114,7 +115,7 @@ class UserListMobileState extends State<UserListMobile>
 
     if (widget.user.userType == ORG_ADMINISTRATOR) {
       list.add(FocusedMenuItem(
-          title: Text('Send Message',style: myTextStyleSmall(context)),
+          title: Text('Send Message', style: myTextStyleSmall(context)),
           backgroundColor: Theme.of(context).primaryColor,
           trailingIcon: Icon(
             Icons.send,
@@ -124,7 +125,10 @@ class UserListMobileState extends State<UserListMobile>
             _navigateToMessaging(user);
           }));
       list.add(FocusedMenuItem(
-          title: Text('Edit User',style: myTextStyleSmall(context),),
+          title: Text(
+            'Edit User',
+            style: myTextStyleSmall(context),
+          ),
           backgroundColor: Theme.of(context).primaryColor,
           trailingIcon: Icon(
             Icons.create,
@@ -134,7 +138,7 @@ class UserListMobileState extends State<UserListMobile>
             _navigateToUserEdit(user);
           }));
       list.add(FocusedMenuItem(
-          title:  Text('View Report',style: myTextStyleSmall(context)),
+          title: Text('View Report', style: myTextStyleSmall(context)),
           backgroundColor: Theme.of(context).primaryColor,
           trailingIcon: Icon(
             Icons.report,
@@ -144,7 +148,8 @@ class UserListMobileState extends State<UserListMobile>
             _navigateToUserReport(user);
           }));
       list.add(FocusedMenuItem(
-          title:  Text('Schedule FieldMonitor',style: myTextStyleSmall(context)),
+          title:
+              Text('Schedule FieldMonitor', style: myTextStyleSmall(context)),
           backgroundColor: Theme.of(context).primaryColor,
           trailingIcon: Icon(
             Icons.person,
@@ -154,7 +159,8 @@ class UserListMobileState extends State<UserListMobile>
             _navigateToScheduler(user);
           }));
       list.add(FocusedMenuItem(
-          title:  Text('FieldMonitor Home Base',style: myTextStyleSmall(context)),
+          title:
+              Text('FieldMonitor Home Base', style: myTextStyleSmall(context)),
           backgroundColor: Theme.of(context).primaryColor,
           trailingIcon: Icon(
             Icons.location_pin,
@@ -167,7 +173,8 @@ class UserListMobileState extends State<UserListMobile>
     if (widget.user.userType == FIELD_MONITOR) {
       if (_user!.userId == user.userId) {
         list.add(FocusedMenuItem(
-            title:  Text('FieldMonitor Home Base',style: myTextStyleSmall(context)),
+            title: Text('FieldMonitor Home Base',
+                style: myTextStyleSmall(context)),
             backgroundColor: Theme.of(context).primaryColor,
             trailingIcon: Icon(
               Icons.location_pin,
@@ -178,7 +185,10 @@ class UserListMobileState extends State<UserListMobile>
             }));
       } else {
         list.add(FocusedMenuItem(
-            title:  Text('Send Message', style: myTextStyleSmall(context),),
+            title: Text(
+              'Send Message',
+              style: myTextStyleSmall(context),
+            ),
             backgroundColor: Theme.of(context).primaryColor,
             trailingIcon: Icon(
               Icons.send,
@@ -249,78 +259,146 @@ class UserListMobileState extends State<UserListMobile>
                                 const SizedBox(
                                   width: 8,
                                 ),
-
                               ],
                             ),
                             const SizedBox(
-                              height: 16,
+                              height: 48,
                             ),
                             Expanded(
                               child: Badge(
-                                badgeContent: Text('${_users.length}'),
+                                badgeContent: Text(
+                                  '${_users.length}',
+                                  style: myTextStyleSmallBlack(context),
+                                ),
                                 badgeColor: Theme.of(context).primaryColor,
-                                position: const BadgePosition(top: -12, end: 12),
-                                child: ListView.builder(
-                                  itemCount: _users.length,
-                                  itemBuilder: (BuildContext context, int index) {
-                                    var user = _users.elementAt(index);
-                                    var mType = 'Field Monitor';
-                                    switch (user.userType) {
-                                      case ORG_ADMINISTRATOR:
-                                        mType = 'Administrator';
-                                        break;
-                                      case ORG_EXECUTIVE:
-                                        mType = 'Executive';
-                                        break;
-                                      case FIELD_MONITOR:
-                                        mType = 'Field Monitor';
-                                        break;
-                                    }
-                                    return FocusedMenuHolder(
-                                      menuItems: _getMenuItems(user),
-                                      blurBackgroundColor: Theme.of(context).backgroundColor,
-                                      animateMenuItems: true,
-                                      openWithTap: true,
-                                      onPressed: () {
-                                        pp('.... 💛️ 💛️ 💛️ not sure what I pressed ...');
-                                      },
-                                      child: Card(
-                                        elevation: 2,
-                                        shape: RoundedRectangleBorder(
-                                            borderRadius:
-                                                BorderRadius.circular(16.0)),
-                                        child: Padding(
-                                          padding: const EdgeInsets.all(4.0),
-                                          child: Column(
-                                            children: [
-                                              Row(
-                                                children: [
-                                                  const SizedBox(width:24, height: 24,
-                                                    child: CircleAvatar(
-                                                        backgroundImage: AssetImage(
-                                                            'assets/batman.png')),
-                                                  ),
-                                                  const SizedBox(
-                                                    width: 8,
-                                                  ),
-                                                  Text(
-                                                    user.name!,
-                                                    style:
-                                                        myTextStyleSmall(context),
-                                                  ),
-                                                ],
-                                              ),
-                                              Row(mainAxisAlignment: MainAxisAlignment.end,
-                                                children: [
-                                                  Text(_user!.cellphone!, style: myTextStyleSmall(context)),
-                                                ],
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                      ),
+                                padding: const EdgeInsets.all(8.0),
+                                position:
+                                    const BadgePosition(top: -16, end: 12),
+                                child: AnimatedBuilder(
+                                  animation: _animationController,
+                                  builder:
+                                      (BuildContext context, Widget? child) {
+                                    return FadeScaleTransition(
+                                      animation: _animationController,
+                                      child: child,
                                     );
                                   },
+                                  child: ListView.builder(
+                                    itemCount: _users.length,
+                                    itemBuilder:
+                                        (BuildContext context, int index) {
+                                      var user = _users.elementAt(index);
+                                      final formattedNumber =
+                                          FlutterLibphonenumber().formatNumberSync(
+                                              user.cellphone!,
+                                              country: CountryWithPhoneCode(
+                                                  phoneCode: '27',
+                                                  countryCode: 'ZA',
+                                                  exampleNumberMobileNational:
+                                                      '0825678899',
+                                                  exampleNumberFixedLineNational:
+                                                      '0124456766',
+                                                  phoneMaskMobileNational:
+                                                      '00000 000000',
+                                                  phoneMaskFixedLineNational:
+                                                      '00000 000000',
+                                                  exampleNumberMobileInternational:
+                                                      '+27 65 747 1234',
+                                                  exampleNumberFixedLineInternational:
+                                                      '+27 65 747 1234',
+                                                  phoneMaskMobileInternational:
+                                                      '+00 00 000 0000',
+                                                  phoneMaskFixedLineInternational:
+                                                      '+00 00 000 0000',
+                                                  countryName: 'South Africa'));
+                                      var mType = 'Field Monitor';
+                                      switch (user.userType) {
+                                        case ORG_ADMINISTRATOR:
+                                          mType = 'Administrator';
+                                          break;
+                                        case ORG_EXECUTIVE:
+                                          mType = 'Executive';
+                                          break;
+                                        case FIELD_MONITOR:
+                                          mType = 'Field Monitor';
+                                          break;
+                                      }
+                                      return FocusedMenuHolder(
+                                        menuItems: _getMenuItems(user),
+                                        blurBackgroundColor:
+                                            Theme.of(context).backgroundColor,
+                                        animateMenuItems: true,
+                                        openWithTap: true,
+                                        onPressed: () {
+                                          pp('.... 💛️ 💛️ 💛️ not sure what I pressed ...');
+                                        },
+                                        child: Card(
+                                          elevation: 2,
+                                          shape: RoundedRectangleBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(16.0)),
+                                          child: Padding(
+                                            padding: const EdgeInsets.all(4.0),
+                                            child: Column(
+                                              children: [
+                                                Padding(
+                                                  padding: const EdgeInsets
+                                                      .symmetric(vertical: 6.0),
+                                                  child: Row(
+                                                    children: [
+                                                      Text(
+                                                        formattedNumber,
+                                                        style: const TextStyle(
+                                                            fontSize: 8,
+                                                            fontWeight:
+                                                                FontWeight
+                                                                    .normal),
+                                                      ),
+                                                      const SizedBox(
+                                                        width: 4,
+                                                      ),
+                                                      SizedBox(
+                                                        width: 16,
+                                                        height: 16,
+                                                        child: Card(
+                                                            color: Theme.of(
+                                                                    context)
+                                                                .primaryColor),
+                                                      ),
+                                                      const SizedBox(
+                                                        width: 8,
+                                                      ),
+                                                      Flexible(
+                                                        child: Row(
+                                                          children: [
+                                                            Text(
+                                                              user.name!,
+                                                              style:
+                                                                  myTextStyleSmall(
+                                                                      context),
+                                                            ),
+                                                          ],
+                                                        ),
+                                                      ),
+                                                      const SizedBox(
+                                                        height: 8,
+                                                      ),
+
+                                                      // const SizedBox(width:24, height: 24,
+                                                      //   child: CircleAvatar(
+                                                      //       backgroundImage: AssetImage(
+                                                      //           'assets/batman.png')),
+                                                      // ),
+                                                    ],
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        ),
+                                      );
+                                    },
+                                  ),
                                 ),
                               ),
                             ),

@@ -227,6 +227,25 @@ class DataAPI {
     }
   }
 
+
+  static Future<User> registerUser( User user) async {
+    String? mURL = await getUrl();
+    Map bag = user.toJson();
+    pp('$mm️ User about to be sent to backend: check name: ☕️ $bag');
+    try {
+      var result = await _callWebAPIPost('${mURL!}createUser', bag);
+      var u = User.fromJson(result);
+      await hiveUtil.addUser(user: u);
+
+      pp('$mm️ User creation complete: user: ☕️ ${u.toJson()}');
+
+      return u;
+    } catch (e) {
+      pp(e);
+      rethrow;
+    }
+  }
+
   static Future<User> updateUser(User user) async {
     String? mURL = await getUrl();
     Map bag = user.toJson();
