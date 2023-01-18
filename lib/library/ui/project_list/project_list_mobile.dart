@@ -314,10 +314,7 @@ class ProjectListMobileState extends State<ProjectListMobile>
       FocusedMenuItem(
           title: Text(
             'Project Directions',
-            style: GoogleFonts.lato(
-                textStyle: Theme.of(context).textTheme.bodyMedium,
-                fontWeight: FontWeight.normal,
-                color: Colors.black),
+            style: myTextStyleSmallBlack(context),
           ),
           trailingIcon: Icon(
             Icons.directions,
@@ -331,10 +328,7 @@ class ProjectListMobileState extends State<ProjectListMobile>
       FocusedMenuItem(
           title: Text(
             'Project Locations Map',
-            style: GoogleFonts.lato(
-                textStyle: Theme.of(context).textTheme.bodyMedium,
-                fontWeight: FontWeight.normal,
-                color: Colors.black),
+            style: myTextStyleSmallBlack(context),
           ),
           trailingIcon: Icon(
             Icons.map,
@@ -348,10 +342,7 @@ class ProjectListMobileState extends State<ProjectListMobile>
     menuItems.add(
       FocusedMenuItem(
           title: Text('Photos & Videos',
-              style: GoogleFonts.lato(
-                  textStyle: Theme.of(context).textTheme.bodyMedium,
-                  fontWeight: FontWeight.normal,
-                  color: Colors.black)),
+              style: myTextStyleSmallBlack(context)),
           trailingIcon: Icon(
             Icons.camera,
             color: Theme.of(context).primaryColor,
@@ -364,10 +355,7 @@ class ProjectListMobileState extends State<ProjectListMobile>
     menuItems.add(
       FocusedMenuItem(
           title: Text('Start Monitoring',
-              style: GoogleFonts.lato(
-                  textStyle: Theme.of(context).textTheme.bodyMedium,
-                  fontWeight: FontWeight.normal,
-                  color: Colors.black)),
+              style: myTextStyleSmallBlack(context)),
           trailingIcon: Icon(
             Icons.lock_clock,
             color: Theme.of(context).primaryColor,
@@ -379,10 +367,7 @@ class ProjectListMobileState extends State<ProjectListMobile>
     if (user!.userType == ORG_ADMINISTRATOR) {
       menuItems.add(FocusedMenuItem(
           title: Text('Add Project Location',
-              style: GoogleFonts.lato(
-                  textStyle: Theme.of(context).textTheme.bodyMedium,
-                  fontWeight: FontWeight.normal,
-                  color: Colors.black)),
+              style: myTextStyleSmallBlack(context)),
           trailingIcon: Icon(
             Icons.location_pin,
             color: Theme.of(context).primaryColor,
@@ -394,10 +379,7 @@ class ProjectListMobileState extends State<ProjectListMobile>
         FocusedMenuItem(
             title: Text(
               'Project Areas Map',
-              style: GoogleFonts.lato(
-                  textStyle: Theme.of(context).textTheme.bodyMedium,
-                  fontWeight: FontWeight.normal,
-                  color: Colors.black),
+              style: myTextStyleSmallBlack(context),
             ),
             trailingIcon: Icon(
               Icons.map,
@@ -409,10 +391,7 @@ class ProjectListMobileState extends State<ProjectListMobile>
       );
       menuItems.add(FocusedMenuItem(
           title: Text('Edit Project',
-              style: GoogleFonts.lato(
-                  textStyle: Theme.of(context).textTheme.bodyMedium,
-                  fontWeight: FontWeight.normal,
-                  color: Colors.black)),
+              style: myTextStyleSmallBlack(context)),
           trailingIcon: Icon(
             Icons.create,
             color: Theme.of(context).primaryColor,
@@ -659,7 +638,7 @@ class ProjectListMobileState extends State<ProjectListMobile>
                             animateMenuItems: true,
                             openWithTap: true,
                             onPressed: () {
-                              pp('.... 💛️ 💛️ 💛️ not sure what I pressed ...');
+                              pp('$mm 💛️💛️💛️ not sure what I pressed ...');
                             },
                             child: Card(
                               elevation: 4,

@@ -53,7 +53,7 @@ class UserListMainState extends State<UserListMain> {
             ),
           )
         : ScreenTypeLayout(
-            mobile: UserListMobile(_user!),
+            mobile: const UserListMobile(),
             tablet: UserListTablet(_user!),
             desktop: UserListDesktop(_user!),
           );

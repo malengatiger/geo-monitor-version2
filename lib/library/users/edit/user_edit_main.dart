@@ -51,6 +51,7 @@ class CountryChooserState extends State<CountryChooser> {
     if (countries.isEmpty) {
       countries = await DataAPI.getCountries();
     }
+    countries.sort((a,b) => a.name!.compareTo(b.name!));
     _buildDropDown();
     setState(() {
       loading = false;
@@ -69,7 +70,10 @@ class CountryChooserState extends State<CountryChooser> {
   @override
   Widget build(BuildContext context) {
 
-    return  DropdownButton(
+    return  loading? const SizedBox(height: 20, width: 20,
+    child: CircularProgressIndicator(
+      strokeWidth: 4, backgroundColor: Colors.pink,
+    ),) : DropdownButton(
         elevation: 4, hint:  Text('Countries', style: myTextStyleSmall(context),),
 
         items: list, onChanged: onChanged);

@@ -43,16 +43,16 @@ class UserReportMobileState extends State<UserReportMobile>
       child: Scaffold(
         appBar: AppBar(
           title: Text(
-            'User Editor',
-            style: Styles.whiteSmall,
+            'User Report',
+            style: myTextStyleMedium(context),
           ),
           bottom: PreferredSize(
             preferredSize: const Size.fromHeight(100),
             child: Column(
               children: [
                 Text(
-                  widget.user == null ? 'New User' : 'Edit User',
-                  style: Styles.blackBoldMedium,
+                  '${widget.user.name}',
+                  style: myTextStyleLarge(context),
                 ),
                 const SizedBox(
                   height: 40,
@@ -61,13 +61,12 @@ class UserReportMobileState extends State<UserReportMobile>
             ),
           ),
         ),
-        backgroundColor: Colors.brown[100],
         body: Stack(
           children: [
             Center(
               child: Text(
-                'User Report',
-                style: Styles.blueBoldLarge,
+                'User Report here',
+                style: myTextStyleMedium(context),
               ),
             ),
           ],

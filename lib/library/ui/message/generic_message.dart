@@ -24,13 +24,13 @@ class GenericMessage extends StatefulWidget {
 class GenericMessageState extends State<GenericMessage> {
   String frequency = MONITOR_TWICE_A_DAY;
   bool isBusy = false;
-  var _key = GlobalKey<ScaffoldState>();
-  void _onRadioButtonSelected(String selected) {
-    pp('MessageMobile :  🥦 🥦 🥦 _onRadioButtonSelected: 🍊 $selected 🍊');
-    setState(() {
-      frequency = selected;
-    });
-  }
+  // final _key = GlobalKey<ScaffoldState>();
+  // void _onRadioButtonSelected(String selected) {
+  //   pp('MessageMobile :  🥦 🥦 🥦 _onRadioButtonSelected: 🍊 $selected 🍊');
+  //   setState(() {
+  //     frequency = selected;
+  //   });
+  // }
 
   void _sendMessage() async {
     // if (frequency == null) {
@@ -79,14 +79,14 @@ class GenericMessageState extends State<GenericMessage> {
               color: Theme.of(context).primaryColor,
             ),
             title: AnimatedContainer(
-              duration: Duration(milliseconds: 1000),
+              duration: const Duration(milliseconds: 1000),
               child: Text(
                 '${widget.project == null ? '' : widget.project!.name}',
                 style: Styles.blackBoldSmall,
               ),
             ),
           ),
-          SizedBox(
+          const SizedBox(
             height: 2,
           ),
           Padding(
@@ -94,18 +94,18 @@ class GenericMessageState extends State<GenericMessage> {
             child: TextField(
               minLines: 2,
               maxLines: 6,
-              decoration: InputDecoration(
+              decoration: const InputDecoration(
                 icon: Icon(Icons.message),
                 hintText: 'Enter message',
               ),
               onChanged: _onMessageChanged,
             ),
           ),
-          SizedBox(
-            height: 4,
+          const SizedBox(
+            height: 24,
           ),
           isBusy
-              ? Container(
+              ? SizedBox(
                   height: 24,
                   width: 24,
                   child: Center(
@@ -115,16 +115,13 @@ class GenericMessageState extends State<GenericMessage> {
                     ),
                   ),
                 )
-              : widget.project == null
-                  ? Container()
-                  : ElevatedButton(
-
+              : ElevatedButton(
+                      onPressed: _sendMessage,
                       child: Text(
                         'Send Message',
-                        style: Styles.whiteSmall,
-                      ),
-                      onPressed: _sendMessage),
-          SizedBox(
+                        style: myTextStyleMedium(context),
+                      )),
+          const SizedBox(
             height: 12,
           )
         ],

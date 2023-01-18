@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'dart:math';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:geo_monitor/library/data/project_polygon.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -534,11 +535,19 @@ prettyPrint(Map map, String name) {
 
 pp(dynamic msg) {
   var time = getFormattedDateHourMinSec(DateTime.now().toString());
-  if (msg is String) {
-    debugPrint('$time ==> $msg');
-  } else {
-    pp('$time ==> $msg');
+  if (kReleaseMode) {
+    if (!msg is String) {
+      pp('$time ==> $msg');
+    }
   }
+  if (kDebugMode) {
+    if (msg is String) {
+      debugPrint('$time ==> $msg');
+    } else {
+      pp('$time ==> $msg');
+    }
+  }
+
 }
 getRoundedBorder({required double radius}) {
   return RoundedRectangleBorder(borderRadius: BorderRadius.circular(radius));

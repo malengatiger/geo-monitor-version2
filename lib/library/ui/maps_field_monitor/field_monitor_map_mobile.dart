@@ -13,22 +13,22 @@ import '../../location/loc_bloc.dart';
 class FieldMonitorMapMobile extends StatefulWidget {
   final User user;
 
-  FieldMonitorMapMobile(this.user);
+  const FieldMonitorMapMobile(this.user);
 
   @override
-  _FieldMonitorMapMobileState createState() => _FieldMonitorMapMobileState();
+  FieldMonitorMapMobileState createState() => FieldMonitorMapMobileState();
 }
 
-class _FieldMonitorMapMobileState extends State<FieldMonitorMapMobile>
+class FieldMonitorMapMobileState extends State<FieldMonitorMapMobile>
     with SingleTickerProviderStateMixin {
   late AnimationController _controller;
-  Completer<GoogleMapController> _mapController = Completer();
+  final Completer<GoogleMapController> _mapController = Completer();
   Map<MarkerId, Marker> markers = <MarkerId, Marker>{};
   var random = Random(DateTime.now().millisecondsSinceEpoch);
-  var _key = GlobalKey<ScaffoldState>();
+  final _key = GlobalKey<ScaffoldState>();
   bool busy = false;
 // -25.7605441 longitude: 27.8525941
-  CameraPosition _cameraPosition = CameraPosition(
+  CameraPosition _cameraPosition = const CameraPosition(
     target: LatLng(-25.7705441, 27.8525941),
     zoom: 14.4746,
   );
@@ -130,28 +130,28 @@ class _FieldMonitorMapMobileState extends State<FieldMonitorMapMobile>
             style: Styles.whiteSmall,
           ),
           bottom: PreferredSize(
+              preferredSize: const Size.fromHeight(124),
               child: Padding(
-                padding: const EdgeInsets.all(20.0),
+                padding: const EdgeInsets.all(12.0),
                 child: Column(
                   children: [
                     Text(
                       'Locate the FieldMonitor at their Home base. This enables you to match projects with monitors during the onboarding process ',
-                      style: Styles.whiteSmall,
+                      style: myTextStyleSmall(context),
                     ),
-                    SizedBox(
+                    const SizedBox(
                       height: 16,
                     ),
                     Text(
                       'Press and Hold to locate FieldMonitor',
-                      style: Styles.blackBoldSmall,
+                      style: myTextStyleSmall(context),
                     ),
-                    SizedBox(
+                    const SizedBox(
                       height: 8,
                     ),
                   ],
                 ),
-              ),
-              preferredSize: Size.fromHeight(110)),
+              )),
         ),
         body: Stack(
           children: [
@@ -196,8 +196,5 @@ class _FieldMonitorMapMobileState extends State<FieldMonitorMapMobile>
     );
   }
 
-  @override
-  onClose() {
-    ScaffoldMessenger.of(_key.currentState!.context).removeCurrentSnackBar();
-  }
+
 }

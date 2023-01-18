@@ -1,3 +1,4 @@
+import 'package:badges/badges.dart';
 import 'package:flutter/material.dart';
 
 import '../../api/data_api.dart';
@@ -63,22 +64,37 @@ class SchedulerMobileState extends State<SchedulerMobile>
 
   @override
   Widget build(BuildContext context) {
+    var mType = 'Unknown';
+    switch(widget.user.userType) {
+      case UserType.orgExecutive:
+        mType = 'Executive';
+        break;
+      case UserType.orgAdministrator:
+        mType = 'Administrator';
+        break;
+      case UserType.fieldMonitor:
+        mType = 'Field Monitor';
+        break;
+    }
     return SafeArea(
         child: Scaffold(
             key: _key,
             appBar: AppBar(
-              title: Text('FieldMonitor Schedule', style: Styles.whiteSmall),
+              title: Text('FieldMonitor Schedule', style: myTextStyleMedium(context)),
               bottom: PreferredSize(
                   preferredSize: const Size.fromHeight(100),
                   child: Column(
                     children: [
                       Text(
                         widget.user.name!,
-                        style: Styles.blackBoldMedium,
+                        style: myTextStyleLarge(context),
+                      ),
+                      const SizedBox(
+                        height: 16,
                       ),
                       Text(
-                        'FieldMonitor',
-                        style: Styles.blackSmall,
+                        mType,
+                        style: myTextStyleSmall(context),
                       ),
                       const SizedBox(
                         height: 48,
@@ -86,15 +102,14 @@ class SchedulerMobileState extends State<SchedulerMobile>
                     ],
                   )),
             ),
-            backgroundColor: Colors.brown[100],
             body: busy
                 ? const Center(
                     child: SizedBox(
-                      height: 24,
-                      width: 24,
+                      height: 20,
+                      width: 20,
                       child: CircularProgressIndicator(
                         strokeWidth: 8,
-                        backgroundColor: Colors.amber,
+                        backgroundColor: Colors.pink,
                       ),
                     ),
                   )
@@ -102,29 +117,37 @@ class SchedulerMobileState extends State<SchedulerMobile>
                     children: [
                       Padding(
                         padding: const EdgeInsets.all(12.0),
-                        child: ListView.builder(
-                            itemCount: _projects.length,
-                            itemBuilder: (context, index) {
-                              return GestureDetector(
-                                onTap: () {
-                                  _navigateToFrequencyEditor(
-                                      _projects.elementAt(index));
-                                },
-                                child: Card(
-                                  elevation: 2,
-                                  child: ListTile(
-                                    leading: Icon(
-                                      Icons.home,
-                                      color: Theme.of(context).primaryColor,
-                                    ),
-                                    title: Text(
-                                      _projects.elementAt(index).name!,
-                                      style: Styles.blackBoldSmall,
+                        child: Badge(
+                          badgeColor: Theme.of(context).primaryColor,
+                          padding: const EdgeInsets.all(8.0),
+                          elevation: 8,
+                          badgeContent: Text('${_projects.length}', style: myTextStyleSmall(context),),
+                          position: BadgePosition.topEnd(top: -12, end: 12),
+                          child: ListView.builder(
+                              itemCount: _projects.length,
+                              itemBuilder: (context, index) {
+                                return GestureDetector(
+                                  onTap: () {
+                                    _navigateToFrequencyEditor(
+                                        _projects.elementAt(index));
+                                  },
+                                  child: Card(
+                                    elevation: 2,
+                                    shape: getRoundedBorder(radius: 16),
+                                    child: ListTile(
+                                      leading: Icon(
+                                        Icons.home,
+                                        color: Theme.of(context).primaryColor,
+                                      ),
+                                      title: Text(
+                                        _projects.elementAt(index).name!,
+                                        style: myTextStyleSmall(context),
+                                      ),
                                     ),
                                   ),
-                                ),
-                              );
-                            }),
+                                );
+                              }),
+                        ),
                       ),
                     ],
                   )));
@@ -182,7 +205,7 @@ class FrequencyEditorState extends State<FrequencyEditor> {
       appBar: AppBar(
         title: Text(
           'Project Monitoring Frequency',
-          style: Styles.whiteSmall,
+          style: myTextStyleSmall(context),
         ),
         bottom: PreferredSize(
             preferredSize: const Size.fromHeight(100),
@@ -190,23 +213,26 @@ class FrequencyEditorState extends State<FrequencyEditor> {
               children: [
                 Text(
                   widget.fieldUser.name!,
-                  style: Styles.blackBoldMedium,
+                  style: myTextStyleMedium(context),
+                ),
+                const SizedBox(
+                  height: 24,
                 ),
                 Text(
                   'FieldMonitor',
-                  style: Styles.blackSmall,
+                  style: myTextStyleSmall(context),
                 ),
                 const SizedBox(
-                  height: 48,
+                  height: 24,
                 ),
               ],
             )),
       ),
-      backgroundColor: Colors.brown[100],
       body: Padding(
         padding: const EdgeInsets.all(8.0),
         child: Card(
           elevation: 16,
+          shape: getRoundedBorder(radius: 16),
           child: Padding(
             padding: const EdgeInsets.all(8.0),
             child: busy
@@ -228,14 +254,14 @@ class FrequencyEditorState extends State<FrequencyEditor> {
                         ),
                         Text(
                           '${widget.project.name}',
-                          style: Styles.blackBoldMedium,
+                          style: myTextStyleMedium(context),
                         ),
                         const SizedBox(
                           height: 8,
                         ),
                         Text(
                           'Project to be Monitored',
-                          style: Styles.blackSmall,
+                          style: myTextStyleSmall(context),
                         ),
                         const SizedBox(
                           height: 28,
@@ -247,14 +273,15 @@ class FrequencyEditorState extends State<FrequencyEditor> {
                             child: TextFormField(
                               controller: _perDayController,
                               keyboardType: TextInputType.number,
-                              style: Styles.blackBoldMedium,
-                              decoration: const InputDecoration(
+                              style: myNumberStyleMedium(context),
+                              decoration:  InputDecoration(
                                 icon: Icon(
                                   Icons.alarm,
-                                  color: Colors.blue,
+                                  color: Theme.of(context).primaryColor,
                                 ),
                                 hintText: 'Enter frequency per day',
                                 labelText: 'Frequency Per Day',
+                                labelStyle: myTextStyleSmall(context)
                               ),
                             ),
                           ),
@@ -269,14 +296,15 @@ class FrequencyEditorState extends State<FrequencyEditor> {
                             child: TextFormField(
                               controller: _perWeekController,
                               keyboardType: TextInputType.number,
-                              style: Styles.blackBoldMedium,
-                              decoration: const InputDecoration(
-                                icon: Icon(
+                              style: myNumberStyleMedium(context),
+                              decoration:  InputDecoration(
+                                icon:  Icon(
                                   Icons.alarm,
-                                  color: Colors.blue,
+                                  color: Theme.of(context).primaryColor,
                                 ),
                                 hintText: 'Enter frequency per week',
                                 labelText: 'Frequency Per Week',
+                                labelStyle: myTextStyleSmall(context)
                               ),
                             ),
                           ),
@@ -291,14 +319,16 @@ class FrequencyEditorState extends State<FrequencyEditor> {
                             child: TextFormField(
                               controller: _perMonthController,
                               keyboardType: TextInputType.number,
-                              style: Styles.blackBoldMedium,
-                              decoration: const InputDecoration(
-                                icon: Icon(
+                              style: myNumberStyleMedium(context),
+                              decoration:  InputDecoration(
+                                icon:  Icon(
                                   Icons.alarm,
-                                  color: Colors.blue,
+                                  color: Theme.of(context).primaryColor,
                                 ),
                                 hintText: 'Enter frequency per month',
                                 labelText: 'Frequency Per Month',
+                                  labelStyle: myTextStyleSmall(context)
+
                               ),
                             ),
                           ),

@@ -62,17 +62,17 @@ class MessageMobileState extends State<MessageMobile>
       appBar: AppBar(
         title: Text(
           'Digital Monitor Messaging',
-          style: Styles.whiteSmall,
+          style: myTextStyleMedium(context),
         ),
         bottom: PreferredSize(
-            preferredSize: Size.fromHeight(_genericMessage ? 320 : 360),
+            preferredSize: Size.fromHeight(_genericMessage ? 100 : 100),
             child: Column(
               children: [
                 Row(
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
                     Text(
-                        _genericMessage ? 'Generic Message' : 'Project Message'),
+                        _genericMessage ? 'Generic Message' : 'Project Message', style: myTextStyleSmall(context),),
                     const SizedBox(
                       width: 20,
                     ),
@@ -84,31 +84,32 @@ class MessageMobileState extends State<MessageMobile>
                 ),
                 Text(
                   '${widget.user!.name}',
-                  style: Styles.blackBoldMedium,
-                ),
-                const SizedBox(
-                  height: 12,
-                ),
-                Padding(
-                  padding: const EdgeInsets.only(left: 12.0, right: 12.0),
-                  child: Container(
-                    child: Card(
-                        elevation: 8,
-                        child: SingleChildScrollView(
-                            child: GenericMessage(
-                                project: _selectedProject == null? null: _selectedProject!, user: widget.user!))),
-                  ),
+                  style: myTextStyleMedium(context),
                 ),
                 const SizedBox(
                   height: 24,
-                )
+                ),
+
               ],
-            )),
+            ),
+        ),
       ),
-      backgroundColor: Colors.brown[100],
-      body: widget.user!.userType == ORG_ADMINISTRATOR
-          ? Stack(
+      body: Stack(
               children: [
+                const SizedBox(
+                  height: 24,
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(left: 12.0, right: 12.0),
+                  child: Card(
+                      elevation: 8,
+                      child: SingleChildScrollView(
+                          child: GenericMessage(
+                              project: _selectedProject == null? null: _selectedProject!, user: widget.user!))),
+                ),
+                const SizedBox(
+                  height: 24,
+                ),
                 Padding(
                   padding: const EdgeInsets.all(20.0),
                   child: ListView.builder(
@@ -135,9 +136,7 @@ class MessageMobileState extends State<MessageMobile>
                 )
               ],
             )
-          : Stack(
-              children: [Center(child: Text('Field Monitor Messaging'))],
-            ),
+
     ));
   }
 

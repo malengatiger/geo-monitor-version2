@@ -35,6 +35,8 @@ class OrgRegistrationPageState extends State<OrgRegistrationPage>
   final codeController = TextEditingController();
   final orgNameController = TextEditingController();
   final adminController = TextEditingController();
+  final emailController = TextEditingController();
+
   bool verificationFailed = false;
   bool busy = false;
   final _formKey = GlobalKey<FormState>();
@@ -173,6 +175,7 @@ class OrgRegistrationPageState extends State<OrgRegistrationPage>
           organizationId: org.organizationId,
           countryId: country!.countryId,
           password: const Uuid().v4());
+
       var m = await DataAPI.addUser(user!);
       await Prefs.saveUser(m);
 
@@ -338,6 +341,26 @@ class OrgRegistrationPageState extends State<OrgRegistrationPage>
                               ),
                               const SizedBox(
                                 height: 20,
+                              ),
+                              TextFormField(
+                                controller: emailController,
+                                keyboardType: TextInputType.text,
+                                decoration: InputDecoration(
+                                    hintText: 'Enter Email Address',
+                                    hintStyle: myTextStyleSmall(context),
+                                    label: Text(
+                                      'Email Address',
+                                      style: myTextStyleSmall(context),
+                                    )),
+                                validator: (value) {
+                                  if (value == null || value.isEmpty) {
+                                    return 'Please enter Email address';
+                                  }
+                                  return null;
+                                },
+                              ),
+                              const SizedBox(
+                                height: 8,
                               ),
                               _codeHasBeenSent
                                   ? const SizedBox()

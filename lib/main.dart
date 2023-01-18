@@ -6,6 +6,7 @@ import 'dart:io';
 
 import 'package:firebase_auth/firebase_auth.dart' as fb;
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -48,6 +49,17 @@ Future<void> _setup() async {
         options: DefaultFirebaseOptions.currentPlatform);
     pp('${Emoji.heartGreen}${Emoji.heartGreen} Firebase App has been initialized: ${firebaseApp.name}');
 
+    // Pass all uncaught "fatal" errors from the framework to Crashlytics
+    FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterFatalError;
+    FlutterError.onError = (errorDetails) {
+      FirebaseCrashlytics.instance.recordFlutterFatalError(errorDetails);
+    };
+    // Pass all uncaught asynchronous errors that aren't handled by the Flutter framework to Crashlytics
+    PlatformDispatcher.instance.onError = (error, stack) {
+      FirebaseCrashlytics.instance.recordError(error, stack, fatal: true);
+      return true;
+    };
+    pp('${Emoji.heartGreen}${Emoji.heartGreen} FirebaseCrashlytics set up');
     // Prefs.deleteUser();
     await Hive.initFlutter();
     await hiveUtil.initialize(forceInitialization: false);
@@ -90,15 +102,16 @@ class MyApp extends StatelessWidget {
     return GestureDetector(
       onTap: () {
         pp('🌀🌀🌀🌀 Tap detected; should dismiss keyboard');
-        // FocusScope.of(context).requestFocus(FocusNode());
         FocusManager.instance.primaryFocus?.unfocus();
       },
       onDoubleTap: () async {
         //todo - REMOVE after testing
         await _sortOutNewHiveArtifacts();
-
-
       },
+      // onLongPress: () {
+      //   pp('🌀🌀🌀🌀 Long press detected; throwing fake exception');
+      //   throw Exception('Fake Exception to test Crashlytics');
+      // },
       child: StreamBuilder(
         stream: themeBloc.newThemeStream,
         initialData: themeIndex,
