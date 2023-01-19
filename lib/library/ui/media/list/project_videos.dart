@@ -67,7 +67,7 @@ class _ProjectPhotosState extends State<ProjectVideos> {
                 height: 48,
                 child: Padding(
                   padding: const EdgeInsets.symmetric(vertical: 16.0),
-                  child: Text(widget.project.name!, style: myTextStyleSmall(context),),
+                  child: Text(widget.project.name!, style: myTextStyleMediumBold(context),),
                 ),
               ),
               Expanded(

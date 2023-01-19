@@ -235,15 +235,15 @@ class ProjectPolygonMapMobileState extends State<ProjectPolygonMapMobile>
           elevation: 0.0,
           titleSpacing: 10.0,
           centerTitle: true,
-          leading: InkWell(
-            onTap: () {
-              Navigator.pop(context);
-            },
-            child:  Icon(
-              Icons.arrow_back_ios,
-              color: Theme.of(context).primaryColor,
-            ),
-          ),
+          // leading: InkWell(
+          //   onTap: () {
+          //     Navigator.pop(context);
+          //   },
+          //   child:  Icon(
+          //     Icons.arrow_back_ios,
+          //     color: Theme.of(context).primaryColor,
+          //   ),
+          // ),
           bottom: PreferredSize(
             preferredSize: const Size.fromHeight(80),
             child: Column(
@@ -257,6 +257,8 @@ class ProjectPolygonMapMobileState extends State<ProjectPolygonMapMobile>
                     ),
                   ],
                 ),
+                const SizedBox(height: 8,),
+                Text('${widget.project.name}', style: myTextStyleLarge(context),),
                 const SizedBox(
                   height: 24,
                 )

@@ -64,10 +64,11 @@ class ProjectPhotosState extends State<ProjectPhotos> {
     ) :Column(
       children: [
         SizedBox(
-          height: 48,
+          height: 60,
           child: Padding(
             padding: const EdgeInsets.symmetric(vertical: 16.0),
-            child: Text(widget.project.name!, style: myTextStyleSmall(context),),
+            child: Text(widget.project.name!,
+              style: myTextStyleMediumBold(context),),
           ),
         ),
          Expanded(

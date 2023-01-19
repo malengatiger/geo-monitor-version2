@@ -183,19 +183,20 @@ class ProjectEditorState extends State<ProjectEditor>
     }
     try {
       mProject = await adminBloc.addProject(mProject!);
-
     } catch (e) {
       pp(e);
       _showError('$e');
     }
-    setState(() {
-      isBusy = false;
-    });
-    AppSnackbar.showSnackbar(
-        scaffoldKey: _key,
-        message: 'Project added',
-        textColor: Colors.lightBlue,
-        backgroundColor: Colors.black);
+
+    if (mounted) {
+      setState(() {
+        isBusy = false;
+      });
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          duration: const Duration(milliseconds: 2000),
+          padding: const EdgeInsets.all(12.0),
+          content: Text('${mProject!.name} added to organization')));
+    }
   }
 
   _showError(String message) {

@@ -55,7 +55,7 @@ class ProjectMediaListMobileState extends State<ProjectMediaListMobile>
     _animationController = AnimationController(
         value: 0.0,
         duration: const Duration(milliseconds: 3000),
-        reverseDuration: const Duration(milliseconds: 1000),
+        reverseDuration: const Duration(milliseconds: 500),
         vsync: this);
     _tabController = TabController(length: 2, vsync: this);
     super.initState();
@@ -154,16 +154,16 @@ class ProjectMediaListMobileState extends State<ProjectMediaListMobile>
         child: Scaffold(
       appBar: AppBar(
         leading: const SizedBox(),
-        title: Column(
-          children: [
-            Text(
-              'Photos & Videos',
-              style: myTextStyleMedium(context),
-            ),
-            // const SizedBox(height: 4,),
-            // Text('${widget.project.name}', style: myTextStyleSmall(context),),
-          ],
-        ),
+        // title: Column(
+        //   children: [
+        //     Text(
+        //       'Photos & Videos',
+        //       style: myTextStyleMedium(context),
+        //     ),
+        //     // const SizedBox(height: 4,),
+        //     // Text('${widget.project.name}', style: myTextStyleSmall(context),),
+        //   ],
+        // ),
         actions: [
           IconButton(
               onPressed: () {
@@ -186,7 +186,8 @@ class ProjectMediaListMobileState extends State<ProjectMediaListMobile>
               )),
           IconButton(
               onPressed: () {
-                _animationController.reverse().then((value) => Navigator.of(context).pop());
+                _animationController.reverse()
+                    .then((value) => Navigator.of(context).pop(context));
 
               },
               icon: Icon(
@@ -400,4 +401,3 @@ class ProjectMediaListMobileState extends State<ProjectMediaListMobile>
   }
 }
 
-void heavyTask() {}

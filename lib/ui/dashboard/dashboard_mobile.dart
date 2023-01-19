@@ -99,6 +99,9 @@ class DashboardMobileState extends State<DashboardMobile>
     _setItems();
     _listenToStreams();
     _listenForFCM();
+
+    _getAuthenticationStatus();
+
     if (widget.user != null) {
       _refreshData(true);
     } else {
@@ -109,26 +112,13 @@ class DashboardMobileState extends State<DashboardMobile>
     _buildGeofences();
   }
 
-  void _setup() async {
-    try {
-      await mainSetup();
-      _getAuthenticationStatus();
-    } catch (e) {
-      pp(e);
-    }
-  }
-
-  void _checkAuth() async {
-    _getAuthenticationStatus();
-  }
-
   final fb.FirebaseAuth firebaseAuth = fb.FirebaseAuth.instance;
   bool authed = false;
 
   void _getAuthenticationStatus() async {
     var cUser = firebaseAuth.currentUser;
     if (cUser == null) {
-      Future.delayed(const Duration(milliseconds: 200), () {
+      Future.delayed(const Duration(milliseconds: 100), () {
         _navigateToIntro();
       });
       //

@@ -12,6 +12,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart' as dot;
 import 'package:flutter_libphonenumber/flutter_libphonenumber.dart';
+import 'package:geo_monitor/library/generic_functions.dart';
 
 import 'package:geo_monitor/ui/dashboard/dashboard_main.dart';
 import 'package:hive_flutter/hive_flutter.dart';
@@ -105,7 +106,7 @@ class MyApp extends StatelessWidget {
       },
       onDoubleTap: () async {
         //todo - REMOVE after testing
-        await _sortOutNewHiveArtifacts();
+        await _sortOutNewHiveArtifacts(context);
       },
       // onLongPress: () {
       //   pp('🌀🌀🌀🌀 Long press detected; throwing fake exception');
@@ -135,7 +136,7 @@ class MyApp extends StatelessWidget {
     );
   }
 
-  Future<void> _sortOutNewHiveArtifacts() async {
+  Future<void> _sortOutNewHiveArtifacts(BuildContext context) async {
      //todo - REMOVE after testing
     String? status = dot.dotenv.env['CURRENT_STATUS'];
     pp('🐤🐤🐤🐤 DataAPI: getUrl: Status from .env: $status');
@@ -154,7 +155,10 @@ class MyApp extends StatelessWidget {
     } else {
       isDevelopmentStatus = false;
       pp('🐤🐤🐤🐤 of the app is PRODUCTION 🌎 🌎 🌎 ');
+      return;
     }
-    pp('🐤🐤🐤🐤 isDevelopmentStatus: $isDevelopmentStatus');
+    pp('\n🐤🐤🐤🐤 isDevelopmentStatus: $isDevelopmentStatus');
+    pp('🐤🐤🐤🐤 We good and clean now, Senor!');
+
   }
 }

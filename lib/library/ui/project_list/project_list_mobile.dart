@@ -3,6 +3,7 @@ import 'package:badges/badges.dart';
 import 'package:flutter/material.dart';
 import 'package:focused_menu/focused_menu.dart';
 import 'package:focused_menu/modals.dart';
+import 'package:geo_monitor/library/bloc/admin_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:map_launcher/map_launcher.dart';
 
@@ -74,6 +75,16 @@ class ProjectListMobileState extends State<ProjectListMobile>
             message: 'Project added: ${project.name}',
             textColor: Colors.white,
             backgroundColor: Theme.of(context).primaryColor);
+      }
+    });
+    adminBloc.projectStream.listen((List<Project> list) {
+      projects = list;
+      projects.sort((a, b) => a.name!.compareTo(b.name!));
+
+      if (mounted) {
+        setState(() {
+
+        });
       }
     });
   }
@@ -227,7 +238,6 @@ class ProjectListMobileState extends State<ProjectListMobile>
             duration: const Duration(milliseconds: 1500),
             child: ProjectSchedulesMobile(project: p)));
   }
-
 
   Future<void> _navigateToOrgMap() async {
     pp('_navigateToOrgMap: ');

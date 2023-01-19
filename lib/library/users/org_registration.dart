@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -7,8 +9,7 @@ import 'package:geo_monitor/library/data/organization.dart';
 import 'package:geo_monitor/library/data/organization_registration_bag.dart';
 import 'package:geo_monitor/library/location/loc_bloc.dart';
 import 'package:geo_monitor/library/users/edit/user_edit_main.dart';
-import 'package:geo_monitor/ui/dashboard/dashboard_mobile.dart';
-import 'package:page_transition/page_transition.dart';
+import 'package:pin_code_fields/pin_code_fields.dart';
 import 'package:uuid/uuid.dart';
 
 import '../api/data_api.dart';
@@ -37,11 +38,14 @@ class OrgRegistrationPageState extends State<OrgRegistrationPage>
   final adminController = TextEditingController();
   final emailController = TextEditingController();
 
-  bool verificationFailed = false;
+  bool verificationFailed = false, verificationCompleted = false;
   bool busy = false;
   final _formKey = GlobalKey<FormState>();
   ur.User? user;
   Country? country;
+
+  final errorController = StreamController<ErrorAnimationType>();
+  String? currentText;
 
   @override
   void initState() {
@@ -67,6 +71,21 @@ class OrgRegistrationPageState extends State<OrgRegistrationPage>
         timeout: const Duration(seconds: 60),
         verificationCompleted: (PhoneAuthCredential phoneAuthCredential) {
           pp('$mm verificationCompleted: $phoneAuthCredential');
+          var message = phoneAuthCredential.smsCode ?? "";
+          if (message.isNotEmpty) {
+            codeController.text = message;
+          }
+          if (mounted) {
+            setState(() {
+              verificationCompleted = true;
+              busy = false;
+            });
+            showToast(
+                backgroundColor: Theme.of(context).backgroundColor,
+                textStyle: myTextStyleMedium(context),
+                message: 'Verification completed. Thank you!',
+                context: context);
+          }
         },
         verificationFailed: (FirebaseAuthException error) {
           pp('\n$mm verificationFailed : $error \n');
@@ -207,6 +226,7 @@ class OrgRegistrationPageState extends State<OrgRegistrationPage>
       Navigator.of(context).pop(user);
     }
   }
+
 
   _onCountrySelected(Country p1) {
     if (mounted) {
@@ -382,25 +402,59 @@ class OrgRegistrationPageState extends State<OrgRegistrationPage>
                                       height: 200,
                                       child: Column(
                                         children: [
-                                          TextFormField(
+                                          // TextFormField(
+                                          //   controller: codeController,
+                                          //   keyboardType: TextInputType.number,
+                                          //   decoration: InputDecoration(
+                                          //       hintText: 'Enter Code',
+                                          //       hintStyle:
+                                          //           myTextStyleSmall(context),
+                                          //       label: Text(
+                                          //         'Code',
+                                          //         style:
+                                          //             myTextStyleSmall(context),
+                                          //       )),
+                                          //   validator: (value) {
+                                          //     if (value == null ||
+                                          //         value.isEmpty) {
+                                          //       return 'Please enter SMS code received';
+                                          //     }
+                                          //     return null;
+                                          //   },
+                                          // ),
+                                          Text('Enter SMS pin code sent to ${phoneController.text}', style: myTextStyleSmall(context),),
+                                          const SizedBox(height: 16,),
+                                          PinCodeTextField(
+                                            length: 6,
+                                            obscureText: false,
+                                            animationType: AnimationType.fade,
+                                            pinTheme: PinTheme(
+                                              shape: PinCodeFieldShape.box,
+                                              borderRadius: BorderRadius.circular(5),
+                                              fieldHeight: 50,
+                                              fieldWidth: 40,
+                                              activeFillColor: Colors.white,
+                                            ),
+                                            animationDuration: const Duration(milliseconds: 300),
+                                            backgroundColor: Colors.blue.shade50,
+                                            enableActiveFill: true,
+                                            errorAnimationController: errorController,
                                             controller: codeController,
-                                            keyboardType: TextInputType.number,
-                                            decoration: InputDecoration(
-                                                hintText: 'Enter Code',
-                                                hintStyle:
-                                                    myTextStyleSmall(context),
-                                                label: Text(
-                                                  'Code',
-                                                  style:
-                                                      myTextStyleSmall(context),
-                                                )),
-                                            validator: (value) {
-                                              if (value == null ||
-                                                  value.isEmpty) {
-                                                return 'Please enter SMS code received';
-                                              }
-                                              return null;
+                                            onCompleted: (v) {
+                                              pp("Completed");
                                             },
+                                            onChanged: (value) {
+                                              pp(value);
+                                              setState(() {
+                                                currentText = value;
+                                              });
+                                            },
+                                            beforeTextPaste: (text) {
+                                              pp("Allowing to paste $text");
+                                              //if you return true then it will show the paste confirmation dialog. Otherwise if false, then nothing will happen.
+                                              //but you can show anything you want here, like your pop up saying wrong paste format or etc
+                                              return true;
+                                            }, appContext: context,
                                           ),
                                           const SizedBox(
                                             height: 28,

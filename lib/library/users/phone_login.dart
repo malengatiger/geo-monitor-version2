@@ -1,19 +1,13 @@
+import 'dart:async';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:geo_monitor/library/api/sharedprefs.dart';
-import 'package:geo_monitor/library/data/country.dart';
-import 'package:geo_monitor/library/data/organization.dart';
-import 'package:geo_monitor/library/data/organization_registration_bag.dart';
 import 'package:geo_monitor/library/hive_util.dart';
-import 'package:geo_monitor/library/location/loc_bloc.dart';
-import 'package:geo_monitor/library/users/edit/user_edit_main.dart';
-import 'package:geo_monitor/ui/dashboard/dashboard_mobile.dart';
-import 'package:page_transition/page_transition.dart';
-import 'package:uuid/uuid.dart';
+import 'package:pin_code_fields/pin_code_fields.dart';
 
 import '../api/data_api.dart';
-import '../data/data_bag.dart';
 import '../data/user.dart' as ur;
 import '../functions.dart';
 import '../generic_functions.dart';
@@ -37,7 +31,10 @@ class PhoneLoginState extends State<PhoneLogin>
   final codeController = TextEditingController(text:'123456');
   final orgNameController = TextEditingController();
   final adminController = TextEditingController();
+  final errorController = StreamController<ErrorAnimationType>();
+  String? currentText;
   bool verificationFailed = false;
+  bool verificationCompleted = false;
   bool busy = false;
   final _formKey = GlobalKey<FormState>();
   ur.User? user;
@@ -65,9 +62,24 @@ class PhoneLoginState extends State<PhoneLogin>
 
     await firebaseAuth.verifyPhoneNumber(
         phoneNumber: phoneController.value.text,
-        timeout: const Duration(seconds: 60),
+        timeout: const Duration(seconds: 90),
         verificationCompleted: (PhoneAuthCredential phoneAuthCredential) {
           pp('$mm verificationCompleted: $phoneAuthCredential');
+          var message = phoneAuthCredential.smsCode ?? "";
+          if (message.isNotEmpty) {
+            codeController.text = message;
+          }
+          if (mounted) {
+            setState(() {
+              verificationCompleted = true;
+              busy = false;
+            });
+            showToast(
+                backgroundColor: Theme.of(context).backgroundColor,
+                textStyle: myTextStyleMedium(context),
+                message: 'Verification completed. Thank you!',
+                context: context);
+          }
         },
         verificationFailed: (FirebaseAuthException error) {
           pp('\n$mm verificationFailed : $error \n');
@@ -77,8 +89,8 @@ class PhoneLoginState extends State<PhoneLogin>
               busy = false;
             });
             showToast(
-                backgroundColor: Theme.of(context).errorColor,
-                textStyle: const TextStyle(color: Colors.white),
+                backgroundColor: Theme.of(context).backgroundColor,
+                textStyle: myTextStyleMedium(context),
                 message: 'Verification failed. Please try later',
                 context: context);
           }
@@ -290,19 +302,44 @@ class PhoneLoginState extends State<PhoneLogin>
                                       height: 200,
                                       child: Column(
                                         children: [
-                                          TextFormField(
-                                            controller: codeController,
-                                            keyboardType: TextInputType.number,
-                                            decoration:  InputDecoration(
-                                                hintText: 'Enter Code', hintStyle: myTextStyleSmall(context),
-                                                label:  Text('Code', style: myTextStyleSmall(context),)),
-                                            validator: (value) {
-                                              if (value == null ||
-                                                  value.isEmpty) {
-                                                return 'Please enter SMS code received';
-                                              }
-                                              return null;
-                                            },
+                                          Text('Enter SMS pin code sent to ${phoneController.text}', style: myTextStyleSmall(context),),
+                                          const SizedBox(height: 16,),
+                                          Padding(
+                                            padding: const EdgeInsets.all(8.0),
+                                            child: PinCodeTextField(
+                                              length: 6,
+                                              obscureText: false,
+                                              textStyle: myNumberStyleLarge(context),
+                                              animationType: AnimationType.fade,
+                                              pinTheme: PinTheme(
+                                                shape: PinCodeFieldShape.box,
+                                                borderRadius: BorderRadius.circular(5),
+                                                fieldHeight: 50,
+                                                fieldWidth: 40,
+                                                activeFillColor: Theme.of(context).backgroundColor,
+                                              ),
+
+                                              animationDuration: const Duration(milliseconds: 300),
+                                              backgroundColor: Theme.of(context).backgroundColor,
+                                              enableActiveFill: true,
+                                              errorAnimationController: errorController,
+                                              controller: codeController,
+                                              onCompleted: (v) {
+                                                pp("$mm PinCodeTextField: Completed: $v - should call submit ...");
+                                              },
+                                              onChanged: (value) {
+                                                pp(value);
+                                                setState(() {
+                                                  currentText = value;
+                                                });
+                                              },
+                                              beforeTextPaste: (text) {
+                                                pp("$mm Allowing to paste $text");
+                                                //if you return true then it will show the paste confirmation dialog. Otherwise if false, then nothing will happen.
+                                                //but you can show anything you want here, like your pop up saying wrong paste format or etc
+                                                return true;
+                                              }, appContext: context,
+                                            ),
                                           ),
                                           const SizedBox(
                                             height: 28,
