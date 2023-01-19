@@ -1,6 +1,7 @@
 import 'package:dots_indicator/dots_indicator.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart' as fb;
+import 'package:geo_monitor/main.dart';
 import 'package:page_transition/page_transition.dart';
 
 
@@ -35,6 +36,14 @@ class IntroPageViewerState extends State<IntroPageViewer>
     _animationController = AnimationController(vsync: this);
     super.initState();
     _getAuthenticationStatus();
+
+  }
+  void _setup() async {
+    try {
+      await mainSetup();
+    } catch (e) {
+      pp(e);
+    }
   }
   void _getAuthenticationStatus() async {
     var cUser = firebaseAuth.currentUser;

@@ -279,7 +279,7 @@ class MediaListMobileState extends State<UserMediaListMobile>
                   ))
               : const SizedBox(),
           _showProjectChooser
-              ? Positioned(child: ProjectChooser(onSelected: onSelected))
+              ? Positioned(child: ProjectChooserOriginal(onSelected: onSelected))
               : const SizedBox(),
         ],
       ),
@@ -332,14 +332,14 @@ class MediaListMobileState extends State<UserMediaListMobile>
   }
 }
 
-class ProjectChooser extends StatefulWidget {
-  const ProjectChooser({Key? key, required this.onSelected}) : super(key: key);
+class ProjectChooserOriginal extends StatefulWidget {
+  const ProjectChooserOriginal({Key? key, required this.onSelected}) : super(key: key);
   final Function(Project) onSelected;
   @override
-  State<ProjectChooser> createState() => _ProjectChooserState();
+  State<ProjectChooserOriginal> createState() => _ProjectChooserOriginalState();
 }
 
-class _ProjectChooserState extends State<ProjectChooser> with SingleTickerProviderStateMixin {
+class _ProjectChooserOriginalState extends State<ProjectChooserOriginal> with SingleTickerProviderStateMixin {
   late AnimationController _animationController;
   var _projects = <Project>[];
   User? user;
@@ -415,10 +415,10 @@ class _ProjectChooserState extends State<ProjectChooser> with SingleTickerProvid
                       height: 20,
                     ),
                      SizedBox(
-                      height: 20, child: Text('Tap to Select Project', style: myTextStyleLarge(context)),
+                      height: 20, child: Text('Tap to Select Project', style: myTextStyleMedium(context)),
                     ),
                     const SizedBox(
-                      height: 12,
+                      height: 24,
                     ),
                     _projects.isEmpty
                         ? const SizedBox()
@@ -437,24 +437,21 @@ class _ProjectChooserState extends State<ProjectChooser> with SingleTickerProvid
                                         widget.onSelected(proj);
                                       },
                                       child: Padding(
-                                        padding: const EdgeInsets.all(0.0),
+                                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4.0),
                                         child: Card(
-                                            child: Padding(
-                                              padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 4),
-                                              child: Row(
+                                            child: Row(
                                           children: [
-                                              Text(Emoji.blueDot),
-                                              const SizedBox(
-                                                width: 4,
-                                              ),
-                                              Flexible(
-                                                  child: Text(
-                                                '${proj.name}',
-                                                style: myTextStyleSmall(context),
-                                              )),
-                                          ],
-                                        ),
+                                            Text(Emoji.blueDot),
+                                            const SizedBox(
+                                              width: 4,
+                                            ),
+                                            Flexible(
+                                                child: Text(
+                                              '${proj.name}',
+                                              style: myTextStyleSmall(context),
                                             )),
+                                          ],
+                                        )),
                                       ),
                                     );
                                   }),

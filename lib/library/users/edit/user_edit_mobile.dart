@@ -96,6 +96,9 @@ class UserEditMobileState extends State<UserEditMobile>
             duration: const Duration(seconds: 2),
             backgroundColor: Colors.pink,
             textStyle: Styles.whiteSmall);
+        setState(() {
+          busy = false;
+        });
         return;
       }
       try {

@@ -72,6 +72,7 @@ class ProjectMapMobileState extends State<ProjectMapMobile>
 
   void _getUser() async {
     user = await Prefs.getUser();
+    _refreshData();
   }
   void _refreshData() async {
     setState(() {

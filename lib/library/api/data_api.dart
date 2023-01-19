@@ -647,6 +647,27 @@ class DataAPI {
     }
   }
 
+  static Future<List<Project>> getOrganizationProjects(
+      String organizationId) async {
+    pp('$mm getOrganizationProjects: 🍏 id: $organizationId');
+    String? mURL = await getUrl();
+    var cmd = 'getOrganizationProjects';
+    var url = '$mURL$cmd?organizationId=$organizationId';
+    try {
+      List result = await _sendHttpGET(url);
+      List<Project> list = [];
+      for (var m in result) {
+        list.add(Project.fromJson(m));
+      }
+      await hiveUtil.addProjects(projects: list);
+      return list;
+    } catch (e) {
+      pp('Houston, 😈😈😈😈😈 we have a problem! 😈😈😈😈😈');
+      gen.p(e);
+      rethrow;
+    }
+  }
+
   static Future<List<GeofenceEvent>> getGeofenceEventsByProjectPosition(
       String projectPositionId) async {
     String? mURL = await getUrl();

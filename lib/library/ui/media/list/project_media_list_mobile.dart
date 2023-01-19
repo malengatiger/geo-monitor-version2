@@ -55,7 +55,7 @@ class ProjectMediaListMobileState extends State<ProjectMediaListMobile>
     _animationController = AnimationController(
         value: 0.0,
         duration: const Duration(milliseconds: 3000),
-        reverseDuration: const Duration(milliseconds: 2000),
+        reverseDuration: const Duration(milliseconds: 1000),
         vsync: this);
     _tabController = TabController(length: 2, vsync: this);
     super.initState();
@@ -153,14 +153,12 @@ class ProjectMediaListMobileState extends State<ProjectMediaListMobile>
     return SafeArea(
         child: Scaffold(
       appBar: AppBar(
+        leading: const SizedBox(),
         title: Column(
           children: [
             Text(
               'Photos & Videos',
-              style: GoogleFonts.lato(
-                textStyle: Theme.of(context).textTheme.bodyMedium,
-                fontWeight: FontWeight.w900,
-              ),
+              style: myTextStyleMedium(context),
             ),
             // const SizedBox(height: 4,),
             // Text('${widget.project.name}', style: myTextStyleSmall(context),),
@@ -183,6 +181,16 @@ class ProjectMediaListMobileState extends State<ProjectMediaListMobile>
               },
               icon: Icon(
                 Icons.refresh,
+                size: 18,
+                color: Theme.of(context).primaryColor,
+              )),
+          IconButton(
+              onPressed: () {
+                _animationController.reverse().then((value) => Navigator.of(context).pop());
+
+              },
+              icon: Icon(
+                Icons.close,
                 size: 18,
                 color: Theme.of(context).primaryColor,
               )),

@@ -2,12 +2,11 @@ import 'dart:async';
 import 'dart:collection';
 import 'dart:math';
 
-import 'package:animations/animations.dart';
 import 'package:badges/badges.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:geo_monitor/library/data/project_polygon.dart';
-import 'package:geo_monitor/library/generic_functions.dart';
+import 'package:geo_monitor/library/data/project_position.dart';
+
 import 'package:google_fonts/google_fonts.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:uuid/uuid.dart';
@@ -16,15 +15,14 @@ import '../../api/data_api.dart';
 import '../../api/sharedprefs.dart';
 import '../../bloc/project_bloc.dart';
 import '../../data/city.dart';
-import '../../data/photo.dart';
 import '../../data/project.dart';
 import '../../data/position.dart' as local;
-import '../../data/project_position.dart';
+import '../../data/project_polygon.dart';
 import '../../data/user.dart';
 import '../../emojis.dart';
 import '../../functions.dart';
+import '../../generic_functions.dart';
 import '../../location/loc_bloc.dart';
-import 'map_utils.dart';
 
 class ProjectPolygonMapMobile extends StatefulWidget {
   final Project project;
@@ -53,25 +51,27 @@ class ProjectPolygonMapMobileState extends State<ProjectPolygonMapMobile>
     zoom: 6,
   );
   final Set<Polygon> _polygons = HashSet<Polygon>();
+  final Set<Marker> _positionMarkers = HashSet<Marker>();
   var projectPolygons = <ProjectPolygon>[];
+  var projectPositions = <ProjectPosition>[];
+
   User? user;
 
-  void _getData() async {
+  void _getData(bool forceRefresh) async {
     setState(() {
       busy = true;
     });
     try {
       user = await Prefs.getUser();
       projectPolygons = await projectBloc.getProjectPolygons(
-          projectId: widget.project.projectId!, forceRefresh: true);
-      if (projectPolygons.isEmpty) {
-        var loc = await locationBloc.getLocation();
-        _latitude = loc.latitude;
-        _longitude = loc.longitude;
-        _animateCamera(zoom: 14.0);
-      } else {
-        _buildProjectPolygons();
-      }
+          projectId: widget.project.projectId!, forceRefresh: forceRefresh);
+      projectPositions = await projectBloc.getProjectPositions(projectId: widget.project.projectId!,
+          forceRefresh: forceRefresh);
+      var loc = await locationBloc.getLocation();
+      _latitude = loc.latitude;
+      _longitude = loc.longitude;
+      _addMarkers();
+      _buildProjectPolygons();
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context)
@@ -83,6 +83,19 @@ class ProjectPolygonMapMobileState extends State<ProjectPolygonMapMobile>
     });
   }
 
+  void _addMarkers() {
+    markers.clear();
+    for (var pos in projectPositions) {
+      var marker = Marker(
+          position: LatLng(pos.position!.coordinates.elementAt(1), pos.position!.coordinates.elementAt(0)),
+          markerId: MarkerId(DateTime.now().toIso8601String()));
+      _positionMarkers.add(marker);
+    }
+    pp('$mm _addMarkers: 🍏project markers added.: '
+        '🔵 ${_positionMarkers.length} markers ...');
+    _animateCamera(zoom: 12.6);
+    setState(() {});
+  }
   void _buildProjectPolygons() {
     pp('$mm _buildProjectPolygons happening ... projectPolygons: ${projectPolygons.length}');
     _polygons.clear();
@@ -115,7 +128,7 @@ class ProjectPolygonMapMobileState extends State<ProjectPolygonMapMobile>
         reverseDuration: const Duration(milliseconds: 1500),
         vsync: this);
     super.initState();
-    _getData();
+    _getData(false);
   }
 
   @override
@@ -217,14 +230,22 @@ class ProjectPolygonMapMobileState extends State<ProjectPolygonMapMobile>
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-        key: _key,
         appBar: AppBar(
-          title: Text(
-            widget.project.name!,
-            style: myTextStyleMedium(context),
+          // backgroundColor: Colors.white,
+          elevation: 0.0,
+          titleSpacing: 10.0,
+          centerTitle: true,
+          leading: InkWell(
+            onTap: () {
+              Navigator.pop(context);
+            },
+            child:  Icon(
+              Icons.arrow_back_ios,
+              color: Theme.of(context).primaryColor,
+            ),
           ),
           bottom: PreferredSize(
-            preferredSize: const Size.fromHeight(20),
+            preferredSize: const Size.fromHeight(80),
             child: Column(
               children: [
                 Row(
@@ -237,12 +258,16 @@ class ProjectPolygonMapMobileState extends State<ProjectPolygonMapMobile>
                   ],
                 ),
                 const SizedBox(
-                  height: 8,
+                  height: 24,
                 )
               ],
             ),
           ),
           actions: [
+            IconButton(onPressed: (){
+               _getData(true);
+            }, icon: Icon(Icons.refresh, size: 20,
+              color: Theme.of(context).primaryColor,)),
             _myPoints.length > 2
                 ? IconButton(
                     onPressed: () {
@@ -266,6 +291,11 @@ class ProjectPolygonMapMobileState extends State<ProjectPolygonMapMobile>
                       size: 16,
                       color: Theme.of(context).primaryColor,
                     )),
+
+            IconButton(onPressed: (){
+
+            }, icon: Icon(Icons.close, size: 20,
+              color: Theme.of(context).primaryColor,)),
           ],
         ),
         body: Stack(
@@ -277,7 +307,7 @@ class ProjectPolygonMapMobileState extends State<ProjectPolygonMapMobile>
               child: Badge(
                 badgeColor: Colors.pink,
                 badgeContent: Text(
-                  '${projectPolygons.length}',
+                  '${projectPolygons.length + projectPositions.length}',
                   style: myNumberStyleSmall(context),
                 ),
                 padding: const EdgeInsets.all(8.0),
@@ -291,12 +321,11 @@ class ProjectPolygonMapMobileState extends State<ProjectPolygonMapMobile>
                     pp('🍎🍎🍎........... GoogleMap onMapCreated ... ready to rumble!');
                     _mapController.complete(controller);
                     googleMapController = controller;
-                    // _addMarkers();
                     setState(() {});
                   },
                   // myLocationEnabled: true,
-                  markers: Set<Marker>.of(markers.values),
-                  polygons: Set<Polygon>.of(_polygons),
+                  markers: _positionMarkers,
+                  polygons: _polygons,
                   compassEnabled: true,
                   buildingsEnabled: true,
                   zoomControlsEnabled: true,

@@ -17,6 +17,7 @@ import 'package:geo_monitor/ui/dashboard/dashboard_main.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'firebase_options.dart';
 import 'library/api/sharedprefs.dart';
+import 'library/data/user.dart' as ur;
 import 'library/bloc/theme_bloc.dart';
 import 'library/bloc/upload_failed_media.dart';
 import 'library/bloc/write_failed_media.dart';
@@ -29,27 +30,14 @@ int themeIndex = 0;
 late FirebaseApp firebaseApp;
 fb.User? user;
 
-
-void main() async {
-  await _setup();
- runApp(const MyApp());
-}
-
-Future<void> _setup() async {
-  WidgetsFlutterBinding.ensureInitialized();
-
-  FlutterError.onError = (details) {
-    FlutterError.presentError(details);
-    if (kReleaseMode) exit(1);
-  };
-
-  themeIndex = await Prefs.getThemeIndex();
+Future<void> mainSetup() async {
   try {
-    firebaseApp = await Firebase.initializeApp(
-        options: DefaultFirebaseOptions.currentPlatform);
-    pp('${Emoji.heartGreen}${Emoji.heartGreen} Firebase App has been initialized: ${firebaseApp.name}');
-
-    // Pass all uncaught "fatal" errors from the framework to Crashlytics
+    FlutterError.onError = (details) {
+      FlutterError.presentError(details);
+      if (kReleaseMode) exit(1);
+    };
+    themeIndex = await Prefs.getThemeIndex();
+     // Pass all uncaught "fatal" errors from the framework to Crashlytics
     FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterFatalError;
     FlutterError.onError = (errorDetails) {
       FirebaseCrashlytics.instance.recordFlutterFatalError(errorDetails);
@@ -83,12 +71,23 @@ Future<void> _setup() async {
   pp('$heartBlue DotEnv has been loaded');
 
   pp('${Emoji.brocolli} Checking for current user : FirebaseAuth');
-  user = fb.FirebaseAuth.instance.currentUser;
+
   if (user == null) {
     pp('${Emoji.redDot}${Emoji.redDot} Ding Dong! new Firebase user, sign in! - check that we do not create user every time $appleGreen  $appleGreen');
   } else {
     pp('${Emoji.blueDot}${Emoji.blueDot}${Emoji.blueDot}${Emoji.blueDot} User already exists. $blueDot Cool!');
   }
+}
+
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  firebaseApp = await Firebase.initializeApp(
+      options: DefaultFirebaseOptions.currentPlatform);
+  pp('${Emoji.heartGreen}${Emoji.heartGreen} Firebase App has been initialized: ${firebaseApp.name}');
+  await mainSetup();
+  user = fb.FirebaseAuth.instance.currentUser;
+  runApp(const MyApp());
+
 }
 
 /// The main app.
@@ -149,6 +148,7 @@ class MyApp extends StatelessWidget {
       fileCounter = await Prefs.getFileCounter();
       fileCounter++;
       Prefs.setFileCounter(fileCounter);
+      Prefs.deleteUser();
       await hiveUtil.initialize(forceInitialization: true);
 
     } else {

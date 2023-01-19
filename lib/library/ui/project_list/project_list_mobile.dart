@@ -3,8 +3,6 @@ import 'package:badges/badges.dart';
 import 'package:flutter/material.dart';
 import 'package:focused_menu/focused_menu.dart';
 import 'package:focused_menu/modals.dart';
-import 'package:geo_monitor/library/data/project_position.dart';
-import 'package:geo_monitor/library/ui/maps/project_polygon_map_mobile.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:map_launcher/map_launcher.dart';
 
@@ -15,6 +13,7 @@ import '../../bloc/organization_bloc.dart';
 import '../../bloc/project_bloc.dart';
 import '../../data/position.dart';
 import '../../data/project_polygon.dart';
+import '../../data/project_position.dart';
 import '../../data/user.dart';
 import '../../functions.dart';
 import '../../snack.dart';
@@ -22,15 +21,25 @@ import '../../data/user.dart' as mon;
 import '../../data/project.dart';
 import '../maps/org_map_mobile.dart';
 import '../maps/project_map_mobile.dart';
+import '../maps/project_polygon_map_mobile.dart';
 import '../media/list/project_media_list_mobile.dart';
 import '../project_edit/project_edit_main.dart';
 import '../project_edit/project_edit_mobile.dart';
 import '../project_location/project_location_main.dart';
 import '../project_monitor/project_monitor_mobile.dart';
+import '../schedule/project_schedules_mobile.dart';
+
+const goToMedia = 1;
+const goToMap = 2;
+const stayOnList = 3;
+const goToSchedule = 4;
+
+
 
 class ProjectListMobile extends StatefulWidget {
-  const ProjectListMobile({super.key});
-
+  const ProjectListMobile({super.key, this.project, required this.instruction});
+  final Project? project;
+  final int instruction;
   @override
   ProjectListMobileState createState() => ProjectListMobileState();
 }
@@ -86,6 +95,17 @@ class ProjectListMobileState extends State<ProjectListMobile>
     setState(() {
       isBusy = false;
     });
+    switch(widget.instruction) {
+      case goToMedia:
+        _navigateToProjectMedia(widget.project!);
+        break;
+      case goToMap:
+        _navigateToProjectMap(widget.project!);
+        break;
+      case goToSchedule:
+        _navigateToProjectSchedules(widget.project!);
+        break;
+    }
   }
 
   void _setUserType() {
@@ -196,6 +216,18 @@ class ProjectListMobileState extends State<ProjectListMobile>
             duration: const Duration(milliseconds: 1500),
             child: ProjectMediaListMobile(project: p)));
   }
+
+  void _navigateToProjectSchedules(Project p) {
+    if (user!.userType == UserType.fieldMonitor) {}
+    Navigator.push(
+        context,
+        PageTransition(
+            type: PageTransitionType.scale,
+            alignment: Alignment.topLeft,
+            duration: const Duration(milliseconds: 1500),
+            child: ProjectSchedulesMobile(project: p)));
+  }
+
 
   Future<void> _navigateToOrgMap() async {
     pp('_navigateToOrgMap: ');
@@ -477,7 +509,7 @@ class ProjectListMobileState extends State<ProjectListMobile>
             actions: _getActions(),
             bottom: PreferredSize(
               preferredSize:
-              Size.fromHeight(isProjectsByLocation ? 160 : 100),
+              Size.fromHeight(isProjectsByLocation ? 200 : 160),
               child: Column(
                 children: [
                   Text(
@@ -489,7 +521,7 @@ class ProjectListMobileState extends State<ProjectListMobile>
                           Theme.of(context).textTheme.bodyLarge,
                           fontWeight: FontWeight.w600)),
                   const SizedBox(
-                    height: 8,
+                    height: 16,
                   ),
                   Text('Organization Projects', style: myTextStyleSmall(context),),
                   const SizedBox(
@@ -540,9 +572,7 @@ class ProjectListMobileState extends State<ProjectListMobile>
                               onChanged: _onSliderChanged,
                             ),
                           ),
-                          // SizedBox(
-                          //   width: 8,
-                          // ),
+
                           Text(
                             '$sliderValue',
                             style: Styles.whiteBoldSmall,
@@ -556,7 +586,7 @@ class ProjectListMobileState extends State<ProjectListMobile>
                     ],
                   ),
                   const SizedBox(
-                    height: 20,
+                    height: 48,
                   ),
                 ],
               ),
