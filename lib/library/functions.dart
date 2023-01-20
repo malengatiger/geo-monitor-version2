@@ -142,9 +142,19 @@ TextStyle myNumberStyleMedium(BuildContext context) {
 }
 TextStyle myNumberStyleLarge(BuildContext context) {
   return GoogleFonts.secularOne(
-    textStyle: Theme.of(context).textTheme.bodyLarge,
+    textStyle: Theme
+        .of(context)
+        .textTheme
+        .bodyLarge,
     fontWeight: FontWeight.w900,
   );
+}
+TextStyle myNumberStyleLarger(BuildContext context) {
+  return GoogleFonts.secularOne(
+    textStyle: Theme.of(context).textTheme.bodyLarge,
+    fontWeight: FontWeight.w900, fontSize: 28
+  );
+
 }
 
 class Styles {

@@ -4,6 +4,7 @@
 
 import 'dart:io';
 
+import 'package:animated_splash_screen/animated_splash_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart' as fb;
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
@@ -12,11 +13,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart' as dot;
 import 'package:flutter_libphonenumber/flutter_libphonenumber.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:geo_monitor/library/generic_functions.dart';
 import 'package:geo_monitor/library/ui/camera/photo_handler.dart';
 
 import 'package:geo_monitor/ui/dashboard/dashboard_main.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:page_transition/page_transition.dart';
 import 'firebase_options.dart';
 import 'library/api/sharedprefs.dart';
 import 'library/data/user.dart' as ur;
@@ -39,7 +42,7 @@ Future<void> mainSetup() async {
       if (kReleaseMode) exit(1);
     };
     themeIndex = await Prefs.getThemeIndex();
-     // Pass all uncaught "fatal" errors from the framework to Crashlytics
+    // Pass all uncaught "fatal" errors from the framework to Crashlytics
     FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterFatalError;
     FlutterError.onError = (errorDetails) {
       FirebaseCrashlytics.instance.recordFlutterFatalError(errorDetails);
@@ -64,7 +67,6 @@ Future<void> mainSetup() async {
         'timers started with 🍎 5 minute duration per tick ...');
 
     await FlutterLibphonenumber().init();
-
   } catch (e) {
     pp('$redDot problem with Firebase? or Hive? : $e');
   }
@@ -96,7 +98,6 @@ void main() async {
   await mainSetup();
 
   runApp(const MyApp());
-
 }
 
 /// The main app.
@@ -124,9 +125,9 @@ class MyApp extends StatelessWidget {
         stream: themeBloc.newThemeStream,
         initialData: themeIndex,
         builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
-            if (snapshot.hasData) {
-              themeIndex = snapshot.data;
-            }
+          if (snapshot.hasData) {
+            themeIndex = snapshot.data;
+          }
           return MaterialApp(
             // routerConfig: _router,
             debugShowCheckedModeBanner: false,
@@ -137,8 +138,21 @@ class MyApp extends StatelessWidget {
             // home: const PhotoHandler(),
             // home: const OrgRegistrationPage(),
             // home: const IntroMain(),
-            home: user == null? const IntroPageViewer() :const DashboardMain(),
+            // home: user == null? const IntroPageViewer() :const DashboardMain(),
             // home: const PhoneLogin(),
+            home: AnimatedSplashScreen(
+              duration: 3000,
+              splash: const SplashWidget(),
+              animationDuration: const Duration(milliseconds: 3000),
+              curve: Curves.easeInCirc,
+              splashIconSize: 160.0,
+              nextScreen: user == null
+                  ? const IntroPageViewer()
+                  : const DashboardMain(),
+              splashTransition: SplashTransition.fadeTransition,
+              pageTransitionType: PageTransitionType.topToBottom,
+              backgroundColor: Colors.teal.shade900,
+            ),
           );
         },
       ),
@@ -146,7 +160,7 @@ class MyApp extends StatelessWidget {
   }
 
   Future<void> _sortOutNewHiveArtifacts(BuildContext context) async {
-     //todo - REMOVE after testing
+    //todo - REMOVE after testing
     String? status = dot.dotenv.env['CURRENT_STATUS'];
     pp('🐤🐤🐤🐤 DataAPI: getUrl: Status from .env: $status');
     bool? isDevelopmentStatus;
@@ -160,7 +174,6 @@ class MyApp extends StatelessWidget {
       Prefs.setFileCounter(fileCounter);
       Prefs.deleteUser();
       await hiveUtil.initialize(forceInitialization: true);
-
     } else {
       isDevelopmentStatus = false;
       pp('🐤🐤🐤🐤 of the app is PRODUCTION 🌎 🌎 🌎 ');
@@ -168,6 +181,56 @@ class MyApp extends StatelessWidget {
     }
     pp('\n🐤🐤🐤🐤 isDevelopmentStatus: $isDevelopmentStatus');
     pp('🐤🐤🐤🐤 We good and clean now, Senor!');
+  }
+}
 
+class SplashWidget extends StatelessWidget {
+  const SplashWidget({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20.0),
+      child: AnimatedContainer(
+        // width: 300, height: 300,
+        curve: Curves.easeInOutCirc,
+        // color: Colors.pink,
+        duration: const Duration(milliseconds: 2000),
+        child: Card(
+          elevation: 24.0,
+          shape: getRoundedBorder(radius: 16),
+          child: Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Text(
+                        'GeoMonitor',
+                        style: myNumberStyleLarger(context),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 4,),
+               Row(mainAxisAlignment: MainAxisAlignment.center,
+                 children: [
+                   const FaIcon(FontAwesomeIcons.anchorCircleCheck),
+                   const SizedBox(width: 24,),
+                   Text('We help you see!', style: myTextStyleMedium(context),),
+                   const SizedBox(width: 24,),
+                   const Text('🔷🔷'),
+                 ],
+               ),
+              const SizedBox(height: 20,),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 }
