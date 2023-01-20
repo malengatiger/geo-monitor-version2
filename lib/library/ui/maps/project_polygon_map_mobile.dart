@@ -15,6 +15,7 @@ import '../../api/data_api.dart';
 import '../../api/sharedprefs.dart';
 import '../../bloc/project_bloc.dart';
 import '../../data/city.dart';
+import '../../data/position.dart';
 import '../../data/project.dart';
 import '../../data/position.dart' as local;
 import '../../data/project_polygon.dart';
@@ -71,7 +72,7 @@ class ProjectPolygonMapMobileState extends State<ProjectPolygonMapMobile>
       _latitude = loc.latitude;
       _longitude = loc.longitude;
       _addMarkers();
-      _buildProjectPolygons();
+      _buildProjectPolygons(animateToLast: false);
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context)
@@ -93,10 +94,10 @@ class ProjectPolygonMapMobileState extends State<ProjectPolygonMapMobile>
     }
     pp('$mm _addMarkers: 🍏project markers added.: '
         '🔵 ${_positionMarkers.length} markers ...');
-    _animateCamera(zoom: 12.6);
+    _animateCamera(zoom: 12.6, position: projectPositions.first.position!);
     setState(() {});
   }
-  void _buildProjectPolygons() {
+  void _buildProjectPolygons({required bool animateToLast}) {
     pp('$mm _buildProjectPolygons happening ... projectPolygons: ${projectPolygons.length}');
     _polygons.clear();
     for (var polygon in projectPolygons) {
@@ -116,7 +117,7 @@ class ProjectPolygonMapMobileState extends State<ProjectPolygonMapMobile>
 
     pp('$mm _buildProjectPolygons: 🍏project polygons created.: '
         '🔵 ${_polygons.length} points in polygon ...');
-    _animateCamera(zoom: 12.6);
+    _animateCamera(zoom: 12.6, position: projectPolygons.first.positions.first);
     setState(() {});
   }
 
@@ -159,22 +160,36 @@ class ProjectPolygonMapMobileState extends State<ProjectPolygonMapMobile>
     pp('$mm about to CLEAR my Polygon with ${_myPoints.length} points');
     _myPoints.clear();
     _polygons.clear();
-    _buildProjectPolygons();
+    _buildProjectPolygons(animateToLast: false);
     setState(() {});
   }
 
-  void _onMapTap(LatLng argument) {
-    pp('$mm Map detected a tap! at $argument');
+  void _onLongPress(LatLng latLng) {
+    pp('$mm long pressed location: 🍎 $latLng');
+    var isOK = checkIfLocationIsWithinPolygons(
+        latitude: latLng.latitude, longitude: latLng.longitude, polygons: projectPolygons);
+    pp('$mm long pressed location found in any of the project\s 🍎 '
+        'polygons; isWithin the polygons: $isOK - ${isOK? Emoji.leaf: Emoji.redDot}');
+
+
     if (user!.userType == UserType.fieldMonitor) {
       pp('$mm FieldMonitor not allowed to create polygon, 🔶 quitting!');
       return;
     }
-    _myPoints.add(argument);
+    _myPoints.add(latLng);
     pp('$mm Polygon has collected ${_myPoints.length} ');
+    showToast(
+        toastGravity: ToastGravity.TOP,
+        textStyle: myTextStyleSmall(context),
+        backgroundColor: Theme.of(context).primaryColor,
+        message: 'Area point no. ${_myPoints.length}', context: context);
+
     if (_myPoints.length > 1) {
       _drawPolygon();
     }
+
   }
+
 
   Future<void> _submitNewPolygon() async {
     pp('\n\n$mm _submitNewPolygon started. 🍏🍏adding polygon to project ...'
@@ -212,7 +227,7 @@ class ProjectPolygonMapMobileState extends State<ProjectPolygonMapMobile>
       pp('$mm polygon saved in DB. we are good to go! '
           '🍏🍏${resultPolygon.toJson()}🍏🍏 ');
       projectPolygons.add(resultPolygon);
-      _buildProjectPolygons();
+      _buildProjectPolygons(animateToLast: true);
       _myPoints.clear();
     } catch (e) {
       pp(e);
@@ -225,6 +240,23 @@ class ProjectPolygonMapMobileState extends State<ProjectPolygonMapMobile>
       busy = false;
     });
   }
+
+  void _animateCamera({required double zoom, required local.Position position}) {
+    CameraPosition? first = CameraPosition(
+      target: LatLng(
+          position
+              .coordinates
+              .elementAt(1),
+          position
+              .coordinates
+              .elementAt(0)),
+      zoom: zoom,
+    );
+
+    googleMapController!.animateCamera(CameraUpdate.newCameraPosition(first));
+    setState(() {});
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -255,10 +287,22 @@ class ProjectPolygonMapMobileState extends State<ProjectPolygonMapMobile>
                       'Project Monitoring Areas',
                       style: myTextStyleSmall(context),
                     ),
+                    const SizedBox(width: 28,),
+                    busy? const SizedBox(width: 16, height: 16,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 4, backgroundColor: Colors.pink,
+                    ),):const SizedBox(),
                   ],
                 ),
-                const SizedBox(height: 8,),
-                Text('${widget.project.name}', style: myTextStyleLarge(context),),
+                const SizedBox(height: 20,),
+                Row(mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    Flexible(child: Text('${widget.project.name}', style: myTextStyleMedium(context),)),
+                    const SizedBox(width: 16,),
+                    ProjectPolygonChooser(projectPolygons: projectPolygons, onSelected: onSelected),
+                    const SizedBox(width: 8,),
+                  ],
+                ),
                 const SizedBox(
                   height: 24,
                 )
@@ -304,12 +348,14 @@ class ProjectPolygonMapMobileState extends State<ProjectPolygonMapMobile>
           children: [
             GestureDetector(
               onTap: () {
-                _animateCamera(zoom: 10.0);
+                if (projectPositions.isNotEmpty) {
+                  _animateCamera(zoom: 10.0, position: projectPositions.first.position!);
+                }
               },
               child: Badge(
                 badgeColor: Colors.pink,
                 badgeContent: Text(
-                  '${projectPolygons.length + projectPositions.length}',
+                  '${projectPolygons.length}',
                   style: myNumberStyleSmall(context),
                 ),
                 padding: const EdgeInsets.all(8.0),
@@ -332,7 +378,6 @@ class ProjectPolygonMapMobileState extends State<ProjectPolygonMapMobile>
                   buildingsEnabled: true,
                   zoomControlsEnabled: true,
                   onLongPress: _onLongPress,
-                  onTap: _onMapTap,
                   rotateGesturesEnabled: true,
                 ),
               ),
@@ -343,65 +388,58 @@ class ProjectPolygonMapMobileState extends State<ProjectPolygonMapMobile>
     );
   }
 
-  void _animateCamera({required double zoom}) {
-    CameraPosition? first;
-    if (projectPolygons.isEmpty) {
-      first = CameraPosition(
-        target: LatLng(_latitude, _longitude),
-        zoom: zoom,
-      );
-    } else {
-      first = CameraPosition(
-        target: LatLng(
-            projectPolygons
-                .elementAt(0)
-                .positions
-                .elementAt(0)
-                .coordinates
-                .elementAt(1),
-            projectPolygons
-                .elementAt(0)
-                .positions
-                .elementAt(0)
-                .coordinates
-                .elementAt(0)),
-        zoom: zoom,
-      );
-    }
-    googleMapController!.animateCamera(CameraUpdate.newCameraPosition(first));
-    setState(() {});
-  }
 
-  void _onLongPress(LatLng latLng) {
-    pp('$mm long pressed location: 🍎 $latLng');
-    var isOK = checkIfLocationIsWithinPolygons(
-        latitude: latLng.latitude, longitude: latLng.longitude, polygons: projectPolygons);
-    pp('$mm long pressed location found in any of the project\s 🍎 '
-        'polygons; isWithin the polygons: $isOK - ${isOK? Emoji.leaf: Emoji.redDot}');
-    if (isOK) {
-      showToast(
-          duration: const Duration(seconds: 3),
-          backgroundColor: Colors.teal,
-          toastGravity: ToastGravity.TOP,
-          padding: 12.0,
-          textStyle: GoogleFonts.lato(
-              textStyle: Theme.of(context).textTheme.bodySmall,
-              fontWeight: FontWeight.normal,
-              color: Colors.white),
-          message: 'Bravo! You are inside!',
-          context: context);
-    } else {
-      showToast(
-          duration: const Duration(seconds: 3),
-          backgroundColor: Colors.pink,
-          toastGravity: ToastGravity.TOP,
-          padding: 12.0,
-          textStyle: GoogleFonts.lato(
-              textStyle: Theme.of(context).textTheme.bodySmall,
-              fontWeight: FontWeight.normal,
-              color: Colors.white),
-          message: 'Sorry! You are outside!',
-          context: context);
-    }
+
+  onSelected(Position p1) {
+    _animateCamera(zoom: 14.6, position: p1);
   }
 }
+
+class ProjectPolygonChooser extends StatelessWidget {
+  const ProjectPolygonChooser(
+      {Key? key,
+        required this.projectPolygons,
+        required this.onSelected})
+      : super(key: key);
+  final List<ProjectPolygon> projectPolygons;
+  final Function(local.Position) onSelected;
+
+  @override
+  Widget build(BuildContext context) {
+    var list = <local.Position>[];
+    projectPolygons.sort((a,b) => a.created!.compareTo(b.created!));
+
+    for (var value in projectPolygons) {
+      list.add(value.positions.first);
+    }
+    var cnt = 0;
+    var menuItems = <DropdownMenuItem>[];
+    for (var pos in list) {
+      cnt++;
+      menuItems.add(
+        DropdownMenuItem<local.Position>(
+          value: pos,
+          child: Row(
+            children: [
+              Text('Area No. ', style: myTextStyleSmall(context),),
+              const SizedBox(
+                width: 8,
+              ),
+              Text('$cnt', style: myNumberStyleSmall(context),),
+            ],
+          ),
+        ),
+      );
+    }
+    return DropdownButton(
+        hint: Text(
+          'Areas',
+          style: myTextStyleSmall(context),
+        ),
+        items: menuItems,
+        onChanged: (value) {
+          onSelected(value);
+        });
+  }
+}
+

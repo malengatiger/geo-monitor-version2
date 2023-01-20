@@ -459,6 +459,7 @@ class DashboardMobileState extends State<DashboardMobile>
                 instruction: instruction,
                 project: selectedProject,
               )));
+      selectedProject = null;
     } else {
       Navigator.push(
           context,
@@ -910,11 +911,11 @@ class DashboardMobileState extends State<DashboardMobile>
                   ),
                   _showProjectChooser
                       ? Positioned(
-                          left: 12,
+                          left: 40,
                           top: 0,
                           child: SizedBox(
-                            height: 300,
-                            width: 260,
+                            height: 420,
+                            width: 280,
                             child: ProjectChooser(
                               onClose: () {
                                 setState(() {

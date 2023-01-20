@@ -17,6 +17,8 @@ import '../../data/project_position.dart';
 import '../../location/loc_bloc.dart';
 import '../camera/field_camera_photo.dart';
 import '../camera/field_camera_video.dart';
+import '../camera/photo_handler.dart';
+import '../camera/video_handler.dart';
 import '../project_location/project_location_main.dart';
 
 class ProjectMonitorMobile extends StatefulWidget {
@@ -431,7 +433,7 @@ class ProjectMonitorMobileState extends State<ProjectMonitorMobile>
             type: PageTransitionType.scale,
             alignment: Alignment.topLeft,
             duration: const Duration(seconds: 1),
-            child: FieldPhotoCamera(
+            child: PhotoHandler(
               project: widget.project,
               projectPosition: nearestProjectPosition!,
             )));
@@ -447,7 +449,7 @@ class ProjectMonitorMobileState extends State<ProjectMonitorMobile>
             type: PageTransitionType.scale,
             alignment: Alignment.topLeft,
             duration: const Duration(seconds: 1),
-            child: FieldVideoCamera(
+            child: VideoHandler(
               project: widget.project,
               projectPosition: nearestProjectPosition!,
             )));

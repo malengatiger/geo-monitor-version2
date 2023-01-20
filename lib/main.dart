@@ -13,6 +13,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart' as dot;
 import 'package:flutter_libphonenumber/flutter_libphonenumber.dart';
 import 'package:geo_monitor/library/generic_functions.dart';
+import 'package:geo_monitor/library/ui/camera/photo_handler.dart';
 
 import 'package:geo_monitor/ui/dashboard/dashboard_main.dart';
 import 'package:hive_flutter/hive_flutter.dart';
@@ -85,8 +86,15 @@ void main() async {
   firebaseApp = await Firebase.initializeApp(
       options: DefaultFirebaseOptions.currentPlatform);
   pp('${Emoji.heartGreen}${Emoji.heartGreen} Firebase App has been initialized: ${firebaseApp.name}');
-  await mainSetup();
+
   user = fb.FirebaseAuth.instance.currentUser;
+  if (user == null) {
+    pp('${Emoji.heartGreen}${Emoji.heartGreen} Ding Dong! Rookie here ...');
+  } else {
+    pp('${Emoji.redDot}${Emoji.redDot} User already here ...');
+  }
+  await mainSetup();
+
   runApp(const MyApp());
 
 }
@@ -126,6 +134,7 @@ class MyApp extends StatelessWidget {
             theme: themeBloc.getTheme(themeIndex).darkTheme,
             darkTheme: themeBloc.getTheme(themeIndex).darkTheme,
             themeMode: ThemeMode.system,
+            // home: const PhotoHandler(),
             // home: const OrgRegistrationPage(),
             // home: const IntroMain(),
             home: user == null? const IntroPageViewer() :const DashboardMain(),

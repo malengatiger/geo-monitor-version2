@@ -32,7 +32,8 @@ class ProjectMapMobile extends StatefulWidget {
       {super.key,
       required this.project,
       required this.projectPositions,
-      this.photo, required this.projectPolygons});
+      this.photo,
+      required this.projectPolygons});
 
   @override
   ProjectMapMobileState createState() => ProjectMapMobileState();
@@ -72,17 +73,18 @@ class ProjectMapMobileState extends State<ProjectMapMobile>
 
   void _getUser() async {
     user = await Prefs.getUser();
-    _refreshData();
+    _refreshData(false);
   }
-  void _refreshData() async {
+
+  void _refreshData(bool forceRefresh) async {
     setState(() {
       busy = true;
     });
     try {
       projectPolygons = await projectBloc.getProjectPolygons(
-          projectId: widget.project.projectId!, forceRefresh: true);
+          projectId: widget.project.projectId!, forceRefresh: forceRefresh);
       projectPositions = await projectBloc.getProjectPositions(
-          projectId: widget.project.projectId!, forceRefresh: true);
+          projectId: widget.project.projectId!, forceRefresh: forceRefresh);
     } catch (e) {
       pp(e);
       if (mounted) {
@@ -105,8 +107,7 @@ class ProjectMapMobileState extends State<ProjectMapMobile>
   double _latitude = 0.0, _longitude = 0.0;
 
   Future<void> _addMarkers() async {
-    pp('$mm _addMarkers: ....... 🍎 ${widget
-        .projectPositions.length}');
+    pp('$mm _addMarkers: ....... 🍎 ${widget.projectPositions.length}');
     if (projectPositions.isEmpty) {
       pp('There are no positions found ${Emoji.redDot}');
       return;
@@ -120,7 +121,7 @@ class ProjectMapMobileState extends State<ProjectMapMobile>
       latLongs.add(latLng);
       cnt++;
       final MarkerId markerId =
-      MarkerId('${projectPosition.projectId}_${random.nextInt(9999988)}');
+          MarkerId('${projectPosition.projectId}_${random.nextInt(9999988)}');
       final Marker marker = Marker(
         markerId: markerId,
         // icon: markerIcon,
@@ -130,7 +131,8 @@ class ProjectMapMobileState extends State<ProjectMapMobile>
         ),
         infoWindow: InfoWindow(
             title: projectPosition.projectName,
-            snippet: 'Project Location #$cnt of ${projectPositions.length} Here'),
+            snippet:
+                'Project Location #$cnt of ${projectPositions.length} Here'),
         onTap: () {
           _onMarkerTapped(projectPosition);
         },
@@ -141,10 +143,10 @@ class ProjectMapMobileState extends State<ProjectMapMobile>
     if (projectPositions.isNotEmpty) {
       var lat = projectPositions.first.position!.coordinates[1];
       var lng = projectPositions.first.position!.coordinates[0];
-      _animateCamera(latitude: lat, longitude: lng);
+      _animateCamera(latitude: lat, longitude: lng, zoom: 10.0);
     }
-
   }
+
   void _buildProjectPolygons() {
     pp('$mm _buildProjectPolygons happening ... projectPolygons: ${projectPolygons.length}');
     _polygons.clear();
@@ -169,7 +171,7 @@ class ProjectMapMobileState extends State<ProjectMapMobile>
       var p = projectPolygons.first.positions.first;
       var lat = p.coordinates[1];
       var lng = p.coordinates[0];
-      _animateCamera(latitude: lat, longitude: lng);
+      _animateCamera(latitude: lat, longitude: lng, zoom: 10.0);
     }
     setState(() {});
   }
@@ -192,7 +194,8 @@ class ProjectMapMobileState extends State<ProjectMapMobile>
     _animationController.forward();
   }
 
-  Future<bool> _isLocationWithinProjectMonitorDistance({required double latitude, required double longitude}) async {
+  Future<bool> _isLocationWithinProjectMonitorDistance(
+      {required double latitude, required double longitude}) async {
     pp('$mm calculating _isLocationWithinProjectMonitorDistance .... '
         '${widget.project.monitorMaxDistanceInMetres!} metres');
 
@@ -201,7 +204,9 @@ class ProjectMapMobileState extends State<ProjectMapMobile>
       var projPos = widget.projectPositions.elementAt(i);
       var dist = await locationBloc.getDistance(
           latitude: projPos.position!.coordinates.elementAt(1),
-          longitude: projPos.position!.coordinates.elementAt(0), toLatitude: latitude, toLongitude: longitude);
+          longitude: projPos.position!.coordinates.elementAt(0),
+          toLatitude: latitude,
+          toLongitude: longitude);
 
       map[dist] = projPos;
       pp('$mm Distance: 🌶 $dist metres 🌶 projectId: ${projPos.projectId} 🐊 projectPositionId: ${projPos.projectPositionId}');
@@ -228,20 +233,21 @@ class ProjectMapMobileState extends State<ProjectMapMobile>
       busy = true;
     });
     try {
-      var isWithinRange = await _isLocationWithinProjectMonitorDistance(latitude: _latitude, longitude: _longitude);
+      var isWithinRange = await _isLocationWithinProjectMonitorDistance(
+          latitude: _latitude, longitude: _longitude);
       if (isWithinRange) {
         if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-               SnackBar(
-                  padding: const EdgeInsets.all(0.0),
-                  duration: const Duration(seconds: 10),
-                  content: Card(
-                      elevation: 8,
-                      color: Theme.of(context).errorColor,
-                      child: const Padding(
-                        padding: EdgeInsets.all(8.0),
-                        child: Text('There is a project monitoring location nearby. This new one is not needed'),
-                      ))));
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+              padding: const EdgeInsets.all(0.0),
+              duration: const Duration(seconds: 10),
+              content: Card(
+                  elevation: 8,
+                  color: Theme.of(context).errorColor,
+                  child: const Padding(
+                    padding: EdgeInsets.all(8.0),
+                    child: Text(
+                        'There is a project monitoring location nearby. This new one is not needed'),
+                  ))));
         }
         _animationController.reverse().then((value) {
           setState(() {
@@ -262,20 +268,19 @@ class ProjectMapMobileState extends State<ProjectMapMobile>
           caption: 'tbd',
           projectPositionId: const Uuid().v4(),
           created: DateTime.now().toUtc().toIso8601String(),
-          position:
-              local.Position(coordinates: [_longitude, _latitude], type: 'Point'),
+          position: local.Position(
+              coordinates: [_longitude, _latitude], type: 'Point'),
           nearestCities: cities,
           organizationId: widget.project.organizationId,
           projectId: widget.project.projectId);
       var resultPosition = await DataAPI.addProjectPosition(position: pos);
-      widget.projectPositions.add(resultPosition);
+      projectPositions.add(resultPosition);
       _addMarkers();
     } catch (e) {
       pp(e);
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-            duration: const Duration(seconds: 10),
-            content: Text('$e')));
+            duration: const Duration(seconds: 10), content: Text('$e')));
       }
     }
     _animationController.reverse().then((value) {
@@ -293,45 +298,78 @@ class ProjectMapMobileState extends State<ProjectMapMobile>
         key: _key,
         appBar: AppBar(
           title: Text(
-            widget.project.name!,
-            style: myTextStyleMedium(context),
+            'Project Locations & Areas',
+            style: myTextStyleSmall(context),
           ),
           actions: [
-            IconButton(onPressed: _refreshData, icon: Icon(Icons.refresh_rounded,
-              size: 18, color: Theme.of(context).primaryColor,))
+            IconButton(
+                onPressed: () {
+                  _refreshData(true);
+                },
+                icon: Icon(
+                  Icons.refresh_rounded,
+                  size: 18,
+                  color: Theme.of(context).primaryColor,
+                ))
           ],
-          bottom: PreferredSize(preferredSize: const Size.fromHeight(20),
-          child: Column(
-            children: [
-              Row(mainAxisAlignment: MainAxisAlignment.center,
-              children:  [
-                Text('Project Locations', style: myTextStyleSmall(context),),
-                busy? const SizedBox(width: 48,):const SizedBox(),
-                busy? const SizedBox(width: 12, height: 12,
-                child: CircularProgressIndicator(
-                  strokeWidth: 3, backgroundColor: Colors.pink,
-                ),):const SizedBox(),
+          bottom: PreferredSize(
+            preferredSize: const Size.fromHeight(60),
+            child: Column(
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    const SizedBox(width: 12,),
+                    Flexible(
+                      child: Text(
+                        widget.project.name!,
+                        style: myTextStyleMedium(context),
+                      ),
+                    ),
+                    const SizedBox(width: 28,),
+                    ProjectPositionChooser(projectPositions: projectPositions,
+                        projectPolygons: projectPolygons, onSelected: _onSelected),
+
+                    const SizedBox(width: 12,),
+                    busy
+                        ? const SizedBox(
+                            width: 48,
+                          )
+                        : const SizedBox(),
+                    busy
+                        ? const SizedBox(
+                            width: 12,
+                            height: 12,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 3,
+                              backgroundColor: Colors.pink,
+                            ),
+                          )
+                        : const SizedBox(),
+                  ],
+                ),
+                const SizedBox(
+                  height: 16,
+                )
               ],
             ),
-              const SizedBox(height: 16,)
-            ],
-
-          ),),
+          ),
         ),
         body: Stack(
           children: [
             GestureDetector(
               onTap: () async {
                 var loc = await locationBloc.getLocation();
-                _animateCamera(latitude: loc.latitude, longitude: loc.longitude);
+                _animateCamera(
+                    latitude: loc.latitude, longitude: loc.longitude, zoom: 12.0);
               },
               child: Badge(
                 badgeColor: Colors.pink,
-                badgeContent: Text('${projectPositions.length + projectPolygons.length}'),
+                badgeContent:
+                    Text('${projectPositions.length + projectPolygons.length}'),
                 padding: const EdgeInsets.all(8.0),
                 position: BadgePosition.topEnd(top: 8, end: 8),
                 elevation: 8,
-
                 child: GoogleMap(
                   mapType: MapType.hybrid,
                   mapToolbarEnabled: true,
@@ -418,27 +456,35 @@ class ProjectMapMobileState extends State<ProjectMapMobile>
                             padding: const EdgeInsets.all(16.0),
                             child: Column(
                               children: [
-                                Row(mainAxisAlignment: MainAxisAlignment.end,
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.end,
                                   children: [
                                     Text(
                                       'Project Location',
                                       style: myTextStyleLarge(context),
                                     ),
-                                    const SizedBox(width: 60,),
-                                    IconButton(onPressed: () {
-                                      _animationController.reverse().then((value) {
-                                        setState(() {
-                                          _showNewPositionUI = false;
-                                        });
-                                      });
-                                    }, icon: const Icon(Icons.close)),
+                                    const SizedBox(
+                                      width: 60,
+                                    ),
+                                    IconButton(
+                                        onPressed: () {
+                                          _animationController
+                                              .reverse()
+                                              .then((value) {
+                                            setState(() {
+                                              _showNewPositionUI = false;
+                                            });
+                                          });
+                                        },
+                                        icon: const Icon(Icons.close)),
                                   ],
                                 ),
                                 const SizedBox(
                                   height: 24,
                                 ),
                                 Padding(
-                                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 16.0),
                                   child: Row(
                                     children: [
                                       SizedBox(
@@ -458,7 +504,8 @@ class ProjectMapMobileState extends State<ProjectMapMobile>
                                   height: 8,
                                 ),
                                 Padding(
-                                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 16.0),
                                   child: Row(
                                     children: [
                                       SizedBox(
@@ -479,14 +526,21 @@ class ProjectMapMobileState extends State<ProjectMapMobile>
                                 const SizedBox(
                                   height: 24,
                                 ),
-                                busy? const SizedBox(
-                                  width: 20, height: 20,
-                                  child: CircularProgressIndicator(
-                                    strokeWidth: 4, backgroundColor: Colors.pink,
-                                  ),
-                                ): ElevatedButton(
-                                    onPressed: _submitNewPosition,
-                                    child:  Text('Save Project Location', style: myTextStyleMedium(context),)),
+                                busy
+                                    ? const SizedBox(
+                                        width: 20,
+                                        height: 20,
+                                        child: CircularProgressIndicator(
+                                          strokeWidth: 4,
+                                          backgroundColor: Colors.pink,
+                                        ),
+                                      )
+                                    : ElevatedButton(
+                                        onPressed: _submitNewPosition,
+                                        child: Text(
+                                          'Save Project Location',
+                                          style: myTextStyleMedium(context),
+                                        )),
                               ],
                             ),
                           ),
@@ -500,15 +554,70 @@ class ProjectMapMobileState extends State<ProjectMapMobile>
     );
   }
 
-  void _animateCamera({required double latitude, required double longitude}) {
-      final CameraPosition cameraPosition = CameraPosition(
-        target: LatLng(
-            latitude,
-            longitude),
-        zoom: 10.0,
-      );
-      googleMapController!.animateCamera(
-          CameraUpdate.newCameraPosition(cameraPosition));
+  void _animateCamera({required double latitude, required double longitude, required double zoom}) {
+    final CameraPosition cameraPosition = CameraPosition(
+      target: LatLng(latitude, longitude),
+      zoom: zoom,
+    );
+    googleMapController!
+        .animateCamera(CameraUpdate.newCameraPosition(cameraPosition));
+  }
 
+  _onSelected(local.Position p1) {
+    _animateCamera(latitude: p1.coordinates[1], longitude: p1.coordinates[0], zoom: 14.6);
+  }
+}
+
+class ProjectPositionChooser extends StatelessWidget {
+  const ProjectPositionChooser(
+      {Key? key,
+      required this.projectPositions,
+      required this.projectPolygons,
+      required this.onSelected})
+      : super(key: key);
+  final List<ProjectPosition> projectPositions;
+  final List<ProjectPolygon> projectPolygons;
+  final Function(local.Position) onSelected;
+  @override
+  Widget build(BuildContext context) {
+    var list = <local.Position>[];
+    projectPositions.sort((a,b) => a.created!.compareTo(b.created!));
+    for (var value in projectPositions) {
+      list.add(value.position!);
+    }
+    for (var value in projectPolygons) {
+      list.add(value.positions.first);
+      // for (var element in value.positions) {
+      //
+      // }
+    }
+    var cnt = 0;
+    var menuItems = <DropdownMenuItem>[];
+    for (var pos in list) {
+      cnt++;
+      menuItems.add(
+        DropdownMenuItem<local.Position>(
+          value: pos,
+          child: Row(
+            children: [
+               Text('Location No. ', style: myTextStyleSmall(context),),
+              const SizedBox(
+                width: 8,
+              ),
+              Text('$cnt', style: myNumberStyleSmall(context),),
+            ],
+          ),
+        ),
+      );
+    }
+    return DropdownButton(
+        hint: Text(
+          'Locations',
+          style: myTextStyleSmall(context),
+        ),
+        items: menuItems,
+        onChanged: (value) {
+          onSelected(value);
+        });
   }
 }

@@ -1,7 +1,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.boha.geo_monitor">
    <application
-        android:label="geo_monitor"
+        android:label="GeoMonitor"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
        <meta-data android:name="com.google.android.geo.API_KEY" android:value="AIzaSyAppCGKY2IfL3R1lSyoUKXrdU7yUj5weMc"/>

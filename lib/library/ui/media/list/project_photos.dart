@@ -1,7 +1,9 @@
+import 'package:animations/animations.dart';
 import 'package:badges/badges.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:transparent_image/transparent_image.dart';
 
 import '../../../bloc/project_bloc.dart';
 import '../../../data/photo.dart';
@@ -21,14 +23,24 @@ class ProjectPhotos extends StatefulWidget {
   State<ProjectPhotos> createState() => ProjectPhotosState();
 }
 
-class ProjectPhotosState extends State<ProjectPhotos> {
+class ProjectPhotosState extends State<ProjectPhotos> with SingleTickerProviderStateMixin{
+  late AnimationController _animationController;
   var photos = <Photo>[];
   bool loading = false;
   @override
   void initState() {
+    _animationController = AnimationController(
+        value: 0.0,
+        duration: const Duration(milliseconds: 2000),
+        vsync: this);
     super.initState();
     _subscribeToStreams();
     _getPhotos();
+  }
+  @override
+  void dispose() {
+    _animationController.dispose();
+    super.dispose();
   }
 
   void _subscribeToStreams() async {}
@@ -89,6 +101,7 @@ class ProjectPhotosState extends State<ProjectPhotos> {
                     var photo = photos.elementAt(index);
                     var dt =
                     getFormattedDateShortestWithTime(photo.created!, context);
+
                     return Stack(
                       children: [
                         SizedBox(
@@ -101,6 +114,8 @@ class ProjectPhotosState extends State<ProjectPhotos> {
                               quarterTurns: photo.landscape == 0? 3:0,
                               child: CachedNetworkImage(
                                   imageUrl: photo.thumbnailUrl!, fit: BoxFit.cover),
+                              // child: FadeInImage(placeholder: const AssetImage('assets/avatar.png'),
+                              //     image: NetworkImage('${photo.thumbnailUrl}',)),
                             ),
                           ),
                         ),

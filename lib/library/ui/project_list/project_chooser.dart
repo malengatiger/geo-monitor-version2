@@ -73,8 +73,8 @@ class ProjectChooserState extends State<ProjectChooser>
         : Stack(
             children: [
               SizedBox(
-                height: 360,
-                width: 260,
+                height: 460,
+                width: 300,
                 child: Card(
                   elevation: 4,
                   color: Theme.of(context).primaryColorDark,
@@ -138,9 +138,11 @@ class ProjectChooserState extends State<ProjectChooser>
                                               const SizedBox(
                                                 width: 12,
                                               ),
-                                              Text(
-                                                project.name!,
-                                                style: myTextStyleSmall(context),
+                                              Flexible(
+                                                child: Text(
+                                                  project.name!,
+                                                  style: myTextStyleSmall(context),
+                                                ),
                                               )
                                             ],
                                           ),

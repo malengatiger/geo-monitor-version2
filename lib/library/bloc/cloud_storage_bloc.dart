@@ -34,7 +34,7 @@ class CloudStorageBloc {
       StreamController.broadcast();
   Stream<List<StorageMediaBag>> get mediaStream =>
       _mediaStreamController.stream;
-
+ bool busy = false;
   User? _user;
 
   close() {
@@ -72,13 +72,8 @@ class CloudStorageBloc {
     String storageName = _setup(listener, isVideo);
     try {
       pp('$mm️ uploadPhotoOrVideo ☕️☕️☕️☕️☕️☕️☕️file path: \n${file.path}');
-     //todo - REMOVE AFTER TEST - OTHERWISE cloud storage upload will NEVER run
-     //  if (storageName.isNotEmpty) {
-     //    var msg = 'Fake exception 🔴🔴🔴🔴 for cloud storage '
-     //        'failure testing; storageName: $storageName 🔴';
-     //    pp('\n\n\n$mm $msg');
-     //    throw Exception(msg);
-     //  }
+      //todo - REMOVE AFTER TEST - OTHERWISE cloud storage upload will NEVER run
+
       //upload main file
       var fileName = _getFileName(isVideo, project);
       var firebaseStorageRef =
@@ -97,7 +92,7 @@ class CloudStorageBloc {
       final firebaseStorageRef2 =
           FirebaseStorage.instance.ref().child(storageName).child(thumbName);
       final thumbUploadTask = firebaseStorageRef2.putFile(thumbnailFile);
-      _reportProgress(thumbUploadTask, listener);
+       // _reportProgress(thumbUploadTask, listener);
       final thumbTaskSnapshot = await thumbUploadTask.whenComplete(() {
         // pp('$mm This is like a finally block - consider this ...');
       });
@@ -106,28 +101,36 @@ class CloudStorageBloc {
       _printSnapshot(thumbTaskSnapshot);
 
       //write to db
-      pp('\n$mm adding photo or video data to the database ...');
-      await _writeToDatabase(
-          isVideo,
-          project,
-          projectPosition,
-          projectPositionId,
-          projectPolygonId,
-          url,
-          thumbUrl,
-          file,
-          isLandscape);
+      pp('\n$mm adding photo or video data to the database ... isVideo?: $isVideo');
+      try {
+        await _writeToDatabase(
+            isVideo,
+            project,
+            projectPosition,
+            projectPositionId,
+            projectPolygonId,
+            url,
+            thumbUrl,
+            file,
+            isLandscape);
 
-      pp('\n\n$mm upload process completed, tell the faithful listener!.\n\n');
-      listener.onFileUploadComplete(
-          url, taskSnapshot.totalBytes, taskSnapshot.bytesTransferred);
+        pp('\n\n$mm upload process completed, tell the faithful listener!.\n\n');
+        listener.onFileUploadComplete(
+            url, taskSnapshot.totalBytes, taskSnapshot.bytesTransferred);
+      } catch (e) {
+        pp('\n\n$mm 👿👿👿👿 Photo/Video write to database failed, We may have a database problem: 🔴🔴🔴 $e');
+        listener.onError('👿👿👿👿 We have a database problem $e');
+        await _saveFailedMedia(file, thumbnailFile, project, projectPosition,
+            isLandscape, isVideo);
+        return uploadError;
+      }
       return uploadFinished;
     } catch (e) {
-      pp('\n\n$mm 👿👿👿👿 Photo/Video upload failed: $e');
+      pp('\n\n$mm 👿👿👿👿 Photo/Video cloud storage upload failed: 🔴🔴🔴 $e');
+      pp(e);
       listener.onError('👿👿👿👿 Houston, we have a cloud storage problem $e');
       await _saveFailedMedia(
-          file, thumbnailFile, project, projectPosition,
-          isLandscape, isVideo);
+          file, thumbnailFile, project, projectPosition, isLandscape, isVideo);
     }
 
     return uploadError;
@@ -135,7 +138,6 @@ class CloudStorageBloc {
 
   Future<void> _saveFailedMedia(File file, File thumbnailFile, Project project,
       Position projectPosition, bool isLandscape, bool isVideo) async {
-
     var failedBag = FailedBag(
         filePath: file.path,
         thumbnailPath: thumbnailFile.path,
@@ -146,7 +148,7 @@ class CloudStorageBloc {
         date: DateTime.now().toUtc().toIso8601String());
 
     await hiveUtil.addFailedBag(bag: failedBag);
-    pp('\n$mm failedBag cached in hive after cloud storage failure 🔴🔴🔴');
+    pp('\n$mm 🔴🔴🔴 failedBag cached in hive after upload or database failure 🔴🔴🔴');
   }
 
   String _setup(StorageBlocListener listener, bool isVideo) {
@@ -171,29 +173,26 @@ class CloudStorageBloc {
       String thumbUrl,
       File file,
       bool isLandscape) async {
-
-      if (isVideo) {
-        await _writeVideo(
-            project: project,
-            projectPosition: projectPosition,
-            projectPositionId: projectPositionId,
-            projectPolygonId: projectPolygonId,
-            fileUrl: url,
-            thumbnailUrl: thumbUrl);
-      } else {
-        final mainFileSize = ImageSizeGetter.getSize(FileInput(file));
-        await _writePhoto(
-            project: project,
-            projectPosition: projectPosition,
-            fileUrl: url,
-            thumbnailUrl: thumbUrl,
-            projectPositionId: projectPositionId,
-            projectPolygonId: projectPolygonId,
-            height: mainFileSize.height,
-            width: mainFileSize.width,
-            isLandscape: isLandscape);
-      }
-
+    if (isVideo) {
+      await _writeVideo(
+          project: project,
+          projectPosition: projectPosition,
+          projectPositionId: projectPositionId,
+          projectPolygonId: projectPolygonId,
+          fileUrl: url,
+          thumbnailUrl: thumbUrl);
+    } else {
+      await _writePhoto(
+          project: project,
+          projectPosition: projectPosition,
+          fileUrl: url,
+          thumbnailUrl: thumbUrl,
+          projectPositionId: projectPositionId,
+          projectPolygonId: projectPolygonId,
+          height: 640,
+          width: 480,
+          isLandscape: isLandscape);
+    }
   }
 
   String _getFileName(bool isVideo, Project project) {
@@ -247,7 +246,8 @@ class CloudStorageBloc {
       required int height,
       required int width,
       required bool isLandscape}) async {
-    pp('$mm _writePhoto : 🎽🎽 adding photo - isLandscape: $isLandscape');
+
+    pp('$mm _writePhoto : 🎽🎽🎽🎽🎽🎽🎽🎽 adding photo - isLandscape: $isLandscape');
     if (_user == null) {
       await getUser();
     }
@@ -256,7 +256,6 @@ class CloudStorageBloc {
         latitude: projectPosition.coordinates[1],
         longitude: projectPosition.coordinates[0]);
 
-    pp('🎽🎽🎽🎽 StorageBloc: _writePhoto : 🎽🎽 adding photo ..... 😡😡 distance: $distance 😡😡 isLandscape: $isLandscape');
     var u = const Uuid();
 
     var photo = Photo(
@@ -284,7 +283,7 @@ class CloudStorageBloc {
       pp('$mm Photo has been added to database, result photo: 🎁 $result - 🎁 isLandscape: $isLandscape');
       pp('$mm Photo has been added to photoStream ...');
     } catch (e) {
-      pp('$mm Photo problem: $e');
+      pp('\n\n$mm 🔴🔴🔴 Photo problem: 🔴🔴🔴 $e \n');
       _errorStreamController.sink.add("Photo database write failed: $e");
       await hiveUtil.addFailedPhoto(photo: photo);
       storageBlocListener.onError('Photo database write failed');

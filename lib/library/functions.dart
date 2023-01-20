@@ -5,13 +5,18 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:geo_monitor/library/data/project_polygon.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:intl/intl.dart';
 import 'package:google_maps_utils/google_maps_utils.dart';
+import 'package:path_provider/path_provider.dart';
 
 import 'data/position.dart';
 import 'data/project_position.dart';
 import 'location/loc_bloc.dart';
+import 'package:video_thumbnail/video_thumbnail.dart' as vt;
+import 'package:image/image.dart' as img;
+
 
 List<String> logs = [];
 bool busy = false;
@@ -537,6 +542,53 @@ prettyPrint(Map map, String name) {
   } else {
     pp('📍📍📍📍 prettyPrint: 📍📍📍📍📍📍📍📍 map is NULL - tag: $name 📍📍📍📍📍📍📍📍');
   }
+}
+
+LatLngBounds boundsFromLatLngList(List<LatLng> list) {
+  assert(list.isNotEmpty);
+  double? x0, x1, y0, y1;
+  for (LatLng latLng in list) {
+    if (x0 == null) {
+      x0 = x1 = latLng.latitude;
+      y0 = y1 = latLng.longitude;
+    } else {
+      if (latLng.latitude > x1!) x1 = latLng.latitude;
+      if (latLng.latitude < x0) x0 = latLng.latitude;
+      if (latLng.longitude > y1!) y1 = latLng.longitude;
+      if (latLng.longitude < y0!) y0 = latLng.longitude;
+    }
+  }
+  return LatLngBounds(northeast: LatLng(x1!, y1!), southwest: LatLng(x0!, y0!));
+}
+Future<File> getPhotoThumbnail({required File file}) async {
+  final Directory directory = await getApplicationDocumentsDirectory();
+
+  img.Image? image = img.decodeImage(file.readAsBytesSync());
+  var thumbnail = img.copyResize(image!, width: 160);
+  final File mFile = File(
+      '${directory.path}/thumbnail_${DateTime.now().millisecondsSinceEpoch}.jpg');
+  var thumb = mFile..writeAsBytesSync(img.encodeJpg(thumbnail, quality: 90));
+  var len = await thumb.length();
+  pp('🔷🔷 photo thumbnail generated: 😡 ${(len / 1024).toStringAsFixed(1)} KB');
+  return thumb;
+}
+
+Future<File> getVideoThumbnail(File file) async {
+  final Directory directory = await getApplicationDocumentsDirectory();
+
+  var path = 'possibleVideoThumb_${DateTime.now().toIso8601String()}.jpg';
+  final thumbFile = File('${directory.path}/$path');
+
+  final data = await vt.VideoThumbnail.thumbnailData(
+    video: file.path,
+    imageFormat: vt.ImageFormat.JPEG,
+    maxWidth:
+    128, // specify the width of the thumbnail, let the height auto-scaled to keep the source aspect ratio
+    quality: 25,
+  );
+  await thumbFile.writeAsBytes(data!);
+  pp('🔷🔷 Video thumbnail created. length: ${await thumbFile.length()} 🔷🔷🔷');
+  return thumbFile;
 }
 
 pp(dynamic msg) {

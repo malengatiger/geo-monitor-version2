@@ -89,6 +89,33 @@ class ProjectListMobileState extends State<ProjectListMobile>
     });
   }
 
+  bool sortedByName = true;
+  void _sort() {
+    if (sortedByName) {
+      _sortByDate();
+    } else {
+      _sortByName();
+    }
+  }
+  void _sortByName() {
+    projects.sort((a, b) => a.name!.compareTo(b.name!));
+    sortedByName = true;
+    if (mounted) {
+      setState(() {
+
+      });
+    }
+  }
+  void _sortByDate() {
+    projects.sort((a, b) => b.created!.compareTo(a.created!));
+    sortedByName = false;
+    if (mounted) {
+      setState(() {
+
+      });
+    }
+  }
+
   void _getUser() async {
     setState(() {
       isBusy = true;
@@ -420,7 +447,7 @@ class ProjectListMobileState extends State<ProjectListMobile>
       menuItems.add(
         FocusedMenuItem(
             title: Text(
-              'Project Areas Map',
+              'Create Project Areas',
               style: myTextStyleSmallBlack(context),
             ),
             trailingIcon: Icon(
@@ -643,95 +670,98 @@ class ProjectListMobileState extends State<ProjectListMobile>
               )
                   : Stack(
                 children: [
-                  Badge(
-                    position:
-                    BadgePosition.topEnd(top: -8, end: -2),
-                    badgeContent: Padding(
-                      padding: const EdgeInsets.all(4.0),
-                      child: Text('${projects.length}',
-                          style: myNumberStyleSmall(context)),
-                    ),
-                    badgeColor: Theme.of(context).primaryColor,
-                    elevation: 8,
-                    child: AnimatedBuilder(
-                      animation: _animationController,
-                      builder: (BuildContext context,
-                          Widget? child) {
-                        return FadeScaleTransition(
-                          animation: _animationController,
-                          child: child,
-                        );
-                      },
-                      child: ListView.builder(
-                        itemCount: projects.length,
-                        itemBuilder:
-                            (BuildContext context, int index) {
-                          var mProject =
-                          projects.elementAt(index);
-
-                          return FocusedMenuHolder(
-                            menuOffset: 20,
-                            duration: const Duration(
-                                milliseconds: 300),
-                            menuItems: getPopUpMenuItems(
-                                mProject),
-                            animateMenuItems: true,
-                            openWithTap: true,
-                            onPressed: () {
-                              pp('$mm 💛️💛️💛️ not sure what I pressed ...');
-                            },
-                            child: Card(
-                              elevation: 4,
-                              shape: RoundedRectangleBorder(
-                                  borderRadius:
-                                  BorderRadius.circular(
-                                      16.0)),
-                              child: Padding(
-                                padding:
-                                const EdgeInsets.all(4.0),
-                                child: Column(
-                                  children: [
-                                    const SizedBox(
-                                      height: 8,
-                                    ),
-                                    Row(
-                                      children: [
-                                        Opacity(
-                                          opacity: 0.9,
-                                          child: Icon(
-                                            Icons.water_damage,
-                                            color: Theme.of(
-                                                context)
-                                                .primaryColor,
-                                          ),
-                                        ),
-                                        const SizedBox(
-                                          width: 8,
-                                        ),
-                                        Flexible(
-                                          child: Text(
-                                              mProject
-                                                  .name!,
-                                              style: GoogleFonts.lato(
-                                                  textStyle: Theme.of(
-                                                      context)
-                                                      .textTheme
-                                                      .bodySmall,
-                                                  fontWeight:
-                                                  FontWeight
-                                                      .normal)),
-                                        )
-                                      ],
-                                    ),
-                                    const SizedBox(
-                                      height: 4,
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
+                  GestureDetector(
+                    onTap: _sort,
+                    child: Badge(
+                      position:
+                      BadgePosition.topEnd(top: -8, end: -2),
+                      badgeContent: Padding(
+                        padding: const EdgeInsets.all(4.0),
+                        child: Text('${projects.length}',
+                            style: myNumberStyleSmall(context)),
+                      ),
+                      badgeColor: Theme.of(context).primaryColor,
+                      elevation: 8,
+                      child: AnimatedBuilder(
+                        animation: _animationController,
+                        builder: (BuildContext context,
+                            Widget? child) {
+                          return FadeScaleTransition(
+                            animation: _animationController,
+                            child: child,
                           );
                         },
+                        child: ListView.builder(
+                          itemCount: projects.length,
+                          itemBuilder:
+                              (BuildContext context, int index) {
+                            var mProject =
+                            projects.elementAt(index);
+
+                            return FocusedMenuHolder(
+                              menuOffset: 20,
+                              duration: const Duration(
+                                  milliseconds: 300),
+                              menuItems: getPopUpMenuItems(
+                                  mProject),
+                              animateMenuItems: true,
+                              openWithTap: true,
+                              onPressed: () {
+                                pp('$mm 💛️💛️💛️ not sure what I pressed ...');
+                              },
+                              child: Card(
+                                elevation: 4,
+                                shape: RoundedRectangleBorder(
+                                    borderRadius:
+                                    BorderRadius.circular(
+                                        16.0)),
+                                child: Padding(
+                                  padding:
+                                  const EdgeInsets.all(4.0),
+                                  child: Column(
+                                    children: [
+                                      const SizedBox(
+                                        height: 8,
+                                      ),
+                                      Row(
+                                        children: [
+                                          Opacity(
+                                            opacity: 0.9,
+                                            child: Icon(
+                                              Icons.water_damage,
+                                              color: Theme.of(
+                                                  context)
+                                                  .primaryColor,
+                                            ),
+                                          ),
+                                          const SizedBox(
+                                            width: 8,
+                                          ),
+                                          Flexible(
+                                            child: Text(
+                                                mProject
+                                                    .name!,
+                                                style: GoogleFonts.lato(
+                                                    textStyle: Theme.of(
+                                                        context)
+                                                        .textTheme
+                                                        .bodySmall,
+                                                    fontWeight:
+                                                    FontWeight
+                                                        .normal)),
+                                          )
+                                        ],
+                                      ),
+                                      const SizedBox(
+                                        height: 4,
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            );
+                          },
+                        ),
                       ),
                     ),
                   ),

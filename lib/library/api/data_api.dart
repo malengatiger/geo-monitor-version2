@@ -959,11 +959,15 @@ class DataAPI {
     String? mURL = await getUrl();
     try {
       var result = await _callWebAPIPost('${mURL!}addPhoto', photo.toJson());
+      pp('\n\n\n$mm 🔴🔴🔴 DataAPI addPhoto succeeded. Everything OK?? 🔴🔴🔴\n\n');
+
+      pp(result);
       var px = Photo.fromJson(result);
       await hiveUtil.addPhoto(photo: px);
-      pp('$mm addPhoto has added photo to DB and to Hive cache');
+      pp('\n\n$mm addPhoto has added photo to DB and to Hive cache');
       return result;
     } catch (e) {
+      pp('\n\n\n$mm 🔴🔴🔴 DataAPI addPhoto failed. Something fucked up here! ... 🔴🔴🔴\n\n');
       pp(e);
       rethrow;
     }

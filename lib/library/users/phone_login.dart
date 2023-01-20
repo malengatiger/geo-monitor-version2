@@ -253,7 +253,7 @@ class PhoneLoginState extends State<PhoneLogin>
                       style: myTextStyleLarge(context),
                     ),
                     const SizedBox(
-                      height: 28,
+                      height: 16,
                     ),
 
                     Padding(
@@ -280,7 +280,7 @@ class PhoneLoginState extends State<PhoneLogin>
                                 },
                               ),
                               const SizedBox(
-                                height: 48,
+                                height: 32,
                               ),
                               _codeHasBeenSent
                                   ? const SizedBox()
@@ -305,7 +305,7 @@ class PhoneLoginState extends State<PhoneLogin>
                                           Text('Enter SMS pin code sent to ${phoneController.text}', style: myTextStyleSmall(context),),
                                           const SizedBox(height: 16,),
                                           Padding(
-                                            padding: const EdgeInsets.all(8.0),
+                                            padding: const EdgeInsets.all(4.0),
                                             child: PinCodeTextField(
                                               length: 6,
                                               obscureText: false,

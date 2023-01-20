@@ -39,20 +39,14 @@ class PhotoDetails extends StatelessWidget {
               ),
               Text(
                 photo.projectName!,
-                style: GoogleFonts.lato(
-                    textStyle: Theme.of(context).textTheme.bodySmall,
-                    fontWeight: FontWeight.normal,
-                    fontSize: 12),
+                style: myTextStyleSmall(context)
               ),
               const SizedBox(
                 height: 0,
               ),
               Text(
                 getFormattedDateShortWithTime(photo.created!, context),
-                style: GoogleFonts.lato(
-                  textStyle: Theme.of(context).textTheme.bodyMedium,
-                  fontWeight: FontWeight.w900,
-                ),
+                style: myTextStyleMedium(context),
               ),
               SizedBox(
                 width: 240,

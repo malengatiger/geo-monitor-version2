@@ -186,9 +186,8 @@ class ProjectMediaListMobileState extends State<ProjectMediaListMobile>
               )),
           IconButton(
               onPressed: () {
-                _animationController.reverse()
-                    .then((value) => Navigator.of(context).pop(context));
 
+                Navigator.of(context).pop();
               },
               icon: Icon(
                 Icons.close,
@@ -268,46 +267,28 @@ class ProjectMediaListMobileState extends State<ProjectMediaListMobile>
               : TabBarView(
                   controller: _tabController,
                   children: [
-                    AnimatedBuilder(
-                      animation: _animationController,
-                      builder: (BuildContext context, Widget? child) {
-                        return FadeScaleTransition(
-                          animation: _animationController,
-                          child: child,
-                        );
+                    ProjectPhotos(
+                      project: widget.project,
+                      refresh: false,
+                      onPhotoTapped: (Photo photo) {
+                        pp('🔷🔷🔷Photo has been tapped: ${photo.created!}');
+                        selectedPhoto = photo;
+                        setState(() {
+                          _showPhotoDetail = true;
+                        });
+                        _animationController.forward();
                       },
-                      child: ProjectPhotos(
-                        project: widget.project,
-                        refresh: false,
-                        onPhotoTapped: (Photo photo) {
-                          pp('🔷🔷🔷Photo has been tapped: ${photo.created!}');
-                          selectedPhoto = photo;
-                          setState(() {
-                            _showPhotoDetail = true;
-                          });
-                          _animationController.forward();
-                        },
-                      ),
                     ),
-                    AnimatedBuilder(
-                      animation: _animationController,
-                      builder: (BuildContext context, Widget? child) {
-                        return FadeScaleTransition(
-                          animation: _animationController,
-                          child: child,
-                        );
+                    ProjectVideos(
+                      project: widget.project,
+                      refresh: false,
+                      onVideoTapped: (Video video) {
+                        pp('🍎🍎🍎Video has been tapped: ${video.created!}');
+                        setState(() {
+                          selectedVideo = video;
+                        });
+                        _navigateToPlayVideo();
                       },
-                      child: ProjectVideos(
-                        project: widget.project,
-                        refresh: false,
-                        onVideoTapped: (Video video) {
-                          pp('🍎🍎🍎Video has been tapped: ${video.created!}');
-                          setState(() {
-                            selectedVideo = video;
-                          });
-                          _navigateToPlayVideo();
-                        },
-                      ),
                     ),
                   ],
                 ),
@@ -338,10 +319,8 @@ class ProjectMediaListMobileState extends State<ProjectMediaListMobile>
                         child: PhotoDetails(
                           photo: selectedPhoto!,
                           onClose: () {
-                            _animationController.reverse().then((value) {
-                              setState(() {
-                                _showPhotoDetail = false;
-                              });
+                            setState(() {
+                              _showPhotoDetail = false;
                             });
                           },
                         ),
@@ -382,6 +361,7 @@ class ProjectMediaListMobileState extends State<ProjectMediaListMobile>
     pp('... about to navigate after waiting 100 ms - should select project if null');
 
     Future.delayed(const Duration(milliseconds: 100), () {
+      Navigator.of(context).pop();
       Navigator.push(
           context,
           PageTransition(
