@@ -288,25 +288,18 @@ class ProjectMonitorMobileState extends State<ProjectMonitorMobile>
                       ),
                       isWithinDistance
                           ? Text(
-                              'We are ready to start creating photos and videos for ${widget.project.name} \n🍎',
-                              style: GoogleFonts.lato(
-                                textStyle: myTextStyleSmall(context),
-                              ))
+                              'We are ready to start creating photos and videos for ${widget.project.name} \n\n🍎',
+                              style: myTextStyleSmall(context))
                           : Padding(
                               padding: const EdgeInsets.all(8.0),
                               child: Column(
                                 children: [
                                   const SizedBox(
-                                    height: 60,
+                                    height: 40,
                                   ),
                                   Text(
                                     'Device is too far from ${widget.project.name} for monitoring capabilities. Please move closer!',
-                                    style: GoogleFonts.lato(
-                                      textStyle: Theme.of(context)
-                                          .textTheme
-                                          .bodyMedium,
-                                      fontWeight: FontWeight.normal,
-                                    ),
+                                    style: myTextStyleSmall(context),
                                   ),
                                   const SizedBox(
                                     height: 32,

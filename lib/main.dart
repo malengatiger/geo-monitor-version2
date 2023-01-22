@@ -11,11 +11,11 @@ import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart' as dot;
 import 'package:flutter_libphonenumber/flutter_libphonenumber.dart';
+import 'package:flutter_settings_screens/flutter_settings_screens.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:geo_monitor/library/generic_functions.dart';
-import 'package:geo_monitor/library/ui/camera/photo_handler.dart';
+import 'package:geo_monitor/settings/app_settings.dart';
+import 'package:geo_monitor/ui/audio/audio_mobile.dart';
 
 import 'package:geo_monitor/ui/dashboard/dashboard_main.dart';
 import 'package:hive_flutter/hive_flutter.dart';
@@ -33,7 +33,8 @@ import 'ui/intro_page_viewer.dart';
 
 int themeIndex = 0;
 late FirebaseApp firebaseApp;
-fb.User? user;
+ur.User? user;
+int doubleTapCount = 0;
 
 Future<void> mainSetup() async {
   try {
@@ -83,21 +84,32 @@ Future<void> mainSetup() async {
   }
 }
 
-void main() async {
+Future<void> initSettings() async {
+  await Settings.init(
+    cacheProvider: SharePreferenceCache(),
+  );
+  //accentColor = ValueNotifier(Colors.blueAccent);
+}
+
+bool _isDarkTheme = true;
+bool _isUsingHive = true;
+
+Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  firebaseApp = await Firebase.initializeApp(
-      options: DefaultFirebaseOptions.currentPlatform);
-  pp('${Emoji.heartGreen}${Emoji.heartGreen} Firebase App has been initialized: ${firebaseApp.name}');
+  Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  //pp('${Emoji.heartGreen}${Emoji.heartGreen} Firebase App has been initialized: ${firebaseApp.name}');
+  user = await Prefs.getUser();
+  // user = fb.FirebaseAuth.instance.currentUser;
+  // if (user == null) {
+  //   pp('${Emoji.heartGreen}${Emoji.heartGreen} Ding Dong! Rookie here ...');
+  // } else {
+  //   pp('${Emoji.redDot}${Emoji.redDot} User already here ...');
+  // }
+  initSettings().then((value) {
+    pp('🌀🌀🌀🌀 Settings functionality initialized');
+    runApp(const MyApp());
+  });
 
-  user = fb.FirebaseAuth.instance.currentUser;
-  if (user == null) {
-    pp('${Emoji.heartGreen}${Emoji.heartGreen} Ding Dong! Rookie here ...');
-  } else {
-    pp('${Emoji.redDot}${Emoji.redDot} User already here ...');
-  }
-  await mainSetup();
-
-  runApp(const MyApp());
 }
 
 /// The main app.
@@ -108,6 +120,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     themeBloc.start();
+    mainSetup();
     return GestureDetector(
       onTap: () {
         pp('🌀🌀🌀🌀 Tap detected; should dismiss keyboard');
@@ -115,12 +128,13 @@ class MyApp extends StatelessWidget {
       },
       onDoubleTap: () async {
         //todo - REMOVE after testing
-        await _sortOutNewHiveArtifacts(context);
+        pp('🌀🌀🌀🌀 double Tap detected; should clear user stuff, count: $doubleTapCount');
+        doubleTapCount++;
+        if (doubleTapCount > 1) {
+          await _sortOutNewHiveArtifacts(context);
+          doubleTapCount = 0;
+        }
       },
-      // onLongPress: () {
-      //   pp('🌀🌀🌀🌀 Long press detected; throwing fake exception');
-      //   throw Exception('Fake Exception to test Crashlytics');
-      // },
       child: StreamBuilder(
         stream: themeBloc.newThemeStream,
         initialData: themeIndex,
@@ -141,17 +155,20 @@ class MyApp extends StatelessWidget {
             // home: user == null? const IntroPageViewer() :const DashboardMain(),
             // home: const PhoneLogin(),
             home: AnimatedSplashScreen(
-              duration: 3000,
+              duration: 2000,
               splash: const SplashWidget(),
-              animationDuration: const Duration(milliseconds: 3000),
+              animationDuration: const Duration(milliseconds: 2000),
               curve: Curves.easeInCirc,
               splashIconSize: 160.0,
+              // nextScreen: const AudioMobile(),
+              // nextScreen: const CreditCardHandlerMobile(),
+              // nextScreen: const AppSettings(),
               nextScreen: user == null
                   ? const IntroPageViewer()
                   : const DashboardMain(),
               splashTransition: SplashTransition.fadeTransition,
               pageTransitionType: PageTransitionType.topToBottom,
-              backgroundColor: Colors.teal.shade900,
+              backgroundColor: Colors.pink.shade900,
             ),
           );
         },
@@ -161,25 +178,15 @@ class MyApp extends StatelessWidget {
 
   Future<void> _sortOutNewHiveArtifacts(BuildContext context) async {
     //todo - REMOVE after testing
-    String? status = dot.dotenv.env['CURRENT_STATUS'];
-    pp('🐤🐤🐤🐤 DataAPI: getUrl: Status from .env: $status');
-    bool? isDevelopmentStatus;
-    if (status == 'dev') {
-      isDevelopmentStatus = true;
-      pp('🌀🌀🌀🌀 Double Tap detected; should sign out of Firebase when status is DEV');
-      fb.FirebaseAuth.instance.signOut();
-      pp('🌀🌀🌀🌀  🍎 Signed out of Firebase!!! 🍎 ');
-      fileCounter = await Prefs.getFileCounter();
-      fileCounter++;
-      Prefs.setFileCounter(fileCounter);
-      Prefs.deleteUser();
-      await hiveUtil.initialize(forceInitialization: true);
-    } else {
-      isDevelopmentStatus = false;
-      pp('🐤🐤🐤🐤 of the app is PRODUCTION 🌎 🌎 🌎 ');
-      return;
-    }
-    pp('\n🐤🐤🐤🐤 isDevelopmentStatus: $isDevelopmentStatus');
+    pp('🌀🌀🌀🌀 Double Tap detected; should sign out of Firebase when status is DEV');
+    fb.FirebaseAuth.instance.signOut();
+    pp('🌀🌀🌀🌀  🍎 Signed out of Firebase!!! 🍎 ');
+    fileCounter = await Prefs.getFileCounter();
+    fileCounter++;
+    Prefs.setFileCounter(fileCounter);
+    Prefs.deleteUser();
+    await hiveUtil.initialize(forceInitialization: true);
+
     pp('🐤🐤🐤🐤 We good and clean now, Senor!');
   }
 }
@@ -194,7 +201,6 @@ class SplashWidget extends StatelessWidget {
       child: AnimatedContainer(
         // width: 300, height: 300,
         curve: Curves.easeInOutCirc,
-        // color: Colors.pink,
         duration: const Duration(milliseconds: 2000),
         child: Card(
           elevation: 24.0,
@@ -216,17 +222,29 @@ class SplashWidget extends StatelessWidget {
                   ],
                 ),
               ),
-              const SizedBox(height: 4,),
-               Row(mainAxisAlignment: MainAxisAlignment.center,
-                 children: [
-                   const FaIcon(FontAwesomeIcons.anchorCircleCheck),
-                   const SizedBox(width: 24,),
-                   Text('We help you see!', style: myTextStyleMedium(context),),
-                   const SizedBox(width: 24,),
-                   const Text('🔷🔷'),
-                 ],
-               ),
-              const SizedBox(height: 20,),
+              const SizedBox(
+                height: 4,
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const FaIcon(FontAwesomeIcons.anchorCircleCheck),
+                  const SizedBox(
+                    width: 24,
+                  ),
+                  Text(
+                    'We help you see!',
+                    style: myTextStyleMedium(context),
+                  ),
+                  const SizedBox(
+                    width: 24,
+                  ),
+                  const Text('🔷🔷'),
+                ],
+              ),
+              const SizedBox(
+                height: 20,
+              ),
             ],
           ),
         ),

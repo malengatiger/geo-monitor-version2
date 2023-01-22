@@ -55,7 +55,9 @@ class IntroPageViewerState extends State<IntroPageViewer>
   }
 
   void _navigateToDashboard() {
+
     if (user != null) {
+      Navigator.of(context).pop();
       Navigator.push(
           context,
           PageTransition(
@@ -187,8 +189,8 @@ class IntroPageViewerState extends State<IntroPageViewer>
             ],
           ),
           Positioned(
-            bottom: 24,
-            left: 48,
+            bottom: 2,
+            left: 48, right: 40,
             child: SizedBox(
               width: 200,
               height: 48,

@@ -14,6 +14,7 @@ import 'package:uuid/uuid.dart';
 
 import '../api/data_api.dart';
 import '../api/sharedprefs.dart';
+import '../data/audio.dart';
 import '../data/position.dart';
 import '../data/user.dart';
 import '../data/video.dart';
@@ -43,6 +44,7 @@ class CloudStorageBloc {
 
   final photoStorageName = 'geoPhotos';
   final videoStorageName = 'geoVideos';
+  final audioStorageName = 'geoAudios';
 
   final StreamController<Photo> _photoStreamController =
       StreamController.broadcast();
@@ -56,6 +58,66 @@ class CloudStorageBloc {
   Stream<String> get errorStream => _errorStreamController.stream;
 
   late StorageBlocListener storageBlocListener;
+
+  Future<int> uploadAudio({required StorageBlocListener listener,
+    required File file,
+    required Project project,
+    Position? projectPosition,
+    String? projectPositionId,
+    String? projectPolygonId,}) async {
+    pp('\n\n\n$mm️ uploadAudio ☕️☕️☕️☕️☕️☕️☕️️file length: ${await file.length()} bytes');
+
+    try {
+      var fileName = 'audio@${project.organizationId}@${project.projectId}@${DateTime.now().toUtc().toIso8601String()}.mp3';
+      var firebaseStorageRef =
+      FirebaseStorage.instance.ref().child(audioStorageName).child(fileName);
+      var uploadTask = firebaseStorageRef.putFile(file);
+      _reportProgress(uploadTask, listener);
+      var taskSnapshot = await uploadTask.whenComplete(() {
+        // pp('$mm This is like a finally block - consider this ...');
+      });
+      final url = await taskSnapshot.ref.getDownloadURL();
+      pp('$mm file url is available, meaning that upload is complete: \n$url');
+      _printSnapshot(taskSnapshot);
+      var user = await Prefs.getUser();
+      var distance = 0.0;
+
+      if (user != null) {
+        if (projectPosition != null) {
+          distance = await locationBloc.getDistanceFromCurrentPosition(
+              latitude: projectPosition.coordinates[1],
+              longitude: projectPosition.coordinates[0]);
+        } else {
+          distance = 0.0;
+        }
+
+        pp('$mm adding audio ..... 😡😡 distance: '
+            '${distance.toStringAsFixed(2)} metres 😡😡');
+
+        var audio = Audio(
+            url: url,
+            created: DateTime.now().toUtc().toIso8601String(),
+            userId: user.userId,
+            userName: user.name,
+            projectPosition: projectPosition,
+            distanceFromProjectPosition: distance,
+            projectId: project.projectId,
+            audioId: const Uuid().v4(),
+            organizationId: project.organizationId,
+            projectName: project.name);
+
+        var result = await DataAPI.addAudio(audio);
+        listener.onFileUploadComplete(url, uploadTask.snapshot.totalBytes, uploadTask.snapshot.bytesTransferred);
+      }
+
+
+    } catch (e) {
+      pp(e);
+      listener.onError('Audio database write failed: $e');
+    }
+
+    return 1;
+  }
 
   Future<int> uploadPhotoOrVideo(
       {required StorageBlocListener listener,

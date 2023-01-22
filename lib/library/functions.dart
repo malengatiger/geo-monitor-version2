@@ -604,15 +604,14 @@ Future<File> getVideoThumbnail(File file) async {
 pp(dynamic msg) {
   var time = getFormattedDateHourMinSec(DateTime.now().toString());
   if (kReleaseMode) {
-    if (!msg is String) {
-      pp('$time ==> $msg');
-    }
+      print('$time ==> $msg');
+
   }
   if (kDebugMode) {
     if (msg is String) {
       debugPrint('$time ==> $msg');
     } else {
-      pp('$time ==> $msg');
+      print('$time ==> $msg');
     }
   }
 

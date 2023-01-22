@@ -63,7 +63,7 @@ class FCMBloc {
   }
 
   void initialize() async {
-    pp("$mm initialize FIREBASE MESSAGING ...........................");
+    pp("\n$mm initialize FIREBASE MESSAGING ...........................");
     user = await Prefs.getUser();
     var android = UniversalPlatform.isAndroid;
     var ios = UniversalPlatform.isIOS;
@@ -71,7 +71,7 @@ class FCMBloc {
     if (android || ios) {
       messaging.setAutoInitEnabled(true);
       messaging.onTokenRefresh.listen((newToken) {
-        pp("$mm onTokenRefresh: 🍎 🍎  🍎 🍎 update user: token: $newToken ... 🍎 🍎 ");
+        pp("$mm onTokenRefresh: 🍎 🍎 🍎 update user: token: $newToken ... 🍎 🍎 ");
         _updateUser(newToken);
       });
 
@@ -156,7 +156,7 @@ class FCMBloc {
   }
 
   Future processFCMMessage(fb.RemoteMessage message) async {
-    pp('$mm processing newly arrived FCM message from: ${message.senderId}');
+    pp('$mm processing newly arrived FCM message; messageId:: ${message.messageId}');
     Map data = message.data;
     User? user = await Prefs.getUser();
 

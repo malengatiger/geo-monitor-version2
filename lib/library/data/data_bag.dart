@@ -1,8 +1,8 @@
 import 'package:geo_monitor/library/data/project_polygon.dart';
 import 'package:hive/hive.dart';
 
-import '../data/position.dart';
 import '../functions.dart';
+import 'audio.dart';
 import 'user.dart';
 import 'field_monitor_schedule.dart';
 import 'photo.dart';
@@ -30,6 +30,8 @@ class DataBag {
   List<User>? users;
   @HiveField(7)
   List<ProjectPolygon>? projectPolygons;
+  @HiveField(8)
+  List<Audio>? audios;
 
   DataBag({
     required this.photos,
@@ -37,6 +39,7 @@ class DataBag {
     required this.fieldMonitorSchedules,
     required this.projectPositions,
     required this.projects,
+    required this.audios,
     required this.date, required this.users,
     required this.projectPolygons,
   });
@@ -49,6 +52,14 @@ class DataBag {
       for (var element in m) {
         var pos = User.fromJson(element);
         users?.add(pos);
+      }
+    }
+    audios = [];
+    if (data['audios'] != null) {
+      List m = data['audios'];
+      for (var element in m) {
+        var pos = Audio.fromJson(element);
+        audios?.add(pos);
       }
     }
     projectPolygons = [];
@@ -107,6 +118,12 @@ class DataBag {
         mPhotos.add(r.toJson());
       }
     }
+    List mAudios = [];
+    if (audios != null) {
+      for (var r in audios!) {
+        mAudios.add(r.toJson());
+      }
+    }
     List mVideos = [];
     if (videos != null) {
       for (var r in videos!) {
@@ -152,6 +169,7 @@ class DataBag {
       'projectPolygons': mPolygons,
       'projects': mProjects,
       'users': mUsers,
+      'audios': mAudios,
       'date': date,
     };
     return map;

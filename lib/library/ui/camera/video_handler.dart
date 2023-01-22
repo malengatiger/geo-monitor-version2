@@ -184,7 +184,6 @@ class VideoHandlerState extends State<VideoHandler>
     _startVideo();
   }
 
-
   @override
   void dispose() {
     _controller.dispose();
@@ -262,6 +261,8 @@ class VideoHandlerState extends State<VideoHandler>
         actions: [
           IconButton(
               onPressed: _navigateToList, icon:  Icon(Icons.list, color: Theme.of(context).primaryColor,)),
+          IconButton(
+              onPressed: _onCancel, icon:  Icon(Icons.close, color: Theme.of(context).primaryColor,)),
         ],
       ),
       body: Stack(
@@ -286,14 +287,14 @@ class VideoHandlerState extends State<VideoHandler>
                   ),
                 ),
           Positioned(
-            left: 12,
+            left: 36,
             top: 100,
             child: SizedBox(
-              width: 300,
-              height: 400,
+              // width: 360,
+              // height: 400,
               child: Card(
                 elevation: 4,
-                color: Colors.black38,
+                color: Colors.black12,
                 shape: getRoundedBorder(radius: 16),
                 child: Column(
                   children: [
@@ -320,7 +321,7 @@ class VideoHandlerState extends State<VideoHandler>
                       height: 12,
                     ),
                     Padding(
-                      padding: const EdgeInsets.all(20.0),
+                      padding: const EdgeInsets.all(24.0),
                       child: Card(
                         elevation: 4,
                         shape: getRoundedBorder(radius: 16),
@@ -350,7 +351,7 @@ class VideoHandlerState extends State<VideoHandler>
                                 ],
                               ),
                               const SizedBox(
-                                height: 16,
+                                height: 24,
                               ),
                               Row(
                                 children: [
@@ -374,7 +375,7 @@ class VideoHandlerState extends State<VideoHandler>
                                 ],
                               ),
                               const SizedBox(
-                                height: 24,
+                                height: 48,
                               ),
                               SizedBox(width: 200,
                                 child: ElevatedButton(
@@ -397,8 +398,11 @@ class VideoHandlerState extends State<VideoHandler>
                                 ),
                               ) : const SizedBox(),
                               const SizedBox(
-                                height: 12,
+                                height: 48,
                               ),
+                               TextButton(onPressed: _onCancel,
+                                   child: Text('Cancel',
+                                       style: myTextStyleSmall(context)))
                             ],
                           ),
                         ),
@@ -436,5 +440,9 @@ class VideoHandlerState extends State<VideoHandler>
             child: PlayVideo(
               video: _currentVideo!,
             )));
+  }
+
+  void _onCancel() {
+    Navigator.of(context).pop();
   }
 }

@@ -4,6 +4,7 @@ import 'package:animations/animations.dart';
 import 'package:firebase_auth/firebase_auth.dart' as fb;
 import 'package:flutter/material.dart';
 import 'package:geo_monitor/library/bloc/connection_check.dart';
+import 'package:geo_monitor/library/data/audio.dart';
 import 'package:geo_monitor/library/data/data_bag.dart';
 import 'package:geo_monitor/library/data/project_polygon.dart';
 import 'package:geo_monitor/library/ui/maps/project_map_mobile.dart';
@@ -55,6 +56,8 @@ class DashboardMobileState extends State<DashboardMobile>
   late AnimationController _videoAnimationController;
   late AnimationController _positionAnimationController;
   late AnimationController _polygonAnimationController;
+  late AnimationController _audioAnimationController;
+
   var isBusy = false;
   var _projects = <Project>[];
   var _users = <User>[];
@@ -63,6 +66,7 @@ class DashboardMobileState extends State<DashboardMobile>
   var _projectPositions = <ProjectPosition>[];
   var _projectPolygons = <ProjectPolygon>[];
   var _schedules = <FieldMonitorSchedule>[];
+  var _audioss = <Audio>[];
   User? user;
 
   static const nn = '🎽🎽🎽🎽🎽🎽 DashboardMobile: 🎽';
@@ -72,6 +76,10 @@ class DashboardMobileState extends State<DashboardMobile>
   @override
   void initState() {
     _projectAnimationController = AnimationController(
+        duration: Duration(milliseconds: dur),
+        reverseDuration: Duration(milliseconds: dur),
+        vsync: this);
+    _audioAnimationController = AnimationController(
         duration: Duration(milliseconds: dur),
         reverseDuration: Duration(milliseconds: dur),
         vsync: this);
@@ -358,13 +366,16 @@ class DashboardMobileState extends State<DashboardMobile>
     _videoAnimationController.reset();
     _positionAnimationController.reset();
     _polygonAnimationController.reset();
+    _audioAnimationController.reset();
 
     _projectAnimationController.forward().then((value) {
       _userAnimationController.forward().then((value) {
         _photoAnimationController.forward().then((value) {
           _videoAnimationController.forward().then((value) {
             _positionAnimationController.forward().then((value) {
-              _polygonAnimationController.forward();
+              _polygonAnimationController.forward().then((value) {
+                _audioAnimationController.forward();
+              });
             });
           });
         });
@@ -381,6 +392,7 @@ class DashboardMobileState extends State<DashboardMobile>
     _photos = bag.photos!;
     _videos = bag.videos!;
     _schedules = bag.fieldMonitorSchedules!;
+    _audioss = bag.audios!;
 
     pp('$mm ..... setting state extracting org data from bag');
     setState(() {});
@@ -794,6 +806,43 @@ class DashboardMobileState extends State<DashboardMobile>
                           ),
                         ),
                         AnimatedBuilder(
+                          animation: _audioAnimationController,
+                          builder: (BuildContext context, Widget? child) {
+                            return FadeScaleTransition(
+                              animation: _audioAnimationController,
+                              child: child,
+                            );
+                          },
+                          child: GestureDetector(
+                            onTap: () {
+                              setState(() {
+                                _showProjectChooser = true;
+                                instruction = goToMedia;
+                              });
+                            },
+                            child: Card(
+                              elevation: 8,
+                              shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(16.0)),
+                              child: Column(
+                                children: [
+                                  const SizedBox(
+                                    height: 32,
+                                  ),
+                                  Text('${_audioss.length}', style: style),
+                                  const SizedBox(
+                                    height: 8,
+                                  ),
+                                  Text(
+                                    'Audio Clips',
+                                    style: Styles.greyLabelSmall,
+                                  )
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                        AnimatedBuilder(
                           animation: _polygonAnimationController,
                           builder: (BuildContext context, Widget? child) {
                             return FadeScaleTransition(
@@ -911,7 +960,7 @@ class DashboardMobileState extends State<DashboardMobile>
                   ),
                   _showProjectChooser
                       ? Positioned(
-                          left: 40,
+                          left: 24, right: 24,
                           top: 0,
                           child: SizedBox(
                             height: 420,

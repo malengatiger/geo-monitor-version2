@@ -1,36 +1,64 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_credit_card/credit_card_brand.dart';
 import 'package:flutter_credit_card/credit_card_model.dart';
 import 'package:flutter_credit_card/credit_card_widget.dart';
+import 'package:flutter_credit_card/custom_card_type_icon.dart';
+import 'package:flutter_credit_card/glassmorphism_config.dart';
 
+import '../../api/sharedprefs.dart';
 import '../../data/user.dart';
 import '../../functions.dart';
 
 
 class CreditCardHandlerMobile extends StatefulWidget {
-  final User user;
+  final User? user;
 
-  const CreditCardHandlerMobile({Key? key, required this.user}) : super(key: key);
+  const CreditCardHandlerMobile({Key? key, this.user}) : super(key: key);
+
   @override
   CreditCardHandlerMobileState createState() =>
       CreditCardHandlerMobileState();
 }
 
 class CreditCardHandlerMobileState extends State<CreditCardHandlerMobile>
-    with SingleTickerProviderStateMixin
-     {
-  late AnimationController _controller;
-  String cardNumber = '';
-  String expiryDate = '';
-  String cardHolderName = '';
-  String cvvCode = '';
-  bool isCvvFocused = false;
-  var _key = GlobalKey<ScaffoldState>();
+    with SingleTickerProviderStateMixin {
+
+       final mm = '🧩🧩🧩🧩🧩 CreditCardHandler: ';
+       late AnimationController _controller;
+       String cardNumber = '';
+       String expiryDate = '';
+       String cardHolderName = '';
+       String cvvCode = '';
+       bool isCvvFocused = false;
+       bool useGlassMorphism = false;
+       bool useBackgroundImage = false;
+       OutlineInputBorder? border;
+       final GlobalKey<FormState> formKey = GlobalKey<FormState>();
+
+  final _key = GlobalKey<ScaffoldState>();
+  final _formKey = GlobalKey<FormState>();
+  User? user;
 
   @override
   void initState() {
     _controller = AnimationController(vsync: this);
     super.initState();
-    cardHolderName = widget.user.name!;
+    if (widget.user != null) {
+      user = widget.user;
+      cardHolderName = user!.name!;
+    } else {
+      _getUser();
+    }
+  }
+
+  void _getUser() async {
+    user = await Prefs.getUser();
+    if (user != null) {
+      cardHolderName = user!.name!;
+      setState(() {
+
+      });
+    }
   }
 
   @override
@@ -48,15 +76,15 @@ class CreditCardHandlerMobileState extends State<CreditCardHandlerMobile>
         appBar: AppBar(
           title: Text(
             'Service Subscription',
-            style: Styles.whiteSmall,
+            style: myTextStyleSmall(context),
           ),
           bottom: PreferredSize(
             preferredSize: const Size.fromHeight(20),
             child: Column(
               children: [
-                Text(
-                  '${widget.user.organizationName}',
-                  style: Styles.whiteSmall,
+                user == null? const SizedBox() : Text(
+                  user!.organizationName!,
+                  style: myTextStyleSmall(context),
                 ),
                 const SizedBox(
                   height: 8,
@@ -69,16 +97,39 @@ class CreditCardHandlerMobileState extends State<CreditCardHandlerMobile>
           children: [
             Column(
               children: [
+                const SizedBox(height: 60,),
+                const SizedBox(
+                  height: 30,
+                ),
                 CreditCardWidget(
-                    cardNumber: cardNumber,
-                    expiryDate: expiryDate,
-                    cardHolderName: cardHolderName,
-                    cvvCode: cvvCode,
-                    textStyle: Styles.whiteSmall,
-                    cardBgColor: Theme.of(context).primaryColor,
-                    showBackView: isCvvFocused, onCreditCardWidgetChange: (creditCardBrand ) {
-                      pp('onCreditCardWidgetChange FIRED!! ${creditCardBrand.toString()}');
-                },),
+                  glassmorphismConfig:
+                  useGlassMorphism ? Glassmorphism.defaultConfig() : null,
+                  cardNumber: cardNumber,
+                  expiryDate: expiryDate,
+                  cardHolderName: cardHolderName,
+                  cvvCode: cvvCode,
+                  bankName: 'Axis Bank',
+                  showBackView: isCvvFocused,
+                  obscureCardNumber: true,
+                  obscureCardCvv: true,
+                  isHolderNameVisible: true,
+                  cardBgColor: Colors.amber,
+                  backgroundImage:
+                  useBackgroundImage ? 'assets/card_bg.png' : null,
+                  isSwipeGestureEnabled: true,
+                  onCreditCardWidgetChange:
+                      (CreditCardBrand creditCardBrand) {},
+                  customCardTypeIcons: <CustomCardTypeIcon>[
+                    CustomCardTypeIcon(
+                      cardType: CardType.mastercard,
+                      cardImage: Image.asset(
+                        'assets/mastercard.png',
+                        height: 48,
+                        width: 48,
+                      ),
+                    ),
+                  ],
+                ),
                 // Expanded(
                 //   child: SingleChildScrollView(
                 //     child: CreditCardForm(
@@ -91,31 +142,29 @@ class CreditCardHandlerMobileState extends State<CreditCardHandlerMobile>
                 ? Positioned(
                     right: 12,
                     bottom: 12,
-                    child: Container(
-                      child: Card(
-                        elevation: 8,
-                        child: ElevatedButton(
-                          child: Padding(
-                            padding: const EdgeInsets.only(
-                                left: 32, right: 32, top: 12, bottom: 12),
-                            child: Text(
-                              'Submit Card',
-                              style: Styles.whiteSmall,
-                            ),
+                    child: Card(
+                      elevation: 8,
+                      child: ElevatedButton(
+                        onPressed: _submit,
+                        child: Padding(
+                          padding: const EdgeInsets.only(
+                              left: 32, right: 32, top: 12, bottom: 12),
+                          child: Text(
+                            'Submit Card',
+                            style: Styles.whiteSmall,
                           ),
-                          onPressed: _submit,
                         ),
                       ),
                     ),
                   )
-                : Container(),
+                : const SizedBox(),
           ],
         ),
       ),
     );
   }
 
-  var _formKey = GlobalKey<FormState>();
+
   bool showSubmit = false;
   void _onChange(CreditCardModel creditCardModel) {
     pp('😡 😡 😡 Credit Card Details changed '
@@ -150,12 +199,11 @@ class CreditCardHandlerMobileState extends State<CreditCardHandlerMobile>
   }
 
   void _submit() {
-    pp('😡 😡 😡 Credit Card about to be submitted here 💙 💙 💙 💙 💙');
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Payment made')));
+    pp('$mm 😡😡😡 Credit Card about to be submitted here 💙💙💙💙💙 what do we do here? ');
+    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Payment made')));
   }
 
-  @override
-  onActionPressed(int action) {
-    Navigator.pop(context);
+  void _onCreditCardChange(CreditCardBrand p1) {
+    pp('$mm _onCreditCardChange,  🍎brand: ${p1.brandName} -  🍎$p1');
   }
 }

@@ -4,13 +4,16 @@ import 'package:animations/animations.dart';
 import 'package:badges/badges.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:geo_monitor/library/ui/media/list/project_audios.dart';
 import 'package:get/utils.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:just_audio/just_audio.dart';
 import 'package:page_transition/page_transition.dart';
 
 import '../../../api/sharedprefs.dart';
 import '../../../bloc/cloud_storage_bloc.dart';
 import '../../../bloc/project_bloc.dart';
+import '../../../data/audio.dart';
 import '../../../data/user.dart';
 import '../../../data/video.dart';
 import '../../../emojis.dart';
@@ -57,7 +60,7 @@ class ProjectMediaListMobileState extends State<ProjectMediaListMobile>
         duration: const Duration(milliseconds: 3000),
         reverseDuration: const Duration(milliseconds: 500),
         vsync: this);
-    _tabController = TabController(length: 2, vsync: this);
+    _tabController = TabController(length: 3, vsync: this);
     super.initState();
     _listen();
     _refresh(false);
@@ -201,31 +204,37 @@ class ProjectMediaListMobileState extends State<ProjectMediaListMobile>
             Card(
                 elevation: 8,
                 shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(24.0)),
+                    borderRadius: BorderRadius.circular(8.0)),
                 child: Padding(
                   padding: const EdgeInsets.only(
-                      left: 24.0, right: 24.0, top: 8, bottom: 8),
+                      left: 4.0, right: 4.0, top: 4, bottom: 4),
                   child: Text(
                     'Photos',
-                    style: GoogleFonts.lato(
-                      textStyle: Theme.of(context).textTheme.bodySmall,
-                      fontWeight: FontWeight.normal,
-                    ),
+                    style: myTextStyleSmall(context),
                   ),
                 )),
             Card(
                 elevation: 8,
                 shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(24.0)),
+                    borderRadius: BorderRadius.circular(8.0)),
                 child: Padding(
                   padding: const EdgeInsets.only(
-                      left: 24.0, right: 24.0, top: 8, bottom: 8),
+                      left: 4.0, right: 4.0, top: 4, bottom: 4),
                   child: Text(
                     'Videos',
-                    style: GoogleFonts.lato(
-                      textStyle: Theme.of(context).textTheme.bodySmall,
-                      fontWeight: FontWeight.normal,
-                    ),
+                    style: myTextStyleSmall(context),
+                  ),
+                )),
+            Card(
+                elevation: 8,
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8.0)),
+                child: Padding(
+                  padding: const EdgeInsets.only(
+                      left: 4.0, right: 4.0, top: 4, bottom: 4),
+                  child: Text(
+                    'Audio',
+                    style: myTextStyleSmall(context),
                   ),
                 )),
           ],
@@ -290,6 +299,17 @@ class ProjectMediaListMobileState extends State<ProjectMediaListMobile>
                         _navigateToPlayVideo();
                       },
                     ),
+                    ProjectAudios(
+                      project: widget.project,
+                      refresh: false,
+                      onAudioTapped: (Audio audio) {
+                        pp('🍎🍎🍎Audio has been tapped: ${audio.created!}');
+                        setState(() {
+                          selectedAudio = audio;
+                        });
+                        _navigateToPlayAudio();
+                      },
+                    ),
                   ],
                 ),
           _showPhotoDetail
@@ -333,9 +353,10 @@ class ProjectMediaListMobileState extends State<ProjectMediaListMobile>
     ));
   }
 
+  Audio? selectedAudio;
   Video? selectedVideo;
   void _navigateToPlayVideo() {
-    pp('... about to navigate after waiting 100 ms');
+    pp('... play audio from internets');
     Navigator.push(
         context,
         PageTransition(
@@ -343,6 +364,19 @@ class ProjectMediaListMobileState extends State<ProjectMediaListMobile>
             alignment: Alignment.topLeft,
             duration: const Duration(milliseconds: 1000),
             child: PlayVideo(video: selectedVideo!)));
+  }
+  AudioPlayer audioPlayer = AudioPlayer();
+  void _navigateToPlayAudio() {
+    pp('... play audio from internet ....');
+    audioPlayer.setUrl(selectedAudio!.url!);
+    audioPlayer.play();
+    // Navigator.push(
+    //     context,
+    //     PageTransition(
+    //         type: PageTransitionType.leftToRightWithFade,
+    //         alignment: Alignment.topLeft,
+    //         duration: const Duration(milliseconds: 1000),
+    //         child: PlayVideo(video: selectedAudio!)));
   }
 
   void _navigateToFullPhoto() {

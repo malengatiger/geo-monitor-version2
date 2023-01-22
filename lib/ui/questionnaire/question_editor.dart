@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:grouped_buttons/grouped_buttons.dart';
 
 import 'package:page_transition/page_transition.dart';
 
@@ -160,15 +159,15 @@ class QuestionFormState extends State<QuestionForm> {
           const SizedBox(
             height: 12,
           ),
-          RadioButtonGroup(
-            labels: const <String>[
-              'Single Answer',
-              'Multiple Choice',
-              'Single Choice',
-            ],
-            picked: picked,
-            onChange: _onRadioButton,
-          ),
+          // RadioButtonGroup(
+          //   labels: const <String>[
+          //     'Single Answer',
+          //     'Multiple Choice',
+          //     'Single Choice',
+          //   ],
+          //   picked: picked,
+          //   onChange: _onRadioButton,
+          // ),
           const SizedBox(
             height: 4,
           ),

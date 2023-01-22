@@ -9,6 +9,7 @@ import 'package:geo_monitor/library/data/project_polygon.dart';
 import 'package:geo_monitor/library/emojis.dart';
 import 'package:http/http.dart' as http;
 import '../auth/app_auth.dart';
+import '../data/audio.dart';
 import '../data/city.dart';
 import '../data/community.dart';
 import '../data/condition.dart';
@@ -481,6 +482,7 @@ class DataAPI {
         fieldMonitorSchedules: [],
         projects: [],
         users: [],
+        audios: [],
         projectPositions: [],
         projectPolygons: [],
         date: DateTime.now().toIso8601String());
@@ -495,6 +497,7 @@ class DataAPI {
       await hiveUtil.addUsers(users: bag.users!);
       await hiveUtil.addPhotos(photos: bag.photos!);
       await hiveUtil.addVideos(videos: bag.videos!);
+      await hiveUtil.addAudios(audios: bag.audios!);
       await hiveUtil.addFieldMonitorSchedules(
           schedules: bag.fieldMonitorSchedules!);
     } catch (e) {
@@ -982,6 +985,23 @@ class DataAPI {
       var vx = Video.fromJson(result);
       await hiveUtil.addVideo(video: vx);
       return result;
+    } catch (e) {
+      pp(e);
+      rethrow;
+    }
+  }
+  static Future<Audio> addAudio(Audio audio) async {
+    String? mURL = await getUrl();
+
+    try {
+      var result = await _callWebAPIPost('${mURL!}addAudio', audio.toJson());
+      var audiox = Audio.fromJson(result);
+      pp('$mm addAudio has added audio to DB : 😡😡😡 fromJson:: ${audiox.toJson()}');
+
+      var x = await hiveUtil.addAudio(audio: audiox);
+      pp('$mm addAudio has added audio to Hive??? : 😡😡😡 result from hive: $x');
+
+      return audiox;
     } catch (e) {
       pp(e);
       rethrow;

@@ -8,6 +8,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:map_launcher/map_launcher.dart';
 
 import 'package:page_transition/page_transition.dart';
+import '../../../ui/audio/audio_mobile.dart';
 import '../../api/sharedprefs.dart';
 import '../../bloc/fcm_bloc.dart';
 import '../../bloc/organization_bloc.dart';
@@ -266,6 +267,18 @@ class ProjectListMobileState extends State<ProjectListMobile>
             child: ProjectSchedulesMobile(project: p)));
   }
 
+  void _navigateToProjectAudio(Project p) {
+    if (user!.userType == UserType.fieldMonitor) {}
+    Navigator.push(
+        context,
+        PageTransition(
+            type: PageTransitionType.scale,
+            alignment: Alignment.topLeft,
+            duration: const Duration(milliseconds: 1500),
+            child: AudioMobile(project: p)));
+  }
+
+
   Future<void> _navigateToOrgMap() async {
     pp('_navigateToOrgMap: ');
 
@@ -419,6 +432,19 @@ class ProjectListMobileState extends State<ProjectListMobile>
           onPressed: () {
             pp('...... going to ProjectMedia ...');
             _navigateToProjectMedia(project);
+          }),
+    );
+    menuItems.add(
+      FocusedMenuItem(
+          title: Text('Create Audio',
+              style: myTextStyleSmallBlack(context)),
+          trailingIcon: Icon(
+            Icons.camera,
+            color: Theme.of(context).primaryColor,
+          ),
+          onPressed: () {
+            pp('...... going to ProjectAudio ...');
+            _navigateToProjectAudio(project);
           }),
     );
     menuItems.add(

@@ -5,3 +5,10 @@ brew install node
 curl -sL https://firebase.tools | bash
 
 #  flutter packages pub run build_runner build --delete-conflicting-outputs
+
+$ brew update
+$ brew install --HEAD libimobiledevice
+$ brew install ideviceinstaller ios-deploy cocoapods
+$ pod setup
+
+https://stackoverflow.com/questions/65921257/flutter-display-log-in-release-mode-in-ios

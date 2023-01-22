@@ -8,6 +8,7 @@ import 'package:hive/hive.dart';
 import 'package:path_provider/path_provider.dart';
 
 import 'api/sharedprefs.dart';
+import 'data/audio.dart';
 import 'data/city.dart';
 import 'data/community.dart';
 import 'data/condition.dart';
@@ -66,6 +67,7 @@ class HiveUtil {
   CollectionBox<FailedBag>? _failedBagBox;
   CollectionBox<Country>? _countryBox;
   CollectionBox<OrganizationRegistrationBag>? _registrationBox;
+  CollectionBox<Audio>? _audioBox;
 
   bool _isInitialized = false;
 
@@ -104,10 +106,12 @@ class HiveUtil {
     _reportBox?.clear();
     _cityBox?.clear();
     _conditionBox?.clear();
+    _audioBox?.clear();
     pp('$mm all Hive boxes cleared 💚💚');
-
   }
-  static final xx = '${Emoji.peach}${Emoji.peach}${Emoji.peach}${Emoji.peach} HiveUtil: ';
+
+  static final xx =
+      '${Emoji.peach}${Emoji.peach}${Emoji.peach}${Emoji.peach} HiveUtil: ';
   Future<void> _doTheInitializationWork() async {
     p('$mm ... Creating a Hive box collection');
     var appDir = await getApplicationDocumentsDirectory();
@@ -136,9 +140,11 @@ class HiveUtil {
           'failedBags',
           'registrations',
           'countries',
+          'audios',
         },
         // Names of your boxes
-        path: file.path, // Path where to store your boxes (Only used in Flutter / Dart IO)
+        path: file
+            .path, // Path where to store your boxes (Only used in Flutter / Dart IO)
       );
     } catch (e) {
       pp('$mm 🔴🔴 There is some problem with 🔴initialization 🔴');
@@ -214,17 +220,18 @@ class HiveUtil {
       Hive.registerAdapter(OrganizationRegistrationBagAdapter());
       p('$xx Hive OrganizationRegistrationBagAdapter registered');
     }
-    if (!Hive.isAdapterRegistered(21)) {
-      Hive.registerAdapter(OrganizationRegistrationBagAdapter());
-      p('$xx Hive OrganizationRegistrationBagAdapter registered');
-    }
+
     if (!Hive.isAdapterRegistered(1)) {
       Hive.registerAdapter(CountryAdapter());
       p('$xx Hive CountryAdapter registered');
     }
+    if (!Hive.isAdapterRegistered(23)) {
+      Hive.registerAdapter(AudioAdapter());
+      p('$xx Hive AudioAdapter registered');
+    }
 
     var bb = file.path.lastIndexOf("/");
-    var cc = file.path.substring(bb+1);
+    var cc = file.path.substring(bb + 1);
     p('$mm Hive box collection created and types registered; 🍎file: $cc '
         '🍎_boxCollection: ${_boxCollection!.name}');
 
@@ -253,7 +260,9 @@ class HiveUtil {
       _failedPhotoBox = await _boxCollection!.openBox<Photo>('failedPhotos');
       _failedVideoBox = await _boxCollection!.openBox<Video>('failedVideos');
       _failedBagBox = await _boxCollection!.openBox<FailedBag>('failedBags');
-      _registrationBox = await _boxCollection!.openBox<OrganizationRegistrationBag>('registrations');
+      _registrationBox = await _boxCollection!
+          .openBox<OrganizationRegistrationBag>('registrations');
+      _audioBox = await _boxCollection!.openBox<Audio>('audios');
 
       //
       _isInitialized = true;
@@ -264,7 +273,8 @@ class HiveUtil {
     }
   }
 
-  final mm = '${Emoji.appleRed}${Emoji.appleRed}${Emoji.appleRed}${Emoji.appleRed} HiveUtil: ';
+  final mm =
+      '${Emoji.appleRed}${Emoji.appleRed}${Emoji.appleRed}${Emoji.appleRed} HiveUtil: ';
   var random = Random(DateTime.now().millisecondsSinceEpoch);
 
   Future addRegistration({required OrganizationRegistrationBag bag}) async {
@@ -355,6 +365,15 @@ class HiveUtil {
     return videos.length;
   }
 
+  Future addAudios({required List<Audio> audios}) async {
+    for (var v in audios) {
+      await addAudio(audio: v);
+    }
+    pp('$mm Audios added to local cache: 🔵 🔵  ${audios.length} ');
+
+    return audios.length;
+  }
+
   List<FieldMonitorSchedule> filterSchedulesByProject(
       List<FieldMonitorSchedule> mList, String projectId) {
     List<FieldMonitorSchedule> list = [];
@@ -437,6 +456,8 @@ class HiveUtil {
     final users = await getUsers(organizationId: organizationId);
     final photos = await getOrganizationPhotos(organizationId);
     final videos = await getOrganizationVideos(organizationId);
+    final audios = await getOrganizationAudios(organizationId);
+
     final schedules = await getOrganizationMonitorSchedules(organizationId);
     final positions =
         await getOrganizationProjectPositions(organizationId: organizationId);
@@ -449,6 +470,7 @@ class HiveUtil {
         fieldMonitorSchedules: schedules,
         projectPositions: positions,
         projects: projects,
+        audios: audios,
         projectPolygons: polygons,
         date: DateTime.now().toUtc().toIso8601String(),
         users: users);
@@ -456,7 +478,8 @@ class HiveUtil {
     pp('$mm getOrganizationData: 🍎projects: ${projects.length} '
         '🍎users: ${users.length} 🍎photos: ${photos.length}'
         ' 🍎videos: ${videos.length} 🍎schedules: ${schedules.length} '
-        '🍎positions: ${positions.length} 🍎polygons: ${polygons.length}');
+        '🍎positions: ${positions.length} '
+        '🍎polygons: ${polygons.length} 🍎audios: ${audios.length}');
 
     return bag;
   }
@@ -525,6 +548,20 @@ class HiveUtil {
     pp('$mm Project videos found: ${mList.length}');
     return mList;
   }
+  Future<List<Audio>> getProjectAudios(String projectId) async {
+    var keys = await _audioBox?.getAllKeys();
+    List<Audio> mList = [];
+    if (keys != null) {
+      for (var key in keys) {
+        if (key.contains(projectId)) {
+          var audio = await _audioBox?.get(key);
+          mList.add(audio!);
+        }
+      }
+    }
+    pp('$mm Project audio clips found: ${mList.length}');
+    return mList;
+  }
 
   Future<List<Video>> getOrganizationVideos(String organizationId) async {
     List<Video> mList = [];
@@ -533,6 +570,16 @@ class HiveUtil {
       mList = videoMap.values.toList();
     }
     pp('$mm ${mList.length} videos found in cache');
+    return mList;
+  }
+
+  Future<List<Audio>> getOrganizationAudios(String organizationId) async {
+    List<Audio> mList = [];
+    var audioMap = await _audioBox?.getAllValues();
+    if (audioMap != null) {
+      mList = audioMap.values.toList();
+    }
+    pp('$mm ${mList.length} audios found in cache');
     return mList;
   }
 
@@ -626,13 +673,27 @@ class HiveUtil {
     var key = '${user.organizationId}_${user.userId}';
     await _userBox?.put(key, user);
     pp('$mm User added to local cache:  🔵 🔵 ${user.name} organizationId: ${user.organizationId} ');
-
   }
 
   Future addVideo({required Video video}) async {
     var key =
         '${video.organizationId}_${video.projectId}_${video.userId}_${video.created}';
     await _videoBox?.put(key, video);
+    // pp('$mm Video added to local cache:  🔵 🔵 ${video.projectName}');
+  }
+
+  Future addAudio({required Audio audio}) async {
+    try {
+      var key =
+          '${audio.organizationId}_${audio.projectId}_${audio.userId}_${audio.created}';
+      await _audioBox?.put(key, audio);
+      var list = await getOrganizationAudios(audio.organizationId!);
+      pp('$mm looks like hive has cached ${list.length} audios');
+      return 0;
+    } catch (e) {
+      pp('$mm hive ERROR: $e');
+      return 9;
+    }
     // pp('$mm Video added to local cache:  🔵 🔵 ${video.projectName}');
   }
 
@@ -704,6 +765,7 @@ class HiveUtil {
     await _cityBox?.put(key, city);
     pp('$mm City added to local cache: 🌿 ${city.name}');
   }
+
   Future addCountry({required Country country}) async {
     var key = '${country.countryId}';
     await _countryBox?.put(key, country);
@@ -773,7 +835,6 @@ class HiveUtil {
     pp('$mm .... getCountries ..... found:  🌼 ${mList.length} 🌼');
     return mList;
   }
-
 
   Future<List<Organization>> getOrganizations() async {
     var keys = await _orgBox?.getAllKeys();

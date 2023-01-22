@@ -4,6 +4,7 @@ import 'package:geolocator/geolocator.dart' as loc;
 
 import '../api/data_api.dart';
 import '../api/sharedprefs.dart';
+import '../data/audio.dart';
 import '../data/community.dart';
 import '../data/country.dart';
 import '../data/data_bag.dart';
@@ -43,6 +44,8 @@ class ProjectBloc {
       StreamController.broadcast();
   final StreamController<List<Video>> _videoController =
       StreamController.broadcast();
+  final StreamController<List<Audio>> _audioController =
+  StreamController.broadcast();
 
   final StreamController<List<Photo>> _projectPhotoController =
       StreamController.broadcast();
@@ -92,6 +95,7 @@ class ProjectBloc {
   Stream<List<Photo>> get photoStream => _photoController.stream;
 
   Stream<List<Video>> get videoStream => _videoController.stream;
+  Stream<List<Audio>> get audioStream => _audioController.stream;
 
   //
   Future<List<ProjectPosition>> getProjectPositions(
@@ -188,7 +192,6 @@ class ProjectBloc {
       {required String projectId, required bool forceRefresh}) async {
     pp('$mm refreshing project data ... photos, videos and schedules '
         '... forceRefresh: $forceRefresh');
-
     var bag = await _loadBag(projectId);
 
     if (forceRefresh) {
@@ -203,6 +206,7 @@ class ProjectBloc {
     var polygons = await hiveUtil.getProjectPolygons(projectId: projectId);
     var photos = await hiveUtil.getProjectPhotos(projectId);
     var videos = await hiveUtil.getProjectVideos(projectId);
+    var audios = await hiveUtil.getProjectAudios(projectId);
     var schedules = await hiveUtil.getProjectMonitorSchedules(projectId);
 
     var bag = DataBag(
@@ -211,6 +215,7 @@ class ProjectBloc {
         fieldMonitorSchedules: schedules,
         projectPositions: positions,
         projects: [],
+        audios: audios,
         date: DateTime.now().toUtc().toIso8601String(),
         users: [],
         projectPolygons: polygons);
@@ -230,6 +235,12 @@ class ProjectBloc {
       if (bag.videos!.isNotEmpty) {
         bag.videos?.sort((a, b) => b.created!.compareTo(a.created!));
         _videoController.sink.add(bag.videos!);
+      }
+    }
+    if (bag.audios != null) {
+      if (bag.audios!.isNotEmpty) {
+        bag.audios?.sort((a, b) => b.created!.compareTo(a.created!));
+        _audioController.sink.add(bag.audios!);
       }
     }
 
