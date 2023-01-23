@@ -35,6 +35,7 @@ int themeIndex = 0;
 late FirebaseApp firebaseApp;
 ur.User? user;
 int doubleTapCount = 0;
+int milliSecondsAtLastDoubleTap = 0;
 
 Future<void> mainSetup() async {
   try {
@@ -94,6 +95,7 @@ Future<void> initSettings() async {
 bool _isDarkTheme = true;
 bool _isUsingHive = true;
 
+
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
@@ -126,14 +128,11 @@ class MyApp extends StatelessWidget {
         pp('🌀🌀🌀🌀 Tap detected; should dismiss keyboard');
         FocusManager.instance.primaryFocus?.unfocus();
       },
-      onDoubleTap: () async {
+      onLongPress: () async {
         //todo - REMOVE after testing
-        pp('🌀🌀🌀🌀 double Tap detected; should clear user stuff, count: $doubleTapCount');
-        doubleTapCount++;
-        if (doubleTapCount > 1) {
-          await _sortOutNewHiveArtifacts(context);
-          doubleTapCount = 0;
-        }
+        pp('🌀🌀🌀🌀 onLongPress detected; should clear user stuff, count: $doubleTapCount');
+          await sortOutNewHiveArtifacts(context);
+
       },
       child: StreamBuilder(
         stream: themeBloc.newThemeStream,
@@ -176,19 +175,6 @@ class MyApp extends StatelessWidget {
     );
   }
 
-  Future<void> _sortOutNewHiveArtifacts(BuildContext context) async {
-    //todo - REMOVE after testing
-    pp('🌀🌀🌀🌀 Double Tap detected; should sign out of Firebase when status is DEV');
-    fb.FirebaseAuth.instance.signOut();
-    pp('🌀🌀🌀🌀  🍎 Signed out of Firebase!!! 🍎 ');
-    fileCounter = await Prefs.getFileCounter();
-    fileCounter++;
-    Prefs.setFileCounter(fileCounter);
-    Prefs.deleteUser();
-    await hiveUtil.initialize(forceInitialization: true);
-
-    pp('🐤🐤🐤🐤 We good and clean now, Senor!');
-  }
 }
 
 class SplashWidget extends StatelessWidget {
@@ -252,3 +238,19 @@ class SplashWidget extends StatelessWidget {
     );
   }
 }
+
+Future<void> sortOutNewHiveArtifacts(BuildContext context) async {
+  //todo - REMOVE after testing
+  pp('🌀🌀🌀🌀 Request to sign out of Firebase and the app!');
+
+  fb.FirebaseAuth.instance.signOut();
+  pp('🌀🌀🌀🌀  🍎 Signed out of Firebase!!! 🍎 ');
+  fileCounter = await Prefs.getFileCounter();
+  fileCounter++;
+  Prefs.setFileCounter(fileCounter);
+  Prefs.deleteUser();
+  await hiveUtil.initialize(forceInitialization: true);
+
+  pp('🌀🌀🌀🌀 We good and clean now, Senor!');
+}
+

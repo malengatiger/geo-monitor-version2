@@ -148,7 +148,8 @@ class FCMBloc {
       await messaging.subscribeToTopic('conditions_${user.organizationId}');
       await messaging.subscribeToTopic('messages_${user.organizationId}');
       await messaging.subscribeToTopic('users_${user.organizationId}');
-      pp("$mm subscribeToTopics: 🍎 subscribed to all 6 organization topics 🍎");
+      await messaging.subscribeToTopic('audios_${user.organizationId}');
+      pp("$mm subscribeToTopics: 🍎 subscribed to all 7 organization topics 🍎");
     } else {
       pp("$mm subscribeToTopics:  👿 👿 👿 user not cached on device yet  👿 👿 👿");
     }

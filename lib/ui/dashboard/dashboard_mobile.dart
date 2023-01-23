@@ -568,6 +568,15 @@ class DashboardMobileState extends State<DashboardMobile>
           actions: [
             IconButton(
                 icon: Icon(
+                  Icons.cut,
+                  size: 18,
+                  color: Theme.of(context).primaryColor,
+                ),
+                onPressed: (){
+                  sortOutNewHiveArtifacts(context);
+                }),
+            IconButton(
+                icon: Icon(
                   Icons.info_outline,
                   size: 18,
                   color: Theme.of(context).primaryColor,

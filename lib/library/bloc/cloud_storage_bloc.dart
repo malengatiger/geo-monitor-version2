@@ -8,6 +8,7 @@ import 'package:geo_monitor/library/hive_util.dart';
 import 'package:http/http.dart' as http;
 import 'package:image_size_getter/file_input.dart';
 import 'package:image_size_getter/image_size_getter.dart';
+import 'package:just_audio/just_audio.dart';
 import 'package:path_provider/path_provider.dart';
 
 import 'package:uuid/uuid.dart';
@@ -58,6 +59,7 @@ class CloudStorageBloc {
   Stream<String> get errorStream => _errorStreamController.stream;
 
   late StorageBlocListener storageBlocListener;
+  AudioPlayer audioPlayer = AudioPlayer();
 
   Future<int> uploadAudio({required StorageBlocListener listener,
     required File file,
@@ -94,6 +96,7 @@ class CloudStorageBloc {
         pp('$mm adding audio ..... 😡😡 distance: '
             '${distance.toStringAsFixed(2)} metres 😡😡');
 
+        var dur = await audioPlayer.setUrl(url);
         var audio = Audio(
             url: url,
             created: DateTime.now().toUtc().toIso8601String(),
@@ -104,7 +107,7 @@ class CloudStorageBloc {
             projectId: project.projectId,
             audioId: const Uuid().v4(),
             organizationId: project.organizationId,
-            projectName: project.name);
+            projectName: project.name, durationInSeconds: dur!.inSeconds);
 
         var result = await DataAPI.addAudio(audio);
         listener.onFileUploadComplete(url, uploadTask.snapshot.totalBytes, uploadTask.snapshot.bytesTransferred);

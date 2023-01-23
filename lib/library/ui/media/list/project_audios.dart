@@ -51,24 +51,28 @@ class _ProjectPhotosState extends State<ProjectAudios> {
   }
   bool _showAudioPlayer = false;
   Audio? _selectedAudio;
-
+  final mm = '🍎🍎🍎🍎';
   AudioPlayer audioPlayer = AudioPlayer();
+  Duration? duration;
+  String? stringDuration;
+  Future<void> _playAudio() async {
+    duration = await audioPlayer.setUrl(_selectedAudio!.url!);
+    stringDuration = _printDuration(duration!);
+    pp('🍎🍎🍎🍎 Duration of file is: ${duration!.inSeconds} seconds');
+    setState(() {
 
-  void _playAudio() {
-    audioPlayer.setUrl(_selectedAudio!.url!);
+    });
     audioPlayer.play();
-    // audioPlayer.playerStateStream.listen((event) {
-    //   if (event.playing) {
-    //     //ignore
-    //   } else {
-    //     audioPlayer.stop();
-    //     setState(() {
-    //       _showAudioPlayer = false;
-    //     });
-    //   }
-    // });
-  }
 
+  }
+  String _printDuration(Duration duration) {
+    String twoDigits(int n) => n.toString().padLeft(2, "0");
+    String twoDigitMinutes = twoDigits(duration.inMinutes.remainder(60));
+    String twoDigitSeconds = twoDigits(duration.inSeconds.remainder(60));
+    var s = "${twoDigits(duration.inHours)}:$twoDigitMinutes:$twoDigitSeconds";
+    pp('$mm stringDuration: $s');
+    return s;
+  }
   @override
   Widget build(BuildContext context) {
     return audios.isEmpty
@@ -170,6 +174,18 @@ class _ProjectPhotosState extends State<ProjectAudios> {
               const SizedBox(height: 32,),
               Text(getFormattedDateShortWithTime(_selectedAudio!.created!, context), style: myTextStyleSmall(context),),
               const SizedBox(height: 20,),
+              duration == null? const SizedBox(): Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                   Text('Duration', style: myTextStyleSmall(context),),
+                  const SizedBox(width: 8,),
+                  Text('$stringDuration', style: myNumberStyleSmall(context),),
+                  const SizedBox(width: 8,),
+                   Text('seconds', style: myTextStyleSmall(context),),
+                ],
+              ),
+              const SizedBox(height: 20,),
+
               TextButton(onPressed: () {
                 setState(() {
                   _showAudioPlayer = false;

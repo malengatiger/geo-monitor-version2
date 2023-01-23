@@ -302,12 +302,12 @@ class AudioMobileState extends State<AudioMobile>
           children: [
             Center(
               child: Padding(
-                padding: const EdgeInsets.all(16.0),
+                padding: const EdgeInsets.all(12.0),
                 child: Card(
                   elevation: 1,
                   shape: getRoundedBorder(radius: 16),
                   child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                    padding: const EdgeInsets.symmetric(horizontal: 12.0),
                     child: Column(
                       children: [
                         const SizedBox(
@@ -318,21 +318,21 @@ class AudioMobileState extends State<AudioMobile>
                           style: myTextStyleMedium(context),
                         ),
                         const SizedBox(
-                          height: 48,
+                          height: 28,
                         ),
                         Text(
                           '${widget.project.name}',
                           style: myTextStyleLarge(context),
                         ),
                         const SizedBox(
-                          height: 28,
+                          height: 24,
                         ),
                         user == null? const SizedBox():Text(
                           '${user!.name}',
                           style: myTextStyleSmall(context),
                         ),
                         const SizedBox(
-                          height: 80,
+                          height: 48,
                         ),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.center,
@@ -341,7 +341,7 @@ class AudioMobileState extends State<AudioMobile>
                           ],
                         ),
                         const SizedBox(
-                          height: 20,
+                          height: 16,
                         ),
 
                         isStopped
@@ -409,7 +409,7 @@ class AudioMobileState extends State<AudioMobile>
               ),
             ),
             Positioned(
-              bottom: 28,
+              bottom: 12,
               left: 20,
               right: 20,
               child: Padding(

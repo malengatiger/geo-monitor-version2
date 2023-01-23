@@ -30,6 +30,8 @@ class Audio extends HiveObject {
   String? projectName;
   @HiveField(12)
   String? projectPolygonId;
+  @HiveField(13)
+  int? durationInSeconds = 0;
 
   Audio(
       {required this.url,
@@ -43,6 +45,7 @@ class Audio extends HiveObject {
         required this.distanceFromProjectPosition,
         required this.projectId,
         required this.audioId,
+        required this.durationInSeconds,
         required this.organizationId,
         required this.projectName}); // Audio({required this.url, this.userId, required this.created});
 
@@ -51,6 +54,8 @@ class Audio extends HiveObject {
     projectPositionId = data['projectPositionId'];
     projectPolygonId = data['projectPolygonId'];
     caption = data['caption'];
+    durationInSeconds = data['durationInSeconds'];
+
     created = data['created'];
     userId = data['userId'];
     organizationId = data['organizationId'];
@@ -62,6 +67,10 @@ class Audio extends HiveObject {
     if (data['projectPosition'] != null) {
       projectPosition = Position.fromJson(data['projectPosition']);
     }
+    durationInSeconds = 0;
+    if (data['durationInSeconds'] != null) {
+      durationInSeconds = data['projectPosition'];
+    }
   }
   Map<String, dynamic> toJson() {
     Map<String, dynamic> map = {
@@ -70,6 +79,7 @@ class Audio extends HiveObject {
       'projectPolygonId': projectPolygonId,
       'caption': caption,
       'created': created,
+      'durationInSeconds': durationInSeconds,
       'userId': userId,
       'audioId': audioId,
       'organizationId': organizationId,

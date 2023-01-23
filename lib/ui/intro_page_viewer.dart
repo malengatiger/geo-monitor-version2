@@ -69,6 +69,18 @@ class IntroPageViewerState extends State<IntroPageViewer>
       pp('User is null,  🔆 🔆 🔆 🔆 cannot navigate to Dashboard');
     }
   }
+  void _navigateToDashboardWithoutUser() {
+
+      Navigator.of(context).pop();
+      Navigator.push(
+          context,
+          PageTransition(
+              type: PageTransitionType.scale,
+              alignment: Alignment.topLeft,
+              duration: const Duration(seconds: 2),
+              child: const DashboardMobile()));
+
+  }
 
   Future<void> _navigateToSignIn() async {
     var result = await Navigator.push(
@@ -230,7 +242,8 @@ class IntroPageViewerState extends State<IntroPageViewer>
           child: Card(
             shape: getRoundedBorder(radius: 48),
             child: IconButton(onPressed: (){
-              Navigator.of(context).pop();
+              //Navigator.of(context).pop();
+              _navigateToDashboardWithoutUser();
             }, icon:  Icon(Icons.close, size: 18, color: Theme.of(context).primaryColor,)),
           ),)): Positioned(
             left: 8,
