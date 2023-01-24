@@ -65,6 +65,19 @@ class UserEditMobileState extends State<UserEditMobile>
   }
 
   void _submit() async {
+    if (country == null) {
+      setState(() {
+        busy = false;
+      });
+      showToast(
+          context: context,
+          message: 'Please select country',
+          duration: const Duration(seconds: 2),
+          backgroundColor: Colors.pink,
+          textStyle: Styles.whiteSmall);
+
+      return;
+    }
     if (_formKey.currentState!.validate()) {
       //todo - validate
       pp('🔵🔵 ....... Submitting user data to create a new User!');
@@ -89,18 +102,7 @@ class UserEditMobileState extends State<UserEditMobile>
       setState(() {
         isBusy = true;
       });
-      if (country == null) {
-        showToast(
-            context: context,
-            message: 'Please select country',
-            duration: const Duration(seconds: 2),
-            backgroundColor: Colors.pink,
-            textStyle: Styles.whiteSmall);
-        setState(() {
-          busy = false;
-        });
-        return;
-      }
+
       try {
         if (widget.user == null) {
           var user = ar.User(

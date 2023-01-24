@@ -108,6 +108,14 @@ class PhoneLoginState extends State<PhoneLogin>
         },
         codeAutoRetrievalTimeout: (String verificationId) {
           pp('$mm codeAutoRetrievalTimeout verificationId: $verificationId');
+          if (mounted) {
+           setState(() {
+             busy = false;
+             _codeHasBeenSent = false;
+           });
+           showToast(message: 'Code retrieval failed, please try again', context: context);
+           Navigator.of(context).pop();
+          }
         });
   }
 
@@ -157,7 +165,8 @@ class PhoneLoginState extends State<PhoneLogin>
                 'new phone but same number; 🍎 seconds: $seconds}');
           }
         }
-        user = await DataAPI.getUser(userId: userCred.user!.uid);
+        user = await DataAPI.getUserById(userId: userCred.user!.uid);
+
         if (user != null) {
           await Prefs.saveUser(user!);
           await hiveUtil.addUser(user: user!);
@@ -177,7 +186,7 @@ class PhoneLoginState extends State<PhoneLogin>
 
     } catch (e) {
       pp(e);
-      String msg = e.toString();
+      String msg = 'User not found';
       if (msg.contains('dup key')) {
         msg = 'Duplicate organization name';
       }
@@ -185,9 +194,13 @@ class PhoneLoginState extends State<PhoneLogin>
         msg = 'This user does not exist in the database';
       }
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          backgroundColor: Theme.of(context).errorColor,
-            duration: const Duration(seconds: 5), content: Text(msg)));
+        showToast(
+            duration: const Duration(seconds: 5),
+            backgroundColor: Colors.pink.shade700,
+            textStyle: myTextStyleMediumBold(context),
+            padding: 20.0,
+            toastGravity: ToastGravity.CENTER,
+            message: msg, context: context);
         setState(() {
           busy = false;
         });

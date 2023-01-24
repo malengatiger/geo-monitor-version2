@@ -1,11 +1,12 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:firebase_auth/firebase_auth.dart' as auth;
 import 'package:firebase_messaging/firebase_messaging.dart' as fb;
 import 'package:firebase_messaging/firebase_messaging.dart';
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:geo_monitor/library/bloc/organization_bloc.dart';
+import 'package:geo_monitor/main.dart';
 import 'package:universal_platform/universal_platform.dart';
 
 import '../api/data_api.dart';
@@ -43,6 +44,8 @@ class FCMBloc {
       StreamController.broadcast();
   final StreamController<OrgMessage> _messageController =
       StreamController.broadcast();
+  final StreamController<String> _killController =
+  StreamController.broadcast();
 
   Stream<User> get userStream => _userController.stream;
   Stream<Project> get projectStream => _projectController.stream;
@@ -51,6 +54,7 @@ class FCMBloc {
   Stream<Audio> get audioStream => _audioController.stream;
   Stream<Condition> get conditionStream => _conditionController.stream;
   Stream<OrgMessage> get messageStream => _messageController.stream;
+  Stream<String> get killStream => _killController.stream;
 
   User? user;
   void closeStreams() {
@@ -153,21 +157,41 @@ class FCMBloc {
       await messaging.subscribeToTopic('messages_${user.organizationId}');
       await messaging.subscribeToTopic('users_${user.organizationId}');
       await messaging.subscribeToTopic('audios_${user.organizationId}');
-      pp("$mm subscribeToTopics: 🍎 subscribed to all 7 organization topics 🍎");
+      await messaging.subscribeToTopic('kill_${user.organizationId}');
+      pp("$mm subscribeToTopics: 🍎 subscribed to all 8 organization topics 🍎");
     } else {
       pp("$mm subscribeToTopics:  👿 👿 👿 user not cached on device yet  👿 👿 👿");
     }
     return null;
   }
 
+  final blue = '🔵 🔵 🔵';
   Future processFCMMessage(fb.RemoteMessage message) async {
-    pp('$mm processing newly arrived FCM message; messageId:: ${message.messageId}');
+    pp('\n\n$mm processFCMMessage: $blue processing newly arrived FCM message; messageId:: ${message.messageId}');
     Map data = message.data;
     User? user = await Prefs.getUser();
 
+    if (data['kill'] != null) {
+      pp("$mm processFCMMessage:  $blue ........................... 🍎🍎🍎🍎🍎🍎kill USER!!  🍎  🍎 ");
+      var m = jsonDecode(data['kill']);
+      var receivedUser = User.fromJson(m);
+      if (receivedUser.userId! == user!.userId!) {
+        pp("$mm processFCMMessage  $blue This user is about to be killed: ${receivedUser.name!} ......");
+        Prefs.deleteUser();
+        auth.FirebaseAuth.instance.signOut();
+        pp('$mm 🌀🌀🌀🌀  🍎 Signed out of Firebase!!! 🍎 ');
+
+        await _handleCache(receivedUser);
+        _killController.sink.add("Your app has been disabled. If you need to, please talk to your supervisor or administrator");
+
+      } else {
+        await _handleCache(receivedUser);
+        pp('🌀🌀🌀🌀🍎 User should be deleted from Hive cache by now! 🍎 ');
+      }
+    }
     if (data['user'] != null) {
       pp("$mm processFCMMessage  🔵 🔵 🔵 ........................... cache USER  🍎  🍎 ");
-      var m = jsonDecode(data['user']);
+      var m = jsonDecode(data['receivedUser']);
       var user = User.fromJson(m);
       await hiveUtil.addUser(user: user);
       _userController.sink.add(user);
@@ -234,6 +258,13 @@ class FCMBloc {
     }
 
     return null;
+  }
+
+  Future<void> _handleCache(User receivedUser) async {
+    pp('$mm handling cache and removing user from cache');
+    await hiveUtil.deleteUser(user: receivedUser);
+    var list = await hiveUtil.getUsers(organizationId: receivedUser.organizationId!);
+    organizationBloc.userController.sink.add(list);
   }
 
   Future _updateUser(String newToken) async {

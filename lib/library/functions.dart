@@ -134,6 +134,12 @@ TextStyle myTextStyleLarge(BuildContext context) {
     fontWeight: FontWeight.w900,
   );
 }
+TextStyle myTextStyleLargePrimaryColor(BuildContext context) {
+  return GoogleFonts.lato(
+    textStyle: Theme.of(context).textTheme.bodyLarge,
+    fontWeight: FontWeight.w900, color: Theme.of(context).primaryColor
+  );
+}
 TextStyle myNumberStyleSmall(BuildContext context) {
   return GoogleFonts.secularOne(
     textStyle: Theme.of(context).textTheme.bodyMedium,

@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:animations/animations.dart';
 import 'package:firebase_auth/firebase_auth.dart' as fb;
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:geo_monitor/library/data/geofence_event.dart';
 
 import 'package:get/get.dart';
@@ -207,6 +208,8 @@ class DashboardMobileState extends State<DashboardMobile>
   late StreamSubscription<ProjectPolygon> projectPolygonSubscriptionFCM;
   late StreamSubscription<Project> projectSubscriptionFCM;
   late StreamSubscription<User> userSubscriptionFCM;
+  late StreamSubscription<String> killSubscriptionFCM;
+
 
   void _listenToOrgStreams() async {
     projectSubscription = organizationBloc.projectStream.listen((event) {
@@ -478,6 +481,34 @@ class DashboardMobileState extends State<DashboardMobile>
     setState(() {});
   }
 
+  void _showKillDialog(String message) {
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title:  Text("Critical App Message", style: myTextStyleLarge(ctx),),
+        content: Text(message, style: myTextStyleMedium(ctx),),
+        actions: <Widget>[
+          TextButton(
+            onPressed: () {
+              pp('$mm Navigator popping for the last time, Sucker! 🔵🔵🔵');
+              var android = UniversalPlatform.isAndroid;
+              var ios = UniversalPlatform.isIOS;
+              if (android) {
+                SystemNavigator.pop();
+              }
+              if (ios) {
+                Navigator.of(ctx).pop();
+                Navigator.of(ctx).pop();
+              }
+
+
+            },
+            child: const Text("Exit the App"),
+          ),
+        ],
+      ),
+    );
+  }
   void _listenForFCM() async {
     var android = UniversalPlatform.isAndroid;
     var ios = UniversalPlatform.isIOS;
@@ -491,6 +522,18 @@ class DashboardMobileState extends State<DashboardMobile>
           _projects = await organizationBloc.getOrganizationProjects(
               organizationId: user!.organizationId!, forceRefresh: false);
           setState(() {});
+        }
+      });
+
+      killSubscriptionFCM = fcmBloc.killStream.listen((event) {
+        pp('$mm Kill message received! 🍎Time to fuck off!');
+        if (mounted) {
+          _showKillDialog(event);
+        } else {
+          rootScaffoldMessengerKey.currentState?.showSnackBar(
+            SnackBar(content: Text(event), action: SnackBarAction(label: 'Close', onPressed: (){
+              Navigator.of(rootScaffoldMessengerKey.currentContext!).pop();
+            }),) );
         }
       });
 

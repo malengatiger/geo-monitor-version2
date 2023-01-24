@@ -31,7 +31,7 @@ class OrganizationBloc {
       'OrganizationBloc: ';
   final StreamController<List<MonitorReport>> _reportController =
       StreamController.broadcast();
-  final StreamController<List<User>> _userController =
+  final StreamController<List<User>> userController =
       StreamController.broadcast();
   final StreamController<List<Community>> _communityController =
       StreamController.broadcast();
@@ -84,7 +84,7 @@ class OrganizationBloc {
 
   Stream get countryStream => _countryController.stream;
 
-  Stream<List<User>> get usersStream => _userController.stream;
+  Stream<List<User>> get usersStream => userController.stream;
 
   Stream get activeQuestionnaireStream => _activeQuestionnaireController.stream;
 
@@ -209,7 +209,7 @@ class OrganizationBloc {
       try {
         if (bag.users != null) {
           bag.users!.sort((a, b) => a.name!.compareTo(b.name!));
-          _userController.sink.add(bag.users!);
+          userController.sink.add(bag.users!);
         }
       } catch (e) {
         pp('$mm _putContentsOfBagIntoStreams users ERROR - $e');
@@ -257,7 +257,7 @@ class OrganizationBloc {
       pp('$mm getOrganizationUsers ... _users: ${users.length} ... will add to cache');
     }
     pp('$mm getOrganizationUsers found: 💜 ${users.length} users. adding to stream ... ');
-    _userController.sink.add(users);
+    userController.sink.add(users);
 
     for (var element in users) {
       pp('$mm 😲 😡 USER:  🍏 ${element.name} 🍏 ${element.organizationName}');
@@ -322,15 +322,12 @@ class OrganizationBloc {
       {required String organizationId, required bool forceRefresh}) async {
     var videos = <Video>[];
     try {
-      var android = UniversalPlatform.isAndroid;
-      if (android) {
-        //_videos = await hiveUtil.getVideos();
-      } else {
-        videos.clear();
-      }
+
+        videos = await hiveUtil.getVideos();
+
       if (videos.isEmpty || forceRefresh) {
         videos = await DataAPI.getOrganizationVideos(organizationId);
-        if (android) await hiveUtil.addVideos(videos: videos);
+         await hiveUtil.addVideos(videos: videos);
       }
       _videoController.sink.add(videos);
       pp('$mm getVideos found: 💜 ${videos.length} videos ');

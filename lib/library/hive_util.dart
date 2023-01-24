@@ -35,8 +35,8 @@ import 'generic_functions.dart';
 const stillWorking = 201, doneCaching = 200;
 HiveUtil hiveUtil = HiveUtil._instance;
 
-var fileCounter = 0;
-const databaseFileName = 'db';
+var fileCounter = 1;
+const databaseFileName = 'dbx';
 const boxCollection = 'BoxCollection';
 
 class HiveUtil {
@@ -704,6 +704,19 @@ class HiveUtil {
     var key = '${user.organizationId}_${user.userId}';
     await _userBox?.put(key, user);
     pp('$mm User added to local cache:  🔵 🔵 ${user.name} organizationId: ${user.organizationId} ');
+  }
+  Future deleteUser({required User user}) async {
+    var key = '${user.organizationId}_${user.userId}';
+    var keys = await _userBox?.getAllKeys();
+    if (keys != null) {
+      for (var mKey in keys) {
+        if (mKey == key) {
+          await _userBox?.delete(mKey);
+          break;
+        }
+      }
+    }
+    pp('$mm User deleted from hive cache:  🔵 🔵 ${user.name} organizationId: ${user.organizationId} ');
   }
 
   Future addVideo({required Video video}) async {

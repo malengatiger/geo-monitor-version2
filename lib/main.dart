@@ -14,8 +14,6 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_libphonenumber/flutter_libphonenumber.dart';
 import 'package:flutter_settings_screens/flutter_settings_screens.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:geo_monitor/settings/app_settings.dart';
-import 'package:geo_monitor/ui/audio/audio_mobile.dart';
 import 'package:get/get.dart';
 
 import 'package:geo_monitor/ui/dashboard/dashboard_main.dart';
@@ -38,6 +36,9 @@ late FirebaseApp firebaseApp;
 ur.User? user;
 int doubleTapCount = 0;
 int milliSecondsAtLastDoubleTap = 0;
+
+final GlobalKey<ScaffoldMessengerState> rootScaffoldMessengerKey = GlobalKey<ScaffoldMessengerState>();
+
 
 Future<void> mainSetup() async {
   try {
@@ -111,6 +112,10 @@ Future<void> main() async {
     await fb.FirebaseAuth.instance.signOut();
   } else {
     pp('\n${Emoji.heartGreen}${Emoji.heartGreen} Prefs user available:: ${user!.toJson()}\n');
+    String? token = await fb.FirebaseAuth.instance.currentUser?.getIdToken();
+    if (token != null) {
+      pp('👌👌👌==== $token ==== 👌👌👌');
+    }
   }
 
   initSettings().then((value) {
@@ -147,7 +152,7 @@ class MyApp extends StatelessWidget {
             themeIndex = snapshot.data;
           }
           return GetMaterialApp(
-            // routerConfig: _router,
+            scaffoldMessengerKey: rootScaffoldMessengerKey,
             debugShowCheckedModeBanner: false,
             title: 'GeoMonitor',
             theme: themeBloc.getTheme(themeIndex).darkTheme,

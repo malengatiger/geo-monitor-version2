@@ -19,6 +19,7 @@ import '../data/country.dart';
 import '../data/data_bag.dart';
 import '../data/field_monitor_schedule.dart';
 import '../data/geofence_event.dart';
+import '../data/kill_response.dart';
 import '../data/org_message.dart';
 import '../data/organization.dart';
 import '../data/photo.dart';
@@ -207,6 +208,19 @@ class DataAPI {
     }
   }
 
+  static Future<KillResponse> killUser({required String userId, required String killerId} ) async {
+    String? mURL = await getUrl();
+    try {
+      var result = await _sendHttpGET('${mURL!}killUser?userId=$userId&killerId=$killerId');
+      var resp = KillResponse.fromJson(result);
+      return resp;
+    } catch (e) {
+      pp(e);
+      rethrow;
+    }
+  }
+
+
   static Future<OrganizationRegistrationBag> registerOrganization(
       OrganizationRegistrationBag orgBag) async {
     String? mURL = await getUrl();
@@ -389,12 +403,17 @@ class DataAPI {
     }
   }
 
-  static Future<User?> getUser({required String userId}) async {
+  static Future<User?> getUserById({required String userId}) async {
     String? mURL = await getUrl();
     User? user;
-    var result = await _sendHttpGET('${mURL!}getUserById?userId=$userId');
-    user = User.fromJson(result);
-    return user;
+    try {
+      var result = await _sendHttpGET('${mURL!}getUserById?userId=$userId');
+      user = User.fromJson(result);
+      return user;
+    } catch (e) {
+      pp(e);
+      throw Exception('User failed: $e');
+    }
   }
 
   static Future<DataBag?> getUserData(String userId) async {
@@ -1273,7 +1292,6 @@ class DataAPI {
       mBag = json.encode(bag);
     }
     var start = DateTime.now();
-    var client = http.Client();
     var token = await AppAuth.getAuthToken();
     if (token != null) {
       pp('$xz http POST call: 😡 😡 😡 Firebase Auth Token: 💙️ Token is GOOD! 💙 ');
@@ -1284,7 +1302,7 @@ class DataAPI {
         Uri.parse(mUrl),
         body: mBag,
         headers: headers,
-      );
+      ).timeout(const Duration(seconds: timeOutInSeconds));
       if (resp.statusCode == 200) {
         pp('$xz http POST call RESPONSE: 💙💙 statusCode: 👌👌👌 ${resp.statusCode} 👌👌👌 💙 for $mUrl');
       } else {
@@ -1319,13 +1337,13 @@ class DataAPI {
     }
   }
 
-  static const timeOutInSeconds = 180;
+  static const timeOutInSeconds = 60;
+  static final client = http.Client();
 
   static const xz = '🌎🌎🌎🌎🌎🌎 DataAPI: ';
   static Future _sendHttpGET(String mUrl) async {
     pp('$xz http GET call:  🔆 🔆 🔆 calling : 💙  $mUrl  💙');
     var start = DateTime.now();
-    var client = http.Client();
     var token = await AppAuth.getAuthToken();
     if (token != null) {
       pp('$xz http GET call: 😡😡😡 Firebase Auth Token: 💙️ Token is GOOD! 💙 ');
@@ -1337,19 +1355,25 @@ class DataAPI {
       var resp = await client.get(
         Uri.parse(mUrl),
         headers: headers,
-      );
+      ).timeout(const Duration(seconds: timeOutInSeconds));
       pp('$xz http GET call RESPONSE: .... : 💙 statusCode: 👌👌👌 ${resp.statusCode} 👌👌👌 💙 for $mUrl');
       var end = DateTime.now();
       pp('$xz http GET call: 🔆 elapsed time for http: ${end.difference(start).inSeconds} seconds 🔆 \n\n');
-      sendError(resp);
+
+      if (resp.statusCode != 200) {
+        var msg =
+            '😡 😡 The response is not 200; it is ${resp.statusCode}, NOT GOOD, throwing up !! 🥪 🥙 🌮  😡 ${resp.body}';
+        pp(msg);
+        throw HttpException(msg);
+      }
       var mJson = json.decode(resp.body);
       return mJson;
     } on SocketException {
       pp('$xz No Internet connection, really means that server cannot be reached 😑');
       throw 'GeoMonitor server cannot be reached at this time. Please try later';
     } on HttpException {
-      pp("$xz Couldn't find the post 😱");
-      throw 'Could not find the post';
+      pp("$xz HttpException occurred 😱");
+      throw 'HttpException';
     } on FormatException {
       pp("$xz Bad response format 👎");
       throw 'Bad response format';
@@ -1357,14 +1381,7 @@ class DataAPI {
       pp("$xz GET Request has timed out in $timeOutInSeconds seconds 👎");
       throw 'Request has timed out in $timeOutInSeconds seconds';
     }
+
   }
 
-  static void sendError(http.Response resp) {
-    if (resp.statusCode != 200) {
-      var msg =
-          '😡 😡 The response is not 200; it is ${resp.statusCode}, NOT GOOD, throwing up !! 🥪 🥙 🌮  😡 ${resp.body}';
-      pp(msg);
-      throw Exception(msg);
-    }
-  }
 }
