@@ -30,52 +30,6 @@ class OrganizationBlocWithGet extends GetxController{
   }
   final mm = '${Emoji.blueDot}${Emoji.blueDot}${Emoji.blueDot}${Emoji.blueDot}${Emoji.blueDot}${Emoji.appleRed} '
       'OrganizationBlocWithGet: ';
-  //
-  Future<void> addProjectToStream(Project project) async {
-
-  }
-
-  Future<void> addPhotoToStream(Photo photo) async {
-    pp('\n\n$mm ......... addPhotoToStream ... ');
-    try {
-      var p = await hiveUtil.getOrganizationPhotos(photo.organizationId!);
-      pp('$mm .... adding new photo -- sending ${p
-          .length} photos to photoStream ');
-      // _photoController.sink.add(p);
-    } catch (e) {
-      pp('$mm problem with stream? 🔴🔴🔴 $e');
-    }
-  }
-
-  Future<void> addVideoToStream(Video video) async {
-    pp('$mm addVideoToStream ...');
-    var p = await hiveUtil.getOrganizationVideos(video.organizationId!);
-    pp('$mm added new video -- sending ${p.length} videos to videoStream ');
-    // _videoController.sink.add(p);
-  }
-
-  Future<void> addAudioToStream(Audio audio) async {
-    pp('$mm addAudioToStream ...');
-    var p = await hiveUtil.getOrganizationAudios();
-    p.add(audio);
-    pp('$mm added new audio -- sending ${p.length} audios to audioStream ');
-    // _audioController.sink.add(p);
-  }
-
-  Future<void> addProjectPositionToStream(
-      ProjectPosition projectPosition) async {
-    pp('$mm addProjectPositionToStream ...');
-    var p = await hiveUtil.getOrganizationProjectPositions(organizationId: projectPosition.organizationId!);
-    pp('$mm added new projectPosition -- sending ${p.length} projectPositions to projectPositionsStream ');
-    // _projectPositionsController.sink.add(p);
-  }
-
-  Future<void> addProjectPolygonToStream(ProjectPolygon projectPolygon) async {
-    pp('$mm addProjectPolygonToStream ...');
-    var p = await hiveUtil.getOrganizationProjectPolygons(organizationId: projectPolygon.organizationId!);
-    pp('$mm added new projectPolygon -- sending ${p.length} projectPolygons to projectPolygonsStream ');
-    // _projPolygonsController.sink.add(p);
-  }
 
   DataBag? organizationDataBag;
   Future<DataBag> getOrganizationData(
@@ -273,30 +227,6 @@ class OrganizationBlocWithGet extends GetxController{
     }
 
     return videos;
-  }
-
-  Future<List<Audio>> getAudios(
-      {required String organizationId, required bool forceRefresh}) async {
-    var audios = <Audio>[];
-    try {
-      var android = UniversalPlatform.isAndroid;
-      if (android) {
-        //_videos = await hiveUtil.getVideos();
-      } else {
-        audios.clear();
-      }
-      if (audios.isEmpty || forceRefresh) {
-        audios = await DataAPI.getOrganizationAudios(organizationId);
-        if (android) await hiveUtil.addAudios(audios: audios);
-      }
-      // _audioController.sink.add(audios);
-      pp('$mm getVideos found: 💜 ${audios.length} videos ');
-    } catch (e) {
-      pp('😈😈😈😈😈 MonitorBloc: getOrganizationAudios FAILED');
-      rethrow;
-    }
-
-    return audios;
   }
 
   Future<List<Project>> getOrganizationProjects(

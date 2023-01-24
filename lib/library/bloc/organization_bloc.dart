@@ -127,7 +127,6 @@ class OrganizationBloc {
   Future<void> addAudioToStream(Audio audio) async {
     pp('$mm addAudioToStream ...');
     var p = await hiveUtil.getOrganizationAudios();
-    p.add(audio);
     pp('$mm added new audio -- sending ${p.length} audios to audioStream ');
     _audioController.sink.add(p);
   }

@@ -378,6 +378,7 @@ class DataAPI {
       await hiveUtil.addUsers(users: bag.users!);
       await hiveUtil.addPhotos(photos: bag.photos!);
       await hiveUtil.addVideos(videos: bag.videos!);
+      await hiveUtil.addAudios(audios: bag.audios!);
       await hiveUtil.addFieldMonitorSchedules(
           schedules: bag.fieldMonitorSchedules!);
       pp('\n$mm Data returned from server, sending to caller ...');
