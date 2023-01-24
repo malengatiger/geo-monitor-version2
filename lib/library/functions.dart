@@ -104,6 +104,12 @@ TextStyle myTextStyleSmall(BuildContext context) {
     fontWeight: FontWeight.normal,
   );
 }
+TextStyle myTextStyleTiny(BuildContext context) {
+  return GoogleFonts.lato(
+    textStyle: Theme.of(context).textTheme.bodySmall,
+    fontWeight: FontWeight.normal, fontSize: 10,
+  );
+}
 TextStyle myTextStyleSmallBlack(BuildContext context) {
   return GoogleFonts.lato(
     textStyle: Theme.of(context).textTheme.bodySmall,
@@ -620,6 +626,14 @@ getRoundedBorder({required double radius}) {
   return RoundedRectangleBorder(borderRadius: BorderRadius.circular(radius));
 }
 
+String getHourMinuteSecond(Duration duration) {
+  String twoDigits(int n) => n.toString().padLeft(2, "0");
+  String twoDigitMinutes = twoDigits(duration.inMinutes.remainder(60));
+  String twoDigitSeconds = twoDigits(duration.inSeconds.remainder(60));
+  var s = "${twoDigits(duration.inHours)}:$twoDigitMinutes:$twoDigitSeconds";
+  pp('🌿🌿🌿 stringDuration: $s');
+  return s;
+}
 
 String getFormattedDateLongWithTime(String date, BuildContext context) {
   Locale myLocale = Localizations.localeOf(context);

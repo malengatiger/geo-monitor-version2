@@ -1,5 +1,6 @@
 import 'package:hive/hive.dart';
 import '../data/position.dart';
+import '../functions.dart';
 part 'audio.g.dart';
 
 @HiveType(typeId: 23)
@@ -50,11 +51,16 @@ class Audio extends HiveObject {
         required this.projectName}); // Audio({required this.url, this.userId, required this.created});
 
   Audio.fromJson(Map data) {
+    // pp(data);
     url = data['url'];
     projectPositionId = data['projectPositionId'];
     projectPolygonId = data['projectPolygonId'];
     caption = data['caption'];
-    durationInSeconds = data['durationInSeconds'];
+    if (data['durationInSeconds'] == null) {
+      durationInSeconds = 0;
+    } else {
+      durationInSeconds = data['durationInSeconds'];
+    }
 
     created = data['created'];
     userId = data['userId'];
@@ -69,7 +75,7 @@ class Audio extends HiveObject {
     }
     durationInSeconds = 0;
     if (data['durationInSeconds'] != null) {
-      durationInSeconds = data['projectPosition'];
+      durationInSeconds = data['durationInSeconds'];
     }
   }
   Map<String, dynamic> toJson() {

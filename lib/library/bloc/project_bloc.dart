@@ -28,7 +28,7 @@ class ProjectBloc {
   ProjectBloc() {
     pp('$mm ProjectBloc constructed');
   }
-  final mm = '${Emoji.blueDot}${Emoji.blueDot}${Emoji.blueDot} '
+  final mm = '${Emoji.appleRed}${Emoji.appleRed}${Emoji.appleRed} '
       'ProjectBloc';
   final StreamController<List<MonitorReport>> _reportController =
       StreamController.broadcast();
@@ -219,7 +219,7 @@ class ProjectBloc {
         date: DateTime.now().toUtc().toIso8601String(),
         users: [],
         projectPolygons: polygons);
-    pp('$mm project data bag loaded: ... photos: ${photos.length}, videos: ${videos.length} and schedules: ${schedules.length} ...');
+    pp('$mm project data bag loaded: ... photos: ${photos.length}, videos: ${videos.length} and audios: ${audios.length} ...');
     return bag;
   }
 
@@ -279,11 +279,11 @@ class ProjectBloc {
       }
     }
 
+
+
     pp('$mm User Org Projects within radius of $radiusInKM kilometres; '
         'found: 💜 ${userProjects.length} projects in organization, filtered out non-org projects found in radius');
-    for (var proj in userProjects) {
-      pp('💜 user PROJECT: ${proj.name} 🍏 ${proj.organizationName}  🍏 ${proj.organizationId}');
-    }
+
     if (checkUserOrg) {
       return userProjects;
     } else {

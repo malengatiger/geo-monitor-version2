@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:geo_monitor/library/data/audio.dart';
 import 'package:geo_monitor/library/data/project.dart';
 import 'package:geo_monitor/library/data/project_position.dart';
 import 'package:geo_monitor/library/data/video.dart';
@@ -11,9 +12,6 @@ import 'package:geo_monitor/library/ui/camera/play_video.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:native_device_orientation/native_device_orientation.dart';
 import 'package:page_transition/page_transition.dart';
-import 'package:path_provider/path_provider.dart';
-import 'package:video_thumbnail/video_thumbnail.dart' as vt;
-import 'package:image/image.dart' as img;
 
 import '../../bloc/cloud_storage_bloc.dart';
 import '../../bloc/project_bloc.dart';
@@ -37,12 +35,11 @@ class VideoHandlerState extends State<VideoHandler>
     with SingleTickerProviderStateMixin
     implements StorageBlocListener {
   final mm =
-      '${Emoji.blueDot}${Emoji.blueDot}${Emoji.blueDot}${Emoji.blueDot} ImageHandler: 🌿';
+      '${Emoji.blueDot}${Emoji.blueDot}${Emoji.blueDot}${Emoji.blueDot} VideoHandler: 🌿';
 
   late AnimationController _controller;
   final ImagePicker _picker = ImagePicker();
   late StreamSubscription orientStreamSubscription;
-  NativeDeviceOrientation? _deviceOrientation;
   var polygons = <ProjectPolygon>[];
   var positions = <ProjectPosition>[];
 
@@ -62,7 +59,6 @@ class VideoHandlerState extends State<VideoHandler>
             .onOrientationChanged(useSensor: true);
     orientStreamSubscription = stream.listen((event) {
       pp('${Emoji.blueDot}${Emoji.blueDot} orientation, name: ${event.name} index: ${event.index}');
-      _deviceOrientation = event;
     });
   }
 
@@ -132,15 +128,13 @@ class VideoHandlerState extends State<VideoHandler>
     });
 
     if (widget.projectPosition != null && finalFile != null) {
-      var result = await cloudStorageBloc.uploadPhotoOrVideo(
+      var result = await cloudStorageBloc.uploadVideo(
           listener: this,
           file: finalFile!,
           thumbnailFile: thumbnailFile!,
           project: widget.project,
           projectPositionId: widget.projectPosition!.projectPositionId!,
-          projectPosition: widget.projectPosition!.position!,
-          isVideo: true,
-          isLandscape: false);
+          projectPosition: widget.projectPosition!.position!,);
       pp('$mm result from cloudStorageBloc: $result, if $uploadFinished we good!');
 
     } else {
@@ -150,15 +144,13 @@ class VideoHandlerState extends State<VideoHandler>
       var polygon = getPolygonUserIsWithin(
           polygons: polygons, latitude: loc.latitude, longitude: loc.longitude);
 
-      var result = await cloudStorageBloc.uploadPhotoOrVideo(
+      var result = await cloudStorageBloc.uploadVideo(
           listener: this,
           file: finalFile!,
           thumbnailFile: thumbnailFile!,
           project: widget.project,
           projectPolygonId: polygon?.projectPolygonId,
-          projectPosition: position,
-          isVideo: true,
-          isLandscape: false);
+          projectPosition: position,);
 
       pp('$mm result from cloudStorageBloc: $result, if $uploadFinished we good!');
 
@@ -211,20 +203,6 @@ class VideoHandlerState extends State<VideoHandler>
     if (mounted) {
       setState(() {});
     }
-  }
-
-  @override
-  onThumbnailProgress(int totalByteCount, int bytesTransferred) {
-    pp('$mm 🍏thumbnail Upload progress: bytesTransferred: ${(bytesTransferred / 1024).toStringAsFixed(1)} KB '
-        'of totalByteCount: ${(totalByteCount / 1024).toStringAsFixed(1)} KB');
-  }
-
-  @override
-  onThumbnailUploadComplete(
-      String url, int totalByteCount, int bytesTransferred) async {
-    pp('$mm 🍏thumbnail Upload has been completed 😡 bytesTransferred: ${(bytesTransferred / 1024).toStringAsFixed(1)} KB '
-        'of totalByteCount: ${(totalByteCount / 1024).toStringAsFixed(1)} KB');
-    setState(() {});
   }
 
   @override
@@ -287,11 +265,9 @@ class VideoHandlerState extends State<VideoHandler>
                   ),
                 ),
           Positioned(
-            left: 36,
+            left: 24, right: 24,
             top: 100,
             child: SizedBox(
-              // width: 360,
-              // height: 400,
               child: Card(
                 elevation: 4,
                 color: Colors.black12,
@@ -321,12 +297,12 @@ class VideoHandlerState extends State<VideoHandler>
                       height: 12,
                     ),
                     Padding(
-                      padding: const EdgeInsets.all(24.0),
+                      padding: const EdgeInsets.all(12.0),
                       child: Card(
                         elevation: 4,
                         shape: getRoundedBorder(radius: 16),
                         child: Padding(
-                          padding: const EdgeInsets.all(12.0),
+                          padding: const EdgeInsets.all(8.0),
                           child: Column(
                             children: [
                               Row(
@@ -356,7 +332,7 @@ class VideoHandlerState extends State<VideoHandler>
                               Row(
                                 children: [
                                   SizedBox(
-                                    width: 100,
+                                    width: 80,
                                     child: Text(
                                       'Total Size',
                                       style: myTextStyleSmall(context),
@@ -419,6 +395,7 @@ class VideoHandlerState extends State<VideoHandler>
   }
 
   bool videoIsReady = false;
+
   @override
   onVideoReady(Video video) {
     pp('$mm video is ready for playback ... 🍎 video: ${video.toJson()}');
@@ -444,5 +421,10 @@ class VideoHandlerState extends State<VideoHandler>
 
   void _onCancel() {
     Navigator.of(context).pop();
+  }
+
+  @override
+  onAudioReady(Audio audio) {
+
   }
 }

@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:collection';
 import 'dart:convert';
 import 'dart:io';
 
@@ -650,6 +651,27 @@ class DataAPI {
     }
   }
 
+  static Future<List<Audio>> getOrganizationAudios(
+      String organizationId) async {
+    pp('$mm getOrganizationAudios: 🍏 id: $organizationId');
+    String? mURL = await getUrl();
+    var cmd = 'getOrganizationAudios';
+    var url = '$mURL$cmd?organizationId=$organizationId';
+    try {
+      List result = await _sendHttpGET(url);
+      List<Audio> list = [];
+      for (var m in result) {
+        list.add(Audio.fromJson(m));
+      }
+      await hiveUtil.addAudios(audios: list);
+      return list;
+    } catch (e) {
+      pp('Houston, 😈😈😈😈😈 we have a problem! 😈😈😈😈😈 $e');
+      gen.p(e);
+      rethrow;
+    }
+  }
+
   static Future<List<Project>> getOrganizationProjects(
       String organizationId) async {
     pp('$mm getOrganizationProjects: 🍏 id: $organizationId');
@@ -721,7 +743,8 @@ class DataAPI {
       {required double latitude,
       required double longitude,
       required double radiusInKM}) async {
-    pp('$mm findProjectsByLocation: 🍏 radiusInKM: $radiusInKM');
+    pp('\n$mm ......... findProjectsByLocation: 🍏 radiusInKM: $radiusInKM kilometres,  '
+        '🥏 🥏 🥏about to call _sendHttpGET.........');
     String? mURL = await getUrl();
     var cmd = 'findProjectsByLocation';
     var url =
@@ -732,8 +755,16 @@ class DataAPI {
       for (var m in result) {
         list.add(Project.fromJson(m));
       }
-      await hiveUtil.addProjects(projects: list);
-      return list;
+      pp('\n$mm findProjectsByLocation: 🍏 radiusInKM: $radiusInKM kilometres; 🔵🔵 found ${list.length}');
+      var map = HashMap<String, Project>();
+      list.forEach((element) {
+        map[element.projectId!] = element;
+      });
+
+      var mList = map.values.toList();
+      pp('\n$mm findProjectsByLocation: 🍏 radiusInKM: $radiusInKM kilometres; 🔵🔵 found ${mList.length} after filtering for duplicates');
+      await hiveUtil.addProjects(projects: mList);
+      return mList;
     } catch (e) {
       pp(e);
       rethrow;
@@ -958,17 +989,15 @@ class DataAPI {
     }
   }
 
-  static Future addPhoto(Photo photo) async {
+  static Future<Photo> addPhoto(Photo photo) async {
     String? mURL = await getUrl();
     try {
       var result = await _callWebAPIPost('${mURL!}addPhoto', photo.toJson());
-      pp('\n\n\n$mm 🔴🔴🔴 DataAPI addPhoto succeeded. Everything OK?? 🔴🔴🔴\n\n');
-
-      pp(result);
+      pp('\n\n\n$mm 🔴🔴🔴 DataAPI addPhoto succeeded. Everything OK?? 🔴🔴🔴');
       var px = Photo.fromJson(result);
       await hiveUtil.addPhoto(photo: px);
-      pp('\n\n$mm addPhoto has added photo to DB and to Hive cache');
-      return result;
+      pp('\n\n$mm addPhoto has added photo to DB and to Hive cache\n\n');
+      return px;
     } catch (e) {
       pp('\n\n\n$mm 🔴🔴🔴 DataAPI addPhoto failed. Something fucked up here! ... 🔴🔴🔴\n\n');
       pp(e);
@@ -976,7 +1005,7 @@ class DataAPI {
     }
   }
 
-  static Future addVideo(Video video) async {
+  static Future<Video> addVideo(Video video) async {
     String? mURL = await getUrl();
 
     try {
@@ -984,7 +1013,7 @@ class DataAPI {
       pp('$mm addVideo has added photo to DB and to Hive cache');
       var vx = Video.fromJson(result);
       await hiveUtil.addVideo(video: vx);
-      return result;
+      return vx;
     } catch (e) {
       pp(e);
       rethrow;
@@ -1008,15 +1037,15 @@ class DataAPI {
     }
   }
 
-  static Future addCondition(Condition condition) async {
+  static Future<Condition> addCondition(Condition condition) async {
     String? mURL = await getUrl();
 
     try {
       var result =
           await _callWebAPIPost('${mURL!}addCondition', condition.toJson());
-      pp(result);
-      await hiveUtil.addCondition(condition: condition);
-      return result;
+      var x = Condition.fromJson(result);
+      await hiveUtil.addCondition(condition: x);
+      return x;
     } catch (e) {
       pp(e);
       rethrow;

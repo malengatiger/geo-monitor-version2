@@ -6,6 +6,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:geo_monitor/library/api/sharedprefs.dart';
+import 'package:geo_monitor/library/data/audio.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:path_provider/path_provider.dart';
@@ -42,6 +43,21 @@ class AudioMobileState extends State<AudioMobile>
   bool isAudioPlaying = false;
   bool isUploading = false;
   User? user;
+  static const int bufferSize = 2048;
+  static const int sampleRate = 44100;
+  bool isRecording = false;
+  bool isPaused = false;
+  bool isStopped = false;
+  String? mTotalByteCount;
+  String? mBytesTransferred;
+  bool fileUploadComplete = false;
+
+  late Stream<Uint8List> audioStream;
+  late StreamController<List<double>> audioFFT;
+  File? _recordedFile;
+  int fileSize = 0;
+  int seconds = 0;
+
   @override
   void initState() {
     _animationController = AnimationController(vsync: this);
@@ -71,11 +87,6 @@ class AudioMobileState extends State<AudioMobile>
 
     });
   }
-  static const int bufferSize = 2048;
-  static const int sampleRate = 44100;
-
-  late Stream<Uint8List> audioStream;
-  late StreamController<List<double>> audioFFT;
 
   @override
   void dispose() {
@@ -95,10 +106,6 @@ class AudioMobileState extends State<AudioMobile>
       setState(() => seconds++);
     });
   }
-
-  bool isRecording = false;
-  bool isPaused = false;
-  bool isStopped = false;
 
   _onRecord() async {
     pp('$mm start recording ...');
@@ -216,8 +223,7 @@ class AudioMobileState extends State<AudioMobile>
       isUploading = false;
     });
   }
-  String? mTotalByteCount;
-  String? mBytesTransferred;
+
   @override
   onFileProgress(int totalByteCount, int bytesTransferred) {
     pp('$mm 🍏file Upload progress: bytesTransferred: ${(bytesTransferred / 1024).toStringAsFixed(1)} KB '
@@ -229,7 +235,6 @@ class AudioMobileState extends State<AudioMobile>
     });
   }
 
-  bool fileUploadComplete = false;
   @override
   onFileUploadComplete(String url, int totalByteCount, int bytesTransferred) {
     pp('$mm 😡 file Upload has been completed 😡 bytesTransferred: ${(bytesTransferred / 1024).toStringAsFixed(1)} KB '
@@ -264,20 +269,6 @@ class AudioMobileState extends State<AudioMobile>
   }
 
   @override
-  onThumbnailProgress(int totalByteCount, int bytesTransferred) {
-    pp('$mm 🍏thumbnail Upload progress: bytesTransferred: ${(bytesTransferred / 1024).toStringAsFixed(1)} KB '
-        'of totalByteCount: ${(totalByteCount / 1024).toStringAsFixed(1)} KB');
-  }
-
-  @override
-  onThumbnailUploadComplete(
-      String url, int totalByteCount, int bytesTransferred) async {
-    pp('$mm 🍏thumbnail Upload has been completed 😡 bytesTransferred: ${(bytesTransferred / 1024).toStringAsFixed(1)} KB '
-        'of totalByteCount: ${(totalByteCount / 1024).toStringAsFixed(1)} KB');
-    setState(() {});
-  }
-
-  @override
   onError(String message) {
     pp('$mm onError fired - $message');
     if (mounted) {
@@ -290,9 +281,7 @@ class AudioMobileState extends State<AudioMobile>
           context: context);
     }
   }
-  File? _recordedFile;
-  int fileSize = 0;
-  int seconds = 0;
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -461,7 +450,13 @@ class AudioMobileState extends State<AudioMobile>
   @override
   onVideoReady(Video video) {
   }
+
+  @override
+  onAudioReady(Audio audio) {
+
+  }
 }
+
 
 class PlayControls extends StatelessWidget {
   const PlayControls(

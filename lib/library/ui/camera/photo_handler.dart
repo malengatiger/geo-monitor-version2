@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:geo_monitor/library/data/audio.dart';
 import 'package:geo_monitor/library/data/project.dart';
 import 'package:geo_monitor/library/data/project_position.dart';
 import 'package:geo_monitor/library/data/video.dart';
@@ -11,7 +12,6 @@ import 'package:image_picker/image_picker.dart';
 import 'package:native_device_orientation/native_device_orientation.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:video_thumbnail/video_thumbnail.dart' as vt;
 import 'package:image/image.dart' as img;
 
 import '../../bloc/cloud_storage_bloc.dart';
@@ -36,7 +36,7 @@ class PhotoHandlerState extends State<PhotoHandler>
     with SingleTickerProviderStateMixin
     implements StorageBlocListener {
   final mm =
-      '${Emoji.blueDot}${Emoji.blueDot}${Emoji.blueDot}${Emoji.blueDot} ImageHandler: 🌿';
+      '${Emoji.blueDot}${Emoji.blueDot}${Emoji.blueDot}${Emoji.blueDot} PhotoHandler: 🌿';
 
   late AnimationController _controller;
   final ImagePicker _picker = ImagePicker();
@@ -144,15 +144,13 @@ class PhotoHandlerState extends State<PhotoHandler>
     });
 
     if (widget.projectPosition != null && finalFile != null) {
-      cloudStorageBloc.uploadPhotoOrVideo(
+      cloudStorageBloc.uploadPhoto(
           listener: this,
           file: finalFile!,
           thumbnailFile: thumbnailFile,
           project: widget.project,
           projectPositionId: widget.projectPosition!.projectPositionId!,
-          projectPosition: widget.projectPosition!.position!,
-          isVideo: false,
-          isLandscape: isLandscape);
+          projectPosition: widget.projectPosition!.position!,);
     } else {
       var loc = await locationBloc.getLocation();
       var position =
@@ -160,15 +158,13 @@ class PhotoHandlerState extends State<PhotoHandler>
       var polygon = getPolygonUserIsWithin(
           polygons: polygons, latitude: loc.latitude, longitude: loc.longitude);
 
-      var result = await cloudStorageBloc.uploadPhotoOrVideo(
+      var result = await cloudStorageBloc.uploadPhoto(
           listener: this,
           file: finalFile!,
           thumbnailFile: thumbnailFile,
           project: widget.project,
           projectPolygonId: polygon?.projectPolygonId,
-          projectPosition: position,
-          isVideo: false,
-          isLandscape: isLandscape);
+          projectPosition: position,);
 
       pp('$mm result from cloudStorageBloc: $result, if $uploadFinished we good!');
     }
@@ -254,20 +250,6 @@ class PhotoHandlerState extends State<PhotoHandler>
     if (mounted) {
       setState(() {});
     }
-  }
-
-  @override
-  onThumbnailProgress(int totalByteCount, int bytesTransferred) {
-    pp('$mm 🍏thumbnail Upload progress: bytesTransferred: ${(bytesTransferred / 1024).toStringAsFixed(1)} KB '
-        'of totalByteCount: ${(totalByteCount / 1024).toStringAsFixed(1)} KB');
-  }
-
-  @override
-  onThumbnailUploadComplete(
-      String url, int totalByteCount, int bytesTransferred) async {
-    pp('$mm 🍏thumbnail Upload has been completed 😡 bytesTransferred: ${(bytesTransferred / 1024).toStringAsFixed(1)} KB '
-        'of totalByteCount: ${(totalByteCount / 1024).toStringAsFixed(1)} KB');
-    setState(() {});
   }
 
   @override
@@ -367,7 +349,7 @@ class PhotoHandlerState extends State<PhotoHandler>
                         elevation: 4,
                         shape: getRoundedBorder(radius: 16),
                         child: Padding(
-                          padding: const EdgeInsets.all(12.0),
+                          padding: const EdgeInsets.all(8.0),
                           child: Column(
                             children: [
                               Row(
@@ -444,4 +426,8 @@ class PhotoHandlerState extends State<PhotoHandler>
 
   @override
   onVideoReady(Video video) {}
+
+  @override
+  onAudioReady(Audio audio) {
+  }
 }

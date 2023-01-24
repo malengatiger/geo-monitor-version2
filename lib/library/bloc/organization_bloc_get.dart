@@ -1,5 +1,7 @@
 import 'dart:async';
 
+import 'package:get/get.dart';
+import 'package:get/get_state_manager/src/simple/get_controllers.dart';
 import 'package:universal_platform/universal_platform.dart';
 
 import '../api/data_api.dart';
@@ -21,97 +23,25 @@ import '../emojis.dart';
 import '../functions.dart';
 import '../hive_util.dart';
 
-final OrganizationBloc organizationBloc = OrganizationBloc();
 
-class OrganizationBloc {
-  OrganizationBloc() {
-    pp('$mm OrganizationBloc constructed');
+class OrganizationBlocWithGet extends GetxController{
+  OrganizationBlocWithGet() {
+    pp('$mm OrganizationBlocWithGet constructed');
   }
-  final mm = '${Emoji.blueDot}${Emoji.blueDot}${Emoji.blueDot} '
-      'OrganizationBloc: ';
-  final StreamController<List<MonitorReport>> _reportController =
-      StreamController.broadcast();
-  final StreamController<List<User>> _userController =
-      StreamController.broadcast();
-  final StreamController<List<Community>> _communityController =
-      StreamController.broadcast();
-  final StreamController<List<Questionnaire>> _questController =
-      StreamController.broadcast();
-  final StreamController<List<Project>> _projController =
-      StreamController.broadcast();
-  final StreamController<List<Photo>> _photoController =
-      StreamController.broadcast();
-  final StreamController<List<Video>> _videoController =
-      StreamController.broadcast();
-  final StreamController<List<Audio>> _audioController =
-      StreamController.broadcast();
-
-  final StreamController<List<Photo>> _projectPhotoController =
-      StreamController.broadcast();
-  final StreamController<List<Video>> _projectVideoController =
-      StreamController.broadcast();
-
-  final StreamController<List<ProjectPosition>> _projPositionsController =
-      StreamController.broadcast();
-  final StreamController<List<ProjectPolygon>> _projPolygonsController =
-      StreamController.broadcast();
-  final StreamController<List<ProjectPosition>> _projectPositionsController =
-      StreamController.broadcast();
-  final StreamController<List<FieldMonitorSchedule>>
-      _fieldMonitorScheduleController = StreamController.broadcast();
-  final StreamController<List<Country>> _countryController =
-      StreamController.broadcast();
-
-  final StreamController<Questionnaire> _activeQuestionnaireController =
-      StreamController.broadcast();
-  final StreamController<User> _activeUserController =
-      StreamController.broadcast();
-
-  Stream<List<MonitorReport>> get reportStream => _reportController.stream;
-
-  Stream<List<Community>> get communityStream => _communityController.stream;
-
-  Stream<List<Questionnaire>> get questionnaireStream =>
-      _questController.stream;
-
-  Stream<List<Project>> get projectStream => _projController.stream;
-
-  Stream<List<ProjectPosition>> get projectPositionsStream =>
-      _projPositionsController.stream;
-
-  Stream<List<ProjectPolygon>> get projectPolygonsStream =>
-      _projPolygonsController.stream;
-
-  Stream get countryStream => _countryController.stream;
-
-  Stream<List<User>> get usersStream => _userController.stream;
-
-  Stream get activeQuestionnaireStream => _activeQuestionnaireController.stream;
-
-  Stream<List<FieldMonitorSchedule>> get fieldMonitorScheduleStream =>
-      _fieldMonitorScheduleController.stream;
-  Stream<List<Photo>> get photoStream => _photoController.stream;
-
-  Stream<List<Video>> get videoStream => _videoController.stream;
-  Stream<List<Audio>> get audioStream => _audioController.stream;
-
+  final mm = '${Emoji.blueDot}${Emoji.blueDot}${Emoji.blueDot}${Emoji.blueDot}${Emoji.blueDot}${Emoji.appleRed} '
+      'OrganizationBlocWithGet: ';
   //
   Future<void> addProjectToStream(Project project) async {
-    try {
-      var p = await hiveUtil.getOrganizationProjects();
-      pp('$mm .... adding new project -- sending ${p.length} photos to project Stream ');
-      _projController.sink.add(p);
-    } catch (e) {
-      pp('$mm problem with stream? 🔴🔴🔴 $e');
-    }
+
   }
 
   Future<void> addPhotoToStream(Photo photo) async {
     pp('\n\n$mm ......... addPhotoToStream ... ');
     try {
       var p = await hiveUtil.getOrganizationPhotos(photo.organizationId!);
-      pp('$mm .... adding new photo -- sending ${p.length} photos to photoStream ');
-      _photoController.sink.add(p);
+      pp('$mm .... adding new photo -- sending ${p
+          .length} photos to photoStream ');
+      // _photoController.sink.add(p);
     } catch (e) {
       pp('$mm problem with stream? 🔴🔴🔴 $e');
     }
@@ -121,7 +51,7 @@ class OrganizationBloc {
     pp('$mm addVideoToStream ...');
     var p = await hiveUtil.getOrganizationVideos(video.organizationId!);
     pp('$mm added new video -- sending ${p.length} videos to videoStream ');
-    _videoController.sink.add(p);
+    // _videoController.sink.add(p);
   }
 
   Future<void> addAudioToStream(Audio audio) async {
@@ -129,32 +59,31 @@ class OrganizationBloc {
     var p = await hiveUtil.getOrganizationAudios();
     p.add(audio);
     pp('$mm added new audio -- sending ${p.length} audios to audioStream ');
-    _audioController.sink.add(p);
+    // _audioController.sink.add(p);
   }
 
   Future<void> addProjectPositionToStream(
       ProjectPosition projectPosition) async {
     pp('$mm addProjectPositionToStream ...');
-    var p = await hiveUtil.getOrganizationProjectPositions(
-        organizationId: projectPosition.organizationId!);
+    var p = await hiveUtil.getOrganizationProjectPositions(organizationId: projectPosition.organizationId!);
     pp('$mm added new projectPosition -- sending ${p.length} projectPositions to projectPositionsStream ');
-    _projectPositionsController.sink.add(p);
+    // _projectPositionsController.sink.add(p);
   }
 
   Future<void> addProjectPolygonToStream(ProjectPolygon projectPolygon) async {
     pp('$mm addProjectPolygonToStream ...');
-    var p = await hiveUtil.getOrganizationProjectPolygons(
-        organizationId: projectPolygon.organizationId!);
+    var p = await hiveUtil.getOrganizationProjectPolygons(organizationId: projectPolygon.organizationId!);
     pp('$mm added new projectPolygon -- sending ${p.length} projectPolygons to projectPolygonsStream ');
-    _projPolygonsController.sink.add(p);
+    // _projPolygonsController.sink.add(p);
   }
 
+  DataBag? organizationDataBag;
   Future<DataBag> getOrganizationData(
       {required String organizationId, required bool forceRefresh}) async {
     pp('$mm refreshing organization data ... photos, videos and schedules'
         ' ...forceRefresh: $forceRefresh');
 
-    DataBag bag =
+    var bag =
         await hiveUtil.getOrganizationData(organizationId: organizationId);
 
     if (forceRefresh) {
@@ -167,6 +96,9 @@ class OrganizationBloc {
         bag = await DataAPI.getOrganizationData(organizationId);
       }
     }
+
+    organizationDataBag = bag;
+    update();
     _putContentsOfBagIntoStreams(bag);
     return bag;
   }
@@ -178,7 +110,7 @@ class OrganizationBloc {
       try {
         if (bag.photos != null) {
           bag.photos!.sort((a, b) => b.created!.compareTo(a.created!));
-          _photoController.sink.add(bag.photos!);
+          // _photoController.sink.add(bag.photos!);
         }
       } catch (e) {
         pp('$mm _putContentsOfBagIntoStreams photos ERROR - $e');
@@ -186,7 +118,7 @@ class OrganizationBloc {
       try {
         if (bag.videos != null) {
           bag.videos!.sort((a, b) => b.created!.compareTo(a.created!));
-          _videoController.sink.add(bag.videos!);
+          // _videoController.sink.add(bag.videos!);
         }
       } catch (e) {
         pp('$mm _putContentsOfBagIntoStreams videos ERROR - $e');
@@ -194,7 +126,7 @@ class OrganizationBloc {
       try {
         if (bag.audios != null) {
           bag.audios!.sort((a, b) => b.created!.compareTo(a.created!));
-          _audioController.sink.add(bag.audios!);
+          // _audioController.sink.add(bag.audios!);
         }
       } catch (e) {
         pp('$mm _putContentsOfBagIntoStreams audios ERROR - $e');
@@ -202,7 +134,7 @@ class OrganizationBloc {
       try {
         if (bag.fieldMonitorSchedules != null) {
           bag.fieldMonitorSchedules!.sort((a, b) => b.date!.compareTo(a.date!));
-          _fieldMonitorScheduleController.sink.add(bag.fieldMonitorSchedules!);
+          // _fieldMonitorScheduleController.sink.add(bag.fieldMonitorSchedules!);
         }
       } catch (e) {
         pp('$mm _putContentsOfBagIntoStreams fieldMonitorSchedules ERROR - $e');
@@ -210,7 +142,7 @@ class OrganizationBloc {
       try {
         if (bag.users != null) {
           bag.users!.sort((a, b) => a.name!.compareTo(b.name!));
-          _userController.sink.add(bag.users!);
+          // _userController.sink.add(bag.users!);
         }
       } catch (e) {
         pp('$mm _putContentsOfBagIntoStreams users ERROR - $e');
@@ -218,7 +150,7 @@ class OrganizationBloc {
       try {
         if (bag.projects != null) {
           bag.projects!.sort((a, b) => a.name!.compareTo(b.name!));
-          _projController.sink.add(bag.projects!);
+          // _projController.sink.add(bag.projects!);
         }
       } catch (e) {
         pp('$mm _putContentsOfBagIntoStreams projects ERROR - $e');
@@ -227,7 +159,7 @@ class OrganizationBloc {
         if (bag.projectPositions != null) {
           // bag.projectPositions!
           //     .sort((a, b) => b.created!.compareTo(a.created!));
-          _projPositionsController.sink.add(bag.projectPositions!);
+          // _projPositionsController.sink.add(bag.projectPositions!);
         }
       } catch (e) {
         pp('$mm _putContentsOfBagIntoStreams projectPositions ERROR - $e');
@@ -235,7 +167,7 @@ class OrganizationBloc {
       try {
         if (bag.projectPolygons != null) {
           bag.projectPolygons!.sort((a, b) => b.created!.compareTo(a.created!));
-          _projPolygonsController.sink.add(bag.projectPolygons!);
+          // _projPolygonsController.sink.add(bag.projectPolygons!);
         }
       } catch (e) {
         pp('$mm _putContentsOfBagIntoStreams projectPolygons ERROR - $e');
@@ -258,7 +190,7 @@ class OrganizationBloc {
       pp('$mm getOrganizationUsers ... _users: ${users.length} ... will add to cache');
     }
     pp('$mm getOrganizationUsers found: 💜 ${users.length} users. adding to stream ... ');
-    _userController.sink.add(users);
+    // _userController.sink.add(users);
 
     for (var element in users) {
       pp('$mm 😲 😡 USER:  🍏 ${element.name} 🍏 ${element.organizationName}');
@@ -279,7 +211,7 @@ class OrganizationBloc {
       pp('$mm getOrganizationProjectPositions found ${projectPositions.length} positions from remote database ');
       await hiveUtil.addProjectPositions(positions: projectPositions);
     }
-    _projPositionsController.sink.add(projectPositions);
+    // _projPositionsController.sink.add(projectPositions);
     pp('$mm getOrganizationProjectPositions found: 💜 ${projectPositions.length} projectPositions from local or remote db ');
     return projectPositions;
   }
@@ -294,7 +226,7 @@ class OrganizationBloc {
       await hiveUtil.addFieldMonitorSchedules(schedules: schedules);
     }
 
-    _fieldMonitorScheduleController.sink.add(schedules);
+    // _fieldMonitorScheduleController.sink.add(schedules);
     pp('$mm getOrgFieldMonitorSchedules found: 🔵 ${schedules.length} schedules ');
 
     return schedules;
@@ -309,7 +241,7 @@ class OrganizationBloc {
         photos = await DataAPI.getOrganizationPhotos(organizationId);
         await hiveUtil.addPhotos(photos: photos);
       }
-      _photoController.sink.add(photos);
+      // _photoController.sink.add(photos);
       pp('$mm getPhotos found: 💜 ${photos.length} photos 💜 ');
     } catch (e) {
       pp('😈😈😈😈😈 MonitorBloc: getOrganizationPhotos FAILED: 😈😈😈😈😈 $e');
@@ -318,7 +250,7 @@ class OrganizationBloc {
 
     return photos;
   }
-
+  List<Video> videos = <Video>[];
   Future<List<Video>> getVideos(
       {required String organizationId, required bool forceRefresh}) async {
     var videos = <Video>[];
@@ -333,7 +265,7 @@ class OrganizationBloc {
         videos = await DataAPI.getOrganizationVideos(organizationId);
         if (android) await hiveUtil.addVideos(videos: videos);
       }
-      _videoController.sink.add(videos);
+      // _videoController.sink.add(videos);
       pp('$mm getVideos found: 💜 ${videos.length} videos ');
     } catch (e) {
       pp('😈😈😈😈😈 MonitorBloc: getOrganizationVideos FAILED');
@@ -346,15 +278,18 @@ class OrganizationBloc {
   Future<List<Audio>> getAudios(
       {required String organizationId, required bool forceRefresh}) async {
     var audios = <Audio>[];
-    var android = UniversalPlatform.isAndroid;
-
     try {
-      audios = await hiveUtil.getOrganizationAudios();
+      var android = UniversalPlatform.isAndroid;
+      if (android) {
+        //_videos = await hiveUtil.getVideos();
+      } else {
+        audios.clear();
+      }
       if (audios.isEmpty || forceRefresh) {
         audios = await DataAPI.getOrganizationAudios(organizationId);
         if (android) await hiveUtil.addAudios(audios: audios);
       }
-      _audioController.sink.add(audios);
+      // _audioController.sink.add(audios);
       pp('$mm getVideos found: 💜 ${audios.length} videos ');
     } catch (e) {
       pp('😈😈😈😈😈 MonitorBloc: getOrganizationAudios FAILED');
@@ -372,7 +307,7 @@ class OrganizationBloc {
       if (projects.isEmpty || forceRefresh) {
         projects = await DataAPI.findProjectsByOrganization(organizationId);
       }
-      _projController.sink.add(projects);
+      // _projController.sink.add(projects);
       pp('💜💜💜💜 MonitorBloc: OrganizationProjects found: 💜 ${projects.length} projects ; organizationId: $organizationId💜');
       for (var project in projects) {
         pp('💜💜 Org PROJECT: ${project.name} 🍏 ${project.organizationName}  🍏 ${project.organizationId}');
@@ -393,7 +328,7 @@ class OrganizationBloc {
     try {
       org ??= await DataAPI.findOrganizationById(organizationId);
 
-      pp('$mm OrganizationBloc: Organization found: 💜 ${org!.toJson()} ');
+      pp('$mm OrganizationBlocWithGet: Organization found: 💜 ${org!.toJson()} ');
     } catch (e) {
       pp('$mm $e');
       rethrow;

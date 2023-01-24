@@ -6,6 +6,7 @@ import 'package:animations/animations.dart';
 import 'package:badges/badges.dart';
 import 'package:flutter/material.dart';
 import 'package:geo_monitor/library/api/sharedprefs.dart';
+import 'package:geo_monitor/library/bloc/organization_bloc.dart';
 import 'package:geo_monitor/library/bloc/project_bloc.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:uuid/uuid.dart';
@@ -44,6 +45,8 @@ class ProjectMapMobileState extends State<ProjectMapMobile>
   final mm = '🔷🔷🔷ProjectMapMobile: ';
   late AnimationController _animationController;
   final Completer<GoogleMapController> _mapController = Completer();
+
+  BitmapDescriptor markerIcon = BitmapDescriptor.defaultMarker;
   Map<MarkerId, Marker> markers = <MarkerId, Marker>{};
   var random = Random(DateTime.now().millisecondsSinceEpoch);
   final _key = GlobalKey<ScaffoldState>();
@@ -69,6 +72,19 @@ class ProjectMapMobileState extends State<ProjectMapMobile>
     projectPolygons = widget.projectPolygons;
     projectPositions = widget.projectPositions;
     _getUser();
+    _setMarkerIcon();
+  }
+
+  void _setMarkerIcon() async {
+    BitmapDescriptor.fromAssetImage(
+        const ImageConfiguration(size: Size(4.0,4.0)), "assets/avatar.png",)
+        .then(
+          (icon) {
+        setState(() {
+          markerIcon = icon;
+        });
+      },
+    );
   }
 
   void _getUser() async {
@@ -124,7 +140,7 @@ class ProjectMapMobileState extends State<ProjectMapMobile>
           MarkerId('${projectPosition.projectId}_${random.nextInt(9999988)}');
       final Marker marker = Marker(
         markerId: markerId,
-        // icon: markerIcon,
+        icon: markerIcon,
         position: LatLng(
           projectPosition.position!.coordinates.elementAt(1),
           projectPosition.position!.coordinates.elementAt(0),
@@ -273,9 +289,14 @@ class ProjectMapMobileState extends State<ProjectMapMobile>
           nearestCities: cities,
           organizationId: widget.project.organizationId,
           projectId: widget.project.projectId);
+
       var resultPosition = await DataAPI.addProjectPosition(position: pos);
+      organizationBloc.addProjectPositionToStream(resultPosition);
       projectPositions.add(resultPosition);
       _addMarkers();
+      setState(() {
+
+      });
     } catch (e) {
       pp(e);
       if (mounted) {
@@ -323,7 +344,7 @@ class ProjectMapMobileState extends State<ProjectMapMobile>
                     Flexible(
                       child: Text(
                         widget.project.name!,
-                        style: myTextStyleMedium(context),
+                        style: myTextStyleSmall(context),
                       ),
                     ),
                     const SizedBox(width: 28,),
@@ -581,7 +602,8 @@ class ProjectPositionChooser extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     var list = <local.Position>[];
-    projectPositions.sort((a,b) => a.created!.compareTo(b.created!));
+    // projectPositions.sort((a,b) => a.created!.compareTo(b.created!));
+    pp('this sort breaks cause created is null');
     for (var value in projectPositions) {
       list.add(value.position!);
     }

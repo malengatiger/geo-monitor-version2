@@ -1,6 +1,7 @@
 import 'package:animations/animations.dart';
 import 'package:badges/badges.dart';
 import 'package:flutter/material.dart';
+import 'package:geo_monitor/library/bloc/organization_bloc.dart';
 import 'package:geo_monitor/library/data/project_polygon.dart';
 import 'package:geo_monitor/library/ui/maps/project_map_mobile.dart';
 import 'package:geo_monitor/library/ui/maps/project_polygon_map_mobile.dart';
@@ -200,6 +201,7 @@ class ProjectLocationMobileState extends State<ProjectLocationMobile>
       try {
         var m = await DataAPI.addProjectPosition(position: loc);
         pp('$mx  _submit: new projectPosition added .........  🍅 ${m.toJson()} 🍅');
+        organizationBloc.addProjectPositionToStream(m);
         _getProjectPositions(true);
       } catch (e) {
         if (mounted) {

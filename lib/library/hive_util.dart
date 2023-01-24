@@ -8,6 +8,7 @@ import 'package:hive/hive.dart';
 import 'package:path_provider/path_provider.dart';
 
 import 'api/sharedprefs.dart';
+import 'bloc/failed_audio.dart';
 import 'data/audio.dart';
 import 'data/city.dart';
 import 'data/community.dart';
@@ -64,10 +65,12 @@ class HiveUtil {
   CollectionBox<ProjectPolygon>? _projectPolygonBox;
   CollectionBox<Photo>? _failedPhotoBox;
   CollectionBox<Video>? _failedVideoBox;
+  // CollectionBox<Audio>? _failedAudioBox;
   CollectionBox<FailedBag>? _failedBagBox;
   CollectionBox<Country>? _countryBox;
   CollectionBox<OrganizationRegistrationBag>? _registrationBox;
   CollectionBox<Audio>? _audioBox;
+  CollectionBox<FailedAudio>? _failedAudioBox;
 
   bool _isInitialized = false;
 
@@ -107,6 +110,7 @@ class HiveUtil {
     _cityBox?.clear();
     _conditionBox?.clear();
     _audioBox?.clear();
+    _failedAudioBox?.clear();
     pp('$mm all Hive boxes cleared 💚💚');
   }
 
@@ -141,6 +145,7 @@ class HiveUtil {
           'registrations',
           'countries',
           'audios',
+          'failedAudios',
         },
         // Names of your boxes
         path: file
@@ -229,9 +234,14 @@ class HiveUtil {
       Hive.registerAdapter(AudioAdapter());
       p('$xx Hive AudioAdapter registered');
     }
+    if (!Hive.isAdapterRegistered(24)) {
+      Hive.registerAdapter(FailedAudioAdapter());
+      p('$xx Hive FailedAudioAdapter registered');
+    }
 
     var bb = file.path.lastIndexOf("/");
     var cc = file.path.substring(bb + 1);
+    
     p('$mm Hive box collection created and types registered; 🍎file: $cc '
         '🍎_boxCollection: ${_boxCollection!.name}');
 
@@ -260,6 +270,8 @@ class HiveUtil {
       _failedPhotoBox = await _boxCollection!.openBox<Photo>('failedPhotos');
       _failedVideoBox = await _boxCollection!.openBox<Video>('failedVideos');
       _failedBagBox = await _boxCollection!.openBox<FailedBag>('failedBags');
+      _failedAudioBox = await _boxCollection!.openBox<FailedAudio>('failedAudios');
+
       _registrationBox = await _boxCollection!
           .openBox<OrganizationRegistrationBag>('registrations');
       _audioBox = await _boxCollection!.openBox<Audio>('audios');
@@ -392,7 +404,6 @@ class HiveUtil {
   Future<List<FieldMonitorSchedule>> getFieldMonitorSchedules(
       String userId) async {
     var keys = await _scheduleBox?.getAllKeys();
-    var list = <FieldMonitorSchedule>[];
     List<FieldMonitorSchedule> schedules = [];
     if (keys != null) {
       for (var r in keys) {
@@ -456,7 +467,7 @@ class HiveUtil {
     final users = await getUsers(organizationId: organizationId);
     final photos = await getOrganizationPhotos(organizationId);
     final videos = await getOrganizationVideos(organizationId);
-    final audios = await getOrganizationAudios(organizationId);
+    final audios = await getOrganizationAudios();
 
     final schedules = await getOrganizationMonitorSchedules(organizationId);
     final positions =
@@ -573,7 +584,7 @@ class HiveUtil {
     return mList;
   }
 
-  Future<List<Audio>> getOrganizationAudios(String organizationId) async {
+  Future<List<Audio>> getOrganizationAudios() async {
     List<Audio> mList = [];
     var audioMap = await _audioBox?.getAllValues();
     if (audioMap != null) {
@@ -634,6 +645,12 @@ class HiveUtil {
     await _failedPhotoBox?.put(key, photo);
     pp('$mm Failed Photo added to local cache:  🔵 🔵 ${photo.projectName}');
   }
+  
+  Future addFailedAudio({required FailedAudio failedAudio}) async {
+    var key = '${failedAudio.date}';
+    await _failedAudioBox?.put(key, failedAudio);
+    pp('$mm Failed Audio added to local cache  🔵');
+  }
 
   Future removeFailedPhoto({required Photo photo}) async {
     var key =
@@ -641,6 +658,20 @@ class HiveUtil {
     await _failedPhotoBox?.delete(key);
     pp('$mm Failed Photo deleted from local cache:  🔵 🔵 ${photo.projectName}');
   }
+
+  Future removeFailedVideo({required Video video}) async {
+    var key =
+        '${video.organizationId}_${video.projectId}_${video.userId}_${video.created}';
+    await _failedVideoBox?.delete(key);
+    pp('$mm Failed Video deleted from local cache:  🔵 🔵 ${video.projectName}');
+  }
+  
+  Future removeFailedAudio({required FailedAudio failedAudio}) async {
+    var key ='${failedAudio.date}';
+    await _failedAudioBox?.delete(key);
+    pp('$mm Failed Audio deleted from local cache  🔵');
+  }
+
 
   Future addFailedBag({required FailedBag bag}) async {
     var key = bag.date!;
@@ -687,8 +718,7 @@ class HiveUtil {
       var key =
           '${audio.organizationId}_${audio.projectId}_${audio.userId}_${audio.created}';
       await _audioBox?.put(key, audio);
-      var list = await getOrganizationAudios(audio.organizationId!);
-      pp('$mm looks like hive has cached ${list.length} audios');
+      // pp('$mm looks like hive has cached an audio object');
       return 0;
     } catch (e) {
       pp('$mm hive ERROR: $e');
@@ -702,13 +732,6 @@ class HiveUtil {
         '${video.organizationId}_${video.projectId}_${video.userId}_${video.created}';
     await _failedVideoBox?.put(key, video);
     pp('$mm failed Video added to local cache:  🔵 🔵 ${video.projectName}');
-  }
-
-  Future removeFailedVideo({required Video video}) async {
-    var key =
-        '${video.organizationId}_${video.projectId}_${video.userId}_${video.created}';
-    await _failedVideoBox?.delete(key);
-    pp('$mm failed Video deleted from local cache:  🔵 🔵 ${video.projectName}');
   }
 
   Future<List<Project>> getOrganizationProjects() async {
@@ -740,6 +763,17 @@ class HiveUtil {
       mList = videoMap.values.toList();
     }
     pp('$mm ${mList.length} failed Videos found in cache');
+    return mList;
+  }
+
+  Future<List<FailedAudio>> getFailedAudios() async {
+    var audioMap = await _failedAudioBox?.getAllValues();
+
+    var mList = <FailedAudio>[];
+    if (audioMap != null) {
+      mList = audioMap.values.toList();
+    }
+    pp('$mm ${mList.length} failed Audios found in cache');
     return mList;
   }
 

@@ -5,6 +5,7 @@ import 'dart:math';
 import 'package:badges/badges.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:geo_monitor/library/bloc/organization_bloc.dart';
 import 'package:geo_monitor/library/data/project_position.dart';
 
 import 'package:google_fonts/google_fonts.dart';
@@ -226,6 +227,7 @@ class ProjectPolygonMapMobileState extends State<ProjectPolygonMapMobile>
       var resultPolygon = await DataAPI.addProjectPolygon(polygon: pos);
       pp('$mm polygon saved in DB. we are good to go! '
           '🍏🍏${resultPolygon.toJson()}🍏🍏 ');
+      organizationBloc.addProjectPolygonToStream(resultPolygon);
       projectPolygons.add(resultPolygon);
       _buildProjectPolygons(animateToLast: true);
       _myPoints.clear();

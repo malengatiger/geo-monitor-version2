@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 import 'dart:math';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:geo_monitor/library/data/audio.dart';
 
 import '../data/video.dart';
 import '../emojis.dart';
@@ -24,7 +25,7 @@ class UploadFailedMedia implements StorageBlocListener {
     _timer = Timer.periodic(duration, (timer) async {
       pp('\n\n$mm ......... Timer tick:  🍎 ${timer.tick} 🍎 at: '
           '${DateTime.now().toIso8601String()}');
-      await _uploadFailedBags();
+      await uploadFailedBags();
     });
     isStarted = true;
   }
@@ -35,7 +36,7 @@ class UploadFailedMedia implements StorageBlocListener {
     }
   }
 
-  Future _uploadFailedBags() async {
+  Future uploadFailedBags() async {
     pp('$mm start uploading failed media to cloud storage .....');
     var bags = await hiveUtil.getFailedBags();
     if (bags.isEmpty) {
@@ -45,34 +46,26 @@ class UploadFailedMedia implements StorageBlocListener {
 
     pp('$mm will upload ${bags.length} file/thumbnails pairs .....');
     for (var bag in bags) {
-      File file = File(bag.filePath!);
-      File thumbnailFile = File(bag.thumbnailPath!);
-      pp('$mm file length ${await file.length()} '
-          'thumbnail length: ${await thumbnailFile.length()} path: ${file.path} thumb: ${thumbnailFile.path}');
-      Future.delayed(const Duration(seconds: 1), () async {
-        pp('$mm starting cloud storage upload after '
-            'dithering for 1 seconds ...');
-        pp('$mm processing files from project: ${bag.project!.name}');
-
-        try {
-          var isOK = await cloudStorageBloc.uploadPhotoOrVideo(
-              listener: this,
+      if (bag.filePath != null) {
+        File file = File(bag.filePath!);
+        File thumbnailFile = File(bag.thumbnailPath!);
+        pp('$mm file length ${await file.length()} '
+            'thumbnail length: ${await thumbnailFile.length()} path: ${file.path} thumb: ${thumbnailFile.path}');
+        if (file.path.contains('photo')) {
+          await cloudStorageBloc.uploadPhoto(listener: this,
               file: file,
               thumbnailFile: thumbnailFile,
               project: bag.project!,
-              projectPosition: bag.projectPosition!,
-              isVideo: bag.isVideo!,
-              isLandscape: bag.isLandscape!);
-
-          if (isOK == uploadFinished) {
-            pp(
-                '$mm ...cloud storage uploads completed! ${DateTime.now()
-                    .toIso8601String()}');
-          }
-        } catch (e) {
-          pp(e);
+              projectPosition: bag.projectPosition!);
         }
-      });
+        if (file.path.contains('video')) {
+          await cloudStorageBloc.uploadVideo(listener: this,
+              file: file,
+              thumbnailFile: thumbnailFile,
+              project: bag.project!,
+              projectPosition: bag.projectPosition!);
+        }
+      }
     }
   }
 
@@ -96,21 +89,12 @@ class UploadFailedMedia implements StorageBlocListener {
   }
 
   @override
-  onThumbnailProgress(int totalByteCount, int bytesTransferred) {
-    pp('$mm Thumbnail File transferring to cloud storage:  🍎 '
-        '$bytesTransferred of $totalByteCount bytes');
-  }
-
-  @override
-  onThumbnailUploadComplete(
-      String url, int totalByteCount, int bytesTransferred) {
-    pp('$mm Thumbnail File transfer complete:  ${Emoji.leaf} '
-        '$bytesTransferred of $totalByteCount bytes');
-    pp('$mm thumbnail url: $url');
-  }
-
-  @override
   onVideoReady(Video video) {
     pp('$mm Video is ready, folks!');
+  }
+
+  @override
+  onAudioReady(Audio audio) {
+    pp('$mm Audio is ready, folks!');
   }
 }

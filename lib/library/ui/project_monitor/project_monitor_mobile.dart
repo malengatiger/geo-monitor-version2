@@ -1,4 +1,3 @@
-import 'package:android_intent/android_intent.dart';
 import 'package:flutter/material.dart';
 import 'package:geo_monitor/library/ui/project_location/project_location_mobile.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -9,17 +8,13 @@ import 'package:page_transition/page_transition.dart';
 import '../../bloc/project_bloc.dart';
 import '../../data/position.dart';
 import '../../data/project_polygon.dart';
-import '../../emojis.dart';
 import '../../functions.dart';
 import '../../hive_util.dart';
 import '../../data/project.dart';
 import '../../data/project_position.dart';
 import '../../location/loc_bloc.dart';
-import '../camera/field_camera_photo.dart';
-import '../camera/field_camera_video.dart';
 import '../camera/photo_handler.dart';
 import '../camera/video_handler.dart';
-import '../project_location/project_location_main.dart';
 
 class ProjectMonitorMobile extends StatefulWidget {
   final Project project;
@@ -120,10 +115,7 @@ class ProjectMonitorMobileState extends State<ProjectMonitorMobile>
               child: Column(
                 children: [
                   Text(widget.project.name!,
-                      style: GoogleFonts.lato(
-                        textStyle: Theme.of(context).textTheme.bodyMedium,
-                        fontWeight: FontWeight.normal,
-                      )),
+                      style: myTextStyleMedium(context)),
                   const SizedBox(
                     height: 60,
                   ),
@@ -274,11 +266,11 @@ class ProjectMonitorMobileState extends State<ProjectMonitorMobile>
                                   ),
                                 ),
                                 const SizedBox(
-                                  width: 8,
+                                  width: 28,
                                 ),
                                 Text(
                                   'Checking project location',
-                                  style: Styles.blackTiny,
+                                  style: myTextStyleSmall(context),
                                 )
                               ],
                             )

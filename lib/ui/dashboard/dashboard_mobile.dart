@@ -3,40 +3,38 @@ import 'dart:async';
 import 'package:animations/animations.dart';
 import 'package:firebase_auth/firebase_auth.dart' as fb;
 import 'package:flutter/material.dart';
-import 'package:geo_monitor/library/bloc/connection_check.dart';
-import 'package:geo_monitor/library/data/audio.dart';
-import 'package:geo_monitor/library/data/data_bag.dart';
-import 'package:geo_monitor/library/data/project_polygon.dart';
-import 'package:geo_monitor/library/ui/maps/project_map_mobile.dart';
-import 'package:geo_monitor/library/ui/media/list/project_media_list_mobile.dart';
-import 'package:geo_monitor/ui/intro_page_viewer.dart';
+import 'package:geo_monitor/library/data/geofence_event.dart';
+
+import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:universal_platform/universal_platform.dart';
 
 import '../../library/api/sharedprefs.dart';
+import '../../library/bloc/connection_check.dart';
 import '../../library/bloc/fcm_bloc.dart';
 import '../../library/bloc/organization_bloc.dart';
+import '../../library/bloc/organization_bloc_get.dart';
 import '../../library/bloc/theme_bloc.dart';
+import '../../library/data/audio.dart';
+import '../../library/data/data_bag.dart';
 import '../../library/data/field_monitor_schedule.dart';
-import '../../library/data/org_message.dart';
 import '../../library/data/photo.dart';
 import '../../library/data/project.dart';
+import '../../library/data/project_polygon.dart';
 import '../../library/data/project_position.dart';
 import '../../library/data/user.dart';
 import '../../library/data/video.dart';
 import '../../library/functions.dart';
 import '../../library/generic_functions.dart';
 import '../../library/geofence/geofencer_two.dart';
-import '../../library/ui/maps/project_polygon_map_mobile.dart';
-import '../../library/ui/media/user_media_list/user_media_list_main.dart';
 import '../../library/ui/media/user_media_list/user_media_list_mobile.dart';
 import '../../library/ui/message/message_main.dart';
 import '../../library/ui/project_list/project_chooser.dart';
 import '../../library/ui/project_list/project_list_mobile.dart';
 import '../../library/users/list/user_list_main.dart';
 import '../../main.dart';
-import '../intro/intro_mobile.dart';
+import '../intro_page_viewer.dart';
 
 class DashboardMobile extends StatefulWidget {
   const DashboardMobile({
@@ -58,6 +56,8 @@ class DashboardMobileState extends State<DashboardMobile>
   late AnimationController _polygonAnimationController;
   late AnimationController _audioAnimationController;
 
+  OrganizationBlocWithGet orgGet = Get.put(OrganizationBlocWithGet());
+
   var isBusy = false;
   var _projects = <Project>[];
   var _users = <User>[];
@@ -66,15 +66,34 @@ class DashboardMobileState extends State<DashboardMobile>
   var _projectPositions = <ProjectPosition>[];
   var _projectPolygons = <ProjectPolygon>[];
   var _schedules = <FieldMonitorSchedule>[];
-  var _audioss = <Audio>[];
+  var _audios = <Audio>[];
   User? user;
 
-  static const nn = '🎽🎽🎽🎽🎽🎽 DashboardMobile: 🎽';
   static const mm = '🎽🎽🎽🎽🎽🎽 DashboardMobile: 🎽';
   bool networkAvailable = false;
   final dur = 600;
   @override
   void initState() {
+    _setAnimationControllers();
+    super.initState();
+    _setItems();
+
+    _listenToStreams();
+    _listenForFCM();
+    _getAuthenticationStatus();
+
+    if (widget.user != null) {
+      _refreshData(true);
+    } else {
+      _refreshData(false);
+    }
+    _subscribeToConnectivity();
+    _subscribeToGeofenceStream();
+    _buildGeofences();
+    _startTimer();
+  }
+
+  void _setAnimationControllers() {
     _projectAnimationController = AnimationController(
         duration: Duration(milliseconds: dur),
         reverseDuration: Duration(milliseconds: dur),
@@ -103,21 +122,6 @@ class DashboardMobileState extends State<DashboardMobile>
         duration: Duration(milliseconds: dur),
         reverseDuration: Duration(milliseconds: dur),
         vsync: this);
-    super.initState();
-    _setItems();
-    _listenToStreams();
-    _listenForFCM();
-
-    _getAuthenticationStatus();
-
-    if (widget.user != null) {
-      _refreshData(true);
-    } else {
-      _refreshData(false);
-    }
-    _subscribeToConnectivity();
-    _subscribeToGeofenceStream();
-    _buildGeofences();
   }
 
   final fb.FirebaseAuth firebaseAuth = fb.FirebaseAuth.instance;
@@ -150,19 +154,19 @@ class DashboardMobileState extends State<DashboardMobile>
   }
 
   void _buildGeofences() async {
-    pp('\n\n$nn _buildGeofences starting ........................');
+    pp('\n$mm _buildGeofences starting ........................');
     await geofencerTwo.buildGeofences();
-    pp('$nn _buildGeofences done.\n');
+    pp('$mm _buildGeofences done.');
   }
 
-  late StreamSubscription<bool> subscription;
-
+  late StreamSubscription<bool> connectionSubscription;
   Future<void> _subscribeToConnectivity() async {
-    subscription = connectionCheck.connectivityStream.listen((bool connected) {
+    connectionSubscription =
+        connectionCheck.connectivityStream.listen((bool connected) {
       if (connected) {
         pp('$mm We have a connection! - $connected');
       } else {
-        pp('$mm We DO NOT have a connection! - show snackbar ...');
+        pp('$mm We DO NOT have a connection! - show snackbar ...  🍎 mounted? $mounted');
         if (mounted) {
           //showConnectionProblemSnackBar(context: context);
         }
@@ -172,9 +176,11 @@ class DashboardMobileState extends State<DashboardMobile>
     pp('$mm Are we connected? answer: $isConnected');
   }
 
+  late StreamSubscription<GeofenceEvent> geofenceSubscription;
+
   void _subscribeToGeofenceStream() async {
-    geofencerTwo.geofenceStream.listen((event) {
-      pp('\n$nn geofenceEvent delivered by geofenceStream: ${event.projectName} ...');
+    geofenceSubscription = geofencerTwo.geofenceStream.listen((event) {
+      pp('\n$mm geofenceEvent delivered by geofenceStream: ${event.projectName} ...');
       if (mounted) {
         showToast(
             message:
@@ -184,62 +190,92 @@ class DashboardMobileState extends State<DashboardMobile>
     });
   }
 
+  // late StreamSubscription<>
+  late StreamSubscription<List<Project>> projectSubscription;
+  late StreamSubscription<List<User>> userSubscription;
+  late StreamSubscription<List<Photo>> photoSubscription;
+  late StreamSubscription<List<Video>> videoSubscription;
+  late StreamSubscription<List<Audio>> audioSubscription;
+  late StreamSubscription<List<ProjectPosition>> projectPositionSubscription;
+  late StreamSubscription<List<ProjectPolygon>> projectPolygonSubscription;
+  late StreamSubscription<List<FieldMonitorSchedule>> schedulesSubscription;
+
+  late StreamSubscription<Photo> photoSubscriptionFCM;
+  late StreamSubscription<Video> videoSubscriptionFCM;
+  late StreamSubscription<Audio> audioSubscriptionFCM;
+  late StreamSubscription<ProjectPosition> projectPositionSubscriptionFCM;
+  late StreamSubscription<ProjectPolygon> projectPolygonSubscriptionFCM;
+  late StreamSubscription<Project> projectSubscriptionFCM;
+  late StreamSubscription<User> userSubscriptionFCM;
+
   void _listenToOrgStreams() async {
-    organizationBloc.projectStream.listen((event) {
+    projectSubscription = organizationBloc.projectStream.listen((event) {
+      _projects = event;
+      pp('$mm attempting to set state after projects delivered by stream: ${_projects.length} ... mounted: $mounted');
       if (mounted) {
-        setState(() {
-          _projects = event;
-          pp('$nn projects delivered by stream: ${_projects.length} ...');
-        });
+        setState(() {});
         _projectAnimationController.forward();
       }
     });
-    organizationBloc.usersStream.listen((event) {
+    userSubscription = organizationBloc.usersStream.listen((event) {
+      _users = event;
+      pp('$mm attempting to set state after users delivered by stream: ${_users.length} ... mounted: $mounted');
       if (mounted) {
-        setState(() {
-          _users = event;
-          pp('$mm users delivered by stream: ${_users.length} ...');
-        });
-        // _controller.reset();
+        setState(() {});
         _userAnimationController.forward();
       }
     });
-    organizationBloc.photoStream.listen((event) {
+    photoSubscription = organizationBloc.photoStream.listen((event) {
+      _photos = event;
+      pp('$mm attempting to set state after photos delivered by stream: ${_photos.length} ... mounted: $mounted');
       if (mounted) {
-        setState(() {
-          _photos = event;
-          pp('$mm photos delivered by stream: ${_photos.length} ...');
-        });
+        setState(() {});
       }
-      // _controller.reset();
       _photoAnimationController.forward();
     });
-    organizationBloc.videoStream.listen((event) {
+
+    videoSubscription = organizationBloc.videoStream.listen((event) {
+      _videos = event;
+      pp('$mm attempting to set state after videos delivered by stream: ${_videos.length} ... mounted: $mounted');
       if (mounted) {
-        setState(() {
-          _videos = event;
-          pp('$mm videos delivered by stream: ${_videos.length} ...');
-        });
-        // _controller.reset();
+        setState(() {});
         _videoAnimationController.forward();
       }
     });
-    organizationBloc.projectPositionsStream.listen((event) {
+    audioSubscription = organizationBloc.audioStream.listen((event) {
+      _audios = event;
+      pp('$mm attempting to set state after audios delivered by stream: ${_audios.length} ... mounted: $mounted');
       if (mounted) {
-        setState(() {
-          _projectPositions = event;
-          pp('$mm projectPositions delivered by stream: ${_projectPositions.length} ...');
-        });
-        // _controller.reset();
+        setState(() {});
+        _audioAnimationController.forward();
+      }
+    });
+    projectPositionSubscription =
+        organizationBloc.projectPositionsStream.listen((event) {
+      _projectPositions = event;
+      pp('$mm attempting to set state after projectPositions delivered by stream: ${_projectPositions.length} ... mounted: $mounted');
+      if (mounted) {
+        setState(() {});
         _projectAnimationController.forward();
       }
     });
-    organizationBloc.fieldMonitorScheduleStream.listen((event) {
+    projectPolygonSubscription =
+        organizationBloc.projectPolygonsStream.listen((event) {
+      _projectPolygons = event;
+      pp('$mm attempting to set state after projectPolygons delivered by stream: ${_projectPolygons.length} ... mounted: $mounted');
       if (mounted) {
-        setState(() {
-          _schedules = event;
-          pp('$mm fieldMonitorSchedules delivered by stream: ${_schedules.length} ...');
-        });
+        setState(() {});
+        _projectAnimationController.forward();
+      }
+    });
+
+    schedulesSubscription =
+        organizationBloc.fieldMonitorScheduleStream.listen((event) {
+      _schedules = event;
+      pp('$mm attempting to set state after schedules delivered by stream: ${_schedules.length} ... mounted: $mounted');
+
+      if (mounted) {
+        setState(() {});
         // _controller.reset();
         _projectAnimationController.forward();
       }
@@ -247,64 +283,102 @@ class DashboardMobileState extends State<DashboardMobile>
   }
 
   void _listenToMonitorStreams() async {
-    organizationBloc.projectStream.listen((event) {
+    projectSubscription = organizationBloc.projectStream.listen((event) {
+      _projects = event;
+      pp('$mm attempting to set state after projects delivered by stream: ${_projects.length} ... mounted: $mounted');
       if (mounted) {
-        setState(() {
-          _projects = event;
-          pp('$nn setting state after projects delivered by stream: ${_projects.length} ...');
-        });
+        setState(() {});
         _projectAnimationController.forward();
       }
     });
-    organizationBloc.usersStream.listen((event) {
+    userSubscription = organizationBloc.usersStream.listen((event) {
+      _users = event;
+      pp('$mm attempting to set state after users delivered by stream: ${_users.length} ... mounted: $mounted');
       if (mounted) {
-        setState(() {
-          _users = event;
-          pp('$mm setting state after users delivered by stream: ${_users.length} ...');
-        });
+        setState(() {});
         _userAnimationController.forward();
       }
     });
-    organizationBloc.photoStream.listen((event) {
+    photoSubscription = organizationBloc.photoStream.listen((event) {
+      pp('$mm attempting to set state after photos delivered by stream: ${_photos.length} ... mounted: $mounted');
+      _photos = event;
       if (mounted) {
-        setState(() {
-          _photos = event;
-          pp('$mm setting state after photos delivered by stream: ${_photos.length} ...');
-        });
+        setState(() {});
         _photoAnimationController.forward();
       }
     });
-    organizationBloc.videoStream.listen((event) {
+
+    videoSubscription = organizationBloc.videoStream.listen((event) {
+      _videos = event;
+      pp('$mm attempting to set state after videos delivered by stream: ${_videos.length} ... mounted: $mounted');
+
       if (mounted) {
-        setState(() {
-          _videos = event;
-          pp('$mm setting state after videos delivered by stream: ${_videos.length} ...');
-        });
+        setState(() {});
         _videoAnimationController.forward();
       }
     });
-    organizationBloc.projectPositionsStream.listen((event) {
+    audioSubscription =organizationBloc.audioStream.listen((event) {
+      _audios = event;
+      pp('$mm attempting to set state after audios delivered by stream: ${_audios.length} ... mounted: $mounted');
       if (mounted) {
-        setState(() {
-          _projectPositions = event;
-          pp('$mm setting state after projectPositions delivered by stream: ${_projectPositions.length} ...');
-        });
+        setState(() {});
+        _audioAnimationController.forward();
       }
     });
-    organizationBloc.fieldMonitorScheduleStream.listen((event) {
+    projectPositionSubscription =organizationBloc.projectPositionsStream.listen((event) {
+      _projectPositions = event;
+      pp('$mm attempting to set state after project positions delivered by stream: ${_projectPositions.length} ... mounted: $mounted');
+
       if (mounted) {
-        setState(() {
-          _schedules = event;
-          pp('$mm fieldMonitorSchedules delivered by stream: ${_schedules.length} ...');
-        });
+        setState(() {});
       }
+    });
+    schedulesSubscription = organizationBloc.fieldMonitorScheduleStream.listen((event) {
+      _schedules = event;
+      pp('$mm attempting to set state after fieldMonitorSchedules delivered by stream: ${_schedules.length} ... mounted: $mounted');
+      if (mounted) {
+        setState(() {});
+      }
+    });
+  }
+
+  void _startTimer() async {
+    Future.delayed(const Duration(seconds: 5), () {
+      Timer.periodic(const Duration(minutes: 30), (timer) async {
+        pp('$mm ........ set state timer tick: ${timer.tick}');
+        try {
+          _refreshData(false);
+        } catch (e) {
+          //ignore
+        }
+      });
     });
   }
 
   @override
   void dispose() {
     _projectAnimationController.dispose();
-    subscription.cancel();
+    _audioAnimationController.dispose();
+    _photoAnimationController.dispose();
+    _videoAnimationController.dispose();
+    _userAnimationController.dispose();
+    _polygonAnimationController.dispose();
+    _positionAnimationController.dispose();
+    connectionSubscription.cancel();
+    projectPolygonSubscription.cancel();
+    projectPositionSubscription.cancel();
+    projectSubscription.cancel();
+    photoSubscription.cancel();
+    videoSubscription.cancel();
+    userSubscription.cancel();
+    audioSubscription.cancel();
+    projectPolygonSubscriptionFCM.cancel();
+    projectPositionSubscriptionFCM.cancel();
+    projectSubscriptionFCM.cancel();
+    photoSubscriptionFCM.cancel();
+    videoSubscriptionFCM.cancel();
+    userSubscriptionFCM.cancel();
+    audioSubscriptionFCM.cancel();
     super.dispose();
   }
 
@@ -334,21 +408,27 @@ class DashboardMobileState extends State<DashboardMobile>
 
   void _refreshData(bool forceRefresh) async {
     pp('$mm ............................................Refreshing data ....');
-    setState(() {
-      isBusy = true;
-    });
-
+    if (mounted) {
+      setState(() {
+        isBusy = true;
+      });
+    }
     await _doTheWork(forceRefresh);
-    setState(() {});
   }
 
   Future<void> _doTheWork(bool forceRefresh) async {
     try {
       user = await Prefs.getUser();
-      var bag = await organizationBloc.getOrganizationData(
+      await orgGet.getOrganizationData(
           organizationId: user!.organizationId!, forceRefresh: forceRefresh);
-      pp('$mm  result: users found ${bag.users!.length}');
-      await _extractData(bag);
+      var mBag = orgGet.organizationDataBag;
+      if (mBag!.date != null) {
+        pp('\n\n\n$mm new get seems to have gone well! ...  🍎🍎🍎🍎 what now, Boss?\n');
+      }
+      // var bag = await organizationBloc.getOrganizationData(
+      //     organizationId: user!.organizationId!, forceRefresh: forceRefresh);
+      // pp('$mm  result: users found ${bag.users!.length}');
+      await _extractData(mBag);
       setState(() {});
     } catch (e) {
       pp('$mm $e - will show snackbar ..');
@@ -392,9 +472,9 @@ class DashboardMobileState extends State<DashboardMobile>
     _photos = bag.photos!;
     _videos = bag.videos!;
     _schedules = bag.fieldMonitorSchedules!;
-    _audioss = bag.audios!;
+    _audios = bag.audios!;
 
-    pp('$mm ..... setting state extracting org data from bag');
+    pp('$mm ..... setting state after extracting org data from bag');
     setState(() {});
   }
 
@@ -404,32 +484,47 @@ class DashboardMobileState extends State<DashboardMobile>
 
     if (android || ios) {
       pp('DashboardMobile: 🍎 🍎 _listen to FCM message streams ... 🍎 🍎');
-      fcmBloc.projectStream.listen((Project project) async {
+      projectSubscriptionFCM =
+          fcmBloc.projectStream.listen((Project project) async {
         if (mounted) {
-          pp('DashboardMobile: 🍎 🍎 showProjectSnackbar: ${project.name} ... 🍎 🍎');
+          pp('$mm: 🍎 🍎 projects arrived: ${project.name} ... 🍎 🍎');
           _projects = await organizationBloc.getOrganizationProjects(
               organizationId: user!.organizationId!, forceRefresh: false);
           setState(() {});
         }
       });
 
-      fcmBloc.userStream.listen((user) async {
+      userSubscriptionFCM = fcmBloc.userStream.listen((user) async {
+        pp('$mm: 🍎 🍎 user arrived... 🍎 🍎');
+
         if (mounted) {
-          pp('DashboardMobile: 🍎 🍎 showUserSnackbar: ${user.name} ... 🍎 🍎');
           _users = await organizationBloc.getUsers(
               organizationId: user.organizationId!, forceRefresh: false);
           setState(() {});
-          // SpecialSnack.showUserSnackbar(
-          //     scaffoldKey: _key, user: user, listener: this);
+        }
+      });
+      photoSubscriptionFCM = fcmBloc.photoStream.listen((user) async {
+        pp('$mm: 🍎 🍎 photoSubscriptionFCM photo arrived... 🍎 🍎');
+        if (mounted) {
+          _photos = await organizationBloc.getPhotos(
+              organizationId: user.organizationId!, forceRefresh: false);
+          setState(() {});
         }
       });
 
-      fcmBloc.messageStream.listen((OrgMessage message) {
+      videoSubscriptionFCM = fcmBloc.videoStream.listen((Video message) async {
+        pp('$mm: 🍎 🍎 videoSubscriptionFCM video arrived... 🍎 🍎');
         if (mounted) {
-          pp('DashboardMobile: 🍎 🍎 showMessageSnackbar: ${message.message} ... 🍎 🍎');
-
-          // SpecialSnack.showMessageSnackbar(
-          //     scaffoldKey: _key, message: message, listener: this);
+          pp('DashboardMobile: 🍎 🍎 showMessageSnackbar: ${message.projectName} ... 🍎 🍎');
+          _videos = await organizationBloc.getVideos(
+              organizationId: user!.organizationId!, forceRefresh: false);
+        }
+      });
+      audioSubscriptionFCM = fcmBloc.audioStream.listen((Audio message) async {
+        pp('$mm: 🍎 🍎 audioSubscriptionFCM audio arrived... 🍎 🍎');
+        if (mounted) {
+          _audios = await organizationBloc.getAudios(
+              organizationId: user!.organizationId!, forceRefresh: false);
         }
       });
     } else {
@@ -493,18 +588,6 @@ class DashboardMobileState extends State<DashboardMobile>
             alignment: Alignment.topLeft,
             duration: const Duration(seconds: 1),
             child: MessageMain(user: user)));
-  }
-
-  void _navigateToMediaList() {
-    if (mounted) {
-      Navigator.push(
-          context,
-          PageTransition(
-              type: PageTransitionType.scale,
-              alignment: Alignment.topLeft,
-              duration: const Duration(seconds: 1),
-              child: UserMediaListMain(user!)));
-    }
   }
 
   void _navigateToUserMediaList() async {
@@ -572,7 +655,7 @@ class DashboardMobileState extends State<DashboardMobile>
                   size: 18,
                   color: Theme.of(context).primaryColor,
                 ),
-                onPressed: (){
+                onPressed: () {
                   sortOutNewHiveArtifacts(context);
                 }),
             IconButton(
@@ -838,7 +921,7 @@ class DashboardMobileState extends State<DashboardMobile>
                                   const SizedBox(
                                     height: 32,
                                   ),
-                                  Text('${_audioss.length}', style: style),
+                                  Text('${_audios.length}', style: style),
                                   const SizedBox(
                                     height: 8,
                                   ),
@@ -969,7 +1052,8 @@ class DashboardMobileState extends State<DashboardMobile>
                   ),
                   _showProjectChooser
                       ? Positioned(
-                          left: 24, right: 24,
+                          left: 24,
+                          right: 24,
                           top: 0,
                           child: SizedBox(
                             height: 420,
@@ -993,7 +1077,9 @@ class DashboardMobileState extends State<DashboardMobile>
                         )
                       : const SizedBox(),
                   _showProjectSelected
-                      ? Positioned(left: 29, top: -8,
+                      ? Positioned(
+                          left: 29,
+                          top: -8,
                           child: SizedBox(
                             height: 80,
                             width: 300,
@@ -1013,11 +1099,17 @@ class DashboardMobileState extends State<DashboardMobile>
                                     const SizedBox(
                                       height: 12,
                                     ),
-                                     Text('Tap to see more:', style: myTextStyleSmall(context),),
+                                    Text(
+                                      'Tap to see more:',
+                                      style: myTextStyleSmall(context),
+                                    ),
                                     const SizedBox(
                                       height: 8,
                                     ),
-                                    Text('${selectedProject!.name}',style: myTextStyleMedium(context),),
+                                    Text(
+                                      '${selectedProject!.name}',
+                                      style: myTextStyleMedium(context),
+                                    ),
                                   ],
                                 ),
                               ),

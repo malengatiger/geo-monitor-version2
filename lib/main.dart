@@ -16,10 +16,12 @@ import 'package:flutter_settings_screens/flutter_settings_screens.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:geo_monitor/settings/app_settings.dart';
 import 'package:geo_monitor/ui/audio/audio_mobile.dart';
+import 'package:get/get.dart';
 
 import 'package:geo_monitor/ui/dashboard/dashboard_main.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:page_transition/page_transition.dart';
+import 'package:restart_app/restart_app.dart';
 import 'firebase_options.dart';
 import 'library/api/sharedprefs.dart';
 import 'library/data/user.dart' as ur;
@@ -61,10 +63,12 @@ Future<void> mainSetup() async {
     pp('${Emoji.heartGreen}${Emoji.heartGreen}}${Emoji.heartGreen} '
         'Hive initialized and boxCollection set up');
 
-    writeFailedMedia.startTimer(const Duration(minutes: 10));
-    uploadFailedMedia.startTimer(const Duration(minutes: 15));
-    writeFailedMedia.writeFailedPhotos();
-    writeFailedMedia.writeFailedVideos();
+    writeFailedMedia.startTimer(const Duration(minutes: 25));
+    uploadFailedMedia.startTimer(const Duration(minutes: 30));
+
+    writeFailedMedia.writeFailedMedia();
+    uploadFailedMedia.uploadFailedBags();
+
     pp('${Emoji.heartGreen}${Emoji.heartGreen} writeFailedMedia/uploadFailedMedia '
         'timers started with 🍎 5 minute duration per tick ...');
 
@@ -95,23 +99,24 @@ Future<void> initSettings() async {
 bool _isDarkTheme = true;
 bool _isUsingHive = true;
 
-
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-  //pp('${Emoji.heartGreen}${Emoji.heartGreen} Firebase App has been initialized: ${firebaseApp.name}');
+  firebaseApp = await Firebase.initializeApp(
+      options: DefaultFirebaseOptions.currentPlatform);
+  pp('${Emoji.heartGreen}${Emoji.heartGreen} Firebase App has been initialized: ${firebaseApp.name}');
   user = await Prefs.getUser();
-  // user = fb.FirebaseAuth.instance.currentUser;
-  // if (user == null) {
-  //   pp('${Emoji.heartGreen}${Emoji.heartGreen} Ding Dong! Rookie here ...');
-  // } else {
-  //   pp('${Emoji.redDot}${Emoji.redDot} User already here ...');
-  // }
+  if (user == null) {
+    pp('${Emoji.redDot}${Emoji.redDot}${Emoji.redDot}${Emoji.redDot} '
+        'User is null; ensure that firebase is signed out ...');
+    await fb.FirebaseAuth.instance.signOut();
+  } else {
+    pp('\n${Emoji.heartGreen}${Emoji.heartGreen} Prefs user available:: ${user!.toJson()}\n');
+  }
+
   initSettings().then((value) {
     pp('🌀🌀🌀🌀 Settings functionality initialized');
     runApp(const MyApp());
   });
-
 }
 
 /// The main app.
@@ -128,12 +133,12 @@ class MyApp extends StatelessWidget {
         pp('🌀🌀🌀🌀 Tap detected; should dismiss keyboard');
         FocusManager.instance.primaryFocus?.unfocus();
       },
-      onLongPress: () async {
-        //todo - REMOVE after testing
-        pp('🌀🌀🌀🌀 onLongPress detected; should clear user stuff, count: $doubleTapCount');
-          await sortOutNewHiveArtifacts(context);
-
-      },
+      // onLongPress: () async {
+      //   //todo - REMOVE after testing
+      //   pp('🌀🌀🌀🌀 onLongPress detected; should clear user stuff, count: $doubleTapCount');
+      //     await sortOutNewHiveArtifacts(context);
+      //
+      // },
       child: StreamBuilder(
         stream: themeBloc.newThemeStream,
         initialData: themeIndex,
@@ -141,7 +146,7 @@ class MyApp extends StatelessWidget {
           if (snapshot.hasData) {
             themeIndex = snapshot.data;
           }
-          return MaterialApp(
+          return GetMaterialApp(
             // routerConfig: _router,
             debugShowCheckedModeBanner: false,
             title: 'GeoMonitor',
@@ -174,7 +179,6 @@ class MyApp extends StatelessWidget {
       ),
     );
   }
-
 }
 
 class SplashWidget extends StatelessWidget {
@@ -251,6 +255,7 @@ Future<void> sortOutNewHiveArtifacts(BuildContext context) async {
   Prefs.deleteUser();
   await hiveUtil.initialize(forceInitialization: true);
 
-  pp('🌀🌀🌀🌀 We good and clean now, Senor!');
+  pp('🌀🌀🌀🌀 We good and clean now, Senor! .... restarting the app ....');
+  await Restart.restartApp();
+  pp('🌀🌀🌀🌀 We should be in the process of restarting the app.');
 }
-

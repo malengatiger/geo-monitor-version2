@@ -10,6 +10,7 @@ import 'package:universal_platform/universal_platform.dart';
 
 import '../api/data_api.dart';
 import '../api/sharedprefs.dart';
+import '../data/audio.dart';
 import '../data/condition.dart';
 import '../data/org_message.dart';
 import '../data/video.dart';
@@ -36,6 +37,8 @@ class FCMBloc {
       StreamController.broadcast();
   final StreamController<Photo> _photoController = StreamController.broadcast();
   final StreamController<Video> _videoController = StreamController.broadcast();
+  final StreamController<Audio> _audioController = StreamController.broadcast();
+
   final StreamController<Condition> _conditionController =
       StreamController.broadcast();
   final StreamController<OrgMessage> _messageController =
@@ -45,6 +48,7 @@ class FCMBloc {
   Stream<Project> get projectStream => _projectController.stream;
   Stream<Photo> get photoStream => _photoController.stream;
   Stream<Video> get videoStream => _videoController.stream;
+  Stream<Audio> get audioStream => _audioController.stream;
   Stream<Condition> get conditionStream => _conditionController.stream;
   Stream<OrgMessage> get messageStream => _messageController.stream;
 
@@ -182,7 +186,8 @@ class FCMBloc {
       if (photo.userId == user!.userId) {
         pp('$mm This message is about my own photo - not caching');
       } else {
-        await hiveUtil.addPhoto(photo: photo);
+        var res = await hiveUtil.addPhoto(photo: photo);
+        pp('$mm Photo received added to local cache:  🔵 🔵 ${photo.projectName} result: $res, sending to photo stream');
         _photoController.sink.add(photo);
       }
     }
@@ -191,10 +196,24 @@ class FCMBloc {
       var m = jsonDecode(data['video']);
       var video = Video.fromJson(m);
       if (video.userId == user!.userId) {
-        pp('$mm This message is about my own video - not caching');
+        pp('$mm This message is about my own audio - not caching');
       } else {
         await hiveUtil.addVideo(video: video);
+        pp('$mm Video received added to local cache:  🔵 🔵 ${video.projectName}, sending to video stream');
         _videoController.sink.add(video);
+      }
+    }
+    if (data['audio'] != null) {
+      pp("$mm processFCMMessage  🔵 🔵 🔵 ........................... cache AUDIO  🍎  🍎");
+      var m = jsonDecode(data['audio']);
+      var audio = Audio.fromJson(m);
+      if (audio.userId == user!.userId) {
+        pp('$mm This message is about my own audio - not caching');
+      } else {
+        await hiveUtil.addAudio(audio: audio);
+        pp('$mm Audio received added to local cache:  🔵 🔵 ${audio.projectName}, sending to audio stream');
+
+        _audioController.sink.add(audio);
       }
     }
     if (data['condition'] != null) {
@@ -202,6 +221,7 @@ class FCMBloc {
       var m = jsonDecode(data['condition']);
       var condition = Condition.fromJson(m);
       await hiveUtil.addCondition(condition: condition);
+      pp('$mm condition received added to local cache:  🔵 🔵 ${condition.projectName}, sending to condition stream');
       _conditionController.sink.add(condition);
     }
     if (data['message'] != null) {

@@ -278,7 +278,6 @@ class ProjectListMobileState extends State<ProjectListMobile>
             child: AudioMobile(project: p)));
   }
 
-
   Future<void> _navigateToOrgMap() async {
     pp('_navigateToOrgMap: ');
 
@@ -579,10 +578,7 @@ class ProjectListMobileState extends State<ProjectListMobile>
                       user == null
                           ? 'Unknown User'
                           : user!.organizationName!,
-                      style: GoogleFonts.lato(
-                          textStyle:
-                          Theme.of(context).textTheme.bodyLarge,
-                          fontWeight: FontWeight.w600)),
+                      style: myTextStyleMediumBold(context)),
                   const SizedBox(
                     height: 16,
                   ),
@@ -598,11 +594,11 @@ class ProjectListMobileState extends State<ProjectListMobile>
                         children: [
                           SliderTheme(
                             data: SliderTheme.of(context).copyWith(
-                              activeTrackColor: Colors.pink[700],
+                              activeTrackColor: Theme.of(context).primaryColor,
                               inactiveTrackColor: Colors.pink[100],
                               trackShape:
                               const RoundedRectSliderTrackShape(),
-                              trackHeight: 4.0,
+                              trackHeight: 2.0,
                               thumbShape:
                               const RoundSliderThumbShape(
                                   enabledThumbRadius: 12.0),
@@ -614,7 +610,7 @@ class ProjectListMobileState extends State<ProjectListMobile>
                                   overlayRadius: 28.0),
                               tickMarkShape:
                               const RoundSliderTickMarkShape(),
-                              activeTickMarkColor: Colors.pink[700],
+                              activeTickMarkColor: Colors.indigo[700],
                               inactiveTickMarkColor:
                               Colors.pink[100],
                               valueIndicatorShape:
@@ -622,23 +618,20 @@ class ProjectListMobileState extends State<ProjectListMobile>
                               valueIndicatorColor:
                               Colors.pinkAccent,
                               valueIndicatorTextStyle:
-                              const TextStyle(
-                                color: Colors.white,
-                              ),
+                              myTextStyleSmall(context),
                             ),
                             child: Slider(
                               value: sliderValue,
-                              min: 10,
-                              max: 50,
+                              min: 20,
+                              max: 200,
                               divisions: 5,
                               label: '$sliderValue',
                               onChanged: _onSliderChanged,
                             ),
                           ),
-
                           Text(
                             '$sliderValue',
-                            style: Styles.whiteBoldSmall,
+                            style: myNumberStyleMedium(context),
                           )
                         ],
                       )
@@ -649,7 +642,7 @@ class ProjectListMobileState extends State<ProjectListMobile>
                     ],
                   ),
                   const SizedBox(
-                    height: 48,
+                    height: 32,
                   ),
                 ],
               ),

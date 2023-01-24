@@ -55,24 +55,18 @@ class _ProjectPhotosState extends State<ProjectAudios> {
   AudioPlayer audioPlayer = AudioPlayer();
   Duration? duration;
   String? stringDuration;
+
   Future<void> _playAudio() async {
     duration = await audioPlayer.setUrl(_selectedAudio!.url!);
-    stringDuration = _printDuration(duration!);
-    pp('🍎🍎🍎🍎 Duration of file is: ${duration!.inSeconds} seconds');
+    stringDuration = getHourMinuteSecond(duration!);
+    pp('🍎🍎🍎🍎 Duration of file is: $stringDuration ');
     setState(() {
 
     });
     audioPlayer.play();
 
   }
-  String _printDuration(Duration duration) {
-    String twoDigits(int n) => n.toString().padLeft(2, "0");
-    String twoDigitMinutes = twoDigits(duration.inMinutes.remainder(60));
-    String twoDigitSeconds = twoDigits(duration.inSeconds.remainder(60));
-    var s = "${twoDigits(duration.inHours)}:$twoDigitMinutes:$twoDigitSeconds";
-    pp('$mm stringDuration: $s');
-    return s;
-  }
+
   @override
   Widget build(BuildContext context) {
     return audios.isEmpty
@@ -119,6 +113,11 @@ class _ProjectPhotosState extends State<ProjectAudios> {
                         var audio = audios.elementAt(index);
                         var dt = getFormattedDateShortestWithTime(
                             audio.created!, context);
+                        String dur = '00:00:00';
+                        if (audio.durationInSeconds != null) {
+                          dur = getHourMinuteSecond(Duration(seconds: audio
+                              .durationInSeconds!));
+                        }
                         return Stack(
                           children: [
                             SizedBox(
@@ -136,19 +135,29 @@ class _ProjectPhotosState extends State<ProjectAudios> {
                                     elevation: 4,
                                     shape: getRoundedBorder(radius: 16),
                                     child:  Padding(
-                                      padding: const EdgeInsets.all(20.0),
+                                      padding: const EdgeInsets.all(8.0),
                                       child: SizedBox(
-                                        height: 200, width: 200,
+                                        height: 220, width: 220,
                                         child: Column(
                                           children:  [
-                                            const SizedBox(height: 28,),
-                                            const SizedBox(height: 48, width: 48,
+                                            const SizedBox(height: 20,),
+                                            const SizedBox(height: 40, width: 40,
                                               child: CircleAvatar(
-                                                child: Icon(Icons.mic, size: 32,),
+                                                child: Icon(Icons.mic, size: 36,),
                                               ),
                                             ),
                                             const SizedBox(height: 16,),
-                                            Text(dt, style: myTextStyleSmall(context),),
+                                            Text(dt, style: myTextStyleTiny(context),),
+                                            const SizedBox(height: 8,),
+                                            Text('${audio.userName}', style: myTextStyleTiny(context),),
+                                            const SizedBox(height: 12,),
+                                            Row(
+                                              children: [
+                                                Text('Duration:', style: myTextStyleTiny(context),),
+                                                const SizedBox(width: 8,),
+                                                Text(dur, style: myNumberStyleSmall(context),),
+                                              ],
+                                            ),
                                           ],
                                         ),
                                       ),
