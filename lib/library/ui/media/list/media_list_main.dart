@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:responsive_builder/responsive_builder.dart';
 import '../../../api/sharedprefs.dart';
 import '../../../bloc/organization_bloc.dart';
-import '../../../bloc/user_bloc.dart';
 import '../../../data/project.dart';
 import '../../../data/user.dart';
 import '../../../functions.dart';

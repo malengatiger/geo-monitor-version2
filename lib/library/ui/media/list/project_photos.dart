@@ -1,9 +1,7 @@
-import 'package:animations/animations.dart';
 import 'package:badges/badges.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:transparent_image/transparent_image.dart';
 
 import '../../../bloc/project_bloc.dart';
 import '../../../data/photo.dart';
@@ -99,8 +97,8 @@ class ProjectPhotosState extends State<ProjectPhotos> with SingleTickerProviderS
                   itemCount: photos.length,
                   itemBuilder: (context, index) {
                     var photo = photos.elementAt(index);
-                    var dt =
-                    getFormattedDateShortestWithTime(photo.created!, context);
+                    // var dt =
+                    // getFormattedDateShortestWithTime(photo.created!, context);
 
                     return Stack(
                       children: [

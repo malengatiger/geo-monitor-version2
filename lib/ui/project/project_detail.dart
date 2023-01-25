@@ -299,7 +299,7 @@ class ProjectDetailState extends State<ProjectDetail> {
                 type: PageTransitionType.scale,
                 alignment: Alignment.topLeft,
                 duration: const Duration(seconds: 1),
-                child: ProjectEditor()));
+                child: const ProjectEditor()));
 
         break;
       case 1:

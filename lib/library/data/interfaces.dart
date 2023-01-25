@@ -1,13 +1,13 @@
 enum QuestionType {
-  SingleAnswer,
-  MultipleChoice,
-  SingleChoice,
-  Optional,
+  singleAnswer,
+  multipleChoice,
+  singleChoice,
+  optional,
 }
 enum Rating {
-  Excellent,
-  Good,
-  Average,
-  Bad,
-  Terrible,
+  excellent,
+  good,
+  average,
+  bad,
+  terrible,
 }

@@ -12,22 +12,22 @@ import '../../functions.dart';
 class FieldMonitorMapDesktop extends StatefulWidget {
   final User user;
 
-  FieldMonitorMapDesktop(this.user);
+  const FieldMonitorMapDesktop(this.user, {super.key});
 
   @override
-  _FieldMonitorMapDesktopState createState() => _FieldMonitorMapDesktopState();
+  FieldMonitorMapDesktopState createState() => FieldMonitorMapDesktopState();
 }
 
-class _FieldMonitorMapDesktopState extends State<FieldMonitorMapDesktop>
+class FieldMonitorMapDesktopState extends State<FieldMonitorMapDesktop>
     with SingleTickerProviderStateMixin {
   late AnimationController _controller;
-  Completer<GoogleMapController> _mapController = Completer();
+  final Completer<GoogleMapController> _mapController = Completer();
   Map<MarkerId, Marker> markers = <MarkerId, Marker>{};
   var random = Random(DateTime.now().millisecondsSinceEpoch);
-  var _key = GlobalKey<ScaffoldState>();
+  final _key = GlobalKey<ScaffoldState>();
   bool busy = false;
 
-  static final CameraPosition _kGooglePlex = CameraPosition(
+  static const CameraPosition _kGooglePlex = CameraPosition(
     target: LatLng(37.42796133580664, -122.085749655962),
     zoom: 14.4746,
   );
@@ -67,7 +67,7 @@ class _FieldMonitorMapDesktopState extends State<FieldMonitorMapDesktop>
     );
     markers[markerId] = marker;
 
-    final CameraPosition _first = CameraPosition(
+    final CameraPosition first = CameraPosition(
       target: LatLng(
         latitude,
         longitude,
@@ -75,7 +75,7 @@ class _FieldMonitorMapDesktopState extends State<FieldMonitorMapDesktop>
       zoom: 14.4746,
     );
     googleMapController = await _mapController.future;
-    googleMapController!.animateCamera(CameraUpdate.newCameraPosition(_first));
+    googleMapController!.animateCamera(CameraUpdate.newCameraPosition(first));
   }
 
   void _onMarkerTapped() {
@@ -122,6 +122,7 @@ class _FieldMonitorMapDesktopState extends State<FieldMonitorMapDesktop>
             style: Styles.whiteSmall,
           ),
           bottom: PreferredSize(
+              preferredSize: const Size.fromHeight(40),
               child: Padding(
                 padding: const EdgeInsets.all(20.0),
                 child: Column(
@@ -130,13 +131,12 @@ class _FieldMonitorMapDesktopState extends State<FieldMonitorMapDesktop>
                       'Locate the FieldMonitor at their Home base. This enables you to match projects with monitors during the onboarding process ',
                       style: Styles.whiteSmall,
                     ),
-                    SizedBox(
+                    const SizedBox(
                       height: 16,
                     )
                   ],
                 ),
-              ),
-              preferredSize: Size.fromHeight(40)),
+              )),
         ),
         body: Stack(
           children: [
@@ -159,8 +159,4 @@ class _FieldMonitorMapDesktopState extends State<FieldMonitorMapDesktop>
     );
   }
 
-  @override
-  onClose() {
-    ScaffoldMessenger.of(_key.currentState!.context).removeCurrentSnackBar();
-  }
 }

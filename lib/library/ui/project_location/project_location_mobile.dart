@@ -1,14 +1,10 @@
 import 'package:animations/animations.dart';
 import 'package:badges/badges.dart';
 import 'package:flutter/material.dart';
-import 'package:geo_monitor/library/bloc/organization_bloc.dart';
-import 'package:geo_monitor/library/data/project_polygon.dart';
-import 'package:geo_monitor/library/ui/maps/project_map_mobile.dart';
-import 'package:geo_monitor/library/ui/maps/project_polygon_map_mobile.dart';
+
 import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
 
-import 'package:google_fonts/google_fonts.dart';
 import 'package:page_transition/page_transition.dart';
 
 import 'package:uuid/uuid.dart';
@@ -16,16 +12,19 @@ import 'package:uuid/uuid.dart';
 import '../../api/data_api.dart';
 
 import '../../api/sharedprefs.dart';
+import '../../bloc/organization_bloc.dart';
 import '../../bloc/project_bloc.dart';
 import '../../data/city.dart';
 import '../../data/place_mark.dart';
 import '../../data/position.dart' as mon;
 
+import '../../data/project_polygon.dart';
 import '../../data/user.dart';
 import '../../functions.dart';
 import '../../data/project.dart';
 import '../../data/project_position.dart';
 import '../../location/loc_bloc.dart';
+import '../maps/project_polygon_map_mobile.dart';
 
 class ProjectLocationMobile extends StatefulWidget {
   final Project project;

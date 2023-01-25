@@ -4,12 +4,12 @@ import '../../library/data/user.dart';
 
 class IntroDesktop extends StatefulWidget {
   final User? user;
-  IntroDesktop({Key? key, this.user}) : super(key: key);
+  const IntroDesktop({Key? key, this.user}) : super(key: key);
   @override
-  _IntroDesktopState createState() => _IntroDesktopState();
+  IntroDesktopState createState() => IntroDesktopState();
 }
 
-class _IntroDesktopState extends State<IntroDesktop>
+class IntroDesktopState extends State<IntroDesktop>
     with SingleTickerProviderStateMixin {
   late AnimationController _controller;
 

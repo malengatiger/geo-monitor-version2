@@ -5,7 +5,7 @@ import '../../data/project.dart';
 class ProjectEditTablet extends StatefulWidget {
   final Project? project;
 
-  ProjectEditTablet(this.project);
+  const ProjectEditTablet(this.project, {super.key});
 
   @override
   ProjectEditTabletState createState() => ProjectEditTabletState();

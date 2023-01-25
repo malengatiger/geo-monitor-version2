@@ -41,7 +41,7 @@ class CacheManager {
     return _instance;
   }
 
-  CacheManager._internal() {}
+  CacheManager._internal();
 
   LazyBox<Organization>? _orgBox;
   LazyBox<Project>? _projectBox;
@@ -432,7 +432,7 @@ class CacheManager {
   }
 
   Future<DataBag> getOrganizationData({required String organizationId}) async {
-    pp('\mm$mm getOrganizationData starting ...');
+    pp('$mm$mm getOrganizationData starting ...');
     final projects = await getOrganizationProjects();
     final users = await getUsers();
     final photos = await getOrganizationPhotos();

@@ -1,4 +1,3 @@
-import 'package:meta/meta.dart';
 
 class UserCount {
   String? userId;
@@ -13,10 +12,10 @@ class UserCount {
       required this.photos});
 
   UserCount.fromJson(Map data) {
-    this.userId = data['userId'];
-    this.videos = data['videos'];
-    this.projects = data['projects'];
-    this.photos = data['photos'];
+    userId = data['userId'];
+    videos = data['videos'];
+    projects = data['projects'];
+    photos = data['photos'];
   }
   Map<String, dynamic> toJson() {
     Map<String, dynamic> map = {
@@ -34,12 +33,12 @@ class ProjectCount {
   int photos = 0, videos = 0;
 
   ProjectCount(
-      {required this.projectId, required this.videos, required this.photos});
+      {required projectId, required this.videos, required this.photos});
 
   ProjectCount.fromJson(Map data) {
-    this.projectId = data['projectId'];
-    this.videos = data['videos'];
-    this.photos = data['photos'];
+   projectId = data['projectId'];
+   videos = data['videos'];
+   photos = data['photos'];
   }
   Map<String, dynamic> toJson() {
     Map<String, dynamic> map = {

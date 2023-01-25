@@ -1,7 +1,6 @@
 import 'dart:collection';
 import 'dart:convert';
 import 'dart:math';
-import 'dart:typed_data';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -22,30 +21,6 @@ p(dynamic message) {
     }
   }
 }
-
-const FREQUENCY_IN_SECONDS = 3;
-const TOPIC_GENERAL = 'generalTopic';
-const PERSONAL_TOPIC_PREFIX = 'personal_',
-    MESSAGE_TYPE_SCAN = 'SCAN',
-    MESSAGE_TYPE_WALK_REQUEST = 'WALK_REQUEST',
-    MESSAGE_TYPE_WALK_REQUEST_RESPONSE = 'WALK_REQUEST_RESPONSE',
-    MESSAGE_TYPE_WALK_RESPONSE_ACCEPTANCE = 'WALK_RESPONSE_ACCEPTANCE',
-    MESSAGE_TYPE_WALK_RESPONSE_DECLINATION = 'WALK_RESPONSE_DECLINATION ',
-    MESSAGE_TYPE_PERSONAL_BROADCAST = 'PERSONAL_BROADCAST',
-    MESSAGE_TYPE_EMERGENCY = 'EMERGENCY',
-    MESSAGE_TYPE_CANCELLATION = 'CANCELLATION',
-    MESSAGE_TYPE_EMERGENCY_RESPONSE = 'EMERGENCY_RESPONSE',
-    MESSAGE_TYPE_EMERGENCY_OVER = 'EMERGENCY_OVER',
-    MESSAGE_TYPE_SHAKE = 'DEVICE_SHAKE',
-    MESSAGE_TYPE_SHAKE_RESPONSE = 'DEVICE_SHAKE_RESPONSE',
-    MESSAGE_TYPE_USER_LOCATION = 'USER_LOCATION',
-    MESSAGE_TYPE_BROADCAST_TO_ALL = 'BROADCAST_TO_ALL';
-
-//todo - hide FCM API key in .env
-const FCM_API_KEY =
-    'AAAALCpokDI:APA91bFk3QqOq59dA1NBLumjEDhWLyX7yPhgpUq1oodFQ91sRzX_HSC2xkAzGGv27LiGqnwf841Ogc0EovJSN0jbGKAvgxX5Dc8evbk6cisMESFKLw97vsx1CA0S7kW_ZfFnetWzXslk';
-
-// GeoRange georange = GeoRange();
 
 Color getColor(String stringColor) {
   late Color color;
@@ -83,9 +58,6 @@ Color getColor(String stringColor) {
     case 'green':
       color = Colors.green;
       break;
-    case 'indigo':
-      color = Colors.indigo;
-      break;
     default:
       color = Colors.black;
       break;
@@ -99,7 +71,7 @@ Future getCurrentPosition() async {
   pp('$mm .......... get current location ....');
   int count = 0;
   try {
-    var granted = await Geolocator.requestPermission();
+    await Geolocator.requestPermission();
     var currentPosition = await Geolocator.getCurrentPosition(
         forceAndroidLocationManager: true,
         desiredAccuracy: LocationAccuracy.best,
@@ -117,11 +89,6 @@ Future getCurrentPosition() async {
     rethrow;
   }
 }
-
-// String getGeoHash({required double latitude, required double longitude}) {
-//   String encoded = georange.encode(latitude, longitude);
-//   return encoded;
-// }
 
 String getAddress(Placemark placeMark) {
   String address = ''
@@ -141,20 +108,6 @@ String getShortAddress(Placemark placeMark) {
       '${placeMark.locality == null ? '' : '${placeMark.locality}'} ';
   return address;
 }
-
-// const lorem = 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc id euismod lectus, '
-//     'non tempor felis. Nam rutrum rhoncus est ac venenatis.';
-
-// pp(dynamic message) {
-//   if (isInDebugMode) {
-//     if (message is String) {
-//       debugPrint('${DateTime.now().toIso8601String()}: $message');
-//     } else {
-//       print(message);
-//     }
-//   }
-//   //🔴 this logging ignored when in release mode!
-// }
 
 Future<Uint8List> getBytesFromAsset(String path, int width) async {
   ByteData data = await rootBundle.load(path);

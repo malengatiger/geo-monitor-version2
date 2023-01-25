@@ -11,7 +11,7 @@ import '../../../ui/media/video/video_desktop.dart';
 class VideoMain extends StatelessWidget {
   final Video video;
 
-  VideoMain(this.video);
+  const VideoMain(this.video, {super.key});
 
   @override
   Widget build(BuildContext context) {

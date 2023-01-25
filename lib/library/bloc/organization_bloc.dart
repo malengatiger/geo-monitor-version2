@@ -60,8 +60,6 @@ class OrganizationBloc {
 
   final StreamController<Questionnaire> _activeQuestionnaireController =
       StreamController.broadcast();
-  final StreamController<User> _activeUserController =
-      StreamController.broadcast();
 
   Stream<List<MonitorReport>> get reportStream => _reportController.stream;
 

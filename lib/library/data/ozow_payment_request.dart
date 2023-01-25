@@ -3,7 +3,6 @@ import 'dart:convert';
 import 'package:crypto/crypto.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart' as DotEnv;
 import 'package:http/http.dart' as http;
-import 'package:meta/meta.dart';
 
 import '../functions.dart';
 
@@ -39,22 +38,22 @@ class OzowPaymentRequest {
   });
 
   OzowPaymentRequest.fromJson(Map data) {
-    this.siteCode = data['siteCode'];
-    this.countryCode = data['countryCode'];
-    this.currencyCode = data['currencyCode'];
-    this.transactionReference = data['transactionReference'];
-    this.errorUrl = data['errorUrl'];
-    this.customer = data['customer'];
-    this.bankReference = data['bankReference'];
+    siteCode = data['siteCode'];
+    countryCode = data['countryCode'];
+    currencyCode = data['currencyCode'];
+    transactionReference = data['transactionReference'];
+    errorUrl = data['errorUrl'];
+    customer = data['customer'];
+    bankReference = data['bankReference'];
 
-    this.cancelUrl = data['cancelUrl'];
-    this.successUrl = data['successUrl'];
-    this.cancelUrl = data['cancelUrl'];
-    this.notifyUrl = data['notifyUrl'];
+    cancelUrl = data['cancelUrl'];
+    successUrl = data['successUrl'];
+    cancelUrl = data['cancelUrl'];
+    notifyUrl = data['notifyUrl'];
 
-    this.amount = data['amount'];
-    this.hashCheck = data['hashCheck'];
-    this.isTest = data['isTest'];
+    amount = data['amount'];
+    hashCheck = data['hashCheck'];
+    isTest = data['isTest'];
   }
   Map<String, dynamic> toJson() {
     Map<String, dynamic> map = {
@@ -113,7 +112,7 @@ class OzowPaymentRequest {
 
     pp('🏈 🏈 Bag after json decode call, check properties of mBag:  🏈 🏈 $mBag');
     var start = DateTime.now();
-    var client = new http.Client();
+    var client = http.Client();
     var resp = await client
         .post(
           Uri.parse(mUrl!),

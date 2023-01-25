@@ -4,13 +4,13 @@ import '../../data/user.dart' as mon;
 class ProjectListTablet extends StatefulWidget {
   final mon.User user;
 
-  ProjectListTablet(this.user);
+  const ProjectListTablet(this.user, {super.key});
 
   @override
-  _ProjectListTabletState createState() => _ProjectListTabletState();
+  ProjectListTabletState createState() => ProjectListTabletState();
 }
 
-class _ProjectListTabletState extends State<ProjectListTablet>
+class ProjectListTabletState extends State<ProjectListTablet>
     with SingleTickerProviderStateMixin {
   late AnimationController _controller;
 

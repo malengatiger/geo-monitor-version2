@@ -26,7 +26,7 @@ class AppSettingsState extends State<AppSettings>
       children: <Widget>[
         const Text('Shared Pref'),
         Switch(
-            activeColor: Theme.of(context).accentColor,
+            activeColor: Theme.of(context).primaryColor,
             value: true,
             onChanged: (newVal) {
               if (kIsWeb) {
@@ -39,21 +39,6 @@ class AppSettingsState extends State<AppSettings>
     );
   }
 
-  Widget _buildThemeSwitch(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-      children: <Widget>[
-        const Text('Light Theme'),
-        Switch(
-            activeColor: Theme.of(context).accentColor,
-            value: true,
-            onChanged: (newVal) {
-              setState(() {});
-            }),
-        const Text('Dark Theme'),
-      ],
-    );
-  }
 
   @override
   void dispose() {

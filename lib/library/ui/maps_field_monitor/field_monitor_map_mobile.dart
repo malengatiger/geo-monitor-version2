@@ -13,7 +13,7 @@ import '../../location/loc_bloc.dart';
 class FieldMonitorMapMobile extends StatefulWidget {
   final User user;
 
-  const FieldMonitorMapMobile(this.user);
+  const FieldMonitorMapMobile(this.user, {super.key});
 
   @override
   FieldMonitorMapMobileState createState() => FieldMonitorMapMobileState();
@@ -79,7 +79,7 @@ class FieldMonitorMapMobileState extends State<FieldMonitorMapMobile>
     );
     markers[markerId] = marker;
 
-    final CameraPosition _first = CameraPosition(
+    final CameraPosition first = CameraPosition(
       target: LatLng(
         latitude,
         longitude,
@@ -87,7 +87,7 @@ class FieldMonitorMapMobileState extends State<FieldMonitorMapMobile>
       zoom: 14.4746,
     );
     googleMapController = await _mapController.future;
-    googleMapController!.animateCamera(CameraUpdate.newCameraPosition(_first));
+    googleMapController!.animateCamera(CameraUpdate.newCameraPosition(first));
   }
 
   void _onMarkerTapped() {
@@ -178,10 +178,10 @@ class FieldMonitorMapMobileState extends State<FieldMonitorMapMobile>
               onLongPress: _onLongPress,
             ),
             busy
-                ? Positioned(
+                ? const Positioned(
                     left: 60,
                     top: 60,
-                    child: Container(
+                    child: SizedBox(
                       width: 20,
                       height: 20,
                       child: CircularProgressIndicator(

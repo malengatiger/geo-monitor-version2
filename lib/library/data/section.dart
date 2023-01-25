@@ -1,4 +1,3 @@
-import 'package:meta/meta.dart';
 
 import '../data/question.dart';
 class Section {
@@ -13,17 +12,17 @@ class Section {
         required this.description});
 
   Section.fromJson(Map data) {
-    this.sectionId = data['sectionId'];
-    this.title = data['title'];
-    this.sectionNumber = data['sectionNumber'];
-    this.questions = [];
+    sectionId = data['sectionId'];
+    title = data['title'];
+    sectionNumber = data['sectionNumber'];
+    questions = [];
     if (data['questions'] != null) {
       List  list = data['questions'];
       list.forEach((m) {
-        this.questions!.add(Question.fromJson(m));
+        questions!.add(Question.fromJson(m));
       });
     }
-    this.description = data['description'];
+    description = data['description'];
 
   }
   Map<String, dynamic> toJson() {

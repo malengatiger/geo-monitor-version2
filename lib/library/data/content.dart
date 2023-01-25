@@ -1,4 +1,3 @@
-import 'package:meta/meta.dart';
 import '../data/position.dart';
 
 class Content {
@@ -21,7 +20,7 @@ class Content {
   }
   
   Map<String, dynamic> toJson() {
-    Map pos = Map();
+    Map pos = {};
     if (position != null) {
       pos = position!.toJson();
     }

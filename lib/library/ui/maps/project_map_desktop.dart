@@ -1,9 +1,6 @@
 import 'package:flutter/material.dart';
-import '../../data/organization.dart';
 import '../../data/project.dart';
 import '../../data/project_position.dart';
-import '../../functions.dart';
-import '../../hive_util.dart';
 
 class ProjectMapDesktop extends StatefulWidget {
   final Project project;

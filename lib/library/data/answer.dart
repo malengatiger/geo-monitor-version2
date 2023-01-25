@@ -22,15 +22,15 @@ class Answer {
   Map<String, dynamic> toJson() {
     List mPhotos = [];
 
-    photoUrls.forEach((photo) {
+    for (var photo in photoUrls) {
       mPhotos.add(photo.toJson());
-    });
+    }
 
     List mVideos = [];
 
-    videoUrls.forEach((photo) {
+    for (var photo in videoUrls) {
       mVideos.add(photo.toJson());
-    });
+    }
 
     Map<String, dynamic> map = {
       'text': text,

@@ -15,11 +15,11 @@ class RatingContent {
       required this.rating});
 
   RatingContent.fromJson(Map data) {
-    this.userId = data['userId'];
-    this.comment = data['comment'];
-    this.created = data['created'];
-    this.position = data['position'];
-    this.rating = data['rating'];
+    userId = data['userId'];
+    comment = data['comment'];
+    created = data['created'];
+    position = data['position'];
+    rating = data['rating'];
   }
 
   Map<String, dynamic> toJson() {

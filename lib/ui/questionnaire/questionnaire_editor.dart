@@ -6,7 +6,6 @@ import 'package:page_transition/page_transition.dart';
 import 'package:uuid/uuid.dart';
 import '../../library/api/sharedprefs.dart';
 import '../../library/bloc/admin_bloc.dart';
-import '../../library/data/question.dart';
 import '../../library/data/questionnaire.dart';
 import '../../library/data/section.dart';
 import '../../library/data/user.dart';
@@ -333,9 +332,11 @@ class QuestionnaireEditorState extends State<QuestionnaireEditor>
       setState(() {
         isBusy = false;
       });
-      Navigator.pop(context);
+      if (mounted) {
+        Navigator.pop(context);
+      }
     } catch (e) {
-      print(e);
+      pp(e);
       _showErrorSnack('$e');
     }
   }

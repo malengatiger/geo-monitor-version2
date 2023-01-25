@@ -1,12 +1,7 @@
 import 'dart:async';
 
 import 'package:animations/animations.dart';
-import 'package:badges/badges.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:geo_monitor/library/ui/media/list/project_audios.dart';
-import 'package:get/utils.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:page_transition/page_transition.dart';
 
@@ -25,6 +20,7 @@ import '../../project_monitor/project_monitor_mobile.dart';
 import '../full_photo/full_photo_mobile.dart';
 import 'media_grid.dart';
 import 'photo_details.dart';
+import 'project_audios.dart';
 import 'project_photos.dart';
 import 'project_videos.dart';
 
@@ -49,7 +45,6 @@ class ProjectMediaListMobileState extends State<ProjectMediaListMobile>
   late TabController _tabController;
 
   var _photos = <Photo>[];
-  var _videos = <Video>[];
   User? user;
   static const mm = '🔆🔆🔆 MediaListMobile 💜💜 ';
 
@@ -90,7 +85,6 @@ class ProjectMediaListMobileState extends State<ProjectMediaListMobile>
 
     videoStreamSubscription = projectBloc.videoStream.listen((value) {
       pp('$mm Videos received from projectVideoStream: 🏈 ${value.length}');
-      _videos = value;
       if (mounted) {
         setState(() {});
       }else {
@@ -122,7 +116,6 @@ class ProjectMediaListMobileState extends State<ProjectMediaListMobile>
           projectId: widget.project.projectId!, forceRefresh: forceRefresh);
       pp('$mm bag has arrived safely! Yeah!! photos: ${bag.photos!.length} videos: ${bag.videos!.length}');
       _photos = bag.photos!;
-      _videos = bag.videos!;
       setState(() {
 
       });

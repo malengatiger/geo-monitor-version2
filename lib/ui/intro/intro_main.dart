@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-import 'package:page_transition/page_transition.dart';
 import 'package:responsive_builder/responsive_builder.dart';
 
 import '../../library/data/user.dart';

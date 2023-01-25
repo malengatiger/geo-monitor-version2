@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import '../api/data_api.dart';
-import '../data/data_bag.dart';
 import '../data/questionnaire.dart';
 import '../data/video.dart';
 import '../functions.dart';

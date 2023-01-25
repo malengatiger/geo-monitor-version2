@@ -35,21 +35,21 @@ class SectionEditorState extends State<SectionEditor>
     return Scaffold(
       key: _key,
       appBar: AppBar(
-        title: Text('Section Editor'),
+        title: const Text('Section Editor'),
         backgroundColor: Colors.pink[300],
         elevation: 8,
         bottom: PreferredSize(
-          preferredSize: Size.fromHeight(80),
+          preferredSize: const Size.fromHeight(80),
           child: Column(
             children: <Widget>[
               Row(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: <Widget>[
                   Text(
-                    '${widget.questionnaire.title}',
+                    widget.questionnaire.title,
                     style: Styles.whiteSmall,
                   ),
-                  SizedBox(
+                  const SizedBox(
                     width: 8,
                   ),
                   Column(
@@ -58,7 +58,7 @@ class SectionEditorState extends State<SectionEditor>
                         '${sections.length}',
                         style: Styles.blackBoldLarge,
                       ),
-                      SizedBox(
+                      const SizedBox(
                         height: 4,
                       ),
                       Text(
@@ -67,12 +67,12 @@ class SectionEditorState extends State<SectionEditor>
                       ),
                     ],
                   ),
-                  SizedBox(
+                  const SizedBox(
                     width: 12,
                   ),
                 ],
               ),
-              SizedBox(
+              const SizedBox(
                 height: 12,
               ),
             ],

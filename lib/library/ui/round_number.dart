@@ -9,22 +9,22 @@ class RoundNumber extends StatelessWidget {
   final TextStyle? textStyle;
 
   const RoundNumber(this.number,
-      {required this.height, required this.width, required this.color, required this.textStyle});
+      {super.key, required this.height, required this.width, required this.color, required this.textStyle});
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: height == null ? 32.0 : height,
-      width: width == null ? 32.0 : width,
-      color: color == null ? Colors.white : color,
+      height: height ?? 32.0,
+      width: width ?? 32.0,
+      color: color ?? Colors.white,
+      decoration: const BoxDecoration(
+        shape: BoxShape.circle,
+      ),
       child: Center(
         child: Text(
           '$number',
-          style: textStyle == null ? Styles.whiteTiny : textStyle,
+          style: textStyle ?? Styles.whiteTiny,
         ),
-      ),
-      decoration: BoxDecoration(
-        shape: BoxShape.circle,
       ),
     );
   }

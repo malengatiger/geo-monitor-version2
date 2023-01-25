@@ -7,11 +7,11 @@ class CreditCardHandlerTablet extends StatefulWidget {
 
   const CreditCardHandlerTablet({Key? key, required this.user}) : super(key: key);
   @override
-  _CreditCardHandlerTabletState createState() =>
-      _CreditCardHandlerTabletState();
+  CreditCardHandlerTabletState createState() =>
+      CreditCardHandlerTabletState();
 }
 
-class _CreditCardHandlerTabletState extends State<CreditCardHandlerTablet>
+class CreditCardHandlerTabletState extends State<CreditCardHandlerTablet>
     with SingleTickerProviderStateMixin {
   late AnimationController _controller;
 

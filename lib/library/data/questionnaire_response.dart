@@ -9,11 +9,11 @@ class QuestionnaireResponse {
     required this.questionnaireResponseId, required this.sections});
 
   QuestionnaireResponse.fromJson(Map data) {
-    this.userId = data['userId'];
-    this.questionnaireResponseId = data['questionnaireResponseId'];
-    this.sections = data['sections'];
-    this.respondentId = data['respondentId'];
-    this.questionnaireId = data['questionnaireId'];
+    userId = data['userId'];
+    questionnaireResponseId = data['questionnaireResponseId'];
+    sections = data['sections'];
+    respondentId = data['respondentId'];
+    questionnaireId = data['questionnaireId'];
   }
   Map<String, dynamic> toJson() {
     List mSecs = [];

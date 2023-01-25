@@ -3,7 +3,6 @@ import 'dart:math';
 
 import 'package:badges/badges.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 import '../../api/sharedprefs.dart';
@@ -13,7 +12,6 @@ import '../../data/project.dart';
 import '../../data/project_position.dart';
 import '../../data/user.dart';
 import '../../functions.dart';
-import '../../hive_util.dart';
 
 class OrganizationMapMobile extends StatefulWidget {
   const OrganizationMapMobile({

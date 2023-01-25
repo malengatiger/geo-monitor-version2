@@ -1,6 +1,5 @@
 import 'package:hive/hive.dart';
 import '../data/position.dart';
-import '../functions.dart';
 
 part 'photo.g.dart';
 

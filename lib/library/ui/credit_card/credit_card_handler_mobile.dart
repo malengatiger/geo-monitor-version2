@@ -36,7 +36,6 @@ class CreditCardHandlerMobileState extends State<CreditCardHandlerMobile>
        final GlobalKey<FormState> formKey = GlobalKey<FormState>();
 
   final _key = GlobalKey<ScaffoldState>();
-  final _formKey = GlobalKey<FormState>();
   User? user;
 
   @override

@@ -4,7 +4,6 @@ import 'package:responsive_builder/responsive_builder.dart';
 import 'dashboard_desktop.dart';
 import 'dashboard_mobile.dart';
 import 'dashboard_tablet.dart';
-import '../../library/data/user.dart';
 
 
 class DashboardMain extends StatefulWidget {

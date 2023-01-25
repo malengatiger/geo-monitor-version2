@@ -1,6 +1,5 @@
 
 import 'package:firebase_auth/firebase_auth.dart' as fb;
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:geo_monitor/library/users/org_registration.dart';
 import 'package:geo_monitor/library/users/phone_login.dart';
@@ -9,10 +8,8 @@ import 'package:introduction_screen/introduction_screen.dart';
 
 import 'package:page_transition/page_transition.dart';
 
-import '../../library/api/sharedprefs.dart';
 import '../../library/data/user.dart' as ur;
 import '../../library/functions.dart';
-import '../../library/ui/signin.dart';
 import '../dashboard/dashboard_main.dart';
 
 class IntroMobile extends StatefulWidget {

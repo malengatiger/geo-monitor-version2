@@ -1,4 +1,3 @@
-import 'package:geocoding/geocoding.dart';
 import 'package:hive/hive.dart';
 
 import 'city.dart';

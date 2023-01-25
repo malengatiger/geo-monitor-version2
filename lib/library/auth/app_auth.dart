@@ -6,19 +6,7 @@ import '../api/data_api.dart';
 import '../api/sharedprefs.dart';
 import '../data/country.dart';
 import '../functions.dart';
-import '../data/city.dart';
-import '../data/community.dart';
-import '../data/condition.dart';
-import '../data/field_monitor_schedule.dart';
-import '../data/monitor_report.dart';
-import '../data/org_message.dart';
-import '../data/organization.dart';
-import '../data/photo.dart';
-import '../data/project.dart';
-import '../data/project_position.dart';
-import '../data/section.dart';
 import '../data/user.dart' as mon;
-import '../data/video.dart';
 
 class AppAuth {
   static FirebaseAuth? _auth;
@@ -39,7 +27,7 @@ class AppAuth {
     }
   }
 
-  static Future<mon.User> createUserxx(
+  static Future<mon.User> createUser(
       {required mon.User user,
       required String password,}) async {
     pp('AppAuth: 💜 💜 createUser: auth record to be created ... ${user.toJson()}');
@@ -147,17 +135,4 @@ class AppAuth {
 
   static Future getCountry() async {}
 
-  static Future _getAdminAuthenticationToken() async {
-    var email = dot.dotenv.env['email'];
-    var password = dot.dotenv.env['password'];
-    _auth = FirebaseAuth.instance;
-
-    var res = await _auth!
-        .signInWithEmailAndPassword(email: email!, password: password!);
-    if (res.user != null) {
-      return await res.user!.getIdToken();
-    } else {
-      return null;
-    }
-  }
 }

@@ -5,7 +5,6 @@ import 'package:flutter/services.dart';
 import 'package:video_player/video_player.dart';
 
 import '../../../data/video.dart';
-import '../../../data/photo.dart';
 import '../../../functions.dart';
 
 
@@ -24,7 +23,6 @@ class VideoMobileState extends State<VideoMobile>
   ChewieController? chewieController;
   Chewie? playerWidget;
   VideoPlayerController? _videoPlayerController1;
-  VideoPlayerController? _videoPlayerController2;
 
   Future<void> _setPlayer() async {
     _videoPlayerController1 = VideoPlayerController.network(widget.video.url!);
@@ -94,14 +92,14 @@ class VideoMobileState extends State<VideoMobile>
             style: Styles.whiteSmall,
           ),
           bottom: PreferredSize(
-            preferredSize: Size.fromHeight(16),
+            preferredSize: const Size.fromHeight(16),
             child: Column(
               children: [
                 Text(
-                  '${getFormattedDateLongWithTime(widget.video.created!, context)}',
+                  getFormattedDateLongWithTime(widget.video.created!, context),
                   style: Styles.blackBoldSmall,
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 8,
                 ),
               ],
@@ -109,7 +107,7 @@ class VideoMobileState extends State<VideoMobile>
           ),
           actions: [
             IconButton(
-              icon: isLandscape ? Icon(Icons.portrait) : Icon(Icons.landscape),
+              icon: isLandscape ? const Icon(Icons.portrait) : const Icon(Icons.landscape),
               onPressed: () {
                 if (isLandscape) {
                   _changeToLandscape();
@@ -129,21 +127,17 @@ class VideoMobileState extends State<VideoMobile>
               child: Card(
                 color: Colors.black,
                 elevation: 4,
-                child: Container(
-                  child: Center(
-                    child: chewieController != null &&
-                            chewieController!
-                                .videoPlayerController.value.isInitialized
-                        ? Chewie(
-                            controller: chewieController!,
-                          )
-                        : Container(
-                            child: CircularProgressIndicator(
-                              strokeWidth: 4,
-                              backgroundColor: Colors.black,
-                            ),
-                          ),
-                  ),
+                child: Center(
+                  child: chewieController != null &&
+                          chewieController!
+                              .videoPlayerController.value.isInitialized
+                      ? Chewie(
+                          controller: chewieController!,
+                        )
+                      : const CircularProgressIndicator(
+                        strokeWidth: 4,
+                        backgroundColor: Colors.black,
+                      ),
                 ),
               ),
             ),
@@ -157,8 +151,8 @@ class VideoMobileState extends State<VideoMobile>
                   padding: const EdgeInsets.only(left: 20.0),
                   child: Row(
                     children: [
-                      Text('Distance from Project'),
-                      SizedBox(
+                      const Text('Distance from Project'),
+                      const SizedBox(
                         width: 8,
                       ),
                       Text(
@@ -166,11 +160,11 @@ class VideoMobileState extends State<VideoMobile>
                             .toStringAsFixed(1),
                         style: Styles.blackBoldMedium,
                       ),
-                      SizedBox(
+                      const SizedBox(
                         width: 8,
                       ),
-                      Text('metres'),
-                      SizedBox(
+                      const Text('metres'),
+                      const SizedBox(
                         width: 28,
                       ),
                     ],
@@ -185,7 +179,7 @@ class VideoMobileState extends State<VideoMobile>
                 elevation: 8,
                 mini: true,
                 backgroundColor: Theme.of(context).primaryColor,
-                child: Icon(
+                child: const Icon(
                   Icons.map,
                   color: Colors.white,
                 ),

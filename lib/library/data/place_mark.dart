@@ -1,6 +1,5 @@
 import 'package:geocoding/geocoding.dart';
 import 'package:hive/hive.dart';
-import '../data/position.dart';
 part 'place_mark.g.dart';
 
 @HiveType(typeId: 17)

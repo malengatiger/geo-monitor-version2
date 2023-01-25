@@ -1,9 +1,7 @@
-import 'package:geocoding/geocoding.dart';
 import 'package:hive/hive.dart';
 
 import 'city.dart';
 import '../data/position.dart';
-import 'place_mark.dart';
 
 part 'project_polygon.g.dart';
 

@@ -1,5 +1,4 @@
 import 'package:hive/hive.dart';
-import 'package:meta/meta.dart';
 
 part 'organization.g.dart';
 

@@ -556,14 +556,12 @@ class Styles {
 
 prettyPrint(Map map, String name) {
   pp('$name \t{\n');
-  if (map != null) {
+
     map.forEach((key, val) {
       pp('\t$key : $val ,\n');
     });
     pp('}\n\n');
-  } else {
-    pp('📍📍📍📍 prettyPrint: 📍📍📍📍📍📍📍📍 map is NULL - tag: $name 📍📍📍📍📍📍📍📍');
-  }
+
 }
 
 LatLngBounds boundsFromLatLngList(List<LatLng> list) {
@@ -619,8 +617,7 @@ Future<File> getVideoThumbnail(File file) async {
 pp(dynamic msg) {
   var time = getFormattedDateHourMinSec(DateTime.now().toString());
   if (kReleaseMode) {
-      print('$time ==> $msg');
-
+     return;
   }
   if (kDebugMode) {
     if (msg is String) {
@@ -764,7 +761,6 @@ String getFormattedDateShortestWithTime(String date, BuildContext context) {
 
 int getIntDate(String date, BuildContext context) {
   pp('\n---------------> getIntDate $date'); //Sun, 28 Oct 2018 23:59:49 GMT
-  assert(context != null);
   initializeDateFormatting();
   try {
     if (date.contains('GMT')) {
@@ -780,7 +776,7 @@ int getIntDate(String date, BuildContext context) {
   }
 }
 
-String getFormattedDateHourMinute({required DateTime date, required BuildContext context}) {
+String getFormattedDateHourMinute({required DateTime date, required BuildContext? context}) {
   initializeDateFormatting();
 
   try {
@@ -808,7 +804,7 @@ DateTime getLocalDateFromGMT(String date, BuildContext context) {
     return mDate.toLocal();
   } catch (e) {
     pp(e);
-    throw e;
+    rethrow;
   }
 }
 
@@ -908,8 +904,9 @@ String? getFormattedDateHourMinuteSecond() {
   try {
     DateTime d = DateTime.now();
     return format.format(d.toUtc());
-  } catch (e) {}
-  return null;
+  } catch (e) {
+    rethrow;
+  }
 }
 
 String getFormattedNumber(int number, BuildContext context) {
@@ -929,7 +926,6 @@ String getFormattedDouble(double number, BuildContext context) {
 }
 
 String getFormattedAmount(String amount, BuildContext context) {
-  assert(amount != null);
   Locale myLocale = Localizations.localeOf(context);
   var val = '${myLocale.languageCode}_${myLocale.countryCode!}';
   //pp('getFormattedAmount ----------- locale is  $val');

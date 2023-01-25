@@ -1,6 +1,5 @@
 
 import 'answer.dart';
-import '../data/interfaces.dart';
 
 class Question {
   String? text, created;
@@ -15,33 +14,33 @@ class Question {
       this.choices});
 
   Question.fromJson(Map data) {
-    this.text = data['text'];
-    this.created = data['created'];
-    this.choices = [];
+    text = data['text'];
+    created = data['created'];
+    choices = [];
     if (data['choices'] != null) {
       List  list = data['choices'];
-      list.forEach((m) {
-        this.choices!.add(m);
-      });
+      for (var m in list) {
+        choices!.add(m);
+      }
     }
-      this.questionType = data['questionType'];
+      questionType = data['questionType'];
 
 
-    this.answers = [];
+    answers = [];
     if (data['answers'] != null) {
       List  list = data['answers'];
-      list.forEach((m) {
-        this.answers!.add(Answer.fromJson(m));
-      });
+      for (var m in list) {
+        answers!.add(Answer.fromJson(m));
+      }
     }
 
   }
   Map<String, dynamic> toJson() {
     List mAnswers = [];
     if (answers != null) {
-      answers!.forEach((a) {
+      for (var a in answers!) {
         mAnswers.add(a.toJson());
-      });
+      }
     }
     Map<String, dynamic> map = {
       'text': text,

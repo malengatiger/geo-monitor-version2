@@ -16,8 +16,8 @@ class Position extends HiveObject {
   });
 
   Position.fromJson(Map data) {
-    this.coordinates = data['coordinates'];
-    this.type = data['type'];
+    coordinates = data['coordinates'];
+    type = data['type'];
   }
   Map<String, dynamic> toJson() {
     Map<String, dynamic> map = {

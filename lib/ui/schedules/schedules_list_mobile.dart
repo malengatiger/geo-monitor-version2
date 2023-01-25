@@ -92,7 +92,7 @@ class SchedulesListMobileState extends State<SchedulesListMobile>
     List<FocusedMenuItem> menuItems = [];
     menuItems.add(
       FocusedMenuItem(
-          title: Text('Project Map'),
+          title: const Text('Project Map'),
           trailingIcon: Icon(
             Icons.map,
             color: Theme.of(context).primaryColor,
@@ -104,7 +104,7 @@ class SchedulesListMobileState extends State<SchedulesListMobile>
     );
     menuItems.add(
       FocusedMenuItem(
-          title: Text('Photos & Videos'),
+          title: const Text('Photos & Videos'),
           trailingIcon: Icon(
             Icons.camera,
             color: Theme.of(context).primaryColor,
@@ -117,7 +117,7 @@ class SchedulesListMobileState extends State<SchedulesListMobile>
     );
     if (_user!.userType == ORG_ADMINISTRATOR) {
       menuItems.add(FocusedMenuItem(
-          title: Text('Add Project Location'),
+          title: const Text('Add Project Location'),
           trailingIcon: Icon(
             Icons.location_pin,
             color: Theme.of(context).primaryColor,
@@ -128,7 +128,7 @@ class SchedulesListMobileState extends State<SchedulesListMobile>
     }
     if (_user!.userType == ORG_ADMINISTRATOR) {
       menuItems.add(FocusedMenuItem(
-          title: Text('Edit Project'),
+          title: const Text('Edit Project'),
           trailingIcon: Icon(
             Icons.create,
             color: Theme.of(context).primaryColor,

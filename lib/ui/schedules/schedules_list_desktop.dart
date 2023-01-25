@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 import '../../library/api/sharedprefs.dart';
@@ -10,6 +9,8 @@ import '../../library/snack.dart';
 
 
 class SchedulesListDesktop extends StatefulWidget {
+  const SchedulesListDesktop({super.key});
+
   @override
   SchedulesListDesktopState createState() => SchedulesListDesktopState();
 }
@@ -113,9 +114,9 @@ class SchedulesListDesktopState extends State<SchedulesListDesktop>
                               '${sched.projectName}',
                               style: Styles.blackBoldSmall,
                             ),
-                            subtitle: Text('$subTitle'),
+                            subtitle: Text(subTitle),
                           ),
-                          SizedBox(
+                          const SizedBox(
                             height: 12,
                           ),
                           Text(getFormattedDateLongWithTime(

@@ -54,7 +54,7 @@ class GenericMessageState extends State<GenericMessage> {
           userId: widget.user.userId,
           created: DateTime.now().toUtc().toIso8601String(),
           projectId: widget.project == null? null: widget.project!.projectId,
-          organizationId: widget.project == null? null: widget.project!.organizationId, orgMessageId: Uuid().v4());
+          organizationId: widget.project == null? null: widget.project!.organizationId, orgMessageId: const Uuid().v4());
       try {
         var res = await DataAPI.sendMessage(msg);
         pp('GenericMessage:  🏓  🏓  🏓 Response from server:  🏓 ${res.toJson()}  🏓');

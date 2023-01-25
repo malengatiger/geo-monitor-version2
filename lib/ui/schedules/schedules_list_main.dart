@@ -14,7 +14,7 @@ class SchedulesListMain extends StatelessWidget {
     return ScreenTypeLayout(
       mobile: const SchedulesListMobile(),
       tablet: const SchedulesListTablet(),
-      desktop: SchedulesListDesktop(),
+      desktop: const SchedulesListDesktop(),
     );
   }
 }

@@ -22,13 +22,13 @@ class Country extends HiveObject {
         required this.countryCode});
 
   Country.fromJson(Map data) {
-    this.name = data['name'];
-    this.countryId = data['countryId'];
-    this.countryCode = data['countryCode'];
+    name = data['name'];
+    countryId = data['countryId'];
+    countryCode = data['countryCode'];
     if (data['population'] != null) {
-      this.population = data['population'];
+      population = data['population'];
     } else {
-      this.population = 0;
+      population = 0;
     }
   }
   Map<String, dynamic> toJson() {
@@ -36,7 +36,7 @@ class Country extends HiveObject {
       'name': name,
       'countryId': countryId,
       'countryCode': countryCode,
-      'population': population == null? 0 : population,
+      'population':  population,
     };
     return map;
   }

@@ -42,19 +42,19 @@ class Condition extends HiveObject {
         required this.projectName}); // Video({required this.url, this.userId, required this.created});
 
   Condition.fromJson(Map data) {
-    this.url = data['url'];
-    this.projectPositionId = data['projectPositionId'];
-    this.caption = data['caption'];
-    this.created = data['created'];
-    this.userId = data['userId'];
-    this.conditionId = data['conditionId'];
+    url = data['url'];
+    projectPositionId = data['projectPositionId'];
+    caption = data['caption'];
+    created = data['created'];
+    userId = data['userId'];
+    conditionId = data['conditionId'];
 
-    this.userName = data['userName'];
-    this.rating = data['rating'];
-    this.projectId = data['projectId'];
-    this.projectName = data['projectName'];
+    userName = data['userName'];
+    rating = data['rating'];
+    projectId = data['projectId'];
+    projectName = data['projectName'];
     if (data['projectPosition'] != null) {
-      this.projectPosition = Position.fromJson(data['projectPosition']);
+      projectPosition = Position.fromJson(data['projectPosition']);
     }
   }
   Map<String, dynamic> toJson() {

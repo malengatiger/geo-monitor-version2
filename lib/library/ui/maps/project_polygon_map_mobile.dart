@@ -8,7 +8,6 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:geo_monitor/library/bloc/organization_bloc.dart';
 import 'package:geo_monitor/library/data/project_position.dart';
 
-import 'package:google_fonts/google_fonts.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:uuid/uuid.dart';
 
@@ -45,7 +44,6 @@ class ProjectPolygonMapMobileState extends State<ProjectPolygonMapMobile>
   final Completer<GoogleMapController> _mapController = Completer();
   Map<MarkerId, Marker> markers = <MarkerId, Marker>{};
   var random = Random(DateTime.now().millisecondsSinceEpoch);
-  final _key = GlobalKey<ScaffoldState>();
   bool busy = false;
 
   static const CameraPosition _kGooglePlex = CameraPosition(
@@ -169,7 +167,7 @@ class ProjectPolygonMapMobileState extends State<ProjectPolygonMapMobile>
     pp('$mm long pressed location: 🍎 $latLng');
     var isOK = checkIfLocationIsWithinPolygons(
         latitude: latLng.latitude, longitude: latLng.longitude, polygons: projectPolygons);
-    pp('$mm long pressed location found in any of the project\s 🍎 '
+    pp('$mm long pressed location found in any of the project\'s 🍎 '
         'polygons; isWithin the polygons: $isOK - ${isOK? Emoji.leaf: Emoji.redDot}');
 
 

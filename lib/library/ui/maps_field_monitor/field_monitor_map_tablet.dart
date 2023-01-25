@@ -12,16 +12,16 @@ import '../../functions.dart';
 class FieldMonitorMapTablet extends StatefulWidget {
   final User user;
 
-  FieldMonitorMapTablet(this.user);
+  const FieldMonitorMapTablet(this.user, {super.key});
 
   @override
-  _FieldMonitorMapTabletState createState() => _FieldMonitorMapTabletState();
+  FieldMonitorMapTabletState createState() => FieldMonitorMapTabletState();
 }
 
-class _FieldMonitorMapTabletState extends State<FieldMonitorMapTablet>
+class FieldMonitorMapTabletState extends State<FieldMonitorMapTablet>
     with SingleTickerProviderStateMixin {
   late AnimationController _controller;
-  Completer<GoogleMapController> _mapController = Completer();
+  final Completer<GoogleMapController> _mapController = Completer();
   Map<MarkerId, Marker> markers = <MarkerId, Marker>{};
   var random = Random(DateTime.now().millisecondsSinceEpoch);
   final _key = GlobalKey<ScaffoldState>();
@@ -160,8 +160,4 @@ class _FieldMonitorMapTabletState extends State<FieldMonitorMapTablet>
     );
   }
 
-  @override
-  onClose() {
-    ScaffoldMessenger.of(_key.currentState!.context).removeCurrentSnackBar();
-  }
 }

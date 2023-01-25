@@ -7,7 +7,6 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import '../api/sharedprefs.dart';
 import '../bloc/organization_bloc.dart';
 import '../bloc/project_bloc.dart';
-import '../bloc/user_bloc.dart';
 import '../data/user.dart';
 import '../data/project_position.dart';
 import '../data/project.dart';

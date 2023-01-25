@@ -129,39 +129,39 @@ class Project extends HiveObject {
   Map<String, dynamic> toJson() {
     List mProjectPositions = [];
     if (projectPositions != null) {
-      projectPositions!.forEach((pos) {
+      for (var pos in projectPositions!) {
         mProjectPositions.add(pos.toJson());
-      });
+      }
     }
     List mPhotos = [];
     if (photos != null) {
-      photos!.forEach((photo) {
+      for (var photo in photos!) {
         mPhotos.add(photo.toJson());
-      });
+      }
     }
     List mVideos = [];
     if (videos != null) {
-      videos!.forEach((photo) {
+      for (var photo in videos!) {
         mVideos.add(photo.toJson());
-      });
+      }
     }
     List mRatings = [];
     if (ratings != null) {
-      ratings!.forEach((r) {
+      for (var r in ratings!) {
         mRatings.add(r.toJson());
-      });
+      }
     }
     List mSett = [];
     if (communities != null) {
-      communities!.forEach((r) {
+      for (var r in communities!) {
         mSett.add(r.toJson());
-      });
+      }
     }
     List mCities = [];
     if (nearestCities != null) {
-      nearestCities!.forEach((r) {
+      for (var r in nearestCities!) {
         mCities.add(r.toJson());
-      });
+      }
     }
     Map<String, dynamic> map = {
       'name': name,

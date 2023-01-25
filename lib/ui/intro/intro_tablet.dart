@@ -4,13 +4,13 @@ import '../../library/data/user.dart';
 
 class IntroTablet extends StatefulWidget {
   final User? user;
-  IntroTablet({Key? key, this.user}) : super(key: key);
+  const IntroTablet({Key? key, this.user}) : super(key: key);
 
   @override
-  _IntroTabletState createState() => _IntroTabletState();
+  IntroTabletState createState() => IntroTabletState();
 }
 
-class _IntroTabletState extends State<IntroTablet>
+class IntroTabletState extends State<IntroTablet>
     with SingleTickerProviderStateMixin {
   late AnimationController _controller;
 

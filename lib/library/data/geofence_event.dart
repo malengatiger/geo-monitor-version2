@@ -35,14 +35,14 @@ class GeofenceEvent extends HiveObject {
         required this.date});
 
   GeofenceEvent.fromJson(Map data) {
-    this.status = data['status'];
-    this.userId = data['userId'];
-    this.geofenceEventId = data['geofenceEventId'];
-    this.projectPositionId = data['projectPositionId'];
-    this.projectName = data['projectName'];
-    this.date = data['date'];
+    status = data['status'];
+    userId = data['userId'];
+    geofenceEventId = data['geofenceEventId'];
+    projectPositionId = data['projectPositionId'];
+    projectName = data['projectName'];
+    date = data['date'];
     if (data['user'] != null) {
-      this.user = User.fromJson(data['user']);
+      user = User.fromJson(data['user']);
     } 
   }
   Map<String, dynamic> toJson() {

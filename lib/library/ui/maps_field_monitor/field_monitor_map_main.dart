@@ -5,7 +5,6 @@ import '../../api/data_api.dart';
 import '../../data/user.dart';
 import '../../data/position.dart';
 import '../../functions.dart';
-import '../../hive_util.dart';
 
 import 'field_monitor_map_desktop.dart';
 import 'field_monitor_map_mobile.dart';
@@ -14,16 +13,15 @@ import 'field_monitor_map_tablet.dart';
 class FieldMonitorMapMain extends StatefulWidget {
   final User user;
 
-  FieldMonitorMapMain(this.user);
+  const FieldMonitorMapMain(this.user);
 
   @override
-  _FieldMonitorMapMainState createState() => _FieldMonitorMapMainState();
+  FieldMonitorMapMainState createState() => FieldMonitorMapMainState();
 }
 
-class _FieldMonitorMapMainState extends State<FieldMonitorMapMain> {
+class FieldMonitorMapMainState extends State<FieldMonitorMapMain> {
   var isBusy = false;
-  var _positions = [];
-  var _key = GlobalKey<ScaffoldState>();
+  final _key = GlobalKey<ScaffoldState>();
   User? _updatedUser;
   @override
   void initState() {
@@ -39,7 +37,7 @@ class _FieldMonitorMapMainState extends State<FieldMonitorMapMain> {
           Position(type: 'Point', coordinates: [longitude, latitude]);
       _updatedUser = await DataAPI.updateUser(widget.user);
     } catch (e) {
-      print(e);
+      pp(e);
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Data refresh failed: $e')));
     }
     setState(() {
@@ -59,8 +57,8 @@ class _FieldMonitorMapMainState extends State<FieldMonitorMapMain> {
                   style: Styles.whiteTiny,
                 ),
               ),
-              body: Center(
-                child: Container(
+              body: const Center(
+                child: SizedBox(
                   width: 48,
                   height: 48,
                   child: CircularProgressIndicator(

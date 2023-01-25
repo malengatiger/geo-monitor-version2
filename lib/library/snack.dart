@@ -32,16 +32,6 @@ class AppSnackbar {
 
   }
 
-  static Widget _getText(
-      String message,
-      Color textColor,
-      ) {
-    return Text(
-      message,
-      overflow: TextOverflow.clip,
-      style: new TextStyle(color: textColor),
-    );
-  }
 
   static showErrorSnackbar(
       {required GlobalKey<ScaffoldState> scaffoldKey,
@@ -51,7 +41,6 @@ class AppSnackbar {
 
   }
 
-  static const Error = 0, Action = 1;
 }
 
 abstract class SnackBarListener {

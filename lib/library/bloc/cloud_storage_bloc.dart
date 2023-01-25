@@ -400,9 +400,9 @@ class CloudStorageBloc {
     uploadTask.snapshotEvents.listen((event) {
       var totalByteCount = event.totalBytes;
       var bytesTransferred = event.bytesTransferred;
-      // var bt = '${(bytesTransferred / 1024).toStringAsFixed(2)} KB';
-      // var tot = '${(totalByteCount / 1024).toStringAsFixed(2)} KB';
-      //pp('️$mm _reportProgress:  💚 progress ******* 🧩 $bt KB of $tot KB 🧩 transferred');
+      var bt = '${(bytesTransferred / 1024).toStringAsFixed(2)} KB';
+      var tot = '${(totalByteCount / 1024).toStringAsFixed(2)} KB';
+      pp('️$mm _reportProgress:  💚 progress ******* 🧩 $bt KB of $tot KB 🧩 transferred');
       listener.onFileProgress(event.totalBytes, event.bytesTransferred);
     });
   }

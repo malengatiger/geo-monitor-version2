@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import '../../../bloc/user_bloc.dart';
 import '../../../data/photo.dart';
 import '../../../data/user.dart';
-import '../../../functions.dart';
 
 class UserPhotos extends StatefulWidget {
 
@@ -58,8 +57,8 @@ class UserPhotosState extends State<UserPhotos> {
                 itemCount: photos.length,
                 itemBuilder: (context, index) {
                   var photo = photos.elementAt(index);
-                  var dt =
-                  getFormattedDateShortestWithTime(photo.created!, context);
+                  // var dt =
+                  // getFormattedDateShortestWithTime(photo.created!, context);
                   return Stack(
                     children: [
                       SizedBox(

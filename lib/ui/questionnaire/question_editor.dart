@@ -288,13 +288,15 @@ class QuestionFormState extends State<QuestionForm> {
     await Prefs.saveQuestionnaire(widget.questionnaire);
     adminBloc.updateActiveQuestionnaire(widget.questionnaire);
 
-    Navigator.push(
-        context,
-        PageTransition(
-            type: PageTransitionType.scale,
-            alignment: Alignment.topLeft,
-            duration: Duration(seconds: 1),
-            child: ChoiceEditor(widget.question, widget.questionnaire)));
+    if (mounted) {
+      Navigator.push(
+          context,
+          PageTransition(
+              type: PageTransitionType.scale,
+              alignment: Alignment.topLeft,
+              duration: const Duration(seconds: 1),
+              child: ChoiceEditor(widget.question, widget.questionnaire)));
+    }
   }
 }
 
