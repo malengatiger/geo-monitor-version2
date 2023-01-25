@@ -102,11 +102,12 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   firebaseApp = await Firebase.initializeApp(
       options: DefaultFirebaseOptions.currentPlatform);
-  pp('${Emoji.heartGreen}${Emoji.heartGreen} Firebase App has been initialized: ${firebaseApp.name}');
+  pp('${Emoji.heartGreen}${Emoji.heartGreen}${Emoji.heartGreen}'
+      ' Firebase App has been initialized: ${firebaseApp.name}');
   user = await Prefs.getUser();
   if (user == null) {
     pp('${Emoji.redDot}${Emoji.redDot}${Emoji.redDot}${Emoji.redDot} '
-        'User is null; ensure that firebase is signed out ...');
+        'User from Prefs is null; ensure that firebase is signed out ...');
     await fb.FirebaseAuth.instance.signOut();
   } else {
     pp('\n${Emoji.heartGreen}${Emoji.heartGreen} Prefs user available:: ${user!.toJson()}\n');
@@ -136,18 +137,12 @@ class MyApp extends StatelessWidget {
         pp('🌀🌀🌀🌀 Tap detected; should dismiss keyboard');
         FocusManager.instance.primaryFocus?.unfocus();
       },
-      // onLongPress: () async {
-      //   //todo - REMOVE after testing
-      //   pp('🌀🌀🌀🌀 onLongPress detected; should clear user stuff, count: $doubleTapCount');
-      //     await sortOutNewHiveArtifacts(context);
-      //
-      // },
       child: StreamBuilder(
         stream: themeBloc.newThemeStream,
         initialData: themeIndex,
-        builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
+        builder: (BuildContext context, AsyncSnapshot<int> snapshot) {
           if (snapshot.hasData) {
-            themeIndex = snapshot.data;
+            themeIndex = snapshot.data!;
           }
           return GetMaterialApp(
             scaffoldMessengerKey: rootScaffoldMessengerKey,
@@ -226,8 +221,8 @@ class SplashWidget extends StatelessWidget {
                     width: 24,
                   ),
                   Text(
-                    'We help you see!',
-                    style: myTextStyleMedium(context),
+                    'We help you see more!',
+                    style: myTextStyleSmall(context),
                   ),
                   const SizedBox(
                     width: 24,
@@ -246,8 +241,8 @@ class SplashWidget extends StatelessWidget {
   }
 }
 
+///remove authentication for this user
 Future<void> getOut(BuildContext context) async {
-  //todo - REMOVE after testing
   pp('🌀🌀🌀🌀 Request to sign out of Firebase and the app!');
 
   fb.FirebaseAuth.instance.signOut();
@@ -266,6 +261,5 @@ Future<void> getOut(BuildContext context) async {
     pp('🌀🌀🌀🌀 ios platform: We should notify the user : account closed.');
 
   }
-
 
 }

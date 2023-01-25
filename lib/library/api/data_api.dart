@@ -208,6 +208,21 @@ class DataAPI {
       rethrow;
     }
   }
+  static Future<int> deleteAuthUser(String userId) async {
+    String? mURL = await getUrl();
+    try {
+      var result = await _sendHttpGET(
+          '${mURL!}deleteAuthUser?userId=$userId');
+      var res = result['result'];
+      pp('$mm 🌿 🌿 🌿 deleteAuthUser returned: 🌿 $result');
+      return res;
+    } catch (e) {
+      pp(e);
+      rethrow;
+    }
+
+    return 9;
+  }
 
   static Future<KillResponse> killUser({required String userId, required String killerId} ) async {
     String? mURL = await getUrl();
@@ -245,7 +260,7 @@ class DataAPI {
   }
 
 
-  static Future<User> registerUser( User user) async {
+  static Future<User> createUser( User user) async {
     String? mURL = await getUrl();
     Map bag = user.toJson();
     pp('$mm️ User about to be sent to backend: check name: ☕️ $bag');
@@ -269,6 +284,18 @@ class DataAPI {
     try {
       var result = await _callWebAPIPost('${mURL!}updateUser', bag);
       return User.fromJson(result);
+    } catch (e) {
+      pp(e);
+      rethrow;
+    }
+  }
+  static Future<int> updateAuthedUser(User user) async {
+    pp('\n$mm updateAuthedUser started for ${user.name!}');
+    String? mURL = await getUrl();
+    Map bag = user.toJson();
+    try {
+      var result = await _callWebAPIPost('${mURL!}updateAuthedUser', bag);
+      return result['returnCode'];
     } catch (e) {
       pp(e);
       rethrow;

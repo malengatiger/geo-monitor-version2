@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:animations/animations.dart';
 import 'package:badges/badges.dart';
 import 'package:flutter/material.dart';
@@ -9,6 +11,7 @@ import 'package:map_launcher/map_launcher.dart';
 
 import 'package:page_transition/page_transition.dart';
 import '../../../ui/audio/audio_mobile.dart';
+import '../../../ui/dashboard/dashboard_mobile.dart';
 import '../../api/sharedprefs.dart';
 import '../../bloc/fcm_bloc.dart';
 import '../../bloc/organization_bloc.dart';
@@ -55,6 +58,8 @@ class ProjectListMobileState extends State<ProjectListMobile>
   bool isProjectsByLocation = false;
   var userTypeLabel = 'Unknown User Type';
   final mm = '🔵🔵🔵🔵 ProjectListMobile:  ';
+  late StreamSubscription<String> killSubscription;
+
 
   @override
   void initState() {
@@ -64,6 +69,8 @@ class ProjectListMobileState extends State<ProjectListMobile>
         reverseDuration: const Duration(milliseconds: 2000),
         vsync: this);
     super.initState();
+    killSubscription = listenForKill(context: context);
+
     _getUser();
     _listen();
   }

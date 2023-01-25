@@ -481,34 +481,6 @@ class DashboardMobileState extends State<DashboardMobile>
     setState(() {});
   }
 
-  void _showKillDialog(String message) {
-    showDialog(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        title:  Text("Critical App Message", style: myTextStyleLarge(ctx),),
-        content: Text(message, style: myTextStyleMedium(ctx),),
-        actions: <Widget>[
-          TextButton(
-            onPressed: () {
-              pp('$mm Navigator popping for the last time, Sucker! 🔵🔵🔵');
-              var android = UniversalPlatform.isAndroid;
-              var ios = UniversalPlatform.isIOS;
-              if (android) {
-                SystemNavigator.pop();
-              }
-              if (ios) {
-                Navigator.of(ctx).pop();
-                Navigator.of(ctx).pop();
-              }
-
-
-            },
-            child: const Text("Exit the App"),
-          ),
-        ],
-      ),
-    );
-  }
   void _listenForFCM() async {
     var android = UniversalPlatform.isAndroid;
     var ios = UniversalPlatform.isIOS;
@@ -525,17 +497,19 @@ class DashboardMobileState extends State<DashboardMobile>
         }
       });
 
-      killSubscriptionFCM = fcmBloc.killStream.listen((event) {
-        pp('$mm Kill message received! 🍎Time to fuck off!');
-        if (mounted) {
-          _showKillDialog(event);
-        } else {
-          rootScaffoldMessengerKey.currentState?.showSnackBar(
-            SnackBar(content: Text(event), action: SnackBarAction(label: 'Close', onPressed: (){
-              Navigator.of(rootScaffoldMessengerKey.currentContext!).pop();
-            }),) );
-        }
-      });
+      killSubscriptionFCM = listenForKill(context: context);
+
+      // killSubscriptionFCM = fcmBloc.killStream.listen((event) {
+      //   pp('$mm Kill message received! 🍎Time to fuck off!');
+      //   if (mounted) {
+      //     showKillDialog(event, message: event);
+      //   } else {
+      //     rootScaffoldMessengerKey.currentState?.showSnackBar(
+      //       SnackBar(content: Text(event), action: SnackBarAction(label: 'Close', onPressed: (){
+      //         Navigator.of(rootScaffoldMessengerKey.currentContext!).pop();
+      //       }),) );
+      //   }
+      // });
 
       userSubscriptionFCM = fcmBloc.userStream.listen((user) async {
         pp('$mm: 🍎 🍎 user arrived... 🍎 🍎');
@@ -702,7 +676,7 @@ class DashboardMobileState extends State<DashboardMobile>
                   Prefs.deleteUser();
                   fb.FirebaseAuth.instance.signOut();
                   getOut(context);
-                  _showKillDialog('GeoMonitor Account');
+                  showKillDialog(message: 'GeoMonitor Account Closed', context: context);
                 }),
             IconButton(
                 icon: Icon(
@@ -1168,4 +1142,51 @@ class DashboardMobileState extends State<DashboardMobile>
       ),
     );
   }
+}
+
+//////
+void showKillDialog({required String message, required BuildContext context}) {
+  showDialog(
+    context: context,
+    barrierDismissible: false,
+    builder: (ctx) => AlertDialog(
+      title:  Text("Critical App Message", style: myTextStyleLarge(ctx),),
+      content: Text(message, style: myTextStyleMedium(ctx),),
+      shape: getRoundedBorder(radius: 16),
+
+      actions: <Widget>[
+        TextButton(
+          onPressed: () {
+            pp('$mm Navigator popping for the last time, Sucker! 🔵🔵🔵');
+            var android = UniversalPlatform.isAndroid;
+            var ios = UniversalPlatform.isIOS;
+            if (android) {
+              SystemNavigator.pop();
+            }
+            if (ios) {
+              Navigator.of(ctx).pop();
+              Navigator.of(ctx).pop();
+            }
+
+
+          },
+          child: const Text("Exit the App"),
+        ),
+      ],
+    ),
+  );
+}
+
+StreamSubscription<String> listenForKill({required BuildContext context}) {
+  pp('\n$mm Kill message; listen for KILL message ...... 🍎🍎🍎🍎 ......');
+  var sub = fcmBloc.killStream.listen((event) {
+    pp('$mm Kill message arrived: 🍎🍎🍎🍎 $event 🍎🍎🍎🍎');
+    try {
+      showKillDialog(message: event, context: context);
+    } catch (e) {
+      pp(e);
+    }
+  });
+
+  return sub;
 }

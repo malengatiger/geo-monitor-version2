@@ -7,6 +7,7 @@ import 'package:geo_monitor/library/api/sharedprefs.dart';
 import 'package:geo_monitor/library/data/country.dart';
 import 'package:geo_monitor/library/data/organization.dart';
 import 'package:geo_monitor/library/data/organization_registration_bag.dart';
+import 'package:geo_monitor/library/hive_util.dart';
 import 'package:geo_monitor/library/location/loc_bloc.dart';
 import 'package:geo_monitor/library/users/edit/user_edit_main.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
@@ -55,13 +56,11 @@ class OrgRegistrationPageState extends State<OrgRegistrationPage>
         reverseDuration: const Duration(milliseconds: 2000),
         vsync: this);
     super.initState();
-    //_start();
+  
   }
 
   void _start() async {
     pp('$mm _start: ....... Verifying phone number ...');
-    // ui.AuthProvider<ui.AuthListener, AuthCredential>  provider =
-    // ui.PhoneAuthProvider();
     setState(() {
       busy = true;
     });
@@ -84,6 +83,7 @@ class OrgRegistrationPageState extends State<OrgRegistrationPage>
                 backgroundColor: Theme.of(context).backgroundColor,
                 textStyle: myTextStyleMedium(context),
                 message: 'Verification completed. Thank you!',
+                duration: const Duration(seconds: 5),
                 context: context);
           }
         },
@@ -98,6 +98,7 @@ class OrgRegistrationPageState extends State<OrgRegistrationPage>
                 backgroundColor: Theme.of(context).errorColor,
                 textStyle: const TextStyle(color: Colors.white),
                 message: 'Verification failed. Please try later',
+                duration: const Duration(seconds: 5),
                 context: context);
           }
         },
@@ -159,8 +160,6 @@ class OrgRegistrationPageState extends State<OrgRegistrationPage>
       PhoneAuthCredential authCredential = PhoneAuthProvider.credential(
           verificationId: phoneVerificationId!, smsCode: code!);
       await firebaseAuth.signOut();
-      var userCred = await firebaseAuth.signInWithCredential(authCredential);
-      pp('$mm firebase user credential obtained:  🍎 $userCred');
 
       var org = Organization(
           name: orgNameController.value.text,
@@ -182,6 +181,10 @@ class OrgRegistrationPageState extends State<OrgRegistrationPage>
           longitude: loc.longitude);
 
       var result = await DataAPI.registerOrganization(bag);
+
+      var userCred = await firebaseAuth.signInWithCredential(authCredential);
+      pp('$mm firebase user credential obtained:  🍎 $userCred');
+
       user = ur.User(
           name: adminController.value.text,
           email: '',
@@ -196,10 +199,19 @@ class OrgRegistrationPageState extends State<OrgRegistrationPage>
           countryId: country!.countryId,
           password: const Uuid().v4());
 
-      var m = await DataAPI.addUser(user!);
-      await Prefs.saveUser(m);
+      var mUser = await DataAPI.addUser(user!);
+      var res = await DataAPI.updateAuthedUser(mUser);
+      await firebaseAuth.signOut();
+      var userCred2 = await firebaseAuth.signInWithCredential(authCredential);
+      pp('$mm userCred2 after auth update: 🔵🔵 $userCred2 🔵🔵');
 
-      pp('\n\n$mm Organization registered:  🍎 ${result.toJson()} \n\n');
+      if (res == 0) {
+        await Prefs.saveUser(user!);
+        await cacheManager.addUser(user: user!);
+        pp('\n$mm Organization OG Administrator registered OK:🌍🌍🌍🌍  🍎 ${mUser.toJson()} 🌍🌍🌍🌍');
+
+      }
+      pp('\n\n$mm Organization registered: 🌍🌍🌍🌍 🍎 ${result.toJson()} 🌍🌍🌍🌍\n\n');
     } catch (e) {
       pp(e);
       String msg = e.toString();

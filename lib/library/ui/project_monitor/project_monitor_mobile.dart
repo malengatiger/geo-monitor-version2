@@ -1,5 +1,8 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:geo_monitor/library/ui/project_location/project_location_mobile.dart';
+import 'package:geo_monitor/ui/dashboard/dashboard_mobile.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:map_launcher/map_launcher.dart';
 
@@ -33,11 +36,13 @@ class ProjectMonitorMobileState extends State<ProjectMonitorMobile>
   final _key = GlobalKey<ScaffoldState>();
   var positions = <ProjectPosition>[];
   var polygons = <ProjectPolygon>[];
+  late StreamSubscription<String> killSubscription;
 
   @override
   void initState() {
     _controller = AnimationController(vsync: this);
     super.initState();
+    killSubscription = listenForKill(context: context);
     _getProjectData(false);
   }
 
@@ -66,6 +71,7 @@ class ProjectMonitorMobileState extends State<ProjectMonitorMobile>
   @override
   void dispose() {
     _controller.dispose();
+    killSubscription.cancel();
     super.dispose();
   }
 

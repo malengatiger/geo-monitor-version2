@@ -54,8 +54,6 @@ class PhoneLoginState extends State<PhoneLogin>
 
   void _start() async {
     pp('$mm _start: ....... Verifying phone number ...');
-    // ui.AuthProvider<ui.AuthListener, AuthCredential>  provider =
-    // ui.PhoneAuthProvider();
     setState(() {
       busy = true;
     });
@@ -145,12 +143,12 @@ class PhoneLoginState extends State<PhoneLogin>
       });
       return;
     }
-
+    UserCredential? userCred;
     try {
         pp('$mm .... start getting auth artifacts ...');
         PhoneAuthCredential authCredential = PhoneAuthProvider.credential(
             verificationId: phoneVerificationId!, smsCode: code!);
-        var userCred = await firebaseAuth.signInWithCredential(authCredential);
+        userCred = await firebaseAuth.signInWithCredential(authCredential);
         pp('$mm firebase user credential obtained:  🍎 $userCred 🍎');
         if (userCred.user?.metadata != null ) {
           var createDate = userCred.user?.metadata.creationTime;
@@ -193,6 +191,13 @@ class PhoneLoginState extends State<PhoneLogin>
       if (msg.contains('Bad response format')) {
         msg = 'This user does not exist in the database';
       }
+      if (userCred != null) {
+        var res = await DataAPI.deleteAuthUser(userCred.user!.uid);
+        if (res == 0) {
+          pp('$mm deleteAuthUser returned $res, 🌀🌀 cool if zero!!');
+        }
+      }
+
       if (mounted) {
         showToast(
             duration: const Duration(seconds: 5),

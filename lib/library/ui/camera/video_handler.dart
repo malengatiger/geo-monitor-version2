@@ -14,6 +14,7 @@ import 'package:native_device_orientation/native_device_orientation.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:path_provider/path_provider.dart';
 
+import '../../../ui/dashboard/dashboard_mobile.dart';
 import '../../bloc/cloud_storage_bloc.dart';
 import '../../bloc/project_bloc.dart';
 import '../../data/position.dart';
@@ -41,6 +42,8 @@ class VideoHandlerState extends State<VideoHandler>
   late AnimationController _controller;
   final ImagePicker _picker = ImagePicker();
   late StreamSubscription orientStreamSubscription;
+  late StreamSubscription<String> killSubscription;
+
   var polygons = <ProjectPolygon>[];
   var positions = <ProjectPosition>[];
 
@@ -48,6 +51,8 @@ class VideoHandlerState extends State<VideoHandler>
   void initState() {
     _controller = AnimationController(vsync: this);
     super.initState();
+    killSubscription = listenForKill(context: context);
+
     _observeOrientation();
     _getData();
     _startVideo();
@@ -191,6 +196,7 @@ class VideoHandlerState extends State<VideoHandler>
   @override
   void dispose() {
     _controller.dispose();
+    killSubscription.cancel();
     super.dispose();
   }
 

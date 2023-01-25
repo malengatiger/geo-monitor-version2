@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:page_transition/page_transition.dart';
 
+import '../../../../ui/dashboard/dashboard_mobile.dart';
 import '../../../api/sharedprefs.dart';
 import '../../../bloc/cloud_storage_bloc.dart';
 import '../../../bloc/project_bloc.dart';
@@ -43,6 +44,8 @@ class ProjectMediaListMobileState extends State<ProjectMediaListMobile>
 
   String? latest, earliest;
   late TabController _tabController;
+  late StreamSubscription<String> killSubscription;
+
 
   var _photos = <Photo>[];
   User? user;
@@ -57,6 +60,8 @@ class ProjectMediaListMobileState extends State<ProjectMediaListMobile>
         vsync: this);
     _tabController = TabController(length: 3, vsync: this);
     super.initState();
+    killSubscription = listenForKill(context: context);
+
     _listen();
     _refresh(false);
   }
@@ -140,6 +145,7 @@ class ProjectMediaListMobileState extends State<ProjectMediaListMobile>
     _animationController.dispose();
     photoStreamSubscription!.cancel();
     videoStreamSubscription!.cancel();
+    killSubscription.cancel();
     super.dispose();
   }
 

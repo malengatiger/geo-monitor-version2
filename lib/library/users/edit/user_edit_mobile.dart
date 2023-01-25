@@ -118,7 +118,7 @@ class UserEditMobileState extends State<UserEditMobile>
               userId: 'tbd');
           pp('\n\n\n😡😡😡 _submit new user ......... ${user.toJson()}');
           try {
-            var mUser = await DataAPI.registerUser(user);
+            var mUser = await DataAPI.createUser(user);
             pp('\n🍎🍎🍎🍎 UserEditMobile: 🍎 A user has been created:  🍎 ${mUser.toJson()}\b');
             gender = null;
             type = null;
@@ -133,7 +133,7 @@ class UserEditMobileState extends State<UserEditMobile>
             await organizationBloc.getUsers(
                 organizationId: user.organizationId!, forceRefresh: true);
             if (mounted) {
-              Navigator.pop(context);
+              Navigator.of(context).pop(mUser);
             }
           } catch (e) {
             pp(e);

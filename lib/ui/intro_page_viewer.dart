@@ -1,6 +1,9 @@
+import 'dart:async';
+
 import 'package:dots_indicator/dots_indicator.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart' as fb;
+import 'package:geo_monitor/library/generic_functions.dart';
 import 'package:geo_monitor/main.dart';
 import 'package:page_transition/page_transition.dart';
 
@@ -27,7 +30,9 @@ class IntroPageViewerState extends State<IntroPageViewer>
   bool authed = false;
   fb.FirebaseAuth firebaseAuth = fb.FirebaseAuth.instance;
   ur.User? user;
-  
+  late StreamSubscription<String> killSubscription;
+
+
   final mm =
       '${Emoji.pear}${Emoji.pear}${Emoji.pear}${Emoji.pear} IntroPageViewer: ';
 
@@ -36,6 +41,8 @@ class IntroPageViewerState extends State<IntroPageViewer>
     _animationController = AnimationController(vsync: this);
     super.initState();
     _getAuthenticationStatus();
+    killSubscription = listenForKill(context: context);
+
 
   }
   void _setup() async {
@@ -99,6 +106,13 @@ class IntroPageViewerState extends State<IntroPageViewer>
       _navigateToDashboard();
     } else {
       pp(' 😡  😡  Returned from sign in is NOT a user :  😡 $result');
+      if (mounted) {
+        showToast(message: 'Phone Sign In Failed',
+            duration: const Duration(seconds: 5),
+            backgroundColor: Theme.of(context).primaryColor,
+            padding: 12.0,
+            context: context);
+      }
     }
   }
 
@@ -125,6 +139,7 @@ class IntroPageViewerState extends State<IntroPageViewer>
   void dispose() {
     _animationController.dispose();
     _pageController.dispose();
+    killSubscription.cancel();
     super.dispose();
   }
 
@@ -246,7 +261,7 @@ class IntroPageViewerState extends State<IntroPageViewer>
               _navigateToDashboardWithoutUser();
             }, icon:  Icon(Icons.close, size: 18, color: Theme.of(context).primaryColor,)),
           ),)): Positioned(
-            left: 8,
+            left: 16, right: 16,
             child: SizedBox(width: 300, height: 60, child: Card(
               elevation: 4, color: Colors.black12,
               shape: getRoundedBorder(radius: 16),

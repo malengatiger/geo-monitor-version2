@@ -18,6 +18,7 @@ import '../../library/data/user.dart';
 import '../../library/data/video.dart';
 import '../../library/functions.dart';
 import '../../library/generic_functions.dart';
+import '../dashboard/dashboard_mobile.dart';
 
 class AudioMobile extends StatefulWidget {
   const AudioMobile({Key? key, required this.project}) : super(key: key);
@@ -37,6 +38,8 @@ class AudioMobileState extends State<AudioMobile>
   StreamSubscription<RecordState>? _recordSub;
   StreamSubscription<Amplitude>? _amplitudeSub;
   final wv.RecorderController _recorderController = wv.RecorderController(); //
+  late StreamSubscription<String> killSubscription;
+
 
   AudioPlayer player = AudioPlayer();
   List<StreamSubscription> streams = []; // Initialise
@@ -62,6 +65,8 @@ class AudioMobileState extends State<AudioMobile>
   void initState() {
     _animationController = AnimationController(vsync: this);
     super.initState();
+    killSubscription = listenForKill(context: context);
+
     _getUser();
     player.playerStateStream.listen((event) {
       if (event.playing) {
@@ -96,6 +101,7 @@ class AudioMobileState extends State<AudioMobile>
     _audioRecorder.dispose();
     _recorderController.dispose();
     _animationController.dispose();
+    killSubscription.cancel();
     super.dispose();
   }
 

@@ -393,7 +393,7 @@ class UserListMobileState extends State<UserListMobile>
   }
 
   void _navigateToUserEdit(User? user) async {
-    await Navigator.push(
+    var result = await Navigator.push(
         context,
         PageTransition(
             type: PageTransitionType.scale,
@@ -401,7 +401,7 @@ class UserListMobileState extends State<UserListMobile>
             duration: const Duration(seconds: 1),
             child: UserEditMobile(user)));
 
-    if (user != null) {
+    if (result != null) {
       _users = await cacheManager.getUsers();
     }
     setState(() {});
