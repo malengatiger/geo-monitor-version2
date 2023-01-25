@@ -5,8 +5,6 @@ import 'package:firebase_auth/firebase_auth.dart' as auth;
 import 'package:firebase_messaging/firebase_messaging.dart' as fb;
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:geo_monitor/library/bloc/organization_bloc.dart';
-import 'package:geo_monitor/main.dart';
 import 'package:universal_platform/universal_platform.dart';
 
 import '../api/data_api.dart';
@@ -21,6 +19,7 @@ import '../hive_util.dart';
 import '../data/photo.dart';
 import '../data/project.dart';
 import '../data/user.dart';
+import 'organization_bloc.dart';
 
 FCMBloc fcmBloc = FCMBloc();
 const mm = '🔵 🔵 🔵 🔵 🔵 🔵 FCMBloc: ';
@@ -104,8 +103,8 @@ class FCMBloc {
           onDidReceiveNotificationResponse: onDidReceiveNotificationResponse);
 
       FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-        RemoteNotification? notification = message.notification;
-        AndroidNotification? android = message.notification?.android;
+        // RemoteNotification? notification = message.notification;
+        // AndroidNotification? android = message.notification?.android;
         pp("\n\n$mm onMessage: 🍎 🍎 data: ${message.data} ... 🍎 🍎 ");
         //todo - save photo or video in cache if not yours ...
         processFCMMessage(message);
@@ -193,14 +192,14 @@ class FCMBloc {
       pp("$mm processFCMMessage  🔵 🔵 🔵 ........................... cache USER  🍎  🍎 ");
       var m = jsonDecode(data['receivedUser']);
       var user = User.fromJson(m);
-      await hiveUtil.addUser(user: user);
+      await cacheManager.addUser(user: user);
       _userController.sink.add(user);
     }
     if (data['project'] != null) {
       pp("$mm processFCMMessage  🔵 🔵 🔵 ........................... cache PROJECT  🍎  🍎");
       var m = jsonDecode(data['project']);
       var project = Project.fromJson(m);
-      await hiveUtil.addProject(project: project);
+      await cacheManager.addProject(project: project);
       _projectController.sink.add(project);
     }
     if (data['photo'] != null) {
@@ -210,7 +209,7 @@ class FCMBloc {
       if (photo.userId == user!.userId) {
         pp('$mm This message is about my own photo - not caching');
       } else {
-        var res = await hiveUtil.addPhoto(photo: photo);
+        var res = await cacheManager.addPhoto(photo: photo);
         pp('$mm Photo received added to local cache:  🔵 🔵 ${photo.projectName} result: $res, sending to photo stream');
         _photoController.sink.add(photo);
       }
@@ -222,7 +221,7 @@ class FCMBloc {
       if (video.userId == user!.userId) {
         pp('$mm This message is about my own audio - not caching');
       } else {
-        await hiveUtil.addVideo(video: video);
+        await cacheManager.addVideo(video: video);
         pp('$mm Video received added to local cache:  🔵 🔵 ${video.projectName}, sending to video stream');
         _videoController.sink.add(video);
       }
@@ -234,7 +233,7 @@ class FCMBloc {
       if (audio.userId == user!.userId) {
         pp('$mm This message is about my own audio - not caching');
       } else {
-        await hiveUtil.addAudio(audio: audio);
+        await cacheManager.addAudio(audio: audio);
         pp('$mm Audio received added to local cache:  🔵 🔵 ${audio.projectName}, sending to audio stream');
         _audioController.sink.add(audio);
       }
@@ -243,7 +242,7 @@ class FCMBloc {
       pp("$mm processFCMMessage  🔵 🔵 🔵 ........................... cache CONDITION  🍎  🍎");
       var m = jsonDecode(data['condition']);
       var condition = Condition.fromJson(m);
-      await hiveUtil.addCondition(condition: condition);
+      await cacheManager.addCondition(condition: condition);
       pp('$mm condition received added to local cache:  🔵 🔵 ${condition.projectName}, sending to condition stream');
       _conditionController.sink.add(condition);
     }
@@ -251,7 +250,7 @@ class FCMBloc {
       pp("$mm processFCMMessage  🔵 🔵 🔵 ........................... cache ORG MESSAGE  🍎  🍎");
       var m = jsonDecode(data['message']);
       var msg = OrgMessage.fromJson(m);
-      await hiveUtil.addOrgMessage(message: msg);
+      await cacheManager.addOrgMessage(message: msg);
       if (user!.userId != msg.adminId) {
         _messageController.sink.add(msg);
       }
@@ -262,14 +261,14 @@ class FCMBloc {
 
   Future<void> _handleCache(User receivedUser) async {
     pp('$mm handling cache and removing user from cache');
-    await hiveUtil.deleteUser(user: receivedUser);
-    var list = await hiveUtil.getUsers(organizationId: receivedUser.organizationId!);
+    await cacheManager.deleteUser(user: receivedUser);
+    var list = await cacheManager.getUsers();
     organizationBloc.userController.sink.add(list);
   }
 
   Future _updateUser(String newToken) async {
     if (user != null) {
-      pp("$mm updateUser: 🍎 🍎  🍎 🍎  🍎 🍎  🍎 🍎  🍎 USER: 🍎 ${user!.toJson()} ... 🍎 🍎 ");
+      pp("$mm updateUser: 🍎🍎🍎🍎🍎🍎🍎🍎 USER: 🍎 ${user!.toJson()} ... 🍎🍎 ");
       user!.fcmRegistration = newToken;
       await DataAPI.updateUser(user!);
       await Prefs.saveUser(user!);
@@ -298,36 +297,36 @@ Future<dynamic> myBackgroundMessageHandler(Map<String, dynamic> message) async {
   if (data['user'] != null) {
     var m = jsonDecode(data['user']);
     var user = User.fromJson(m);
-    hiveUtil.addUser(user: user);
+    cacheManager.addUser(user: user);
   }
   if (data['project'] != null) {
     pp("$mm myBackgroundMessageHandler   🦠 🦠 🦠 ........................... cache PROJECT  🍎  🍎");
     var m = jsonDecode(data['project']);
     var project = Project.fromJson(m);
-    hiveUtil.addProject(project: project);
+    cacheManager.addProject(project: project);
   }
   if (data['photo'] != null) {
     pp("$mm myBackgroundMessageHandler   🦠 🦠 🦠 ........................... cache PHOTO  🍎  🍎");
     var m = jsonDecode(data['photo']);
     var photo = Photo.fromJson(m);
-    hiveUtil.addPhoto(photo: photo);
+    cacheManager.addPhoto(photo: photo);
   }
   if (data['video'] != null) {
     pp("$mm myBackgroundMessageHandler   🦠 🦠 🦠 ........................... cache VIDEO  🍎  🍎");
     var m = jsonDecode(data['video']);
     var video = Video.fromJson(m);
-    hiveUtil.addVideo(video: video);
+    cacheManager.addVideo(video: video);
   }
   if (data['condition'] != null) {
     pp("$mm myBackgroundMessageHandler   🦠 🦠 🦠 ........................... cache CONDITION  🍎  🍎");
     var m = jsonDecode(data['condition']);
     var condition = Condition.fromJson(m);
-    hiveUtil.addCondition(condition: condition);
+    cacheManager.addCondition(condition: condition);
   }
   if (data['message'] != null) {
     pp("$mm myBackgroundMessageHandler  🦠 🦠 🦠 ........................... cache ORG MESSAGE  🍎  🍎");
     var m = jsonDecode(data['message']);
     var msg = OrgMessage.fromJson(m);
-    hiveUtil.addOrgMessage(message: msg);
+    cacheManager.addOrgMessage(message: msg);
   }
 }

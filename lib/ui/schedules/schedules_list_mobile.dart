@@ -44,9 +44,9 @@ class SchedulesListMobileState extends State<SchedulesListMobile>
     super.dispose();
   }
   void _navigateToProjectMapMobile(FieldMonitorSchedule sched) async {
-    var pos = await hiveUtil.getProjectPositions(sched.projectId!);
-    var pol = await hiveUtil.getProjectPolygons(projectId: sched.projectId!);
-    var proj = await hiveUtil.getProjectById(projectId: sched.projectId!);
+    var pos = await cacheManager.getProjectPositions(sched.projectId!);
+    var pol = await cacheManager.getProjectPolygons(projectId: sched.projectId!);
+    var proj = await cacheManager.getProjectById(projectId: sched.projectId!);
     if (mounted) {
       Navigator.push(
           context,

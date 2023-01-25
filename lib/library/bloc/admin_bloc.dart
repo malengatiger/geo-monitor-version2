@@ -2,22 +2,13 @@ import 'dart:async';
 
 import '../api/data_api.dart';
 import '../api/sharedprefs.dart';
-import '../data/city.dart';
 import '../data/community.dart';
-import '../data/condition.dart';
 import '../data/country.dart';
-import '../data/field_monitor_schedule.dart';
-import '../data/monitor_report.dart';
-import '../data/org_message.dart';
-import '../data/organization.dart';
-import '../data/photo.dart';
 import '../data/position.dart';
 import '../data/project.dart';
-import '../data/project_position.dart';
 import '../data/questionnaire.dart';
 import '../data/section.dart';
 import '../data/user.dart';
-import '../data/video.dart';
 import '../functions.dart';
 import '../location/loc_bloc.dart';
 
@@ -179,11 +170,6 @@ class AdminBloc {
     return _countries;
   }
 
-  Future addUser(User user) async {
-    var res = await DataAPI.addUser(user);
-    _users.add(res);
-    _userController.sink.add(_users);
-  }
 
   Future updateUser(User user) async {
     //todo - sort out user update - check backend api

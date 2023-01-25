@@ -17,13 +17,9 @@ import '../../bloc/organization_bloc.dart';
 import '../../emojis.dart';
 import '../../functions.dart';
 import '../../hive_util.dart';
-import '../../ui/maps_field_monitor/field_monitor_map_main.dart';
-import '../../ui/message/message_main.dart';
 import '../../ui/message/message_mobile.dart';
-import '../../ui/schedule/scheduler_main.dart';
 import '../../data/user.dart';
 import '../edit/user_edit_mobile.dart';
-import '../report/user_rpt_main.dart';
 
 class UserListMobile extends StatefulWidget {
   // final User user;
@@ -64,12 +60,16 @@ class UserListMobileState extends State<UserListMobile>
     });
   }
 
+  bool _showPlusIcon = false;
   void _getData(bool forceRefresh) async {
     setState(() {
       busy = true;
     });
     try {
       _user = await Prefs.getUser();
+      if (_user!.userType == UserType.orgAdministrator || _user!.userType == UserType.orgExecutive) {
+        _showPlusIcon = true;
+      }
       _users = await organizationBloc.getUsers(
           organizationId: _user!.organizationId!, forceRefresh: forceRefresh);
       _users.sort((a, b) => (a.name!.compareTo(b.name!)));
@@ -89,29 +89,6 @@ class UserListMobileState extends State<UserListMobile>
   void dispose() {
     _animationController.dispose();
     super.dispose();
-  }
-
-  List<IconButton> getIconButtons() {
-    List<IconButton> list = [];
-    list.add(IconButton(
-      icon: Icon(
-        Icons.refresh,
-        size: 20,
-        color: Theme.of(context).primaryColor,
-      ),
-      onPressed: () {
-        _getData(true);
-      },
-    ));
-    if (_user!.userType == UserType.orgAdministrator) {
-      list.add(IconButton(
-        icon: Icon(Icons.add, size: 20, color: Theme.of(context).primaryColor),
-        onPressed: () {
-          _navigateToUserEdit(null);
-        },
-      ));
-    }
-    return list;
   }
 
   List<FocusedMenuItem> _getMenuItems(User user) {
@@ -247,7 +224,24 @@ class UserListMobileState extends State<UserListMobile>
           'Organization Users',
           style: Styles.whiteTiny,
         ),
-        actions: busy? [] : getIconButtons(),
+        actions: busy? [] : [
+          IconButton(
+            icon: Icon(
+              Icons.refresh,
+              size: 20,
+              color: Theme.of(context).primaryColor,
+            ),
+            onPressed: () {
+              _getData(true);
+            },
+          ),
+          _showPlusIcon? IconButton(
+            icon: Icon(Icons.add, size: 20, color: Theme.of(context).primaryColor),
+            onPressed: () {
+              _navigateToUserEdit(null);
+            },
+          ): const SizedBox()
+        ],
       ),
       body: busy
           ? const Center(
@@ -408,7 +402,7 @@ class UserListMobileState extends State<UserListMobile>
             child: UserEditMobile(user)));
 
     if (user != null) {
-      _users = await hiveUtil.getUsers(organizationId: user.organizationId!);
+      _users = await cacheManager.getUsers();
     }
     setState(() {});
   }

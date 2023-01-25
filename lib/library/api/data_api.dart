@@ -78,7 +78,7 @@ class DataAPI {
       var result =
           await _callWebAPIPost('${mURL!}addFieldMonitorSchedule', bag);
       var s = FieldMonitorSchedule.fromJson(result);
-      await hiveUtil.addFieldMonitorSchedule(schedule: s);
+      await cacheManager.addFieldMonitorSchedule(schedule: s);
       return s;
     } catch (e) {
       pp(e);
@@ -94,7 +94,7 @@ class DataAPI {
     try {
       var result = await _callWebAPIPost('${mURL!}addGeofenceEvent', bag);
       var s = GeofenceEvent.fromJson(result);
-      await hiveUtil.addGeofenceEvent(geofenceEvent: s);
+      await cacheManager.addGeofenceEvent(geofenceEvent: s);
       return s;
     } catch (e) {
       pp(e);
@@ -113,7 +113,7 @@ class DataAPI {
         mList.add(FieldMonitorSchedule.fromJson(element));
       }
       pp('🌿 🌿 🌿 getProjectFieldMonitorSchedules returned: 🌿 ${mList.length}');
-      await hiveUtil.addFieldMonitorSchedules(schedules: mList);
+      await cacheManager.addFieldMonitorSchedules(schedules: mList);
       return mList;
     } catch (e) {
       pp(e);
@@ -132,7 +132,7 @@ class DataAPI {
         mList.add(FieldMonitorSchedule.fromJson(element));
       }
       pp('🌿 🌿 🌿 getProjectFieldMonitorSchedules returned: 🌿 ${mList.length}');
-      await hiveUtil.addFieldMonitorSchedules(schedules: mList);
+      await cacheManager.addFieldMonitorSchedules(schedules: mList);
       return mList;
     } catch (e) {
       pp(e);
@@ -166,7 +166,7 @@ class DataAPI {
         mList.add(FieldMonitorSchedule.fromJson(element));
       }
       pp('🌿 🌿 🌿 getMonitorFieldMonitorSchedules returned: 🌿 ${mList.length}');
-      await hiveUtil.addFieldMonitorSchedules(schedules: mList);
+      await cacheManager.addFieldMonitorSchedules(schedules: mList);
       return mList;
     } catch (e) {
       pp(e);
@@ -185,7 +185,7 @@ class DataAPI {
         mList.add(FieldMonitorSchedule.fromJson(element));
       }
       pp('🌿 🌿 🌿 getOrgFieldMonitorSchedules returned: 🌿 ${mList.length}');
-      await hiveUtil.addFieldMonitorSchedules(schedules: mList);
+      await cacheManager.addFieldMonitorSchedules(schedules: mList);
       return mList;
     } catch (e) {
       pp(e);
@@ -195,12 +195,13 @@ class DataAPI {
 
   static Future<User> addUser(User user) async {
     String? mURL = await getUrl();
+    user.active ??= 0;
     Map bag = user.toJson();
     pp('DataAPI: ☕️ ☕️ ☕️ bag about to be sent to backend: check name: ☕️ $bag');
     try {
       var result = await _callWebAPIPost('${mURL!}addUser', bag);
       var u = User.fromJson(result);
-      await hiveUtil.addUser(user: u);
+      await cacheManager.addUser(user: u);
       return u;
     } catch (e) {
       pp(e);
@@ -229,10 +230,10 @@ class DataAPI {
     try {
       var result = await _callWebAPIPost('${mURL!}registerOrganization', bag);
       var u = OrganizationRegistrationBag.fromJson(result);
-      await hiveUtil.addRegistration(bag: u);
-      await hiveUtil.addUsers(users: u.sampleUsers!);
-      await hiveUtil.addProject(project: u.sampleProject!);
-      await hiveUtil.addProjectPosition(
+      await cacheManager.addRegistration(bag: u);
+      await cacheManager.addUsers(users: u.sampleUsers!);
+      await cacheManager.addProject(project: u.sampleProject!);
+      await cacheManager.addProjectPosition(
           projectPosition: u.sampleProjectPosition!);
       pp('$mm️ Organization RegistrationBag complete: org:: ☕️ ${u.organization!.name!}');
 
@@ -251,7 +252,7 @@ class DataAPI {
     try {
       var result = await _callWebAPIPost('${mURL!}createUser', bag);
       var u = User.fromJson(result);
-      await hiveUtil.addUser(user: u);
+      await cacheManager.addUser(user: u);
 
       pp('$mm️ User creation complete: user: ☕️ ${u.toJson()}');
 
@@ -267,7 +268,6 @@ class DataAPI {
     Map bag = user.toJson();
     try {
       var result = await _callWebAPIPost('${mURL!}updateUser', bag);
-      var users = findUsersByOrganization(user.organizationId!);
       return User.fromJson(result);
     } catch (e) {
       pp(e);
@@ -310,7 +310,7 @@ class DataAPI {
     try {
       var result = await _callWebAPIPost('${mURL!}findProjectById', bag);
       var p = Project.fromJson(result);
-      await hiveUtil.addProject(project: p);
+      await cacheManager.addProject(project: p);
       return p;
     } catch (e) {
       pp(e);
@@ -321,9 +321,7 @@ class DataAPI {
   static Future<List<ProjectPosition>> findProjectPositionsById(
       String projectId) async {
     String? mURL = await getUrl();
-    Map bag = {
-      'projectId': projectId,
-    };
+
     try {
       var result = await _sendHttpGET(
           '${mURL!}getProjectPositions?projectId=$projectId');
@@ -331,7 +329,7 @@ class DataAPI {
       result.forEach((m) {
         list.add(ProjectPosition.fromJson(m));
       });
-      await hiveUtil.addProjectPositions(positions: list);
+      await cacheManager.addProjectPositions(positions: list);
       return list;
     } catch (e) {
       pp(e);
@@ -350,7 +348,7 @@ class DataAPI {
       result.forEach((m) {
         list.add(ProjectPolygon.fromJson(m));
       });
-      await hiveUtil.addProjectPolygons(polygons: list);
+      await cacheManager.addProjectPolygons(polygons: list);
       return list;
     } catch (e) {
       pp(e);
@@ -369,7 +367,7 @@ class DataAPI {
       result.forEach((m) {
         list.add(ProjectPosition.fromJson(m));
       });
-      await hiveUtil.addProjectPositions(positions: list);
+      await cacheManager.addProjectPositions(positions: list);
       return list;
     } catch (e) {
       pp(e);
@@ -386,14 +384,15 @@ class DataAPI {
 
       final bag = DataBag.fromJson(result);
       pp('\n$mm Data returned from server, adding to Hive cache ...');
-      await hiveUtil.addProjects(projects: bag.projects!);
-      await hiveUtil.addProjectPolygons(polygons: bag.projectPolygons!);
-      await hiveUtil.addProjectPositions(positions: bag.projectPositions!);
-      await hiveUtil.addUsers(users: bag.users!);
-      await hiveUtil.addPhotos(photos: bag.photos!);
-      await hiveUtil.addVideos(videos: bag.videos!);
-      await hiveUtil.addAudios(audios: bag.audios!);
-      await hiveUtil.addFieldMonitorSchedules(
+      await cacheManager.addProjects(projects: bag.projects!);
+      await cacheManager.addProjectPolygons(polygons: bag.projectPolygons!);
+      await cacheManager.addProjectPositions(positions: bag.projectPositions!);
+      await cacheManager.deleteUsers();
+      await cacheManager.addUsers(users: bag.users!);
+      await cacheManager.addPhotos(photos: bag.photos!);
+      await cacheManager.addVideos(videos: bag.videos!);
+      await cacheManager.addAudios(audios: bag.audios!);
+      await cacheManager.addFieldMonitorSchedules(
           schedules: bag.fieldMonitorSchedules!);
       pp('\n$mm Data returned from server, sending to caller ...');
       return bag;
@@ -423,13 +422,13 @@ class DataAPI {
       var result = await _sendHttpGET('${mURL!}getUserData?userId=$userId');
 
       bag = DataBag.fromJson(result);
-      await hiveUtil.addProjects(projects: bag.projects!);
-      await hiveUtil.addProjectPolygons(polygons: bag.projectPolygons!);
-      await hiveUtil.addProjectPositions(positions: bag.projectPositions!);
-      await hiveUtil.addUsers(users: bag.users!);
-      await hiveUtil.addPhotos(photos: bag.photos!);
-      await hiveUtil.addVideos(videos: bag.videos!);
-      await hiveUtil.addFieldMonitorSchedules(
+      await cacheManager.addProjects(projects: bag.projects!);
+      await cacheManager.addProjectPolygons(polygons: bag.projectPolygons!);
+      await cacheManager.addProjectPositions(positions: bag.projectPositions!);
+      await cacheManager.addUsers(users: bag.users!);
+      await cacheManager.addPhotos(photos: bag.photos!);
+      await cacheManager.addVideos(videos: bag.videos!);
+      await cacheManager.addFieldMonitorSchedules(
           schedules: bag.fieldMonitorSchedules!);
 
       return bag;
@@ -450,7 +449,7 @@ class DataAPI {
       result.forEach((m) {
         list.add(ProjectPosition.fromJson(m));
       });
-      await hiveUtil.addProjectPositions(positions: list);
+      await cacheManager.addProjectPositions(positions: list);
       return list;
     } catch (e) {
       pp(e);
@@ -468,7 +467,7 @@ class DataAPI {
       result.forEach((m) {
         list.add(Photo.fromJson(m));
       });
-      await hiveUtil.addPhotos(photos: list);
+      await cacheManager.addPhotos(photos: list);
       return list;
     } catch (e) {
       pp(e);
@@ -486,7 +485,7 @@ class DataAPI {
       result.forEach((m) {
         list.add(Photo.fromJson(m));
       });
-      await hiveUtil.addPhotos(photos: list);
+      await cacheManager.addPhotos(photos: list);
       return list;
     } catch (e) {
       pp(e);
@@ -512,14 +511,14 @@ class DataAPI {
           await _sendHttpGET('${mURL!}getProjectData?projectId=$projectId');
 
       bag = DataBag.fromJson(result);
-      await hiveUtil.addProjects(projects: bag.projects!);
-      await hiveUtil.addProjectPolygons(polygons: bag.projectPolygons!);
-      await hiveUtil.addProjectPositions(positions: bag.projectPositions!);
-      await hiveUtil.addUsers(users: bag.users!);
-      await hiveUtil.addPhotos(photos: bag.photos!);
-      await hiveUtil.addVideos(videos: bag.videos!);
-      await hiveUtil.addAudios(audios: bag.audios!);
-      await hiveUtil.addFieldMonitorSchedules(
+      await cacheManager.addProjects(projects: bag.projects!);
+      await cacheManager.addProjectPolygons(polygons: bag.projectPolygons!);
+      await cacheManager.addProjectPositions(positions: bag.projectPositions!);
+      await cacheManager.addUsers(users: bag.users!);
+      await cacheManager.addPhotos(photos: bag.photos!);
+      await cacheManager.addVideos(videos: bag.videos!);
+      await cacheManager.addAudios(audios: bag.audios!);
+      await cacheManager.addFieldMonitorSchedules(
           schedules: bag.fieldMonitorSchedules!);
     } catch (e) {
       pp(e);
@@ -538,7 +537,7 @@ class DataAPI {
       result.forEach((m) {
         list.add(Video.fromJson(m));
       });
-      await hiveUtil.addVideos(videos: list);
+      await cacheManager.addVideos(videos: list);
       return list;
     } catch (e) {
       pp(e);
@@ -556,7 +555,7 @@ class DataAPI {
       result.forEach((m) {
         list.add(Video.fromJson(m));
       });
-      await hiveUtil.addVideos(videos: list);
+      await cacheManager.addVideos(videos: list);
       return list;
     } catch (e) {
       pp(e);
@@ -576,7 +575,7 @@ class DataAPI {
       for (var m in result) {
         list.add(User.fromJson(m));
       }
-      await hiveUtil.addUsers(users: list);
+      await cacheManager.addUsers(users: list);
       pp('$mm findUsersByOrganization: 🍏 returning objects for: ${list.length} users');
       return list;
     } catch (e) {
@@ -600,7 +599,7 @@ class DataAPI {
         list.add(Project.fromJson(m));
       }
       pp('$mm ${list.length} project objects built .... about to cache in local mongo');
-      await hiveUtil.addProjects(projects: list);
+      await cacheManager.addProjects(projects: list);
       return list;
     } catch (e) {
       pp('Houston, 😈😈😈😈😈 we have a problem! 😈😈😈😈😈 $e');
@@ -619,7 +618,7 @@ class DataAPI {
       var result = await _sendHttpGET(url);
       pp('$mm findOrganizationById: 🍏 result: $result ');
       Organization? org = Organization.fromJson(result);
-      await hiveUtil.addOrganization(organization: org);
+      await cacheManager.addOrganization(organization: org);
       return org;
     } catch (e) {
       pp('Houston, 😈😈😈😈😈 we have a problem! 😈😈😈😈😈 $e');
@@ -641,7 +640,7 @@ class DataAPI {
       for (var m in result) {
         list.add(Photo.fromJson(m));
       }
-      await hiveUtil.addPhotos(photos: list);
+      await cacheManager.addPhotos(photos: list);
       return list;
     } catch (e) {
       pp('Houston, 😈😈😈😈😈 we have a problem! 😈😈😈😈😈');
@@ -662,7 +661,7 @@ class DataAPI {
       for (var m in result) {
         list.add(Video.fromJson(m));
       }
-      await hiveUtil.addVideos(videos: list);
+      await cacheManager.addVideos(videos: list);
       return list;
     } catch (e) {
       pp('Houston, 😈😈😈😈😈 we have a problem! 😈😈😈😈😈');
@@ -683,7 +682,7 @@ class DataAPI {
       for (var m in result) {
         list.add(Audio.fromJson(m));
       }
-      await hiveUtil.addAudios(audios: list);
+      await cacheManager.addAudios(audios: list);
       return list;
     } catch (e) {
       pp('Houston, 😈😈😈😈😈 we have a problem! 😈😈😈😈😈 $e');
@@ -704,7 +703,7 @@ class DataAPI {
       for (var m in result) {
         list.add(Project.fromJson(m));
       }
-      await hiveUtil.addProjects(projects: list);
+      await cacheManager.addProjects(projects: list);
       return list;
     } catch (e) {
       pp('Houston, 😈😈😈😈😈 we have a problem! 😈😈😈😈😈');
@@ -726,7 +725,7 @@ class DataAPI {
       }
 
       for (var b in list) {
-        await hiveUtil.addGeofenceEvent(geofenceEvent: b);
+        await cacheManager.addGeofenceEvent(geofenceEvent: b);
       }
       return list;
     } catch (e) {
@@ -749,7 +748,7 @@ class DataAPI {
       }
 
       for (var b in list) {
-        await hiveUtil.addGeofenceEvent(geofenceEvent: b);
+        await cacheManager.addGeofenceEvent(geofenceEvent: b);
       }
       return list;
     } catch (e) {
@@ -783,7 +782,7 @@ class DataAPI {
 
       var mList = map.values.toList();
       pp('\n$mm findProjectsByLocation: 🍏 radiusInKM: $radiusInKM kilometres; 🔵🔵 found ${mList.length} after filtering for duplicates');
-      await hiveUtil.addProjects(projects: mList);
+      await cacheManager.addProjects(projects: mList);
       return mList;
     } catch (e) {
       pp(e);
@@ -807,7 +806,7 @@ class DataAPI {
         list.add(City.fromJson(m));
       }
       pp('$mm findCitiesByLocation: 🍏 found: ${list.length} cities');
-      await hiveUtil.addCities(cities: list);
+      await cacheManager.addCities(cities: list);
       for (var city in list) {
         pp('$mm city found by findCitiesByLocation call: ${city.toJson()} \n');
       }
@@ -855,7 +854,7 @@ class DataAPI {
     try {
       var result = await _callWebAPIPost('${mURL!}addCommunity', bag);
       var c = Community.fromJson(result);
-      await hiveUtil.addCommunity(community: c);
+      await cacheManager.addCommunity(community: c);
       return c;
     } catch (e) {
       pp(e);
@@ -927,7 +926,7 @@ class DataAPI {
       communityList.add(Community.fromJson(m));
     }
     pp('🍏 🍏 🍏 findCommunitiesByCountry found ${communityList.length}');
-    await hiveUtil.addCommunities(communities: communityList);
+    await cacheManager.addCommunities(communities: communityList);
     return communityList;
   }
 
@@ -937,7 +936,7 @@ class DataAPI {
     try {
       var result = await _callWebAPIPost('${mURL!}addProject', bag);
       var p = Project.fromJson(result);
-      await hiveUtil.addProject(project: p);
+      await cacheManager.addProject(project: p);
       return p;
     } catch (e) {
       pp(e);
@@ -951,7 +950,7 @@ class DataAPI {
     try {
       var result = await _callWebAPIPost('${mURL!}updateProject', bag);
       var p = Project.fromJson(result);
-      await hiveUtil.addProject(project: p);
+      await cacheManager.addProject(project: p);
       return p;
     } catch (e) {
       pp(e);
@@ -969,7 +968,7 @@ class DataAPI {
     try {
       var result = await _callWebAPIPost('${mURL!}addSettlementToProject', bag);
       var proj = Project.fromJson(result);
-      await hiveUtil.addProject(project: proj);
+      await cacheManager.addProject(project: proj);
       return proj;
     } catch (e) {
       pp(e);
@@ -985,7 +984,7 @@ class DataAPI {
       var result = await _callWebAPIPost('${mURL!}addProjectPosition', bag);
 
       var pp = ProjectPosition.fromJson(result);
-      await hiveUtil.addProjectPosition(projectPosition: pp);
+      await cacheManager.addProjectPosition(projectPosition: pp);
       return pp;
     } catch (e) {
       pp(e);
@@ -1001,7 +1000,7 @@ class DataAPI {
       var result = await _callWebAPIPost('${mURL!}addProjectPolygon', bag);
 
       var pp = ProjectPolygon.fromJson(result);
-      await hiveUtil.addProjectPolygon(projectPolygon: pp);
+      await cacheManager.addProjectPolygon(projectPolygon: pp);
       return pp;
     } catch (e) {
       pp(e);
@@ -1015,8 +1014,8 @@ class DataAPI {
       var result = await _callWebAPIPost('${mURL!}addPhoto', photo.toJson());
       pp('\n\n\n$mm 🔴🔴🔴 DataAPI addPhoto succeeded. Everything OK?? 🔴🔴🔴');
       var px = Photo.fromJson(result);
-      await hiveUtil.addPhoto(photo: px);
-      pp('\n\n$mm addPhoto has added photo to DB and to Hive cache\n\n');
+      await cacheManager.addPhoto(photo: px);
+      pp('$mm addPhoto has added photo to DB and to Hive cache\n');
       return px;
     } catch (e) {
       pp('\n\n\n$mm 🔴🔴🔴 DataAPI addPhoto failed. Something fucked up here! ... 🔴🔴🔴\n\n');
@@ -1032,7 +1031,7 @@ class DataAPI {
       var result = await _callWebAPIPost('${mURL!}addVideo', video.toJson());
       pp('$mm addVideo has added photo to DB and to Hive cache');
       var vx = Video.fromJson(result);
-      await hiveUtil.addVideo(video: vx);
+      await cacheManager.addVideo(video: vx);
       return vx;
     } catch (e) {
       pp(e);
@@ -1047,7 +1046,7 @@ class DataAPI {
       var audiox = Audio.fromJson(result);
       pp('$mm addAudio has added audio to DB : 😡😡😡 fromJson:: ${audiox.toJson()}');
 
-      var x = await hiveUtil.addAudio(audio: audiox);
+      var x = await cacheManager.addAudio(audio: audiox);
       pp('$mm addAudio has added audio to Hive??? : 😡😡😡 result from hive: $x');
 
       return audiox;
@@ -1064,7 +1063,7 @@ class DataAPI {
       var result =
           await _callWebAPIPost('${mURL!}addCondition', condition.toJson());
       var x = Condition.fromJson(result);
-      await hiveUtil.addCondition(condition: x);
+      await cacheManager.addCondition(condition: x);
       return x;
     } catch (e) {
       pp(e);
@@ -1092,7 +1091,7 @@ class DataAPI {
       var result = await _callWebAPIPost('${mURL!}addSettlementPhoto', bag);
 
       var photo = Photo.fromJson(result);
-      await hiveUtil.addPhoto(photo: photo);
+      await cacheManager.addPhoto(photo: photo);
       return photo;
     } catch (e) {
       pp(e);
@@ -1119,7 +1118,7 @@ class DataAPI {
     try {
       var result = await _callWebAPIPost('${mURL!}addProjectVideo', bag);
       var video = Video.fromJson(result);
-      await hiveUtil.addVideo(video: video);
+      await cacheManager.addVideo(video: video);
       return video;
     } catch (e) {
       pp(e);
@@ -1176,7 +1175,7 @@ class DataAPI {
       for (var m in result) {
         list.add(Project.fromJson(m));
       }
-      await hiveUtil.addProjects(projects: list);
+      await cacheManager.addProjects(projects: list);
       return list;
     } catch (e) {
       pp(e);
@@ -1192,7 +1191,7 @@ class DataAPI {
     try {
       var result = await _callWebAPIPost('${mURL!}addOrganization', bag);
       var o = Organization.fromJson(result);
-      await hiveUtil.addOrganization(organization: o);
+      await cacheManager.addOrganization(organization: o);
       return o;
     } catch (e) {
       pp(e);
@@ -1208,7 +1207,7 @@ class DataAPI {
     try {
       var result = await _callWebAPIPost('${mURL!}sendMessage', bag);
       var m = OrgMessage.fromJson(result);
-      await hiveUtil.addOrgMessage(message: m);
+      await cacheManager.addOrgMessage(message: m);
       return m;
     } catch (e) {
       pp(e);
@@ -1263,7 +1262,7 @@ class DataAPI {
       pp('🐤🐤🐤🐤 ${list.length} Countries found 🥏');
       list.sort((a, b) => a.name!.compareTo(b.name!));
       for (var value in list) {
-        await hiveUtil.addCountry(country: value);
+        await cacheManager.addCountry(country: value);
       }
       return list;
     } catch (e) {

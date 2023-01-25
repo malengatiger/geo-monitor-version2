@@ -46,10 +46,6 @@ class OrganizationBloc {
   final StreamController<List<Audio>> _audioController =
       StreamController.broadcast();
 
-  final StreamController<List<Photo>> _projectPhotoController =
-      StreamController.broadcast();
-  final StreamController<List<Video>> _projectVideoController =
-      StreamController.broadcast();
 
   final StreamController<List<ProjectPosition>> _projPositionsController =
       StreamController.broadcast();
@@ -98,7 +94,7 @@ class OrganizationBloc {
   //
   Future<void> addProjectToStream(Project project) async {
     try {
-      var p = await hiveUtil.getOrganizationProjects();
+      var p = await cacheManager.getOrganizationProjects();
       pp('$mm .... adding new project -- sending ${p.length} photos to project Stream ');
       _projController.sink.add(p);
     } catch (e) {
@@ -109,7 +105,7 @@ class OrganizationBloc {
   Future<void> addPhotoToStream(Photo photo) async {
     pp('\n\n$mm ......... addPhotoToStream ... ');
     try {
-      var p = await hiveUtil.getOrganizationPhotos(photo.organizationId!);
+      var p = await cacheManager.getOrganizationPhotos();
       pp('$mm .... adding new photo -- sending ${p.length} photos to photoStream ');
       _photoController.sink.add(p);
     } catch (e) {
@@ -119,14 +115,14 @@ class OrganizationBloc {
 
   Future<void> addVideoToStream(Video video) async {
     pp('$mm addVideoToStream ...');
-    var p = await hiveUtil.getOrganizationVideos(video.organizationId!);
+    var p = await cacheManager.getOrganizationVideos();
     pp('$mm added new video -- sending ${p.length} videos to videoStream ');
     _videoController.sink.add(p);
   }
 
   Future<void> addAudioToStream(Audio audio) async {
     pp('$mm addAudioToStream ...');
-    var p = await hiveUtil.getOrganizationAudios();
+    var p = await cacheManager.getOrganizationAudios();
     pp('$mm added new audio -- sending ${p.length} audios to audioStream ');
     _audioController.sink.add(p);
   }
@@ -134,7 +130,7 @@ class OrganizationBloc {
   Future<void> addProjectPositionToStream(
       ProjectPosition projectPosition) async {
     pp('$mm addProjectPositionToStream ...');
-    var p = await hiveUtil.getOrganizationProjectPositions(
+    var p = await cacheManager.getOrganizationProjectPositions(
         organizationId: projectPosition.organizationId!);
     pp('$mm added new projectPosition -- sending ${p.length} projectPositions to projectPositionsStream ');
     _projectPositionsController.sink.add(p);
@@ -142,7 +138,7 @@ class OrganizationBloc {
 
   Future<void> addProjectPolygonToStream(ProjectPolygon projectPolygon) async {
     pp('$mm addProjectPolygonToStream ...');
-    var p = await hiveUtil.getOrganizationProjectPolygons(
+    var p = await cacheManager.getOrganizationProjectPolygons(
         organizationId: projectPolygon.organizationId!);
     pp('$mm added new projectPolygon -- sending ${p.length} projectPolygons to projectPolygonsStream ');
     _projPolygonsController.sink.add(p);
@@ -154,7 +150,7 @@ class OrganizationBloc {
         ' ...forceRefresh: $forceRefresh');
 
     DataBag bag =
-        await hiveUtil.getOrganizationData(organizationId: organizationId);
+        await cacheManager.getOrganizationData(organizationId: organizationId);
 
     if (forceRefresh) {
       pp('$mm get data from server .....................; forceRefresh: $forceRefresh');
@@ -250,7 +246,7 @@ class OrganizationBloc {
   Future<List<User>> getUsers(
       {required String organizationId, required bool forceRefresh}) async {
     pp('$mm getOrganizationUsers ... forceRefresh: $forceRefresh');
-    var users = await hiveUtil.getUsers(organizationId: organizationId);
+    var users = await cacheManager.getUsers();
 
     if (users.isEmpty || forceRefresh) {
       users = await DataAPI.findUsersByOrganization(organizationId);
@@ -268,7 +264,7 @@ class OrganizationBloc {
 
   Future<List<ProjectPosition>> getProjectPositions(
       {required String organizationId, required bool forceRefresh}) async {
-    var projectPositions = await hiveUtil.getOrganizationProjectPositions(
+    var projectPositions = await cacheManager.getOrganizationProjectPositions(
         organizationId: organizationId);
     pp('$mm getOrganizationProjectPositions found ${projectPositions.length} positions in local cache ');
 
@@ -276,7 +272,7 @@ class OrganizationBloc {
       projectPositions =
           await DataAPI.getOrganizationProjectPositions(organizationId);
       pp('$mm getOrganizationProjectPositions found ${projectPositions.length} positions from remote database ');
-      await hiveUtil.addProjectPositions(positions: projectPositions);
+      await cacheManager.addProjectPositions(positions: projectPositions);
     }
     _projPositionsController.sink.add(projectPositions);
     pp('$mm getOrganizationProjectPositions found: 💜 ${projectPositions.length} projectPositions from local or remote db ');
@@ -286,11 +282,11 @@ class OrganizationBloc {
   Future<List<FieldMonitorSchedule>> getFieldMonitorSchedules(
       {required String organizationId, required bool forceRefresh}) async {
     var schedules =
-        await hiveUtil.getOrganizationMonitorSchedules(organizationId);
+        await cacheManager.getOrganizationMonitorSchedules(organizationId);
 
     if (schedules.isEmpty || forceRefresh) {
       schedules = await DataAPI.getOrgFieldMonitorSchedules(organizationId);
-      await hiveUtil.addFieldMonitorSchedules(schedules: schedules);
+      await cacheManager.addFieldMonitorSchedules(schedules: schedules);
     }
 
     _fieldMonitorScheduleController.sink.add(schedules);
@@ -303,10 +299,10 @@ class OrganizationBloc {
       {required String organizationId, required bool forceRefresh}) async {
     var photos = <Photo>[];
     try {
-      photos = await hiveUtil.getOrganizationPhotos(organizationId);
+      photos = await cacheManager.getOrganizationPhotos();
       if (photos.isEmpty || forceRefresh) {
         photos = await DataAPI.getOrganizationPhotos(organizationId);
-        await hiveUtil.addPhotos(photos: photos);
+        await cacheManager.addPhotos(photos: photos);
       }
       _photoController.sink.add(photos);
       pp('$mm getPhotos found: 💜 ${photos.length} photos 💜 ');
@@ -323,11 +319,11 @@ class OrganizationBloc {
     var videos = <Video>[];
     try {
 
-        videos = await hiveUtil.getVideos();
+        videos = await cacheManager.getVideos();
 
       if (videos.isEmpty || forceRefresh) {
         videos = await DataAPI.getOrganizationVideos(organizationId);
-         await hiveUtil.addVideos(videos: videos);
+         await cacheManager.addVideos(videos: videos);
       }
       _videoController.sink.add(videos);
       pp('$mm getVideos found: 💜 ${videos.length} videos ');
@@ -345,13 +341,13 @@ class OrganizationBloc {
     var android = UniversalPlatform.isAndroid;
 
     try {
-      audios = await hiveUtil.getOrganizationAudios();
+      audios = await cacheManager.getOrganizationAudios();
       if (audios.isEmpty || forceRefresh) {
         audios = await DataAPI.getOrganizationAudios(organizationId);
-        if (android) await hiveUtil.addAudios(audios: audios);
+        if (android) await cacheManager.addAudios(audios: audios);
       }
       _audioController.sink.add(audios);
-      pp('$mm getVideos found: 💜 ${audios.length} videos ');
+      pp('$mm getAudios found: 💜 ${audios.length} Audios ');
     } catch (e) {
       pp('😈😈😈😈😈 MonitorBloc: getOrganizationAudios FAILED');
       rethrow;
@@ -362,7 +358,7 @@ class OrganizationBloc {
 
   Future<List<Project>> getOrganizationProjects(
       {required String organizationId, required bool forceRefresh}) async {
-    var projects = await hiveUtil.getOrganizationProjects();
+    var projects = await cacheManager.getOrganizationProjects();
 
     try {
       if (projects.isEmpty || forceRefresh) {
@@ -384,7 +380,7 @@ class OrganizationBloc {
   Future<Organization?> getOrganizationById(
       {required String organizationId}) async {
     var org =
-        await hiveUtil.getOrganizationById(organizationId: organizationId);
+        await cacheManager.getOrganizationById(organizationId: organizationId);
 
     try {
       org ??= await DataAPI.findOrganizationById(organizationId);

@@ -65,8 +65,6 @@ class ProjectBloc {
 
   final StreamController<Questionnaire> _activeQuestionnaireController =
       StreamController.broadcast();
-  final StreamController<User> _activeUserController =
-      StreamController.broadcast();
 
   Stream<List<MonitorReport>> get reportStream => _reportController.stream;
 
@@ -100,13 +98,13 @@ class ProjectBloc {
   //
   Future<List<ProjectPosition>> getProjectPositions(
       {required String projectId, required bool forceRefresh}) async {
-    var projectPositions = await hiveUtil.getProjectPositions(projectId);
+    var projectPositions = await cacheManager.getProjectPositions(projectId);
     pp('$mm getProjectPositions found ${projectPositions.length} positions in local cache ');
 
     if (projectPositions.isEmpty || forceRefresh) {
       projectPositions = await DataAPI.findProjectPositionsById(projectId);
       pp('$mm getProjectPositions found ${projectPositions.length} positions from remote database ');
-      await hiveUtil.addProjectPositions(positions: projectPositions);
+      await cacheManager.addProjectPositions(positions: projectPositions);
     }
     _projPositionsController.sink.add(projectPositions);
     pp('$mm getProjectPositions found: 💜 ${projectPositions.length} projectPositions from local or remote db ');
@@ -115,13 +113,13 @@ class ProjectBloc {
 
   Future<List<ProjectPolygon>> getProjectPolygons(
       {required String projectId, required bool forceRefresh}) async {
-    var projectPolygons = await hiveUtil.getProjectPolygons(projectId: projectId);
+    var projectPolygons = await cacheManager.getProjectPolygons(projectId: projectId);
     pp('$mm getProjectPolygons found ${projectPolygons.length} positions in local cache ');
 
     if (projectPolygons.isEmpty || forceRefresh) {
       projectPolygons = await DataAPI.findProjectPolygonsById(projectId);
       pp('$mm getProjectPolygons found ${projectPolygons.length} positions from remote database ');
-      await hiveUtil.addProjectPolygons(polygons: projectPolygons);
+      await cacheManager.addProjectPolygons(polygons: projectPolygons);
     }
     _polygonController.sink.add(projectPolygons);
     pp('$mm getProjectPolygons found: 💜 ${projectPolygons.length} projectPolygons from local or remote db ');
@@ -131,10 +129,10 @@ class ProjectBloc {
   Future<List<Photo>> getPhotos(
       {required String projectId, required bool forceRefresh}) async {
 
-    List<Photo> photos = await hiveUtil.getProjectPhotos(projectId);
+    List<Photo> photos = await cacheManager.getProjectPhotos(projectId);
     if (photos.isEmpty || forceRefresh) {
       photos = await DataAPI.findPhotosByProject(projectId);
-      await hiveUtil.addPhotos(photos: photos);
+      await cacheManager.addPhotos(photos: photos);
     }
     _projectPhotoController.sink.add(photos);
     pp('$mm getPhotos found: 💜 ${photos.length} photos ');
@@ -144,11 +142,11 @@ class ProjectBloc {
 
   Future<List<FieldMonitorSchedule>> getProjectFieldMonitorSchedules(
       {required String projectId, required bool forceRefresh}) async {
-    var schedules = await hiveUtil.getProjectMonitorSchedules(projectId);
+    var schedules = await cacheManager.getProjectMonitorSchedules(projectId);
 
     if (schedules.isEmpty || forceRefresh) {
       schedules = await DataAPI.getProjectFieldMonitorSchedules(projectId);
-      await hiveUtil.addFieldMonitorSchedules(schedules: schedules);
+      await cacheManager.addFieldMonitorSchedules(schedules: schedules);
     }
 
     _fieldMonitorScheduleController.sink.add(schedules);
@@ -159,11 +157,11 @@ class ProjectBloc {
 
   Future<List<FieldMonitorSchedule>> getMonitorFieldMonitorSchedules(
       {required String userId, required bool forceRefresh}) async {
-    var schedules = await hiveUtil.getFieldMonitorSchedules(userId);
+    var schedules = await cacheManager.getFieldMonitorSchedules(userId);
 
     if (schedules.isEmpty || forceRefresh) {
       schedules = await DataAPI.getMonitorFieldMonitorSchedules(userId);
-      await hiveUtil.addFieldMonitorSchedules(schedules: schedules);
+      await cacheManager.addFieldMonitorSchedules(schedules: schedules);
     }
     schedules.sort((a, b) => b.date!.compareTo(a.date!));
     _fieldMonitorScheduleController.sink.add(schedules);
@@ -174,7 +172,7 @@ class ProjectBloc {
 
   Future<List<Video>> getProjectVideos(
       {required String projectId, required bool forceRefresh}) async {
-    List<Video> videos = await hiveUtil.getProjectVideos(projectId);
+    List<Video> videos = await cacheManager.getProjectVideos(projectId);
     // var android = UniversalPlatform.isAndroid;
     // if (android) {
     //   //videos = await hiveUtil.getProjectVideos(projectId);
@@ -202,12 +200,12 @@ class ProjectBloc {
   }
 
   Future<DataBag> _loadBag(String projectId) async {
-    var positions = await hiveUtil.getProjectPositions(projectId);
-    var polygons = await hiveUtil.getProjectPolygons(projectId: projectId);
-    var photos = await hiveUtil.getProjectPhotos(projectId);
-    var videos = await hiveUtil.getProjectVideos(projectId);
-    var audios = await hiveUtil.getProjectAudios(projectId);
-    var schedules = await hiveUtil.getProjectMonitorSchedules(projectId);
+    var positions = await cacheManager.getProjectPositions(projectId);
+    var polygons = await cacheManager.getProjectPolygons(projectId: projectId);
+    var photos = await cacheManager.getProjectPhotos(projectId);
+    var videos = await cacheManager.getProjectVideos(projectId);
+    var audios = await cacheManager.getProjectAudios(projectId);
+    var schedules = await cacheManager.getProjectMonitorSchedules(projectId);
 
     var bag = DataBag(
         photos: photos,

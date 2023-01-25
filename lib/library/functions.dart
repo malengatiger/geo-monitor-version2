@@ -587,8 +587,10 @@ Future<File> getPhotoThumbnail({required File file}) async {
 
   img.Image? image = img.decodeImage(file.readAsBytesSync());
   var thumbnail = img.copyResize(image!, width: 160);
+  const slash = '/thumbnail_';
+
   final File mFile = File(
-      '${directory.path}/thumbnail_${DateTime.now().millisecondsSinceEpoch}.jpg');
+      '${directory.path}$slash${DateTime.now().millisecondsSinceEpoch}.jpg');
   var thumb = mFile..writeAsBytesSync(img.encodeJpg(thumbnail, quality: 90));
   var len = await thumb.length();
   pp('🔷🔷 photo thumbnail generated: 😡 ${(len / 1024).toStringAsFixed(1)} KB');
@@ -599,7 +601,8 @@ Future<File> getVideoThumbnail(File file) async {
   final Directory directory = await getApplicationDocumentsDirectory();
 
   var path = 'possibleVideoThumb_${DateTime.now().toIso8601String()}.jpg';
-  final thumbFile = File('${directory.path}/$path');
+  const slash = '/';
+  final thumbFile = File('${directory.path}$slash$path');
 
   final data = await vt.VideoThumbnail.thumbnailData(
     video: file.path,
@@ -797,7 +800,6 @@ String getFormattedDateHourMinute({required DateTime date, required BuildContext
 
 DateTime getLocalDateFromGMT(String date, BuildContext context) {
   //pp('getLocalDateFromGMT string: $date'); //Sun, 28 Oct 2018 23:59:49 GMT
-  Locale myLocale = Localizations.localeOf(context);
 
   //pp('+++++++++++++++ locale: ${myLocale.toString()}');
   initializeDateFormatting();

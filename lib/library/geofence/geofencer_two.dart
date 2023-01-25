@@ -100,7 +100,7 @@ class GeofencerTwo {
       required GeofenceStatus geofenceStatus,
       required Location location}) async {
 
-    var projectPosition = await hiveUtil.getProjectPosition(geofence.id);
+    var projectPosition = await cacheManager.getProjectPosition(geofence.id);
     if (projectPosition == null) {
       return;
     }

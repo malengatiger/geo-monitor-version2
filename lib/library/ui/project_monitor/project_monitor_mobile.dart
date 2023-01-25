@@ -155,7 +155,7 @@ class ProjectMonitorMobileState extends State<ProjectMonitorMobile>
                 shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(16.0)),
                 child: Padding(
-                  padding: const EdgeInsets.all(20.0),
+                  padding: const EdgeInsets.all(12.0),
                   child: Column(
                     children: [
                       const SizedBox(
@@ -240,7 +240,7 @@ class ProjectMonitorMobileState extends State<ProjectMonitorMobile>
                                     ),
                                   ),
                                   const SizedBox(
-                                    height: 12,
+                                    height: 8,
                                   ),
                                   TextButton(
                                       onPressed: () {
@@ -266,7 +266,7 @@ class ProjectMonitorMobileState extends State<ProjectMonitorMobile>
                                   ),
                                 ),
                                 const SizedBox(
-                                  width: 28,
+                                  width: 20,
                                 ),
                                 Text(
                                   'Checking project location',
@@ -280,21 +280,21 @@ class ProjectMonitorMobileState extends State<ProjectMonitorMobile>
                       ),
                       isWithinDistance
                           ? Text(
-                              'We are ready to start creating photos and videos for ${widget.project.name} \n\n🍎',
+                              'We are ready to start creating photos and videos for ${widget.project.name} \n🍎',
                               style: myTextStyleSmall(context))
                           : Padding(
                               padding: const EdgeInsets.all(8.0),
                               child: Column(
                                 children: [
                                   const SizedBox(
-                                    height: 40,
+                                    height: 12,
                                   ),
                                   Text(
                                     'Device is too far from ${widget.project.name} for monitoring capabilities. Please move closer!',
                                     style: myTextStyleSmall(context),
                                   ),
                                   const SizedBox(
-                                    height: 32,
+                                    height: 24,
                                   ),
                                   TextButton(
                                       onPressed: () {
@@ -331,7 +331,7 @@ class ProjectMonitorMobileState extends State<ProjectMonitorMobile>
   Future<ProjectPosition?> _findNearestProjectPosition() async {
     var bags = <BagX>[];
     var positions =
-        await hiveUtil.getProjectPositions(widget.project.projectId!);
+        await cacheManager.getProjectPositions(widget.project.projectId!);
     if (positions.isEmpty) {
       _navigateToProjectLocation();
     } else {
@@ -561,9 +561,8 @@ class ProjectLocationChooser extends StatelessWidget {
               child: ListView.builder(
                   itemCount: positions.length,
                   itemBuilder: (context, index) {
-                    var pos = positions.elementAt(index);
-                    double lat = pos.coordinates[1];
-                    double lng = pos.coordinates[0];
+                    // var pos = positions.elementAt(index);
+
                     return GestureDetector(
                       onTap: () {
                         onSelected(positions.elementAt(index));

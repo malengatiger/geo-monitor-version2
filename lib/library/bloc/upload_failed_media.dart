@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:io';
 import 'dart:math';
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:geo_monitor/library/data/audio.dart';
 
 import '../data/video.dart';
@@ -16,7 +15,6 @@ class UploadFailedMedia implements StorageBlocListener {
   final mm = '️🌿🌿🌿🌿🌿 UploadFailedMedia: 🍎 ';
   late Timer _timer;
   bool isStarted = false;
-  final FirebaseStorage _firebaseStorage = FirebaseStorage.instance;
   Random rand = Random(DateTime.now().millisecondsSinceEpoch);
   final photoStorageName = 'geoPhotos';
   final videoStorageName = 'geoVideos';
@@ -25,7 +23,7 @@ class UploadFailedMedia implements StorageBlocListener {
     _timer = Timer.periodic(duration, (timer) async {
       pp('\n\n$mm ......... Timer tick:  🍎 ${timer.tick} 🍎 at: '
           '${DateTime.now().toIso8601String()}');
-      await uploadFailedBags();
+      await uploadFailedMedia();
     });
     isStarted = true;
   }
@@ -36,12 +34,15 @@ class UploadFailedMedia implements StorageBlocListener {
     }
   }
 
-  Future uploadFailedBags() async {
+  Future uploadFailedMedia() async {
     pp('$mm start uploading failed media to cloud storage .....');
-    var bags = await hiveUtil.getFailedBags();
+    var bags = await cacheManager.getFailedBags();
+    var failedAudios = await cacheManager.getFailedAudios();
     if (bags.isEmpty) {
-      pp('$mm no media needs rescuing! ✅✅✅');
-      return;
+      pp('$mm no photos or videos need rescuing for cloud storage! ✅✅✅');
+    }
+    if (failedAudios.isEmpty) {
+      pp('$mm no audio needs rescuing for cloud storage! ✅✅✅');
     }
 
     pp('$mm will upload ${bags.length} file/thumbnails pairs .....');
@@ -52,23 +53,49 @@ class UploadFailedMedia implements StorageBlocListener {
         pp('$mm file length ${await file.length()} '
             'thumbnail length: ${await thumbnailFile.length()} path: ${file.path} thumb: ${thumbnailFile.path}');
         if (file.path.contains('photo')) {
-          await cloudStorageBloc.uploadPhoto(listener: this,
+          var result = await cloudStorageBloc.uploadPhoto(
+              listener: this,
               file: file,
               thumbnailFile: thumbnailFile,
               project: bag.project!,
               projectPosition: bag.projectPosition!);
+          if (result == 0) {
+            await cacheManager.removeFailedBag(bag: bag);
+          }
         }
         if (file.path.contains('video')) {
-          await cloudStorageBloc.uploadVideo(listener: this,
+          var result =await cloudStorageBloc.uploadVideo(
+              listener: this,
               file: file,
               thumbnailFile: thumbnailFile,
               project: bag.project!,
               projectPosition: bag.projectPosition!);
+
+          if (result == 0) {
+            await cacheManager.removeFailedBag(bag: bag);
+          }
+        }
+
+
+      }
+
+    }
+    //audio
+    for (var failedAudio in failedAudios) {
+      if (failedAudio.filePath != null) {
+        File file = File(failedAudio.filePath!);
+        pp('$mm file length ${await file.length()} ');
+        var result = await cloudStorageBloc.uploadAudio(
+            listener: this,
+            file: file,
+            project: failedAudio.project!,
+            projectPosition: failedAudio.projectPosition!);
+        if (result == 0) {
+          await cacheManager.removeFailedAudio(failedAudio: failedAudio);
         }
       }
     }
   }
-
 
   @override
   onError(String message) {

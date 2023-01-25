@@ -4,10 +4,8 @@ import 'package:uuid/uuid.dart';
 
 import '../../api/data_api.dart';
 import '../../api/sharedprefs.dart';
-import '../../auth/app_auth.dart';
 import '../../bloc/admin_bloc.dart';
 import '../../bloc/organization_bloc.dart';
-import '../../bloc/user_bloc.dart';
 import '../../data/user.dart' as ar;
 import '../../data/country.dart';
 import '../../data/user.dart';
@@ -114,6 +112,7 @@ class UserEditMobileState extends State<UserEditMobile>
               countryId: country!.countryId,
               userType: type,
               gender: gender,
+              active: 0,
               created: DateTime.now().toUtc().toIso8601String(),
               fcmRegistration: 'tbd', password: const Uuid().v4(),
               userId: 'tbd');

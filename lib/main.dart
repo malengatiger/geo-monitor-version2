@@ -20,6 +20,7 @@ import 'package:geo_monitor/ui/dashboard/dashboard_main.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:restart_app/restart_app.dart';
+import 'package:universal_platform/universal_platform.dart';
 import 'firebase_options.dart';
 import 'library/api/sharedprefs.dart';
 import 'library/data/user.dart' as ur;
@@ -60,7 +61,7 @@ Future<void> mainSetup() async {
     pp('${Emoji.heartGreen}${Emoji.heartGreen} FirebaseCrashlytics set up');
     // Prefs.deleteUser();
     await Hive.initFlutter();
-    await hiveUtil.initialize(forceInitialization: false);
+    await cacheManager.initialize(forceInitialization: false);
     pp('${Emoji.heartGreen}${Emoji.heartGreen}}${Emoji.heartGreen} '
         'Hive initialized and boxCollection set up');
 
@@ -68,7 +69,7 @@ Future<void> mainSetup() async {
     uploadFailedMedia.startTimer(const Duration(minutes: 30));
 
     writeFailedMedia.writeFailedMedia();
-    uploadFailedMedia.uploadFailedBags();
+    uploadFailedMedia.uploadFailedMedia();
 
     pp('${Emoji.heartGreen}${Emoji.heartGreen} writeFailedMedia/uploadFailedMedia '
         'timers started with 🍎 5 minute duration per tick ...');
@@ -96,9 +97,6 @@ Future<void> initSettings() async {
   );
   //accentColor = ValueNotifier(Colors.blueAccent);
 }
-
-bool _isDarkTheme = true;
-bool _isUsingHive = true;
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -248,19 +246,26 @@ class SplashWidget extends StatelessWidget {
   }
 }
 
-Future<void> sortOutNewHiveArtifacts(BuildContext context) async {
+Future<void> getOut(BuildContext context) async {
   //todo - REMOVE after testing
   pp('🌀🌀🌀🌀 Request to sign out of Firebase and the app!');
 
   fb.FirebaseAuth.instance.signOut();
   pp('🌀🌀🌀🌀  🍎 Signed out of Firebase!!! 🍎 ');
-  fileCounter = await Prefs.getFileCounter();
-  fileCounter++;
-  Prefs.setFileCounter(fileCounter);
   Prefs.deleteUser();
-  await hiveUtil.initialize(forceInitialization: true);
+  await cacheManager.initialize(forceInitialization: true);
 
   pp('🌀🌀🌀🌀 We good and clean now, Senor! .... restarting the app ....');
-  await Restart.restartApp();
-  pp('🌀🌀🌀🌀 We should be in the process of restarting the app.');
+  var android = UniversalPlatform.isAndroid;
+  var ios = UniversalPlatform.isIOS;
+  if (android) {
+    pp('🌀🌀🌀🌀 android platform: We should be in the process of restarting the app.');
+    Restart.restartApp();
+  }
+  if (ios) {
+    pp('🌀🌀🌀🌀 ios platform: We should notify the user : account closed.');
+
+  }
+
+
 }

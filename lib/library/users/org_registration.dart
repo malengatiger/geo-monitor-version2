@@ -190,6 +190,7 @@ class OrgRegistrationPageState extends State<OrgRegistrationPage>
           created: DateTime.now().toUtc().toIso8601String(),
           userType: ur.UserType.orgAdministrator,
           gender: '',
+          active: 0,
           organizationName: orgNameController.value.text,
           organizationId: org.organizationId,
           countryId: country!.countryId,

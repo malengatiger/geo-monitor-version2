@@ -36,8 +36,8 @@ class Prefs {
     final preferences = await SharedPreferences.getInstance();
     var b = preferences.getInt('fileCounter');
     if (b == null) {
-      pp('🔵🔵🔵 Prefs: fileCounter does not exist. default to 0 🍏🍏 ');
-      return 0;
+      pp('🔵🔵🔵 Prefs: fileCounter does not exist. default to 1 🍏🍏 ');
+      return 1;
     } else {
       return b;
     }
@@ -46,11 +46,11 @@ class Prefs {
   static Future saveUser(User user) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
 
-    Map jsonx = user.toJson();
-    var jx = json.encode(jsonx);
+    Map map = user.toJson();
+    var jx = json.encode(map);
     prefs.setString('user', jx);
     pp("🌽 🌽 🌽 Prefs.saveUser  SAVED: 🌽 ${user.email}");
-    prettyPrint(jsonx, " 🏈 Saved User in Prefs  🏈");
+    pp(" 🏈 Saved User in Prefs $jx 🏈");
     return null;
   }
 

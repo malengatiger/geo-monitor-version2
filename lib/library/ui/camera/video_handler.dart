@@ -12,6 +12,7 @@ import 'package:geo_monitor/library/ui/camera/play_video.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:native_device_orientation/native_device_orientation.dart';
 import 'package:page_transition/page_transition.dart';
+import 'package:path_provider/path_provider.dart';
 
 import '../../bloc/cloud_storage_bloc.dart';
 import '../../bloc/project_bloc.dart';
@@ -102,18 +103,30 @@ class VideoHandlerState extends State<VideoHandler>
     // file.saveTo(path);
   }
 
-  File? finalFile;
-  File? thumbnailFile;
+  File? finalFile, thumbnailFile;
   Future<void> _processFile(XFile file) async {
+    final Directory directory = await getApplicationDocumentsDirectory();
+    const x = '/video';
+    final File mFile =
+        File('${directory.path}$x${DateTime.now().millisecondsSinceEpoch}.jpg');
+    const z = '/video_thumbnail';
+    final File tFile =
+        File('${directory.path}$z${DateTime.now().millisecondsSinceEpoch}.jpg');
+
     File mImageFile = File(file.path);
-    pp('$mm _processFile 🔵🔵🔵 video file to upload, '
-        'size: ${await mImageFile.length()} bytes🔵');
+    await mImageFile.copy(mFile.path);
+    pp('$mm _processFile 🔵🔵🔵 video file to upload: ${mFile.path}'
+        ' size: ${await mFile.length()} bytes 🔵');
 
-    thumbnailFile = await getVideoThumbnail(mImageFile);
+    var thumbnailFile0 = await getVideoThumbnail(mImageFile);
+    await thumbnailFile0.copy(tFile.path);
+    pp('$mm _processFile 🔵🔵🔵 video file to upload: ${mFile.path}'
+        ' size: ${await mFile.length()} bytes 🔵');
+
     setState(() {
-
+      finalFile = mFile;
+      thumbnailFile = tFile;
     });
-    finalFile = mImageFile;
 
     cloudStorageBloc.errorStream.listen((event) {
       if (mounted) {
@@ -127,16 +140,16 @@ class VideoHandlerState extends State<VideoHandler>
       }
     });
 
-    if (widget.projectPosition != null && finalFile != null) {
+    if (widget.projectPosition != null) {
       var result = await cloudStorageBloc.uploadVideo(
-          listener: this,
-          file: finalFile!,
-          thumbnailFile: thumbnailFile!,
-          project: widget.project,
-          projectPositionId: widget.projectPosition!.projectPositionId!,
-          projectPosition: widget.projectPosition!.position!,);
+        listener: this,
+        file: mFile,
+        thumbnailFile: tFile,
+        project: widget.project,
+        projectPositionId: widget.projectPosition!.projectPositionId!,
+        projectPosition: widget.projectPosition!.position!,
+      );
       pp('$mm result from cloudStorageBloc: $result, if $uploadFinished we good!');
-
     } else {
       var loc = await locationBloc.getLocation();
       var position =
@@ -145,16 +158,15 @@ class VideoHandlerState extends State<VideoHandler>
           polygons: polygons, latitude: loc.latitude, longitude: loc.longitude);
 
       var result = await cloudStorageBloc.uploadVideo(
-          listener: this,
-          file: finalFile!,
-          thumbnailFile: thumbnailFile!,
-          project: widget.project,
-          projectPolygonId: polygon?.projectPolygonId,
-          projectPosition: position,);
+        listener: this,
+        file: mFile,
+        thumbnailFile: tFile,
+        project: widget.project,
+        projectPolygonId: polygon?.projectPolygonId,
+        projectPosition: position,
+      );
 
       pp('$mm result from cloudStorageBloc: $result, if $uploadFinished we good!');
-
-
     }
 
     var size = await finalFile!.length();
@@ -190,9 +202,10 @@ class VideoHandlerState extends State<VideoHandler>
     pp('$mm 🍏file Upload progress: bytesTransferred: ${(bytesTransferred / 1024).toStringAsFixed(1)} KB '
         'of totalByteCount: ${(totalByteCount / 1024).toStringAsFixed(1)} KB');
     setState(() {
-      this.totalByteCount = '${(totalByteCount / 1024/1024).toStringAsFixed(2)} MB';
+      this.totalByteCount =
+          '${(totalByteCount / 1024 / 1024).toStringAsFixed(2)} MB';
       this.bytesTransferred =
-          '${(bytesTransferred / 1024/1024).toStringAsFixed(2)} MB';
+          '${(bytesTransferred / 1024 / 1024).toStringAsFixed(2)} MB';
     });
   }
 
@@ -218,6 +231,7 @@ class VideoHandlerState extends State<VideoHandler>
           context: context);
     }
   }
+
   void _navigateToList() {
     Navigator.of(context).pop();
     Navigator.push(
@@ -235,12 +249,23 @@ class VideoHandlerState extends State<VideoHandler>
         child: Scaffold(
       appBar: AppBar(
         leading: const SizedBox(),
-        title: Text('${widget.project.name}', style: myTextStyleSmall(context),),
+        title: Text(
+          '${widget.project.name}',
+          style: myTextStyleSmall(context),
+        ),
         actions: [
           IconButton(
-              onPressed: _navigateToList, icon:  Icon(Icons.list, color: Theme.of(context).primaryColor,)),
+              onPressed: _navigateToList,
+              icon: Icon(
+                Icons.list,
+                color: Theme.of(context).primaryColor,
+              )),
           IconButton(
-              onPressed: _onCancel, icon:  Icon(Icons.close, color: Theme.of(context).primaryColor,)),
+              onPressed: _onCancel,
+              icon: Icon(
+                Icons.close,
+                color: Theme.of(context).primaryColor,
+              )),
         ],
       ),
       body: Stack(
@@ -265,7 +290,8 @@ class VideoHandlerState extends State<VideoHandler>
                   ),
                 ),
           Positioned(
-            left: 24, right: 24,
+            left: 24,
+            right: 24,
             top: 100,
             child: SizedBox(
               child: Card(
@@ -353,7 +379,8 @@ class VideoHandlerState extends State<VideoHandler>
                               const SizedBox(
                                 height: 48,
                               ),
-                              SizedBox(width: 200,
+                              SizedBox(
+                                width: 200,
                                 child: ElevatedButton(
                                     onPressed: _startNextVideo,
                                     child: const Padding(
@@ -364,21 +391,25 @@ class VideoHandlerState extends State<VideoHandler>
                               const SizedBox(
                                 height: 20,
                               ),
-                              videoIsReady? SizedBox(width: 200,
-                                child: ElevatedButton(
-                                    onPressed: _navigateToPlayer,
-                                    child: const Padding(
-                                      padding: EdgeInsets.all(12.0),
-                                      child: Text('Play Video'),
-                                    ),
-                                ),
-                              ) : const SizedBox(),
+                              videoIsReady
+                                  ? SizedBox(
+                                      width: 200,
+                                      child: ElevatedButton(
+                                        onPressed: _navigateToPlayer,
+                                        child: const Padding(
+                                          padding: EdgeInsets.all(12.0),
+                                          child: Text('Play Video'),
+                                        ),
+                                      ),
+                                    )
+                                  : const SizedBox(),
                               const SizedBox(
                                 height: 48,
                               ),
-                               TextButton(onPressed: _onCancel,
-                                   child: Text('Cancel',
-                                       style: myTextStyleSmall(context)))
+                              TextButton(
+                                  onPressed: _onCancel,
+                                  child: Text('Cancel',
+                                      style: myTextStyleSmall(context)))
                             ],
                           ),
                         ),
@@ -405,6 +436,7 @@ class VideoHandlerState extends State<VideoHandler>
       videoIsReady = true;
     });
   }
+
   Video? _currentVideo;
 
   void _navigateToPlayer() {
@@ -424,7 +456,5 @@ class VideoHandlerState extends State<VideoHandler>
   }
 
   @override
-  onAudioReady(Audio audio) {
-
-  }
+  onAudioReady(Audio audio) {}
 }

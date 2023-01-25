@@ -31,7 +31,6 @@ class CloudStorageBloc {
   final FirebaseStorage _firebaseStorage = FirebaseStorage.instance;
   Random rand = Random(DateTime.now().millisecondsSinceEpoch);
   static const mm = '☕️☕️☕️☕️☕️☕️ CloudStorageBloc: 💚 ';
-  final List<StorageMediaBag> _mediaBags = [];
   final StreamController<List<StorageMediaBag>> _mediaStreamController =
       StreamController.broadcast();
   Stream<List<StorageMediaBag>> get mediaStream =>
@@ -75,7 +74,6 @@ class CloudStorageBloc {
   }) async {
     pp('\n\n\n$mm️ uploadAudio ☕️☕️☕️☕️☕️☕️☕️️file length: ${await file.length()} bytes');
 
-
       String url = 'unknown';
       UploadTask? uploadTask;
       try {
@@ -103,7 +101,8 @@ class CloudStorageBloc {
             projectPositionId: projectPositionId,
             projectPosition: projectPosition,
             date: DateTime.now().toIso8601String());
-        await hiveUtil.addFailedAudio(failedAudio: failed);
+
+        await cacheManager.addFailedAudio(failedAudio: failed);
         pp('\n$mm 🔴🔴🔴 failed audio cached in hive after upload or database failure 🔴🔴🔴');
         listener.onError('Audio upload failed: $e');
         return uploadError;
@@ -140,7 +139,7 @@ class CloudStorageBloc {
         try {
           var result = await DataAPI.addAudio(audio);
           await organizationBloc.addAudioToStream(result);
-          listener.onFileUploadComplete(url, uploadTask!.snapshot.totalBytes,
+          listener.onFileUploadComplete(url, uploadTask.snapshot.totalBytes,
               uploadTask.snapshot.bytesTransferred);
         } catch (e) {
           pp(e);
@@ -152,7 +151,7 @@ class CloudStorageBloc {
               projectPolygonId: projectPolygonId,
               projectPositionId: projectPositionId,
               date: DateTime.now().toIso8601String());
-          await hiveUtil.addFailedAudio(failedAudio: failed);
+          await cacheManager.addFailedAudio(failedAudio: failed);
           listener.onError('Audio database write failed: $e');
           pp('\n$mm 🔴🔴🔴 failed audio cached in hive after upload or database failure 🔴🔴🔴');
           return uploadError;
@@ -250,7 +249,7 @@ class CloudStorageBloc {
 
         await DataAPI.addPhoto(photo);
 
-      pp('\n\n$mm upload process completed, tell the faithful listener!.\n\n');
+      pp('\n$mm upload process completed, tell the faithful listener!.');
       listener.onFileUploadComplete(
           url, taskSnapshot.totalBytes, taskSnapshot.bytesTransferred);
       return uploadFinished;
@@ -345,7 +344,7 @@ class CloudStorageBloc {
 
         await DataAPI.addVideo(video);
 
-      pp('\n\n$mm video upload process completed, tell the faithful listener!.\n\n');
+      pp('$mm video upload process completed, tell the faithful listener!.\n');
       listener.onFileUploadComplete(
           url, taskSnapshot.totalBytes, taskSnapshot.bytesTransferred);
       return uploadFinished;
@@ -382,7 +381,7 @@ class CloudStorageBloc {
         video: video,
         date: DateTime.now().toUtc().toIso8601String());
 
-    await hiveUtil.addFailedBag(bag: failedBag);
+    await cacheManager.addFailedBag(bag: failedBag);
     pp('\n$mm 🔴🔴🔴 failedBag cached in hive after upload or database failure 🔴🔴🔴');
   }
 
@@ -401,8 +400,8 @@ class CloudStorageBloc {
     uploadTask.snapshotEvents.listen((event) {
       var totalByteCount = event.totalBytes;
       var bytesTransferred = event.bytesTransferred;
-      var bt = '${(bytesTransferred / 1024).toStringAsFixed(2)} KB';
-      var tot = '${(totalByteCount / 1024).toStringAsFixed(2)} KB';
+      // var bt = '${(bytesTransferred / 1024).toStringAsFixed(2)} KB';
+      // var tot = '${(totalByteCount / 1024).toStringAsFixed(2)} KB';
       //pp('️$mm _reportProgress:  💚 progress ******* 🧩 $bt KB of $tot KB 🧩 transferred');
       listener.onFileProgress(event.totalBytes, event.bytesTransferred);
     });

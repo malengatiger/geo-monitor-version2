@@ -47,6 +47,7 @@ class User extends HiveObject {
       required this.organizationName,
       required this.organizationId,
       required this.countryId,
+        required this.active,
       this.position,
       this.fcmRegistration,
         required this.password});

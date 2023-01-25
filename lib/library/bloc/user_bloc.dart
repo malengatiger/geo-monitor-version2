@@ -61,7 +61,7 @@ class UserBloc {
   Future<List<Photo>> getPhotos(
       {required String userId, required bool forceRefresh}) async {
     // var android = UniversalPlatform.isAndroid;
-    var photos = await hiveUtil.getUserPhotos(userId);
+    var photos = await cacheManager.getUserPhotos(userId);
 
     if (photos.isEmpty || forceRefresh) {
       photos = await DataAPI.getUserProjectPhotos(userId);
@@ -74,7 +74,7 @@ class UserBloc {
   Future<List<Video>> getVideos(
       {required String userId, required bool forceRefresh}) async {
     // var android = UniversalPlatform.isAndroid;
-    var videos = await hiveUtil.getUserVideos(userId);
+    var videos = await cacheManager.getUserVideos(userId);
 
     if (videos.isEmpty || forceRefresh) {
       videos = await DataAPI.getUserProjectVideos(userId);
@@ -87,7 +87,7 @@ class UserBloc {
   Future<List<FieldMonitorSchedule>> getFieldMonitorSchedules(
       {required String userId, required bool forceRefresh}) async {
     // var android = UniversalPlatform.isAndroid;
-    var schedules = await hiveUtil.getProjectMonitorSchedules(userId);
+    var schedules = await cacheManager.getProjectMonitorSchedules(userId);
 
     if (schedules.isEmpty || forceRefresh) {
       schedules = await DataAPI.getUserFieldMonitorSchedules(userId);
@@ -110,27 +110,6 @@ class UserBloc {
   //   return bag;
   // }
 
-  void _processBag(DataBag bag) {
-    pp('$mm _processBag: send data to streams ...');
-    if (bag.photos != null) {
-      _photoController.sink.add(bag.photos!);
-    }
-    if (bag.videos != null) {
-      _videoController.sink.add(bag.videos!);
-    }
-    if (bag.fieldMonitorSchedules != null) {
-      _fieldMonitorScheduleController.sink.add(bag.fieldMonitorSchedules!);
-    }
-    if (bag.users != null) {
-      _userController.sink.add(bag.users!);
-    }
-    if (bag.projects != null) {
-      _projController.sink.add(bag.projects!);
-    }
-    if (bag.projectPositions != null) {
-      _projPositionsController.sink.add(bag.projectPositions!);
-    }
-  }
 
   close() {
     _communityController.close();

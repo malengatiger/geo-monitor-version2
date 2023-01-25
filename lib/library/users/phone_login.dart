@@ -169,7 +169,7 @@ class PhoneLoginState extends State<PhoneLogin>
 
         if (user != null) {
           await Prefs.saveUser(user!);
-          await hiveUtil.addUser(user: user!);
+          await cacheManager.addUser(user: user!);
           setState(() {
             busy = false;
           });

@@ -47,7 +47,7 @@ class CountryChooserState extends State<CountryChooser> {
     setState(() {
       loading = true;
     });
-    countries = await hiveUtil.getCountries();
+    countries = await cacheManager.getCountries();
     if (countries.isEmpty) {
       countries = await DataAPI.getCountries();
     }

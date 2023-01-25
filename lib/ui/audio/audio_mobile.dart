@@ -204,6 +204,9 @@ class AudioMobileState extends State<AudioMobile>
   }
 
   Future<void> _uploadFile() async {
+    if (isUploading) {
+      return;
+    }
     pp('\n\n$mm Start file upload .....................');
     setState(() {
       isUploading = true;
@@ -369,7 +372,10 @@ class AudioMobileState extends State<AudioMobile>
                                 children: [
                                   const SizedBox(height: 20,),
 
-                                  ElevatedButton(
+                                  isUploading? SizedBox(height: 20, width: 20,
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 4, backgroundColor: Theme.of(context).primaryColorDark,
+                                  ),): ElevatedButton(
                                     onPressed: _uploadFile,
                                     child: const Text('Upload File'),
                                   ),
@@ -398,11 +404,11 @@ class AudioMobileState extends State<AudioMobile>
               ),
             ),
             Positioned(
-              bottom: 12,
-              left: 20,
-              right: 20,
+              bottom: 24,
+              left: 16,
+              right: 16,
               child: Padding(
-                padding: const EdgeInsets.all(16.0),
+                padding: const EdgeInsets.all(12.0),
                 child: PlayControls(
                   onPlay: _onPlay,
                   onPause: _onPause,
@@ -432,13 +438,16 @@ class AudioMobileState extends State<AudioMobile>
                 bottom: 100, left: 40, right: 40,
                 child: Card(
                   elevation: 8,
-                  shape: getRoundedBorder(radius: 16),
-              child: Row(
-                children: [
-                  Text('Uploaded ', style: myTextStyleSmall(context),),
-                  const SizedBox(width: 8,),
-                  Text('$mBytesTransferred', style: myNumberStyleSmall(context),),
-                ],
+                  shape: getRoundedBorder(radius: 12),
+              child: Padding(
+                padding: const EdgeInsets.all(12.0),
+                child: Row(mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text('Uploaded ', style: myTextStyleSmall(context),),
+                    const SizedBox(width: 8,),
+                    Text('$mBytesTransferred', style: myTextStyleSmall(context),),
+                  ],
+                ),
               ),
             )),
           ],
@@ -513,13 +522,13 @@ class PlayControls extends StatelessWidget {
         child: Row(
           children: [
             const SizedBox(
-              width: 12,
+              width: 4,
             ),
             showRecord
                 ? IconButton(onPressed: _onRecord, icon:  Icon(Icons.mic, color: Theme.of(context).primaryColor))
                 : const SizedBox(),
             const SizedBox(
-              width: 32,
+              width: 28,
             ),
             showPlay
                 ? IconButton(
@@ -527,14 +536,14 @@ class PlayControls extends StatelessWidget {
                     icon:  Icon(Icons.play_arrow, color: Theme.of(context).primaryColor))
                 : const SizedBox(),
             const SizedBox(
-              width: 32,
+              width: 28,
             ),
             showPause
                 ? IconButton(
                     onPressed: _onPlayPaused, icon:  Icon(Icons.pause, color: Theme.of(context).primaryColor))
                 : const SizedBox(),
             const SizedBox(
-              width: 32,
+              width: 28,
             ),
             showStop
                 ? IconButton(

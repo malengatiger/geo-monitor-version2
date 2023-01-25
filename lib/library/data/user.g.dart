@@ -27,16 +27,17 @@ class UserAdapter extends TypeAdapter<User> {
       organizationName: fields[7] as String?,
       organizationId: fields[10] as String?,
       countryId: fields[9] as String?,
+      active: fields[14] as int?,
       position: fields[11] as Position?,
       fcmRegistration: fields[8] as String?,
       password: fields[12] as String?,
-    );
+    )..updated = fields[13] as String?;
   }
 
   @override
   void write(BinaryWriter writer, User obj) {
     writer
-      ..writeByte(13)
+      ..writeByte(15)
       ..writeByte(0)
       ..write(obj.name)
       ..writeByte(1)
@@ -62,7 +63,11 @@ class UserAdapter extends TypeAdapter<User> {
       ..writeByte(11)
       ..write(obj.position)
       ..writeByte(12)
-      ..write(obj.password);
+      ..write(obj.password)
+      ..writeByte(13)
+      ..write(obj.updated)
+      ..writeByte(14)
+      ..write(obj.active);
   }
 
   @override

@@ -5,18 +5,12 @@ import 'package:get/get_state_manager/src/simple/get_controllers.dart';
 import 'package:universal_platform/universal_platform.dart';
 
 import '../api/data_api.dart';
-import '../data/audio.dart';
-import '../data/community.dart';
-import '../data/country.dart';
 import '../data/data_bag.dart';
 import '../data/field_monitor_schedule.dart';
-import '../data/monitor_report.dart';
 import '../data/organization.dart';
 import '../data/photo.dart';
 import '../data/project.dart';
-import '../data/project_polygon.dart';
 import '../data/project_position.dart';
-import '../data/questionnaire.dart';
 import '../data/user.dart';
 import '../data/video.dart';
 import '../emojis.dart';
@@ -38,7 +32,7 @@ class OrganizationBlocWithGet extends GetxController{
         ' ...forceRefresh: $forceRefresh');
 
     var bag =
-        await hiveUtil.getOrganizationData(organizationId: organizationId);
+        await cacheManager.getOrganizationData(organizationId: organizationId);
 
     if (forceRefresh) {
       pp('$mm get data from server .....................; forceRefresh: $forceRefresh');
@@ -137,7 +131,7 @@ class OrganizationBlocWithGet extends GetxController{
   Future<List<User>> getUsers(
       {required String organizationId, required bool forceRefresh}) async {
     pp('$mm getOrganizationUsers ... forceRefresh: $forceRefresh');
-    var users = await hiveUtil.getUsers(organizationId: organizationId);
+    var users = await cacheManager.getUsers();
 
     if (users.isEmpty || forceRefresh) {
       users = await DataAPI.findUsersByOrganization(organizationId);
@@ -155,7 +149,7 @@ class OrganizationBlocWithGet extends GetxController{
 
   Future<List<ProjectPosition>> getProjectPositions(
       {required String organizationId, required bool forceRefresh}) async {
-    var projectPositions = await hiveUtil.getOrganizationProjectPositions(
+    var projectPositions = await cacheManager.getOrganizationProjectPositions(
         organizationId: organizationId);
     pp('$mm getOrganizationProjectPositions found ${projectPositions.length} positions in local cache ');
 
@@ -163,7 +157,7 @@ class OrganizationBlocWithGet extends GetxController{
       projectPositions =
           await DataAPI.getOrganizationProjectPositions(organizationId);
       pp('$mm getOrganizationProjectPositions found ${projectPositions.length} positions from remote database ');
-      await hiveUtil.addProjectPositions(positions: projectPositions);
+      await cacheManager.addProjectPositions(positions: projectPositions);
     }
     // _projPositionsController.sink.add(projectPositions);
     pp('$mm getOrganizationProjectPositions found: 💜 ${projectPositions.length} projectPositions from local or remote db ');
@@ -173,11 +167,11 @@ class OrganizationBlocWithGet extends GetxController{
   Future<List<FieldMonitorSchedule>> getFieldMonitorSchedules(
       {required String organizationId, required bool forceRefresh}) async {
     var schedules =
-        await hiveUtil.getOrganizationMonitorSchedules(organizationId);
+        await cacheManager.getOrganizationMonitorSchedules(organizationId);
 
     if (schedules.isEmpty || forceRefresh) {
       schedules = await DataAPI.getOrgFieldMonitorSchedules(organizationId);
-      await hiveUtil.addFieldMonitorSchedules(schedules: schedules);
+      await cacheManager.addFieldMonitorSchedules(schedules: schedules);
     }
 
     // _fieldMonitorScheduleController.sink.add(schedules);
@@ -190,10 +184,10 @@ class OrganizationBlocWithGet extends GetxController{
       {required String organizationId, required bool forceRefresh}) async {
     var photos = <Photo>[];
     try {
-      photos = await hiveUtil.getOrganizationPhotos(organizationId);
+      photos = await cacheManager.getOrganizationPhotos();
       if (photos.isEmpty || forceRefresh) {
         photos = await DataAPI.getOrganizationPhotos(organizationId);
-        await hiveUtil.addPhotos(photos: photos);
+        await cacheManager.addPhotos(photos: photos);
       }
       // _photoController.sink.add(photos);
       pp('$mm getPhotos found: 💜 ${photos.length} photos 💜 ');
@@ -217,7 +211,7 @@ class OrganizationBlocWithGet extends GetxController{
       }
       if (videos.isEmpty || forceRefresh) {
         videos = await DataAPI.getOrganizationVideos(organizationId);
-        if (android) await hiveUtil.addVideos(videos: videos);
+        if (android) await cacheManager.addVideos(videos: videos);
       }
       // _videoController.sink.add(videos);
       pp('$mm getVideos found: 💜 ${videos.length} videos ');
@@ -231,7 +225,7 @@ class OrganizationBlocWithGet extends GetxController{
 
   Future<List<Project>> getOrganizationProjects(
       {required String organizationId, required bool forceRefresh}) async {
-    var projects = await hiveUtil.getOrganizationProjects();
+    var projects = await cacheManager.getOrganizationProjects();
 
     try {
       if (projects.isEmpty || forceRefresh) {
@@ -253,7 +247,7 @@ class OrganizationBlocWithGet extends GetxController{
   Future<Organization?> getOrganizationById(
       {required String organizationId}) async {
     var org =
-        await hiveUtil.getOrganizationById(organizationId: organizationId);
+        await cacheManager.getOrganizationById(organizationId: organizationId);
 
     try {
       org ??= await DataAPI.findOrganizationById(organizationId);

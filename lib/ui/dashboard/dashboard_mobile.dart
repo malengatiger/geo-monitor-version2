@@ -699,7 +699,10 @@ class DashboardMobileState extends State<DashboardMobile>
                   color: Theme.of(context).primaryColor,
                 ),
                 onPressed: () {
-                  sortOutNewHiveArtifacts(context);
+                  Prefs.deleteUser();
+                  fb.FirebaseAuth.instance.signOut();
+                  getOut(context);
+                  _showKillDialog('GeoMonitor Account');
                 }),
             IconButton(
                 icon: Icon(

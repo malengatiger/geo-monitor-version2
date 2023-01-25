@@ -1,6 +1,8 @@
 import 'dart:async';
 
+import 'package:geo_monitor/library/bloc/failed_audio.dart';
 import 'package:geo_monitor/library/bloc/failed_bag.dart';
+import 'package:geo_monitor/library/data/audio.dart';
 import 'package:geo_monitor/library/hive_util.dart';
 
 import '../api/data_api.dart';
@@ -29,7 +31,14 @@ class WriteFailedMedia {
   }
 
   Future writeFailedMedia() async {
-    var bags = await hiveUtil.getFailedBags();
+    var bags = await cacheManager.getFailedBags();
+    var failedAudios = await cacheManager.getFailedAudios();
+    if (bags.isEmpty) {
+      pp('$mm no media needs rescuing for the database! ✅✅✅');
+    }
+    if (failedAudios.isEmpty) {
+      pp('$mm no failedAudios needs rescuing for the database! ✅✅✅');
+    }
     for (var bag in bags) {
       if (bag.photo != null) {
         var isOK = await writePhoto(photo: bag.photo!);
@@ -45,11 +54,25 @@ class WriteFailedMedia {
       }
     }
     pp('$mm ${bags.length} failed bags written to database');
+    for (var failedAudio in failedAudios) {
+      if (failedAudio.audio != null) {
+        var isOK = await writeAudio(audio: failedAudio.audio!);
+        if (isOK) {
+          await _deleteAudio(failedAudio);
+        }
+      }
+    }
+    pp('$mm ${bags.length} failed audio written to database');
   }
 
   Future writePhoto({required Photo photo}) async  {
     await DataAPI.addPhoto(photo);
     pp('$mm failed photo written to DB');
+    return true;
+  }
+  Future writeAudio({required Audio audio}) async  {
+    await DataAPI.addAudio(audio);
+    pp('$mm failed audio written to DB');
     return true;
   }
 
@@ -61,7 +84,11 @@ class WriteFailedMedia {
 
   Future _deleteBag(FailedBag bag) async {
     pp('$mm delete failed bag from cache ...');
-    await hiveUtil.removeFailedBag(bag: bag);
+    await cacheManager.removeFailedBag(bag: bag);
+  }
+  Future _deleteAudio(FailedAudio failedAudio) async {
+    pp('$mm delete failed adio from cache ...');
+    await cacheManager.removeFailedAudio( failedAudio: failedAudio);
   }
 
 }

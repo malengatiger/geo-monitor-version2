@@ -43,7 +43,7 @@ class ProjectChooserState extends State<ProjectChooser>
       loading = true;
     });
 
-    projects = await hiveUtil.getOrganizationProjects();
+    projects = await cacheManager.getOrganizationProjects();
     if (projects.isEmpty) {
       var user = await Prefs.getUser();
       projects = await DataAPI.getOrganizationProjects(user!.organizationId!);

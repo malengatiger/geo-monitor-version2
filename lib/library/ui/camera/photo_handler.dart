@@ -3,11 +3,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:geo_monitor/library/data/audio.dart';
-import 'package:geo_monitor/library/data/project.dart';
-import 'package:geo_monitor/library/data/project_position.dart';
-import 'package:geo_monitor/library/data/video.dart';
-import 'package:geo_monitor/library/emojis.dart';
+
 import 'package:image_picker/image_picker.dart';
 import 'package:native_device_orientation/native_device_orientation.dart';
 import 'package:page_transition/page_transition.dart';
@@ -16,8 +12,13 @@ import 'package:image/image.dart' as img;
 
 import '../../bloc/cloud_storage_bloc.dart';
 import '../../bloc/project_bloc.dart';
+import '../../data/audio.dart';
 import '../../data/position.dart';
+import '../../data/project.dart';
 import '../../data/project_polygon.dart';
+import '../../data/project_position.dart';
+import '../../data/video.dart';
+import '../../emojis.dart';
 import '../../functions.dart';
 import '../../generic_functions.dart';
 import '../../location/loc_bloc.dart';
@@ -124,12 +125,24 @@ class PhotoHandlerState extends State<PhotoHandler>
       pp('_deviceOrientation is null, wtf?? means that user did not change device orientation ..........');
     }
     pp('$mm ... isLandscape: $isLandscape - check if true!  🍎');
+    final Directory directory = await getApplicationDocumentsDirectory();
+    const x = '/photo_';
+    final File mFile = File(
+        '${directory.path}$x${DateTime.now().millisecondsSinceEpoch}.jpg');
+    const z = '/photo_thumbnail';
+    final File tFile = File(
+        '${directory.path}$z${DateTime.now().millisecondsSinceEpoch}.jpg');
+     await thumbnailFile.copy(tFile.path);
     //can i force
     if (_deviceOrientation != null) {
-      finalFile = await _processOrientation(mImageFile, _deviceOrientation!);
+      final finalFile = await _processOrientation(mImageFile, _deviceOrientation!);
+      await finalFile.copy(mFile.path);
     } else {
-      finalFile = mImageFile;
+      await mImageFile.copy(mFile.path);
     }
+    setState(() {
+      finalFile = mFile;
+    });
 
     cloudStorageBloc.errorStream.listen((event) {
       if (mounted) {
@@ -143,11 +156,13 @@ class PhotoHandlerState extends State<PhotoHandler>
       }
     });
 
-    if (widget.projectPosition != null && finalFile != null) {
+    pp('$mm check file upload names: \n💚 ${mFile.path} length: ${await mFile.length()} '
+        '\n💚thumb: ${tFile.path} length: ${await tFile.length()}');
+    if (widget.projectPosition != null) {
       cloudStorageBloc.uploadPhoto(
           listener: this,
-          file: finalFile!,
-          thumbnailFile: thumbnailFile,
+          file: mFile,
+          thumbnailFile: tFile,
           project: widget.project,
           projectPositionId: widget.projectPosition!.projectPositionId!,
           projectPosition: widget.projectPosition!.position!,);
@@ -160,8 +175,8 @@ class PhotoHandlerState extends State<PhotoHandler>
 
       var result = await cloudStorageBloc.uploadPhoto(
           listener: this,
-          file: finalFile!,
-          thumbnailFile: thumbnailFile,
+          file: mFile,
+          thumbnailFile: tFile,
           project: widget.project,
           projectPolygonId: polygon?.projectPolygonId,
           projectPosition: position,);
@@ -169,7 +184,7 @@ class PhotoHandlerState extends State<PhotoHandler>
       pp('$mm result from cloudStorageBloc: $result, if $uploadFinished we good!');
     }
 
-    var size = await finalFile!.length();
+    var size = await mFile.length();
     var m = (size / 1024 / 1024).toStringAsFixed(2);
     pp('$mm Picture taken is $m MB in size');
     if (mounted) {
@@ -310,7 +325,7 @@ class PhotoHandlerState extends State<PhotoHandler>
                   ),
                 ),
           Positioned(
-            left: 12,
+            left: 12, right: 12,
             top: 100,
             child: SizedBox(
               width: 300,

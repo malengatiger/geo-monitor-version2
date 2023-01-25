@@ -1,14 +1,10 @@
 import 'package:badges/badges.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:geo_monitor/library/data/audio.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:just_audio/just_audio.dart';
 
 import '../../../bloc/project_bloc.dart';
-import '../../../data/photo.dart';
+import '../../../data/audio.dart';
 import '../../../data/project.dart';
-import '../../../data/video.dart';
 import '../../../functions.dart';
 
 class ProjectAudios extends StatefulWidget {
@@ -23,10 +19,10 @@ class ProjectAudios extends StatefulWidget {
       required this.onAudioTapped});
 
   @override
-  State<ProjectAudios> createState() => _ProjectPhotosState();
+  State<ProjectAudios> createState() => ProjectAudiosState();
 }
 
-class _ProjectPhotosState extends State<ProjectAudios> {
+class ProjectAudiosState extends State<ProjectAudios> {
   var audios = <Audio>[];
   bool loading = false;
   @override
@@ -133,29 +129,29 @@ class _ProjectPhotosState extends State<ProjectAudios> {
                                   },
                                   child:  Card(
                                     elevation: 4,
-                                    shape: getRoundedBorder(radius: 16),
+                                    shape: getRoundedBorder(radius: 12),
                                     child:  Padding(
                                       padding: const EdgeInsets.all(8.0),
                                       child: SizedBox(
-                                        height: 220, width: 220,
+                                        height: 300, width: 300,
                                         child: Column(
                                           children:  [
-                                            const SizedBox(height: 20,),
+                                            const SizedBox(height: 16,),
                                             const SizedBox(height: 40, width: 40,
                                               child: CircleAvatar(
                                                 child: Icon(Icons.mic, size: 36,),
                                               ),
                                             ),
-                                            const SizedBox(height: 16,),
+                                            const SizedBox(height: 8,),
                                             Text(dt, style: myTextStyleTiny(context),),
                                             const SizedBox(height: 8,),
                                             Text('${audio.userName}', style: myTextStyleTiny(context),),
-                                            const SizedBox(height: 12,),
-                                            Row(
+                                            const SizedBox(height: 8,),
+                                            Row(mainAxisAlignment: MainAxisAlignment.center,
                                               children: [
                                                 Text('Duration:', style: myTextStyleTiny(context),),
                                                 const SizedBox(width: 8,),
-                                                Text(dur, style: myNumberStyleSmall(context),),
+                                                Text(dur, style: myTextStyleSmall(context),),
                                               ],
                                             ),
                                           ],
