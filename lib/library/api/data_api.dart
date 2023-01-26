@@ -395,6 +395,7 @@ class DataAPI {
       result.forEach((m) {
         list.add(ProjectPosition.fromJson(m));
       });
+      pp('$mm org project positions found .... ${list.length}');
       await cacheManager.addProjectPositions(positions: list);
       return list;
     } catch (e) {
@@ -838,6 +839,34 @@ class DataAPI {
       for (var city in list) {
         pp('$mm city found by findCitiesByLocation call: ${city.toJson()} \n');
       }
+      return list;
+    } catch (e) {
+      pp(e);
+      rethrow;
+    }
+  }
+
+  static Future<List<ProjectPosition>> findProjectPositionsByLocation(
+      {
+        required String organizationId,
+        required double latitude,
+        required double longitude,
+        required double radiusInKM}) async {
+
+    pp('$mm findProjectPositionsByLocation: 🍏 radiusInKM: $radiusInKM');
+
+    String? mURL = await getUrl();
+    var cmd = 'findProjectPositionsByLocation';
+    var url =
+        '$mURL$cmd?organizationId=$organizationId&latitude=$latitude&longitude=$longitude&radiusInKM=$radiusInKM';
+    try {
+      List result = await _sendHttpGET(url);
+      List<ProjectPosition> list = [];
+      for (var m in result) {
+        list.add(ProjectPosition.fromJson(m));
+      }
+      pp('$mm findProjectPositionsByLocation: 🍏 found: ${list.length} cities');
+      await cacheManager.addProjectPositions(positions: list);
       return list;
     } catch (e) {
       pp(e);

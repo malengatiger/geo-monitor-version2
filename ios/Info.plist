@@ -63,5 +63,7 @@
     <string>You will need the mic for recording work</string>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
+	<key>NSLocationAlwaysUsageDescription</key>
+    <string>This app needs access to location to help you find your project.</string>
 </dict>
 </plist>

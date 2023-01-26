@@ -66,7 +66,7 @@ class PhotoHandlerState extends State<PhotoHandler>
         NativeDeviceOrientationCommunicator()
             .onOrientationChanged(useSensor: true);
     orientStreamSubscription = stream.listen((event) {
-      pp('${E.blueDot}${E.blueDot} orientation, name: ${event.name} index: ${event.index}');
+      // pp('${E.blueDot}${E.blueDot} orientation, name: ${event.name} index: ${event.index}');
       _deviceOrientation = event;
     });
   }

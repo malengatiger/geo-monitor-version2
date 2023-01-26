@@ -14,6 +14,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_libphonenumber/flutter_libphonenumber.dart';
 import 'package:flutter_settings_screens/flutter_settings_screens.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:geofence_service/geofence_service.dart';
 import 'package:get/get.dart';
 
 import 'package:geo_monitor/ui/dashboard/dashboard_main.dart';
@@ -41,7 +42,7 @@ int milliSecondsAtLastDoubleTap = 0;
 final GlobalKey<ScaffoldMessengerState> rootScaffoldMessengerKey = GlobalKey<ScaffoldMessengerState>();
 
 
-Future<void> mainSetup() async {
+Future<void> _mainSetup() async {
   try {
     FlutterError.onError = (details) {
       FlutterError.presentError(details);
@@ -59,9 +60,9 @@ Future<void> mainSetup() async {
       return true;
     };
     pp('${E.heartGreen}${E.heartGreen} FirebaseCrashlytics set up');
-    // Prefs.deleteUser();
-    await Hive.initFlutter();
+    await Hive.initFlutter('data001');
     await cacheManager.initialize(forceInitialization: false);
+
     pp('${E.heartGreen}${E.heartGreen}}${E.heartGreen} '
         'Hive initialized and boxCollection set up');
 
@@ -108,13 +109,21 @@ Future<void> main() async {
   if (user == null) {
     pp('${E.redDot}${E.redDot}${E.redDot}${E.redDot} '
         'User from Prefs is null; ensure that firebase is signed out ...');
-    await fb.FirebaseAuth.instance.signOut();
+    if (fb.FirebaseAuth.instance.currentUser != null) {
+      await fb.FirebaseAuth.instance.signOut();
+    }
   } else {
     pp('\n${E.heartGreen}${E.heartGreen} Prefs user available:: ${user!.toJson()}\n');
-    fb.FirebaseAuth.instance.currentUser?.refreshToken!;
-    String? token = await fb.FirebaseAuth.instance.currentUser?.getIdToken();
-    if (token != null) {
-      pp('👌👌👌==== $token ==== 👌👌👌');
+    try {
+      String? token = await fb.FirebaseAuth.instance.currentUser?.getIdToken();
+      if (token != null) {
+        pp('👌👌👌==== $token ==== 👌👌👌');
+      }
+    } catch (e) {
+      pp('${E.redDot} ERROR with Firebase Auth $e');
+      if (e.toString().contains('credential is no longer valid')) {
+        pp('${E.redDot}${E.redDot}${E.redDot}${E.redDot}${E.redDot} ... We fucked!!, credentials no longer valid');
+      }
     }
   }
 
@@ -124,6 +133,16 @@ Future<void> main() async {
   });
 }
 
+// Create a [GeofenceService] instance and set options.
+final geofenceService = GeofenceService.instance.setup(
+    interval: 5000,
+    accuracy: 100,
+    loiteringDelayMs: 60000,
+    statusChangeDelayMs: 10000,
+    useActivityRecognition: true,
+    allowMockLocations: false,
+    printDevLog: false,
+    geofenceRadiusSortType: GeofenceRadiusSortType.DESC);
 /// The main app.
 class MyApp extends StatelessWidget {
   /// Constructs a [MyApp]
@@ -132,7 +151,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     themeBloc.start();
-    mainSetup();
+    _mainSetup();
     return GestureDetector(
       onTap: () {
         pp('🌀🌀🌀🌀 Tap detected; should dismiss keyboard');

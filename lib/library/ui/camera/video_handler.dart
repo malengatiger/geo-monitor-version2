@@ -64,7 +64,7 @@ class VideoHandlerState extends State<VideoHandler>
         NativeDeviceOrientationCommunicator()
             .onOrientationChanged(useSensor: true);
     orientStreamSubscription = stream.listen((event) {
-      pp('${E.blueDot}${E.blueDot} orientation, name: ${event.name} index: ${event.index}');
+      // pp('${E.blueDot}${E.blueDot} orientation, name: ${event.name} index: ${event.index}');
     });
   }
 

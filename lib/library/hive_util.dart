@@ -104,6 +104,8 @@ class CacheManager {
     _conditionBox?.clear();
     _audioBox?.clear();
     _failedAudioBox?.clear();
+    _ratingBox?.clear();
+    _videoBox?.clear();
     pp('$mm all Hive boxes cleared 💚💚');
   }
 

@@ -16,7 +16,7 @@ class FullPhotoMain extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ScreenTypeLayout(
-      mobile: FullPhotoMobile(photo: photo,),
+      mobile: FullPhotoMobile(project: project, photo: photo,),
       tablet: FullPhotoTablet(photo, project),
       desktop: FullPhotoDesktop(photo, project),
     );

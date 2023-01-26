@@ -158,7 +158,6 @@ class OrgRegistrationPageState extends State<OrgRegistrationPage>
       pp('$mm .... start building registration artifacts ...');
       PhoneAuthCredential authCredential = PhoneAuthProvider.credential(
           verificationId: phoneVerificationId!, smsCode: code!);
-      await firebaseAuth.signOut();
       var userCred = await firebaseAuth.signInWithCredential(authCredential);
 
       var org = Organization(
@@ -200,9 +199,6 @@ class OrgRegistrationPageState extends State<OrgRegistrationPage>
       var mUser = await DataAPI.addUser(user!);
       mUser.password = const Uuid().v4();
       var res = await DataAPI.updateAuthedUser(mUser);
-      await firebaseAuth.signOut();
-      var userCred2 = await firebaseAuth.signInWithCredential(authCredential);
-      pp('$mm userCred2 after auth update: 🔵🔵 $userCred2 🔵🔵');
 
       if (res == 0) {
         await Prefs.saveUser(user!);

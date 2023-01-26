@@ -45,13 +45,7 @@ class IntroPageViewerState extends State<IntroPageViewer>
 
 
   }
-  void _setup() async {
-    try {
-      await mainSetup();
-    } catch (e) {
-      pp(e);
-    }
-  }
+
   void _getAuthenticationStatus() async {
     var cUser = firebaseAuth.currentUser;
     if (cUser != null) {
