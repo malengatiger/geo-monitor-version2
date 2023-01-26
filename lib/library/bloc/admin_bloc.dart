@@ -1,5 +1,7 @@
 import 'dart:async';
 
+import 'package:geo_monitor/library/hive_util.dart';
+
 import '../api/data_api.dart';
 import '../api/sharedprefs.dart';
 import '../data/community.dart';
@@ -173,9 +175,10 @@ class AdminBloc {
 
   Future updateUser(User user) async {
     //todo - sort out user update - check backend api
-    // var res = await DataAPI.addUser(user);
-    // _users.add(res);
-    // _userController.sink.add(_users);
+    var res = await DataAPI.updateUser(user);
+    await cacheManager.addUser(user: res);
+    var users = await cacheManager.getUsers();
+    _userController.sink.add(users);
   }
 
   Future<List<User>> findUsersByOrganization(String organizationId) async {

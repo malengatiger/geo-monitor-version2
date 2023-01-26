@@ -119,7 +119,8 @@ class UserEditMobileState extends State<UserEditMobile>
           pp('\n\n\n😡😡😡 _submit new user ......... ${user.toJson()}');
           try {
             var mUser = await DataAPI.createUser(user);
-            pp('\n🍎🍎🍎🍎 UserEditMobile: 🍎 A user has been created:  🍎 ${mUser.toJson()}\b');
+            pp('\n🍎🍎🍎🍎 UserEditMobile: 🍎 A user has been created:  🍎 '
+                '${mUser.toJson()}\b');
             gender = null;
             type = null;
             showToast(

@@ -111,6 +111,7 @@ Future<void> main() async {
     await fb.FirebaseAuth.instance.signOut();
   } else {
     pp('\n${Emoji.heartGreen}${Emoji.heartGreen} Prefs user available:: ${user!.toJson()}\n');
+    fb.FirebaseAuth.instance.currentUser?.refreshToken!;
     String? token = await fb.FirebaseAuth.instance.currentUser?.getIdToken();
     if (token != null) {
       pp('👌👌👌==== $token ==== 👌👌👌');

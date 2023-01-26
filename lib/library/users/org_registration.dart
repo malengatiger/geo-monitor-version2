@@ -34,7 +34,7 @@ class OrgRegistrationPageState extends State<OrgRegistrationPage>
   String? phoneVerificationId;
   String? code;
   final phoneController = TextEditingController(text: "+27659990000");
-  final codeController = TextEditingController();
+  final codeController = TextEditingController(text: "123456");
   final orgNameController = TextEditingController();
   final adminController = TextEditingController();
   final emailController = TextEditingController();
@@ -56,7 +56,6 @@ class OrgRegistrationPageState extends State<OrgRegistrationPage>
         reverseDuration: const Duration(milliseconds: 2000),
         vsync: this);
     super.initState();
-  
   }
 
   void _start() async {
@@ -160,6 +159,7 @@ class OrgRegistrationPageState extends State<OrgRegistrationPage>
       PhoneAuthCredential authCredential = PhoneAuthProvider.credential(
           verificationId: phoneVerificationId!, smsCode: code!);
       await firebaseAuth.signOut();
+      var userCred = await firebaseAuth.signInWithCredential(authCredential);
 
       var org = Organization(
           name: orgNameController.value.text,
@@ -181,25 +181,24 @@ class OrgRegistrationPageState extends State<OrgRegistrationPage>
           longitude: loc.longitude);
 
       var result = await DataAPI.registerOrganization(bag);
-
-      var userCred = await firebaseAuth.signInWithCredential(authCredential);
       pp('$mm firebase user credential obtained:  🍎 $userCred');
-
+      var gender = 'Unknown';
       user = ur.User(
           name: adminController.value.text,
-          email: '',
+          email: emailController.value.text,
           userId: userCred.user!.uid,
           cellphone: phoneController.value.text,
           created: DateTime.now().toUtc().toIso8601String(),
           userType: ur.UserType.orgAdministrator,
-          gender: '',
+          gender: gender,
           active: 0,
           organizationName: orgNameController.value.text,
           organizationId: org.organizationId,
           countryId: country!.countryId,
-          password: const Uuid().v4());
+          password: '');
 
       var mUser = await DataAPI.addUser(user!);
+      mUser.password = const Uuid().v4();
       var res = await DataAPI.updateAuthedUser(mUser);
       await firebaseAuth.signOut();
       var userCred2 = await firebaseAuth.signInWithCredential(authCredential);
@@ -209,7 +208,6 @@ class OrgRegistrationPageState extends State<OrgRegistrationPage>
         await Prefs.saveUser(user!);
         await cacheManager.addUser(user: user!);
         pp('\n$mm Organization OG Administrator registered OK:🌍🌍🌍🌍  🍎 ${mUser.toJson()} 🌍🌍🌍🌍');
-
       }
       pp('\n\n$mm Organization registered: 🌍🌍🌍🌍 🍎 ${result.toJson()} 🌍🌍🌍🌍\n\n');
     } catch (e) {
@@ -240,7 +238,6 @@ class OrgRegistrationPageState extends State<OrgRegistrationPage>
     }
   }
 
-
   _onCountrySelected(Country p1) {
     if (mounted) {
       setState(() {
@@ -261,12 +258,12 @@ class OrgRegistrationPageState extends State<OrgRegistrationPage>
       ),
       body: Stack(
         children: [
-          SingleChildScrollView(
-            child: Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Card(
-                elevation: 4,
-                shape: getRoundedBorder(radius: 16),
+          Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Card(
+              elevation: 4,
+              shape: getRoundedBorder(radius: 16),
+              child: SingleChildScrollView(
                 child: Column(
                   children: [
                     busy
@@ -290,7 +287,7 @@ class OrgRegistrationPageState extends State<OrgRegistrationPage>
                             height: 12,
                           ),
                     const SizedBox(
-                      height: 24,
+                      height: 16,
                     ),
                     Text(
                       'Phone Authentication',
@@ -304,6 +301,7 @@ class OrgRegistrationPageState extends State<OrgRegistrationPage>
                       child: Row(
                         children: [
                           CountryChooser(onSelected: _onCountrySelected),
+                          const SizedBox(width: 24,),
                           country == null
                               ? const SizedBox()
                               : Text(
@@ -315,188 +313,199 @@ class OrgRegistrationPageState extends State<OrgRegistrationPage>
                     ),
                     Padding(
                       padding: const EdgeInsets.all(16.0),
-                      child: Form(
-                          key: _formKey,
-                          child: Column(
-                            children: [
-                              TextFormField(
-                                controller: orgNameController,
-                                keyboardType: TextInputType.text,
-                                decoration: InputDecoration(
-                                    hintText: 'Enter Organization Name',
-                                    hintStyle: myTextStyleSmall(context),
-                                    label: Text(
-                                      'Organization Name',
-                                      style: myTextStyleSmall(context),
-                                    )),
-                                validator: (value) {
-                                  if (value == null || value.isEmpty) {
-                                    return 'Please enter Organization Name';
-                                  }
-                                  return null;
-                                },
-                              ),
-                              const SizedBox(
-                                height: 8,
-                              ),
-                              TextFormField(
-                                controller: adminController,
-                                keyboardType: TextInputType.text,
-                                decoration: InputDecoration(
-                                    hintText: 'Enter Administrator Name',
-                                    hintStyle: myTextStyleSmall(context),
-                                    label: Text(
-                                      'Administrator Name',
-                                      style: myTextStyleSmall(context),
-                                    )),
-                                validator: (value) {
-                                  if (value == null || value.isEmpty) {
-                                    return 'Please enter Administrator Name';
-                                  }
-                                  return null;
-                                },
-                              ),
-                              const SizedBox(
-                                height: 8,
-                              ),
-                              TextFormField(
-                                controller: phoneController,
-                                keyboardType: TextInputType.phone,
-                                decoration: const InputDecoration(
-                                    hintText: 'Enter Phone Number',
-                                    label: Text('Phone Number')),
-                                validator: (value) {
-                                  if (value == null || value.isEmpty) {
-                                    return 'Please enter Phone Number';
-                                  }
-                                  return null;
-                                },
-                              ),
-                              const SizedBox(
-                                height: 20,
-                              ),
-                              TextFormField(
-                                controller: emailController,
-                                keyboardType: TextInputType.text,
-                                decoration: InputDecoration(
-                                    hintText: 'Enter Email Address',
-                                    hintStyle: myTextStyleSmall(context),
-                                    label: Text(
-                                      'Email Address',
-                                      style: myTextStyleSmall(context),
-                                    )),
-                                validator: (value) {
-                                  if (value == null || value.isEmpty) {
-                                    return 'Please enter Email address';
-                                  }
-                                  return null;
-                                },
-                              ),
-                              const SizedBox(
-                                height: 8,
-                              ),
-                              _codeHasBeenSent
-                                  ? const SizedBox()
-                                  : ElevatedButton(
-                                      onPressed: () {
-                                        if (_formKey.currentState!.validate()) {
-                                          _start();
-                                        }
-                                      },
-                                      child: const Padding(
-                                        padding: EdgeInsets.all(12.0),
-                                        child: Text('Verify Phone Number'),
-                                      )),
-                              const SizedBox(
-                                height: 20,
-                              ),
-                              _codeHasBeenSent
-                                  ? SizedBox(
-                                      height: 200,
-                                      child: Column(
-                                        children: [
-                                          // TextFormField(
-                                          //   controller: codeController,
-                                          //   keyboardType: TextInputType.number,
-                                          //   decoration: InputDecoration(
-                                          //       hintText: 'Enter Code',
-                                          //       hintStyle:
-                                          //           myTextStyleSmall(context),
-                                          //       label: Text(
-                                          //         'Code',
-                                          //         style:
-                                          //             myTextStyleSmall(context),
-                                          //       )),
-                                          //   validator: (value) {
-                                          //     if (value == null ||
-                                          //         value.isEmpty) {
-                                          //       return 'Please enter SMS code received';
-                                          //     }
-                                          //     return null;
-                                          //   },
-                                          // ),
-                                          Text('Enter SMS pin code sent to ${phoneController.text}', style: myTextStyleSmall(context),),
-                                          const SizedBox(height: 16,),
-                                          PinCodeTextField(
-                                            length: 6,
-                                            obscureText: false,
-                                            animationType: AnimationType.fade,
-                                            pinTheme: PinTheme(
-                                              shape: PinCodeFieldShape.box,
-                                              borderRadius: BorderRadius.circular(5),
-                                              fieldHeight: 50,
-                                              fieldWidth: 40,
-                                              activeFillColor: Colors.white,
-                                            ),
-                                            animationDuration: const Duration(milliseconds: 300),
-                                            backgroundColor: Colors.blue.shade50,
-                                            enableActiveFill: true,
-                                            errorAnimationController: errorController,
-                                            controller: codeController,
-                                            onCompleted: (v) {
-                                              pp("Completed");
-                                            },
-                                            onChanged: (value) {
-                                              pp(value);
-                                              setState(() {
-                                                currentText = value;
-                                              });
-                                            },
-                                            beforeTextPaste: (text) {
-                                              pp("Allowing to paste $text");
-                                              //if you return true then it will show the paste confirmation dialog. Otherwise if false, then nothing will happen.
-                                              //but you can show anything you want here, like your pop up saying wrong paste format or etc
-                                              return true;
-                                            }, appContext: context,
-                                          ),
-                                          const SizedBox(
-                                            height: 28,
-                                          ),
-                                          busy
-                                              ? const SizedBox(
-                                                  height: 16,
-                                                  width: 16,
-                                                  child:
-                                                      CircularProgressIndicator(
-                                                    strokeWidth: 4,
-                                                    backgroundColor:
-                                                        Colors.pink,
-                                                  ),
-                                                )
-                                              : ElevatedButton(
-                                                  onPressed:
-                                                      _processRegistration,
-                                                  child: const Padding(
-                                                    padding:
-                                                        EdgeInsets.all(12.0),
-                                                    child: Text('Send Code'),
-                                                  )),
-                                        ],
+                      child: SingleChildScrollView(
+                        child: Form(
+                            key: _formKey,
+                            child: Column(
+                              children: [
+                                TextFormField(
+                                  controller: orgNameController,
+                                  keyboardType: TextInputType.text,
+                                  decoration: InputDecoration(
+                                      hintText: 'Enter Organization Name',
+                                      hintStyle: myTextStyleSmall(context),
+                                      enabledBorder:  OutlineInputBorder(
+                                        borderSide: BorderSide(
+                                            width: 0.6, color: Theme.of(context).primaryColor), //<-- SEE HERE
                                       ),
-                                    )
-                                  : const SizedBox(),
-                            ],
-                          )),
+                                      label: Text(
+                                        'Organization Name',
+                                        style: myTextStyleSmall(context),
+                                      )),
+                                  validator: (value) {
+                                    if (value == null || value.isEmpty) {
+                                      return 'Please enter Organization Name';
+                                    }
+                                    return null;
+                                  },
+                                ),
+                                const SizedBox(
+                                  height: 20,
+                                ),
+                                TextFormField(
+                                  controller: adminController,
+                                  keyboardType: TextInputType.text,
+                                  decoration: InputDecoration(
+                                      hintText: 'Enter Administrator Name',
+                                      hintStyle: myTextStyleSmall(context),
+                                      enabledBorder:  OutlineInputBorder(
+                                        borderSide: BorderSide(
+                                            width: 0.6, color: Theme.of(context).primaryColor), //<-- SEE HERE
+                                      ),
+                                      label: Text(
+                                        'Administrator Name',
+                                        style: myTextStyleSmall(context),
+                                      )),
+                                  validator: (value) {
+                                    if (value == null || value.isEmpty) {
+                                      return 'Please enter Administrator Name';
+                                    }
+                                    return null;
+                                  },
+                                ),
+                                const SizedBox(
+                                  height: 20,
+                                ),
+                                TextFormField(
+                                  controller: phoneController,
+                                  keyboardType: TextInputType.phone,
+                                  decoration:  InputDecoration(
+                                      hintText: 'Enter Phone Number',
+                                      enabledBorder:  OutlineInputBorder(
+                                        borderSide: BorderSide(
+                                            width: 0.6, color: Theme.of(context).primaryColor), //<-- SEE HERE
+                                      ),
+                                      label: const Text('Phone Number')),
+                                  validator: (value) {
+                                    if (value == null || value.isEmpty) {
+                                      return 'Please enter Phone Number';
+                                    }
+                                    return null;
+                                  },
+                                ),
+                                const SizedBox(
+                                  height: 20,
+                                ),
+                                TextFormField(
+                                  controller: emailController,
+                                  keyboardType: TextInputType.text,
+                                  decoration: InputDecoration(
+                                      hintText: 'Enter Email Address',
+                                      hintStyle: myTextStyleSmall(context),
+                                      enabledBorder:  OutlineInputBorder(
+                                        borderSide: BorderSide(
+                                            width: 0.6, color: Theme.of(context).primaryColor), //<-- SEE HERE
+                                      ),
+                                      label: Text(
+                                        'Email Address',
+                                        style: myTextStyleSmall(context),
+                                      )),
+                                  validator: (value) {
+                                    if (value == null || value.isEmpty) {
+                                      return 'Please enter Email address';
+                                    }
+                                    return null;
+                                  },
+                                ),
+                                const SizedBox(
+                                  height: 32,
+                                ),
+                                _codeHasBeenSent
+                                    ? const SizedBox()
+                                    : ElevatedButton(
+                                        onPressed: () {
+                                          if (_formKey.currentState!.validate()) {
+                                            _start();
+                                          }
+                                        },
+                                        child: const Padding(
+                                          padding: EdgeInsets.all(12.0),
+                                          child: Text('Verify Phone Number'),
+                                        )),
+                                const SizedBox(
+                                  height: 20,
+                                ),
+                                _codeHasBeenSent
+                                    ? SizedBox(
+                                        height: 200,
+                                        child: Column(
+                                          children: [
+                                            Text(
+                                              'Enter SMS pin code sent to ${phoneController.text}',
+                                              style: myTextStyleSmall(context),
+                                            ),
+                                            const SizedBox(
+                                              height: 16,
+                                            ),
+                                            PinCodeTextField(
+                                              length: 6,
+                                              obscureText: false,
+                                              textStyle:
+                                                  myNumberStyleLarge(context),
+                                              animationType: AnimationType.fade,
+                                              pinTheme: PinTheme(
+                                                shape: PinCodeFieldShape.box,
+                                                borderRadius:
+                                                    BorderRadius.circular(5),
+                                                fieldHeight: 50,
+                                                fieldWidth: 40,
+                                                activeFillColor: Theme.of(context)
+                                                    .backgroundColor,
+                                              ),
+                                              animationDuration: const Duration(
+                                                  milliseconds: 300),
+                                              backgroundColor: Theme.of(context)
+                                                  .backgroundColor,
+                                              enableActiveFill: true,
+                                              errorAnimationController:
+                                                  errorController,
+                                              controller: codeController,
+                                              onCompleted: (v) {
+                                                pp("Completed");
+                                              },
+                                              onChanged: (value) {
+                                                pp(value);
+                                                setState(() {
+                                                  currentText = value;
+                                                });
+                                              },
+                                              beforeTextPaste: (text) {
+                                                pp("Allowing to paste $text");
+                                                //if you return true then it will show the paste confirmation dialog. Otherwise if false, then nothing will happen.
+                                                //but you can show anything you want here, like your pop up saying wrong paste format or etc
+                                                return true;
+                                              },
+                                              appContext: context,
+                                            ),
+                                            const SizedBox(
+                                              height: 28,
+                                            ),
+                                            busy
+                                                ? const SizedBox(
+                                                    height: 16,
+                                                    width: 16,
+                                                    child:
+                                                        CircularProgressIndicator(
+                                                      strokeWidth: 4,
+                                                      backgroundColor:
+                                                          Colors.pink,
+                                                    ),
+                                                  )
+                                                : ElevatedButton(
+                                                    onPressed:
+                                                        _processRegistration,
+                                                    child: const Padding(
+                                                      padding:
+                                                          EdgeInsets.all(12.0),
+                                                      child: Text('Send Code'),
+                                                    )),
+                                          ],
+                                        ),
+                                      )
+                                    : const SizedBox(),
+                              ],
+                            )),
+                      ),
                     )
                   ],
                 ),
