@@ -22,7 +22,7 @@ class OrganizationBlocWithGet extends GetxController{
   OrganizationBlocWithGet() {
     pp('$mm OrganizationBlocWithGet constructed');
   }
-  final mm = '${Emoji.blueDot}${Emoji.blueDot}${Emoji.blueDot}${Emoji.blueDot}${Emoji.blueDot}${Emoji.appleRed} '
+  final mm = '${E.blueDot}${E.blueDot}${E.blueDot}${E.blueDot}${E.blueDot}${E.appleRed} '
       'OrganizationBlocWithGet: ';
 
   DataBag? organizationDataBag;

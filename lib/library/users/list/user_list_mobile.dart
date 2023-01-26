@@ -37,7 +37,7 @@ class UserListMobileState extends State<UserListMobile>
   final _key = GlobalKey<ScaffoldState>();
   User? _user;
   final mm =
-      '${Emoji.diamond}${Emoji.diamond}${Emoji.diamond}${Emoji.diamond} UserListMobile: ';
+      '${E.diamond}${E.diamond}${E.diamond}${E.diamond} UserListMobile: ';
 
   @override
   void initState() {

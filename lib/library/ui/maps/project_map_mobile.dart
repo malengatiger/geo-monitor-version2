@@ -125,7 +125,7 @@ class ProjectMapMobileState extends State<ProjectMapMobile>
   Future<void> _addMarkers() async {
     pp('$mm _addMarkers: ....... 🍎 ${widget.projectPositions.length}');
     if (projectPositions.isEmpty) {
-      pp('There are no positions found ${Emoji.redDot}');
+      pp('There are no positions found ${E.redDot}');
       return;
     }
     markers.clear();

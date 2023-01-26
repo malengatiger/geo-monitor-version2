@@ -110,7 +110,7 @@ class UploadFailedMedia implements StorageBlocListener {
 
   @override
   onFileUploadComplete(String url, int totalByteCount, int bytesTransferred) {
-    pp('$mm File transfer complete:  ${Emoji.leaf} '
+    pp('$mm File transfer complete:  ${E.leaf} '
         '$bytesTransferred of $totalByteCount bytes');
     pp('$mm file url: $url');
   }

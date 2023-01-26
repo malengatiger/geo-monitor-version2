@@ -37,7 +37,7 @@ class VideoHandlerState extends State<VideoHandler>
     with SingleTickerProviderStateMixin
     implements StorageBlocListener {
   final mm =
-      '${Emoji.blueDot}${Emoji.blueDot}${Emoji.blueDot}${Emoji.blueDot} VideoHandler: 🌿';
+      '${E.blueDot}${E.blueDot}${E.blueDot}${E.blueDot} VideoHandler: 🌿';
 
   late AnimationController _controller;
   final ImagePicker _picker = ImagePicker();
@@ -59,12 +59,12 @@ class VideoHandlerState extends State<VideoHandler>
   }
 
   Future<void> _observeOrientation() async {
-    pp('${Emoji.blueDot} ........ _observeOrientation ... ');
+    pp('${E.blueDot} ........ _observeOrientation ... ');
     Stream<NativeDeviceOrientation> stream =
         NativeDeviceOrientationCommunicator()
             .onOrientationChanged(useSensor: true);
     orientStreamSubscription = stream.listen((event) {
-      pp('${Emoji.blueDot}${Emoji.blueDot} orientation, name: ${event.name} index: ${event.index}');
+      pp('${E.blueDot}${E.blueDot} orientation, name: ${event.name} index: ${event.index}');
     });
   }
 
@@ -453,6 +453,7 @@ class VideoHandlerState extends State<VideoHandler>
             alignment: Alignment.topLeft,
             duration: const Duration(seconds: 1),
             child: PlayVideo(
+              project: widget.project,
               video: _currentVideo!,
             )));
   }

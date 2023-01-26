@@ -1,7 +1,7 @@
-class Emoji {
+class E {
   static String appleGreen = "🍏",
       appleRed = "🍎",
-      brocolli = "🥦",
+      broccolli = "🥦",
       leaf = "🥬",
       peach = "🍊",
       pear = "🍐",
@@ -10,7 +10,11 @@ class Emoji {
       heartBlue = "💙",
       heartGreen = "💚",
       heartOrange = "🧡",
-      diamond = "🔷";
+      diamond = "🔷",
+      leaf2 = "🌿",
+      heartRed = "❤️",
+      check = "✅",
+      nice = '👌🏾';
 }
 
 const appleGreen = "🍏",

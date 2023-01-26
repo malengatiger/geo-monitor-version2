@@ -97,8 +97,8 @@ class MediaListMobileState extends State<UserMediaListMobile>
 
   void _listenToPhotoStream() async {
     newPhotoStreamSubscription = cloudStorageBloc.photoStream.listen((mPhoto) {
-      pp('${Emoji.blueDot}${Emoji.blueDot} '
-          'New photo arrived from newPhotoStreamSubscription: ${mPhoto.toJson()} ${Emoji.blueDot}');
+      pp('${E.blueDot}${E.blueDot} '
+          'New photo arrived from newPhotoStreamSubscription: ${mPhoto.toJson()} ${E.blueDot}');
       _photos.add(mPhoto);
       if (mounted) {
         setState(() {});
@@ -294,7 +294,9 @@ class MediaListMobileState extends State<UserMediaListMobile>
             type: PageTransitionType.leftToRightWithFade,
             alignment: Alignment.topLeft,
             duration: const Duration(milliseconds: 1000),
-            child: FullPhotoMobile(photo: selectedPhoto!)));
+            child: FullPhotoMobile(
+                project: project!,
+                photo: selectedPhoto!)));
   }
 
   Video? selectedVideo;
@@ -306,11 +308,13 @@ class MediaListMobileState extends State<UserMediaListMobile>
             type: PageTransitionType.leftToRightWithFade,
             alignment: Alignment.topLeft,
             duration: const Duration(milliseconds: 1000),
-            child: PlayVideo(video: selectedVideo!)));
+            child: PlayVideo(
+                project: project!,
+                video: selectedVideo!)));
   }
 
   void _navigateToMonitor() {
-    pp('${Emoji.redDot}... about to navigate after waiting 100 ms - should select project if null');
+    pp('${E.redDot}... about to navigate after waiting 100 ms - should select project if null');
 
     Future.delayed(const Duration(milliseconds: 100), () {
       Navigator.push(
@@ -441,7 +445,7 @@ class _ProjectChooserOriginalState extends State<ProjectChooserOriginal> with Si
                                         child: Card(
                                             child: Row(
                                           children: [
-                                            Text(Emoji.blueDot),
+                                            Text(E.blueDot),
                                             const SizedBox(
                                               width: 4,
                                             ),

@@ -1,6 +1,5 @@
 import 'dart:math';
 
-
 import 'package:hive/hive.dart';
 
 import 'bloc/failed_audio.dart';
@@ -23,6 +22,7 @@ import 'data/position.dart';
 import 'data/project.dart';
 import 'data/project_polygon.dart';
 import 'data/project_position.dart';
+import 'data/rating.dart';
 import 'data/section.dart';
 import 'data/user.dart';
 import 'data/video.dart';
@@ -32,7 +32,6 @@ import 'generic_functions.dart';
 
 const stillWorking = 201, doneCaching = 200;
 CacheManager cacheManager = CacheManager._instance;
-
 
 class CacheManager {
   static final CacheManager _instance = CacheManager._internal();
@@ -64,6 +63,7 @@ class CacheManager {
   LazyBox<OrganizationRegistrationBag>? _registrationBox;
   LazyBox<Audio>? _audioBox;
   LazyBox<FailedAudio>? _failedAudioBox;
+  LazyBox<Rating>? _ratingBox;
 
   bool _isInitialized = false;
 
@@ -107,8 +107,7 @@ class CacheManager {
     pp('$mm all Hive boxes cleared 💚💚');
   }
 
-  static final xx =
-      '${Emoji.peach}${Emoji.peach}${Emoji.peach}${Emoji.peach} CacheManager: ';
+  static final xx = '${E.peach}${E.peach}${E.peach}${E.peach} CacheManager: ';
   // static const databaseFileName = 'database2.db';
   // static const boxCollectionName = 'GeoBoxCollection1';
 
@@ -119,7 +118,7 @@ class CacheManager {
       await _openBoxes();
       _isInitialized = true;
       p('\n$mm'
-          ' Hive has been initialized and boxes opened ${Emoji.leaf}${Emoji.leaf}${Emoji.leaf}\n');
+          ' Hive has been initialized and boxes opened ${E.leaf}${E.leaf}${E.leaf}\n');
     } catch (e) {
       p('🔴🔴 We have a problem 🔴 opening Hive boxes: $e');
       throw Exception('Problem with device database');
@@ -129,8 +128,7 @@ class CacheManager {
   Future<void> _openBoxes() async {
     _orgBox = await Hive.openLazyBox<Organization>('organizations');
     _projectBox = await Hive.openLazyBox<Project>('projects');
-    _positionBox =
-        await Hive.openLazyBox<ProjectPosition>('positions');
+    _positionBox = await Hive.openLazyBox<ProjectPosition>('positions');
     _cityBox = await Hive.openLazyBox<City>('cities');
     _photoBox = await Hive.openLazyBox<Photo>('photos');
     _videoBox = await Hive.openLazyBox<Video>('videos');
@@ -142,19 +140,21 @@ class CacheManager {
     _scheduleBox = await Hive.openLazyBox<FieldMonitorSchedule>('schedules');
     _orgMessageBox = await Hive.openLazyBox<OrgMessage>('messages');
     _reportBox = await Hive.openLazyBox<MonitorReport>('reports');
-    _geofenceEventBox =
-        await Hive.openLazyBox<GeofenceEvent>('geofenceEvents');
+    _geofenceEventBox = await Hive.openLazyBox<GeofenceEvent>('geofenceEvents');
 
     _userBox = await Hive.openLazyBox<User>('users');
-    _projectPolygonBox = await Hive.openLazyBox<ProjectPolygon>('projectPolygons');
+    _projectPolygonBox =
+        await Hive.openLazyBox<ProjectPolygon>('projectPolygons');
 
     _failedPhotoBox = await Hive.openLazyBox<Photo>('failedPhotos');
     _failedVideoBox = await Hive.openLazyBox<Video>('failedVideos');
     _failedBagBox = await Hive.openLazyBox<FailedBag>('failedBags');
 
-    _registrationBox = await Hive.openLazyBox<OrganizationRegistrationBag>('registrations');
+    _registrationBox =
+        await Hive.openLazyBox<OrganizationRegistrationBag>('registrations');
     _audioBox = await Hive.openLazyBox<Audio>('audios');
     _failedAudioBox = await Hive.openLazyBox<FailedAudio>('failedAudios');
+    _ratingBox = await Hive.openLazyBox<Rating>('ratings');
   }
 
   void _registerAdapters() {
@@ -195,7 +195,7 @@ class CacheManager {
       Hive.registerAdapter(OrgMessageAdapter());
       p('$xx Hive OrgMessageAdapter registered');
     }
-    
+
     if (!Hive.isAdapterRegistered(9)) {
       Hive.registerAdapter(MonitorReportAdapter());
       p('$xx Hive MonitorReportAdapter registered');
@@ -212,7 +212,7 @@ class CacheManager {
       Hive.registerAdapter(PlaceMarkAdapter());
       p('$xx Hive PlaceMarkAdapter registered');
     }
-    
+
     if (!Hive.isAdapterRegistered(11)) {
       Hive.registerAdapter(UserAdapter());
       p('$xx Hive UserAdapter registered');
@@ -229,7 +229,7 @@ class CacheManager {
       Hive.registerAdapter(OrganizationRegistrationBagAdapter());
       p('$xx Hive OrganizationRegistrationBagAdapter registered');
     }
-    
+
     if (!Hive.isAdapterRegistered(1)) {
       Hive.registerAdapter(CountryAdapter());
       p('$xx Hive CountryAdapter registered');
@@ -242,10 +242,14 @@ class CacheManager {
       Hive.registerAdapter(FailedAudioAdapter());
       p('$xx Hive FailedAudioAdapter registered');
     }
+    if (!Hive.isAdapterRegistered(26)) {
+      Hive.registerAdapter(RatingAdapter());
+      p('$xx Hive RatingAdapter registered');
+    }
   }
 
   final mm =
-      '${Emoji.appleRed}${Emoji.appleRed}${Emoji.appleRed}${Emoji.appleRed} CacheManager: ';
+      '${E.appleRed}${E.appleRed}${E.appleRed}${E.appleRed} CacheManager: ';
   var random = Random(DateTime.now().millisecondsSinceEpoch);
 
   Future addRegistration({required OrganizationRegistrationBag bag}) async {
@@ -262,6 +266,41 @@ class CacheManager {
     await _conditionBox?.put(key, condition);
 
     pp('$mm Condition added to local cache: ${condition.projectName}');
+  }
+
+  Future addRating({required Rating rating}) async {
+    var key = '${rating.projectId}_${rating.ratingId}_${rating.created}';
+    await _ratingBox?.put(key, rating);
+  }
+
+  Future addRatings({required List<Rating> ratings}) async {
+    for (var value in ratings) {
+      await addRating(rating: value);
+    }
+    pp('$mm Ratings added to local cache: ${ratings.length}');
+  }
+
+  Future<List<Rating>> getProjectRatings({required String projectId}) async {
+    var mList = <Rating>[];
+    var keys = _ratingBox?.keys;
+    keys?.forEach((key) async {
+      if (key.contains(projectId)) {
+        var rating = await _ratingBox?.get(key);
+        if (rating != null) {
+          mList.add(rating);
+        }
+      }
+    });
+
+    return mList;
+  }
+
+  Future<int> countOrganizationRatings() async {
+    var keys = _ratingBox?.keys;
+    if (keys != null) {
+      return keys.length;
+    }
+    return 0;
   }
 
   Future addFieldMonitorSchedules(
@@ -385,7 +424,7 @@ class CacheManager {
       String organizationId) async {
     List<FieldMonitorSchedule> list = [];
 
-    var keys =  _scheduleBox?.keys;
+    var keys = _scheduleBox?.keys;
 
     if (keys != null) {
       for (var key in keys) {
@@ -401,7 +440,7 @@ class CacheManager {
   }
 
   Future<List<GeofenceEvent>> getGeofenceEventsByUser(String userId) async {
-    var keys =  _geofenceEventBox?.keys;
+    var keys = _geofenceEventBox?.keys;
     var mList = <GeofenceEvent>[];
     if (keys != null) {
       for (var key in keys) {
@@ -417,7 +456,7 @@ class CacheManager {
 
   Future<List<GeofenceEvent>> getGeofenceEventsByProjectPosition(
       String projectPositionId) async {
-    var keys =  _geofenceEventBox?.keys;
+    var keys = _geofenceEventBox?.keys;
     var mList = <GeofenceEvent>[];
     if (keys != null) {
       for (var key in keys) {
@@ -467,7 +506,7 @@ class CacheManager {
 
   Future<List<Photo>> getOrganizationPhotos() async {
     List<Photo> mList = [];
-    var keys =  _photoBox?.keys;
+    var keys = _photoBox?.keys;
     if (keys != null) {
       for (var key in keys) {
         var m = await _photoBox!.get(key);
@@ -483,7 +522,7 @@ class CacheManager {
 
   Future<List<FieldMonitorSchedule>> getProjectMonitorSchedules(
       String projectId) async {
-    var keys =  _scheduleBox?.keys;
+    var keys = _scheduleBox?.keys;
     List<FieldMonitorSchedule> mList = [];
     if (keys != null) {
       for (var key in keys) {
@@ -500,7 +539,7 @@ class CacheManager {
   }
 
   Future<List<Photo>> getProjectPhotos(String projectId) async {
-    var keys =  _photoBox?.keys;
+    var keys = _photoBox?.keys;
     List<Photo> mList = [];
     if (keys != null) {
       for (var key in keys) {
@@ -518,7 +557,7 @@ class CacheManager {
 
   Future<List<ProjectPolygon>> getProjectPolygons(
       {required String projectId}) async {
-    var keys =  _projectPolygonBox?.keys;
+    var keys = _projectPolygonBox?.keys;
     List<ProjectPolygon> mList = [];
 
     if (keys != null) {
@@ -536,7 +575,7 @@ class CacheManager {
   }
 
   Future<List<Video>> getProjectVideos(String projectId) async {
-    var keys =  _videoBox?.keys;
+    var keys = _videoBox?.keys;
     List<Video> mList = [];
     if (keys != null) {
       for (var key in keys) {
@@ -551,8 +590,9 @@ class CacheManager {
     pp('$mm Project videos found: ${mList.length}');
     return mList;
   }
+
   Future<List<Audio>> getProjectAudios(String projectId) async {
-    var keys =  _audioBox?.keys;
+    var keys = _audioBox?.keys;
     List<Audio> mList = [];
     if (keys != null) {
       for (var key in keys) {
@@ -570,12 +610,12 @@ class CacheManager {
 
   Future<List<Video>> getOrganizationVideos() async {
     List<Video> mList = [];
-    var keys =  _videoBox?.keys;
+    var keys = _videoBox?.keys;
     if (keys != null) {
       for (var key in keys) {
         var m = await _videoBox!.get(key);
         if (m != null) {
-            mList.add(m);
+          mList.add(m);
         }
       }
     }
@@ -585,13 +625,12 @@ class CacheManager {
 
   Future<List<Audio>> getOrganizationAudios() async {
     List<Audio> mList = [];
-    var keys =  _audioBox?.keys;
+    var keys = _audioBox?.keys;
     if (keys != null) {
       for (var key in keys) {
         var m = await _audioBox!.get(key);
         if (m != null) {
-            mList.add(m);
-
+          mList.add(m);
         }
       }
     }
@@ -600,7 +639,7 @@ class CacheManager {
   }
 
   Future<List<Photo>> getUserPhotos(String userId) async {
-    var keys =  _photoBox?.keys;
+    var keys = _photoBox?.keys;
     List<Photo> mList = [];
     if (keys != null) {
       for (var key in keys) {
@@ -617,7 +656,7 @@ class CacheManager {
   }
 
   Future<List<User>> getUsers() async {
-    var keys =  _userBox?.keys;
+    var keys = _userBox?.keys;
     var mList = <User>[];
     if (keys != null) {
       for (var value in keys) {
@@ -633,7 +672,7 @@ class CacheManager {
 
   Future<List<Video>> getVideos() async {
     List<Video> videos = [];
-    var keys =  _videoBox?.keys;
+    var keys = _videoBox?.keys;
     var mList = <Video>[];
     if (keys != null) {
       for (var value in keys) {
@@ -666,7 +705,7 @@ class CacheManager {
     await _failedPhotoBox?.put(key, photo);
     pp('$mm Failed Photo added to local cache:  🔵 🔵 ${photo.projectName}');
   }
-  
+
   Future addFailedAudio({required FailedAudio failedAudio}) async {
     var key = '${failedAudio.date}';
     await _failedAudioBox?.put(key, failedAudio);
@@ -686,13 +725,12 @@ class CacheManager {
     await _failedVideoBox?.delete(key);
     pp('$mm Failed Video deleted from local cache:  🔵 🔵 ${video.projectName}');
   }
-  
+
   Future removeFailedAudio({required FailedAudio failedAudio}) async {
-    var key ='${failedAudio.date}';
+    var key = '${failedAudio.date}';
     await _failedAudioBox?.delete(key);
     pp('$mm Failed Audio deleted from local cache  🔵');
   }
-
 
   Future addFailedBag({required FailedBag bag}) async {
     var key = bag.date!;
@@ -726,9 +764,10 @@ class CacheManager {
     await _userBox?.put(key, user);
     pp('$mm User added to local cache:  🔵 🔵 ${user.name} organizationId: ${user.organizationId} ');
   }
+
   Future deleteUser({required User user}) async {
     var key = '${user.organizationId}_${user.userId}';
-    var keys =  _userBox?.keys;
+    var keys = _userBox?.keys;
     if (keys != null) {
       for (var mKey in keys) {
         if (mKey == key) {
@@ -769,7 +808,7 @@ class CacheManager {
   }
 
   Future<List<Project>> getOrganizationProjects() async {
-    var keys =  _projectBox?.keys;
+    var keys = _projectBox?.keys;
 
     var mList = <Project>[];
     if (keys != null) {
@@ -785,7 +824,7 @@ class CacheManager {
   }
 
   Future<List<FailedAudio>> getFailedAudios() async {
-    var keys =  _failedAudioBox?.keys;
+    var keys = _failedAudioBox?.keys;
 
     var mList = <FailedAudio>[];
     if (keys != null) {
@@ -801,7 +840,7 @@ class CacheManager {
   }
 
   Future<List<FailedBag>> getFailedBags() async {
-    var keys =  _failedBagBox?.keys;
+    var keys = _failedBagBox?.keys;
     var mList = <FailedBag>[];
     if (keys != null) {
       for (var value in keys) {
@@ -875,7 +914,7 @@ class CacheManager {
   }
 
   Future<List<Community>> getCommunities() async {
-    var keys =  _communityBox?.keys;
+    var keys = _communityBox?.keys;
     var mList = <Community>[];
     if (keys != null) {
       for (var key in keys) {
@@ -888,7 +927,7 @@ class CacheManager {
   }
 
   Future<List<Country>> getCountries() async {
-    var keys =  _countryBox?.keys;
+    var keys = _countryBox?.keys;
     var mList = <Country>[];
 
     if (keys != null) {
@@ -904,7 +943,7 @@ class CacheManager {
   }
 
   Future<List<Organization>> getOrganizations() async {
-    var keys =  _orgBox?.keys;
+    var keys = _orgBox?.keys;
     var mList = <Organization>[];
     if (keys != null) {
       for (var key in keys) {
@@ -928,7 +967,7 @@ class CacheManager {
   Future<Organization?> getOrganizationById(
       {required String organizationId}) async {
     pp('$mm .... getOrganizationById ..... ');
-    var keys =  _orgBox?.keys;
+    var keys = _orgBox?.keys;
     Organization? org;
     if (keys != null) {
       for (var key in keys) {
@@ -945,7 +984,7 @@ class CacheManager {
   Future<List<ProjectPosition>> getOrganizationProjectPositions(
       {required String organizationId}) async {
     var mList = <ProjectPosition>[];
-    var keys =  _positionBox?.keys;
+    var keys = _positionBox?.keys;
     if (keys != null) {
       for (var value in keys) {
         var m = await _positionBox?.get(value);
@@ -969,7 +1008,7 @@ class CacheManager {
   Future<List<ProjectPolygon>> getOrganizationProjectPolygons(
       {required String organizationId}) async {
     var mList = <ProjectPolygon>[];
-    var keys =  _projectPolygonBox?.keys;
+    var keys = _projectPolygonBox?.keys;
     if (keys != null) {
       for (var value in keys) {
         var m = await _projectPolygonBox?.get(value);
@@ -984,7 +1023,7 @@ class CacheManager {
   }
 
   Future<List<ProjectPosition>> getProjectPositions(String projectId) async {
-    var keys =  _positionBox?.keys;
+    var keys = _positionBox?.keys;
     var mList = <ProjectPosition>[];
     if (keys != null) {
       for (var key in keys) {
@@ -1000,7 +1039,7 @@ class CacheManager {
 
   Future<ProjectPosition?> getProjectPosition(String projectPositionId) async {
     ProjectPosition? position;
-    var keys =  _positionBox?.keys;
+    var keys = _positionBox?.keys;
     if (keys != null) {
       for (var key in keys) {
         if (key.contains(projectPositionId)) {

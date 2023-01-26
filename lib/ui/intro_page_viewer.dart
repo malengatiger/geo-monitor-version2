@@ -34,7 +34,7 @@ class IntroPageViewerState extends State<IntroPageViewer>
 
 
   final mm =
-      '${Emoji.pear}${Emoji.pear}${Emoji.pear}${Emoji.pear} IntroPageViewer: ';
+      '${E.pear}${E.pear}${E.pear}${E.pear} IntroPageViewer: ';
 
   @override
   void initState() {

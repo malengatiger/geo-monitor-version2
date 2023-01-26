@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:geo_monitor/library/ui/project_location/project_location_mobile.dart';
+import 'package:geo_monitor/ui/audio/audio_mobile.dart';
 import 'package:geo_monitor/ui/dashboard/dashboard_mobile.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:map_launcher/map_launcher.dart';
@@ -162,155 +163,151 @@ class ProjectMonitorMobileState extends State<ProjectMonitorMobile>
                     borderRadius: BorderRadius.circular(16.0)),
                 child: Padding(
                   padding: const EdgeInsets.all(12.0),
-                  child: Column(
-                    children: [
-                      const SizedBox(
-                        height: 8,
-                      ),
-                      isWithinDistance
-                          ? SizedBox(
-                              height: 180,
-                              child: Column(
-                                children: [
-                                  ElevatedButton(
-                                    style: ButtonStyle(
-                                        shape: MaterialStateProperty.all(
-                                          RoundedRectangleBorder(
-                                              borderRadius:
-                                                  BorderRadius.circular(16.0)),
-                                        ),
-                                        elevation: MaterialStateProperty.all(8),
-                                        backgroundColor:
-                                            MaterialStateProperty.all(
-                                                Theme.of(context)
-                                                    .primaryColor)),
-                                    onPressed: () async {
-                                      isWithinDistance =
-                                          await _checkProjectDistance();
-                                      if (isWithinDistance) {
-                                        _startPhotoMonitoring();
-                                      } else {
-                                        setState(() {});
-                                        _showError();
-                                      }
-                                    },
-                                    child: Padding(
-                                      padding: const EdgeInsets.all(12.0),
-                                      child: Text(
-                                        'Start Photo Monitor',
-                                        style: GoogleFonts.lato(
-                                          textStyle: Theme.of(context)
-                                              .textTheme
-                                              .bodyMedium,
-                                          fontWeight: FontWeight.normal,
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                  const SizedBox(
-                                    height: 12,
-                                  ),
-                                  ElevatedButton(
-                                    style: ButtonStyle(
-                                        shape: MaterialStateProperty.all(
-                                          RoundedRectangleBorder(
-                                              borderRadius:
-                                                  BorderRadius.circular(16.0)),
-                                        ),
-                                        elevation: MaterialStateProperty.all(8),
-                                        backgroundColor:
-                                            MaterialStateProperty.all(
-                                                Theme.of(context)
-                                                    .primaryColor)),
-                                    onPressed: () async {
-                                      isWithinDistance =
-                                          await _checkProjectDistance();
-                                      if (isWithinDistance) {
-                                        _startVideoMonitoring();
-                                      } else {
-                                        setState(() {});
-                                        _showError();
-                                      }
-                                    },
-                                    child: Padding(
-                                      padding: const EdgeInsets.all(12.0),
-                                      child: Text(
-                                        'Start Video Monitor',
-                                        style: GoogleFonts.lato(
-                                          textStyle: Theme.of(context)
-                                              .textTheme
-                                              .bodyMedium,
-                                          fontWeight: FontWeight.normal,
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                  const SizedBox(
-                                    height: 8,
-                                  ),
-                                  TextButton(
-                                      onPressed: () {
-                                        Navigator.of(context).pop();
+                  child: SingleChildScrollView(
+                    child: Column(
+                      children: [
+                        const SizedBox(
+                          height: 8,
+                        ),
+                        isWithinDistance
+                            ? SizedBox(
+                                height: 280,
+                                child: Column(
+                                  children: [
+                                   TextButton(
+
+                                      onPressed: () async {
+                                        isWithinDistance =
+                                            await _checkProjectDistance();
+                                        if (isWithinDistance) {
+                                          _startPhotoMonitoring();
+                                        } else {
+                                          setState(() {});
+                                          _showError();
+                                        }
                                       },
-                                      child: const Text('Cancel')),
-                                ],
-                              ),
-                            )
-                          : Container(),
-                      const SizedBox(
-                        height: 4,
-                      ),
-                      isBusy
-                          ? Row(
-                              children: [
-                                const SizedBox(
-                                  width: 16,
-                                  height: 16,
-                                  child: CircularProgressIndicator(
-                                    strokeWidth: 2,
-                                    backgroundColor: Colors.pink,
-                                  ),
+                                      child: Padding(
+                                        padding: const EdgeInsets.all(12.0),
+                                        child: Text(
+                                          'Start Photo Monitor',
+                                          style: myTextStyleMediumPrimaryColor(context),
+                                        ),
+                                      ),
+                                    ),
+                                    const SizedBox(
+                                      height: 12,
+                                    ),
+                                    TextButton(
+
+                                      onPressed: () async {
+                                        isWithinDistance =
+                                            await _checkProjectDistance();
+                                        if (isWithinDistance) {
+                                          _startVideoMonitoring();
+                                        } else {
+                                          setState(() {});
+                                          _showError();
+                                        }
+                                      },
+                                      child: Padding(
+                                        padding: const EdgeInsets.all(12.0),
+                                        child: Text(
+                                          'Start Video Monitor',
+                                          style: myTextStyleMediumPrimaryColor(context),
+                                        ),
+                                      ),
+                                    ),
+
+                                    const SizedBox(
+                                      height: 12,
+                                    ),
+                                    TextButton(
+
+                                      onPressed: () async {
+                                        isWithinDistance =
+                                        await _checkProjectDistance();
+                                        if (isWithinDistance) {
+                                          _startAudioMonitoring();
+                                        } else {
+                                          setState(() {});
+                                          _showError();
+                                        }
+                                      },
+                                      child: Padding(
+                                        padding: const EdgeInsets.all(12.0),
+                                        child: Text(
+                                          'Start Audio Report',
+                                          style: myTextStyleMediumPrimaryColor(context),
+                                        ),
+                                      ),
+                                    ),
+                                    const SizedBox(
+                                      height: 12,
+                                    ),
+                                    TextButton(
+                                        onPressed: () {
+                                          Navigator.of(context).pop();
+                                        },
+                                        child: Text('Cancel', style: myTextStyleSmall(context),)),
+                                  ],
                                 ),
-                                const SizedBox(
-                                  width: 20,
-                                ),
-                                Text(
-                                  'Checking project location',
-                                  style: myTextStyleSmall(context),
-                                )
-                              ],
-                            )
-                          : Container(),
-                      const SizedBox(
-                        height: 4,
-                      ),
-                      isWithinDistance
-                          ? Text(
-                              'We are ready to start creating photos and videos for ${widget.project.name} \n🍎',
-                              style: myTextStyleSmall(context))
-                          : Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: Column(
+                              )
+                            : Container(),
+                        const SizedBox(
+                          height: 4,
+                        ),
+                        isBusy
+                            ? Row(
                                 children: [
                                   const SizedBox(
-                                    height: 12,
+                                    width: 16,
+                                    height: 16,
+                                    child: CircularProgressIndicator(
+                                      strokeWidth: 2,
+                                      backgroundColor: Colors.pink,
+                                    ),
+                                  ),
+                                  const SizedBox(
+                                    width: 20,
                                   ),
                                   Text(
-                                    'Device is too far from ${widget.project.name} for monitoring capabilities. Please move closer!',
+                                    'Checking project location',
                                     style: myTextStyleSmall(context),
-                                  ),
-                                  const SizedBox(
-                                    height: 24,
-                                  ),
-                                  TextButton(
-                                      onPressed: () {
-                                        Navigator.of(context).pop();
-                                      },
-                                      child: const Text('Cancel')),
+                                  )
                                 ],
+                              )
+                            : Container(),
+                        const SizedBox(
+                          height: 4,
+                        ),
+                        isWithinDistance
+                            ? Text(
+                                'We are ready to start creating photos and videos for ${widget.project.name} \n🍎',
+                                style: myTextStyleSmall(context))
+                            : Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: Column(
+                                  children: [
+                                    const SizedBox(
+                                      height: 12,
+                                    ),
+                                    Text(
+                                      'Device is too far from ${widget.project.name} for monitoring capabilities. Please move closer!',
+                                      style: myTextStyleSmall(context),
+                                    ),
+                                    const SizedBox(
+                                      height: 24,
+                                    ),
+                                    TextButton(
+                                        onPressed: () {
+                                          Navigator.of(context).pop();
+                                        },
+                                        child: const Text('Cancel')),
+                                  ],
+                                ),
                               ),
-                            ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
               ),
@@ -443,6 +440,21 @@ class ProjectMonitorMobileState extends State<ProjectMonitorMobile>
             child: VideoHandler(
               project: widget.project,
               projectPosition: nearestProjectPosition!,
+            )));
+  }
+
+  void _startAudioMonitoring() async {
+    pp('🍏 🍏 Start Audio Monitoring this project after checking that the device is within '
+        ' 🍎 ${widget.project.monitorMaxDistanceInMetres} metres 🍎 of a project point within ${widget.project.name}');
+    Navigator.of(context).pop();
+    Navigator.push(
+        context,
+        PageTransition(
+            type: PageTransitionType.scale,
+            alignment: Alignment.topLeft,
+            duration: const Duration(seconds: 1),
+            child: AudioMobile(
+              project: widget.project,
             )));
   }
 

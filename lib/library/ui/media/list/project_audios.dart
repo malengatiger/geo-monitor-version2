@@ -2,8 +2,11 @@ import 'dart:async';
 
 import 'package:badges/badges.dart';
 import 'package:flutter/material.dart';
+import 'package:geo_monitor/library/emojis.dart';
+import 'package:geo_monitor/library/ui/ratings/rating_adder_mobile.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:just_audio/just_audio.dart';
+import 'package:page_transition/page_transition.dart';
 
 import '../../../bloc/project_bloc.dart';
 import '../../../data/audio.dart';
@@ -34,6 +37,7 @@ class ProjectAudiosState extends State<ProjectAudios> {
     _subscribeToStreams();
     _getAudios();
   }
+
   @override
   void dispose() {
     audioPlayer.stop();
@@ -64,7 +68,6 @@ class ProjectAudiosState extends State<ProjectAudios> {
   Duration _currentPosition = const Duration(seconds: 0);
 
   Future<void> _playAudio() async {
-
     try {
       _listenToAudioPlayer();
       duration = await audioPlayer.setUrl(_selectedAudio!.url!);
@@ -89,25 +92,31 @@ class ProjectAudiosState extends State<ProjectAudios> {
       } else {
         switch (state.processingState) {
           case ProcessingState.idle:
-            pp('$mm ProcessingState.idle ...');
+            // pp('$mm ProcessingState.idle ...');
             break;
           case ProcessingState.loading:
-            pp('$mm ProcessingState.loading ...');
-            setState(() {
-              _loading = true;
-            });
+            // pp('$mm ProcessingState.loading ...');
+            if (mounted) {
+              setState(() {
+                _loading = true;
+              });
+            }
             break;
           case ProcessingState.buffering:
-            pp('$mm ProcessingState.buffering ...');
-            setState(() {
-              _loading = false;
-            });
+            // pp('$mm ProcessingState.buffering ...');
+            if (mounted) {
+              setState(() {
+                _loading = false;
+              });
+            }
             break;
           case ProcessingState.ready:
-            pp('$mm ProcessingState.ready ...');
-            setState(() {
-              _loading = false;
-            });
+            // pp('$mm ProcessingState.ready ...');
+            if (mounted) {
+              setState(() {
+                _loading = false;
+              });
+            }
             break;
           case ProcessingState.completed:
             pp('$mm ProcessingState.completed ...');
@@ -123,9 +132,9 @@ class ProjectAudiosState extends State<ProjectAudios> {
 
     audioPlayer.positionStream.listen((event) {
       if (mounted) {
-       setState(() {
-         _currentPosition = event;
-       });
+        setState(() {
+          _currentPosition = event;
+        });
       }
     });
     playbackSub = audioPlayer.playbackEventStream.listen((event) {
@@ -150,6 +159,22 @@ class ProjectAudiosState extends State<ProjectAudios> {
 
   bool isPaused = false;
   bool isStopped = false;
+  void _onFavorite() async {
+    pp('$mm on favorite tapped - do da bizness! navigate to RatingAdder');
+
+    Future.delayed(const Duration(milliseconds: 10), () {
+      Navigator.push(
+          context,
+          PageTransition(
+              type: PageTransitionType.leftToRightWithFade,
+              alignment: Alignment.topLeft,
+              duration: const Duration(milliseconds: 1000),
+              child: RatingAdderMobile(
+                project: widget.project,
+                audioId: _selectedAudio!.audioId!,
+              )));
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -346,7 +371,8 @@ class ProjectAudiosState extends State<ProjectAudios> {
                               duration == null
                                   ? const SizedBox()
                                   : Row(
-                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
                                       children: [
                                         Text(
                                           getHourMinuteSecond(_currentPosition),
@@ -356,8 +382,8 @@ class ProjectAudiosState extends State<ProjectAudios> {
                                                   .bodyLarge,
                                               fontWeight: FontWeight.bold,
                                               fontSize: 20,
-                                              color:
-                                                  Theme.of(context).primaryColor),
+                                              color: Theme.of(context)
+                                                  .primaryColor),
                                         ),
                                         const SizedBox(
                                           width: 8,
@@ -395,7 +421,7 @@ class ProjectAudiosState extends State<ProjectAudios> {
                                 ],
                               ),
                               const SizedBox(
-                                height: 28,
+                                height: 32,
                               ),
                               Column(
                                 mainAxisAlignment: MainAxisAlignment.center,
@@ -423,17 +449,23 @@ class ProjectAudiosState extends State<ProjectAudios> {
                                     ),
                                   ),
                                   const SizedBox(
-                                    width: 48,
+                                    height: 16,
                                   ),
-                                  TextButton(
-                                      onPressed: () {
-                                        setState(() {
-                                          _showAudioPlayer = false;
-                                          _selectedAudio = null;
-                                        });
-                                        audioPlayer.stop();
-                                      },
-                                      child: const Text('Close')),
+                                  Row(mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      TextButton(onPressed: _onFavorite, child: Text(E.heartRed)),
+                                      const SizedBox(width: 48,),
+                                      TextButton(
+                                          onPressed: () {
+                                            setState(() {
+                                              _showAudioPlayer = false;
+                                              _selectedAudio = null;
+                                            });
+                                            audioPlayer.stop();
+                                          },
+                                          child:  Text('Close', style: myTextStyleSmall(context),)),
+                                    ],
+                                  ),
                                 ],
                               ),
                               const SizedBox(
@@ -444,11 +476,9 @@ class ProjectAudiosState extends State<ProjectAudios> {
                         ),
                       ))
                   : const SizedBox(),
-
             ],
           );
   }
-
 }
 
 class PlaybackControls extends StatelessWidget {
@@ -464,7 +494,6 @@ class PlaybackControls extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-
     return Card(
       elevation: 4,
       shape: getRoundedBorder(radius: 16),
@@ -475,24 +504,25 @@ class PlaybackControls extends StatelessWidget {
             const SizedBox(
               width: 8,
             ),
-             IconButton(
-                    onPressed: _onPlayTapped,
-                    icon: Icon(Icons.play_arrow,
-                        color: Theme.of(context).primaryColor)),
-
             IconButton(
-                    onPressed: _onPlayPaused,
-                    icon: Icon(Icons.pause,
-                        color: Theme.of(context).primaryColor)),
+                onPressed: _onPlayTapped,
+                icon: Icon(Icons.play_arrow,
+                    color: Theme.of(context).primaryColor)),
             const SizedBox(
               width: 16,
             ),
             IconButton(
-                    onPressed: _onPlayStopped,
-                    icon: Icon(
-                      Icons.stop,
-                      color: Theme.of(context).primaryColor,
-                    ))
+                onPressed: _onPlayPaused,
+                icon: Icon(Icons.pause, color: Theme.of(context).primaryColor)),
+            const SizedBox(
+              width: 16,
+            ),
+            IconButton(
+                onPressed: _onPlayStopped,
+                icon: Icon(
+                  Icons.stop,
+                  color: Theme.of(context).primaryColor,
+                ))
           ],
         ),
       ),

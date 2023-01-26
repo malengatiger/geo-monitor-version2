@@ -101,8 +101,8 @@ class ProjectMediaListMobileState extends State<ProjectMediaListMobile>
 
   void _listenToPhotoStream() async {
     newPhotoStreamSubscription = cloudStorageBloc.photoStream.listen((mPhoto) {
-      pp('${Emoji.blueDot}${Emoji.blueDot} '
-          'New photo arrived from newPhotoStreamSubscription: ${mPhoto.toJson()} ${Emoji.blueDot}');
+      pp('${E.blueDot}${E.blueDot} '
+          'New photo arrived from newPhotoStreamSubscription: ${mPhoto.toJson()} ${E.blueDot}');
       _photos.add(mPhoto);
       if (mounted) {
         setState(() {});
@@ -362,7 +362,9 @@ class ProjectMediaListMobileState extends State<ProjectMediaListMobile>
             type: PageTransitionType.leftToRightWithFade,
             alignment: Alignment.topLeft,
             duration: const Duration(milliseconds: 1000),
-            child: PlayVideo(video: selectedVideo!)));
+            child: PlayVideo(
+                project: widget.project,
+                video: selectedVideo!)));
   }
   AudioPlayer audioPlayer = AudioPlayer();
   void _navigateToPlayAudio() {
@@ -386,7 +388,9 @@ class ProjectMediaListMobileState extends State<ProjectMediaListMobile>
             type: PageTransitionType.leftToRightWithFade,
             alignment: Alignment.topLeft,
             duration: const Duration(milliseconds: 1000),
-            child: FullPhotoMobile(photo: selectedPhoto!)));
+            child: FullPhotoMobile(
+                project: widget.project,
+                photo: selectedPhoto!)));
     Future.delayed(const Duration(milliseconds: 100), () {});
   }
 

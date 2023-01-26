@@ -57,7 +57,7 @@ class ThemeBloc {
     _themeController.close();
   }
 
-  static final mm = '${Emoji.appleRed}${Emoji.appleRed}${Emoji.appleRed}';
+  static final mm = '${E.appleRed}${E.appleRed}${E.appleRed}';
 }
 
 
@@ -72,7 +72,7 @@ class SchemeUtil {
   static final List<ThemeBag> _themeBags = [];
   static final _rand = Random(DateTime.now().millisecondsSinceEpoch);
   static int index = 0;
-  static final mm = 'ThemeBloc ${Emoji.diamond}${Emoji.diamond}${Emoji.diamond}';
+  static final mm = 'ThemeBloc ${E.diamond}${E.diamond}${E.diamond}';
 
   static int getThemeCount() {
     _setThemes();

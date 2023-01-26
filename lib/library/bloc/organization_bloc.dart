@@ -27,7 +27,7 @@ class OrganizationBloc {
   OrganizationBloc() {
     pp('$mm OrganizationBloc constructed');
   }
-  final mm = '${Emoji.blueDot}${Emoji.blueDot}${Emoji.blueDot} '
+  final mm = '${E.blueDot}${E.blueDot}${E.blueDot} '
       'OrganizationBloc: ';
   final StreamController<List<MonitorReport>> _reportController =
       StreamController.broadcast();

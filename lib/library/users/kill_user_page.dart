@@ -20,7 +20,7 @@ class KillUserPageState extends State<KillUserPage>
     with SingleTickerProviderStateMixin {
   late AnimationController _animationController;
   final mm =
-      '${Emoji.redDot}${Emoji.redDot}${Emoji.redDot}${Emoji.redDot} KillUserPage: ';
+      '${E.redDot}${E.redDot}${E.redDot}${E.redDot} KillUserPage: ';
   bool busy = false;
   @override
   void initState() {

@@ -26,6 +26,7 @@ import '../data/photo.dart';
 import '../data/project.dart';
 import '../data/project_position.dart';
 import '../data/questionnaire.dart';
+import '../data/rating.dart';
 import '../data/section.dart';
 import '../data/user.dart';
 import '../data/video.dart';
@@ -1082,7 +1083,23 @@ class DataAPI {
       rethrow;
     }
   }
+  static Future<Rating> addRating(Rating rating) async {
+    String? mURL = await getUrl();
 
+    try {
+      var result = await _callWebAPIPost('${mURL!}addRating', rating.toJson());
+      var mRating = Rating.fromJson(result);
+      pp('$mm addRating has added mRating to DB : 😡😡😡 fromJson:: ${mRating.toJson()}');
+
+      var x = await cacheManager.addRating(rating: mRating);
+      pp('$mm addRating has added result to Hive??? : 😡😡😡 result from hive: $x');
+
+      return mRating;
+    } catch (e) {
+      pp(e);
+      rethrow;
+    }
+  }
   static Future<Condition> addCondition(Condition condition) async {
     String? mURL = await getUrl();
 
@@ -1347,9 +1364,9 @@ class DataAPI {
         return resp.body;
       }
     } on SocketException {
-      pp('\n\n$xz ${Emoji.redDot}${Emoji.redDot} ${Emoji.redDot} '
-          'GeoMonitor Server not available. ${Emoji.redDot} Possible Internet Connection issue '
-          '${Emoji.redDot} ${Emoji.redDot} ${Emoji.redDot}\n');
+      pp('\n\n$xz ${E.redDot}${E.redDot} ${E.redDot} '
+          'GeoMonitor Server not available. ${E.redDot} Possible Internet Connection issue '
+          '${E.redDot} ${E.redDot} ${E.redDot}\n');
       throw 'GeoMonitor Server not available. Possible Internet Connection issue';
     } on HttpException {
       pp("$xz Couldn't find the post 😱");

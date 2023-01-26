@@ -16,13 +16,23 @@ class Position extends HiveObject {
   });
 
   Position.fromJson(Map data) {
-    coordinates = data['coordinates'];
+    coordinates = [];
+    if (data['coordinates'] != null) {
+      List list = data['coordinates'];
+      for (var value in list) {
+        coordinates.add(value);
+      }
+    }
     type = data['type'];
   }
   Map<String, dynamic> toJson() {
+    var m = [];
+    for (var element in coordinates) {
+      m.add(element);
+    }
     Map<String, dynamic> map = {
       'type': type,
-      'coordinates': coordinates,
+      'coordinates': m,
     };
     return map;
   }

@@ -168,7 +168,7 @@ class ProjectPolygonMapMobileState extends State<ProjectPolygonMapMobile>
     var isOK = checkIfLocationIsWithinPolygons(
         latitude: latLng.latitude, longitude: latLng.longitude, polygons: projectPolygons);
     pp('$mm long pressed location found in any of the project\'s 🍎 '
-        'polygons; isWithin the polygons: $isOK - ${isOK? Emoji.leaf: Emoji.redDot}');
+        'polygons; isWithin the polygons: $isOK - ${isOK? E.leaf: E.redDot}');
 
 
     if (user!.userType == UserType.fieldMonitor) {
@@ -192,7 +192,7 @@ class ProjectPolygonMapMobileState extends State<ProjectPolygonMapMobile>
 
   Future<void> _submitNewPolygon() async {
     pp('\n\n$mm _submitNewPolygon started. 🍏🍏adding polygon to project ...'
-        '${Emoji.blueDot} polygon points: ${_myPoints.length}');
+        '${E.blueDot} polygon points: ${_myPoints.length}');
 
     setState(() {
       busy = true;

@@ -38,7 +38,7 @@ class PhotoHandlerState extends State<PhotoHandler>
     with SingleTickerProviderStateMixin
     implements StorageBlocListener {
   final mm =
-      '${Emoji.blueDot}${Emoji.blueDot}${Emoji.blueDot}${Emoji.blueDot} PhotoHandler: 🌿';
+      '${E.blueDot}${E.blueDot}${E.blueDot}${E.blueDot} PhotoHandler: 🌿';
 
   late AnimationController _controller;
   final ImagePicker _picker = ImagePicker();
@@ -61,12 +61,12 @@ class PhotoHandlerState extends State<PhotoHandler>
   }
 
   Future<void> _observeOrientation() async {
-    pp('${Emoji.blueDot} ........ _observeOrientation ... ');
+    pp('${E.blueDot} ........ _observeOrientation ... ');
     Stream<NativeDeviceOrientation> stream =
         NativeDeviceOrientationCommunicator()
             .onOrientationChanged(useSensor: true);
     orientStreamSubscription = stream.listen((event) {
-      pp('${Emoji.blueDot}${Emoji.blueDot} orientation, name: ${event.name} index: ${event.index}');
+      pp('${E.blueDot}${E.blueDot} orientation, name: ${event.name} index: ${event.index}');
       _deviceOrientation = event;
     });
   }

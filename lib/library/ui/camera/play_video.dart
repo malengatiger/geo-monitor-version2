@@ -1,14 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:page_transition/page_transition.dart';
 import 'package:video_player/video_player.dart';
 
+import '../../data/project.dart';
 import '../../data/video.dart';
+import '../../emojis.dart';
 import '../../functions.dart';
+import '../ratings/rating_adder_mobile.dart';
 
 class PlayVideo extends StatefulWidget {
-  const PlayVideo({Key? key, required this.video}) : super(key: key);
+  const PlayVideo({Key? key, required this.video, required this.project}) : super(key: key);
 
   final Video video;
+  final Project project;
 
   @override
   PlayVideoState createState() => PlayVideoState();
@@ -87,6 +92,22 @@ class PlayVideoState extends State<PlayVideo>
     }
     super.dispose();
   }
+  void _onFavorite() async {
+    pp('$mm on favorite tapped - do da bizness! navigate to RatingAdder');
+
+    Future.delayed(const Duration(milliseconds: 10), () {
+      Navigator.push(
+          context,
+          PageTransition(
+              type: PageTransitionType.leftToRightWithFade,
+              alignment: Alignment.topLeft,
+              duration: const Duration(milliseconds: 1000),
+              child: RatingAdderMobile(
+                project: widget.project,
+                videoId: widget.video.videoId!,
+              )));
+    });
+  }
 
   bool _showElapsed = false;
   @override
@@ -117,20 +138,22 @@ class PlayVideoState extends State<PlayVideo>
                   style: myTextStyleLarge(context),
                 ),
                 const SizedBox(
-                  height: 20,
+                  height: 8,
                 ),
                 Text(
                   m,
                   style: myTextStyleSmall(context),
                 ),
                 const SizedBox(
-                  height: 8,
+                  height: 2,
                 ),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
+                    TextButton(onPressed: _onFavorite, child: Text(E.heartBlue)),
+                    const SizedBox(width: 28,),
                     Text(
-                      'Video Duration',
+                      'Duration',
                       style: GoogleFonts.lato(
                         textStyle: Theme.of(context).textTheme.bodySmall,
                         fontWeight: FontWeight.normal,

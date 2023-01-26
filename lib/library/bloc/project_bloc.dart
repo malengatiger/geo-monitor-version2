@@ -28,7 +28,7 @@ class ProjectBloc {
   ProjectBloc() {
     pp('$mm ProjectBloc constructed');
   }
-  final mm = '${Emoji.appleRed}${Emoji.appleRed}${Emoji.appleRed} '
+  final mm = '${E.appleRed}${E.appleRed}${E.appleRed} '
       'ProjectBloc';
   final StreamController<List<MonitorReport>> _reportController =
       StreamController.broadcast();

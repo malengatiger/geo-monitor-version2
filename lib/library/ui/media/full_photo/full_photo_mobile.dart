@@ -2,14 +2,19 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:page_transition/page_transition.dart';
 
 import '../../../data/photo.dart';
+import '../../../data/project.dart';
+import '../../../emojis.dart';
 import '../../../functions.dart';
+import '../../ratings/rating_adder_mobile.dart';
 
 class FullPhotoMobile extends StatefulWidget {
   final Photo photo;
+  final Project project;
 
-  const FullPhotoMobile({super.key, required this.photo});
+  const FullPhotoMobile({super.key, required this.photo, required this.project});
 
   @override
   FullPhotoMobileState createState() => FullPhotoMobileState();
@@ -53,6 +58,23 @@ class FullPhotoMobileState extends State<FullPhotoMobile>
     super.dispose();
   }
 
+  void _onFavorite() async {
+    pp(' 😡😡😡 on favorite tapped - do da bizness! navigate to RatingAdder');
+
+    Future.delayed(const Duration(milliseconds: 10), () {
+      Navigator.push(
+          context,
+          PageTransition(
+              type: PageTransitionType.leftToRightWithFade,
+              alignment: Alignment.topLeft,
+              duration: const Duration(milliseconds: 1000),
+              child: RatingAdderMobile(
+                project: widget.project,
+                photoId: widget.photo.photoId!,
+              )));
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     var height = 800.0;
@@ -63,52 +85,27 @@ class FullPhotoMobileState extends State<FullPhotoMobile>
     }
     return SafeArea(
       child: Scaffold(
-        // appBar: AppBar(
-        //   title: Text(
-        //     '${widget.photo.projectName}',
-        //     style: GoogleFonts.lato(
-        //       textStyle: Theme.of(context).textTheme.bodySmall,
-        //       fontWeight: FontWeight.w900,
-        //     ),
-        //   ),
-        //   bottom: PreferredSize(
-        //     preferredSize: const Size.fromHeight(8),
-        //     child: Column(
-        //       children: [
-        //         Text(
-        //           getFormattedDateLongWithTime(widget.photo.created!, context),
-        //           style: GoogleFonts.lato(
-        //             textStyle: Theme.of(context).textTheme.bodySmall,
-        //             fontWeight: FontWeight.normal, fontSize: 10
-        //           ),
-        //         ),
-        //         const SizedBox(
-        //           height: 8,
-        //         )
-        //       ],
-        //     ),
-        //   ),
-        // ),
-        // backgroundColor: Colors.black,
         body: Stack(
           children: [
             GestureDetector(
               onTap: (){
                 Navigator.of(context).pop();
               },
-              child: CachedNetworkImage(
-                imageUrl: widget.photo.url!,
-                fadeInDuration: const Duration(milliseconds: 500),
-                fit: BoxFit.cover, width: width, height: height,
-                progressIndicatorBuilder: (context, url, downloadProgress) =>
-                    Center(
-                        child: SizedBox(
-                            width: 24,
-                            height: 24,
-                            child: CircularProgressIndicator(
-                                backgroundColor: Colors.white,
-                                value: downloadProgress.progress))),
-                errorWidget: (context, url, error) => const Icon(Icons.error),
+              child: InteractiveViewer(
+                child: CachedNetworkImage(
+                  imageUrl: widget.photo.url!,
+                  fadeInDuration: const Duration(milliseconds: 500),
+                  fit: BoxFit.cover, width: width, height: height,
+                  progressIndicatorBuilder: (context, url, downloadProgress) =>
+                      Center(
+                          child: SizedBox(
+                              width: 24,
+                              height: 24,
+                              child: CircularProgressIndicator(
+                                  backgroundColor: Colors.white,
+                                  value: downloadProgress.progress))),
+                  errorWidget: (context, url, error) => const Icon(Icons.error),
+                ),
               ),
             ),
             Positioned(
@@ -157,6 +154,13 @@ class FullPhotoMobileState extends State<FullPhotoMobile>
                 ),
               ),
             ),
+
+            Positioned(
+                right: 12, top: 2,
+                child: Card(
+                  color: Colors.black12,
+              child: TextButton(onPressed: _onFavorite, child: Text(E.heartOrange),),
+            )),
           ],
         ),
       ),

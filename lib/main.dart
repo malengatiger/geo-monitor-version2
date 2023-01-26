@@ -58,11 +58,11 @@ Future<void> mainSetup() async {
       FirebaseCrashlytics.instance.recordError(error, stack, fatal: true);
       return true;
     };
-    pp('${Emoji.heartGreen}${Emoji.heartGreen} FirebaseCrashlytics set up');
+    pp('${E.heartGreen}${E.heartGreen} FirebaseCrashlytics set up');
     // Prefs.deleteUser();
     await Hive.initFlutter();
     await cacheManager.initialize(forceInitialization: false);
-    pp('${Emoji.heartGreen}${Emoji.heartGreen}}${Emoji.heartGreen} '
+    pp('${E.heartGreen}${E.heartGreen}}${E.heartGreen} '
         'Hive initialized and boxCollection set up');
 
     writeFailedMedia.startTimer(const Duration(minutes: 25));
@@ -71,7 +71,7 @@ Future<void> mainSetup() async {
     writeFailedMedia.writeFailedMedia();
     uploadFailedMedia.uploadFailedMedia();
 
-    pp('${Emoji.heartGreen}${Emoji.heartGreen} writeFailedMedia/uploadFailedMedia '
+    pp('${E.heartGreen}${E.heartGreen} writeFailedMedia/uploadFailedMedia '
         'timers started with 🍎 5 minute duration per tick ...');
 
     await FlutterLibphonenumber().init();
@@ -82,12 +82,12 @@ Future<void> mainSetup() async {
   await dotenv.load(fileName: ".env");
   pp('$heartBlue DotEnv has been loaded');
 
-  pp('${Emoji.brocolli} Checking for current user : FirebaseAuth');
+  pp('${E.broccolli} Checking for current user : FirebaseAuth');
 
   if (user == null) {
-    pp('${Emoji.redDot}${Emoji.redDot} Ding Dong! new Firebase user, sign in! - check that we do not create user every time $appleGreen  $appleGreen');
+    pp('${E.redDot}${E.redDot} Ding Dong! new Firebase user, sign in! - check that we do not create user every time $appleGreen  $appleGreen');
   } else {
-    pp('${Emoji.blueDot}${Emoji.blueDot}${Emoji.blueDot}${Emoji.blueDot} User already exists. $blueDot Cool!');
+    pp('${E.blueDot}${E.blueDot}${E.blueDot}${E.blueDot} User already exists. $blueDot Cool!');
   }
 }
 
@@ -102,15 +102,15 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   firebaseApp = await Firebase.initializeApp(
       options: DefaultFirebaseOptions.currentPlatform);
-  pp('${Emoji.heartGreen}${Emoji.heartGreen}${Emoji.heartGreen}'
+  pp('${E.heartGreen}${E.heartGreen}${E.heartGreen}'
       ' Firebase App has been initialized: ${firebaseApp.name}');
   user = await Prefs.getUser();
   if (user == null) {
-    pp('${Emoji.redDot}${Emoji.redDot}${Emoji.redDot}${Emoji.redDot} '
+    pp('${E.redDot}${E.redDot}${E.redDot}${E.redDot} '
         'User from Prefs is null; ensure that firebase is signed out ...');
     await fb.FirebaseAuth.instance.signOut();
   } else {
-    pp('\n${Emoji.heartGreen}${Emoji.heartGreen} Prefs user available:: ${user!.toJson()}\n');
+    pp('\n${E.heartGreen}${E.heartGreen} Prefs user available:: ${user!.toJson()}\n');
     fb.FirebaseAuth.instance.currentUser?.refreshToken!;
     String? token = await fb.FirebaseAuth.instance.currentUser?.getIdToken();
     if (token != null) {

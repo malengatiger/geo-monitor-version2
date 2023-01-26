@@ -122,6 +122,12 @@ TextStyle myTextStyleMedium(BuildContext context) {
     fontWeight: FontWeight.normal,
   );
 }
+TextStyle myTextStyleMediumPrimaryColor(BuildContext context) {
+  return GoogleFonts.lato(
+    textStyle: Theme.of(context).textTheme.bodyMedium,
+    fontWeight: FontWeight.normal, color: Theme.of(context).primaryColor
+  );
+}
 TextStyle myTextStyleMediumBold(BuildContext context) {
   return GoogleFonts.lato(
     textStyle: Theme.of(context).textTheme.bodyMedium,
