@@ -34,6 +34,11 @@ class ProjectAudiosState extends State<ProjectAudios> {
     _subscribeToStreams();
     _getAudios();
   }
+  @override
+  void dispose() {
+    audioPlayer.stop();
+    super.dispose();
+  }
 
   void _subscribeToStreams() async {}
   void _getAudios() async {
@@ -59,10 +64,7 @@ class ProjectAudiosState extends State<ProjectAudios> {
   Duration _currentPosition = const Duration(seconds: 0);
 
   Future<void> _playAudio() async {
-    if (audioPlayer.playing) {
-      pp('$mm audio player is already playing; quitting');
-      return;
-    }
+
     try {
       _listenToAudioPlayer();
       duration = await audioPlayer.setUrl(_selectedAudio!.url!);
@@ -82,42 +84,42 @@ class ProjectAudiosState extends State<ProjectAudios> {
 
   late StreamSubscription<PlaybackEvent> playbackSub;
   void _listenToAudioPlayer() {
-    // audioPlayer.playerStateStream.listen((state) {
-    //   if (state.playing) {
-    //   } else {
-    //     switch (state.processingState) {
-    //       case ProcessingState.idle:
-    //         pp('$mm ProcessingState.idle ...');
-    //         break;
-    //       case ProcessingState.loading:
-    //         pp('$mm ProcessingState.loading ...');
-    //         setState(() {
-    //           _loading = true;
-    //         });
-    //         break;
-    //       case ProcessingState.buffering:
-    //         pp('$mm ProcessingState.buffering ...');
-    //         setState(() {
-    //           _loading = false;
-    //         });
-    //         break;
-    //       case ProcessingState.ready:
-    //         pp('$mm ProcessingState.ready ...');
-    //         setState(() {
-    //           _loading = false;
-    //         });
-    //         break;
-    //       case ProcessingState.completed:
-    //         pp('$mm ProcessingState.completed ...');
-    //         if (mounted) {
-    //           setState(() {
-    //             isStopped = true;
-    //           });
-    //         }
-    //         break;
-    //     }
-    //   }
-    // });
+    audioPlayer.playerStateStream.listen((state) {
+      if (state.playing) {
+      } else {
+        switch (state.processingState) {
+          case ProcessingState.idle:
+            pp('$mm ProcessingState.idle ...');
+            break;
+          case ProcessingState.loading:
+            pp('$mm ProcessingState.loading ...');
+            setState(() {
+              _loading = true;
+            });
+            break;
+          case ProcessingState.buffering:
+            pp('$mm ProcessingState.buffering ...');
+            setState(() {
+              _loading = false;
+            });
+            break;
+          case ProcessingState.ready:
+            pp('$mm ProcessingState.ready ...');
+            setState(() {
+              _loading = false;
+            });
+            break;
+          case ProcessingState.completed:
+            pp('$mm ProcessingState.completed ...');
+            if (mounted) {
+              setState(() {
+                isStopped = true;
+              });
+            }
+            break;
+        }
+      }
+    });
 
     audioPlayer.positionStream.listen((event) {
       if (mounted) {
@@ -148,29 +150,6 @@ class ProjectAudiosState extends State<ProjectAudios> {
 
   bool isPaused = false;
   bool isStopped = false;
-
-  void _showPlaybackDialog() {
-    showDialog(
-        context: context,
-        barrierDismissible: false,
-        builder: (ctx) => AlertDialog(
-              title: Text(
-                "Critical App Message",
-                style: myTextStyleLarge(ctx),
-              ),
-              content: Text(
-                '',
-                style: myTextStyleMedium(ctx),
-              ),
-              shape: getRoundedBorder(radius: 16),
-              actions: <Widget>[
-                TextButton(
-                  onPressed: () {},
-                  child: const Text("Exit the App"),
-                ),
-              ],
-            ));
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -334,132 +313,134 @@ class ProjectAudiosState extends State<ProjectAudios> {
                       child: Card(
                         elevation: 16,
                         shape: getRoundedBorder(radius: 16),
-                        child: Column(
-                          children: [
-                            const SizedBox(
-                              height: 24,
-                            ),
-                            _loading
-                                ? const SizedBox(
-                                    width: 20,
-                                    height: 20,
-                                    child: CircularProgressIndicator(
-                                      strokeWidth: 4,
-                                      backgroundColor: Colors.pink,
+                        child: SingleChildScrollView(
+                          child: Column(
+                            children: [
+                              const SizedBox(
+                                height: 24,
+                              ),
+                              _loading
+                                  ? const SizedBox(
+                                      width: 20,
+                                      height: 20,
+                                      child: CircularProgressIndicator(
+                                        strokeWidth: 4,
+                                        backgroundColor: Colors.pink,
+                                      ),
+                                    )
+                                  : Text(
+                                      'Audio Report',
+                                      style: myTextStyleMediumBold(context),
                                     ),
-                                  )
-                                : Text(
-                                    'Audio Report',
-                                    style: myTextStyleMediumBold(context),
+                              const SizedBox(
+                                height: 20,
+                              ),
+                              Text(
+                                getFormattedDateShortWithTime(
+                                    _selectedAudio!.created!, context),
+                                style: myTextStyleSmall(context),
+                              ),
+                              const SizedBox(
+                                height: 16,
+                              ),
+                              duration == null
+                                  ? const SizedBox()
+                                  : Row(
+                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      children: [
+                                        Text(
+                                          getHourMinuteSecond(_currentPosition),
+                                          style: GoogleFonts.secularOne(
+                                              textStyle: Theme.of(context)
+                                                  .textTheme
+                                                  .bodyLarge,
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 20,
+                                              color:
+                                                  Theme.of(context).primaryColor),
+                                        ),
+                                        const SizedBox(
+                                          width: 8,
+                                        ),
+                                        Text(
+                                          'of',
+                                          style: myTextStyleTiny(context),
+                                        ),
+                                        const SizedBox(
+                                          width: 8,
+                                        ),
+                                        Text(
+                                          '$stringDuration',
+                                          style: myTextStyleTiny(context),
+                                        ),
+                                      ],
+                                    ),
+                              const SizedBox(
+                                height: 32,
+                              ),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Text(
+                                    'Made By:',
+                                    style: myTextStyleTiny(context),
                                   ),
-                            const SizedBox(
-                              height: 24,
-                            ),
-                            Text(
-                              getFormattedDateShortWithTime(
-                                  _selectedAudio!.created!, context),
-                              style: myTextStyleSmall(context),
-                            ),
-                            const SizedBox(
-                              height: 16,
-                            ),
-                            duration == null
-                                ? const SizedBox()
-                                : Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      Text(
-                                        getHourMinuteSecond(_currentPosition),
-                                        style: GoogleFonts.secularOne(
-                                            textStyle: Theme.of(context)
-                                                .textTheme
-                                                .bodySmall,
-                                            fontWeight: FontWeight.normal,
-                                            fontSize: 12,
-                                            color:
-                                                Theme.of(context).primaryColor),
-                                      ),
-                                      const SizedBox(
-                                        width: 8,
-                                      ),
-                                      Text(
-                                        'of',
-                                        style: myTextStyleTiny(context),
-                                      ),
-                                      const SizedBox(
-                                        width: 8,
-                                      ),
-                                      Text(
-                                        '$stringDuration',
-                                        style: myTextStyleTiny(context),
-                                      ),
-                                    ],
+                                  const SizedBox(
+                                    width: 8,
                                   ),
-                            const SizedBox(
-                              height: 48,
-                            ),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Text(
-                                  'Made By:',
-                                  style: myTextStyleTiny(context),
-                                ),
-                                const SizedBox(
-                                  width: 8,
-                                ),
-                                Text(
-                                  '${_selectedAudio!.userName}',
-                                  style: myTextStyleTiny(context),
-                                ),
-                              ],
-                            ),
-                            const SizedBox(
-                              height: 28,
-                            ),
-                            Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 28.0),
-                                  child: PlaybackControls(
-                                    onPlay: () {
-                                      if (isStopped) {
-                                        _playAudio();
-                                      } else {
-                                        audioPlayer.play();
-                                      }
-                                      isStopped = false;
-                                    },
-                                    onPause: () {
-                                      audioPlayer.pause();
-                                      isStopped = false;
-                                    },
-                                    onStop: () {
-                                      audioPlayer.stop();
-                                      isStopped = true;
-                                    },
+                                  Text(
+                                    '${_selectedAudio!.userName}',
+                                    style: myTextStyleTiny(context),
                                   ),
-                                ),
-                                const SizedBox(
-                                  width: 48,
-                                ),
-                                TextButton(
-                                    onPressed: () {
-                                      setState(() {
-                                        _showAudioPlayer = false;
-                                        _selectedAudio = null;
-                                      });
-                                      audioPlayer.stop();
-                                    },
-                                    child: const Text('Close')),
-                              ],
-                            ),
-                            const SizedBox(
-                              height: 32,
-                            ),
-                          ],
+                                ],
+                              ),
+                              const SizedBox(
+                                height: 28,
+                              ),
+                              Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 28.0),
+                                    child: PlaybackControls(
+                                      onPlay: () {
+                                        if (isStopped) {
+                                          _playAudio();
+                                        } else {
+                                          audioPlayer.play();
+                                        }
+                                        isStopped = false;
+                                      },
+                                      onPause: () {
+                                        audioPlayer.pause();
+                                        isStopped = false;
+                                      },
+                                      onStop: () {
+                                        audioPlayer.stop();
+                                        isStopped = true;
+                                      },
+                                    ),
+                                  ),
+                                  const SizedBox(
+                                    width: 48,
+                                  ),
+                                  TextButton(
+                                      onPressed: () {
+                                        setState(() {
+                                          _showAudioPlayer = false;
+                                          _selectedAudio = null;
+                                        });
+                                        audioPlayer.stop();
+                                      },
+                                      child: const Text('Close')),
+                                ],
+                              ),
+                              const SizedBox(
+                                height: 32,
+                              ),
+                            ],
+                          ),
                         ),
                       ))
                   : const SizedBox(),
@@ -468,167 +449,6 @@ class ProjectAudiosState extends State<ProjectAudios> {
           );
   }
 
-  // onPlay() {
-  //   pp('$mm ... playing after pause? - should not start from beginning');
-  //   audioPlayer.play();
-  // }
-  //
-  // onPause() {
-  //   pp('$mm ... player has been paused .............');
-  //   audioPlayer.pause();
-  // }
-  //
-  // onStop() {
-  //   pp('$mm ... player has been stopped .............');
-  //   audioPlayer.stop();
-  // }
-  //
-  // onClose() {
-  //   setState(() {
-  //     _showAudioPlayer = false;
-  //     _currentPosition = const Duration(seconds: 0);
-  //   });
-  // }
-}
-
-class AudioPlaybackCard extends StatelessWidget {
-  const AudioPlaybackCard(
-      {Key? key,
-      required this.loading,
-      required this.selectedAudio,
-      required this.duration,
-      required this.currentPosition,
-      required this.onPlay,
-      required this.onPause,
-      required this.onStop,
-      required this.onClose})
-      : super(key: key);
-
-  final bool loading;
-  final Audio selectedAudio;
-  final Duration duration, currentPosition;
-  final Function onPlay;
-  final Function onPause;
-  final Function onStop;
-  final Function onClose;
-
-  @override
-  Widget build(BuildContext context) {
-    var stringDuration = getHourMinuteSecond(duration);
-    return Card(
-      elevation: 8,
-      shape: getRoundedBorder(radius: 16),
-      child: Column(
-        children: [
-          const SizedBox(
-            height: 24,
-          ),
-          loading
-              ? const SizedBox(
-                  width: 20,
-                  height: 20,
-                  child: CircularProgressIndicator(
-                    strokeWidth: 4,
-                    backgroundColor: Colors.pink,
-                  ),
-                )
-              : Text(
-                  'Audio Report',
-                  style: myTextStyleMediumBold(context),
-                ),
-          const SizedBox(
-            height: 24,
-          ),
-          Text(
-            getFormattedDateShortWithTime(selectedAudio.created!, context),
-            style: myTextStyleSmall(context),
-          ),
-          const SizedBox(
-            height: 16,
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text(
-                getHourMinuteSecond(currentPosition),
-                style: GoogleFonts.secularOne(
-                    textStyle: Theme.of(context).textTheme.bodySmall,
-                    fontWeight: FontWeight.normal,
-                    fontSize: 12,
-                    color: Theme.of(context).primaryColor),
-              ),
-              const SizedBox(
-                width: 8,
-              ),
-              Text(
-                'of',
-                style: myTextStyleTiny(context),
-              ),
-              const SizedBox(
-                width: 8,
-              ),
-              Text(
-                stringDuration,
-                style: myTextStyleTiny(context),
-              ),
-            ],
-          ),
-          const SizedBox(
-            height: 48,
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text(
-                'Made By:',
-                style: myTextStyleTiny(context),
-              ),
-              const SizedBox(
-                width: 8,
-              ),
-              Text(
-                '${selectedAudio.userName}',
-                style: myTextStyleTiny(context),
-              ),
-            ],
-          ),
-          const SizedBox(
-            height: 28,
-          ),
-          Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 28.0),
-                child: PlaybackControls(
-                  onPlay: () {
-                    onPlay();
-                  },
-                  onPause: () {
-                    onPause();
-                  },
-                  onStop: () {
-                    onStop();
-                  },
-                ),
-              ),
-              const SizedBox(
-                width: 48,
-              ),
-              TextButton(
-                  onPressed: () {
-                    onClose();
-                  },
-                  child: const Text('Close')),
-            ],
-          ),
-          const SizedBox(
-            height: 32,
-          ),
-        ],
-      ),
-    );
-  }
 }
 
 class PlaybackControls extends StatelessWidget {
