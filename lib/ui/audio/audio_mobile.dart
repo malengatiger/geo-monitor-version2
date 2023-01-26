@@ -415,7 +415,7 @@ class AudioMobileState extends State<AudioMobile>
               right: 16,
               child: Padding(
                 padding: const EdgeInsets.all(12.0),
-                child: PlayControls(
+                child: RecordingControls(
                   onPlay: _onPlay,
                   onPause: _onPause,
                   onStop: _onStop,
@@ -473,8 +473,8 @@ class AudioMobileState extends State<AudioMobile>
 }
 
 
-class PlayControls extends StatelessWidget {
-  const PlayControls(
+class RecordingControls extends StatelessWidget {
+  const RecordingControls(
       {Key? key,
       required this.onPlay,
       required this.onPause,

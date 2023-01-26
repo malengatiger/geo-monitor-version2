@@ -637,7 +637,6 @@ String getHourMinuteSecond(Duration duration) {
   String twoDigitMinutes = twoDigits(duration.inMinutes.remainder(60));
   String twoDigitSeconds = twoDigits(duration.inSeconds.remainder(60));
   var s = "${twoDigits(duration.inHours)}:$twoDigitMinutes:$twoDigitSeconds";
-  pp('🌿🌿🌿 stringDuration: $s');
   return s;
 }
 
