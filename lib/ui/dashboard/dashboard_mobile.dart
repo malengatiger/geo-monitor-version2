@@ -182,13 +182,13 @@ class DashboardMobileState extends State<DashboardMobile>
 
   void _subscribeToGeofenceStream() async {
     geofenceSubscription = geofencerTwo.geofenceEventStream.listen((event) {
-      pp('\n$mm geofenceEvent delivered by geofenceStream: ${event.toJson()} ...');
-      if (mounted) {
-        showToast(
-            message:
-                'Geofence triggered: ${event.projectName} projectPositionId: ${event.projectPositionId}',
-            context: context);
-      }
+      pp('\n$mm geofenceEvent delivered by geofenceStream: ${event.projectName} ...');
+      // if (mounted) {
+      //   showToast(
+      //       message:
+      //           'Geofence triggered for ${event.projectName}',
+      //       context: context);
+      // }
     });
   }
 

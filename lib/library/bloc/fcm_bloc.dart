@@ -79,25 +79,25 @@ class FCMBloc {
       messaging.setAutoInitEnabled(true);
       messaging.onTokenRefresh.listen((newToken) {
         pp("$mm onTokenRefresh: 🍎 🍎 🍎 update user: token: $newToken ... 🍎 🍎 ");
-        _updateUser(newToken);
+        // _updateUser(newToken);
       });
 
       // initialise the plugin. app_icon needs to be a added as a drawable resource to the Android head project
       const AndroidInitializationSettings initializationSettingsAndroid =
-          AndroidInitializationSettings('app_icon');
+      AndroidInitializationSettings('app_icon');
 
       final DarwinInitializationSettings initializationSettingsDarwin =
-          DarwinInitializationSettings(
-              onDidReceiveLocalNotification: onDidReceiveLocalNotification);
+      DarwinInitializationSettings(
+          onDidReceiveLocalNotification: onDidReceiveLocalNotification);
 
       const LinuxInitializationSettings initializationSettingsLinux =
-          LinuxInitializationSettings(defaultActionName: 'Open notification');
+      LinuxInitializationSettings(defaultActionName: 'Open notification');
 
       final InitializationSettings initializationSettings =
-          InitializationSettings(
-              android: initializationSettingsAndroid,
-              iOS: initializationSettingsDarwin,
-              linux: initializationSettingsLinux);
+      InitializationSettings(
+          android: initializationSettingsAndroid,
+          iOS: initializationSettingsDarwin,
+          linux: initializationSettingsLinux);
 
       FlutterLocalNotificationsPlugin().initialize(initializationSettings,
           onDidReceiveNotificationResponse: onDidReceiveNotificationResponse);
@@ -111,23 +111,12 @@ class FCMBloc {
       });
 
       FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
-        pp('$mm onMessageOpenedApp:  🍎 🍎 A new onMessageOpenedApp event was published! ${message.data}');
+        pp(
+            '$mm onMessageOpenedApp:  🍎 🍎 A new onMessageOpenedApp event was published! ${message
+                .data}');
       });
 
       await subscribeToTopics();
-
-      if (user != null) {
-        var token = await messaging.getToken();
-        if (token != user!.fcmRegistration) {
-          try {
-            await _updateUser(token!);
-          } catch (e) {
-            pp('$mm 🚨 🚨 🚨 🚨 🚨 🚨 Cannot update the user token ... important for direct device notification only');
-          }
-        }
-      }
-    } else {
-      pp('App is running on the web - 👿 👿 👿 firebase messaging NOT initialized 👿 👿 👿 ');
     }
   }
 
@@ -266,14 +255,14 @@ class FCMBloc {
     organizationBloc.userController.sink.add(list);
   }
 
-  Future _updateUser(String newToken) async {
-    if (user != null) {
-      pp("$mm updateUser: 🍎🍎🍎🍎🍎🍎🍎🍎 USER: 🍎 ${user!.toJson()} ... 🍎🍎 ");
-      user!.fcmRegistration = newToken;
-      await DataAPI.updateUser(user!);
-      await Prefs.saveUser(user!);
-    }
-  }
+  // Future _updateUser(String newToken) async {
+  //   if (user != null) {
+  //     pp("$mm updateUser: 🍎🍎🍎🍎🍎🍎🍎🍎 USER: 🍎 ${user!.toJson()} ... 🍎🍎 ");
+  //     user!.fcmRegistration = newToken;
+  //     await DataAPI.updateUser(user!);
+  //     await Prefs.saveUser(user!);
+  //   }
+  // }
 
   void onDidReceiveNotificationResponse(NotificationResponse details) {
   pp('$mm onDidReceiveNotificationResponse ... details: ${details.payload}');

@@ -77,14 +77,13 @@ class GeofencerTwo {
         await addGeofence(projectPosition: pos);
       }
 
-      pp("$mm $xx  Geofence.startListening with instance of 💠 GeofenceStatusChangeListener 💠 ");
       geofenceService.addGeofenceList(_geofenceList);
 
       geofenceService.addGeofenceStatusChangeListener(
           (geofence, geofenceRadius, geofenceStatus, location) async {
-        pp('\n\n$mm $xx GeofenceStatusChangeListener 💠 FIRED!! '
-            '🔵 🔵 🔵 🔵 🔵  id: ${geofence.id} 🔵 geofenceStatus: ${geofenceStatus.name} ');
-        pp('$mm geofence: ${geofence.toJson()}');
+        pp('$xx Geofence Listener 💠 FIRED!! '
+            '🔵 🔵 🔵 geofenceStatus: ${geofenceStatus.name}  at ${geofence.data['projectName']}');
+        // pp('$mm geofence: ${geofence.toJson()}');
         pp('$mm geofenceRadius: ${geofenceRadius.toJson()}');
         pp('$mm geofenceStatus: ${geofenceStatus.toString()}');
 
@@ -120,7 +119,7 @@ class GeofencerTwo {
       required GeofenceRadius geofenceRadius,
       required GeofenceStatus geofenceStatus,
       required Location location}) async {
-    pp('\n\n$mm $xx _processing new GeofenceEvent; data:  🔵 ${geofence.data} '
+    pp('$mm $xx _processing new GeofenceEvent;  🔵 ${geofence.data['projectName']} '
         '🔵 with geofenceStatus: ${geofenceStatus.toString()}');
 
     var event = GeofenceEvent(
@@ -136,21 +135,28 @@ class GeofencerTwo {
     switch (status) {
       case 'GeofenceStatus.ENTER':
         event.status = 'ENTER';
+        pp('$mm IGNORING geofence ENTER event for ${event.projectName}');
         break;
       case 'GeofenceStatus.DWELL':
         event.status = 'DWELL';
+        var gfe = await DataAPI.addGeofenceEvent(event);
+        pp('$mm $xx geofence event added to database for ${event.projectName}');
+        _streamController.sink.add(gfe);
         break;
       case 'GeofenceStatus.EXIT':
         event.status = 'EXIT';
+        var gfe = await DataAPI.addGeofenceEvent(event);
+        pp('$mm $xx geofence event added to database for ${event.projectName}');
+        _streamController.sink.add(gfe);
         break;
     }
 
-    var gfe = await DataAPI.addGeofenceEvent(event);
-    pp('$mm $xx geofence event added to database');
-    _streamController.sink.add(gfe);
+
+
   }
 
   Future addGeofence({required ProjectPosition projectPosition}) async {
+    projectPosition.nearestCities = [];
     var fence = Geofence(
       id: projectPosition.projectPositionId!,
       data: projectPosition.toJson(),
@@ -158,7 +164,7 @@ class GeofencerTwo {
       longitude: projectPosition.position!.coordinates[0],
       radius: [
         GeofenceRadius(id: 'radius_150m', length: 150),
-        GeofenceRadius(id: 'radius_100m', length: 100),
+        // GeofenceRadius(id: 'radius_100m', length: 100),
       ],
     );
 
