@@ -1,7 +1,7 @@
 import 'dart:convert';
 
 import 'package:crypto/crypto.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart' as DotEnv;
+import 'package:flutter_dotenv/flutter_dotenv.dart' as dot;
 import 'package:http/http.dart' as http;
 
 import '../functions.dart';
@@ -75,7 +75,7 @@ class OzowPaymentRequest {
   }
 
   static String generateOzowHash(OzowPaymentRequest request) {
-    String? privateKey = DotEnv.dotenv.env['ozowPrivateKey'];
+    String? privateKey = dot.dotenv.env['ozowPrivateKey'];
     StringBuffer sb = StringBuffer();
     sb.write(request.siteCode);
     sb.write(request.countryCode);
@@ -105,7 +105,7 @@ class OzowPaymentRequest {
     'Accept': 'application/json',
   };
   static Future postPaymentRequest(OzowPaymentRequest request) async {
-    var mUrl = DotEnv.dotenv.env['ozowUrl'];
+    var mUrl = dot.dotenv.env['ozowUrl'];
     pp('\n\n🏈 🏈 🏈 🏈 🏈 OzowPaymentRequest Post:  🔆 🔆 🔆 🔆 calling : 💙  $mUrl  💙 ');
 
     var mBag = json.encode(request);

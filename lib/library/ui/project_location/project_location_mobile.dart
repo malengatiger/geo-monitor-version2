@@ -1,5 +1,5 @@
 import 'package:animations/animations.dart';
-import 'package:badges/badges.dart';
+import 'package:badges/badges.dart' as bd;
 import 'package:flutter/material.dart';
 
 import 'package:geocoding/geocoding.dart';
@@ -150,7 +150,7 @@ class ProjectLocationMobileState extends State<ProjectLocationMobile>
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
             duration: const Duration(seconds: 5),
-            backgroundColor: Theme.of(context).errorColor,
+            backgroundColor: Theme.of(context).colorScheme.error,
             content: Text('There is a project location here already for ${widget.project.name}',
               style: myTextStyleMedium(context),)));
       }
@@ -340,12 +340,13 @@ class ProjectLocationMobileState extends State<ProjectLocationMobile>
                 child: child,
               );
             },
-            child: Badge(
+            child: bd.Badge(
               badgeContent: Text('${_projectPositions.length + _projectPolygons.length}'),
-              badgeColor: Colors.pink,
-              elevation: 8,
-              position: BadgePosition.topEnd(top: -8, end: 16),
-              padding: const EdgeInsets.all(8.0),
+              badgeStyle:  bd.BadgeStyle(
+                badgeColor: Theme.of(context).primaryColor,
+                elevation: 8, padding: const EdgeInsets.all(8),
+              ),
+              position: bd.BadgePosition.topEnd(top: -8, end: 16),
               child: Card(
                 elevation: 4,
                 shape: RoundedRectangleBorder(

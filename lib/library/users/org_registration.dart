@@ -79,7 +79,7 @@ class OrgRegistrationPageState extends State<OrgRegistrationPage>
               busy = false;
             });
             showToast(
-                backgroundColor: Theme.of(context).backgroundColor,
+                backgroundColor: Theme.of(context).colorScheme.background,
                 textStyle: myTextStyleMedium(context),
                 message: 'Verification completed. Thank you!',
                 duration: const Duration(seconds: 5),
@@ -94,7 +94,7 @@ class OrgRegistrationPageState extends State<OrgRegistrationPage>
               busy = false;
             });
             showToast(
-                backgroundColor: Theme.of(context).errorColor,
+                backgroundColor: Theme.of(context).colorScheme.background,
                 textStyle: const TextStyle(color: Colors.white),
                 message: 'Verification failed. Please try later',
                 duration: const Duration(seconds: 5),
@@ -132,7 +132,7 @@ class OrgRegistrationPageState extends State<OrgRegistrationPage>
     if (country == null) {
       showToast(
           duration: const Duration(seconds: 2),
-          backgroundColor: Theme.of(context).errorColor,
+          backgroundColor: Theme.of(context).colorScheme.background,
           message: 'Please select country',
           context: context);
       setState(() {
@@ -143,7 +143,7 @@ class OrgRegistrationPageState extends State<OrgRegistrationPage>
     if (code == null || code!.isEmpty) {
       showToast(
           duration: const Duration(seconds: 2),
-          backgroundColor: Theme.of(context).errorColor,
+          backgroundColor: Theme.of(context).colorScheme.error,
           textStyle: const TextStyle(color: Colors.white),
           toastGravity: ToastGravity.CENTER,
           message: 'Please put in the code that was sent to you',
@@ -446,12 +446,12 @@ class OrgRegistrationPageState extends State<OrgRegistrationPage>
                                                 fieldHeight: 50,
                                                 fieldWidth: 40,
                                                 activeFillColor: Theme.of(context)
-                                                    .backgroundColor,
+                                                    .colorScheme.background,
                                               ),
                                               animationDuration: const Duration(
                                                   milliseconds: 300),
                                               backgroundColor: Theme.of(context)
-                                                  .backgroundColor,
+                                                  .colorScheme.background,
                                               enableActiveFill: true,
                                               errorAnimationController:
                                                   errorController,

@@ -4,7 +4,6 @@ import 'package:dots_indicator/dots_indicator.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart' as fb;
 import 'package:geo_monitor/library/generic_functions.dart';
-import 'package:geo_monitor/main.dart';
 import 'package:page_transition/page_transition.dart';
 
 

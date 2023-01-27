@@ -1,5 +1,5 @@
 import 'package:animations/animations.dart';
-import 'package:badges/badges.dart';
+import 'package:badges/badges.dart' as bd;
 import 'package:flutter/material.dart';
 
 import '../../api/data_api.dart';
@@ -110,12 +110,16 @@ class ProjectChooserState extends State<ProjectChooser>
                                 child: child,
                               );
                             },
-                            child: Badge(
+                            child: bd.Badge(
                               badgeContent: Text('${projects.length}',
                                 style: myTextStyleSmall(context),),
-                              position: BadgePosition.topEnd(top: -12, end: 10),
-                              badgeColor: Theme.of(context).primaryColor,
-                              padding: const EdgeInsets.all(8.0),
+                              badgeStyle:  bd.BadgeStyle(
+                                badgeColor: Theme.of(context).primaryColor,
+                                elevation: 8, padding: const EdgeInsets.all(8),
+                              ),
+                              position: bd.BadgePosition.topEnd(top: -12, end: 10),
+                              // badgeColor: Theme.of(context).primaryColor,
+                              // padding: const EdgeInsets.all(8.0),
                               child: ListView.builder(
                                   itemCount: projects.length,
                                   itemBuilder: (_, index) {

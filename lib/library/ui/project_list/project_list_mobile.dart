@@ -1,11 +1,10 @@
 import 'dart:async';
 
 import 'package:animations/animations.dart';
-import 'package:badges/badges.dart';
+import 'package:badges/badges.dart' as bd;
 import 'package:flutter/material.dart';
 import 'package:focused_menu/focused_menu.dart';
 import 'package:focused_menu/modals.dart';
-import 'package:geo_monitor/library/bloc/admin_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:map_launcher/map_launcher.dart';
 
@@ -13,6 +12,7 @@ import 'package:page_transition/page_transition.dart';
 import '../../../ui/audio/audio_mobile.dart';
 import '../../../ui/dashboard/dashboard_mobile.dart';
 import '../../api/sharedprefs.dart';
+import '../../bloc/admin_bloc.dart';
 import '../../bloc/fcm_bloc.dart';
 import '../../bloc/organization_bloc.dart';
 import '../../bloc/project_bloc.dart';
@@ -157,13 +157,13 @@ class ProjectListMobileState extends State<ProjectListMobile>
   void _setUserType() {
     setState(() {
       switch (user!.userType) {
-        case FIELD_MONITOR:
+        case UserType.fieldMonitor:
           userTypeLabel = 'Field Monitor';
           break;
-        case ORG_ADMINISTRATOR:
+        case UserType.orgAdministrator:
           userTypeLabel = 'Administrator';
           break;
-        case ORG_EXECUTIVE:
+        case UserType.orgExecutive:
           userTypeLabel = 'Executive';
           break;
       }
@@ -212,7 +212,7 @@ class ProjectListMobileState extends State<ProjectListMobile>
 
   bool openProjectActions = false;
   void _navigateToDetail(Project? p) {
-    if (user!.userType == FIELD_MONITOR) {
+    if (user!.userType == UserType.fieldMonitor) {
       Navigator.push(
           context,
           PageTransition(
@@ -221,7 +221,7 @@ class ProjectListMobileState extends State<ProjectListMobile>
               duration: const Duration(milliseconds: 1500),
               child: ProjectEditMobile(p)));
     }
-    if (user!.userType! == ORG_ADMINISTRATOR) {
+    if (user!.userType! == UserType.orgAdministrator || user!.userType == UserType.orgExecutive) {
       Navigator.push(
           context,
           PageTransition(
@@ -465,7 +465,7 @@ class ProjectListMobileState extends State<ProjectListMobile>
             _navigateToMonitorStart(project);
           }),
     );
-    if (user!.userType == ORG_ADMINISTRATOR) {
+    if (user!.userType == UserType.orgAdministrator) {
       menuItems.add(FocusedMenuItem(
           title: Text('Add Project Location',
               style: myTextStyleSmallBlack(context)),
@@ -551,7 +551,7 @@ class ProjectListMobileState extends State<ProjectListMobile>
       );
     }
     if (user != null) {
-      if (user!.userType == ORG_ADMINISTRATOR) {
+      if (user!.userType == UserType.orgAdministrator) {
         list.add(
           IconButton(
             icon: Icon(
@@ -698,16 +698,19 @@ class ProjectListMobileState extends State<ProjectListMobile>
                 children: [
                   GestureDetector(
                     onTap: _sort,
-                    child: Badge(
+                    child: bd.Badge(
+                      badgeStyle:  bd.BadgeStyle(
+                        badgeColor: Theme.of(context).primaryColor,
+                        elevation: 8, padding: const EdgeInsets.all(8),
+                      ),
                       position:
-                      BadgePosition.topEnd(top: -8, end: -2),
+                      bd.BadgePosition.topEnd(top: -8, end: -2),
                       badgeContent: Padding(
                         padding: const EdgeInsets.all(4.0),
                         child: Text('${projects.length}',
                             style: myNumberStyleSmall(context)),
                       ),
-                      badgeColor: Theme.of(context).primaryColor,
-                      elevation: 8,
+
                       child: AnimatedBuilder(
                         animation: _animationController,
                         builder: (BuildContext context,

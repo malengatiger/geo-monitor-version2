@@ -115,7 +115,7 @@ class SchedulesListMobileState extends State<SchedulesListMobile>
             _navigateToUserMediaListMobile();
           }),
     );
-    if (_user!.userType == ORG_ADMINISTRATOR) {
+    if (_user!.userType == UserType.orgAdministrator) {
       menuItems.add(FocusedMenuItem(
           title: const Text('Add Project Location'),
           trailingIcon: Icon(
@@ -126,7 +126,7 @@ class SchedulesListMobileState extends State<SchedulesListMobile>
             //_navigateToProjectLocation(p);
           }));
     }
-    if (_user!.userType == ORG_ADMINISTRATOR) {
+    if (_user!.userType == UserType.orgAdministrator) {
       menuItems.add(FocusedMenuItem(
           title: const Text('Edit Project'),
           trailingIcon: Icon(

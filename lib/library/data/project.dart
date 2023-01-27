@@ -6,7 +6,7 @@ import 'community.dart';
 import '../data/video.dart';
 import '../data/photo.dart';
 import '../data/project_position.dart';
-import '../data/ratingContent.dart';
+import '../data/rating_content.dart';
 import '../data/monitor_report.dart';
 
 part 'project.g.dart';

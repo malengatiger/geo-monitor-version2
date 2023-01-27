@@ -1,5 +1,4 @@
 import 'package:hive/hive.dart';
-import '../data/position.dart';
 part 'location_request.g.dart';
 /*
 private String organizationId, created, administratorId, response;

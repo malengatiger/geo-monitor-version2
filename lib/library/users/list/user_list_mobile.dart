@@ -1,5 +1,5 @@
 import 'package:animations/animations.dart';
-import 'package:badges/badges.dart';
+import 'package:badges/badges.dart' as bd;
 import 'package:flutter/material.dart';
 import 'package:flutter_libphonenumber/flutter_libphonenumber.dart';
 import 'package:focused_menu/focused_menu.dart';
@@ -287,14 +287,16 @@ class UserListMobileState extends State<UserListMobile>
                       height: 48,
                     ),
                     Expanded(
-                      child: Badge(
+                      child: bd.Badge(
                         badgeContent: Text(
                           '${_users.length}',
                           style: myTextStyleSmallBlack(context),
                         ),
-                        badgeColor: Theme.of(context).primaryColor,
-                        padding: const EdgeInsets.all(8.0),
-                        position: const BadgePosition(top: -16, end: 12),
+                        badgeStyle:  bd.BadgeStyle(
+                          badgeColor: Theme.of(context).primaryColor,
+                          elevation: 8, padding: const EdgeInsets.all(8),
+                        ),
+                        position:  bd.BadgePosition.topEnd(top: -16, end: 12),
                         child: AnimatedBuilder(
                           animation: _animationController,
                           builder: (BuildContext context, Widget? child) {

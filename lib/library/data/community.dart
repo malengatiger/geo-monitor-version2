@@ -2,7 +2,7 @@ import 'package:hive/hive.dart';
 
 import '../data/city.dart';
 import '../data/photo.dart';
-import '../data/ratingContent.dart';
+import '../data/rating_content.dart';
 import '../data/position.dart';
 import '../data/video.dart';
 part 'community.g.dart';

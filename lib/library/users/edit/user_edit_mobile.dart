@@ -123,13 +123,15 @@ class UserEditMobileState extends State<UserEditMobile>
                 '${mUser.toJson()}\b');
             gender = null;
             type = null;
-            showToast(
-                message: 'User created: ${user.name}',
-                context: context,
-                backgroundColor: Colors.teal,
-                textStyle: Styles.whiteSmall,
-                toastGravity: ToastGravity.TOP,
-                duration: const Duration(seconds: 5));
+            if (mounted) {
+              showToast(
+                  message: 'User created: ${user.name}',
+                  context: context,
+                  backgroundColor: Colors.teal,
+                  textStyle: Styles.whiteSmall,
+                  toastGravity: ToastGravity.TOP,
+                  duration: const Duration(seconds: 5));
+            }
 
             await organizationBloc.getUsers(
                 organizationId: user.organizationId!, forceRefresh: true);
@@ -177,16 +179,16 @@ class UserEditMobileState extends State<UserEditMobile>
 
   void _setTypeRadio() {
     if (widget.user != null) {
-      if (widget.user!.userType == FIELD_MONITOR) {
-        type = FIELD_MONITOR;
+      if (widget.user!.userType == UserType.fieldMonitor) {
+        type = UserType.fieldMonitor;
         userType = 0;
       }
-      if (widget.user!.userType == ORG_ADMINISTRATOR) {
-        type = ORG_ADMINISTRATOR;
+      if (widget.user!.userType == UserType.orgAdministrator) {
+        type = UserType.orgAdministrator;
         userType = 1;
       }
-      if (widget.user!.userType == ORG_EXECUTIVE) {
-        type = ORG_EXECUTIVE;
+      if (widget.user!.userType == UserType.orgExecutive) {
+        type = UserType.orgExecutive;
         userType = 2;
       }
     }
@@ -437,15 +439,15 @@ class UserEditMobileState extends State<UserEditMobile>
     setState(() {
       switch (value) {
         case 0:
-          type = FIELD_MONITOR;
+          type = UserType.fieldMonitor;
           userType = 0;
           break;
         case 1:
-          type = ORG_ADMINISTRATOR;
+          type = UserType.orgAdministrator;
           userType = 1;
           break;
         case 2:
-          type = ORG_EXECUTIVE;
+          type = UserType.orgExecutive;
           userType = 2;
           break;
       }

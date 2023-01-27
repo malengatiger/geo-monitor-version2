@@ -18,9 +18,9 @@ class QuestionnaireResponse {
   Map<String, dynamic> toJson() {
     List mSecs = [];
     if (sections != null) {
-      sections!.forEach((s) {
+      for (var s in sections!) {
         mSecs.add(s.toJson());
-      });
+      }
     }
 
     Map<String, dynamic> map = {

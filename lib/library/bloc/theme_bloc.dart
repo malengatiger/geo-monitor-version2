@@ -8,7 +8,6 @@ import 'package:flutter/material.dart';
 import '../api/sharedprefs.dart';
 import '../emojis.dart';
 import '../functions.dart';
-import '../generic_functions.dart';
 
 final ThemeBloc themeBloc = ThemeBloc();
 

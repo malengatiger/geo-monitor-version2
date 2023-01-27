@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_settings_screens/flutter_settings_screens.dart';
 import 'package:geo_monitor/library/functions.dart';
@@ -19,26 +18,6 @@ class AppSettingsState extends State<AppSettings>
     animationController = AnimationController(vsync: this);
     super.initState();
   }
-
-  Widget _buildPreferenceSwitch(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-      children: <Widget>[
-        const Text('Shared Pref'),
-        Switch(
-            activeColor: Theme.of(context).primaryColor,
-            value: true,
-            onChanged: (newVal) {
-              if (kIsWeb) {
-                return;
-              }
-              setState(() {});
-            }),
-        const Text('SharedPrefs Storage'),
-      ],
-    );
-  }
-
 
   @override
   void dispose() {

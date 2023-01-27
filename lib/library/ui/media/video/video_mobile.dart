@@ -194,5 +194,4 @@ class VideoMobileState extends State<VideoMobile>
     );
   }
 
-  TargetPlatform? _platform;
 }

@@ -32,7 +32,6 @@ import 'library/bloc/write_failed_media.dart';
 import 'library/emojis.dart';
 import 'library/functions.dart';
 import 'library/hive_util.dart';
-import 'library/ui/camera/play_video_chewie.dart';
 import 'ui/intro_page_viewer.dart';
 
 int themeIndex = 0;
@@ -87,7 +86,10 @@ Future<void> _mainSetup() async {
   pp('$heartBlue DotEnv has been loaded');
 
   locationRequestHandler.sendLocationRequest();
-  locationRequestHandler.startTimer();
+  locationRequestHandler.startLocationRequestTimer();
+
+  locationRequestHandler.sendLocationResponse();
+  locationRequestHandler.startLocationResponseTimer();
 
   pp('${E.broccolli} Checking for current user : FirebaseAuth');
 
@@ -104,22 +106,22 @@ Future<void> initSettings() async {
   );
   //accentColor = ValueNotifier(Colors.blueAccent);
 }
-
+final mx = '${E.heartGreen}${E.heartGreen}${E.heartGreen}${E.heartGreen} main: ';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   firebaseApp = await Firebase.initializeApp(
       options: DefaultFirebaseOptions.currentPlatform);
-  pp('${E.heartGreen}${E.heartGreen}${E.heartGreen}'
+  pp('$mx'
       ' Firebase App has been initialized: ${firebaseApp.name}');
   user = await Prefs.getUser();
   if (user == null) {
-    pp('${E.redDot}${E.redDot}${E.redDot}${E.redDot} '
+    pp('$mx '
         'User from Prefs is null; ensure that firebase is signed out ...');
     if (fb.FirebaseAuth.instance.currentUser != null) {
       await fb.FirebaseAuth.instance.signOut();
     }
   } else {
-    pp('\n${E.heartGreen}${E.heartGreen} Prefs user available:: ${user!.toJson()}\n');
+    pp('\n$mx Prefs user available:: ${user!.toJson()}\n');
     try {
       String? token = await fb.FirebaseAuth.instance.currentUser?.getIdToken();
       if (token != null) {
@@ -196,7 +198,7 @@ class MyApp extends StatelessWidget {
                   ? const IntroPageViewer()
                   : const DashboardMain(),
               splashTransition: SplashTransition.fadeTransition,
-              pageTransitionType: PageTransitionType.topToBottom,
+              pageTransitionType: PageTransitionType.leftToRight,
               backgroundColor: Colors.pink.shade900,
             ),
           );

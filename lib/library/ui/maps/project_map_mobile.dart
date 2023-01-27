@@ -3,7 +3,7 @@ import 'dart:collection';
 import 'dart:math';
 
 import 'package:animations/animations.dart';
-import 'package:badges/badges.dart';
+import 'package:badges/badges.dart' as bd;
 import 'package:flutter/material.dart';
 import 'package:geo_monitor/library/api/sharedprefs.dart';
 import 'package:geo_monitor/library/bloc/organization_bloc.dart';
@@ -258,7 +258,7 @@ class ProjectMapMobileState extends State<ProjectMapMobile>
               duration: const Duration(seconds: 10),
               content: Card(
                   elevation: 8,
-                  color: Theme.of(context).errorColor,
+                  color: Theme.of(context).primaryColor,
                   child: const Padding(
                     padding: EdgeInsets.all(8.0),
                     child: Text(
@@ -384,13 +384,14 @@ class ProjectMapMobileState extends State<ProjectMapMobile>
                 _animateCamera(
                     latitude: loc.latitude, longitude: loc.longitude, zoom: 12.0);
               },
-              child: Badge(
-                badgeColor: Colors.pink,
+              child: bd.Badge(
+                badgeStyle:  bd.BadgeStyle(
+                  badgeColor: Theme.of(context).primaryColor,
+                  elevation: 8, padding: const EdgeInsets.all(8),
+                ),
                 badgeContent:
                     Text('${projectPositions.length + projectPolygons.length}'),
-                padding: const EdgeInsets.all(8.0),
-                position: BadgePosition.topEnd(top: 8, end: 8),
-                elevation: 8,
+                position: bd.BadgePosition.topEnd(top: 8, end: 8),
                 child: GoogleMap(
                   mapType: MapType.hybrid,
                   mapToolbarEnabled: true,

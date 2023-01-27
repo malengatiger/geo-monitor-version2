@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
 import 'package:responsive_builder/responsive_builder.dart';
-import '../../api/data_api.dart';
 import '../../data/user.dart';
 import '../../data/position.dart';
 import '../../functions.dart';
@@ -13,7 +12,7 @@ import 'field_monitor_map_tablet.dart';
 class FieldMonitorMapMain extends StatefulWidget {
   final User user;
 
-  const FieldMonitorMapMain(this.user);
+  const FieldMonitorMapMain(this.user, {super.key});
 
   @override
   FieldMonitorMapMainState createState() => FieldMonitorMapMainState();
@@ -22,7 +21,6 @@ class FieldMonitorMapMain extends StatefulWidget {
 class FieldMonitorMapMainState extends State<FieldMonitorMapMain> {
   var isBusy = false;
   final _key = GlobalKey<ScaffoldState>();
-  User? _updatedUser;
   @override
   void initState() {
     super.initState();
@@ -35,7 +33,6 @@ class FieldMonitorMapMainState extends State<FieldMonitorMapMain> {
     try {
       widget.user.position =
           Position(type: 'Point', coordinates: [longitude, latitude]);
-      _updatedUser = await DataAPI.updateUser(widget.user);
     } catch (e) {
       pp(e);
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Data refresh failed: $e')));

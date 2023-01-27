@@ -18,9 +18,9 @@ class Section {
     questions = [];
     if (data['questions'] != null) {
       List  list = data['questions'];
-      list.forEach((m) {
+      for (var m in list) {
         questions!.add(Question.fromJson(m));
-      });
+      }
     }
     description = data['description'];
 
@@ -28,9 +28,9 @@ class Section {
   Map<String, dynamic> toJson() {
     List mQuestions = [];
     if (questions != null) {
-      questions!.forEach((photo) {
+      for (var photo in questions!) {
         mQuestions.add(photo.toJson());
-      });
+      }
     }
 
     Map<String, dynamic> map = {

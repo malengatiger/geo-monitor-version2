@@ -21,7 +21,7 @@ class MonitorMessage extends StatefulWidget {
 }
 
 class MonitorMessageState extends State<MonitorMessage> {
-  String frequency = MONITOR_TWICE_A_DAY;
+  String frequency = monitorTwiceADay;
   bool isBusy = false;
   void _onRadioButtonSelected(String selected) {
     pp('MessageMobile :  🥦 🥦 🥦 _onRadioButtonSelected: 🍊 $selected 🍊');

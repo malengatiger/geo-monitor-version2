@@ -1,4 +1,4 @@
-import 'package:badges/badges.dart';
+import 'package:badges/badges.dart' as bd;
 import 'package:flutter/material.dart';
 
 import '../../api/data_api.dart';
@@ -116,12 +116,12 @@ class SchedulerMobileState extends State<SchedulerMobile>
                     children: [
                       Padding(
                         padding: const EdgeInsets.all(12.0),
-                        child: Badge(
-                          badgeColor: Theme.of(context).primaryColor,
-                          padding: const EdgeInsets.all(8.0),
-                          elevation: 8,
+                        child: bd.Badge(
+                          // badgeColor: Theme.of(context).primaryColor,
+                          // padding: const EdgeInsets.all(8.0),
+                          // elevation: 8,
                           badgeContent: Text('${_projects.length}', style: myTextStyleSmall(context),),
-                          position: BadgePosition.topEnd(top: -12, end: 12),
+                          position: bd.BadgePosition.topEnd(top: -12, end: 12),
                           child: ListView.builder(
                               itemCount: _projects.length,
                               itemBuilder: (context, index) {

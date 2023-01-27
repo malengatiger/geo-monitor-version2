@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:badges/badges.dart';
+import 'package:badges/badges.dart' as bd;
 import 'package:flutter/material.dart';
 import 'package:geo_monitor/library/emojis.dart';
 import 'package:geo_monitor/library/ui/ratings/rating_adder_mobile.dart';
@@ -204,15 +204,17 @@ class ProjectAudiosState extends State<ProjectAudios> {
                     ),
                   ),
                   Expanded(
-                      child: Badge(
-                    position: BadgePosition.topEnd(top: -8, end: 4),
-                    padding: const EdgeInsets.all(12.0),
+                      child: bd.Badge(
+                    position: bd.BadgePosition.topEnd(top: -8, end: 4),
+                        badgeStyle:  bd.BadgeStyle(
+                          badgeColor: Theme.of(context).primaryColor,
+                          elevation: 8, padding: const EdgeInsets.all(8),
+                        ),
                     badgeContent: Text(
                       '${audios.length}',
                       style: myTextStyleSmall(context),
                     ),
-                    badgeColor: Colors.teal.shade700,
-                    elevation: 16,
+
                     child: GridView.builder(
                         gridDelegate:
                             const SliverGridDelegateWithFixedCrossAxisCount(

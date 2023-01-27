@@ -1,4 +1,4 @@
-import 'package:badges/badges.dart';
+import 'package:badges/badges.dart' as bd;
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -82,15 +82,16 @@ class ProjectPhotosState extends State<ProjectPhotos> with SingleTickerProviderS
           ),
         ),
          Expanded(
-            child: Badge(
-              position: BadgePosition.topEnd(top: 4, end: 4),
-              padding: const EdgeInsets.all(12.0),
+            child: bd.Badge(
+              position: bd.BadgePosition.topEnd(top: 4, end: 4),
+              badgeStyle:  bd.BadgeStyle(
+                badgeColor: Theme.of(context).primaryColor,
+                elevation: 8, padding: const EdgeInsets.all(8),
+              ),
               badgeContent: Text('${photos.length}', style: GoogleFonts.lato(
                 textStyle: Theme.of(context).textTheme.bodySmall,
                 fontWeight: FontWeight.normal, color: Colors.white, fontSize: 10
               ),),
-              badgeColor: Colors.pink,
-              elevation: 16,
               child: GridView.builder(
                   gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                       crossAxisSpacing: 1, crossAxisCount: 2, mainAxisSpacing: 1),

@@ -3044,7 +3044,7 @@
       "organizationName": "Roberts InfraCon Lt",
       "created": "2023-01-03T17:45:06.963+02:00",
       "fcmRegistration": null,
-      "userType": "FIELD_MONITOR",
+      "userType": UserType.fieldMonitor,
       "password": null,
       "position": null
     },
@@ -3108,7 +3108,7 @@
       "organizationName": "Roberts InfraCon Lt",
       "created": "2023-01-03T17:45:05.061+02:00",
       "fcmRegistration": "ej9FHGLrRQS6T5Q08h82vo:APA91bEUviRJMb6n0qf7MF1EObdOeVwiBPl1pJDiLaqnYVFUWVwaOx4G7sQ-iwcjeJY0MXzGg_ZqEUZCaH7iTPorDBOAD6m5O-buu0T9ICZC4gbjScthqFEjoq7d3YfdGseg1mkuQN7S",
-      "userType": "ORG_ADMINISTRATOR",
+      "userType": "UserType.orgAdministrator",
       "password": null,
       "position": null
     }

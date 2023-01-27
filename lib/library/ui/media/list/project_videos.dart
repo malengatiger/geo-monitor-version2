@@ -1,4 +1,4 @@
-import 'package:badges/badges.dart';
+import 'package:badges/badges.dart' as bd;
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -66,23 +66,31 @@ class _ProjectPhotosState extends State<ProjectVideos> {
                 height: 48,
                 child: Padding(
                   padding: const EdgeInsets.symmetric(vertical: 16.0),
-                  child: Text(widget.project.name!, style: myTextStyleMediumBold(context),),
+                  child: Text(
+                    widget.project.name!,
+                    style: myTextStyleMediumBold(context),
+                  ),
                 ),
               ),
               Expanded(
-                  child: Badge(
-                position: BadgePosition.topEnd(top: 4, end: 4),
-                    padding: const EdgeInsets.all(12.0),
-
-                    badgeContent: Text(
+                  child: bd.Badge(
+                badgeStyle: bd.BadgeStyle(
+                  badgeColor: Theme.of(context).primaryColor,
+                  elevation: 8,
+                  padding: const EdgeInsets.all(8),
+                ),
+                position: bd.BadgePosition.topEnd(top: 4, end: 4),
+                // padding: const EdgeInsets.all(12.0),
+                badgeContent: Text(
                   '${videos.length}',
                   style: GoogleFonts.lato(
                       textStyle: Theme.of(context).textTheme.bodySmall,
                       fontWeight: FontWeight.normal,
-                      color: Colors.white, fontSize: 10),
+                      color: Colors.white,
+                      fontSize: 10),
                 ),
-                badgeColor: Colors.black,
-                elevation: 16,
+                // badgeColor: Colors.black,
+                // elevation: 16,
                 child: GridView.builder(
                     gridDelegate:
                         const SliverGridDelegateWithFixedCrossAxisCount(

@@ -22,7 +22,7 @@ class GenericMessage extends StatefulWidget {
 }
 
 class GenericMessageState extends State<GenericMessage> {
-  String frequency = MONITOR_TWICE_A_DAY;
+  String frequency = monitorTwiceADay;
   bool isBusy = false;
   // final _key = GlobalKey<ScaffoldState>();
   // void _onRadioButtonSelected(String selected) {

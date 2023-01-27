@@ -73,7 +73,7 @@ class PhoneLoginState extends State<PhoneLogin>
               busy = false;
             });
             showToast(
-                backgroundColor: Theme.of(context).backgroundColor,
+                backgroundColor: Theme.of(context).colorScheme.background,
                 textStyle: myTextStyleMedium(context),
                 message: 'Verification completed. Thank you!',
                 context: context);
@@ -87,7 +87,7 @@ class PhoneLoginState extends State<PhoneLogin>
               busy = false;
             });
             showToast(
-                backgroundColor: Theme.of(context).backgroundColor,
+                backgroundColor: Theme.of(context).colorScheme.background,
                 textStyle: myTextStyleMedium(context),
                 message: 'Verification failed. Please try later',
                 context: context);
@@ -133,7 +133,7 @@ class PhoneLoginState extends State<PhoneLogin>
     if (code == null || code!.isEmpty) {
       showToast(
           duration: const Duration(seconds: 2),
-          backgroundColor: Theme.of(context).errorColor,
+          backgroundColor: Theme.of(context).colorScheme.error,
           textStyle: const TextStyle(color: Colors.white),
           toastGravity: ToastGravity.CENTER,
           message: 'Please put in the code that was sent to you',
@@ -334,11 +334,11 @@ class PhoneLoginState extends State<PhoneLogin>
                                                 borderRadius: BorderRadius.circular(5),
                                                 fieldHeight: 50,
                                                 fieldWidth: 40,
-                                                activeFillColor: Theme.of(context).backgroundColor,
+                                                activeFillColor: Theme.of(context).colorScheme.background,
                                               ),
 
                                               animationDuration: const Duration(milliseconds: 300),
-                                              backgroundColor: Theme.of(context).backgroundColor,
+                                              backgroundColor: Theme.of(context).colorScheme.background,
                                               enableActiveFill: true,
                                               errorAnimationController: errorController,
                                               controller: codeController,

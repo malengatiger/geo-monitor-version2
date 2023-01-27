@@ -239,7 +239,6 @@ class DataAPI {
       rethrow;
     }
 
-    return 9;
   }
 
   static Future<KillResponse> killUser({required String userId, required String killerId} ) async {
@@ -835,9 +834,9 @@ class DataAPI {
       }
       pp('\n$mm findProjectsByLocation: 🍏 radiusInKM: $radiusInKM kilometres; 🔵🔵 found ${list.length}');
       var map = HashMap<String, Project>();
-      list.forEach((element) {
+      for (var element in list) {
         map[element.projectId!] = element;
-      });
+      }
 
       var mList = map.values.toList();
       pp('\n$mm findProjectsByLocation: 🍏 radiusInKM: $radiusInKM kilometres; 🔵🔵 found ${mList.length} after filtering for duplicates');

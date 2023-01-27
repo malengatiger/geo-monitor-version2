@@ -2,7 +2,7 @@ import 'dart:async';
 import 'dart:collection';
 import 'dart:math';
 
-import 'package:badges/badges.dart';
+import 'package:badges/badges.dart' as bd;
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:geo_monitor/library/bloc/organization_bloc.dart';
@@ -352,15 +352,17 @@ class ProjectPolygonMapMobileState extends State<ProjectPolygonMapMobile>
                   _animateCamera(zoom: 10.0, position: projectPositions.first.position!);
                 }
               },
-              child: Badge(
-                badgeColor: Colors.pink,
+              child: bd.Badge(
+                badgeStyle:  bd.BadgeStyle(
+                  badgeColor: Theme.of(context).primaryColor,
+                  elevation: 8, padding: const EdgeInsets.all(8),
+                ),
                 badgeContent: Text(
                   '${projectPolygons.length}',
                   style: myNumberStyleSmall(context),
                 ),
-                padding: const EdgeInsets.all(8.0),
-                position: BadgePosition.topEnd(top: 8, end: 8),
-                elevation: 16,
+                position: bd.BadgePosition.topEnd(top: 8, end: 8),
+                // elevation: 16,
                 child: GoogleMap(
                   mapType: MapType.hybrid,
                   mapToolbarEnabled: true,

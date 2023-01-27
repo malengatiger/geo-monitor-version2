@@ -28,7 +28,6 @@ import '../../library/data/project_position.dart';
 import '../../library/data/user.dart';
 import '../../library/data/video.dart';
 import '../../library/functions.dart';
-import '../../library/generic_functions.dart';
 import '../../library/geofence/geofencer_two.dart';
 import '../../library/ui/media/user_media_list/user_media_list_mobile.dart';
 import '../../library/ui/message/message_main.dart';
@@ -662,7 +661,7 @@ class DashboardMobileState extends State<DashboardMobile>
       }
     }
     var style = GoogleFonts.secularOne(
-        textStyle: Theme.of(context).textTheme.headline6,
+        textStyle: Theme.of(context).textTheme.titleLarge,
         fontWeight: FontWeight.w900);
     return SafeArea(
       child: WillStartForegroundTask(
@@ -750,7 +749,7 @@ class DashboardMobileState extends State<DashboardMobile>
                         : Text(user!.name!,
                             style: GoogleFonts.lato(
                                 textStyle:
-                                    Theme.of(context).textTheme.headline6,
+                                    Theme.of(context).textTheme.titleLarge,
                                 fontWeight: FontWeight.normal)),
                     const SizedBox(
                       height: 12,

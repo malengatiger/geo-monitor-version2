@@ -133,11 +133,11 @@ class SignInState extends State<SignIn> {
     _checkStatus();
   }
 
-  //user: ORG_ADMINISTRATOR 🍎  org.qaf@monitor.com 🔵  Nicole Seleka
+  //user: UserType.orgAdministrator 🍎  org.qaf@monitor.com 🔵  Nicole Seleka
   //user: FIELD_MONITOR 🍎  monitor.zyp@monitor.com 🔵  Mmaphefo De sousa
   //user: EXECUTIVE 🍎  exec.uat@monitor.com 🔵  Andre Motau
 
-  //user: ORG_ADMINISTRATOR 🍎  org.kis@monitor.com 🔵  Lesley Makhubo
+  //user: UserType.orgAdministrator 🍎  org.kis@monitor.com 🔵  Lesley Makhubo
   //user: FIELD_MONITOR 🍎  monitor.ffg@monitor.com 🔵  Vusi Mavuso
   //user: EXECUTIVE 🍎  exec.wub@monitor.com 🔵  David Maepa
   void _checkStatus() async {

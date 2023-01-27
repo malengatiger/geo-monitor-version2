@@ -93,16 +93,12 @@ class User extends HiveObject {
   }
 }
 
-const FIELD_MONITOR = 'FIELD_MONITOR';
-const ORG_ADMINISTRATOR = 'ORG_ADMINISTRATOR';
-const ORG_EXECUTIVE = 'ORG_EXECUTIVE';
-const NETWORK_ADMINISTRATOR = 'NETWORK_ADMINISTRATOR';
-const ORG_OWNER = 'ORG_OWNER';
 
-const MONITOR_ONCE_A_DAY = 'Once Every Day';
-const MONITOR_TWICE_A_DAY = 'Twice A Day';
-const MONITOR_THREE_A_DAY = 'Three Times A Day';
-const MONITOR_ONCE_A_WEEK = 'Once A Week';
+
+const monitorOnceADay = 'Once Every Day';
+const monitorTwiceADay = 'Twice A Day';
+const monitorThriceADay = 'Three Times A Day';
+const monitorOnceAWeek = 'Once A Week';
 
 const labels = [
   'Once Every Day',
@@ -117,7 +113,7 @@ const labels = [
 
 class UserType {
   static const String fieldMonitor = 'FIELD_MONITOR';
-  static const String orgAdministrator = 'ORG_ADMINISTRATOR';
+  static const String orgAdministrator = 'UserType.orgAdministrator';
   static const String orgExecutive = 'ORG_EXECUTIVE';
   static const String networkAdministrator = 'NETWORK_ADMINISTRATOR';
   static const String orgOwner = 'ORG_OWNER';

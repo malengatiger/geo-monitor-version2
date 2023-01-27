@@ -34,7 +34,7 @@ class MessageMobileState extends State<MessageMobile>
   }
 
   void _getProjects(bool force) async {
-    if (widget.user!.userType == FIELD_MONITOR) {
+    if (widget.user!.userType == UserType.fieldMonitor) {
       setState(() {
         _genericMessage = true;
       });

@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'dart:math';
 
-import 'package:badges/badges.dart';
+import 'package:badges/badges.dart' as bd;
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
@@ -30,11 +30,11 @@ class OrganizationMapMobileState extends State<OrganizationMapMobile>
   Map<MarkerId, Marker> markers = <MarkerId, Marker>{};
   var random = Random(DateTime.now().millisecondsSinceEpoch);
   final _key = GlobalKey<ScaffoldState>();
-  static const DEFAULT_ZOOM = 10.0;
+  static const defaultZoom = 10.0;
 
   static const CameraPosition _kGooglePlex = CameraPosition(
     target: LatLng(-25.42796133580664, 26.085749655962),
-    zoom: DEFAULT_ZOOM,
+    zoom: defaultZoom,
   );
   List<ProjectPosition> _projectPositions = [];
   List<Project> _projects = [];
@@ -163,11 +163,11 @@ class OrganizationMapMobileState extends State<OrganizationMapMobile>
                   onTap: (){
                     _refreshProjectPositions(forceRefresh: true);
                   },
-                  child: Badge(
-                    badgeColor: Theme.of(context).primaryColor,
-                    position: BadgePosition.topEnd(top: -20,end: 12),
+                  child: bd.Badge(
+                    // badgeColor: Theme.of(context).primaryColor,
+                    position:bd. BadgePosition.topEnd(top: -20,end: 12),
                     badgeContent: Text('${_projects.length}', style: myTextStyleMedium(context),),
-                    padding: const EdgeInsets.all(8.0),
+                    // padding: const EdgeInsets.all(8.0),
                     child: Row(mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         organization == null? const SizedBox(): Text(organization!.name!, style: myTextStyleLarge(context),),
@@ -193,14 +193,17 @@ class OrganizationMapMobileState extends State<OrganizationMapMobile>
               onTap: () {
                 _refreshProjectPositions(forceRefresh: true);
               },
-              child: Badge(
+              child: bd.Badge(
                 badgeContent: Text(
                   '${_projectPositions.length}',
                   style: myTextStyleSmall(context),
                 ),
-                badgeColor: Colors.blue.shade700,
-                padding: const EdgeInsets.all(12.0),
-                position: BadgePosition.topEnd(top: 8, end: 8),
+                badgeStyle:  bd.BadgeStyle(
+                  badgeColor: Theme.of(context).primaryColor,
+                  elevation: 8, padding: const EdgeInsets.all(8),
+                ),
+
+                position: bd.BadgePosition.topEnd(top: 8, end: 8),
                 child: GoogleMap(
                   mapType: MapType.hybrid,
                   mapToolbarEnabled: true,
