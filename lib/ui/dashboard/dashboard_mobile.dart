@@ -157,7 +157,7 @@ class DashboardMobileState extends State<DashboardMobile>
 
   void _buildGeofences() async {
     pp('\n$mm _buildGeofences starting ........................');
-    await geofencerTwo.buildGeofences();
+    await theGreatGeofencer.buildGeofences();
     pp('$mm _buildGeofences should be done and dusted ....');
   }
 
@@ -181,7 +181,7 @@ class DashboardMobileState extends State<DashboardMobile>
   late StreamSubscription<GeofenceEvent> geofenceSubscription;
 
   void _subscribeToGeofenceStream() async {
-    geofenceSubscription = geofencerTwo.geofenceEventStream.listen((event) {
+    geofenceSubscription = theGreatGeofencer.geofenceEventStream.listen((event) {
       pp('\n$mm geofenceEvent delivered by geofenceStream: ${event.projectName} ...');
       // if (mounted) {
       //   showToast(

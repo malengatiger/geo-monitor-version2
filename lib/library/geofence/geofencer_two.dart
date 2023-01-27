@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:geo_monitor/library/data/position.dart';
 import 'package:geofence_service/geofence_service.dart';
 import '../../main.dart';
 import '../api/data_api.dart';
@@ -12,11 +13,11 @@ import 'package:uuid/uuid.dart';
 import '../functions.dart';
 import '../location/loc_bloc.dart';
 
-final GeofencerTwo geofencerTwo = GeofencerTwo();
+final TheGreatGeofencer theGreatGeofencer = TheGreatGeofencer();
 
-class GeofencerTwo {
-  static const mm = '💦 💦 💦 💦 💦 GeofencerTwo: 💦 💦 ';
-  final xx = '😡 😡 😡 😡 😡 😡 😡 😡 😡 GeofencerTwo: ';
+class TheGreatGeofencer {
+  static const mm = '💦 💦 💦 💦 💦 TheGreatGeofencer: 💦 💦 ';
+  final xx = '😡 😡 😡 😡 😡 😡 😡 😡 😡 TheGreatGeofencer: ';
   final StreamController<GeofenceEvent> _streamController =
       StreamController.broadcast();
   Stream<GeofenceEvent> get geofenceEventStream => _streamController.stream;
@@ -111,7 +112,7 @@ class GeofencerTwo {
     }
   }
 
-  final reds = '🔴 🔴 🔴 🔴 🔴 🔴 GeofencerTwo: ';
+  final reds = '🔴 🔴 🔴 🔴 🔴 🔴 TheGreatGeofencer: ';
   void onError() {}
 
   Future _processGeofenceEvent(
@@ -121,13 +122,17 @@ class GeofencerTwo {
       required Location location}) async {
     pp('$mm $xx _processing new GeofenceEvent;  🔵 ${geofence.data['projectName']} '
         '🔵 with geofenceStatus: ${geofenceStatus.toString()}');
+    
+    var loc = await locationBloc.getLocation();
 
     var event = GeofenceEvent(
         status: geofenceStatus.toString(),
-        userId: _user!.userId,
+        organizationId: geofence.data['organizationId'],
         user: _user,
+        position: Position(coordinates: [loc.longitude, loc.latitude], type: 'Point'),
         geofenceEventId: const Uuid().v4(),
         projectPositionId: geofence.id,
+        projectId: geofence.data['projectId'],
         projectName: geofence.data['projectName'],
         date: DateTime.now().toUtc().toIso8601String());
 

@@ -898,7 +898,7 @@ class CacheManager {
   }
 
   Future addGeofenceEvent({required GeofenceEvent geofenceEvent}) async {
-    var key = '${geofenceEvent.userId}_${geofenceEvent.projectPositionId}';
+    var key = '${geofenceEvent.user!.userId!}_${geofenceEvent.projectPositionId}';
     await _geofenceEventBox?.put(key, geofenceEvent);
     pp('$mm GeofenceEvent added to local cache: ${geofenceEvent.projectName}');
   }
