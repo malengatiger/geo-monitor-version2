@@ -5,12 +5,17 @@ import 'package:firebase_auth/firebase_auth.dart' as auth;
 import 'package:firebase_messaging/firebase_messaging.dart' as fb;
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:geo_monitor/library/data/location_response.dart';
+import 'package:geo_monitor/library/data/position.dart';
+import 'package:geo_monitor/library/location/loc_bloc.dart';
 import 'package:universal_platform/universal_platform.dart';
+import 'package:uuid/uuid.dart';
 
 import '../api/data_api.dart';
 import '../api/sharedprefs.dart';
 import '../data/audio.dart';
 import '../data/condition.dart';
+import '../data/location_request.dart';
 import '../data/org_message.dart';
 import '../data/video.dart';
 import '../functions.dart';
@@ -146,7 +151,8 @@ class FCMBloc {
       await messaging.subscribeToTopic('users_${user.organizationId}');
       await messaging.subscribeToTopic('audios_${user.organizationId}');
       await messaging.subscribeToTopic('kill_${user.organizationId}');
-      pp("$mm subscribeToTopics: 🍎 subscribed to all 8 organization topics 🍎");
+      await messaging.subscribeToTopic('locationRequest_${user.organizationId}');
+      pp("$mm subscribeToTopics: 🍎 subscribed to all 9 organization topics 🍎");
     } else {
       pp("$mm subscribeToTopics:  👿 👿 👿 user not cached on device yet  👿 👿 👿");
     }
@@ -176,6 +182,28 @@ class FCMBloc {
         await _handleCache(receivedUser);
         pp('🌀🌀🌀🌀🍎 User should be deleted from Hive cache by now! 🍎 ');
       }
+    }
+    if (data['locationRequest'] != null) {
+      pp("$mm processFCMMessage  🔵 🔵 🔵 ........................... LOCATION REQUEST  🍎  🍎 ");
+      var m = jsonDecode(data['locationRequest']);
+      var req = LocationRequest.fromJson(m);
+      if (user!.organizationId == req.organizationId) {
+        var loc = await locationBloc.getLocation();
+        var locResp = LocationResponse(
+            position: Position(coordinates: [loc.longitude, loc.latitude],
+                type: 'Point'),
+            date: DateTime.now().toUtc().toIso8601String(),
+            userId: user.userId,
+            userName: user.name,
+            locationResponseId: const Uuid().v4(),
+            organizationId: user.organizationId,
+            organizationName: user.organizationName);
+
+        pp('$mm responding to location request ...');
+        var result = await DataAPI.addLocationResponse(locResp);
+        await cacheManager.addLocationResponse(locationResponse: result);
+      }
+
     }
     if (data['user'] != null) {
       pp("$mm processFCMMessage  🔵 🔵 🔵 ........................... cache USER  🍎  🍎 ");

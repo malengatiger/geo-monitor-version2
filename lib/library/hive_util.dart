@@ -12,6 +12,7 @@ import 'data/country.dart';
 import 'data/data_bag.dart';
 import 'data/field_monitor_schedule.dart';
 import 'data/geofence_event.dart';
+import 'data/location_response.dart';
 import 'data/monitor_report.dart';
 import 'data/org_message.dart';
 import 'data/organization.dart';
@@ -64,6 +65,7 @@ class CacheManager {
   LazyBox<Audio>? _audioBox;
   LazyBox<FailedAudio>? _failedAudioBox;
   LazyBox<Rating>? _ratingBox;
+  LazyBox<LocationResponse>? _locationResponseBox;
 
   bool _isInitialized = false;
 
@@ -106,6 +108,7 @@ class CacheManager {
     _failedAudioBox?.clear();
     _ratingBox?.clear();
     _videoBox?.clear();
+    _locationResponseBox?.clear();
     pp('$mm all Hive boxes cleared 💚💚');
   }
 
@@ -157,6 +160,8 @@ class CacheManager {
     _audioBox = await Hive.openLazyBox<Audio>('audios');
     _failedAudioBox = await Hive.openLazyBox<FailedAudio>('failedAudios');
     _ratingBox = await Hive.openLazyBox<Rating>('ratings');
+    _locationResponseBox = await Hive.openLazyBox<LocationResponse>('locationResponses');
+
   }
 
   void _registerAdapters() {
@@ -248,12 +253,23 @@ class CacheManager {
       Hive.registerAdapter(RatingAdapter());
       p('$xx Hive RatingAdapter registered');
     }
+    if (!Hive.isAdapterRegistered(27)) {
+      Hive.registerAdapter(LocationResponseAdapter());
+      p('$xx Hive LocationResponseAdapter registered');
+    }
   }
 
   final mm =
       '${E.appleRed}${E.appleRed}${E.appleRed}${E.appleRed} CacheManager: ';
   var random = Random(DateTime.now().millisecondsSinceEpoch);
 
+  Future addLocationResponse({required LocationResponse locationResponse}) async {
+    pp('$mm .... addLocationResponse .....');
+    var key = '${locationResponse.userId}_${locationResponse.date}';
+    await _locationResponseBox?.put(key, locationResponse);
+
+    pp('$mm locationResponse added to local cache}');
+  }
   Future addRegistration({required OrganizationRegistrationBag bag}) async {
     pp('$mm .... addRegistration .....');
     var key = '${bag.date}';

@@ -14,6 +14,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_libphonenumber/flutter_libphonenumber.dart';
 import 'package:flutter_settings_screens/flutter_settings_screens.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:geo_monitor/library/bloc/location_request_handler.dart';
 import 'package:geofence_service/geofence_service.dart';
 import 'package:get/get.dart';
 
@@ -31,6 +32,7 @@ import 'library/bloc/write_failed_media.dart';
 import 'library/emojis.dart';
 import 'library/functions.dart';
 import 'library/hive_util.dart';
+import 'library/ui/camera/play_video_chewie.dart';
 import 'ui/intro_page_viewer.dart';
 
 int themeIndex = 0;
@@ -72,7 +74,8 @@ Future<void> _mainSetup() async {
     writeFailedMedia.writeFailedMedia();
     uploadFailedMedia.uploadFailedMedia();
 
-    pp('${E.heartGreen}${E.heartGreen} writeFailedMedia/uploadFailedMedia '
+
+    pp('${E.heartGreen}${E.heartGreen} writeFailedMedia/uploadFailedMedia/locationRequestHandler '
         'timers started with 🍎 5 minute duration per tick ...');
 
     await FlutterLibphonenumber().init();
@@ -82,6 +85,9 @@ Future<void> _mainSetup() async {
 
   await dotenv.load(fileName: ".env");
   pp('$heartBlue DotEnv has been loaded');
+
+  locationRequestHandler.sendLocationRequest();
+  locationRequestHandler.startTimer();
 
   pp('${E.broccolli} Checking for current user : FirebaseAuth');
 
@@ -185,6 +191,7 @@ class MyApp extends StatelessWidget {
               // nextScreen: const AudioMobile(),
               // nextScreen: const CreditCardHandlerMobile(),
               // nextScreen: const AppSettings(),
+              // nextScreen: const PlayVideoBetter(),
               nextScreen: user == null
                   ? const IntroPageViewer()
                   : const DashboardMain(),

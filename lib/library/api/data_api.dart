@@ -5,6 +5,7 @@ import 'dart:io';
 
 import 'package:flutter_dotenv/flutter_dotenv.dart' as dot;
 import 'package:geo_monitor/library/bloc/connection_check.dart';
+import 'package:geo_monitor/library/data/location_request.dart';
 import 'package:geo_monitor/library/data/organization_registration_bag.dart';
 import 'package:geo_monitor/library/data/project_polygon.dart';
 import 'package:geo_monitor/library/emojis.dart';
@@ -20,6 +21,7 @@ import '../data/data_bag.dart';
 import '../data/field_monitor_schedule.dart';
 import '../data/geofence_event.dart';
 import '../data/kill_response.dart';
+import '../data/location_response.dart';
 import '../data/org_message.dart';
 import '../data/organization.dart';
 import '../data/photo.dart';
@@ -96,6 +98,21 @@ class DataAPI {
       var result = await _callWebAPIPost('${mURL!}addGeofenceEvent', bag);
       var s = GeofenceEvent.fromJson(result);
       await cacheManager.addGeofenceEvent(geofenceEvent: s);
+      return s;
+    } catch (e) {
+      pp(e);
+      rethrow;
+    }
+  }
+  static Future<LocationResponse> addLocationResponse(
+      LocationResponse response) async {
+    String? mURL = await getUrl();
+    Map bag = response.toJson();
+
+    try {
+      var result = await _callWebAPIPost('${mURL!}addLocationResponse', bag);
+      var s = LocationResponse.fromJson(result);
+      await cacheManager.addLocationResponse(locationResponse: s);
       return s;
     } catch (e) {
       pp(e);
@@ -430,6 +447,19 @@ class DataAPI {
       rethrow;
     }
   }
+
+  static Future<LocationRequest> sendLocationRequest(LocationRequest request) async {
+    String? mURL = await getUrl();
+    try {
+      var result = await _callWebAPIPost('${mURL!}sendLocationRequest', request.toJson());
+      final bag = LocationRequest.fromJson(result);
+      return bag;
+    } catch (e) {
+      pp('$mm sendLocationRequest: $e');
+      rethrow;
+    }
+  }
+
 
   static Future<User?> getUserById({required String userId}) async {
     String? mURL = await getUrl();
