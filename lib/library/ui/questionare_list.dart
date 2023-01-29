@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../api/data_api.dart';
-import '../api/sharedprefs.dart';
+import '../api/prefs_og.dart';
 import '../bloc/admin_bloc.dart';
 import '../data/user.dart';
 import '../data/questionnaire.dart';
@@ -30,7 +30,7 @@ class QuestionnaireListState extends State<QuestionnaireList> {
     setState(() {
       isBusy = true;
     });
-    user = await Prefs.getUser();
+    user = await prefsOGx.getUser();
     if (user != null) {
       questionnaires =
           await DataAPI.getQuestionnairesByOrganization(user!.organizationId!);

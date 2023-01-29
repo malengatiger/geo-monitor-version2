@@ -5,7 +5,7 @@ import 'package:badges/badges.dart' as bd;
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
-import '../../api/sharedprefs.dart';
+import '../../api/prefs_og.dart';
 import '../../bloc/organization_bloc.dart';
 import '../../data/organization.dart';
 import '../../data/project.dart';
@@ -54,7 +54,7 @@ class OrganizationMapMobileState extends State<OrganizationMapMobile>
     setState(() {
       loading = true;
     });
-    user = await Prefs.getUser();
+    user = await prefsOGx.getUser();
     organization = await organizationBloc.getOrganizationById(
         organizationId: user!.organizationId!);
 

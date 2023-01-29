@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:responsive_builder/responsive_builder.dart';
-import '../../api/sharedprefs.dart';
+import '../../api/prefs_og.dart';
 import '../../data/user.dart';
 import 'user_list_desktop.dart';
 import 'user_list_mobile.dart';
@@ -27,7 +27,7 @@ class UserListMainState extends State<UserListMain> {
     setState(() {
       isBusy = true;
     });
-    _user = await Prefs.getUser();
+    _user = await prefsOGx.getUser();
     setState(() {
       isBusy = false;
     });

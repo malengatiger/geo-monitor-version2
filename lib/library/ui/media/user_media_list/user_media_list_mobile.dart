@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:page_transition/page_transition.dart';
 
-import '../../../api/sharedprefs.dart';
+import '../../../api/prefs_og.dart';
 import '../../../bloc/cloud_storage_bloc.dart';
 import '../../../bloc/organization_bloc.dart';
 import '../../../bloc/user_bloc.dart';
@@ -62,7 +62,7 @@ class MediaListMobileState extends State<UserMediaListMobile>
   }
 
   Future<void> _listen() async {
-    user ??= await Prefs.getUser();
+    user ??= await prefsOGx.getUser();
 
     _listenToProjectStreams();
     _listenToPhotoStream();
@@ -367,7 +367,7 @@ class _ProjectChooserOriginalState extends State<ProjectChooserOriginal> with Si
     setState(() {
       loading = true;
     });
-    user = await Prefs.getUser();
+    user = await prefsOGx.getUser();
     _projects = await organizationBloc.getOrganizationProjects(
         organizationId: user!.organizationId!, forceRefresh: forceRefresh);
 

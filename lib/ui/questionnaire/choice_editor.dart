@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../library/api/sharedprefs.dart';
+import '../../library/api/prefs_og.dart';
 import '../../library/bloc/admin_bloc.dart';
 import '../../library/data/question.dart';
 import '../../library/data/questionnaire.dart';
@@ -100,7 +100,7 @@ class ChoiceEditorState extends State<ChoiceEditor>
       widget.question.choices = choices;
     });
 
-    await Prefs.saveQuestionnaire(widget.questionnaire);
+    await prefsOGx.saveQuestionnaire(widget.questionnaire);
     adminBloc.updateActiveQuestionnaire(widget.questionnaire);
   }
 }

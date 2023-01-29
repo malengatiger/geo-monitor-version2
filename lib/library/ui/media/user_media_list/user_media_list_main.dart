@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:responsive_builder/responsive_builder.dart';
 
-import '../../../api/sharedprefs.dart';
+import '../../../api/prefs_og.dart';
 import '../../../bloc/user_bloc.dart';
 import '../../../data/user.dart';
 import '../../../functions.dart';
@@ -36,7 +36,7 @@ class UserMediaListMainState extends State<UserMediaListMain>
       isBusy = true;
     });
     user = widget.user;
-    user ??= await Prefs.getUser();
+    user ??= await prefsOGx.getUser();
 
     pp('MediaListMain: 💜 💜 💜 getting media for ${user!.name}');
     await userBloc.getPhotos(userId: user!.userId!, forceRefresh: true);

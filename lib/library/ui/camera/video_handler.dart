@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:geo_monitor/library/api/prefs_og.dart';
 import 'package:geo_monitor/library/data/audio.dart';
 import 'package:geo_monitor/library/data/project.dart';
 import 'package:geo_monitor/library/data/project_position.dart';
@@ -96,9 +97,11 @@ class VideoHandlerState extends State<VideoHandler>
     setState(() {
       videoIsReady = false;
     });
+    var settings = await prefsOGx.getSettings();
+    var minutes = settings.maxVideoLengthInMinutes;
     final XFile? file = await _picker.pickVideo(
         source: ImageSource.camera,
-        maxDuration: const Duration(minutes: 5),
+        maxDuration: Duration(minutes: minutes!),
         preferredCameraDevice: CameraDevice.rear);
 
     if (file != null) {
@@ -156,35 +159,42 @@ class VideoHandlerState extends State<VideoHandler>
       );
       pp('$mm result from cloudStorageBloc: $result, if $uploadFinished we good!');
     } else {
-      var loc = await locationBloc.getLocation();
-      var position =
-          Position(type: 'Point', coordinates: [loc.longitude, loc.latitude]);
-      var polygon = getPolygonUserIsWithin(
-          polygons: polygons, latitude: loc.latitude, longitude: loc.longitude);
+      var loc = await locationBlocOG.getLocation();
+      if (loc != null) {
+        var position =
+        Position(type: 'Point', coordinates: [loc.longitude, loc.latitude]);
+        var polygon = getPolygonUserIsWithin(
+            polygons: polygons,
+            latitude: loc.latitude!,
+            longitude: loc.longitude!);
 
-      var result = await cloudStorageBloc.uploadVideo(
-        listener: this,
-        file: mFile,
-        thumbnailFile: tFile,
-        project: widget.project,
-        projectPolygonId: polygon?.projectPolygonId,
-        projectPosition: position,
-      );
+        var result = await cloudStorageBloc.uploadVideo(
+          listener: this,
+          file: mFile,
+          thumbnailFile: tFile,
+          project: widget.project,
+          projectPolygonId: polygon?.projectPolygonId,
+          projectPosition: position,
+        );
 
-      pp('$mm result from cloudStorageBloc: $result, if $uploadFinished we good!');
-    }
+        pp(
+            '$mm result from cloudStorageBloc: $result, if $uploadFinished we good!');
+      }
 
-    var size = await finalFile!.length();
-    var m = (size / 1024 / 1024).toStringAsFixed(2);
-    pp('$mm Video made is $m MB in size');
-    if (mounted) {
-      showToast(
-          context: context,
-          message: 'Video file saved on device, size: $m MB',
-          backgroundColor: Theme.of(context).primaryColor,
-          textStyle: Styles.whiteSmall,
-          toastGravity: ToastGravity.TOP,
-          duration: const Duration(seconds: 2));
+      var size = await finalFile!.length();
+      var m = (size / 1024 / 1024).toStringAsFixed(2);
+      pp('$mm Video made is $m MB in size');
+      if (mounted) {
+        showToast(
+            context: context,
+            message: 'Video file saved on device, size: $m MB',
+            backgroundColor: Theme
+                .of(context)
+                .primaryColor,
+            textStyle: Styles.whiteSmall,
+            toastGravity: ToastGravity.TOP,
+            duration: const Duration(seconds: 2));
+      }
     }
   }
 

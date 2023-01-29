@@ -12,7 +12,7 @@ import 'package:universal_platform/universal_platform.dart';
 import 'package:uuid/uuid.dart';
 
 import '../api/data_api.dart';
-import '../api/sharedprefs.dart';
+import '../api/prefs_og.dart';
 import '../data/audio.dart';
 import '../data/condition.dart';
 import '../data/location_request.dart';
@@ -76,7 +76,7 @@ class FCMBloc {
 
   void initialize() async {
     pp("\n$mm initialize FIREBASE MESSAGING ...........................");
-    user = await Prefs.getUser();
+    user = await prefsOGx.getUser();
     var android = UniversalPlatform.isAndroid;
     var ios = UniversalPlatform.isIOS;
 
@@ -140,7 +140,7 @@ class FCMBloc {
   }
 
   Future subscribeToTopics() async {
-    var user = await Prefs.getUser();
+    var user = await prefsOGx.getUser();
     if (user != null) {
       pp("$mm subscribeToTopics ...........................");
       await messaging.subscribeToTopic('projects_${user.organizationId}');
@@ -163,7 +163,7 @@ class FCMBloc {
   Future processFCMMessage(fb.RemoteMessage message) async {
     pp('\n\n$mm processFCMMessage: $blue processing newly arrived FCM message; messageId:: ${message.messageId}');
     Map data = message.data;
-    User? user = await Prefs.getUser();
+    User? user = await prefsOGx.getUser();
 
     if (data['kill'] != null) {
       pp("$mm processFCMMessage:  $blue ........................... 🍎🍎🍎🍎🍎🍎kill USER!!  🍎  🍎 ");
@@ -171,7 +171,7 @@ class FCMBloc {
       var receivedUser = User.fromJson(m);
       if (receivedUser.userId! == user!.userId!) {
         pp("$mm processFCMMessage  $blue This user is about to be killed: ${receivedUser.name!} ......");
-        Prefs.deleteUser();
+        prefsOGx.deleteUser();
         auth.FirebaseAuth.instance.signOut();
         pp('$mm 🌀🌀🌀🌀  🍎 Signed out of Firebase!!! 🍎 ');
 
@@ -188,20 +188,22 @@ class FCMBloc {
       var m = jsonDecode(data['locationRequest']);
       var req = LocationRequest.fromJson(m);
       if (user!.organizationId == req.organizationId) {
-        var loc = await locationBloc.getLocation();
-        var locResp = LocationResponse(
-            position: Position(coordinates: [loc.longitude, loc.latitude],
-                type: 'Point'),
-            date: DateTime.now().toUtc().toIso8601String(),
-            userId: user.userId,
-            userName: user.name,
-            locationResponseId: const Uuid().v4(),
-            organizationId: user.organizationId,
-            organizationName: user.organizationName);
+        var loc = await locationBlocOG.getLocation();
+        if (loc != null) {
+          var locResp = LocationResponse(
+              position: Position(coordinates: [loc!.longitude, loc.latitude],
+                  type: 'Point'),
+              date: DateTime.now().toUtc().toIso8601String(),
+              userId: user.userId,
+              userName: user.name,
+              locationResponseId: const Uuid().v4(),
+              organizationId: user.organizationId,
+              organizationName: user.organizationName);
 
-        pp('$mm responding to location request ...');
-        var result = await DataAPI.addLocationResponse(locResp);
-        await cacheManager.addLocationResponse(locationResponse: result);
+          pp('$mm responding to location request ...');
+          var result = await DataAPI.addLocationResponse(locResp);
+          await cacheManager.addLocationResponse(locationResponse: result);
+        }
       }
 
     }
@@ -288,7 +290,7 @@ class FCMBloc {
   //     pp("$mm updateUser: 🍎🍎🍎🍎🍎🍎🍎🍎 USER: 🍎 ${user!.toJson()} ... 🍎🍎 ");
   //     user!.fcmRegistration = newToken;
   //     await DataAPI.updateUser(user!);
-  //     await Prefs.saveUser(user!);
+  //     await prefsOGx.saveUser(user!);
   //   }
   // }
 

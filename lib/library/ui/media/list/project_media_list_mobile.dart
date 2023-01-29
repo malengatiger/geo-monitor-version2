@@ -6,7 +6,7 @@ import 'package:just_audio/just_audio.dart';
 import 'package:page_transition/page_transition.dart';
 
 import '../../../../ui/dashboard/dashboard_mobile.dart';
-import '../../../api/sharedprefs.dart';
+import '../../../api/prefs_og.dart';
 import '../../../bloc/cloud_storage_bloc.dart';
 import '../../../bloc/project_bloc.dart';
 import '../../../data/audio.dart';
@@ -67,7 +67,7 @@ class ProjectMediaListMobileState extends State<ProjectMediaListMobile>
   }
 
   Future<void> _listen() async {
-    user ??= await Prefs.getUser();
+    user ??= await prefsOGx.getUser();
 
     _listenToProjectStreams();
     _listenToPhotoStream();

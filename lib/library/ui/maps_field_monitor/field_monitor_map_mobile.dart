@@ -42,13 +42,15 @@ class FieldMonitorMapMobileState extends State<FieldMonitorMapMobile>
 
   void _getLocation() async {
     pp('💜 💜 💜 💜 💜 💜 FieldMonitorMapMobile: ..... current user, check position: ${widget.user.toJson()}');
-    var pos = await locationBloc.getLocation();
-    setState(() {
-      _cameraPosition = CameraPosition(
-        target: LatLng(pos.latitude, pos.longitude),
-        zoom: 14.4746,
-      );
-    });
+    var pos = await locationBlocOG.getLocation();
+    if (pos != null) {
+      setState(() {
+        _cameraPosition = CameraPosition(
+          target: LatLng(pos.latitude!, pos.longitude!),
+          zoom: 14.4746,
+        );
+      });
+    }
   }
 
   @override

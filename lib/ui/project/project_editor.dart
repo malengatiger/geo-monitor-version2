@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../library/api/sharedprefs.dart';
+import '../../library/api/prefs_og.dart';
 import '../../library/bloc/admin_bloc.dart';
 import '../../library/data/user.dart';
 import '../../library/data/project.dart';
@@ -31,7 +31,7 @@ class ProjectEditorState extends State<ProjectEditor>
   }
 
   _getData() async {
-    user = await Prefs.getUser();
+    user = await prefsOGx.getUser();
     mProject = widget.project;
     if (mProject == null) {
 

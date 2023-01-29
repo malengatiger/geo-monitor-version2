@@ -3,21 +3,21 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart' as dot;
 
 import '../api/data_api.dart';
-import '../api/sharedprefs.dart';
+import '../api/prefs_og.dart';
 import '../data/country.dart';
 import '../functions.dart';
 import '../data/user.dart' as mon;
 
 class AppAuth {
   static FirebaseAuth? _auth;
-
+   
   static Future isUserSignedIn() async {
     pp('🥦 🥦  😎😎😎😎 AppAuth: isUserSignedIn :: 😎😎😎 about to initialize Firebase; 😎');
     var app = await Firebase.initializeApp();
     pp('😎😎😎😎 AppAuth: isUserSignedIn :: 😎😎😎 Firebase has been initialized; '
         '😎 or not? 🍀🍀 app: ${app.options.databaseURL}');
 
-    var user = await Prefs.getUser();
+    var user = await prefsOGx.getUser();
     if (user == null) {
       pp('🦠🦠🦠 user is NOT signed in. 🦠 ');
       return null;
@@ -111,7 +111,7 @@ class AppAuth {
       pp('$locks User found on database. Yeah! 🐤 🐤 🐤 ${user.toJson()}');
     }
     pp('$locks about to cache the user on the device ...');
-    await Prefs.saveUser(user);
+    await prefsOGx.saveUser(user);
     var countries = await DataAPI.getCountries();
 
     if (countries.isNotEmpty) {
@@ -124,9 +124,7 @@ class AppAuth {
         }
       }
 
-      if (c != null) {
-        await Prefs.saveCountry(c);
-      }
+
     } else {
       pp('👿👿 Countries not found');
     }

@@ -5,8 +5,9 @@ import 'package:audio_waveforms/audio_waveforms.dart' as wv;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:geo_monitor/library/api/sharedprefs.dart';
+import 'package:geo_monitor/library/api/prefs_og.dart';
 import 'package:geo_monitor/library/data/audio.dart';
+import 'package:geo_monitor/library/ui/settings.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:path_provider/path_provider.dart';
@@ -14,6 +15,7 @@ import 'package:record/record.dart';
 
 import '../../library/bloc/cloud_storage_bloc.dart';
 import '../../library/data/project.dart';
+import '../../library/data/settings_model.dart';
 import '../../library/data/user.dart';
 import '../../library/data/video.dart';
 import '../../library/functions.dart';
@@ -66,7 +68,7 @@ class AudioMobileState extends State<AudioMobile>
     _animationController = AnimationController(vsync: this);
     super.initState();
     killSubscription = listenForKill(context: context);
-
+    _getSettings();
     _getUser();
     player.playerStateStream.listen((event) {
       if (event.playing) {
@@ -85,9 +87,13 @@ class AudioMobileState extends State<AudioMobile>
       }
     });
   }
-
+  void _getSettings() async {
+    settingsModel = await prefsOGx.getSettings();
+    var m = settingsModel?.maxAudioLengthInMinutes;
+    limitInSeconds = m! * 60;
+  }
   void _getUser() async {
-    user = await Prefs.getUser();
+    user = await prefsOGx.getUser();
     setState(() {
 
     });
@@ -109,12 +115,25 @@ class AudioMobileState extends State<AudioMobile>
     _timer?.cancel();
 
     _timer = Timer.periodic(const Duration(seconds: 1), (Timer t) {
-      setState(() => seconds++);
+      if (seconds >= limitInSeconds) {
+        _recorderController.stop();
+      }
+      if (mounted) {
+        isRecording = false;
+        isPaused = false;
+        isStopped = true;
+        setState(() => seconds++);
+        showToast(message: 'Your recording limit has been reached', context: context);
+
+      }
     });
   }
 
+  SettingsModel? settingsModel;
+  int limitInSeconds = 60;
   _onRecord() async {
     pp('$mm start recording ...');
+
     try {
       setState(() {
         _recordedFile = null;

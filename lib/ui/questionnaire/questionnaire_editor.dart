@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 
 import 'package:page_transition/page_transition.dart';
 import 'package:uuid/uuid.dart';
-import '../../library/api/sharedprefs.dart';
+import '../../library/api/prefs_og.dart';
 import '../../library/bloc/admin_bloc.dart';
 import '../../library/data/questionnaire.dart';
 import '../../library/data/section.dart';
@@ -62,8 +62,8 @@ class QuestionnaireEditorState extends State<QuestionnaireEditor>
   }
 
   _getUser() async {
-    user = await Prefs.getUser();
-    questionnaire = await Prefs.getQuestionnaire();
+    user = await prefsOGx.getUser();
+    questionnaire = await prefsOGx.getQuestionnaire();
     if (questionnaire != null) {
       titleController.text = questionnaire!.title;
       descController.text = questionnaire!.description;
@@ -217,14 +217,14 @@ class QuestionnaireEditorState extends State<QuestionnaireEditor>
   void _onTitle(String value) async {
     title = value;
     questionnaire?.title = title!;
-    await Prefs.saveQuestionnaire(questionnaire!);
+    await prefsOGx.saveQuestionnaire(questionnaire!);
     adminBloc.updateActiveQuestionnaire(questionnaire!);
   }
 
   void _onDescription(String value) async {
     description = value;
     questionnaire?.description = description!;
-    await Prefs.saveQuestionnaire(questionnaire!);
+    await prefsOGx.saveQuestionnaire(questionnaire!);
     adminBloc.updateActiveQuestionnaire(questionnaire!);
   }
 
@@ -243,7 +243,7 @@ class QuestionnaireEditorState extends State<QuestionnaireEditor>
     if (description == null || description!.isEmpty) {
       _showErrorSnack('💦 💦 Enter Description');
     }
-    var country = await Prefs.getCountry();
+    var country = await prefsOGx.getCountry();
     if (country == null) {
       //todo - get appropriate country
       // country = Country(
@@ -295,7 +295,7 @@ class QuestionnaireEditorState extends State<QuestionnaireEditor>
       isBusy = false;
     });
 
-    await Prefs.saveQuestionnaire(questionnaire!);
+    await prefsOGx.saveQuestionnaire(questionnaire!);
     adminBloc.updateActiveQuestionnaire(questionnaire!);
 
     if (mounted) {
@@ -328,7 +328,7 @@ class QuestionnaireEditorState extends State<QuestionnaireEditor>
       await adminBloc.addQuestionnaire(questionnaire!);
       debugPrint(
           ' 😍  😍  😍  remove active 💦 questionnaire from prefs after good write  😍 ');
-      Prefs.removeQuestionnaire();
+      prefsOGx.removeQuestionnaire();
       setState(() {
         isBusy = false;
       });

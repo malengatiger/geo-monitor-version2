@@ -11,7 +11,7 @@ import 'package:map_launcher/map_launcher.dart';
 import 'package:page_transition/page_transition.dart';
 import '../../../ui/audio/audio_mobile.dart';
 import '../../../ui/dashboard/dashboard_mobile.dart';
-import '../../api/sharedprefs.dart';
+import '../../api/prefs_og.dart';
 import '../../bloc/admin_bloc.dart';
 import '../../bloc/fcm_bloc.dart';
 import '../../bloc/organization_bloc.dart';
@@ -128,7 +128,7 @@ class ProjectListMobileState extends State<ProjectListMobile>
     setState(() {
       isBusy = true;
     });
-    user = await Prefs.getUser();
+    user = await prefsOGx.getUser();
     if (user != null) {
       pp('$mm user found: ${user!.toJson()}');
       _setUserType();

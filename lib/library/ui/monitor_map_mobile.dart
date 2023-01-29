@@ -4,7 +4,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import '../api/sharedprefs.dart';
+import '../api/prefs_og.dart';
 import '../bloc/organization_bloc.dart';
 import '../bloc/project_bloc.dart';
 import '../data/user.dart';
@@ -57,7 +57,7 @@ class MonitorMapMobileState extends State<MonitorMapMobile>
     setState(() {
       isBusy = true;
     });
-    user = await Prefs.getUser();
+    user = await prefsOGx.getUser();
     pp('🍎 🍎 🍎 user found: 🍎 ${user!.name!}');
     setState(() {
       isBusy = false;
@@ -70,7 +70,7 @@ class MonitorMapMobileState extends State<MonitorMapMobile>
       isBusy = true;
     });
     try {
-      user = await Prefs.getUser();
+      user = await prefsOGx.getUser();
       projects = await organizationBloc.getOrganizationProjects(
           organizationId: user!.organizationId!, forceRefresh: forceRefresh);
 

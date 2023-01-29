@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:geo_monitor/library/data/settings_model.dart';
 import 'package:universal_platform/universal_platform.dart';
 
 import '../api/data_api.dart';
@@ -310,6 +311,26 @@ class OrganizationBloc {
     }
 
     return photos;
+  }
+  Future<List<SettingsModel>> getSettings(
+      {required String organizationId, required bool forceRefresh}) async {
+    var settingsList = <SettingsModel>[];
+    try {
+      pp('$mm getSettings org settings from hive cache .... 💜 ');
+      settingsList = await cacheManager.getOrganizationSettings();
+      pp('$mm getSettings found in cache: 💜 ${settingsList.length} org settings 💜 ');
+      if (settingsList.isEmpty || forceRefresh) {
+        settingsList = await DataAPI.getOrganizationSettings(organizationId);
+        pp('$mm getSettings list from remote db: 💜 ${settingsList.length} org settings 💜 ');
+      }
+      pp('$mm getSettings found: 💜 ${settingsList.length} org settings 💜 ');
+    } catch (e) {
+      pp('\n$mm 😈😈😈😈😈 getSettings FAILED: 😈😈😈😈😈 $e\n');
+      pp(e);
+      rethrow;
+    }
+
+    return settingsList;
   }
 
   Future<List<Video>> getVideos(

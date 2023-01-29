@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:geo_monitor/library/api/sharedprefs.dart';
+import 'package:geo_monitor/library/api/prefs_og.dart';
 import 'package:geo_monitor/library/data/location_request.dart';
 import 'package:geo_monitor/library/data/user.dart';
 import 'package:uuid/uuid.dart';
@@ -18,7 +18,7 @@ class LocationRequestHandler {
 
   Future<void> startLocationRequestTimer() async {
     pp('$mm starting Timer to send out location requests');
-    var user = await Prefs.getUser();
+    var user = await prefsOGx.getUser();
     if (user == null) {
       pp('$mm Not ready to make location requests');
       return;
@@ -37,10 +37,15 @@ class LocationRequestHandler {
   }
 
   Future sendLocationRequest() async {
+    pp('$mm sendLocationRequest ... getting user');
+    var user = await prefsOGx.getUser();
+    if (user == null) {
+      pp('$mm ..... user is null, cannot send location request ....');
+      return;
+    }
     pp('$mm ..... sending user location request ....');
-    var user = await Prefs.getUser();
     var req = LocationRequest(
-        organizationId: user!.organizationId,
+        organizationId: user.organizationId,
         administratorId: user.organizationId,
         created: DateTime.now().toUtc().toIso8601String(),
         response: '');
@@ -51,7 +56,7 @@ class LocationRequestHandler {
 
   Future<void> startLocationResponseTimer() async {
     pp('$mm starting Timer to send out location requests');
-    var user = await Prefs.getUser();
+    var user = await prefsOGx.getUser();
     if (user == null) {
       pp('$mm Not ready to make location requests');
       return;
@@ -70,21 +75,26 @@ class LocationRequestHandler {
   }
 
   Future sendLocationResponse() async {
-    pp('$mm ..... sending user location response ....');
-    var user = await Prefs.getUser();
-    var loc = await locationBloc.getLocation();
-    var locResp = LocationResponse(
-        position: Position(coordinates: [loc.longitude, loc.latitude],
-            type: 'Point'),
-        date: DateTime.now().toUtc().toIso8601String(),
-        userId: user!.userId,
-        userName: user.name,
-        locationResponseId: const Uuid().v4(),
-        organizationId: user.organizationId,
-        organizationName: user.organizationName);
 
-    var result = await DataAPI.addLocationResponse(locResp);
-    pp('$mm  LocationResponse sent to database, result: ${result.toJson()}');
+    pp('$mm sendLocationResponse ... getting user');
+    var user = await prefsOGx.getUser();
+    if (user == null) return;
+    pp('$mm ..... sending user location response ....');
+    var loc = await locationBlocOG.getLocation();
+    if (loc != null) {
+      var locResp = LocationResponse(
+          position: Position(coordinates: [loc.longitude, loc.latitude],
+              type: 'Point'),
+          date: DateTime.now().toUtc().toIso8601String(),
+          userId: user.userId,
+          userName: user.name,
+          locationResponseId: const Uuid().v4(),
+          organizationId: user.organizationId,
+          organizationName: user.organizationName);
+
+      var result = await DataAPI.addLocationResponse(locResp);
+      pp('$mm  LocationResponse sent to database, result: ${result.toJson()}');
+    }
   }
 }
 

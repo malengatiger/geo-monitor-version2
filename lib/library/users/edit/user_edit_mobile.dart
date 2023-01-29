@@ -3,7 +3,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:uuid/uuid.dart';
 
 import '../../api/data_api.dart';
-import '../../api/sharedprefs.dart';
+import '../../api/prefs_og.dart';
 import '../../bloc/admin_bloc.dart';
 import '../../bloc/organization_bloc.dart';
 import '../../data/user.dart' as ar;
@@ -43,7 +43,7 @@ class UserEditMobileState extends State<UserEditMobile>
   }
 
   void _getAdministrator() async {
-    admin = await Prefs.getUser();
+    admin = await prefsOGx.getUser();
     setState(() {});
   }
 

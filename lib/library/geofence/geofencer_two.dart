@@ -2,9 +2,9 @@ import 'dart:async';
 
 import 'package:geo_monitor/library/data/position.dart';
 import 'package:geofence_service/geofence_service.dart';
-import '../../main.dart';
+import 'package:geofence_service/models/geofence.dart' as geo;
 import '../api/data_api.dart';
-import '../api/sharedprefs.dart';
+import '../api/prefs_og.dart';
 import '../data/geofence_event.dart';
 import '../data/project_position.dart';
 import '../data/user.dart';
@@ -12,6 +12,16 @@ import 'package:uuid/uuid.dart';
 
 import '../functions.dart';
 import '../location/loc_bloc.dart';
+
+final geofenceService = GeofenceService.instance.setup(
+    interval: 5000,
+    accuracy: 100,
+    loiteringDelayMs: 60000,
+    statusChangeDelayMs: 10000,
+    useActivityRecognition: true,
+    allowMockLocations: false,
+    printDevLog: false,
+    geofenceRadiusSortType: GeofenceRadiusSortType.DESC);
 
 final TheGreatGeofencer theGreatGeofencer = TheGreatGeofencer();
 
@@ -22,7 +32,7 @@ class TheGreatGeofencer {
       StreamController.broadcast();
   Stream<GeofenceEvent> get geofenceEventStream => _streamController.stream;
 
-  final _geofenceList = <Geofence>[];
+  final _geofenceList = <geo.Geofence>[];
   User? _user;
 
   // Future initialize() async {
@@ -39,7 +49,7 @@ class TheGreatGeofencer {
   //
   //   pp('\n\n$mm GeofenceService initialized .... 🌺 🌺 🌺 ');
   //
-  //   _user = await Prefs.getUser();
+  //   _user = await prefsOGx.getUser();
   //   if (_user != null) {
   //     pp('$mm Geofences for Organization: ${_user!.organizationId} name: ${_user!.organizationName} .... 🌺 🌺 🌺 ');
   //     pp('$mm Geofences for User: ${_user!.toJson()}');
@@ -62,17 +72,22 @@ class TheGreatGeofencer {
   }
 
   Future buildGeofences({double? radiusInKM}) async {
-    _user ??= await Prefs.getUser();
-
-    await locationBloc.requestPermission();
+    _user ??= await prefsOGx.getUser();
+    if (_user == null) {
+      return;
+    }
+    await locationBlocOG.requestPermission();
     pp('$mm buildGeofences .... build geofences for the organization 🌀 ${_user!.organizationName}  🌀 \n\n');
-    var loc = await locationBloc.getLocation();
+    var loc = await locationBlocOG.getLocation();
+    var list = <ProjectPosition>[];
     try {
-      var list = await _findProjectPositionsByLocation(
-          organizationId: _user!.organizationId!,
-          latitude: loc.latitude,
-          longitude: loc.longitude,
-          radiusInKM: radiusInKM ?? defaultRadiusInKM);
+      if (loc != null) {
+        list = await _findProjectPositionsByLocation(
+            organizationId: _user!.organizationId!,
+            latitude: loc.latitude!,
+            longitude: loc.longitude!,
+            radiusInKM: radiusInKM ?? defaultRadiusInKM);
+      }
 
       for (var pos in list) {
         await addGeofence(projectPosition: pos);
@@ -123,39 +138,43 @@ class TheGreatGeofencer {
     pp('$mm $xx _processing new GeofenceEvent;  🔵 ${geofence.data['projectName']} '
         '🔵 with geofenceStatus: ${geofenceStatus.toString()}');
     
-    var loc = await locationBloc.getLocation();
+    var loc = await locationBlocOG.getLocation();
 
-    var event = GeofenceEvent(
-        status: geofenceStatus.toString(),
-        organizationId: geofence.data['organizationId'],
-        user: _user,
-        position: Position(coordinates: [loc.longitude, loc.latitude], type: 'Point'),
-        geofenceEventId: const Uuid().v4(),
-        projectPositionId: geofence.id,
-        projectId: geofence.data['projectId'],
-        projectName: geofence.data['projectName'],
-        date: DateTime.now().toUtc().toIso8601String());
+    if (loc != null) {
+      var event = GeofenceEvent(
+          status: geofenceStatus.toString(),
+          organizationId: geofence.data['organizationId'],
+          user: _user,
+          position: Position(
+              coordinates: [loc.longitude, loc.latitude], type: 'Point'),
+          geofenceEventId: const Uuid().v4(),
+          projectPositionId: geofence.id,
+          projectId: geofence.data['projectId'],
+          projectName: geofence.data['projectName'],
+          date: DateTime.now().toUtc().toIso8601String());
 
-    String status = geofenceStatus.toString();
-    switch (status) {
-      case 'GeofenceStatus.ENTER':
-        event.status = 'ENTER';
-        pp('$mm IGNORING geofence ENTER event for ${event.projectName}');
-        break;
-      case 'GeofenceStatus.DWELL':
-        event.status = 'DWELL';
-        var gfe = await DataAPI.addGeofenceEvent(event);
-        pp('$mm $xx geofence event added to database for ${event.projectName}');
-        _streamController.sink.add(gfe);
-        break;
-      case 'GeofenceStatus.EXIT':
-        event.status = 'EXIT';
-        var gfe = await DataAPI.addGeofenceEvent(event);
-        pp('$mm $xx geofence event added to database for ${event.projectName}');
-        _streamController.sink.add(gfe);
-        break;
+      String status = geofenceStatus.toString();
+      switch (status) {
+        case 'GeofenceStatus.ENTER':
+          event.status = 'ENTER';
+          pp('$mm IGNORING geofence ENTER event for ${event.projectName}');
+          break;
+        case 'GeofenceStatus.DWELL':
+          event.status = 'DWELL';
+          var gfe = await DataAPI.addGeofenceEvent(event);
+          pp('$mm $xx geofence event added to database for ${event
+              .projectName}');
+          _streamController.sink.add(gfe);
+          break;
+        case 'GeofenceStatus.EXIT':
+          event.status = 'EXIT';
+          var gfe = await DataAPI.addGeofenceEvent(event);
+          pp('$mm $xx geofence event added to database for ${event
+              .projectName}');
+          _streamController.sink.add(gfe);
+          break;
+      }
     }
-
 
 
   }
@@ -174,7 +193,7 @@ class TheGreatGeofencer {
     );
 
     _geofenceList.add(fence);
-    pp('$mm added Geofence .... 👽👽👽👽👽 id: ${fence.id} 👽👽 _geofenceList now has ${_geofenceList.length} fences 🍎 ');
+    pp('$mm added Geofence .... 👽👽👽👽👽👽👽 _geofenceList now has ${_geofenceList.length} fences 🍎 ');
   }
 
   var defaultRadiusInKM = 100.0;

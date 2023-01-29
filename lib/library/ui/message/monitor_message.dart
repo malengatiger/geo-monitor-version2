@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:uuid/uuid.dart';
 import '../../api/data_api.dart';
-import '../../api/sharedprefs.dart';
+import '../../api/prefs_og.dart';
 import '../../data/project.dart';
 import '../../data/user.dart';
 import '../../data/org_message.dart';
@@ -40,7 +40,7 @@ class MonitorMessageState extends State<MonitorMessage> {
     setState(() {
       isBusy = true;
     });
-    var admin = await Prefs.getUser();
+    var admin = await prefsOGx.getUser();
     if (admin != null && admin.userId != widget.user.userId) {
       var msg = OrgMessage(
           name: widget.user.name,

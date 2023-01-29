@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../library/api/sharedprefs.dart';
+import '../../library/api/prefs_og.dart';
 import '../../library/bloc/admin_bloc.dart';
 import '../../library/data/question.dart';
 import '../../library/data/questionnaire.dart';
@@ -101,7 +101,7 @@ class SectionEditorState extends State<SectionEditor>
         ' 🥬🥬🥬 Section just received,  🥬  check if section is in  questionnaire already');
     prettyPrint(widget.questionnaire.toJson(),
         'Questionnaire, 🍪🍪🍪 check if section updated');
-    await Prefs.saveQuestionnaire(widget.questionnaire);
+    await prefsOGx.saveQuestionnaire(widget.questionnaire);
     adminBloc.updateActiveQuestionnaire(widget.questionnaire);
   }
 }

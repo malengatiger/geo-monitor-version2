@@ -1,9 +1,7 @@
 import 'dart:async';
 
-import 'package:geolocator/geolocator.dart' as loc;
-
 import '../api/data_api.dart';
-import '../api/sharedprefs.dart';
+import '../api/prefs_og.dart';
 import '../data/audio.dart';
 import '../data/community.dart';
 import '../data/country.dart';
@@ -251,19 +249,23 @@ class ProjectBloc {
 
   Future<List<Project>> getProjectsWithinRadius(
       {double radiusInKM = 100.5, bool checkUserOrg = true}) async {
-    loc.Position pos;
-    var user = await Prefs.getUser();
-
+    var user = await prefsOGx.getUser();
+    var pos = await locationBlocOG.getLocation();
     try {
-      pos = await locationBloc.getLocation();
-      pp('$mm current location: 💜 latitude: ${pos.latitude} longitude: ${pos.longitude}');
+
+      if (pos != null) {
+        pp('$mm current location: 💜 latitude: ${pos.latitude} longitude: ${pos
+            .longitude}');
+      } else {
+        return [];
+      }
     } catch (e) {
       pp('MonitorBloc: Location is fucked!');
       rethrow;
     }
     var projects = await DataAPI.findProjectsByLocation(
-        latitude: pos.latitude,
-        longitude: pos.longitude,
+        latitude: pos.latitude!,
+        longitude: pos.longitude!,
         radiusInKM: radiusInKM);
 
     List<Project> userProjects = [];
@@ -276,8 +278,6 @@ class ProjectBloc {
         userProjects.add(project);
       }
     }
-
-
 
     pp('$mm User Org Projects within radius of $radiusInKM kilometres; '
         'found: 💜 ${userProjects.length} projects in organization, filtered out non-org projects found in radius');

@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:geo_monitor/library/api/sharedprefs.dart';
+import 'package:geo_monitor/library/api/prefs_og.dart';
 import 'package:geo_monitor/library/hive_util.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
 
@@ -166,7 +166,7 @@ class PhoneLoginState extends State<PhoneLogin>
         user = await DataAPI.getUserById(userId: userCred.user!.uid);
 
         if (user != null) {
-          await Prefs.saveUser(user!);
+          await prefsOGx.saveUser(user!);
           await cacheManager.addUser(user: user!);
           setState(() {
             busy = false;

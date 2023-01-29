@@ -5,7 +5,7 @@ import 'dart:math';
 import 'package:animations/animations.dart';
 import 'package:badges/badges.dart' as bd;
 import 'package:flutter/material.dart';
-import 'package:geo_monitor/library/api/sharedprefs.dart';
+import 'package:geo_monitor/library/api/prefs_og.dart';
 import 'package:geo_monitor/library/bloc/organization_bloc.dart';
 import 'package:geo_monitor/library/bloc/project_bloc.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -88,7 +88,7 @@ class ProjectMapMobileState extends State<ProjectMapMobile>
   }
 
   void _getUser() async {
-    user = await Prefs.getUser();
+    user = await prefsOGx.getUser();
     _refreshData(false);
   }
 
@@ -218,7 +218,7 @@ class ProjectMapMobileState extends State<ProjectMapMobile>
     var map = <double, ProjectPosition>{};
     for (var i = 0; i < widget.projectPositions.length; i++) {
       var projPos = widget.projectPositions.elementAt(i);
-      var dist = await locationBloc.getDistance(
+      var dist = await locationBlocOG.getDistance(
           latitude: projPos.position!.coordinates.elementAt(1),
           longitude: projPos.position!.coordinates.elementAt(0),
           toLatitude: latitude,
@@ -380,9 +380,13 @@ class ProjectMapMobileState extends State<ProjectMapMobile>
           children: [
             GestureDetector(
               onTap: () async {
-                var loc = await locationBloc.getLocation();
-                _animateCamera(
-                    latitude: loc.latitude, longitude: loc.longitude, zoom: 12.0);
+                var loc = await locationBlocOG.getLocation();
+                if (loc != null) {
+                  _animateCamera(
+                      latitude: loc.latitude!,
+                      longitude: loc.longitude!,
+                      zoom: 12.0);
+                }
               },
               child: bd.Badge(
                 badgeStyle:  bd.BadgeStyle(

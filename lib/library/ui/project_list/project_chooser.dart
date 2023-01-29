@@ -3,7 +3,7 @@ import 'package:badges/badges.dart' as bd;
 import 'package:flutter/material.dart';
 
 import '../../api/data_api.dart';
-import '../../api/sharedprefs.dart';
+import '../../api/prefs_og.dart';
 import '../../data/project.dart';
 import '../../functions.dart';
 import '../../hive_util.dart';
@@ -45,7 +45,7 @@ class ProjectChooserState extends State<ProjectChooser>
 
     projects = await cacheManager.getOrganizationProjects();
     if (projects.isEmpty) {
-      var user = await Prefs.getUser();
+      var user = await prefsOGx.getUser();
       projects = await DataAPI.getOrganizationProjects(user!.organizationId!);
     }
     projects.sort((a, b) => b.created!.compareTo(a.created!));

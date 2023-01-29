@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:responsive_builder/responsive_builder.dart';
-import '../../../api/sharedprefs.dart';
+import '../../../api/prefs_og.dart';
 import '../../../bloc/organization_bloc.dart';
 import '../../../data/project.dart';
 import '../../../data/user.dart';
@@ -43,7 +43,7 @@ class MediaListMainState extends State<MediaListMain>
       isBusy = true;
     });
 
-    var user = await Prefs.getUser();
+    var user = await prefsOGx.getUser();
     if (user != null) {
       switch (user.userType!) {
         case UserType.fieldMonitor:

@@ -1,11 +1,11 @@
 {
-    "name": "geo_monitor",
-    "short_name": "geo_monitor",
+    "name": "geo_monitor2",
+    "short_name": "geo_monitor2",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",
     "theme_color": "#0175C2",
-    "description": "Geo Mobile App",
+    "description": "Geo Monitor Version 1.1",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
     "icons": [

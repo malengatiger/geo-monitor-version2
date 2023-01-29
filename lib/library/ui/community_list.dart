@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../api/sharedprefs.dart';
+import '../api/prefs_og.dart';
 import '../bloc/admin_bloc.dart';
 import '../data/community.dart';
 import '../data/country.dart';
@@ -36,7 +36,7 @@ class CommunityListState extends State<CommunityList> {
     setState(() {
       isBusy = true;
     });
-    country = await Prefs.getCountry();
+    country = await prefsOGx.getCountry();
     if (country == null) {
       countries = await adminBloc.getCountries();
       if (countries.length == 1) {

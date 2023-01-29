@@ -113,7 +113,7 @@ const labels = [
 
 class UserType {
   static const String fieldMonitor = 'FIELD_MONITOR';
-  static const String orgAdministrator = 'UserType.orgAdministrator';
+  static const String orgAdministrator = 'ORG_ADMINISTRATOR';
   static const String orgExecutive = 'ORG_EXECUTIVE';
   static const String networkAdministrator = 'NETWORK_ADMINISTRATOR';
   static const String orgOwner = 'ORG_OWNER';

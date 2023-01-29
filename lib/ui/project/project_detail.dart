@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'package:page_transition/page_transition.dart';
 
-import '../../library/api/sharedprefs.dart';
+import '../../library/api/prefs_og.dart';
 import '../../library/bloc/admin_bloc.dart';
 import '../../library/data/community.dart';
 import '../../library/data/project.dart';
@@ -36,7 +36,7 @@ class ProjectDetailState extends State<ProjectDetail> {
 
   _getData() async {
     _buildNav();
-    user = await Prefs.getUser();
+    user = await prefsOGx.getUser();
   }
 
   @override

@@ -5,7 +5,7 @@ import 'package:flutter_credit_card/credit_card_widget.dart';
 import 'package:flutter_credit_card/custom_card_type_icon.dart';
 import 'package:flutter_credit_card/glassmorphism_config.dart';
 
-import '../../api/sharedprefs.dart';
+import '../../api/prefs_og.dart';
 import '../../data/user.dart';
 import '../../functions.dart';
 
@@ -51,7 +51,7 @@ class CreditCardHandlerMobileState extends State<CreditCardHandlerMobile>
   }
 
   void _getUser() async {
-    user = await Prefs.getUser();
+    user = await prefsOGx.getUser();
     if (user != null) {
       cardHolderName = user!.name!;
       setState(() {

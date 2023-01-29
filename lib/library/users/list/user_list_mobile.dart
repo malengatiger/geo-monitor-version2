@@ -11,7 +11,7 @@ import 'package:geo_monitor/library/users/report/user_rpt_mobile.dart';
 
 import 'package:page_transition/page_transition.dart';
 
-import '../../api/sharedprefs.dart';
+import '../../api/prefs_og.dart';
 import '../../bloc/fcm_bloc.dart';
 import '../../bloc/organization_bloc.dart';
 import '../../emojis.dart';
@@ -66,7 +66,7 @@ class UserListMobileState extends State<UserListMobile>
       busy = true;
     });
     try {
-      _user = await Prefs.getUser();
+      _user = await prefsOGx.getUser();
       if (_user!.userType == UserType.orgAdministrator || _user!.userType == UserType.orgExecutive) {
         _showPlusIcon = true;
       }

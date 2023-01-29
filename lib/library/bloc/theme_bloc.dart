@@ -3,9 +3,10 @@ import 'dart:math';
 
 import 'package:flex_color_scheme/flex_color_scheme.dart';
 import 'package:flutter/material.dart';
+import 'package:get_storage/get_storage.dart';
 
 
-import '../api/sharedprefs.dart';
+import '../api/prefs_og.dart';
 import '../emojis.dart';
 import '../functions.dart';
 
@@ -14,7 +15,7 @@ final ThemeBloc themeBloc = ThemeBloc();
 class ThemeBloc {
   ThemeBloc() {
     pp('✈️✈️ ... ThemeBloc initializing ....');
-    initialize();
+    _initialize();
   }
 
   final StreamController<int> _themeController = StreamController.broadcast();
@@ -26,30 +27,46 @@ class ThemeBloc {
 
   int get themeIndex => _themeIndex;
 
-  initialize() async {
-    _themeIndex = await Prefs.getThemeIndex();
+  _initialize() async {
+    _themeIndex = await prefsOGx.getThemeIndex();
     pp('$mm ThemeBloc: initialize:: adding index to stream ....theme index: $themeIndex');
     _themeController.sink.add(_themeIndex);
   }
 
-  void start() async {
-    var index = await Prefs.getThemeIndex();
-    _themeController.sink.add(index);
+  Future start()  async {
+    _themeIndex = await prefsOGx.getThemeIndex();
+    _themeController.sink.add(_themeIndex);
+    pp('$mm theming started ...... _themeIndex: $_themeIndex');
   }
 
   ThemeBag getTheme(int index) {
     return SchemeUtil.getTheme(themeIndex: index);
   }
 
-  changeToRandomTheme() {
+  Future<int> changeToRandomTheme() async {
     _themeIndex = _rand.nextInt(SchemeUtil.getThemeCount() - 1);
-    _setStream(_themeIndex);
+    pp('\n\n$mm changing to theme index: $_themeIndex');
+    pp('$mm _setStream: setting stream .... to theme index: $_themeIndex');
+    await prefsOGx.setThemeIndex(_themeIndex);
+    var settings = await prefsOGx.getSettings();
+    settings.themeIndex = _themeIndex;
+    await prefsOGx.saveSettings(settings);
+    _themeController.sink.add(_themeIndex);
+    return _themeIndex;
+  }
+  Future<int> changeToTheme(int index) async {
+    pp('\n\n$mm changing to theme index: $index');
+    pp('$mm _setStream: setting stream .... to theme index: $_themeIndex');
+    await prefsOGx.setThemeIndex(index);
+    var settings = await prefsOGx.getSettings();
+    settings.themeIndex = _themeIndex;
+    await prefsOGx.saveSettings(settings);
+    _themeController.sink.add(index);
+    return index;
   }
 
-  _setStream(int index) {
-    pp('$mm _setStream: setting stream .... to theme index: $index');
-    Prefs.setThemeIndex(index);
-    _themeController.sink.add(index);
+  int getThemeCount() {
+    return SchemeUtil.getThemeCount();
   }
 
   closeStream() {
@@ -102,9 +119,39 @@ class SchemeUtil {
 
   static void _setThemes() {
     _themeBags.clear();
+
+    _themeBags.add(ThemeBag(
+        lightTheme: FlexThemeData.light(scheme: FlexScheme.redWine),
+        darkTheme: FlexThemeData.dark(scheme: FlexScheme.redWine)));
+    _themeBags.add(ThemeBag(
+        lightTheme: FlexThemeData.light(scheme: FlexScheme.green),
+        darkTheme: FlexThemeData.dark(scheme: FlexScheme.green)));
+
     _themeBags.add(ThemeBag(
         lightTheme: FlexThemeData.light(scheme: FlexScheme.mallardGreen),
         darkTheme: FlexThemeData.dark(scheme: FlexScheme.mallardGreen)));
+
+    _themeBags.add(ThemeBag(
+        lightTheme: FlexThemeData.light(scheme: FlexScheme.mandyRed),
+        darkTheme: FlexThemeData.dark(scheme: FlexScheme.mandyRed)));
+
+    _themeBags.add(ThemeBag(
+        lightTheme: FlexThemeData.light(scheme: FlexScheme.redWine),
+        darkTheme: FlexThemeData.dark(scheme: FlexScheme.redWine)));
+
+    _themeBags.add(ThemeBag(
+        lightTheme: FlexThemeData.light(scheme: FlexScheme.red),
+        darkTheme: FlexThemeData.dark(scheme: FlexScheme.red)));
+
+    _themeBags.add(ThemeBag(
+        lightTheme: FlexThemeData.light(scheme: FlexScheme.flutterDash),
+        darkTheme: FlexThemeData.dark(scheme: FlexScheme.flutterDash)));
+
+    _themeBags.add(ThemeBag(
+        lightTheme: FlexThemeData.light(scheme: FlexScheme.mango),
+        darkTheme: FlexThemeData.dark(scheme: FlexScheme.mango)));
+
+
     _themeBags.add(ThemeBag(
         lightTheme: FlexThemeData.light(scheme: FlexScheme.indigo),
         darkTheme: FlexThemeData.dark(scheme: FlexScheme.indigo)));
@@ -207,6 +254,17 @@ class SchemeUtil {
     _themeBags.add(ThemeBag(
         lightTheme: FlexThemeData.light(scheme: FlexScheme.blumineBlue),
         darkTheme: FlexThemeData.dark(scheme: FlexScheme.blumineBlue)));
+    _themeBags.add(ThemeBag(
+        lightTheme: FlexThemeData.light(scheme: FlexScheme.barossa),
+        darkTheme: FlexThemeData.dark(scheme: FlexScheme.barossa)));
+    _themeBags.add(ThemeBag(
+        lightTheme: FlexThemeData.light(scheme: FlexScheme.green),
+        darkTheme: FlexThemeData.dark(scheme: FlexScheme.green)));
+    _themeBags.add(ThemeBag(
+        lightTheme: FlexThemeData.light(scheme: FlexScheme.greyLaw),
+        darkTheme: FlexThemeData.dark(scheme: FlexScheme.greyLaw)));
+
+
 
   }
 }

@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:geo_monitor/library/api/sharedprefs.dart';
+import 'package:geo_monitor/library/api/prefs_og.dart';
 import 'package:geo_monitor/library/data/country.dart';
 import 'package:geo_monitor/library/data/organization.dart';
 import 'package:geo_monitor/library/data/organization_registration_bag.dart';
@@ -30,7 +30,7 @@ class OrgRegistrationPageState extends State<OrgRegistrationPage>
   late AnimationController _animationController;
   bool _codeHasBeenSent = false;
   FirebaseAuth firebaseAuth = FirebaseAuth.instance;
-  final mm = '🥬🥬🥬🥬🥬🥬 CustomPhoneAuth: ';
+  final mm = '🥬🥬🥬🥬🥬🥬 OrgRegistrationPage: ';
   String? phoneVerificationId;
   String? code;
   final phoneController = TextEditingController(text: "+27659990000");
@@ -168,44 +168,48 @@ class OrgRegistrationPageState extends State<OrgRegistrationPage>
           countryName: country!.name,
           organizationId: const Uuid().v4());
 
-      var loc = await locationBloc.getLocation();
+      var loc = await locationBlocOG.getLocation();
 
-      var bag = OrganizationRegistrationBag(
-          organization: org,
-          sampleProjectPosition: null,
-          sampleUsers: [],
-          sampleProject: null,
-          date: DateTime.now().toUtc().toIso8601String(),
-          latitude: loc.latitude,
-          longitude: loc.longitude);
+      if (loc != null) {
+        var bag = OrganizationRegistrationBag(
+            organization: org,
+            sampleProjectPosition: null,
+            sampleUsers: [],
+            sampleProject: null,
+            date: DateTime.now().toUtc().toIso8601String(),
+            latitude: loc.latitude,
+            longitude: loc.longitude);
 
-      var result = await DataAPI.registerOrganization(bag);
-      pp('$mm firebase user credential obtained:  🍎 $userCred');
-      var gender = 'Unknown';
-      user = ur.User(
-          name: adminController.value.text,
-          email: emailController.value.text,
-          userId: userCred.user!.uid,
-          cellphone: phoneController.value.text,
-          created: DateTime.now().toUtc().toIso8601String(),
-          userType: ur.UserType.orgAdministrator,
-          gender: gender,
-          active: 0,
-          organizationName: orgNameController.value.text,
-          organizationId: org.organizationId,
-          countryId: country!.countryId,
-          password: '');
+        var result = await DataAPI.registerOrganization(bag);
+        pp('$mm firebase user credential obtained:  🍎 $userCred');
+        var gender = 'Unknown';
+        user = ur.User(
+            name: adminController.value.text,
+            email: emailController.value.text,
+            userId: userCred.user!.uid,
+            cellphone: phoneController.value.text,
+            created: DateTime.now().toUtc().toIso8601String(),
+            userType: ur.UserType.orgAdministrator,
+            gender: gender,
+            active: 0,
+            organizationName: orgNameController.value.text,
+            organizationId: org.organizationId,
+            countryId: country!.countryId,
+            password: '');
 
-      var mUser = await DataAPI.addUser(user!);
-      mUser.password = const Uuid().v4();
-      var res = await DataAPI.updateAuthedUser(mUser);
+        var mUser = await DataAPI.addUser(user!);
+        mUser.password = const Uuid().v4();
+        var res = await DataAPI.updateAuthedUser(mUser);
 
-      if (res == 0) {
-        await Prefs.saveUser(user!);
-        await cacheManager.addUser(user: user!);
-        pp('\n$mm Organization OG Administrator registered OK:🌍🌍🌍🌍  🍎 ${mUser.toJson()} 🌍🌍🌍🌍');
+        if (res == 0) {
+          await prefsOGx.saveUser(user!);
+          await cacheManager.addUser(user: user!);
+          pp('\n$mm Organization OG Administrator registered OK:🌍🌍🌍🌍  🍎 ${mUser
+              .toJson()} 🌍🌍🌍🌍');
+        }
+        pp('\n\n$mm Organization registered: 🌍🌍🌍🌍 🍎 ${result
+            .toJson()} 🌍🌍🌍🌍\n\n');
       }
-      pp('\n\n$mm Organization registered: 🌍🌍🌍🌍 🍎 ${result.toJson()} 🌍🌍🌍🌍\n\n');
     } catch (e) {
       pp(e);
       String msg = e.toString();
@@ -235,11 +239,13 @@ class OrgRegistrationPageState extends State<OrgRegistrationPage>
   }
 
   _onCountrySelected(Country p1) {
+
     if (mounted) {
       setState(() {
         country = p1;
       });
     }
+    prefsOGx.saveCountry(p1);
   }
 
   @override

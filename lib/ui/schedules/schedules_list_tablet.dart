@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../library/api/sharedprefs.dart';
+import '../../library/api/prefs_og.dart';
 import '../../library/bloc/user_bloc.dart';
 import '../../library/data/field_monitor_schedule.dart';
 import '../../library/data/user.dart';
@@ -41,7 +41,7 @@ class SchedulesListTabletState extends State<SchedulesListTablet>
       busy = true;
     });
     try {
-      _user = await Prefs.getUser();
+      _user = await prefsOGx.getUser();
       _schedules = await userBloc.getFieldMonitorSchedules(
           userId: _user!.userId!, forceRefresh: refresh);
     } catch (e) {

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../api/sharedprefs.dart';
+import '../../api/prefs_og.dart';
 import '../../data/user.dart';
 import '../../functions.dart';
 
@@ -26,7 +26,7 @@ class UserReportMobileState extends State<UserReportMobile>
   }
 
   void _getAdminUser() async {
-    admin = await Prefs.getUser();
+    admin = await prefsOGx.getUser();
   }
 
   @override

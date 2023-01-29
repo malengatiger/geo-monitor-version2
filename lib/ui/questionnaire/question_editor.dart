@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'package:page_transition/page_transition.dart';
 
-import '../../library/api/sharedprefs.dart';
+import '../../library/api/prefs_og.dart';
 import '../../library/bloc/admin_bloc.dart';
 import '../../library/data/question.dart';
 import '../../library/data/questionnaire.dart';
@@ -99,7 +99,7 @@ class QuestionEditorState extends State<QuestionEditor>
     prettyPrint(widget.questionnaire.toJson(),
         '🐤 🐤 Questionnaire after question update, ☘☘ check  question');
 
-    await Prefs.saveQuestionnaire(widget.questionnaire);
+    await prefsOGx.saveQuestionnaire(widget.questionnaire);
     adminBloc.updateActiveQuestionnaire(widget.questionnaire);
     return null;
   }
@@ -285,7 +285,7 @@ class QuestionFormState extends State<QuestionForm> {
         }
       }
     }
-    await Prefs.saveQuestionnaire(widget.questionnaire);
+    await prefsOGx.saveQuestionnaire(widget.questionnaire);
     adminBloc.updateActiveQuestionnaire(widget.questionnaire);
 
     if (mounted) {

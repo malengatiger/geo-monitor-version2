@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:geo_monitor/library/hive_util.dart';
 
 import '../api/data_api.dart';
-import '../api/sharedprefs.dart';
+import '../api/prefs_og.dart';
 import '../data/community.dart';
 import '../data/country.dart';
 import '../data/position.dart';
@@ -46,13 +46,12 @@ class AdminBloc {
   final List<Country> _countries = [];
 
   AdminBloc() {
-    checkPermission();
     _setActiveQuestionnaire();
     setActiveUser();
   }
 
   setActiveUser() async {
-    var user = await Prefs.getUser();
+    var user = await prefsOGx.getUser();
     if (user != null) {
       pp('setting active user .... 🤟🤟');
       _activeUserController.sink.add(user);
@@ -60,10 +59,10 @@ class AdminBloc {
   }
 
   _setActiveQuestionnaire() async {
-    var q = await Prefs.getQuestionnaire();
-    if (q != null) {
-      updateActiveQuestionnaire(q);
-    }
+    // var q = await prefsOGx.getQuestionnaire();
+    // if (q != null) {
+    //   updateActiveQuestionnaire(q);
+    // }
   }
 
   updateActiveQuestionnaire(Questionnaire q) {
@@ -75,9 +74,9 @@ class AdminBloc {
 
   Future<Position> getCurrentPosition() async {
     try {
-      var mLocation = await locationBloc.getLocation();
+      var mLocation = await locationBlocOG.getLocation();
       return Position.fromJson({
-        'coordinates': [mLocation.longitude, mLocation.latitude],
+        'coordinates': [mLocation?.longitude, mLocation?.latitude],
         'type': 'Point',
       });
     } catch (e) {
@@ -85,10 +84,6 @@ class AdminBloc {
     }
   }
 
-  Future checkPermission() async {
-    pp(' 🔆 🔆 🔆 🔆 .................... checking permissions 💙 location 💙 storage ?? 💙 ...');
-    return locationBloc.checkPermission();
-  }
 
   Future addToPolygon(
       {required String settlementId,
@@ -98,7 +93,7 @@ class AdminBloc {
         communityId: settlementId, latitude: latitude, longitude: longitude);
     pp('Bloc: 🐬 🐬 addToPolygon ... check response below');
 
-    var country = await Prefs.getCountry();
+    var country = await prefsOGx.getCountry();
     if (country != null) {
       pp('Bloc: 🐬 🐬 addToPolygon ... 🐷 🐷 🐷 refreshing settlement list');
 //      _settlements = await findSettlementsByCountry(country.countryId);
@@ -111,7 +106,7 @@ class AdminBloc {
       {required String questionnaireId, required Section section}) async {
     var res = await DataAPI.addQuestionnaireSection(
         questionnaireId: questionnaireId, section: section);
-    var user = await Prefs.getUser();
+    var user = await prefsOGx.getUser();
     if (user != null) {
       await getQuestionnairesByOrganization(user.organizationId!);
       pp('🤟🤟🤟 Org questionnaires refreshed 🌹');
@@ -148,7 +143,7 @@ class AdminBloc {
     _questionnaires.add(res);
     _questController.sink.add(_questionnaires);
 
-    var user = await Prefs.getUser();
+    var user = await prefsOGx.getUser();
     if (user != null) {
       await getQuestionnairesByOrganization(user.organizationId!);
       pp('🤟🤟🤟 Org questionnaires refreshed after 🤟 successful addition to DB 🌹');

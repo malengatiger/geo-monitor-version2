@@ -4,7 +4,7 @@ import 'package:geo_monitor/library/api/data_api.dart';
 import 'package:geo_monitor/library/emojis.dart';
 import 'package:geo_monitor/library/generic_functions.dart';
 
-import '../api/sharedprefs.dart';
+import '../api/prefs_og.dart';
 import '../data/user.dart';
 import '../functions.dart';
 
@@ -41,7 +41,7 @@ class KillUserPageState extends State<KillUserPage>
 
   void _sendKillRequest() async {
     pp('$mm sending kill request for ${widget.user.name!}');
-    var killer = await Prefs.getUser();
+    var killer = await prefsOGx.getUser();
     setState(() {
       busy = true;
     });

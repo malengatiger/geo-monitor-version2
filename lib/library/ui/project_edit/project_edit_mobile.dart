@@ -3,7 +3,7 @@ import 'package:google_fonts/google_fonts.dart';
 
 import 'package:page_transition/page_transition.dart';
 import 'package:uuid/uuid.dart';
-import '../../api/sharedprefs.dart';
+import '../../api/prefs_og.dart';
 import '../../bloc/admin_bloc.dart';
 import '../../bloc/organization_bloc.dart';
 import '../../data/project.dart';
@@ -38,7 +38,7 @@ class ProjectEditMobileState extends State<ProjectEditMobile>
   }
 
   void _getUser() async {
-    admin = await Prefs.getUser();
+    admin = await prefsOGx.getUser();
     if (admin != null) {
       pp('🎽 🎽 🎽 We have an admin user? 🎽 🎽 🎽 ${admin!.toJson()}');
       setState(() {});

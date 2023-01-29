@@ -30,12 +30,14 @@ import '../data/project_position.dart';
 import '../data/questionnaire.dart';
 import '../data/rating.dart';
 import '../data/section.dart';
+import '../data/settings_model.dart';
 import '../data/user.dart';
 import '../data/video.dart';
 
 import '../functions.dart';
 import '../generic_functions.dart' as gen;
 import '../hive_util.dart';
+import '../ui/settings.dart';
 
 class DataAPI {
   static Map<String, String> headers = {
@@ -82,6 +84,23 @@ class DataAPI {
           await _callWebAPIPost('${mURL!}addFieldMonitorSchedule', bag);
       var s = FieldMonitorSchedule.fromJson(result);
       await cacheManager.addFieldMonitorSchedule(schedule: s);
+      return s;
+    } catch (e) {
+      pp(e);
+      rethrow;
+    }
+  }
+
+
+  static Future<SettingsModel> addSettings(
+      SettingsModel settings) async {
+    String? mURL = await getUrl();
+    Map bag = settings.toJson();
+    try {
+      var result =
+      await _callWebAPIPost('${mURL!}addSettings', bag);
+      var s = SettingsModel.fromJson(result);
+      pp('$mm settings from db: ${s.toJson()}');
       return s;
     } catch (e) {
       pp(e);
@@ -185,6 +204,31 @@ class DataAPI {
       }
       pp('🌿 🌿 🌿 getMonitorFieldMonitorSchedules returned: 🌿 ${mList.length}');
       await cacheManager.addFieldMonitorSchedules(schedules: mList);
+      return mList;
+    } catch (e) {
+      pp(e);
+      rethrow;
+    }
+  }
+
+  static Future<List<SettingsModel>> getOrganizationSettings(
+      String organizationId) async {
+    String? mURL = await getUrl();
+    List<SettingsModel> mList = [];
+    try {
+      List result = await _sendHttpGET(
+          '${mURL!}getOrganizationSettings?organizationId=$organizationId');
+      pp(result);
+      for (var element in result) {
+        mList.add(SettingsModel.fromJson(element));
+      }
+      if (mList.isNotEmpty) {
+        mList.sort((a, b) => b.created!.compareTo(a.created!));
+        //todo - save in local cache
+        await cacheManager.addOrganizationSettingsList(mList);
+      }
+
+      pp('🌿 🌿 🌿 getOrganizationSettings returned: 🌿 ${mList.length}');
       return mList;
     } catch (e) {
       pp(e);

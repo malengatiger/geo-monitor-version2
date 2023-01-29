@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../library/api/sharedprefs.dart';
+import '../../library/api/prefs_og.dart';
 import '../../library/bloc/admin_bloc.dart';
 import '../../library/data/community.dart';
 import '../../library/data/country.dart';
@@ -42,11 +42,11 @@ class SettlementEditorState extends State<SettlementEditor>
   }
 
   _getData() async {
-    user = await Prefs.getUser();
+    user = await prefsOGx.getUser();
     countries = await adminBloc.getCountries();
     if (countries.length == 1) {
       _country = countries.elementAt(0);
-      await Prefs.saveCountry(_country!);
+      await prefsOGx.saveCountry(_country!);
       prettyPrint(_country!.toJson(), '💙 💙 💙 country.  check country id');
     }
     setState(() {});

@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:geo_monitor/library/api/prefs_og.dart';
 
 import 'package:image_picker/image_picker.dart';
 import 'package:native_device_orientation/native_device_orientation.dart';
@@ -24,6 +25,7 @@ import '../../functions.dart';
 import '../../generic_functions.dart';
 import '../../location/loc_bloc.dart';
 import '../media/list/project_media_list_mobile.dart';
+import '../settings.dart';
 
 class PhotoHandler extends StatefulWidget {
   const PhotoHandler({Key? key, required this.project, this.projectPosition})
@@ -93,15 +95,38 @@ class PhotoHandlerState extends State<PhotoHandler>
       busy = false;
     });
   }
+/*
 
+Standard Display Resolution Sizes
+Name(s)	Resolution in pixels
+High Definition (HD)	1280 x 720
+Full HD, FHD	1920 x 1080
+ */
   void _startPhoto() async {
-    pp('$mm file taking started ....');
+    pp('$mm photo taking started ....');
+    var settings = await prefsOGx.getSettings();
+    var height = 0.0, width = 0.0;
+    switch(settings.photoSize) {
+      case 0:
+        height = 640;
+        width = 480;
+        break;
+      case 1:
+        height = 720;
+        width = 1280;
+        break;
+      case 2:
+        height = 1080;
+        width = 1920;
+        break;
+    }
     final XFile? file = await _picker.pickImage(
         source: ImageSource.camera,
-        maxHeight: 800,
-        maxWidth: 600,
+        maxHeight: height,
+        maxWidth: width,
         imageQuality: 100,
         preferredCameraDevice: CameraDevice.rear);
+
     if (file != null) {
       await _processFile(file);
       setState(() {});
@@ -172,13 +197,16 @@ class PhotoHandlerState extends State<PhotoHandler>
           projectPositionId: widget.projectPosition!.projectPositionId!,
           projectPosition: widget.projectPosition!.position!,);
     } else {
-      var loc = await locationBloc.getLocation();
-      var position =
-          Position(type: 'Point', coordinates: [loc.longitude, loc.latitude]);
-      var polygon = getPolygonUserIsWithin(
-          polygons: polygons, latitude: loc.latitude, longitude: loc.longitude);
+      var loc = await locationBlocOG.getLocation();
+      if (loc != null) {
+        var position =
+        Position(type: 'Point', coordinates: [loc.longitude, loc.latitude]);
+        var polygon = getPolygonUserIsWithin(
+            polygons: polygons,
+            latitude: loc.latitude!,
+            longitude: loc.longitude!);
 
-      var result = await cloudStorageBloc.uploadPhoto(
+        var result = await cloudStorageBloc.uploadPhoto(
           listener: this,
           file: mFile,
           thumbnailFile: tFile,
@@ -186,20 +214,24 @@ class PhotoHandlerState extends State<PhotoHandler>
           projectPolygonId: polygon?.projectPolygonId,
           projectPosition: position,);
 
-      pp('$mm result from cloudStorageBloc: $result, if $uploadFinished we good!');
-    }
+        pp(
+            '$mm result from cloudStorageBloc: $result, if $uploadFinished we good!');
+      }
 
-    var size = await mFile.length();
-    var m = (size / 1024 / 1024).toStringAsFixed(2);
-    pp('$mm Picture taken is $m MB in size');
-    if (mounted) {
-      showToast(
-          context: context,
-          message: 'Picture file saved on device, size: $m MB',
-          backgroundColor: Theme.of(context).primaryColor,
-          textStyle: Styles.whiteSmall,
-          toastGravity: ToastGravity.TOP,
-          duration: const Duration(seconds: 2));
+      var size = await mFile.length();
+      var m = (size / 1024 / 1024).toStringAsFixed(2);
+      pp('$mm Picture taken is $m MB in size');
+      if (mounted) {
+        showToast(
+            context: context,
+            message: 'Picture file saved on device, size: $m MB',
+            backgroundColor: Theme
+                .of(context)
+                .primaryColor,
+            textStyle: Styles.whiteSmall,
+            toastGravity: ToastGravity.TOP,
+            duration: const Duration(seconds: 2));
+      }
     }
   }
 

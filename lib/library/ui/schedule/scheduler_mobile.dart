@@ -2,7 +2,7 @@ import 'package:badges/badges.dart' as bd;
 import 'package:flutter/material.dart';
 
 import '../../api/data_api.dart';
-import '../../api/sharedprefs.dart';
+import '../../api/prefs_og.dart';
 import '../../bloc/organization_bloc.dart';
 import '../../data/project.dart';
 import '../../data/user.dart';
@@ -48,7 +48,7 @@ class SchedulerMobileState extends State<SchedulerMobile>
       busy = true;
     });
     try {
-      _adminUser = await Prefs.getUser();
+      _adminUser = await prefsOGx.getUser();
       _projects = await organizationBloc.getOrganizationProjects(
           organizationId: widget.user.organizationId!, forceRefresh: refresh);
       pp('$mm ${_projects.length} projects ...');

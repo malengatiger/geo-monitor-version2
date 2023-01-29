@@ -83,6 +83,7 @@ class IntroPageViewerState extends State<IntroPageViewer>
   }
 
   Future<void> _navigateToSignIn() async {
+    //mainSetup();
     var result = await Navigator.push(
         context,
         PageTransition(
@@ -110,6 +111,7 @@ class IntroPageViewerState extends State<IntroPageViewer>
   }
 
   Future<void> _navigateToOrgRegistration() async {
+    //mainSetup();
     var result = await Navigator.push(
         context,
         PageTransition(

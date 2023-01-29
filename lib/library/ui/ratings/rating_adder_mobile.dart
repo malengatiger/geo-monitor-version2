@@ -5,7 +5,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:uuid/uuid.dart';
 
 import '../../api/data_api.dart';
-import '../../api/sharedprefs.dart';
+import '../../api/prefs_og.dart';
 import '../../data/position.dart';
 import '../../data/project.dart';
 import '../../data/rating.dart';
@@ -116,41 +116,48 @@ class RatingAdderMobileState extends State<RatingAdderMobile>
       busy = true;
     });
     try {
-      var user = await Prefs.getUser();
-      var loc = await locationBloc.getLocation();
-      var rating = Rating(
-          remarks: null,
-          created: DateTime.now().toUtc().toIso8601String(),
-          position: Position(coordinates: [loc.longitude, loc.latitude], type: 'Point'),
-          userId: user!.userId,
-          userName: user.name,
-          ratingCode: _rating.round(),
-          projectId: widget.project.projectId,
-          audioId: widget.audioId,
-          videoId: widget.videoId,
-          photoId: widget.photoId,
-          ratingId: const Uuid().v4(),
-          organizationId: widget.project.organizationId,
-          projectName: widget.project.name);
+      var user = await prefsOGx.getUser();
+      var loc = await locationBlocOG.getLocation();
+      if (loc != null) {
+        var rating = Rating(
+            remarks: null,
+            created: DateTime.now().toUtc().toIso8601String(),
+            position: Position(
+                coordinates: [loc.longitude, loc.latitude], type: 'Point'),
+            userId: user!.userId,
+            userName: user.name,
+            ratingCode: _rating.round(),
+            projectId: widget.project.projectId,
+            audioId: widget.audioId,
+            videoId: widget.videoId,
+            photoId: widget.photoId,
+            ratingId: const Uuid().v4(),
+            organizationId: widget.project.organizationId,
+            projectName: widget.project.name);
 
-      var res = await DataAPI.addRating(rating);
-      pp('$mm rating added; ${res.toJson()}');
-      if (mounted) {
-        showToast(
-            textStyle: myTextStyleMedium(context),
-            padding: 8,
-            duration: const Duration(seconds: 3),
-            toastGravity: ToastGravity.TOP,
-            backgroundColor: Theme.of(context).primaryColor,
-            message: "Rating added, thank you!", context: context);
-        Navigator.of(context).pop();
+        var res = await DataAPI.addRating(rating);
+        pp('$mm rating added; ${res.toJson()}');
+        if (mounted) {
+          showToast(
+              textStyle: myTextStyleMedium(context),
+              padding: 8,
+              duration: const Duration(seconds: 3),
+              toastGravity: ToastGravity.TOP,
+              backgroundColor: Theme
+                  .of(context)
+                  .primaryColor,
+              message: "Rating added, thank you!",
+              context: context);
+          Navigator.of(context).pop();
+        }
       }
-    } catch (e) {
+      } catch (e) {
       pp(e);
       if (mounted) {
         showToast(message: '$e', context: context);
       }
     }
+
 
     setState(() {
       busy = false;

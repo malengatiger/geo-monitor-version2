@@ -15,7 +15,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:uuid/uuid.dart';
 
 import '../api/data_api.dart';
-import '../api/sharedprefs.dart';
+import '../api/prefs_og.dart';
 import '../data/audio.dart';
 import '../data/position.dart';
 import '../data/user.dart';
@@ -107,13 +107,13 @@ class CloudStorageBloc {
         listener.onError('Audio upload failed: $e');
         return uploadError;
       }
-      var user = await Prefs.getUser();
+      var user = await prefsOGx.getUser();
       var distance = 0.0;
       Audio? audio;
 
       if (user != null) {
         if (projectPosition != null) {
-          distance = await locationBloc.getDistanceFromCurrentPosition(
+          distance = await locationBlocOG.getDistanceFromCurrentPosition(
               latitude: projectPosition.coordinates[1],
               longitude: projectPosition.coordinates[0]);
         } else {
@@ -215,7 +215,7 @@ class CloudStorageBloc {
     pp('\n$mm adding photo data to the database ...o');
     Photo? photo;
     try {
-      var distance = await locationBloc.getDistanceFromCurrentPosition(
+      var distance = await locationBlocOG.getDistanceFromCurrentPosition(
           latitude: projectPosition.coordinates[1],
           longitude: projectPosition.coordinates[0]);
 
@@ -319,7 +319,7 @@ class CloudStorageBloc {
     pp('\n$mm adding video data to the database ... ');
     Video? video;
     try {
-      var distance = await locationBloc.getDistanceFromCurrentPosition(
+      var distance = await locationBlocOG.getDistanceFromCurrentPosition(
           latitude: projectPosition.coordinates[1],
           longitude: projectPosition.coordinates[0]);
 
@@ -481,7 +481,7 @@ class CloudStorageBloc {
     getUser();
   }
   Future? getUser() async {
-    _user = await Prefs.getUser();
+    _user = await prefsOGx.getUser();
     return _user;
   }
 }

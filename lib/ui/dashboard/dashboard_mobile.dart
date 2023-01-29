@@ -5,6 +5,8 @@ import 'package:firebase_auth/firebase_auth.dart' as fb;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:geo_monitor/library/data/geofence_event.dart';
+import 'package:geo_monitor/library/data/settings_model.dart';
+import 'package:geo_monitor/library/generic_functions.dart';
 import 'package:geofence_service/geofence_service.dart';
 
 import 'package:get/get.dart';
@@ -12,11 +14,10 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:universal_platform/universal_platform.dart';
 
-import '../../library/api/sharedprefs.dart';
+import '../../library/api/prefs_og.dart';
 import '../../library/bloc/connection_check.dart';
 import '../../library/bloc/fcm_bloc.dart';
 import '../../library/bloc/organization_bloc.dart';
-import '../../library/bloc/organization_bloc_get.dart';
 import '../../library/bloc/theme_bloc.dart';
 import '../../library/data/audio.dart';
 import '../../library/data/data_bag.dart';
@@ -27,12 +28,14 @@ import '../../library/data/project_polygon.dart';
 import '../../library/data/project_position.dart';
 import '../../library/data/user.dart';
 import '../../library/data/video.dart';
+import '../../library/emojis.dart';
 import '../../library/functions.dart';
 import '../../library/geofence/geofencer_two.dart';
 import '../../library/ui/media/user_media_list/user_media_list_mobile.dart';
 import '../../library/ui/message/message_main.dart';
 import '../../library/ui/project_list/project_chooser.dart';
 import '../../library/ui/project_list/project_list_mobile.dart';
+import '../../library/ui/settings.dart';
 import '../../library/users/list/user_list_main.dart';
 import '../../main.dart';
 import '../intro_page_viewer.dart';
@@ -57,9 +60,7 @@ class DashboardMobileState extends State<DashboardMobile>
   late AnimationController _polygonAnimationController;
   late AnimationController _audioAnimationController;
 
-  OrganizationBlocWithGet orgGet = Get.put(OrganizationBlocWithGet());
-
-  var isBusy = false;
+  var busy = false;
   var _projects = <Project>[];
   var _users = <User>[];
   var _photos = <Photo>[];
@@ -68,11 +69,13 @@ class DashboardMobileState extends State<DashboardMobile>
   var _projectPolygons = <ProjectPolygon>[];
   var _schedules = <FieldMonitorSchedule>[];
   var _audios = <Audio>[];
+  var _settings = <SettingsModel>[];
   User? user;
 
   static const mm = '🎽🎽🎽🎽🎽🎽 DashboardMobile: 🎽';
   bool networkAvailable = false;
   final dur = 600;
+
   @override
   void initState() {
     _setAnimationControllers();
@@ -94,6 +97,39 @@ class DashboardMobileState extends State<DashboardMobile>
     _startTimer();
   }
 
+  Future _getSettings(bool forceRefresh) async {
+    pp('\n\n$mm get settings from cache or remote db ...');
+    setState(() {
+      busy = true;
+    });
+    try {
+     _settings = await  organizationBloc.getSettings(organizationId: user!.organizationId!, forceRefresh: forceRefresh);
+     pp('$mm settings from cache or db: ${_settings.length}');
+     if (_settings.isNotEmpty) {
+       var filtered = <SettingsModel>[];
+       _settings.sort((a,b) => b.created!.compareTo(a.created!));
+       for (var value in _settings) {
+         if (value.projectId == null) {
+           filtered.add(value);
+         }
+       }
+       if (filtered.isNotEmpty) {
+         pp('$mm ... saving filtered first settings to cache ...');
+         await prefsOGx.saveSettings(filtered.first);
+         themeBloc.changeToTheme(filtered.first.themeIndex!);
+       }
+     }
+    } catch (e) {
+      pp(e);
+      if (mounted) {
+        showToast(message: '$e', context: context);
+      }
+    }
+
+    setState(() {
+      busy = false;
+    });
+  }
   void _setAnimationControllers() {
     _projectAnimationController = AnimationController(
         duration: Duration(milliseconds: dur),
@@ -139,7 +175,7 @@ class DashboardMobileState extends State<DashboardMobile>
   }
 
   void _listenToStreams() async {
-    var user = await Prefs.getUser();
+    var user = await prefsOGx.getUser();
     if (user == null) return;
     switch (user.userType) {
       case UserType.orgExecutive:
@@ -411,11 +447,29 @@ class DashboardMobileState extends State<DashboardMobile>
         label: 'Send Message'));
   }
 
+  String type = 'Unknown Rider';
+
   void _refreshData(bool forceRefresh) async {
     pp('$mm ............................................Refreshing data ....');
+    user = await prefsOGx.getUser();
+    if (user != null) {
+      pp('$mm user inside dashboard ${user!.toJson()}');
+      if (user!.userType == UserType.orgAdministrator) {
+        type = 'Administrator';
+      }
+      if (user!.userType == UserType.orgExecutive) {
+        type = 'Executive';
+      }
+      if (user!.userType == UserType.fieldMonitor) {
+        type = 'Field Monitor';
+      }
+    } else {
+      throw Exception('No user cached on device');
+    }
+
     if (mounted) {
       setState(() {
-        isBusy = true;
+        busy = true;
       });
     }
     await _doTheWork(forceRefresh);
@@ -423,17 +477,15 @@ class DashboardMobileState extends State<DashboardMobile>
 
   Future<void> _doTheWork(bool forceRefresh) async {
     try {
-      user = await Prefs.getUser();
-      await orgGet.getOrganizationData(
-          organizationId: user!.organizationId!, forceRefresh: forceRefresh);
-      var mBag = orgGet.organizationDataBag;
-      if (mBag!.date != null) {
-        pp('\n\n\n$mm new get seems to have gone well! ...  🍎🍎🍎🍎 what now, Boss?\n');
+
+      if (user == null) {
+        throw Exception("Tax man is fucked! User is not found");
       }
-      // var bag = await organizationBloc.getOrganizationData(
-      //     organizationId: user!.organizationId!, forceRefresh: forceRefresh);
-      // pp('$mm  result: users found ${bag.users!.length}');
-      await _extractData(mBag);
+      pp('$mm user: ${user!.toJson()}');
+      var bag = await organizationBloc.getOrganizationData(organizationId: user!.organizationId!,
+          forceRefresh: forceRefresh);
+      await _extractData(bag);
+      await _getSettings(forceRefresh);
       setState(() {});
     } catch (e) {
       pp('$mm $e - will show snackbar ..');
@@ -442,7 +494,7 @@ class DashboardMobileState extends State<DashboardMobile>
           message: 'Data refresh failed. Possible network problem - $e');
     }
     setState(() {
-      isBusy = false;
+      busy = false;
     });
 
     _projectAnimationController.reset();
@@ -633,6 +685,18 @@ class DashboardMobileState extends State<DashboardMobile>
               child: const IntroPageViewer()));
     }
   }
+  void _navigateToSettings() {
+    pp('$mm .................. _navigateToIntro to Settings ....');
+    if (mounted) {
+      Navigator.push(
+          context,
+          PageTransition(
+              type: PageTransitionType.leftToRight,
+              alignment: Alignment.center,
+              duration: const Duration(seconds: 1),
+              child: const Settings()));
+    }
+  }
 
   void _navigateToUserList() {
     Navigator.push(
@@ -651,15 +715,7 @@ class DashboardMobileState extends State<DashboardMobile>
 
   @override
   Widget build(BuildContext context) {
-    var type = 'Field Monitor';
-    if (user != null) {
-      if (user!.userType == UserType.orgAdministrator) {
-        type = 'Administrator';
-      }
-      if (user!.userType == UserType.orgExecutive) {
-        type = 'Executive';
-      }
-    }
+
     var style = GoogleFonts.secularOne(
         textStyle: Theme.of(context).textTheme.titleLarge,
         fontWeight: FontWeight.w900);
@@ -678,7 +734,7 @@ class DashboardMobileState extends State<DashboardMobile>
           isSticky: false,
         ),
         iosNotificationOptions: const IOSNotificationOptions(),
-        notificationTitle: 'Geofence Service is running',
+        notificationTitle: 'GeoMonitor Service is running',
         notificationText: 'Tap to return to the app',
         foregroundTaskOptions: const ForegroundTaskOptions(),
         child: Scaffold(
@@ -687,34 +743,18 @@ class DashboardMobileState extends State<DashboardMobile>
             actions: [
               IconButton(
                   icon: Icon(
-                    Icons.cut,
-                    size: 18,
-                    color: Theme.of(context).primaryColor,
-                  ),
-                  onPressed: () {
-                    Prefs.deleteUser();
-                    fb.FirebaseAuth.instance.signOut();
-                    getOut(context);
-                    showKillDialog(
-                        message: 'GeoMonitor Account Closed', context: context);
-                  }),
-              IconButton(
-                  icon: Icon(
                     Icons.info_outline,
                     size: 18,
                     color: Theme.of(context).primaryColor,
                   ),
                   onPressed: _navigateToIntro),
-              IconButton(
+              user == null? const SizedBox(): user!.userType == UserType.fieldMonitor? const SizedBox():IconButton(
                 icon: Icon(
                   Icons.settings,
                   size: 18,
                   color: Theme.of(context).primaryColor,
                 ),
-                onPressed: () {
-                  themeBloc.changeToRandomTheme();
-                },
-              ),
+                onPressed: _navigateToSettings,),
               IconButton(
                 icon: Icon(
                   Icons.refresh,
@@ -750,7 +790,7 @@ class DashboardMobileState extends State<DashboardMobile>
                             style: GoogleFonts.lato(
                                 textStyle:
                                     Theme.of(context).textTheme.titleLarge,
-                                fontWeight: FontWeight.normal)),
+                                fontWeight: FontWeight.normal, color: Theme.of(context).primaryColor)),
                     const SizedBox(
                       height: 12,
                     ),
@@ -777,7 +817,7 @@ class DashboardMobileState extends State<DashboardMobile>
             onTap: _handleBottomNav,
             elevation: 8,
           ),
-          body: isBusy
+          body: busy
               ? const Center(
                   child: SizedBox(
                     height: 24,
@@ -1165,7 +1205,6 @@ class DashboardMobileState extends State<DashboardMobile>
     );
   }
 }
-
 //////
 void showKillDialog({required String message, required BuildContext context}) {
   showDialog(
@@ -1202,8 +1241,11 @@ void showKillDialog({required String message, required BuildContext context}) {
   );
 }
 
+final mm = '${E.heartRed}${E.heartRed}${E.heartRed}${E.heartRed} Dashboard: ';
+
 StreamSubscription<String> listenForKill({required BuildContext context}) {
   pp('\n$mm Kill message; listen for KILL message ...... 🍎🍎🍎🍎 ......');
+
   var sub = fcmBloc.killStream.listen((event) {
     pp('$mm Kill message arrived: 🍎🍎🍎🍎 $event 🍎🍎🍎🍎');
     try {

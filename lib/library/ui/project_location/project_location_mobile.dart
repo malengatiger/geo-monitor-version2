@@ -3,7 +3,7 @@ import 'package:badges/badges.dart' as bd;
 import 'package:flutter/material.dart';
 
 import 'package:geocoding/geocoding.dart';
-import 'package:geolocator/geolocator.dart';
+import 'package:location/location.dart';
 
 import 'package:page_transition/page_transition.dart';
 
@@ -11,13 +11,14 @@ import 'package:uuid/uuid.dart';
 
 import '../../api/data_api.dart';
 
-import '../../api/sharedprefs.dart';
+import '../../api/prefs_og.dart';
 import '../../bloc/organization_bloc.dart';
 import '../../bloc/project_bloc.dart';
 import '../../data/city.dart';
 import '../../data/place_mark.dart';
 import '../../data/position.dart' as mon;
 
+import '../../data/position.dart';
 import '../../data/project_polygon.dart';
 import '../../data/user.dart';
 import '../../functions.dart';
@@ -69,7 +70,7 @@ class ProjectLocationMobileState extends State<ProjectLocationMobile>
     var map = <double, ProjectPosition>{};
     for (var i = 0; i < _projectPositions.length; i++) {
       var projPos = _projectPositions.elementAt(i);
-      var dist = await locationBloc.getDistanceFromCurrentPosition(
+      var dist = await locationBlocOG.getDistanceFromCurrentPosition(
           latitude: projPos.position!.coordinates.elementAt(1),
           longitude: projPos.position!.coordinates.elementAt(0));
 
@@ -86,17 +87,22 @@ class ProjectLocationMobileState extends State<ProjectLocationMobile>
         return true;
       }
     }
-    var loc = await locationBloc.getLocation();
-    var mOK = checkIfLocationIsWithinPolygons(
-        polygons: _projectPolygons, latitude: loc.latitude, longitude: loc.longitude);
-    return mOK;
+    var loc = await locationBlocOG.getLocation();
+    if (loc != null) {
+      var mOK = checkIfLocationIsWithinPolygons(
+          polygons: _projectPolygons,
+          latitude: loc.latitude!,
+          longitude: loc.longitude!);
+      return mOK;
+    }
+    return false;
   }
 
   bool isWithin = false;
 
   Future _getLocation() async {
     try {
-      _position = await locationBloc.getLocation();
+      _position = await locationBlocOG.getLocation();
       if (_position == null) {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
@@ -118,7 +124,7 @@ class ProjectLocationMobileState extends State<ProjectLocationMobile>
     });
 
     try {
-      user = await Prefs.getUser();
+      user = await prefsOGx.getUser();
       await _getLocation();
       _projectPositions = await projectBloc.getProjectPositions(
           projectId: widget.project.projectId!, forceRefresh: forceRefresh);
@@ -165,15 +171,15 @@ class ProjectLocationMobileState extends State<ProjectLocationMobile>
     List<Placemark>? placeMarks;
     try {
       placeMarks = await placemarkFromCoordinates(
-          _position!.latitude, _position!.longitude);
+          _position!.latitude!, _position!.longitude!);
     } catch (e) {
       pp(e);
     }
 
     try {
       List<City> cities = await DataAPI.findCitiesByLocation(
-          latitude: _position!.latitude,
-          longitude: _position!.longitude,
+          latitude: _position!.latitude!,
+          longitude: _position!.longitude!,
           radiusInKM: 10.0);
       pp('$mx Cities found for project position: ${cities.length}');
       pp('$mx submitting current position ..........');
@@ -184,7 +190,7 @@ class ProjectLocationMobileState extends State<ProjectLocationMobile>
           pp('$mx Placemark for project location: ${pm.toString()}');
         }
       }
-      var org = await Prefs.getUser();
+      var org = await prefsOGx.getUser();
       var loc = ProjectPosition(
           placemark: pm == null ? null : PlaceMark.getPlaceMark(placemark: pm),
           projectName: widget.project.name,
@@ -223,7 +229,7 @@ class ProjectLocationMobileState extends State<ProjectLocationMobile>
     }
   }
 
-  Position? _position;
+  LocationData? _position;
 
   Future<void> _navigateToProjectMap() async {
     pp('... _navigateToProjectMap: about to navigate ');
@@ -383,7 +389,7 @@ class ProjectLocationMobileState extends State<ProjectLocationMobile>
                                         width: 12,
                                       ),
                                       _position == null? const SizedBox(): Text(
-                                        _position!.latitude.toStringAsFixed(6),
+                                        _position!.latitude!.toStringAsFixed(6),
                                         style: myNumberStyleLarge(context),
                                       ),
                                     ],
@@ -408,7 +414,7 @@ class ProjectLocationMobileState extends State<ProjectLocationMobile>
                                         width: 12,
                                       ),
                                       _position == null? const SizedBox() :Text(
-                                        _position!.longitude.toStringAsFixed(6),
+                                        _position!.longitude!.toStringAsFixed(6),
                                         style: myNumberStyleLarge(context),
                                       ),
                                     ],

@@ -342,7 +342,7 @@ class ProjectMonitorMobileState extends State<ProjectMonitorMobile>
         return positions.first;
       }
       for (var pos in positions) {
-        var distance = await locationBloc.getDistanceFromCurrentPosition(
+        var distance = await locationBlocOG.getDistanceFromCurrentPosition(
             latitude: pos.position!.coordinates[1],
             longitude: pos.position!.coordinates[0]);
         bags.add(BagX(distance, pos));
@@ -363,7 +363,7 @@ class ProjectMonitorMobileState extends State<ProjectMonitorMobile>
     });
     nearestProjectPosition = await _findNearestProjectPosition();
     if (nearestProjectPosition != null) {
-      var distance = await locationBloc.getDistanceFromCurrentPosition(
+      var distance = await locationBlocOG.getDistanceFromCurrentPosition(
           latitude: nearestProjectPosition!.position!.coordinates[1],
           longitude: nearestProjectPosition!.position!.coordinates[0]);
 
@@ -399,16 +399,23 @@ class ProjectMonitorMobileState extends State<ProjectMonitorMobile>
   Future<bool> _checkUserWithinPolygon() async {
     pp('$mm project has ${polygons.length} polygons - '
         ' if > zero check if user within polygon ...');
-    var loc = await locationBloc.getLocation();
-    var isOK = checkIfLocationIsWithinPolygons(
-        latitude: loc.latitude, longitude: loc.longitude, polygons: polygons);
-    isWithinDistance = isOK;
-    if (isOK) {
-      pp('$mm _checkProjectDistance ... 🚾🚾🚾 WE ARE INSIDE ONE OF THIS PROJECT POLYGONS!');
-    } else {
-      pp('$mm _checkProjectDistance ... 🔴🔴🔴 WE ARE NOT INSIDE ANY OF THIS PROJECT POLYGONS!');
+    try {
+      var loc = await locationBlocOG.getLocation();
+      var isOK = checkIfLocationIsWithinPolygons(
+          latitude: loc!.latitude!, longitude: loc.longitude!, polygons: polygons);
+      isWithinDistance = isOK;
+      if (isOK) {
+        pp(
+            '$mm _checkProjectDistance ... 🚾🚾🚾 WE ARE INSIDE ONE OF THIS PROJECT POLYGONS!');
+      } else {
+        pp(
+            '$mm _checkProjectDistance ... 🔴🔴🔴 WE ARE NOT INSIDE ANY OF THIS PROJECT POLYGONS!');
+      }
+      return isWithinDistance;
+    } catch (e) {
+      pp(e);
     }
-    return isWithinDistance;
+    return false;
   }
 
   void _startPhotoMonitoring() async {

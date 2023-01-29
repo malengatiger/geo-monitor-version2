@@ -6,7 +6,6 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:geocoding/geocoding.dart';
-import 'package:geolocator/geolocator.dart';
 import 'dart:ui' as ui;
 import 'package:fluttertoast/fluttertoast.dart';
 
@@ -66,29 +65,6 @@ Color getColor(String stringColor) {
 }
 
 int count = 0;
-Future getCurrentPosition() async {
-  const mm = '🥦 🥦 🥦 Generic Function: _getCurrentLocation ';
-  pp('$mm .......... get current location ....');
-  int count = 0;
-  try {
-    await Geolocator.requestPermission();
-    var currentPosition = await Geolocator.getCurrentPosition(
-        forceAndroidLocationManager: true,
-        desiredAccuracy: LocationAccuracy.best,
-        timeLimit: const Duration(seconds: 10));
-
-    pp('$mm .......... get current location .... found: ${currentPosition.toJson()}');
-    return currentPosition;
-  } catch (e) {
-    pp('$mm .......... get current location fell down, count: $count :::::: $e ....');
-    count++;
-    if (count < 4) {
-      return await getCurrentPosition();
-    }
-
-    rethrow;
-  }
-}
 
 String getAddress(Placemark placeMark) {
   String address = ''

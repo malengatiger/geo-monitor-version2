@@ -12,7 +12,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:uuid/uuid.dart';
 
 import '../../api/data_api.dart';
-import '../../api/sharedprefs.dart';
+import '../../api/prefs_og.dart';
 import '../../bloc/project_bloc.dart';
 import '../../data/city.dart';
 import '../../data/position.dart';
@@ -62,16 +62,18 @@ class ProjectPolygonMapMobileState extends State<ProjectPolygonMapMobile>
       busy = true;
     });
     try {
-      user = await Prefs.getUser();
+      user = await prefsOGx.getUser();
       projectPolygons = await projectBloc.getProjectPolygons(
           projectId: widget.project.projectId!, forceRefresh: forceRefresh);
       projectPositions = await projectBloc.getProjectPositions(projectId: widget.project.projectId!,
           forceRefresh: forceRefresh);
-      var loc = await locationBloc.getLocation();
-      _latitude = loc.latitude;
-      _longitude = loc.longitude;
-      _addMarkers();
-      _buildProjectPolygons(animateToLast: false);
+      var loc = await locationBlocOG.getLocation();
+      if (loc != null) {
+        _latitude = loc.latitude!;
+        _longitude = loc.longitude!;
+        _addMarkers();
+        _buildProjectPolygons(animateToLast: false);
+      }
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context)

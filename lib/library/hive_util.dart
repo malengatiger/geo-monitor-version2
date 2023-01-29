@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:geo_monitor/library/data/settings_model.dart';
 import 'package:hive/hive.dart';
 
 import 'bloc/failed_audio.dart';
@@ -66,11 +67,12 @@ class CacheManager {
   LazyBox<FailedAudio>? _failedAudioBox;
   LazyBox<Rating>? _ratingBox;
   LazyBox<LocationResponse>? _locationResponseBox;
+  LazyBox<SettingsModel>? _settingsBox;
 
   bool _isInitialized = false;
 
   initialize({bool? forceInitialization = false}) async {
-    // fileCounter = await Prefs.getFileCounter();
+    // fileCounter = await prefsOGx.getFileCounter();
     if (forceInitialization != null) {
       if (forceInitialization) {
         pp('\n\n$mm Setting up Hive');
@@ -103,6 +105,7 @@ class CacheManager {
     _photoBox?.clear();
     _reportBox?.clear();
     _cityBox?.clear();
+    _settingsBox?.clear();
     _conditionBox?.clear();
     _audioBox?.clear();
     _failedAudioBox?.clear();
@@ -113,8 +116,6 @@ class CacheManager {
   }
 
   static final xx = '${E.peach}${E.peach}${E.peach}${E.peach} CacheManager: ';
-  // static const databaseFileName = 'database2.db';
-  // static const boxCollectionName = 'GeoBoxCollection1';
 
   Future<void> _doTheInitializationWork() async {
     p('$mm ... Initializing Hive boxes ...');
@@ -132,6 +133,7 @@ class CacheManager {
 
   Future<void> _openBoxes() async {
     _orgBox = await Hive.openLazyBox<Organization>('organizations');
+    _settingsBox = await Hive.openLazyBox<SettingsModel>('settings');
     _projectBox = await Hive.openLazyBox<Project>('projects');
     _positionBox = await Hive.openLazyBox<ProjectPosition>('positions');
     _cityBox = await Hive.openLazyBox<City>('cities');
@@ -166,6 +168,10 @@ class CacheManager {
 
   void _registerAdapters() {
     p('$xx ... Registering Hive object adapters ...');
+    if (!Hive.isAdapterRegistered(30)) {
+      Hive.registerAdapter(SettingsModelAdapter());
+      p('$xx Hive SettingsModelAdapter registered');
+    }
     if (!Hive.isAdapterRegistered(8)) {
       Hive.registerAdapter(OrganizationAdapter());
       p('$xx Hive OrganizationAdapter registered');
@@ -270,6 +276,7 @@ class CacheManager {
 
     pp('$mm locationResponse added to local cache}');
   }
+  
   Future addRegistration({required OrganizationRegistrationBag bag}) async {
     pp('$mm .... addRegistration .....');
     var key = '${bag.date}';
@@ -284,6 +291,22 @@ class CacheManager {
     await _conditionBox?.put(key, condition);
 
     pp('$mm Condition added to local cache: ${condition.projectName}');
+  }
+
+  Future addOrganizationSettingsList(List<SettingsModel> settings) async {
+    for (var value in settings) {
+      await addSettings(settings: value);
+    }
+  }
+  Future addSettings({required SettingsModel settings}) async {
+    var key = '${settings.organizationId}_';
+    if (settings.projectId != null) {
+      key = '$key${settings.projectId}';
+    }
+
+    await _settingsBox?.put(key, settings);
+
+    pp('$mm SettingsModel added to local cache: ${settings.organizationId}');
   }
 
   Future addRating({required Rating rating}) async {
@@ -454,6 +477,41 @@ class CacheManager {
     }
     pp('$mm ${list.length} list found in cache 🔵');
 
+    return list;
+  }
+
+  Future<List<SettingsModel>> getOrganizationSettings() async {
+    List<SettingsModel> list = [];
+    pp('$mm org settings search in cache ..........');
+    var keys = _settingsBox?.keys;
+
+    if (keys != null) {
+      pp('$mm org settings search in cache ..........  🔵 keys: ${keys.length}');
+      for (var key in keys) {
+        var mSettings = await _settingsBox?.get(key);
+        pp('$mm org settings search in cache .......... mSettings:  😡 ${mSettings!.toJson()}');
+        list.add(mSettings);
+      }
+    }
+    pp('$mm ${list.length} org settings list found in cache 🔵');
+    return list;
+  }
+  Future<List<SettingsModel>> getProjectSettings(
+      String projectId) async {
+    List<SettingsModel> list = [];
+    var keys = _settingsBox?.keys;
+
+    if (keys != null) {
+      for (var key in keys) {
+        var m = await _settingsBox!.get(key);
+        if (m != null) {
+          if (projectId == m.projectId) {
+            list.add(m);
+          }
+        }
+      }
+    }
+    pp('$mm ${list.length} list found in cache 🔵');
     return list;
   }
 
@@ -945,9 +1003,10 @@ class CacheManager {
   }
 
   Future<List<Country>> getCountries() async {
+    pp('$mm .... getCountries from hive ..... ');
+
     var keys = _countryBox?.keys;
     var mList = <Country>[];
-
     if (keys != null) {
       for (var value in keys) {
         var m = await _countryBox?.get(value);

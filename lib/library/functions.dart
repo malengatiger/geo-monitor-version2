@@ -86,7 +86,7 @@ Color getRandomPastelColor() {
 
 Future<bool>  isLocationValid({required ProjectPosition projectPosition, required double validDistance}) async {
  pp('😡😡😡😡😡😡 checking if user is within monitoring range of project: ${projectPosition.projectName} 😡😡');
-  var distance = await locationBloc.getDistanceFromCurrentPosition(
+  var distance = await locationBlocOG.getDistanceFromCurrentPosition(
       latitude: projectPosition.position!.coordinates[1],
       longitude: projectPosition.position!.coordinates[0]);
 
