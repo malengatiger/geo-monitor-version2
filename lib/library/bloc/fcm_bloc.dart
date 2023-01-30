@@ -50,11 +50,10 @@ class FCMBloc {
       StreamController.broadcast();
   final StreamController<OrgMessage> _messageController =
       StreamController.broadcast();
-  final StreamController<String> _killController =
-  StreamController.broadcast();
+  final StreamController<String> _killController = StreamController.broadcast();
 
   final StreamController<SettingsModel> _settingsController =
-  StreamController.broadcast();
+      StreamController.broadcast();
 
   Stream<SettingsModel> get settingsStream => _settingsController.stream;
   Stream<User> get userStream => _userController.stream;
@@ -97,20 +96,20 @@ class FCMBloc {
 
       // initialise the plugin. app_icon needs to be a added as a drawable resource to the Android head project
       const AndroidInitializationSettings initializationSettingsAndroid =
-      AndroidInitializationSettings('app_icon');
+          AndroidInitializationSettings('app_icon');
 
       final DarwinInitializationSettings initializationSettingsDarwin =
-      DarwinInitializationSettings(
-          onDidReceiveLocalNotification: onDidReceiveLocalNotification);
+          DarwinInitializationSettings(
+              onDidReceiveLocalNotification: onDidReceiveLocalNotification);
 
       const LinuxInitializationSettings initializationSettingsLinux =
-      LinuxInitializationSettings(defaultActionName: 'Open notification');
+          LinuxInitializationSettings(defaultActionName: 'Open notification');
 
       final InitializationSettings initializationSettings =
-      InitializationSettings(
-          android: initializationSettingsAndroid,
-          iOS: initializationSettingsDarwin,
-          linux: initializationSettingsLinux);
+          InitializationSettings(
+              android: initializationSettingsAndroid,
+              iOS: initializationSettingsDarwin,
+              linux: initializationSettingsLinux);
 
       FlutterLocalNotificationsPlugin().initialize(initializationSettings,
           onDidReceiveNotificationResponse: onDidReceiveNotificationResponse);
@@ -123,9 +122,7 @@ class FCMBloc {
       });
 
       FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
-        pp(
-            '$mm onMessageOpenedApp:  🍎 🍎 A new onMessageOpenedApp event was published! ${message
-                .data}');
+        pp('$mm onMessageOpenedApp:  🍎 🍎 A new onMessageOpenedApp event was published! ${message.data}');
       });
       await _subscribeToTopics();
     }
@@ -133,24 +130,49 @@ class FCMBloc {
 
   Future _subscribeToTopics() async {
     var user = await prefsOGx.getUser();
-    if (user != null) {
-      pp("$mm ..... subscribeToTopics ...........................");
-
-      await messaging.subscribeToTopic('projects_${user.organizationId}');
-      await messaging.subscribeToTopic('photos_${user.organizationId}');
-      await messaging.subscribeToTopic('videos_${user.organizationId}');
-      await messaging.subscribeToTopic('conditions_${user.organizationId}');
-      await messaging.subscribeToTopic('messages_${user.organizationId}');
-      await messaging.subscribeToTopic('users_${user.organizationId}');
-      await messaging.subscribeToTopic('audios_${user.organizationId}');
-      await messaging.subscribeToTopic('kill_${user.organizationId}');
-      await messaging.subscribeToTopic('locationRequest_${user.organizationId}');
-      await messaging.subscribeToTopic('settings_${user.organizationId}');
-
-      pp("$mm subscribeToTopics: 🍎 subscribed to all 10 organization topics 🍎");
-    } else {
-      pp("$mm subscribeToTopics: 👿👿👿 user not cached on device yet  👿👿👿");
+    if (user == null) {
+      return;
     }
+
+    pp("$mm ..... subscribeToTopics ...........................");
+    bool flag = await prefsOGx.getFCMSubscriptionFlag();
+    if (flag) {
+      pp("\n\b$mm ..... app already subscribed to GeoMonitor FCM Topics ...... ✅✅✅?\n\n");
+      return;
+    }
+    await messaging.subscribeToTopic('projects_${user.organizationId}');
+    pp("$mm ..... subscribed to topic: projects_${user.organizationId}");
+
+    await messaging.subscribeToTopic('photos_${user.organizationId}');
+    pp("$mm ..... subscribed to topic: photos_${user.organizationId}");
+
+    await messaging.subscribeToTopic('videos_${user.organizationId}');
+    pp("$mm ..... subscribed to topic: videos_${user.organizationId}");
+
+    await messaging.subscribeToTopic('conditions_${user.organizationId}');
+    pp("$mm ..... subscribed to topic: conditions_${user.organizationId}");
+
+    await messaging.subscribeToTopic('messages_${user.organizationId}');
+    pp("$mm ..... subscribed to topic: messages_${user.organizationId}");
+
+    await messaging.subscribeToTopic('users_${user.organizationId}');
+    pp("$mm ..... subscribed to topic: users_${user.organizationId}");
+
+    await messaging.subscribeToTopic('audios_${user.organizationId}');
+    pp("$mm ..... subscribed to topic: audios_${user.organizationId}");
+
+    await messaging.subscribeToTopic('kill_${user.organizationId}');
+    pp("$mm ..... subscribed to topic: kill_${user.organizationId}");
+
+    await messaging.subscribeToTopic('locationRequest_${user.organizationId}');
+    pp("$mm ..... subscribed to topic: locationRequest_${user.organizationId}");
+
+    await messaging.subscribeToTopic('settings_${user.organizationId}');
+    pp("$mm ..... subscribed to topic: settings_${user.organizationId}");
+
+    await prefsOGx.setFCMSubscriptionFlag();
+    pp("$mm subscribeToTopics: 🍎 subscribed to all 10 organization topics 🍎");
+
     return null;
   }
 
@@ -175,8 +197,8 @@ class FCMBloc {
         pp('$mm 🌀🌀🌀🌀  🍎 Signed out of Firebase!!! 🍎 ');
 
         await _handleCache(receivedUser);
-        _killController.sink.add("Your app has been disabled. If you need to, please talk to your supervisor or administrator");
-
+        _killController.sink.add(
+            "Your app has been disabled. If you need to, please talk to your supervisor or administrator");
       } else {
         await _handleCache(receivedUser);
         pp('🌀🌀🌀🌀🍎 User should be deleted from Hive cache by now! 🍎 ');
@@ -190,8 +212,8 @@ class FCMBloc {
         var loc = await locationBlocOG.getLocation();
         if (loc != null) {
           var locResp = LocationResponse(
-              position: Position(coordinates: [loc.longitude, loc.latitude],
-                  type: 'Point'),
+              position: Position(
+                  coordinates: [loc.longitude, loc.latitude], type: 'Point'),
               date: DateTime.now().toUtc().toIso8601String(),
               userId: user.userId,
               userName: user.name,
@@ -204,7 +226,6 @@ class FCMBloc {
           await cacheManager.addLocationResponse(locationResponse: result);
         }
       }
-
     }
     if (data['user'] != null) {
       pp("$mm processFCMMessage  🔵 🔵 🔵 ........................... cache USER  🍎  🍎 ");
@@ -284,7 +305,6 @@ class FCMBloc {
         await themeBloc.changeToTheme(msg.themeIndex!);
         _settingsController.sink.add(msg);
         pp('$mm This is an organization-wide setting, hopefully the ui changes to new color ...');
-
       }
     }
 
@@ -299,18 +319,16 @@ class FCMBloc {
   }
 
   void onDidReceiveNotificationResponse(NotificationResponse details) {
-  pp('$mm onDidReceiveNotificationResponse ... details: ${details.payload}');
-}
+    pp('$mm onDidReceiveNotificationResponse ... details: ${details.payload}');
+  }
 
-  void onDidReceiveLocalNotification(int id, String? title, String? body, String? payload) {
-    pp(
-        '$mm onDidReceiveLocalNotification:  🍎 maybe display a dialog with the notification details - maybe put this on a stream ...');
+  void onDidReceiveLocalNotification(
+      int id, String? title, String? body, String? payload) {
+    pp('$mm onDidReceiveLocalNotification:  🍎 maybe display a dialog with the notification details - maybe put this on a stream ...');
     pp('$mm title: $title  🍎 body: $body with some payload ...');
     pp('$mm payload: $payload  🍎');
   }
 }
-
-
 
 Future<dynamic> myBackgroundMessageHandler(Map<String, dynamic> message) async {
   pp("$mm  🦠 🦠 🦠 🦠 🦠 myBackgroundMessageHandler   🦠 🦠 🦠 🦠 🦠 ........................... $message");

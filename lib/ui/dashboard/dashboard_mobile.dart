@@ -97,6 +97,7 @@ class DashboardMobileState extends State<DashboardMobile>
     _subscribeToGeofenceStream();
     _buildGeofences();
     _startTimer();
+
     uploader.startTimer(const Duration(seconds: 60));
   }
 

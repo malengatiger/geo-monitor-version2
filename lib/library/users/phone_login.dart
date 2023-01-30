@@ -167,7 +167,6 @@ class PhoneLoginState extends State<PhoneLogin>
         }
         pp('\n$mm seeking to acquire this user by their id:- 🌀🌀🌀...');
         user = await DataAPI.getUserById(userId: userCred.user!.uid);
-
         if (user != null) {
           await prefsOGx.saveUser(user!);
           await cacheManager.addUser(user: user!);

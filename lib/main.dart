@@ -30,13 +30,32 @@ final GlobalKey<ScaffoldMessengerState> rootScaffoldMessengerKey = GlobalKey<Sca
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  initializeGeoMonitor();
+  firebaseApp = await Firebase.initializeApp(
+      options: DefaultFirebaseOptions.currentPlatform);
+  pp('$xx'
+      ' Firebase App has been initialized: ${firebaseApp.name}, checking for authed current user');
+  // await signOutForcedForTesting();
+  fbAuthedUser = fb.FirebaseAuth.instance.currentUser;
+  if (fbAuthedUser != null) {
+    pp('Firebase user is OK');
+    // var user = await prefsOGx.getUser();
+    // if (user == null) {
+    //   fbAuthedUser = null;
+    //   await fb.FirebaseAuth.instance.signOut();
+    // } else {
+    //   pp('GeoMonitor user is OK');
+    // }
+  } else {
+    pp('Firebase has no current user!');
+  }
+  await _initializeGeoMonitor();
   runApp(const GeoMonitorApp());
 }
  const xx = '🎽🎽🎽🎽🎽🎽initializeGeoMonitor: ';
-Future<void> initializeGeoMonitor() async {
-  await GetStorage.init('GeoPreferences');
-  pp('$xx GET CACHED SETTINGS; set themeIndex .............. ');
+
+Future<void> _initializeGeoMonitor() async {
+  await GetStorage.init('GeoPreferences1');
+  pp('$xx ... GET CACHED SETTINGS; set themeIndex .............. ');
   var settings = await prefsOGx.getSettings();
   if (settings != null) {
     themeIndex = settings.themeIndex!;
@@ -45,23 +64,6 @@ Future<void> initializeGeoMonitor() async {
   //user = await prefsOGx.getUser();
   pp('$xx THEME: themeIndex up top is: $themeIndex ');
   //pp('THEME: user up top is: ${user!.name}');
-  firebaseApp = await Firebase.initializeApp(
-      options: DefaultFirebaseOptions.currentPlatform);
-  pp('$xx'
-      ' Firebase App has been initialized: ${firebaseApp.name}, checking for authed current user');
-  // await fb.FirebaseAuth.instance.signOut();
-  // if (0 == 0) {
-  //   throw Exception('Tooting my HORN!');
-  // }
-  fbAuthedUser = fb.FirebaseAuth.instance.currentUser;
-  if (fbAuthedUser != null) {
-    //check if user exists
-    var user = await prefsOGx.getUser();
-    if (user == null) {
-      fbAuthedUser = null;
-      await fb.FirebaseAuth.instance.signOut();
-    }
-  }
   await dotenv.load(fileName: ".env");
   pp('$xx $heartBlue DotEnv has been loaded');
   await Hive.initFlutter('data003');
@@ -73,6 +75,31 @@ Future<void> initializeGeoMonitor() async {
   }
   pp('$xx ${E.heartGreen}${E.heartGreen}}${E.heartGreen} '
       'Hive initialized and boxCollection set up');
+}
+
+Future<void> _initializeFirebase() async {
+  firebaseApp = await Firebase.initializeApp(
+      options: DefaultFirebaseOptions.currentPlatform);
+  pp('$xx'
+      ' Firebase App has been initialized: ${firebaseApp.name}, checking for authed current user');
+  // await signOutForcedForTesting();
+  fbAuthedUser = fb.FirebaseAuth.instance.currentUser;
+  if (fbAuthedUser != null) {
+    //check if user exists
+    var user = await prefsOGx.getUser();
+    if (user == null) {
+      fbAuthedUser = null;
+      await fb.FirebaseAuth.instance.signOut();
+    }
+  }
+}
+
+Future<void> signOutForcedForTesting() async {
+  await fb.FirebaseAuth.instance.signOut();
+  await prefsOGx.resetFCMSubscriptionFlag();
+  if (0 == 0) {
+    throw Exception('... Tooting my HORN! and faking it!');
+  }
 }
 
 class GeoMonitorApp extends StatelessWidget {

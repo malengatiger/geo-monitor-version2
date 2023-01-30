@@ -1143,10 +1143,10 @@ class DataAPI {
     try {
       var result = await _callWebAPIPost('${mURL!}addPhoto', photo.toJson());
       pp('\n\n\n$mm 🔴🔴🔴 DataAPI addPhoto succeeded. Everything OK?? 🔴🔴🔴');
-      var px = Photo.fromJson(result);
-      await cacheManager.addPhoto(photo: px);
+      var photoBack = Photo.fromJson(result);
+      await cacheManager.addPhoto(photo: photoBack);
       pp('$mm addPhoto has added photo to DB and to Hive cache\n');
-      return px;
+      return photo;
     } catch (e) {
       pp('\n\n\n$mm 🔴🔴🔴 DataAPI addPhoto failed. Something fucked up here! ... 🔴🔴🔴\n\n');
       pp(e);

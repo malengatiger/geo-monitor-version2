@@ -15,6 +15,29 @@ class PrefsOGx {
 
   final box = GetStorage("GeoPreferences");
 
+  Future setFCMSubscriptionFlag() async {
+    await box.write('fcm', true);
+    pp("\n\n$mm setFCMSubscription SET as true\n");
+    return null;
+  }
+  Future resetFCMSubscriptionFlag() async {
+    await box.write('fcm', false);
+    pp("\n\n$mm setFCMSubscription RESET to false\n");
+    return null;
+  }
+
+  Future<bool> getFCMSubscriptionFlag() async {
+    pp('\n$mm ......... getting getFCMSubscription from cache! ...');
+    bool? isSubscribed =  box.read('fcm');
+    if (isSubscribed == null || isSubscribed == false) {
+      pp('$mm FCMSubscription flag does not exist in Prefs, '
+          'one time isSubscribed, 🍎🍎🍎 next time not so much!');
+      return false;
+    } else {
+      pp("$mm FCMSubscription flag: 🧩 🧩 🧩 🧩 🧩 retrieved .. $isSubscribed 🔴🔴");
+      return isSubscribed;
+    }
+  }
   Future saveUser(User user) async {
     await box.write('user', user.toJson());
     pp("\n\n$mm saveUser SAVED: 🌽 ${user.toJson()}\n");

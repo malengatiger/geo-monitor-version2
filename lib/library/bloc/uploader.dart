@@ -74,6 +74,7 @@ class Uploader {
       pp('$mm photos uploaded: $cnt');
     }
   }
+
   Future<int> _sendPhotoToCloud(PhotoForUpload value) async {
     var url = 'unknown';
     var thumbUrl = 'unknown';
@@ -161,6 +162,7 @@ class Uploader {
       return 9;
     }
   }
+
   Future _uploadVideos() async {
     final list = await cacheManager.getVideoForUpload();
     if (list.isNotEmpty) {
