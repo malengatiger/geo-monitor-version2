@@ -315,8 +315,6 @@ class ProjectListMobileState extends State<ProjectListMobile>
               duration: const Duration(milliseconds: 1000),
               child: ProjectMapMobile(
                 project: p,
-                projectPositions: positions,
-                projectPolygons: polygons,
               )));
     }
   }

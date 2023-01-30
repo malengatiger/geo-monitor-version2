@@ -122,6 +122,7 @@ class SettingsState extends State<Settings>
       pp('🌸 🌸 🌸 🌸 🌸 ... about to save settings: ${model.toJson()}');
       if (model.projectId == null) {
         await prefsOGx.saveSettings(model);
+        themeBloc.themeStreamController.sink.add(model.themeIndex!);
       }
       await sendSettings(model);
 
@@ -363,12 +364,12 @@ class SettingsState extends State<Settings>
                           ),
                           GestureDetector(
                             onTap: () {
-                              themeBloc.changeToTheme(currentThemeIndex);
                               currentThemeIndex++;
                               if (currentThemeIndex >=
                                   themeBloc.getThemeCount()) {
                                 currentThemeIndex = 0;
                               }
+                              themeBloc.changeToTheme(currentThemeIndex);
                               setState(() {
 
                               });
@@ -380,12 +381,12 @@ class SettingsState extends State<Settings>
                                 padding: const EdgeInsets.all(16.0),
                                 child: SizedBox(
                                   height: 36,
-                                  width: 160,
+                                  width: 200,
                                   child: Container(
                                     color: Theme.of(context).primaryColor,
                                     child: Center(
                                       child: Text(
-                                        'Tap Me for Colour',
+                                        'Tap Me for Colour Scheme',
                                         style: myTextStyleSmall(context),
                                       ),
                                     ),

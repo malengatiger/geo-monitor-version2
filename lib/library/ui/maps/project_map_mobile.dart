@@ -25,16 +25,14 @@ import '../../location/loc_bloc.dart';
 
 class ProjectMapMobile extends StatefulWidget {
   final Project project;
-  final List<ProjectPosition> projectPositions;
-  final List<ProjectPolygon> projectPolygons;
+  // final List<ProjectPosition> projectPositions;
+  // final List<ProjectPolygon> projectPolygons;
   final Photo? photo;
 
   const ProjectMapMobile(
       {super.key,
       required this.project,
-      required this.projectPositions,
-      this.photo,
-      required this.projectPolygons});
+      this.photo,});
 
   @override
   ProjectMapMobileState createState() => ProjectMapMobileState();
@@ -69,8 +67,7 @@ class ProjectMapMobileState extends State<ProjectMapMobile>
         reverseDuration: const Duration(milliseconds: 1500),
         vsync: this);
     super.initState();
-    projectPolygons = widget.projectPolygons;
-    projectPositions = widget.projectPositions;
+    _refreshData(false);
     _getUser();
     _setMarkerIcon();
   }
@@ -123,7 +120,7 @@ class ProjectMapMobileState extends State<ProjectMapMobile>
   double _latitude = 0.0, _longitude = 0.0;
 
   Future<void> _addMarkers() async {
-    pp('$mm _addMarkers: ....... 🍎 ${widget.projectPositions.length}');
+    pp('$mm _addMarkers: ....... 🍎 ${projectPositions.length}');
     if (projectPositions.isEmpty) {
       pp('There are no positions found ${E.redDot}');
       return;
@@ -216,8 +213,8 @@ class ProjectMapMobileState extends State<ProjectMapMobile>
         '${widget.project.monitorMaxDistanceInMetres!} metres');
 
     var map = <double, ProjectPosition>{};
-    for (var i = 0; i < widget.projectPositions.length; i++) {
-      var projPos = widget.projectPositions.elementAt(i);
+    for (var i = 0; i < projectPositions.length; i++) {
+      var projPos = projectPositions.elementAt(i);
       var dist = await locationBlocOG.getDistance(
           latitude: projPos.position!.coordinates.elementAt(1),
           longitude: projPos.position!.coordinates.elementAt(0),

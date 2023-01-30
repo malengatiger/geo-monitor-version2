@@ -7,6 +7,8 @@ import 'package:flutter/services.dart';
 import 'package:geo_monitor/library/data/geofence_event.dart';
 import 'package:geo_monitor/library/data/settings_model.dart';
 import 'package:geo_monitor/library/generic_functions.dart';
+import 'package:geo_monitor/library/ui/maps/project_map_mobile.dart';
+import 'package:geo_monitor/library/ui/media/list/project_media_list_mobile.dart';
 import 'package:geofence_service/geofence_service.dart';
 
 import 'package:get/get.dart';
@@ -184,7 +186,8 @@ class DashboardMobileState extends State<DashboardMobile>
   late StreamSubscription<GeofenceEvent> geofenceSubscription;
 
   void _subscribeToGeofenceStream() async {
-    geofenceSubscription = theGreatGeofencer.geofenceEventStream.listen((event) {
+    geofenceSubscription =
+        theGreatGeofencer.geofenceEventStream.listen((event) {
       pp('\n$mm geofenceEvent delivered by geofenceStream: ${event.projectName} ...');
       // if (mounted) {
       //   showToast(
@@ -212,6 +215,8 @@ class DashboardMobileState extends State<DashboardMobile>
   late StreamSubscription<ProjectPolygon> projectPolygonSubscriptionFCM;
   late StreamSubscription<Project> projectSubscriptionFCM;
   late StreamSubscription<User> userSubscriptionFCM;
+  late StreamSubscription<SettingsModel> settingsSubscriptionFCM;
+
   late StreamSubscription<String> killSubscriptionFCM;
 
   void _listenToOrgStreams() async {
@@ -444,13 +449,12 @@ class DashboardMobileState extends State<DashboardMobile>
 
   Future<void> _doTheWork(bool forceRefresh) async {
     try {
-
       if (user == null) {
         throw Exception("Tax man is fucked! User is not found");
       }
 
-      var bag = await organizationBloc.getOrganizationData(organizationId: user!.organizationId!,
-          forceRefresh: forceRefresh);
+      var bag = await organizationBloc.getOrganizationData(
+          organizationId: user!.organizationId!, forceRefresh: forceRefresh);
       await _extractData(bag);
       setState(() {});
     } catch (e) {
@@ -517,10 +521,17 @@ class DashboardMobileState extends State<DashboardMobile>
           setState(() {});
         }
       });
-     if (mounted) {
-       killSubscriptionFCM = listenForKill(context: context);
-     }
+      if (mounted) {
+        killSubscriptionFCM = listenForKill(context: context);
+      }
 
+      settingsSubscriptionFCM = fcmBloc.settingsStream.listen((settings) async {
+        pp('$mm: 🍎🍎 settings arrived with themeIndex: ${settings.themeIndex}... 🍎🍎');
+        themeBloc.themeStreamController.sink.add(settings.themeIndex!);
+        if (mounted) {
+          setState(() {});
+        }
+      });
       userSubscriptionFCM = fcmBloc.userStream.listen((user) async {
         pp('$mm: 🍎 🍎 user arrived... 🍎 🍎');
 
@@ -555,7 +566,7 @@ class DashboardMobileState extends State<DashboardMobile>
         }
       });
     } else {
-      pp('App is running on the Web 👿 👿 👿  firebase messaging is OFF 👿 👿 👿');
+      pp('App is running on the Web 👿👿👿firebase messaging is OFF 👿👿👿');
     }
   }
 
@@ -641,6 +652,7 @@ class DashboardMobileState extends State<DashboardMobile>
               child: const IntroPageViewer()));
     }
   }
+
   void _navigateToSettings() {
     pp('$mm .................. _navigateToIntro to Settings ....');
     if (mounted) {
@@ -663,15 +675,108 @@ class DashboardMobileState extends State<DashboardMobile>
             duration: const Duration(seconds: 1),
             child: const UserListMain()));
   }
+  void _navigateToProjectMedia(Project project) {
+    Navigator.push(
+        context,
+        PageTransition(
+            type: PageTransitionType.scale,
+            alignment: Alignment.topLeft,
+            duration: const Duration(seconds: 1),
+            child: ProjectMediaListMobile(project: project)));
+  }
+  void _navigateToProjectMap(Project project) {
+    Navigator.push(
+        context,
+        PageTransition(
+            type: PageTransitionType.scale,
+            alignment: Alignment.topLeft,
+            duration: const Duration(seconds: 1),
+            child: ProjectMapMobile(project: project)));
+  }
 
-  bool _showProjectChooser = false;
-  bool _showProjectSelected = false;
+  static const typeVideo = 0,
+      typeAudio = 1,
+      typePhoto = 2,
+      typePositions = 3,
+      typePolygons = 4,
+      typeSchedules = 5;
+
+  void _showProjectDialog(int destination) {
+    late String title;
+    switch (destination) {
+      case typePhoto:
+        title = ' Photos';
+        break;
+      case typeVideo:
+        title = ' Videos';
+        break;
+      case typeAudio:
+        title = ' Audio';
+        break;
+      case typePositions:
+        title = ' Map';
+        break;
+      case typePolygons:
+        title = ' Map';
+        break;
+    }
+
+    showDialog(
+        context: context,
+        barrierDismissible: true,
+
+        builder: (_) => AlertDialog(
+
+          backgroundColor: Colors.black12,
+              content: ProjectChooser(
+                title: title,
+                  onSelected: (p1) {
+                    _onProjectSelected(p1, destination);
+                  },
+                  onClose: () {
+                    Navigator.pop(context);
+                  }),
+              actions: <Widget>[
+                TextButton(
+                  child:  Text(
+                    'Close',
+                    style: myTextStyleMedium(context),
+                  ),
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                ),
+
+              ],
+            ));
+  }
+
+  _onProjectSelected(Project p1, int destination) {
+    switch (destination) {
+      case typeVideo:
+        _navigateToProjectMedia(p1);
+        break;
+      case typeAudio:
+        _navigateToProjectMedia(p1);
+        break;
+      case typePhoto:
+        _navigateToProjectMedia(p1);
+        break;
+      case typePositions:
+        _navigateToProjectMap(p1);
+        break;
+      case typePolygons:
+        _navigateToProjectMap(p1);
+        break;
+    }
+  }
+  // bool _showProjectChooser = false;
+  // bool _showProjectSelected = false;
 
   Project? selectedProject;
 
   @override
   Widget build(BuildContext context) {
-
     var style = GoogleFonts.secularOne(
         textStyle: Theme.of(context).textTheme.titleLarge,
         fontWeight: FontWeight.w900);
@@ -704,13 +809,18 @@ class DashboardMobileState extends State<DashboardMobile>
                     color: Theme.of(context).primaryColor,
                   ),
                   onPressed: _navigateToIntro),
-              user == null? const SizedBox(): user!.userType == UserType.fieldMonitor? const SizedBox():IconButton(
-                icon: Icon(
-                  Icons.settings,
-                  size: 18,
-                  color: Theme.of(context).primaryColor,
-                ),
-                onPressed: _navigateToSettings,),
+              user == null
+                  ? const SizedBox()
+                  : user!.userType == UserType.fieldMonitor
+                      ? const SizedBox()
+                      : IconButton(
+                          icon: Icon(
+                            Icons.settings,
+                            size: 18,
+                            color: Theme.of(context).primaryColor,
+                          ),
+                          onPressed: _navigateToSettings,
+                        ),
               IconButton(
                 icon: Icon(
                   Icons.refresh,
@@ -746,7 +856,8 @@ class DashboardMobileState extends State<DashboardMobile>
                             style: GoogleFonts.lato(
                                 textStyle:
                                     Theme.of(context).textTheme.titleLarge,
-                                fontWeight: FontWeight.normal, color: Theme.of(context).primaryColor)),
+                                fontWeight: FontWeight.normal,
+                                color: Theme.of(context).primaryColor)),
                     const SizedBox(
                       height: 12,
                     ),
@@ -870,10 +981,7 @@ class DashboardMobileState extends State<DashboardMobile>
                             },
                             child: GestureDetector(
                               onTap: () {
-                                setState(() {
-                                  _showProjectChooser = true;
-                                  instruction = goToMedia;
-                                });
+                                _showProjectDialog(typePhoto);
                               },
                               child: Card(
                                 elevation: 8,
@@ -907,10 +1015,7 @@ class DashboardMobileState extends State<DashboardMobile>
                             },
                             child: GestureDetector(
                               onTap: () {
-                                setState(() {
-                                  _showProjectChooser = true;
-                                  instruction = goToMedia;
-                                });
+                                _showProjectDialog(typeVideo);
                               },
                               child: Card(
                                 elevation: 8,
@@ -944,10 +1049,7 @@ class DashboardMobileState extends State<DashboardMobile>
                             },
                             child: GestureDetector(
                               onTap: () {
-                                setState(() {
-                                  _showProjectChooser = true;
-                                  instruction = goToMedia;
-                                });
+                                _showProjectDialog(typeAudio);
                               },
                               child: Card(
                                 elevation: 8,
@@ -981,10 +1083,7 @@ class DashboardMobileState extends State<DashboardMobile>
                             },
                             child: GestureDetector(
                               onTap: () {
-                                setState(() {
-                                  _showProjectChooser = true;
-                                  instruction = goToMap;
-                                });
+                                _showProjectDialog(typePolygons);
                               },
                               child: Card(
                                 elevation: 8,
@@ -1019,10 +1118,7 @@ class DashboardMobileState extends State<DashboardMobile>
                             },
                             child: GestureDetector(
                               onTap: () {
-                                setState(() {
-                                  _showProjectChooser = true;
-                                  instruction = goToMap;
-                                });
+                                _showProjectDialog(typePositions);
                               },
                               child: Card(
                                 elevation: 8,
@@ -1057,10 +1153,7 @@ class DashboardMobileState extends State<DashboardMobile>
                             },
                             child: GestureDetector(
                               onTap: () {
-                                setState(() {
-                                  _showProjectChooser = true;
-                                  instruction = goToSchedule;
-                                });
+                                _showProjectDialog(typeSchedules);
                               },
                               child: Card(
                                 elevation: 8,
@@ -1087,73 +1180,6 @@ class DashboardMobileState extends State<DashboardMobile>
                         ],
                       ),
                     ),
-                    _showProjectChooser
-                        ? Positioned(
-                            left: 24,
-                            right: 24,
-                            top: 0,
-                            child: SizedBox(
-                              height: 420,
-                              width: 280,
-                              child: ProjectChooser(
-                                onClose: () {
-                                  setState(() {
-                                    _showProjectChooser = false;
-                                  });
-                                },
-                                onSelected: (project) {
-                                  pp('$mm project selected ${project.name!}');
-                                  selectedProject = project;
-                                  setState(() {
-                                    _showProjectChooser = false;
-                                    _showProjectSelected = true;
-                                  });
-                                },
-                              ),
-                            ),
-                          )
-                        : const SizedBox(),
-                    _showProjectSelected
-                        ? Positioned(
-                            left: 29,
-                            top: -8,
-                            child: SizedBox(
-                              height: 80,
-                              width: 300,
-                              child: Card(
-                                color: Theme.of(context).primaryColor,
-                                elevation: 8,
-                                shape: getRoundedBorder(radius: 8),
-                                child: InkWell(
-                                  onTap: () {
-                                    setState(() {
-                                      _showProjectSelected = false;
-                                    });
-                                    _navigateToProjectList();
-                                  },
-                                  child: Column(
-                                    children: [
-                                      const SizedBox(
-                                        height: 12,
-                                      ),
-                                      Text(
-                                        'Tap to see more:',
-                                        style: myTextStyleSmall(context),
-                                      ),
-                                      const SizedBox(
-                                        height: 8,
-                                      ),
-                                      Text(
-                                        '${selectedProject!.name}',
-                                        style: myTextStyleMedium(context),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            ),
-                          )
-                        : const SizedBox(),
                   ],
                 ),
         ),
@@ -1161,6 +1187,7 @@ class DashboardMobileState extends State<DashboardMobile>
     );
   }
 }
+
 //////
 void showKillDialog({required String message, required BuildContext context}) {
   showDialog(

@@ -288,7 +288,7 @@ class VideoHandlerState extends State<VideoHandler>
           Positioned(
             left: 24,
             right: 24,
-            top: 100,
+            bottom: 20,
             child: SizedBox(
               child: Card(
                 elevation: 4,
@@ -296,120 +296,18 @@ class VideoHandlerState extends State<VideoHandler>
                 shape: getRoundedBorder(radius: 16),
                 child: Column(
                   children: [
+
                     const SizedBox(
-                      height: 20,
+                      height: 4,
                     ),
-                    Text(
-                      'Video Handler',
-                      style: myTextStyleLarge(context),
-                    ),
-                    const SizedBox(
-                      height: 12,
-                    ),
-                    widget.projectPosition == null
-                        ? Text(
-                            'from within Project Area',
-                            style: myTextStyleSmall(context),
-                          )
-                        : Text(
-                            'from Project Location',
-                            style: myTextStyleSmall(context),
-                          ),
-                    const SizedBox(
-                      height: 12,
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.all(12.0),
-                      child: Card(
-                        elevation: 4,
-                        shape: getRoundedBorder(radius: 16),
-                        child: Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Column(
-                            children: [
-                              Row(
-                                children: [
-                                  SizedBox(
-                                    width: 100,
-                                    child: Text(
-                                      'Uploaded',
-                                      style: myTextStyleSmall(context),
-                                    ),
-                                  ),
-                                  const SizedBox(
-                                    width: 8,
-                                  ),
-                                  bytesTransferred == null
-                                      ? Text('0',
-                                          style: myNumberStyleSmall(context))
-                                      : Text(
-                                          '$bytesTransferred',
-                                          style: myNumberStyleSmall(context),
-                                        ),
-                                ],
-                              ),
-                              const SizedBox(
-                                height: 24,
-                              ),
-                              Row(
-                                children: [
-                                  SizedBox(
-                                    width: 80,
-                                    child: Text(
-                                      'Total Size',
-                                      style: myTextStyleSmall(context),
-                                    ),
-                                  ),
-                                  const SizedBox(
-                                    width: 8,
-                                  ),
-                                  totalByteCount == null
-                                      ? Text('0',
-                                          style: myNumberStyleSmall(context))
-                                      : Text(
-                                          '$totalByteCount',
-                                          style: myNumberStyleSmall(context),
-                                        ),
-                                ],
-                              ),
-                              const SizedBox(
-                                height: 48,
-                              ),
-                              SizedBox(
-                                width: 200,
-                                child: ElevatedButton(
-                                    onPressed: _startNextVideo,
-                                    child: const Padding(
-                                      padding: EdgeInsets.all(12.0),
-                                      child: Text('Make Video'),
-                                    )),
-                              ),
-                              const SizedBox(
-                                height: 20,
-                              ),
-                              videoIsReady
-                                  ? SizedBox(
-                                      width: 200,
-                                      child: ElevatedButton(
-                                        onPressed: _navigateToPlayer,
-                                        child: const Padding(
-                                          padding: EdgeInsets.all(12.0),
-                                          child: Text('Play Video'),
-                                        ),
-                                      ),
-                                    )
-                                  : const SizedBox(),
-                              const SizedBox(
-                                height: 48,
-                              ),
-                              TextButton(
-                                  onPressed: _onCancel,
-                                  child: Text('Cancel',
-                                      style: myTextStyleSmall(context)))
-                            ],
-                          ),
-                        ),
-                      ),
+                    SizedBox(
+                      width: 200,
+                      child: TextButton(
+                          onPressed: _startNextVideo,
+                          child: const Padding(
+                            padding: EdgeInsets.all(4.0),
+                            child: Text('Make Video'),
+                          )),
                     ),
                   ],
                 ),

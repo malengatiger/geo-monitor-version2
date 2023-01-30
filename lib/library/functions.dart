@@ -3,6 +3,7 @@ import 'dart:math';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:geo_monitor/library/data/project_polygon.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -570,6 +571,15 @@ prettyPrint(Map map, String name) {
 
 }
 
+Future<File> getImageFileFromAssets(String path) async {
+  final byteData = await rootBundle.load('assets/$path');
+
+  final file = File('${(await getTemporaryDirectory()).path}/$path');
+  await file.writeAsBytes(byteData.buffer.asUint8List(byteData.offsetInBytes, byteData.lengthInBytes));
+
+  return file;
+}
+
 LatLngBounds boundsFromLatLngList(List<LatLng> list) {
   assert(list.isNotEmpty);
   double? x0, x1, y0, y1;
@@ -595,7 +605,7 @@ Future<File> getPhotoThumbnail({required File file}) async {
 
   final File mFile = File(
       '${directory.path}$slash${DateTime.now().millisecondsSinceEpoch}.jpg');
-  var thumb = mFile..writeAsBytesSync(img.encodeJpg(thumbnail, quality: 90));
+  var thumb = mFile..writeAsBytesSync(img.encodeJpg(thumbnail, quality: 100));
   var len = await thumb.length();
   pp('🔷🔷 photo thumbnail generated: 😡 ${(len / 1024).toStringAsFixed(1)} KB');
   return thumb;
@@ -603,21 +613,26 @@ Future<File> getPhotoThumbnail({required File file}) async {
 
 Future<File> getVideoThumbnail(File file) async {
   final Directory directory = await getApplicationDocumentsDirectory();
-
   var path = 'possibleVideoThumb_${DateTime.now().toIso8601String()}.jpg';
   const slash = '/';
   final thumbFile = File('${directory.path}$slash$path');
 
-  final data = await vt.VideoThumbnail.thumbnailData(
-    video: file.path,
-    imageFormat: vt.ImageFormat.JPEG,
-    maxWidth:
-    128, // specify the width of the thumbnail, let the height auto-scaled to keep the source aspect ratio
-    quality: 25,
-  );
-  await thumbFile.writeAsBytes(data!);
-  pp('🔷🔷 Video thumbnail created. length: ${await thumbFile.length()} 🔷🔷🔷');
-  return thumbFile;
+  try {
+    final data = await vt.VideoThumbnail.thumbnailData(
+      video: file.path,
+      imageFormat: vt.ImageFormat.JPEG,
+      maxWidth: 128,
+      quality: 100,
+    );
+    await thumbFile.writeAsBytes(data!);
+    pp('🔷🔷Video thumbnail created. length: ${await thumbFile.length()} 🔷🔷🔷');
+    return thumbFile;
+  } catch (e) {
+      pp('ERROR: $e');
+      var m = await getImageFileFromAssets('assets/intro/small.jpg');
+      return m;
+  }
+
 }
 
 pp(dynamic msg) {

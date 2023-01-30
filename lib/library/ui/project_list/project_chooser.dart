@@ -9,9 +9,10 @@ import '../../functions.dart';
 import '../../hive_util.dart';
 
 class ProjectChooser extends StatefulWidget {
-  const ProjectChooser({Key? key, required this.onSelected, required this.onClose}) : super(key: key);
+  const ProjectChooser({Key? key, required this.onSelected, required this.onClose, required this.title}) : super(key: key);
   final Function(Project) onSelected;
   final Function onClose;
+  final String title;
 
   @override
   State<ProjectChooser> createState() => ProjectChooserState();
@@ -73,8 +74,8 @@ class ProjectChooserState extends State<ProjectChooser>
         : Stack(
             children: [
               SizedBox(
-                height: 460,
-                width: 300,
+                height: 360,
+                // width: 400,
                 child: Card(
                   elevation: 4,
                   color: Theme.of(context).primaryColorDark,
@@ -89,7 +90,7 @@ class ProjectChooserState extends State<ProjectChooser>
                         Row(mainAxisAlignment: MainAxisAlignment.end,
                           children: [
                             Text(
-                              'Projects',
+                              widget.title,
                               style: myTextStyleMedium(context),
                             ),
                             const SizedBox(width: 60,),

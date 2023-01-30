@@ -95,6 +95,9 @@ class AudioMobileState extends State<AudioMobile>
     settingsModel = await prefsOGx.getSettings();
     var m = settingsModel?.maxAudioLengthInMinutes;
     limitInSeconds = m! * 60;
+    setState(() {
+
+    });
   }
   void _getUser() async {
     user = await prefsOGx.getUser();
@@ -122,14 +125,14 @@ class AudioMobileState extends State<AudioMobile>
       if (seconds >= limitInSeconds) {
         _recorderController.stop();
       }
-      if (mounted) {
-        isRecording = false;
-        isPaused = false;
-        isStopped = true;
-        setState(() => seconds++);
-        showToast(message: 'Your recording limit has been reached', context: context);
-
-      }
+      // if (mounted) {
+      //   isRecording = false;
+      //   isPaused = false;
+      //   isStopped = true;
+      //   setState(() => seconds++);
+      //   showToast(message: 'Your recording limit has been reached', context: context);
+      //
+      // }
     });
   }
 
@@ -224,6 +227,9 @@ class AudioMobileState extends State<AudioMobile>
       fileSize = (await _recordedFile?.length())!;
       pp('$mm _waveController stopped : 🍎🍎🍎 path: $path');
       pp('$mm _waveController stopped : 🍎🍎🍎 size: $fileSize bytes');
+    }
+    if (_timer != null) {
+      _timer?.cancel();
     }
     setState(() {
       isPaused = false;

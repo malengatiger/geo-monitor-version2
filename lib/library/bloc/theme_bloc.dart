@@ -18,8 +18,8 @@ class ThemeBloc {
     _initialize();
   }
 
-  final StreamController<int> _themeController = StreamController.broadcast();
-  Stream<int> get newThemeStream => _themeController.stream;
+  final StreamController<int> themeStreamController = StreamController.broadcast();
+  Stream<int> get themeStream => themeStreamController.stream;
 
   final _rand = Random(DateTime.now().millisecondsSinceEpoch);
 
@@ -32,9 +32,9 @@ class ThemeBloc {
     if (settings != null) {
       pp(
           '$mm ThemeBloc: initialize:: adding index to stream ....theme index: ${settings.themeIndex}');
-      _themeController.sink.add(settings.themeIndex!);
+      themeStreamController.sink.add(settings.themeIndex!);
     } else {
-      _themeController.sink.add(0);
+      themeStreamController.sink.add(0);
     }
   }
 
@@ -51,12 +51,13 @@ class ThemeBloc {
       settings.themeIndex = _themeIndex;
       await prefsOGx.saveSettings(settings);
     }
-    _themeController.sink.add(_themeIndex);
+    themeStreamController.sink.add(_themeIndex);
     return _themeIndex;
   }
+
   Future<int> changeToTheme(int index) async {
     pp('\n\n$mm changing to theme index: $index, adding index to stream');
-    _themeController.sink.add(index);
+    themeStreamController.sink.add(index);
 
     pp('$mm changing to theme index: $index, update current cached settings');
     var settings = await prefsOGx.getSettings();
@@ -73,7 +74,7 @@ class ThemeBloc {
   }
 
   closeStream() {
-    _themeController.close();
+    themeStreamController.close();
   }
 
   static final mm = '${E.appleRed}${E.appleRed}${E.appleRed}';

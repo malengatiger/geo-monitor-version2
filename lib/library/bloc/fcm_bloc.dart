@@ -190,7 +190,7 @@ class FCMBloc {
         var loc = await locationBlocOG.getLocation();
         if (loc != null) {
           var locResp = LocationResponse(
-              position: Position(coordinates: [loc!.longitude, loc.latitude],
+              position: Position(coordinates: [loc.longitude, loc.latitude],
                   type: 'Point'),
               date: DateTime.now().toUtc().toIso8601String(),
               userId: user.userId,
@@ -282,6 +282,7 @@ class FCMBloc {
         pp('$mm This is an organization-wide setting, update the user cached settings ...');
         await prefsOGx.saveSettings(msg);
         await themeBloc.changeToTheme(msg.themeIndex!);
+        _settingsController.sink.add(msg);
         pp('$mm This is an organization-wide setting, hopefully the ui changes to new color ...');
 
       }

@@ -81,8 +81,6 @@ class ProjectMapMainState extends State<ProjectMapMain> {
         : ScreenTypeLayout(
             mobile: ProjectMapMobile(
               project: widget.project,
-              projectPositions: _positions,
-              projectPolygons: _polygons,
               photo: widget.photo,
             ),
             tablet: ProjectMapTablet(

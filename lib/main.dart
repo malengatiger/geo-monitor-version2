@@ -30,19 +30,24 @@ final GlobalKey<ScaffoldMessengerState> rootScaffoldMessengerKey = GlobalKey<Sca
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-
+  initializeGeoMonitor();
+  runApp(const GeoMonitorApp());
+}
+ const xx = '🎽🎽🎽🎽🎽🎽initializeGeoMonitor: ';
+Future<void> initializeGeoMonitor() async {
   await GetStorage.init('GeoPreferences');
-  pp('🎽🎽main: GET CACHED SETTINGS; set themeIndex .............. ');
+  pp('$xx GET CACHED SETTINGS; set themeIndex .............. ');
   var settings = await prefsOGx.getSettings();
   if (settings != null) {
     themeIndex = settings.themeIndex!;
+    themeBloc.themeStreamController.sink.add(settings.themeIndex!);
   }
   //user = await prefsOGx.getUser();
-  pp('🎽🎽 main: THEME: themeIndex up top is: $themeIndex ');
+  pp('$xx THEME: themeIndex up top is: $themeIndex ');
   //pp('THEME: user up top is: ${user!.name}');
   firebaseApp = await Firebase.initializeApp(
       options: DefaultFirebaseOptions.currentPlatform);
-  pp('$mx'
+  pp('$xx'
       ' Firebase App has been initialized: ${firebaseApp.name}, checking for authed current user');
   // await fb.FirebaseAuth.instance.signOut();
   // if (0 == 0) {
@@ -58,18 +63,16 @@ void main() async {
     }
   }
   await dotenv.load(fileName: ".env");
-  pp('$heartBlue DotEnv has been loaded');
+  pp('$xx $heartBlue DotEnv has been loaded');
   await Hive.initFlutter('data003');
   await cacheManager.initialize(forceInitialization: false);
 
   if (settings != null) {
-    pp('\n\n${E.heartGreen}${E.heartGreen}}${E
+    pp('\n\n$xx ${E.heartGreen}${E.heartGreen}}${E
         .heartGreen} App Settings are 🍎${settings.toJson()}🍎\n\n');
   }
-  pp('${E.heartGreen}${E.heartGreen}}${E.heartGreen} '
+  pp('$xx ${E.heartGreen}${E.heartGreen}}${E.heartGreen} '
       'Hive initialized and boxCollection set up');
-
-  runApp(const GeoMonitorApp());
 }
 
 class GeoMonitorApp extends StatelessWidget {
@@ -84,11 +87,11 @@ class GeoMonitorApp extends StatelessWidget {
         FocusManager.instance.primaryFocus?.unfocus();
       },
       child: StreamBuilder(
-          stream: themeBloc.newThemeStream,
+          stream: themeBloc.themeStream,
           builder: (_, snapshot) {
             if (snapshot.hasData) {
               pp('\n\n${E.check}${E.check}${E.check}${E.check}${E.check} '
-                  'theme index has changed to ${snapshot.data}\n\n');
+                  'main: theme index has changed to ${snapshot.data}\n\n');
               themeIndex = snapshot.data!;
             }
           return MaterialApp(
@@ -97,7 +100,7 @@ class GeoMonitorApp extends StatelessWidget {
             title: 'GeoMonitor',
             theme: themeBloc.getTheme(themeIndex).darkTheme,
             darkTheme: themeBloc.getTheme(themeIndex).darkTheme,
-            themeMode: ThemeMode.system,
+            themeMode: ThemeMode.dark,
             // home: const StorageTesterPage(),
             home: AnimatedSplashScreen(
               duration: 2000,

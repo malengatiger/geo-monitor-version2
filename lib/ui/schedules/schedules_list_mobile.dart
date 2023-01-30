@@ -55,8 +55,7 @@ class SchedulesListMobileState extends State<SchedulesListMobile>
               alignment: Alignment.topLeft,
               duration: const Duration(seconds: 1),
               child: ProjectMapMobile(
-                projectPositions: pos,
-                projectPolygons: pol,
+
                 project: proj!,)));
     }
   }
