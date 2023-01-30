@@ -37,7 +37,7 @@ class SettingsModel {
         required this.projectId});
 
   SettingsModel.fromJson(Map data) {
-    pp('🌀🌀🌀🌀 data json from server $data');
+    // pp('🌀🌀🌀🌀 data json from server $data');
     distanceFromProject = data['distanceFromProject'];
     photoSize = data['photoSize'];
     settingsId = data['settingsId'];

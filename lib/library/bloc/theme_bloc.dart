@@ -28,15 +28,14 @@ class ThemeBloc {
   int get themeIndex => _themeIndex;
 
   _initialize() async {
-    _themeIndex = await prefsOGx.getThemeIndex();
-    pp('$mm ThemeBloc: initialize:: adding index to stream ....theme index: $themeIndex');
-    _themeController.sink.add(_themeIndex);
-  }
-
-  Future start()  async {
-    _themeIndex = await prefsOGx.getThemeIndex();
-    _themeController.sink.add(_themeIndex);
-    pp('$mm theming started ...... _themeIndex: $_themeIndex');
+    var settings = await prefsOGx.getSettings();
+    if (settings != null) {
+      pp(
+          '$mm ThemeBloc: initialize:: adding index to stream ....theme index: ${settings.themeIndex}');
+      _themeController.sink.add(settings.themeIndex!);
+    } else {
+      _themeController.sink.add(0);
+    }
   }
 
   ThemeBag getTheme(int index) {
@@ -47,21 +46,25 @@ class ThemeBloc {
     _themeIndex = _rand.nextInt(SchemeUtil.getThemeCount() - 1);
     pp('\n\n$mm changing to theme index: $_themeIndex');
     pp('$mm _setStream: setting stream .... to theme index: $_themeIndex');
-    await prefsOGx.setThemeIndex(_themeIndex);
     var settings = await prefsOGx.getSettings();
-    settings.themeIndex = _themeIndex;
-    await prefsOGx.saveSettings(settings);
+    if (settings != null) {
+      settings.themeIndex = _themeIndex;
+      await prefsOGx.saveSettings(settings);
+    }
     _themeController.sink.add(_themeIndex);
     return _themeIndex;
   }
   Future<int> changeToTheme(int index) async {
-    pp('\n\n$mm changing to theme index: $index');
-    pp('$mm _setStream: setting stream .... to theme index: $_themeIndex');
-    await prefsOGx.setThemeIndex(index);
-    var settings = await prefsOGx.getSettings();
-    settings.themeIndex = _themeIndex;
-    await prefsOGx.saveSettings(settings);
+    pp('\n\n$mm changing to theme index: $index, adding index to stream');
     _themeController.sink.add(index);
+
+    pp('$mm changing to theme index: $index, update current cached settings');
+    var settings = await prefsOGx.getSettings();
+    if (settings != null) {
+      settings.themeIndex = index;
+      await prefsOGx.saveSettings(settings);
+    }
+
     return index;
   }
 
@@ -76,14 +79,6 @@ class ThemeBloc {
   static final mm = '${E.appleRed}${E.appleRed}${E.appleRed}';
 }
 
-
-/*
-theme: FlexThemeData.light(scheme: FlexScheme.mallardGreen),
-        // The Mandy red, dark theme.
-        darkTheme: FlexThemeData.dark(scheme: FlexScheme.mallardGreen),
-        // Use dark or light theme based on system setting.
-        themeMode: ThemeMode.system,
- */
 class SchemeUtil {
   static final List<ThemeBag> _themeBags = [];
   static final _rand = Random(DateTime.now().millisecondsSinceEpoch);

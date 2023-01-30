@@ -4,8 +4,10 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:geo_monitor/library/api/prefs_og.dart';
+import 'package:geo_monitor/library/data/settings_model.dart';
 import 'package:geo_monitor/library/hive_util.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
+import 'package:uuid/uuid.dart';
 
 import '../api/data_api.dart';
 import '../data/user.dart' as ur;
@@ -163,11 +165,24 @@ class PhoneLoginState extends State<PhoneLogin>
                 'new phone but same number; 🍎 seconds: $seconds}');
           }
         }
+        pp('\n$mm seeking to acquire this user by their id:- 🌀🌀🌀...');
         user = await DataAPI.getUserById(userId: userCred.user!.uid);
 
         if (user != null) {
           await prefsOGx.saveUser(user!);
           await cacheManager.addUser(user: user!);
+          var list = await DataAPI.getOrganizationSettings(user!.organizationId!);
+          for (var settings in list) {
+            if (settings.projectId == null) {
+              await prefsOGx.saveSettings(settings);
+              break;
+            }
+          }
+          if (list.isEmpty) {
+            await prefsOGx.saveSettings(SettingsModel(distanceFromProject: 100, photoSize: 0, maxVideoLengthInMinutes: 3,
+                maxAudioLengthInMinutes: 10, themeIndex: 0, settingsId: const Uuid().v4(),
+                created: DateTime.now().toUtc().toIso8601String(), organizationId: user!.organizationId, projectId: null));
+          }
           setState(() {
             busy = false;
           });

@@ -101,6 +101,7 @@ class DataAPI {
       await _callWebAPIPost('${mURL!}addSettings', bag);
       var s = SettingsModel.fromJson(result);
       pp('$mm settings from db: ${s.toJson()}');
+      await cacheManager.addSettings(settings: s);
       return s;
     } catch (e) {
       pp(e);
@@ -224,7 +225,6 @@ class DataAPI {
       }
       if (mList.isNotEmpty) {
         mList.sort((a, b) => b.created!.compareTo(a.created!));
-        //todo - save in local cache
         await cacheManager.addOrganizationSettingsList(mList);
       }
 

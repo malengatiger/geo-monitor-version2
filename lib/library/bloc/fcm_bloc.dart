@@ -5,9 +5,6 @@ import 'package:firebase_auth/firebase_auth.dart' as auth;
 import 'package:firebase_messaging/firebase_messaging.dart' as fb;
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:geo_monitor/library/data/location_response.dart';
-import 'package:geo_monitor/library/data/position.dart';
-import 'package:geo_monitor/library/location/loc_bloc.dart';
 import 'package:universal_platform/universal_platform.dart';
 import 'package:uuid/uuid.dart';
 
@@ -16,7 +13,10 @@ import '../api/prefs_og.dart';
 import '../data/audio.dart';
 import '../data/condition.dart';
 import '../data/location_request.dart';
+import '../data/location_response.dart';
 import '../data/org_message.dart';
+import '../data/position.dart';
+import '../data/settings_model.dart';
 import '../data/video.dart';
 import '../functions.dart';
 import '../generic_functions.dart';
@@ -24,7 +24,9 @@ import '../hive_util.dart';
 import '../data/photo.dart';
 import '../data/project.dart';
 import '../data/user.dart';
+import '../location/loc_bloc.dart';
 import 'organization_bloc.dart';
+import 'theme_bloc.dart';
 
 FCMBloc fcmBloc = FCMBloc();
 const mm = '🔵 🔵 🔵 🔵 🔵 🔵 FCMBloc: ';
@@ -51,6 +53,10 @@ class FCMBloc {
   final StreamController<String> _killController =
   StreamController.broadcast();
 
+  final StreamController<SettingsModel> _settingsController =
+  StreamController.broadcast();
+
+  Stream<SettingsModel> get settingsStream => _settingsController.stream;
   Stream<User> get userStream => _userController.stream;
   Stream<Project> get projectStream => _projectController.stream;
   Stream<Photo> get photoStream => _photoController.stream;
@@ -68,14 +74,16 @@ class FCMBloc {
     _videoController.close();
     _conditionController.close();
     _messageController.close();
+    _settingsController.close();
+    _killController.close();
   }
 
   FCMBloc() {
-    initialize();
+    //initialize();
   }
 
-  void initialize() async {
-    pp("\n$mm initialize FIREBASE MESSAGING ...........................");
+  Future initialize() async {
+    pp("\n\n$mm initialize ....... FIREBASE MESSAGING ...........................");
     user = await prefsOGx.getUser();
     var android = UniversalPlatform.isAndroid;
     var ios = UniversalPlatform.isIOS;
@@ -110,9 +118,8 @@ class FCMBloc {
       FirebaseMessaging.onMessage.listen((RemoteMessage message) {
         // RemoteNotification? notification = message.notification;
         // AndroidNotification? android = message.notification?.android;
-        pp("\n\n$mm onMessage: 🍎 🍎 data: ${message.data} ... 🍎 🍎 ");
-        //todo - save photo or video in cache if not yours ...
-        processFCMMessage(message);
+        pp("\n\n$mm onMessage: 🍎 🍎 data: ${message.data} ... 🍎 🍎\n ");
+        _processFCMMessage(message);
       });
 
       FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
@@ -120,29 +127,15 @@ class FCMBloc {
             '$mm onMessageOpenedApp:  🍎 🍎 A new onMessageOpenedApp event was published! ${message
                 .data}');
       });
-
-      await subscribeToTopics();
+      await _subscribeToTopics();
     }
   }
 
-  Future requestPermissions() async {
-    fb.NotificationSettings settings = await messaging.requestPermission(
-      alert: true,
-      announcement: false,
-      badge: true,
-      carPlay: false,
-      criticalAlert: false,
-      provisional: false,
-      sound: true,
-    );
-
-    p('User granted permission: ${settings.authorizationStatus}');
-  }
-
-  Future subscribeToTopics() async {
+  Future _subscribeToTopics() async {
     var user = await prefsOGx.getUser();
     if (user != null) {
-      pp("$mm subscribeToTopics ...........................");
+      pp("$mm ..... subscribeToTopics ...........................");
+
       await messaging.subscribeToTopic('projects_${user.organizationId}');
       await messaging.subscribeToTopic('photos_${user.organizationId}');
       await messaging.subscribeToTopic('videos_${user.organizationId}');
@@ -152,17 +145,23 @@ class FCMBloc {
       await messaging.subscribeToTopic('audios_${user.organizationId}');
       await messaging.subscribeToTopic('kill_${user.organizationId}');
       await messaging.subscribeToTopic('locationRequest_${user.organizationId}');
-      pp("$mm subscribeToTopics: 🍎 subscribed to all 9 organization topics 🍎");
+      await messaging.subscribeToTopic('settings_${user.organizationId}');
+
+      pp("$mm subscribeToTopics: 🍎 subscribed to all 10 organization topics 🍎");
     } else {
-      pp("$mm subscribeToTopics:  👿 👿 👿 user not cached on device yet  👿 👿 👿");
+      pp("$mm subscribeToTopics: 👿👿👿 user not cached on device yet  👿👿👿");
     }
     return null;
   }
 
   final blue = '🔵 🔵 🔵';
-  Future processFCMMessage(fb.RemoteMessage message) async {
+  Future _processFCMMessage(fb.RemoteMessage message) async {
     pp('\n\n$mm processFCMMessage: $blue processing newly arrived FCM message; messageId:: ${message.messageId}');
+
     Map data = message.data;
+    if (data['settings'] != null) {
+      pp('$mm Yebo! Settings have arrived! $data');
+    }
     User? user = await prefsOGx.getUser();
 
     if (data['kill'] != null) {
@@ -274,6 +273,19 @@ class FCMBloc {
         _messageController.sink.add(msg);
       }
     }
+    if (data['settings'] != null) {
+      pp("$mm processFCMMessage  🔵 🔵 🔵 ........................... cache SETTINGS and change THEME  🍎  🍎");
+      var m = jsonDecode(data['settings']);
+      var msg = SettingsModel.fromJson(m);
+      await cacheManager.addSettings(settings: msg);
+      if (msg.projectId == null) {
+        pp('$mm This is an organization-wide setting, update the user cached settings ...');
+        await prefsOGx.saveSettings(msg);
+        await themeBloc.changeToTheme(msg.themeIndex!);
+        pp('$mm This is an organization-wide setting, hopefully the ui changes to new color ...');
+
+      }
+    }
 
     return null;
   }
@@ -284,15 +296,6 @@ class FCMBloc {
     var list = await cacheManager.getUsers();
     organizationBloc.userController.sink.add(list);
   }
-
-  // Future _updateUser(String newToken) async {
-  //   if (user != null) {
-  //     pp("$mm updateUser: 🍎🍎🍎🍎🍎🍎🍎🍎 USER: 🍎 ${user!.toJson()} ... 🍎🍎 ");
-  //     user!.fcmRegistration = newToken;
-  //     await DataAPI.updateUser(user!);
-  //     await prefsOGx.saveUser(user!);
-  //   }
-  // }
 
   void onDidReceiveNotificationResponse(NotificationResponse details) {
   pp('$mm onDidReceiveNotificationResponse ... details: ${details.payload}');

@@ -19,6 +19,7 @@ import '../../library/bloc/connection_check.dart';
 import '../../library/bloc/fcm_bloc.dart';
 import '../../library/bloc/organization_bloc.dart';
 import '../../library/bloc/theme_bloc.dart';
+import '../../library/bloc/uploader.dart';
 import '../../library/data/audio.dart';
 import '../../library/data/data_bag.dart';
 import '../../library/data/field_monitor_schedule.dart';
@@ -81,7 +82,6 @@ class DashboardMobileState extends State<DashboardMobile>
     _setAnimationControllers();
     super.initState();
     _setItems();
-
     _listenToStreams();
     _listenForFCM();
     _getAuthenticationStatus();
@@ -95,41 +95,9 @@ class DashboardMobileState extends State<DashboardMobile>
     _subscribeToGeofenceStream();
     _buildGeofences();
     _startTimer();
+    uploader.startTimer(const Duration(seconds: 60));
   }
 
-  Future _getSettings(bool forceRefresh) async {
-    pp('\n\n$mm get settings from cache or remote db ...');
-    setState(() {
-      busy = true;
-    });
-    try {
-     _settings = await  organizationBloc.getSettings(organizationId: user!.organizationId!, forceRefresh: forceRefresh);
-     pp('$mm settings from cache or db: ${_settings.length}');
-     if (_settings.isNotEmpty) {
-       var filtered = <SettingsModel>[];
-       _settings.sort((a,b) => b.created!.compareTo(a.created!));
-       for (var value in _settings) {
-         if (value.projectId == null) {
-           filtered.add(value);
-         }
-       }
-       if (filtered.isNotEmpty) {
-         pp('$mm ... saving filtered first settings to cache ...');
-         await prefsOGx.saveSettings(filtered.first);
-         themeBloc.changeToTheme(filtered.first.themeIndex!);
-       }
-     }
-    } catch (e) {
-      pp(e);
-      if (mounted) {
-        showToast(message: '$e', context: context);
-      }
-    }
-
-    setState(() {
-      busy = false;
-    });
-  }
   void _setAnimationControllers() {
     _projectAnimationController = AnimationController(
         duration: Duration(milliseconds: dur),
@@ -453,7 +421,6 @@ class DashboardMobileState extends State<DashboardMobile>
     pp('$mm ............................................Refreshing data ....');
     user = await prefsOGx.getUser();
     if (user != null) {
-      pp('$mm user inside dashboard ${user!.toJson()}');
       if (user!.userType == UserType.orgAdministrator) {
         type = 'Administrator';
       }
@@ -481,11 +448,10 @@ class DashboardMobileState extends State<DashboardMobile>
       if (user == null) {
         throw Exception("Tax man is fucked! User is not found");
       }
-      pp('$mm user: ${user!.toJson()}');
+
       var bag = await organizationBloc.getOrganizationData(organizationId: user!.organizationId!,
           forceRefresh: forceRefresh);
       await _extractData(bag);
-      await _getSettings(forceRefresh);
       setState(() {});
     } catch (e) {
       pp('$mm $e - will show snackbar ..');
@@ -538,9 +504,10 @@ class DashboardMobileState extends State<DashboardMobile>
   void _listenForFCM() async {
     var android = UniversalPlatform.isAndroid;
     var ios = UniversalPlatform.isIOS;
-
+    await fcmBloc.initialize();
+    pp('$mm 🍎 🍎 🍎 🍎 FCM should be initialized!!  ... 🍎 🍎');
     if (android || ios) {
-      pp('DashboardMobile: 🍎 🍎 _listen to FCM message streams ... 🍎 🍎');
+      pp('$mm 🍎 🍎 _listen to FCM message streams ... 🍎 🍎');
       projectSubscriptionFCM =
           fcmBloc.projectStream.listen((Project project) async {
         if (mounted) {
@@ -550,20 +517,9 @@ class DashboardMobileState extends State<DashboardMobile>
           setState(() {});
         }
       });
-
-      killSubscriptionFCM = listenForKill(context: context);
-
-      // killSubscriptionFCM = fcmBloc.killStream.listen((event) {
-      //   pp('$mm Kill message received! 🍎Time to fuck off!');
-      //   if (mounted) {
-      //     showKillDialog(event, message: event);
-      //   } else {
-      //     rootScaffoldMessengerKey.currentState?.showSnackBar(
-      //       SnackBar(content: Text(event), action: SnackBarAction(label: 'Close', onPressed: (){
-      //         Navigator.of(rootScaffoldMessengerKey.currentContext!).pop();
-      //       }),) );
-      //   }
-      // });
+     if (mounted) {
+       killSubscriptionFCM = listenForKill(context: context);
+     }
 
       userSubscriptionFCM = fcmBloc.userStream.listen((user) async {
         pp('$mm: 🍎 🍎 user arrived... 🍎 🍎');

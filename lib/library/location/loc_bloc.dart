@@ -1,7 +1,6 @@
 import 'package:location/location.dart';
 import 'package:maps_toolkit/maps_toolkit.dart';
 
-import '../emojis.dart';
 import '../functions.dart';
 
 // final LocationBloc locationBloc = LocationBloc();
@@ -44,11 +43,11 @@ final LocationBlocOG locationBlocOG = LocationBlocOG();
 // }
 
 class LocationBlocOG {
-  Location location = Location();
+  //Location location = Location();
   final mm = '🍐🍐🍐🍐🍐🍐 LocationBlocOG: ';
   bool _serviceEnabled = false;
   PermissionStatus? _permissionGranted;
-  LocationData? _locationData;
+  Location location = Location();
 
   Future requestPermission() async {
     _permissionGranted = await location.hasPermission();
@@ -58,13 +57,31 @@ class LocationBlocOG {
         return;
       }
     }
+
+    return _permissionGranted;
   }
 
   Future<LocationData?> getLocation() async {
-    await requestPermission();
-    _locationData = await location.getLocation();
-    pp('$mm Location acquired: $_locationData');
-    return _locationData;
+
+    _serviceEnabled = await location.serviceEnabled();
+    if (!_serviceEnabled) {
+      _serviceEnabled = await location.requestService();
+      if (!_serviceEnabled) {
+        return null;
+      }
+    }
+
+    _permissionGranted = await location.hasPermission();
+    if (_permissionGranted == PermissionStatus.denied) {
+      _permissionGranted = await location.requestPermission();
+      if (_permissionGranted != PermissionStatus.granted) {
+        return null;
+      }
+    }
+
+    final loc = await location.getLocation();
+    pp('$mm location has been acquired : $loc');
+    return loc;
   }
 
   Future<double> getDistanceFromCurrentPosition(

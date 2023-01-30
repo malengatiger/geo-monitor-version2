@@ -32,11 +32,14 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   await GetStorage.init('GeoPreferences');
-  themeIndex = await prefsOGx.getThemeIndex();
+  pp('🎽🎽main: GET CACHED SETTINGS; set themeIndex .............. ');
+  var settings = await prefsOGx.getSettings();
+  if (settings != null) {
+    themeIndex = settings.themeIndex!;
+  }
   //user = await prefsOGx.getUser();
-  pp('THEME: themeIndex up top is: $themeIndex ');
+  pp('🎽🎽 main: THEME: themeIndex up top is: $themeIndex ');
   //pp('THEME: user up top is: ${user!.name}');
-  await themeBloc.start();
   firebaseApp = await Firebase.initializeApp(
       options: DefaultFirebaseOptions.currentPlatform);
   pp('$mx'
@@ -46,14 +49,23 @@ void main() async {
   //   throw Exception('Tooting my HORN!');
   // }
   fbAuthedUser = fb.FirebaseAuth.instance.currentUser;
+  if (fbAuthedUser != null) {
+    //check if user exists
+    var user = await prefsOGx.getUser();
+    if (user == null) {
+      fbAuthedUser = null;
+      await fb.FirebaseAuth.instance.signOut();
+    }
+  }
   await dotenv.load(fileName: ".env");
   pp('$heartBlue DotEnv has been loaded');
   await Hive.initFlutter('data003');
   await cacheManager.initialize(forceInitialization: false);
-  var settings = await prefsOGx.getSettings();
-  themeIndex = settings.themeIndex!;
 
-  pp('${E.heartGreen}${E.heartGreen}}${E.heartGreen} App Settings are 🍎${settings.toJson()}🍎');
+  if (settings != null) {
+    pp('\n\n${E.heartGreen}${E.heartGreen}}${E
+        .heartGreen} App Settings are 🍎${settings.toJson()}🍎\n\n');
+  }
   pp('${E.heartGreen}${E.heartGreen}}${E.heartGreen} '
       'Hive initialized and boxCollection set up');
 
@@ -75,6 +87,8 @@ class GeoMonitorApp extends StatelessWidget {
           stream: themeBloc.newThemeStream,
           builder: (_, snapshot) {
             if (snapshot.hasData) {
+              pp('\n\n${E.check}${E.check}${E.check}${E.check}${E.check} '
+                  'theme index has changed to ${snapshot.data}\n\n');
               themeIndex = snapshot.data!;
             }
           return MaterialApp(

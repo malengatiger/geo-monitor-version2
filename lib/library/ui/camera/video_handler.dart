@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:collection';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
@@ -11,6 +12,7 @@ import 'package:geo_monitor/library/data/video.dart';
 import 'package:geo_monitor/library/emojis.dart';
 import 'package:geo_monitor/library/ui/camera/play_video.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:isolate_handler/isolate_handler.dart';
 import 'package:native_device_orientation/native_device_orientation.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:path_provider/path_provider.dart';
@@ -18,10 +20,12 @@ import 'package:path_provider/path_provider.dart';
 import '../../../ui/dashboard/dashboard_mobile.dart';
 import '../../bloc/cloud_storage_bloc.dart';
 import '../../bloc/project_bloc.dart';
+import '../../bloc/video_for_upload.dart';
 import '../../data/position.dart';
 import '../../data/project_polygon.dart';
 import '../../functions.dart';
 import '../../generic_functions.dart';
+import '../../hive_util.dart';
 import '../../location/loc_bloc.dart';
 import '../media/list/project_media_list_mobile.dart';
 
@@ -98,15 +102,17 @@ class VideoHandlerState extends State<VideoHandler>
       videoIsReady = false;
     });
     var settings = await prefsOGx.getSettings();
-    var minutes = settings.maxVideoLengthInMinutes;
-    final XFile? file = await _picker.pickVideo(
-        source: ImageSource.camera,
-        maxDuration: Duration(minutes: minutes!),
-        preferredCameraDevice: CameraDevice.rear);
+    if (settings != null) {
+      var minutes = settings.maxVideoLengthInMinutes;
+      final XFile? file = await _picker.pickVideo(
+          source: ImageSource.camera,
+          maxDuration: Duration(minutes: minutes!),
+          preferredCameraDevice: CameraDevice.rear);
 
-    if (file != null) {
-      await _processFile(file);
-      setState(() {});
+      if (file != null) {
+        await _processFile(file);
+        setState(() {});
+      }
     }
     // file.saveTo(path);
   }
@@ -136,50 +142,26 @@ class VideoHandlerState extends State<VideoHandler>
       thumbnailFile = tFile;
     });
 
-    cloudStorageBloc.errorStream.listen((event) {
-      if (mounted) {
-        showToast(
-            message: event,
-            toastGravity: ToastGravity.TOP,
-            textStyle: const TextStyle(color: Colors.white),
-            duration: const Duration(seconds: 3),
-            backgroundColor: Colors.pink.shade400,
-            context: context);
-      }
-    });
-
     if (widget.projectPosition != null) {
-      var result = await cloudStorageBloc.uploadVideo(
-        listener: this,
-        file: mFile,
-        thumbnailFile: tFile,
-        project: widget.project,
-        projectPositionId: widget.projectPosition!.projectPositionId!,
-        projectPosition: widget.projectPosition!.position!,
-      );
-      pp('$mm result from cloudStorageBloc: $result, if $uploadFinished we good!');
-    } else {
+      var videoForUpload = VideoForUpload(
+          filePath: mFile.path,
+          thumbnailPath: tFile.path,
+          project: widget.project,
+          position: widget.projectPosition!.position!,
+          date: DateTime.now().toUtc().toIso8601String());
+      await cacheManager.addVideoForUpload(video: videoForUpload);    } else {
       var loc = await locationBlocOG.getLocation();
       if (loc != null) {
         var position =
-        Position(type: 'Point', coordinates: [loc.longitude, loc.latitude]);
-        var polygon = getPolygonUserIsWithin(
-            polygons: polygons,
-            latitude: loc.latitude!,
-            longitude: loc.longitude!);
+            Position(type: 'Point', coordinates: [loc.longitude, loc.latitude]);
 
-        var result = await cloudStorageBloc.uploadVideo(
-          listener: this,
-          file: mFile,
-          thumbnailFile: tFile,
-          project: widget.project,
-          projectPolygonId: polygon?.projectPolygonId,
-          projectPosition: position,
-        );
-
-        pp(
-            '$mm result from cloudStorageBloc: $result, if $uploadFinished we good!');
-      }
+        var videoForUpload = VideoForUpload(
+            filePath: mFile.path,
+            thumbnailPath: tFile.path,
+            project: widget.project,
+            position: position,
+            date: DateTime.now().toUtc().toIso8601String());
+        await cacheManager.addVideoForUpload(video: videoForUpload);       }
 
       var size = await finalFile!.length();
       var m = (size / 1024 / 1024).toStringAsFixed(2);
@@ -188,9 +170,7 @@ class VideoHandlerState extends State<VideoHandler>
         showToast(
             context: context,
             message: 'Video file saved on device, size: $m MB',
-            backgroundColor: Theme
-                .of(context)
-                .primaryColor,
+            backgroundColor: Theme.of(context).primaryColor,
             textStyle: Styles.whiteSmall,
             toastGravity: ToastGravity.TOP,
             duration: const Duration(seconds: 2));
@@ -474,4 +454,73 @@ class VideoHandlerState extends State<VideoHandler>
 
   @override
   onAudioReady(Audio audio) {}
+
+  final isolates = IsolateHandler();
+
+  void _startIsolate(
+      {required File file,
+      required File thumbnail,
+      required Project project,
+      required Position position}) async {
+
+    pp('\n\n$mm starting isolate ...');
+    var map = {
+      'file': file,
+      'thumbnail': thumbnail,
+      'project': project,
+      'position': position,
+
+    };
+// Start the isolate at the `entryPoint` function. We will be dealing with
+    // string types here, so we will restrict communication to that type. If no type
+    // is given, the type will be dynamic instead.
+    isolates.spawn<GCSMessage>(
+      isolateEntryPoint,
+      errorsAreFatal: false,
+      // Here we give a name to the isolate, by which we can access is later,
+      // for example when sending it data and when disposing of it.
+      name: 'cloudStorageIsolate',
+      // onReceive is executed every time data is received from the spawned
+      // isolate. We will let the setPath function deal with any incoming
+      // data.
+      onReceive: receiveMessage,
+    );
+    // Executed once when spawned isolate is ready for communication. We will
+    // send the isolate a request to perform its task right away.
+    // onInitialized: () => isolates.send(pathMessage, to: 'path'));
+    pp('$mm ..... calling the isolate entry point ...}');
+    isolateEntryPoint(map);
+
+  }
+
+  void receiveMessage(GCSMessage message) {
+    pp('$mm message from isolate: $message');
+  }
+}
+
+void isolateEntryPoint(Map<String, dynamic> map) {
+  pp('$mxx isolate entry point started ... HandledIsolate will initialize: $map');
+  // Calling initialize from the entry point with the context is
+  // required if communication is desired. It returns a messenger which
+  // allows listening and sending information to the main isolate.
+  final messenger = HandledIsolate.initialize(map);
+  // Triggered every time data is received from the main isolate.
+  messenger.listen((message) {
+    // Add one to the count and send the new value back to the main
+    // isolate.
+    pp('$mxx messenger listened: $message');
+  });
+}
+
+final mxx = '${E.heartBlue}${E.heartBlue}${E.heartBlue}${E.heartBlue} Isolate: ';
+class GCSMessage {
+  late double totalBytes, bytesTransferred;
+  late int statusCode;
+  late String message;
+
+  GCSMessage(
+      {required this.totalBytes,
+      required this.bytesTransferred,
+      required this.statusCode,
+      required this.message});
 }

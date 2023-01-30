@@ -7,6 +7,7 @@ import 'package:geo_monitor/library/api/prefs_og.dart';
 import 'package:geo_monitor/library/data/country.dart';
 import 'package:geo_monitor/library/data/organization.dart';
 import 'package:geo_monitor/library/data/organization_registration_bag.dart';
+import 'package:geo_monitor/library/data/settings_model.dart';
 import 'package:geo_monitor/library/hive_util.dart';
 import 'package:geo_monitor/library/location/loc_bloc.dart';
 import 'package:geo_monitor/library/users/edit/user_edit_main.dart';
@@ -181,6 +182,8 @@ class OrgRegistrationPageState extends State<OrgRegistrationPage>
             longitude: loc.longitude);
 
         var result = await DataAPI.registerOrganization(bag);
+        await cacheManager.addOrganization(organization: result.organization!);
+
         pp('$mm firebase user credential obtained:  🍎 $userCred');
         var gender = 'Unknown';
         user = ur.User(
@@ -201,12 +204,21 @@ class OrgRegistrationPageState extends State<OrgRegistrationPage>
         mUser.password = const Uuid().v4();
         var res = await DataAPI.updateAuthedUser(mUser);
 
+        pp('\n$mm Organization OG Administrator registered OK: adding org settings default ...');
+        var mSettings = await DataAPI.addSettings(SettingsModel(distanceFromProject: 100,
+            photoSize: 0, maxVideoLengthInMinutes: 3, maxAudioLengthInMinutes: 10, themeIndex: 0,
+            settingsId: const Uuid().v4(), created: DateTime.now().toUtc().toIso8601String(),
+            organizationId: org.organizationId, projectId: null));
+
+        await prefsOGx.saveSettings(mSettings);
+
         if (res == 0) {
-          await prefsOGx.saveUser(user!);
-          await cacheManager.addUser(user: user!);
+          await prefsOGx.saveUser(mUser);
+          await cacheManager.addUser(user: mUser);
           pp('\n$mm Organization OG Administrator registered OK:🌍🌍🌍🌍  🍎 ${mUser
               .toJson()} 🌍🌍🌍🌍');
         }
+
         pp('\n\n$mm Organization registered: 🌍🌍🌍🌍 🍎 ${result
             .toJson()} 🌍🌍🌍🌍\n\n');
       }
@@ -214,7 +226,7 @@ class OrgRegistrationPageState extends State<OrgRegistrationPage>
       pp(e);
       String msg = e.toString();
       if (msg.contains('dup key')) {
-        msg = 'Duplicate organization name';
+        msg = 'Duplicate organization name, please modify';
       }
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(

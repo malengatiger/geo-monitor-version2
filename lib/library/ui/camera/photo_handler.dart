@@ -4,6 +4,9 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:geo_monitor/library/api/prefs_og.dart';
+import 'package:geo_monitor/library/bloc/failed_bag.dart';
+import 'package:geo_monitor/library/bloc/photo_for_upload.dart';
+import 'package:geo_monitor/library/hive_util.dart';
 
 import 'package:image_picker/image_picker.dart';
 import 'package:native_device_orientation/native_device_orientation.dart';
@@ -15,6 +18,7 @@ import '../../../ui/dashboard/dashboard_mobile.dart';
 import '../../bloc/cloud_storage_bloc.dart';
 import '../../bloc/project_bloc.dart';
 import '../../data/audio.dart';
+import '../../data/photo.dart';
 import '../../data/position.dart';
 import '../../data/project.dart';
 import '../../data/project_polygon.dart';
@@ -25,7 +29,6 @@ import '../../functions.dart';
 import '../../generic_functions.dart';
 import '../../location/loc_bloc.dart';
 import '../media/list/project_media_list_mobile.dart';
-import '../settings.dart';
 
 class PhotoHandler extends StatefulWidget {
   const PhotoHandler({Key? key, required this.project, this.projectPosition})
@@ -95,30 +98,26 @@ class PhotoHandlerState extends State<PhotoHandler>
       busy = false;
     });
   }
-/*
 
-Standard Display Resolution Sizes
-Name(s)	Resolution in pixels
-High Definition (HD)	1280 x 720
-Full HD, FHD	1920 x 1080
- */
   void _startPhoto() async {
     pp('$mm photo taking started ....');
     var settings = await prefsOGx.getSettings();
-    var height = 0.0, width = 0.0;
-    switch(settings.photoSize) {
-      case 0:
-        height = 640;
-        width = 480;
-        break;
-      case 1:
-        height = 720;
-        width = 1280;
-        break;
-      case 2:
-        height = 1080;
-        width = 1920;
-        break;
+    var height = 640.0, width = 480.0;
+    if (settings != null) {
+      switch (settings.photoSize) {
+        case 0:
+          height = 640;
+          width = 480;
+          break;
+        case 1:
+          height = 720;
+          width = 1280;
+          break;
+        case 2:
+          height = 1080;
+          width = 1920;
+          break;
+      }
     }
     final XFile? file = await _picker.pickImage(
         source: ImageSource.camera,
@@ -174,49 +173,30 @@ Full HD, FHD	1920 x 1080
       finalFile = mFile;
     });
 
-    cloudStorageBloc.errorStream.listen((event) {
-      if (mounted) {
-        showToast(
-            message: event,
-            toastGravity: ToastGravity.TOP,
-            textStyle: const TextStyle(color: Colors.white),
-            duration: const Duration(seconds: 3),
-            backgroundColor: Colors.pink.shade400,
-            context: context);
-      }
-    });
-
     pp('$mm check file upload names: \n💚 ${mFile.path} length: ${await mFile.length()} '
         '\n💚thumb: ${tFile.path} length: ${await tFile.length()}');
+
     if (widget.projectPosition != null) {
-      cloudStorageBloc.uploadPhoto(
-          listener: this,
-          file: mFile,
-          thumbnailFile: tFile,
+      var photoForUpload = PhotoForUpload(
+          filePath: mFile.path,
+          thumbnailPath: tFile.path,
           project: widget.project,
-          projectPositionId: widget.projectPosition!.projectPositionId!,
-          projectPosition: widget.projectPosition!.position!,);
+          position: widget.projectPosition!.position!,
+          date: DateTime.now().toUtc().toIso8601String());
+      await cacheManager.addPhotoForUpload(photo: photoForUpload);
+
     } else {
       var loc = await locationBlocOG.getLocation();
       if (loc != null) {
         var position =
         Position(type: 'Point', coordinates: [loc.longitude, loc.latitude]);
-        var polygon = getPolygonUserIsWithin(
-            polygons: polygons,
-            latitude: loc.latitude!,
-            longitude: loc.longitude!);
-
-        var result = await cloudStorageBloc.uploadPhoto(
-          listener: this,
-          file: mFile,
-          thumbnailFile: tFile,
-          project: widget.project,
-          projectPolygonId: polygon?.projectPolygonId,
-          projectPosition: position,);
-
-        pp(
-            '$mm result from cloudStorageBloc: $result, if $uploadFinished we good!');
-      }
+        var photoForUpload = PhotoForUpload(
+            filePath: mFile.path,
+            thumbnailPath: tFile.path,
+            project: widget.project,
+            position: position,
+            date: DateTime.now().toUtc().toIso8601String());
+        await cacheManager.addPhotoForUpload(photo: photoForUpload);}
 
       var size = await mFile.length();
       var m = (size / 1024 / 1024).toStringAsFixed(2);
@@ -364,10 +344,10 @@ Full HD, FHD	1920 x 1080
                 ),
           Positioned(
             left: 12, right: 12,
-            top: 100,
+            bottom: 20,
             child: SizedBox(
-              width: 300,
-              height: 360,
+              width: 240,
+              height: 80,
               child: Card(
                 elevation: 4,
                 color: Colors.black38,
@@ -375,98 +355,15 @@ Full HD, FHD	1920 x 1080
                 child: Column(
                   children: [
                     const SizedBox(
-                      height: 20,
+                      height: 8,
                     ),
-                    Text(
-                      'Photo Handler',
-                      style: myTextStyleLarge(context),
-                    ),
-                    const SizedBox(
-                      height: 12,
-                    ),
-                    widget.projectPosition == null
-                        ? Text(
-                            'from within Project Area',
-                            style: myTextStyleSmall(context),
-                          )
-                        : Text(
-                            'from Project Location',
-                            style: myTextStyleSmall(context),
-                          ),
-                    const SizedBox(
-                      height: 12,
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.all(20.0),
-                      child: Card(
-                        elevation: 4,
-                        shape: getRoundedBorder(radius: 16),
-                        child: Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Column(
-                            children: [
-                              Row(
-                                children: [
-                                  SizedBox(
-                                    width: 150,
-                                    child: Text(
-                                      'Bytes Uploaded',
-                                      style: myTextStyleSmall(context),
-                                    ),
-                                  ),
-                                  const SizedBox(
-                                    width: 8,
-                                  ),
-                                  bytesTransferred == null
-                                      ? Text('0',
-                                          style: myNumberStyleSmall(context))
-                                      : Text(
-                                          '$bytesTransferred',
-                                          style: myNumberStyleSmall(context),
-                                        ),
-                                ],
-                              ),
-                              const SizedBox(
-                                height: 16,
-                              ),
-                              Row(
-                                children: [
-                                  SizedBox(
-                                    width: 150,
-                                    child: Text(
-                                      'Total Bytes',
-                                      style: myTextStyleSmall(context),
-                                    ),
-                                  ),
-                                  const SizedBox(
-                                    width: 8,
-                                  ),
-                                  totalByteCount == null
-                                      ? Text('0',
-                                          style: myNumberStyleSmall(context))
-                                      : Text(
-                                          '$totalByteCount',
-                                          style: myNumberStyleSmall(context),
-                                        ),
-                                ],
-                              ),
-                              const SizedBox(
-                                height: 24,
-                              ),
-                              ElevatedButton(
-                                  onPressed: _startNextPhoto,
-                                  child: const Padding(
-                                    padding: EdgeInsets.all(12.0),
-                                    child: Text('Take Picture'),
-                                  )),
-                              const SizedBox(
-                                height: 24,
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
+
+                    TextButton(
+                        onPressed: _startNextPhoto,
+                        child: const Padding(
+                          padding: EdgeInsets.all(12.0),
+                          child: Text('Take Picture'),
+                        )),
                   ],
                 ),
               ),

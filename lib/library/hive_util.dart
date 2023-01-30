@@ -1,7 +1,11 @@
 import 'dart:math';
 
+import 'package:geo_monitor/library/bloc/audio_for_upload.dart';
+import 'package:geo_monitor/library/bloc/photo_for_upload.dart';
+import 'package:geo_monitor/library/bloc/video_for_upload.dart';
 import 'package:geo_monitor/library/data/settings_model.dart';
 import 'package:hive/hive.dart';
+import 'package:video_player/video_player.dart';
 
 import 'bloc/failed_audio.dart';
 import 'bloc/failed_bag.dart';
@@ -68,6 +72,10 @@ class CacheManager {
   LazyBox<Rating>? _ratingBox;
   LazyBox<LocationResponse>? _locationResponseBox;
   LazyBox<SettingsModel>? _settingsBox;
+
+  LazyBox<PhotoForUpload>? _uploadPhotoBox;
+  LazyBox<VideoForUpload>? _uploadVideoBox;
+  LazyBox<AudioForUpload>? _uploadAudioBox;
 
   bool _isInitialized = false;
 
@@ -136,9 +144,14 @@ class CacheManager {
     _settingsBox = await Hive.openLazyBox<SettingsModel>('settings');
     _projectBox = await Hive.openLazyBox<Project>('projects');
     _positionBox = await Hive.openLazyBox<ProjectPosition>('positions');
+
     _cityBox = await Hive.openLazyBox<City>('cities');
     _photoBox = await Hive.openLazyBox<Photo>('photos');
     _videoBox = await Hive.openLazyBox<Video>('videos');
+
+    _uploadAudioBox = await Hive.openLazyBox<AudioForUpload>('uploadAudios');
+    _uploadPhotoBox = await Hive.openLazyBox<PhotoForUpload>('uploadPhotos');
+    _uploadVideoBox = await Hive.openLazyBox<VideoForUpload>('uploadVideos');
 
     _communityBox = await Hive.openLazyBox<Community>('communities');
     _conditionBox = await Hive.openLazyBox<Condition>('conditions');
@@ -162,12 +175,24 @@ class CacheManager {
     _audioBox = await Hive.openLazyBox<Audio>('audios');
     _failedAudioBox = await Hive.openLazyBox<FailedAudio>('failedAudios');
     _ratingBox = await Hive.openLazyBox<Rating>('ratings');
-    _locationResponseBox = await Hive.openLazyBox<LocationResponse>('locationResponses');
-
+    _locationResponseBox =
+        await Hive.openLazyBox<LocationResponse>('locationResponses');
   }
 
   void _registerAdapters() {
     p('$xx ... Registering Hive object adapters ...');
+    if (!Hive.isAdapterRegistered(35)) {
+      Hive.registerAdapter(AudioForUploadAdapter());
+      p('$xx Hive AudioForUploadAdapter registered');
+    }
+    if (!Hive.isAdapterRegistered(34)) {
+      Hive.registerAdapter(VideoForUploadAdapter());
+      p('$xx Hive VideoForUploadAdapter registered');
+    }
+    if (!Hive.isAdapterRegistered(33)) {
+      Hive.registerAdapter(PhotoForUploadAdapter());
+      p('$xx Hive PhotoForUploadAdapter registered');
+    }
     if (!Hive.isAdapterRegistered(30)) {
       Hive.registerAdapter(SettingsModelAdapter());
       p('$xx Hive SettingsModelAdapter registered');
@@ -269,14 +294,15 @@ class CacheManager {
       '${E.appleRed}${E.appleRed}${E.appleRed}${E.appleRed} CacheManager: ';
   var random = Random(DateTime.now().millisecondsSinceEpoch);
 
-  Future addLocationResponse({required LocationResponse locationResponse}) async {
+  Future addLocationResponse(
+      {required LocationResponse locationResponse}) async {
     pp('$mm .... addLocationResponse .....');
     var key = '${locationResponse.userId}_${locationResponse.date}';
     await _locationResponseBox?.put(key, locationResponse);
 
     pp('$mm locationResponse added to local cache}');
   }
-  
+
   Future addRegistration({required OrganizationRegistrationBag bag}) async {
     pp('$mm .... addRegistration .....');
     var key = '${bag.date}';
@@ -293,11 +319,30 @@ class CacheManager {
     pp('$mm Condition added to local cache: ${condition.projectName}');
   }
 
+  Future addAudioForUpload({required AudioForUpload audio}) async {
+    var key = '${audio.project!.projectId!}_${audio.date}';
+    await _uploadAudioBox?.put(key, audio);
+
+    pp('$mm AudioForUpload added to local cache: ${audio.project!.name}');
+  }
+  Future addVideoForUpload({required VideoForUpload video}) async {
+    var key = '${video.project!.projectId!}_${video.date}';
+    await _uploadVideoBox?.put(key, video);
+
+    pp('$mm VideoForUpload added to local cache: ${video.project!.name}');
+  }
+  Future addPhotoForUpload({required PhotoForUpload photo}) async {
+    var key = '${photo.project!.projectId!}_${photo.date}';
+    await _uploadPhotoBox?.put(key, photo);
+
+    pp('$mm PhotoForUpload added to local cache: ${photo.project!.name}');
+  }
   Future addOrganizationSettingsList(List<SettingsModel> settings) async {
     for (var value in settings) {
       await addSettings(settings: value);
     }
   }
+
   Future addSettings({required SettingsModel settings}) async {
     var key = '${settings.organizationId}_';
     if (settings.projectId != null) {
@@ -479,6 +524,46 @@ class CacheManager {
 
     return list;
   }
+  Future<List<AudioForUpload>> getAudioForUpload() async {
+    List<AudioForUpload> list = [];
+    var keys = _uploadAudioBox?.keys;
+
+    if (keys != null) {
+      for (var key in keys) {
+        var mSettings = await _uploadAudioBox?.get(key);
+        list.add(mSettings!);
+      }
+    }
+    pp('$mm ${list.length} org settings list found in cache 🔵');
+    return list;
+  }
+  Future<List<VideoForUpload>> getVideoForUpload() async {
+    List<VideoForUpload> list = [];
+    var keys = _uploadVideoBox?.keys;
+
+    if (keys != null) {
+      for (var key in keys) {
+        var video = await _uploadVideoBox?.get(key);
+        list.add(video!);
+      }
+    }
+    pp('$mm ${list.length} VideoForUpload list found in cache 🔵');
+    return list;
+  }
+  Future<List<PhotoForUpload>> getPhotoForUpload() async {
+    List<PhotoForUpload> list = [];
+    var keys = _uploadPhotoBox?.keys;
+
+    if (keys != null) {
+      for (var key in keys) {
+        var photo = await _uploadPhotoBox?.get(key);
+        list.add(photo!);
+      }
+    }
+    pp('$mm ${list.length} PhotoForUpload list found in cache 🔵');
+    return list;
+  }
+
 
   Future<List<SettingsModel>> getOrganizationSettings() async {
     List<SettingsModel> list = [];
@@ -496,8 +581,8 @@ class CacheManager {
     pp('$mm ${list.length} org settings list found in cache 🔵');
     return list;
   }
-  Future<List<SettingsModel>> getProjectSettings(
-      String projectId) async {
+
+  Future<List<SettingsModel>> getProjectSettings(String projectId) async {
     List<SettingsModel> list = [];
     var keys = _settingsBox?.keys;
 
@@ -788,6 +873,25 @@ class CacheManager {
     pp('$mm Failed Audio added to local cache  🔵');
   }
 
+  Future removeUploadedPhoto({required PhotoForUpload photo}) async {
+    var key =
+        '${photo.project!.projectId}_${photo.date}';
+    await _uploadPhotoBox?.delete(key);
+    pp('$mm PhotoForUpload deleted from local cache:  🔵 🔵 ${photo.project!.name}');
+  }
+  Future removeUploadedAudio({required AudioForUpload audio}) async {
+    var key =
+        '${audio.project!.projectId}_${audio.date}';
+    await _uploadAudioBox?.delete(key);
+    pp('$mm AudioForUpload deleted from local cache: 🔵 🔵 ${audio.project!.name}');
+  }
+  Future removeUploadedVideo({required VideoForUpload video}) async {
+    var key =
+        '${video.project!.projectId}_${video.date}';
+    await _uploadVideoBox?.delete(key);
+    pp('$mm VideoForUpload deleted from local cache:  🔵 🔵 ${video.project!.name}');
+  }
+
   Future removeFailedPhoto({required Photo photo}) async {
     var key =
         '${photo.organizationId}_${photo.projectId}_${photo.userId}_${photo.created}';
@@ -832,7 +936,7 @@ class CacheManager {
     var key =
         '${projectPosition.organizationId}_${projectPosition.projectId}_${projectPosition.projectPositionId}';
     await _positionBox?.put(key, projectPosition);
-    pp('$mm ProjectPosition added to local cache:  🔵 🔵 ${projectPosition.projectName} organizationId: ${projectPosition.organizationId} ');
+    pp('$mm ProjectPosition added to local cache:  🔵 🔵 ${projectPosition.projectName} ');
   }
 
   Future addUser({required User user}) async {
@@ -972,7 +1076,8 @@ class CacheManager {
   }
 
   Future addGeofenceEvent({required GeofenceEvent geofenceEvent}) async {
-    var key = '${geofenceEvent.user!.userId!}_${geofenceEvent.projectPositionId}';
+    var key =
+        '${geofenceEvent.user!.userId!}_${geofenceEvent.projectPositionId}';
     await _geofenceEventBox?.put(key, geofenceEvent);
     pp('$mm GeofenceEvent added to local cache: ${geofenceEvent.projectName}');
   }

@@ -7,19 +7,23 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:geo_monitor/library/api/prefs_og.dart';
 import 'package:geo_monitor/library/data/audio.dart';
+import 'package:geo_monitor/library/hive_util.dart';
 import 'package:geo_monitor/library/ui/settings.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:record/record.dart';
 
+import '../../library/bloc/audio_for_upload.dart';
 import '../../library/bloc/cloud_storage_bloc.dart';
+import '../../library/data/position.dart';
 import '../../library/data/project.dart';
 import '../../library/data/settings_model.dart';
 import '../../library/data/user.dart';
 import '../../library/data/video.dart';
 import '../../library/functions.dart';
 import '../../library/generic_functions.dart';
+import '../../library/location/loc_bloc.dart';
 import '../dashboard/dashboard_mobile.dart';
 
 class AudioMobile extends StatefulWidget {
@@ -237,9 +241,19 @@ class AudioMobileState extends State<AudioMobile>
       isUploading = true;
     });
     try {
-      var result = await cloudStorageBloc.uploadAudio(
-          listener: this, file: _recordedFile!, project: widget.project);
-      pp('$mm result back from database: $result');
+      Position? position;
+      var loc = await locationBlocOG.getLocation();
+      if (loc != null) {
+        position = Position(coordinates: [loc.longitude, loc.latitude], type: 'Point');
+      }
+      var audioForUpload = AudioForUpload(
+          filePath: _recordedFile!.path,
+          project: widget.project,
+          position: position,
+          date: DateTime.now().toUtc().toIso8601String());
+
+      await cacheManager.addAudioForUpload(audio: audioForUpload);
+
     } catch (e) {
       pp(e);
       if (mounted) {

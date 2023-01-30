@@ -1,24 +1,22 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:geo_monitor/library/ui/project_location/project_location_mobile.dart';
-import 'package:geo_monitor/ui/audio/audio_mobile.dart';
-import 'package:geo_monitor/ui/dashboard/dashboard_mobile.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:map_launcher/map_launcher.dart';
 
 import 'package:page_transition/page_transition.dart';
 
+import '../../../ui/audio/audio_mobile.dart';
+import '../../../ui/dashboard/dashboard_mobile.dart';
 import '../../bloc/project_bloc.dart';
 import '../../data/position.dart';
 import '../../data/project_polygon.dart';
 import '../../functions.dart';
-import '../../hive_util.dart';
 import '../../data/project.dart';
 import '../../data/project_position.dart';
-import '../../location/loc_bloc.dart';
 import '../camera/photo_handler.dart';
 import '../camera/video_handler.dart';
+import '../project_location/project_location_mobile.dart';
 
 class ProjectMonitorMobile extends StatefulWidget {
   final Project project;
@@ -66,7 +64,6 @@ class ProjectMonitorMobileState extends State<ProjectMonitorMobile>
       widget.project.projectPositions = positions;
       isBusy = false;
     });
-    _checkProjectDistance();
   }
 
   @override
@@ -84,20 +81,13 @@ class ProjectMonitorMobileState extends State<ProjectMonitorMobile>
         key: _key,
         appBar: AppBar(
           leading: const SizedBox(),
-          title: Text('Project Monitor Starter',
+          title: Text('Starter',
               style: GoogleFonts.lato(
                 textStyle: Theme.of(context).textTheme.bodySmall,
                 fontWeight: FontWeight.normal,
               )),
           actions: [
-            IconButton(
-              icon: Icon(
-                Icons.ac_unit_rounded,
-                size: 18,
-                color: Theme.of(context).primaryColor,
-              ),
-              onPressed: _checkProjectDistance,
-            ),
+
             IconButton(
               icon: Icon(Icons.refresh_rounded,
                   size: 18, color: Theme.of(context).primaryColor),
@@ -121,8 +111,7 @@ class ProjectMonitorMobileState extends State<ProjectMonitorMobile>
               padding: const EdgeInsets.all(20.0),
               child: Column(
                 children: [
-                  Text(widget.project.name!,
-                      style: myTextStyleMedium(context)),
+                  Text(widget.project.name!, style: myTextStyleMedium(context)),
                   const SizedBox(
                     height: 60,
                   ),
@@ -155,42 +144,43 @@ class ProjectMonitorMobileState extends State<ProjectMonitorMobile>
         ),
         body: Stack(
           children: [
-            Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Card(
-                elevation: 2,
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(16.0)),
+            const Padding(
+              padding: EdgeInsets.all(16.0),
+              child: SizedBox(),
+            ),
+             Positioned(
+                 child: SizedBox(
+                width: 400, height: 400,
                 child: Padding(
-                  padding: const EdgeInsets.all(12.0),
-                  child: SingleChildScrollView(
-                    child: Column(
-                      children: [
-                        const SizedBox(
-                          height: 8,
-                        ),
-                        isWithinDistance
-                            ? SizedBox(
+                  padding: const EdgeInsets.all(20.0),
+                  child: Card(
+                    elevation: 2,
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(16.0)),
+                    child: Padding(
+                      padding: const EdgeInsets.all(12.0),
+                      child: SingleChildScrollView(
+                        child: Padding(
+                          padding: const EdgeInsets.all(20.0),
+                          child: Column(
+                            children: [
+                              const SizedBox(
+                                height: 8,
+                              ),
+                              SizedBox(
                                 height: 280,
                                 child: Column(
                                   children: [
-                                   TextButton(
-
+                                    TextButton(
                                       onPressed: () async {
-                                        isWithinDistance =
-                                            await _checkProjectDistance();
-                                        if (isWithinDistance) {
-                                          _startPhotoMonitoring();
-                                        } else {
-                                          setState(() {});
-                                          _showError();
-                                        }
+                                        _startPhotoMonitoring();
                                       },
                                       child: Padding(
                                         padding: const EdgeInsets.all(12.0),
                                         child: Text(
                                           'Start Photo Monitor',
-                                          style: myTextStyleMediumPrimaryColor(context),
+                                          style: myTextStyleMediumPrimaryColor(
+                                              context),
                                         ),
                                       ),
                                     ),
@@ -198,46 +188,31 @@ class ProjectMonitorMobileState extends State<ProjectMonitorMobile>
                                       height: 12,
                                     ),
                                     TextButton(
-
                                       onPressed: () async {
-                                        isWithinDistance =
-                                            await _checkProjectDistance();
-                                        if (isWithinDistance) {
-                                          _startVideoMonitoring();
-                                        } else {
-                                          setState(() {});
-                                          _showError();
-                                        }
+                                        _startVideoMonitoring();
                                       },
                                       child: Padding(
                                         padding: const EdgeInsets.all(12.0),
                                         child: Text(
                                           'Start Video Monitor',
-                                          style: myTextStyleMediumPrimaryColor(context),
+                                          style: myTextStyleMediumPrimaryColor(
+                                              context),
                                         ),
                                       ),
                                     ),
-
                                     const SizedBox(
                                       height: 12,
                                     ),
                                     TextButton(
-
                                       onPressed: () async {
-                                        isWithinDistance =
-                                        await _checkProjectDistance();
-                                        if (isWithinDistance) {
-                                          _startAudioMonitoring();
-                                        } else {
-                                          setState(() {});
-                                          _showError();
-                                        }
+                                        _startAudioMonitoring();
                                       },
                                       child: Padding(
                                         padding: const EdgeInsets.all(12.0),
                                         child: Text(
                                           'Start Audio Report',
-                                          style: myTextStyleMediumPrimaryColor(context),
+                                          style: myTextStyleMediumPrimaryColor(
+                                              context),
                                         ),
                                       ),
                                     ),
@@ -248,70 +223,26 @@ class ProjectMonitorMobileState extends State<ProjectMonitorMobile>
                                         onPressed: () {
                                           Navigator.of(context).pop();
                                         },
-                                        child: Text('Cancel', style: myTextStyleSmall(context),)),
-                                  ],
-                                ),
-                              )
-                            : Container(),
-                        const SizedBox(
-                          height: 4,
-                        ),
-                        isBusy
-                            ? Row(
-                                children: [
-                                  const SizedBox(
-                                    width: 16,
-                                    height: 16,
-                                    child: CircularProgressIndicator(
-                                      strokeWidth: 2,
-                                      backgroundColor: Colors.pink,
-                                    ),
-                                  ),
-                                  const SizedBox(
-                                    width: 20,
-                                  ),
-                                  Text(
-                                    'Checking project location',
-                                    style: myTextStyleSmall(context),
-                                  )
-                                ],
-                              )
-                            : Container(),
-                        const SizedBox(
-                          height: 4,
-                        ),
-                        isWithinDistance
-                            ? Text(
-                                'We are ready to start creating photos and videos for ${widget.project.name} \n🍎',
-                                style: myTextStyleSmall(context))
-                            : Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: Column(
-                                  children: [
-                                    const SizedBox(
-                                      height: 12,
-                                    ),
-                                    Text(
-                                      'Device is too far from ${widget.project.name} for monitoring capabilities. Please move closer!',
-                                      style: myTextStyleSmall(context),
-                                    ),
-                                    const SizedBox(
-                                      height: 24,
-                                    ),
-                                    TextButton(
-                                        onPressed: () {
-                                          Navigator.of(context).pop();
-                                        },
-                                        child: const Text('Cancel')),
+                                        child: Text(
+                                          'Cancel',
+                                          style: myTextStyleSmall(context),
+                                        )),
                                   ],
                                 ),
                               ),
-                      ],
+                              const SizedBox(
+                                height: 4,
+                              ),
+                              const SizedBox(
+                                height: 4,
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
                     ),
                   ),
-                ),
-              ),
-            ),
+                ))),
             _showPositionChooser
                 ? Positioned(
                     left: 4,
@@ -331,97 +262,96 @@ class ProjectMonitorMobileState extends State<ProjectMonitorMobile>
   }
 
   // ignore: missing_return
-  Future<ProjectPosition?> _findNearestProjectPosition() async {
-    var bags = <BagX>[];
-    var positions =
-        await cacheManager.getProjectPositions(widget.project.projectId!);
-    if (positions.isEmpty) {
-      _navigateToProjectLocation();
-    } else {
-      if (positions.length == 1) {
-        return positions.first;
-      }
-      for (var pos in positions) {
-        var distance = await locationBlocOG.getDistanceFromCurrentPosition(
-            latitude: pos.position!.coordinates[1],
-            longitude: pos.position!.coordinates[0]);
-        bags.add(BagX(distance, pos));
-      }
-      bags.sort((a, b) => a.distance.compareTo(b.distance));
-    }
-    return bags.first.position;
-  }
+  // Future<ProjectPosition?> _findNearestProjectPosition() async {
+  //   var bags = <BagX>[];
+  //   var positions =
+  //       await cacheManager.getProjectPositions(widget.project.projectId!);
+  //   if (positions.isEmpty) {
+  //     _navigateToProjectLocation();
+  //   } else {
+  //     if (positions.length == 1) {
+  //       return positions.first;
+  //     }
+  //     for (var pos in positions) {
+  //       var distance = await locationBlocOG.getDistanceFromCurrentPosition(
+  //           latitude: pos.position!.coordinates[1],
+  //           longitude: pos.position!.coordinates[0]);
+  //       bags.add(BagX(distance, pos));
+  //     }
+  //     bags.sort((a, b) => a.distance.compareTo(b.distance));
+  //   }
+  //   return bags.first.position;
+  // }
 
-  bool isWithinDistance = false;
+  // bool isWithinDistance = false;
   ProjectPosition? nearestProjectPosition;
   static const mm = '🍏 🍏 🍏 ProjectMonitorMobile: 🍏 : ';
-
-  Future<bool> _checkProjectDistance() async {
-    pp('\n\n$mm _checkProjectDistance or residence in a polygon ... ');
-    setState(() {
-      isBusy = true;
-    });
-    nearestProjectPosition = await _findNearestProjectPosition();
-    if (nearestProjectPosition != null) {
-      var distance = await locationBlocOG.getDistanceFromCurrentPosition(
-          latitude: nearestProjectPosition!.position!.coordinates[1],
-          longitude: nearestProjectPosition!.position!.coordinates[0]);
-
-      pp("$mm App is ${distance.toStringAsFixed(1)} metres from the project point; widget.project.monitorMaxDistanceInMetres: "
-          "${widget.project.monitorMaxDistanceInMetres}");
-
-      isWithinDistance = await isLocationValid(
-          projectPosition: nearestProjectPosition!,
-          validDistance: widget.project.monitorMaxDistanceInMetres!);
-      if (isWithinDistance) {
-        pp('🌸 🌸 🌸 The user is within the allowable '
-            'project.monitorMaxDistanceInMetres of '
-            '${widget.project.monitorMaxDistanceInMetres} metres: $distance metres');
-      } else {
-        pp('🌺 The user is NOT within the allowable '
-            'project.monitorMaxDistanceInMetres of '
-            '${widget.project.monitorMaxDistanceInMetres} metres: $distance metres, '
-            '... will check if user in any of the polygons');
-        isWithinDistance = await _checkUserWithinPolygon();
-      }
-    } else {
-      // nearestProjectPosition is NULL
-      isWithinDistance = await _checkUserWithinPolygon();
-    }
-    if (mounted) {
-      setState(() {
-        isBusy = false;
-      });
-    }
-    return isWithinDistance;
-  }
-
-  Future<bool> _checkUserWithinPolygon() async {
-    pp('$mm project has ${polygons.length} polygons - '
-        ' if > zero check if user within polygon ...');
-    try {
-      var loc = await locationBlocOG.getLocation();
-      var isOK = checkIfLocationIsWithinPolygons(
-          latitude: loc!.latitude!, longitude: loc.longitude!, polygons: polygons);
-      isWithinDistance = isOK;
-      if (isOK) {
-        pp(
-            '$mm _checkProjectDistance ... 🚾🚾🚾 WE ARE INSIDE ONE OF THIS PROJECT POLYGONS!');
-      } else {
-        pp(
-            '$mm _checkProjectDistance ... 🔴🔴🔴 WE ARE NOT INSIDE ANY OF THIS PROJECT POLYGONS!');
-      }
-      return isWithinDistance;
-    } catch (e) {
-      pp(e);
-    }
-    return false;
-  }
+  //
+  // Future<bool> _checkProjectDistance() async {
+  //   pp('\n\n$mm _checkProjectDistance or residence in a polygon ... ');
+  //   setState(() {
+  //     isBusy = true;
+  //   });
+  //   nearestProjectPosition = await _findNearestProjectPosition();
+  //   if (nearestProjectPosition != null) {
+  //     var distance = await locationBlocOG.getDistanceFromCurrentPosition(
+  //         latitude: nearestProjectPosition!.position!.coordinates[1],
+  //         longitude: nearestProjectPosition!.position!.coordinates[0]);
+  //
+  //     pp("$mm App is ${distance.toStringAsFixed(1)} metres from the project point; widget.project.monitorMaxDistanceInMetres: "
+  //         "${widget.project.monitorMaxDistanceInMetres}");
+  //
+  //     isWithinDistance = await isLocationValid(
+  //         projectPosition: nearestProjectPosition!,
+  //         validDistance: widget.project.monitorMaxDistanceInMetres!);
+  //     if (isWithinDistance) {
+  //       pp('🌸 🌸 🌸 The user is within the allowable '
+  //           'project.monitorMaxDistanceInMetres of '
+  //           '${widget.project.monitorMaxDistanceInMetres} metres: $distance metres');
+  //     } else {
+  //       pp('🌺 The user is NOT within the allowable '
+  //           'project.monitorMaxDistanceInMetres of '
+  //           '${widget.project.monitorMaxDistanceInMetres} metres: $distance metres, '
+  //           '... will check if user in any of the polygons');
+  //       isWithinDistance = await _checkUserWithinPolygon();
+  //     }
+  //   } else {
+  //     // nearestProjectPosition is NULL
+  //     isWithinDistance = await _checkUserWithinPolygon();
+  //   }
+  //   if (mounted) {
+  //     setState(() {
+  //       isBusy = false;
+  //     });
+  //   }
+  //   return isWithinDistance;
+  // }
+  //
+  // Future<bool> _checkUserWithinPolygon() async {
+  //   pp('$mm project has ${polygons.length} polygons - '
+  //       ' if > zero check if user within polygon ...');
+  //   try {
+  //     var loc = await locationBlocOG.getLocation();
+  //     var isOK = checkIfLocationIsWithinPolygons(
+  //         latitude: loc!.latitude!,
+  //         longitude: loc.longitude!,
+  //         polygons: polygons);
+  //     isWithinDistance = isOK;
+  //     if (isOK) {
+  //       pp('$mm _checkProjectDistance ... 🚾🚾🚾 WE ARE INSIDE ONE OF THIS PROJECT POLYGONS!');
+  //     } else {
+  //       pp('$mm _checkProjectDistance ... 🔴🔴🔴 WE ARE NOT INSIDE ANY OF THIS PROJECT POLYGONS!');
+  //     }
+  //     return isWithinDistance;
+  //   } catch (e) {
+  //     pp(e);
+  //   }
+  //   return false;
+  // }
 
   void _startPhotoMonitoring() async {
     pp('🍏 🍏 Start Photo Monitoring this project after checking that the device is within '
         ' 🍎 ${widget.project.monitorMaxDistanceInMetres} metres 🍎 of a project point within ${widget.project.name}');
-    Navigator.of(context).pop();
     Navigator.push(
         context,
         PageTransition(
@@ -430,14 +360,13 @@ class ProjectMonitorMobileState extends State<ProjectMonitorMobile>
             duration: const Duration(seconds: 1),
             child: PhotoHandler(
               project: widget.project,
-              projectPosition: nearestProjectPosition!,
+              projectPosition: null,
             )));
   }
 
   void _startVideoMonitoring() async {
     pp('🍏 🍏 Start Video Monitoring this project after checking that the device is within '
         ' 🍎 ${widget.project.monitorMaxDistanceInMetres} metres 🍎 of a project point within ${widget.project.name}');
-    Navigator.of(context).pop();
     Navigator.push(
         context,
         PageTransition(
@@ -446,14 +375,13 @@ class ProjectMonitorMobileState extends State<ProjectMonitorMobile>
             duration: const Duration(seconds: 1),
             child: VideoHandler(
               project: widget.project,
-              projectPosition: nearestProjectPosition!,
+              projectPosition: null,
             )));
   }
 
   void _startAudioMonitoring() async {
     pp('🍏 🍏 Start Audio Monitoring this project after checking that the device is within '
         ' 🍎 ${widget.project.monitorMaxDistanceInMetres} metres 🍎 of a project point within ${widget.project.name}');
-    Navigator.of(context).pop();
     Navigator.push(
         context,
         PageTransition(
@@ -494,13 +422,7 @@ class ProjectMonitorMobileState extends State<ProjectMonitorMobile>
             alignment: Alignment.topLeft,
             duration: const Duration(seconds: 1),
             child: ProjectLocationMobile(widget.project)));
-    if (projectPosition != null) {
-      if (projectPosition is ProjectPosition) {
-        widget.project.projectPositions ??= [];
-        widget.project.projectPositions!.add(projectPosition);
-        _checkProjectDistance();
-      }
-    }
+
   }
 
   _onPositionSelected(Position p1) {
@@ -581,7 +503,9 @@ class ProjectLocationChooser extends StatelessWidget {
                 style: myTextStyleSmall(context),
               ),
             ),
-            const SizedBox(height: 8,),
+            const SizedBox(
+              height: 8,
+            ),
             Expanded(
               child: ListView.builder(
                   itemCount: positions.length,
