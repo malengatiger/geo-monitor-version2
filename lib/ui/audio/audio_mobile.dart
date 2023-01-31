@@ -254,6 +254,7 @@ class AudioHandlerState extends State<AudioHandler>
           date: DateTime.now().toUtc().toIso8601String());
 
       await cacheManager.addAudioForUpload(audio: audioForUpload);
+      _recordedFile = null;
 
     } catch (e) {
       pp(e);
