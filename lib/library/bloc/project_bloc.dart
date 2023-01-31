@@ -51,6 +51,8 @@ class ProjectBloc {
       StreamController.broadcast();
   final StreamController<List<Video>> _projectVideoController =
       StreamController.broadcast();
+  final StreamController<List<Audio>> _projectAudioController =
+  StreamController.broadcast();
 
   final StreamController<List<ProjectPosition>> _projPositionsController =
       StreamController.broadcast();
@@ -66,7 +68,10 @@ class ProjectBloc {
   final StreamController<Questionnaire> _activeQuestionnaireController =
       StreamController.broadcast();
 
+  Stream<List<Audio>> get audioStream => _projectAudioController.stream;
+
   Stream<List<MonitorReport>> get reportStream => _reportController.stream;
+
 
   Stream<List<Community>> get communityStream => _communityController.stream;
 
@@ -93,7 +98,6 @@ class ProjectBloc {
   Stream<List<Photo>> get photoStream => _photoController.stream;
 
   Stream<List<Video>> get videoStream => _videoController.stream;
-  Stream<List<Audio>> get audioStream => _audioController.stream;
 
   //
   Future<List<ProjectPosition>> getProjectPositions(
@@ -184,6 +188,19 @@ class ProjectBloc {
     pp('$mm getProjectVideos found: 💜 ${videos.length} videos ');
 
     return videos;
+  }
+
+  Future<List<Audio>> getProjectAudios(
+      {required String projectId, required bool forceRefresh}) async {
+    List<Audio> audios = await cacheManager.getProjectAudios(projectId);
+
+    if (audios.isEmpty || forceRefresh) {
+      audios = await DataAPI.findAudiosById(projectId);
+    }
+    _projectAudioController.sink.add(audios);
+    pp('$mm getProjectAudios found: 💜 ${audios.length} audios ');
+
+    return audios;
   }
 
   Future<DataBag> getProjectData(

@@ -683,6 +683,23 @@ class DataAPI {
       rethrow;
     }
   }
+  static Future<List<Audio>> findAudiosById(String projectId) async {
+    String? mURL = await getUrl();
+
+    try {
+      var result =
+      await _sendHttpGET('${mURL!}getProjectAudios?projectId=$projectId');
+      List<Audio> list = [];
+      result.forEach((m) {
+        list.add(Audio.fromJson(m));
+      });
+      await cacheManager.addAudios(audios: list);
+      return list;
+    } catch (e) {
+      pp(e);
+      rethrow;
+    }
+  }
 
   static Future<List<User>> findUsersByOrganization(
       String organizationId) async {

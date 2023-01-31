@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:badges/badges.dart' as bd;
 import 'package:flutter/material.dart';
+import 'package:geo_monitor/library/bloc/fcm_bloc.dart';
 import 'package:geo_monitor/library/emojis.dart';
 import 'package:geo_monitor/library/ui/ratings/rating_adder_mobile.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -31,6 +32,7 @@ class ProjectAudios extends StatefulWidget {
 class ProjectAudiosState extends State<ProjectAudios> {
   var audios = <Audio>[];
   bool loading = false;
+  late StreamSubscription<Audio> audioStreamSubscriptionFCM;
   @override
   void initState() {
     super.initState();
@@ -41,17 +43,23 @@ class ProjectAudiosState extends State<ProjectAudios> {
   @override
   void dispose() {
     audioPlayer.stop();
+    audioStreamSubscriptionFCM.cancel();
     super.dispose();
   }
 
-  void _subscribeToStreams() async {}
+  void _subscribeToStreams() async {
+    audioStreamSubscriptionFCM = fcmBloc.audioStream.listen((event) {
+      if (mounted) {
+        _getAudios();
+      }
+    });
+  }
   void _getAudios() async {
     setState(() {
       loading = true;
     });
-    var bag = await projectBloc.refreshProjectData(
+    audios = await projectBloc.getProjectAudios(
         projectId: widget.project.projectId!, forceRefresh: widget.refresh);
-    audios = bag.audios!;
     audios.sort((a, b) => b.created!.compareTo(a.created!));
     setState(() {
       loading = false;
@@ -215,119 +223,122 @@ class ProjectAudiosState extends State<ProjectAudios> {
                       style: myTextStyleSmall(context),
                     ),
 
-                    child: GridView.builder(
-                        gridDelegate:
-                            const SliverGridDelegateWithFixedCrossAxisCount(
-                                crossAxisSpacing: 1,
-                                crossAxisCount: 2,
-                                mainAxisSpacing: 1),
-                        itemCount: audios.length,
-                        itemBuilder: (context, index) {
-                          var audio = audios.elementAt(index);
-                          var dt = getFormattedDateShortestWithTime(
-                              audio.created!, context);
-                          String dur = '00:00:00';
-                          if (audio.durationInSeconds != null) {
-                            dur = getHourMinuteSecond(
-                                Duration(seconds: audio.durationInSeconds!));
-                          }
-                          return Stack(
-                            children: [
-                              SizedBox(
-                                width: 300,
-                                child: GestureDetector(
-                                    onTap: () {
-                                      //widget.onAudioTapped(audio);
-                                      setState(() {
-                                        _selectedAudio = audio;
-                                        _showAudioPlayer = true;
-                                      });
-                                      _playAudio();
-                                    },
-                                    child: Card(
-                                      elevation: 4,
-                                      shape: getRoundedBorder(radius: 12),
-                                      child: Padding(
-                                        padding: const EdgeInsets.all(8.0),
-                                        child: SizedBox(
-                                          height: 300,
-                                          width: 300,
-                                          child: Column(
-                                            children: [
-                                              const SizedBox(
-                                                height: 16,
-                                              ),
-                                              const SizedBox(
-                                                height: 32,
-                                                width: 32,
-                                                child: CircleAvatar(
-                                                  child: Icon(
-                                                    Icons.mic,
-                                                    size: 28,
+                    child: Padding(
+                      padding: const EdgeInsets.all(12.0),
+                      child: GridView.builder(
+                          gridDelegate:
+                              const SliverGridDelegateWithFixedCrossAxisCount(
+                                  crossAxisSpacing: 1,
+                                  crossAxisCount: 2,
+                                  mainAxisSpacing: 1),
+                          itemCount: audios.length,
+                          itemBuilder: (context, index) {
+                            var audio = audios.elementAt(index);
+                            var dt = getFormattedDateShortestWithTime(
+                                audio.created!, context);
+                            String dur = '00:00:00';
+                            if (audio.durationInSeconds != null) {
+                              dur = getHourMinuteSecond(
+                                  Duration(seconds: audio.durationInSeconds!));
+                            }
+                            return Stack(
+                              children: [
+                                SizedBox(
+                                  width: 300,
+                                  child: GestureDetector(
+                                      onTap: () {
+                                        //widget.onAudioTapped(audio);
+                                        setState(() {
+                                          _selectedAudio = audio;
+                                          _showAudioPlayer = true;
+                                        });
+                                        _playAudio();
+                                      },
+                                      child: Card(
+                                        elevation: 4,
+                                        shape: getRoundedBorder(radius: 12),
+                                        child: Padding(
+                                          padding: const EdgeInsets.all(8.0),
+                                          child: SizedBox(
+                                            height: 300,
+                                            width: 300,
+                                            child: Column(
+                                              children: [
+                                                const SizedBox(
+                                                  height: 16,
+                                                ),
+                                                const SizedBox(
+                                                  height: 32,
+                                                  width: 32,
+                                                  child: CircleAvatar(
+                                                    child: Icon(
+                                                      Icons.mic,
+                                                      size: 28,
+                                                    ),
                                                   ),
                                                 ),
-                                              ),
-                                              const SizedBox(
-                                                height: 8,
-                                              ),
-                                              Text(
-                                                dt,
-                                                style: myTextStyleTiny(context),
-                                              ),
-                                              const SizedBox(
-                                                height: 8,
-                                              ),
-                                              Row(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment.start,
-                                                children: [
-                                                  Flexible(
-                                                      child: Text(
-                                                    '${audio.userName}',
-                                                    style: myTextStyleTiny(
-                                                        context),
-                                                  )),
-                                                ],
-                                              ),
-                                              const SizedBox(
-                                                height: 8,
-                                              ),
-                                              Row(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment.start,
-                                                children: [
-                                                  Text(
-                                                    'Duration:',
-                                                    style: myTextStyleTiny(
-                                                        context),
-                                                  ),
-                                                  const SizedBox(
-                                                    width: 4,
-                                                  ),
-                                                  Text(
-                                                    dur,
-                                                    style: GoogleFonts.lato(
-                                                        textStyle:
-                                                            Theme.of(context)
-                                                                .textTheme
-                                                                .bodySmall,
-                                                        fontWeight:
-                                                            FontWeight.normal,
-                                                        fontSize: 10,
-                                                        color: Theme.of(context)
-                                                            .primaryColor),
-                                                  ),
-                                                ],
-                                              ),
-                                            ],
+                                                const SizedBox(
+                                                  height: 8,
+                                                ),
+                                                Text(
+                                                  dt,
+                                                  style: myTextStyleTiny(context),
+                                                ),
+                                                const SizedBox(
+                                                  height: 8,
+                                                ),
+                                                Row(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment.start,
+                                                  children: [
+                                                    Flexible(
+                                                        child: Text(
+                                                      '${audio.userName}',
+                                                      style: myTextStyleTiny(
+                                                          context),
+                                                    )),
+                                                  ],
+                                                ),
+                                                const SizedBox(
+                                                  height: 8,
+                                                ),
+                                                Row(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment.start,
+                                                  children: [
+                                                    Text(
+                                                      'Duration:',
+                                                      style: myTextStyleTiny(
+                                                          context),
+                                                    ),
+                                                    const SizedBox(
+                                                      width: 4,
+                                                    ),
+                                                    Text(
+                                                      dur,
+                                                      style: GoogleFonts.lato(
+                                                          textStyle:
+                                                              Theme.of(context)
+                                                                  .textTheme
+                                                                  .bodySmall,
+                                                          fontWeight:
+                                                              FontWeight.normal,
+                                                          fontSize: 10,
+                                                          color: Theme.of(context)
+                                                              .primaryColor),
+                                                    ),
+                                                  ],
+                                                ),
+                                              ],
+                                            ),
                                           ),
                                         ),
-                                      ),
-                                    )),
-                              ),
-                            ],
-                          );
-                        }),
+                                      )),
+                                ),
+                              ],
+                            );
+                          }),
+                    ),
                   )),
                 ],
               ),

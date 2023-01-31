@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:animations/animations.dart';
 import 'package:flutter/material.dart';
+import 'package:geo_monitor/library/bloc/fcm_bloc.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:page_transition/page_transition.dart';
 
@@ -140,8 +141,6 @@ class ProjectMediaListMobileState extends State<ProjectMediaListMobile>
   @override
   void dispose() {
     _animationController.dispose();
-    photoStreamSubscription!.cancel();
-    videoStreamSubscription!.cancel();
     killSubscription.cancel();
     super.dispose();
   }
@@ -164,13 +163,6 @@ class ProjectMediaListMobileState extends State<ProjectMediaListMobile>
     pp('... play audio from internet ....');
     audioPlayer.setUrl(selectedAudio!.url!);
     audioPlayer.play();
-    // Navigator.push(
-    //     context,
-    //     PageTransition(
-    //         type: PageTransitionType.leftToRightWithFade,
-    //         alignment: Alignment.topLeft,
-    //         duration: const Duration(milliseconds: 1000),
-    //         child: PlayVideo(video: selectedAudio!)));
   }
 
   void _navigateToFullPhoto() {
@@ -220,16 +212,6 @@ class ProjectMediaListMobileState extends State<ProjectMediaListMobile>
               Navigator.of(context).pop();
             },
             icon: const Icon(Icons.arrow_back_ios)),
-        // title: Column(
-        //   children: [
-        //     Text(
-        //       'Photos & Videos',
-        //       style: myTextStyleMedium(context),
-        //     ),
-        //     // const SizedBox(height: 4,),
-        //     // Text('${widget.project.name}', style: myTextStyleSmall(context),),
-        //   ],
-        // ),
         actions: [
           IconButton(
               onPressed: () {

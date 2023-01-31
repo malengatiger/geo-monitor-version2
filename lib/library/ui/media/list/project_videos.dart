@@ -1,6 +1,9 @@
+import 'dart:async';
+
 import 'package:badges/badges.dart' as bd;
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:geo_monitor/library/bloc/fcm_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import '../../../bloc/project_bloc.dart';
@@ -20,12 +23,14 @@ class ProjectVideos extends StatefulWidget {
       required this.onVideoTapped});
 
   @override
-  State<ProjectVideos> createState() => _ProjectPhotosState();
+  State<ProjectVideos> createState() => ProjectVideosState();
 }
 
-class _ProjectPhotosState extends State<ProjectVideos> {
+class ProjectVideosState extends State<ProjectVideos> {
   var videos = <Video>[];
   bool loading = false;
+  late StreamSubscription<Video> videoStreamSubscriptionFCM;
+
   @override
   void initState() {
     super.initState();
@@ -33,18 +38,29 @@ class _ProjectPhotosState extends State<ProjectVideos> {
     _getVideos();
   }
 
-  void _subscribeToStreams() async {}
+  void _subscribeToStreams() async {
+    videoStreamSubscriptionFCM = fcmBloc.videoStream.listen((event) {
+      if (mounted) {
+        _getVideos();
+      }
+    });
+  }
   void _getVideos() async {
     setState(() {
       loading = true;
     });
-    var bag = await projectBloc.refreshProjectData(
+    videos = await projectBloc.getProjectVideos(
         projectId: widget.project.projectId!, forceRefresh: widget.refresh);
-    videos = bag.videos!;
     videos.sort((a, b) => b.created!.compareTo(a.created!));
     setState(() {
       loading = false;
     });
+  }
+
+  @override
+  void dispose() {
+    videoStreamSubscriptionFCM.cancel();
+    super.dispose();
   }
 
   @override

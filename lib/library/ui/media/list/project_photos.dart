@@ -1,6 +1,9 @@
+import 'dart:async';
+
 import 'package:badges/badges.dart' as bd;
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:geo_monitor/library/bloc/fcm_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import '../../../bloc/project_bloc.dart';
@@ -25,6 +28,9 @@ class ProjectPhotosState extends State<ProjectPhotos> with SingleTickerProviderS
   late AnimationController _animationController;
   var photos = <Photo>[];
   bool loading = false;
+
+  late StreamSubscription<Photo> photoStreamSubscriptionFCM;
+
   @override
   void initState() {
     _animationController = AnimationController(
@@ -38,18 +44,24 @@ class ProjectPhotosState extends State<ProjectPhotos> with SingleTickerProviderS
   @override
   void dispose() {
     _animationController.dispose();
+    photoStreamSubscriptionFCM.cancel();
     super.dispose();
   }
 
-  void _subscribeToStreams() async {}
-  void _getPhotos() async {
+  void _subscribeToStreams() async {
+    photoStreamSubscriptionFCM = fcmBloc.photoStream.listen((event) async {
+      if (mounted) {
+        _getPhotos();
+      }
+    });
+  }
+  Future _getPhotos() async {
     setState(() {
       loading = true;
     });
     try {
-      var bag = await projectBloc.refreshProjectData(
+      photos = await projectBloc.getPhotos(
           projectId: widget.project.projectId!, forceRefresh: widget.refresh);
-      photos = bag.photos!;
       photos.sort((a, b) => b.created!.compareTo(a.created!));
     } catch (e) {
       pp(e);
