@@ -388,7 +388,7 @@ class ProjectMonitorMobileState extends State<ProjectMonitorMobile>
             type: PageTransitionType.scale,
             alignment: Alignment.topLeft,
             duration: const Duration(seconds: 1),
-            child: AudioMobile(
+            child: AudioHandler(
               project: widget.project,
             )));
   }

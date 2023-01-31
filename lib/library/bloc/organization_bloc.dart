@@ -278,6 +278,23 @@ class OrganizationBloc {
     return projectPositions;
   }
 
+  Future<List<ProjectPolygon>> getProjectPolygons(
+      {required String projectId, required bool forceRefresh}) async {
+    var projectPolygons = await cacheManager.getOrganizationProjectPolygons(
+        organizationId: projectId);
+    pp('$mm getProjectPolygons found ${projectPolygons.length} polygons in local cache ');
+
+    if (projectPolygons.isEmpty || forceRefresh) {
+      projectPolygons =
+      await DataAPI.getProjectPolygons(projectId);
+      pp('$mm getProjectPolygons found ${projectPolygons.length} polygons from remote database ');
+      await cacheManager.addProjectPolygons(polygons: projectPolygons);
+    }
+    _projPolygonsController.sink.add(projectPolygons);
+    pp('$mm getProjectPolygons found: 💜 ${projectPolygons.length} polygons from local or remote db ');
+    return projectPolygons;
+  }
+
   Future<List<FieldMonitorSchedule>> getFieldMonitorSchedules(
       {required String organizationId, required bool forceRefresh}) async {
     var schedules =

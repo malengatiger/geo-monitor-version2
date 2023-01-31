@@ -5,7 +5,6 @@ import 'package:geo_monitor/library/bloc/photo_for_upload.dart';
 import 'package:geo_monitor/library/bloc/video_for_upload.dart';
 import 'package:geo_monitor/library/data/settings_model.dart';
 import 'package:hive/hive.dart';
-import 'package:video_player/video_player.dart';
 
 import 'bloc/failed_audio.dart';
 import 'bloc/failed_bag.dart';
@@ -343,6 +342,14 @@ class CacheManager {
     }
   }
 
+  Future addSettingsList({required List<SettingsModel> settings}) async {
+   for (var m in settings) {
+     await addSettings(settings: m);
+   }
+
+    pp('$mm SettingsModels added to local cache: ${settings.length}');
+  }
+
   Future addSettings({required SettingsModel settings}) async {
     var key = '${settings.organizationId}_';
     if (settings.projectId != null) {
@@ -638,6 +645,7 @@ class CacheManager {
     final photos = await getOrganizationPhotos();
     final videos = await getOrganizationVideos();
     final audios = await getOrganizationAudios();
+    final settings = await getOrganizationSettings();
 
     final schedules = await getOrganizationMonitorSchedules(organizationId);
     final positions =
@@ -654,7 +662,7 @@ class CacheManager {
         audios: audios,
         projectPolygons: polygons,
         date: DateTime.now().toUtc().toIso8601String(),
-        users: users);
+        users: users, settings: settings);
 
     pp('$mm getOrganizationData: 🍎projects: ${projects.length} '
         '🍎users: ${users.length} 🍎photos: ${photos.length}'

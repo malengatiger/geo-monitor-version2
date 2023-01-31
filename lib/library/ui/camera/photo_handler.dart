@@ -3,10 +3,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:geo_monitor/library/api/prefs_og.dart';
-import 'package:geo_monitor/library/bloc/failed_bag.dart';
-import 'package:geo_monitor/library/bloc/photo_for_upload.dart';
-import 'package:geo_monitor/library/hive_util.dart';
+
 
 import 'package:image_picker/image_picker.dart';
 import 'package:native_device_orientation/native_device_orientation.dart';
@@ -15,10 +12,11 @@ import 'package:path_provider/path_provider.dart';
 import 'package:image/image.dart' as img;
 
 import '../../../ui/dashboard/dashboard_mobile.dart';
+import '../../api/prefs_og.dart';
 import '../../bloc/cloud_storage_bloc.dart';
+import '../../bloc/photo_for_upload.dart';
 import '../../bloc/project_bloc.dart';
 import '../../data/audio.dart';
-import '../../data/photo.dart';
 import '../../data/position.dart';
 import '../../data/project.dart';
 import '../../data/project_polygon.dart';
@@ -27,6 +25,7 @@ import '../../data/video.dart';
 import '../../emojis.dart';
 import '../../functions.dart';
 import '../../generic_functions.dart';
+import '../../hive_util.dart';
 import '../../location/loc_bloc.dart';
 import '../media/list/project_media_list_mobile.dart';
 
@@ -156,15 +155,16 @@ class PhotoHandlerState extends State<PhotoHandler>
     pp('$mm ... isLandscape: $isLandscape - check if true!  🍎');
     final Directory directory = await getApplicationDocumentsDirectory();
     const x = '/photo_';
-    final File mFile = File(
-        '${directory.path}$x${DateTime.now().millisecondsSinceEpoch}.jpg');
+    final File mFile =
+        File('${directory.path}$x${DateTime.now().millisecondsSinceEpoch}.jpg');
     const z = '/photo_thumbnail';
-    final File tFile = File(
-        '${directory.path}$z${DateTime.now().millisecondsSinceEpoch}.jpg');
-     await thumbnailFile.copy(tFile.path);
+    final File tFile =
+        File('${directory.path}$z${DateTime.now().millisecondsSinceEpoch}.jpg');
+    await thumbnailFile.copy(tFile.path);
     //can i force
     if (_deviceOrientation != null) {
-      final finalFile = await _processOrientation(mImageFile, _deviceOrientation!);
+      final finalFile =
+          await _processOrientation(mImageFile, _deviceOrientation!);
       await finalFile.copy(mFile.path);
     } else {
       await mImageFile.copy(mFile.path);
@@ -176,42 +176,30 @@ class PhotoHandlerState extends State<PhotoHandler>
     pp('$mm check file upload names: \n💚 ${mFile.path} length: ${await mFile.length()} '
         '\n💚thumb: ${tFile.path} length: ${await tFile.length()}');
 
-    if (widget.projectPosition != null) {
+    var loc = await locationBlocOG.getLocation();
+    if (loc != null) {
+      var position =
+          Position(type: 'Point', coordinates: [loc.longitude, loc.latitude]);
       var photoForUpload = PhotoForUpload(
           filePath: mFile.path,
           thumbnailPath: tFile.path,
           project: widget.project,
-          position: widget.projectPosition!.position!,
+          position: position,
           date: DateTime.now().toUtc().toIso8601String());
       await cacheManager.addPhotoForUpload(photo: photoForUpload);
+    }
 
-    } else {
-      var loc = await locationBlocOG.getLocation();
-      if (loc != null) {
-        var position =
-        Position(type: 'Point', coordinates: [loc.longitude, loc.latitude]);
-        var photoForUpload = PhotoForUpload(
-            filePath: mFile.path,
-            thumbnailPath: tFile.path,
-            project: widget.project,
-            position: position,
-            date: DateTime.now().toUtc().toIso8601String());
-        await cacheManager.addPhotoForUpload(photo: photoForUpload);}
-
-      var size = await mFile.length();
-      var m = (size / 1024 / 1024).toStringAsFixed(2);
-      pp('$mm Picture taken is $m MB in size');
-      if (mounted) {
-        showToast(
-            context: context,
-            message: 'Picture file saved on device, size: $m MB',
-            backgroundColor: Theme
-                .of(context)
-                .primaryColor,
-            textStyle: Styles.whiteSmall,
-            toastGravity: ToastGravity.TOP,
-            duration: const Duration(seconds: 2));
-      }
+    var size = await mFile.length();
+    var m = (size / 1024 / 1024).toStringAsFixed(2);
+    pp('$mm Picture taken is $m MB in size');
+    if (mounted) {
+      showToast(
+          context: context,
+          message: 'Picture file saved on device, size: $m MB',
+          backgroundColor: Theme.of(context).primaryColor,
+          textStyle: Styles.whiteSmall,
+          toastGravity: ToastGravity.TOP,
+          duration: const Duration(seconds: 2));
     }
   }
 
@@ -270,9 +258,10 @@ class PhotoHandlerState extends State<PhotoHandler>
     pp('$mm 🍏file Upload progress: bytesTransferred: ${(bytesTransferred / 1024).toStringAsFixed(1)} KB '
         'of totalByteCount: ${(totalByteCount / 1024).toStringAsFixed(1)} KB');
     setState(() {
-      this.totalByteCount = '${(totalByteCount / 1024/1024).toStringAsFixed(2)} MB';
+      this.totalByteCount =
+          '${(totalByteCount / 1024 / 1024).toStringAsFixed(2)} MB';
       this.bytesTransferred =
-          '${(bytesTransferred / 1024/1024).toStringAsFixed(2)} MB';
+          '${(bytesTransferred / 1024 / 1024).toStringAsFixed(2)} MB';
     });
   }
 
@@ -298,6 +287,7 @@ class PhotoHandlerState extends State<PhotoHandler>
           context: context);
     }
   }
+
   void _navigateToList() {
     Navigator.of(context).pop();
     Navigator.push(
@@ -315,10 +305,17 @@ class PhotoHandlerState extends State<PhotoHandler>
         child: Scaffold(
       appBar: AppBar(
         leading: const SizedBox(),
-        title: Text('${widget.project.name}', style: myTextStyleSmall(context),),
+        title: Text(
+          '${widget.project.name}',
+          style: myTextStyleSmall(context),
+        ),
         actions: [
           IconButton(
-              onPressed: _navigateToList, icon:  Icon(Icons.list, color: Theme.of(context).primaryColor,)),
+              onPressed: _navigateToList,
+              icon: Icon(
+                Icons.list,
+                color: Theme.of(context).primaryColor,
+              )),
         ],
       ),
       body: Stack(
@@ -343,7 +340,8 @@ class PhotoHandlerState extends State<PhotoHandler>
                   ),
                 ),
           Positioned(
-            left: 12, right: 12,
+            left: 12,
+            right: 12,
             bottom: 20,
             child: SizedBox(
               width: 240,
@@ -357,7 +355,6 @@ class PhotoHandlerState extends State<PhotoHandler>
                     const SizedBox(
                       height: 8,
                     ),
-
                     TextButton(
                         onPressed: _startNextPhoto,
                         child: const Padding(
@@ -378,6 +375,5 @@ class PhotoHandlerState extends State<PhotoHandler>
   onVideoReady(Video video) {}
 
   @override
-  onAudioReady(Audio audio) {
-  }
+  onAudioReady(Audio audio) {}
 }

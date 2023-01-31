@@ -6,12 +6,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:geo_monitor/library/data/geofence_event.dart';
 import 'package:geo_monitor/library/data/settings_model.dart';
-import 'package:geo_monitor/library/generic_functions.dart';
 import 'package:geo_monitor/library/ui/maps/project_map_mobile.dart';
 import 'package:geo_monitor/library/ui/media/list/project_media_list_mobile.dart';
 import 'package:geofence_service/geofence_service.dart';
 
-import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:universal_platform/universal_platform.dart';
@@ -20,6 +18,7 @@ import '../../library/api/prefs_og.dart';
 import '../../library/bloc/connection_check.dart';
 import '../../library/bloc/fcm_bloc.dart';
 import '../../library/bloc/organization_bloc.dart';
+import '../../library/bloc/project_bloc.dart';
 import '../../library/bloc/theme_bloc.dart';
 import '../../library/bloc/uploader.dart';
 import '../../library/data/audio.dart';
@@ -40,20 +39,21 @@ import '../../library/ui/project_list/project_chooser.dart';
 import '../../library/ui/project_list/project_list_mobile.dart';
 import '../../library/ui/settings.dart';
 import '../../library/users/list/user_list_main.dart';
-import '../../main.dart';
 import '../intro_page_viewer.dart';
+import 'dashboard_mobile.dart';
 
-class DashboardMobile extends StatefulWidget {
-  const DashboardMobile({
+class ProjectDashboardMobile extends StatefulWidget {
+  const ProjectDashboardMobile({
     Key? key,
-    this.user,
+    this.user, required this.project,
   }) : super(key: key);
+  final Project project;
   final User? user;
   @override
-  DashboardMobileState createState() => DashboardMobileState();
+  ProjectDashboardMobileState createState() => ProjectDashboardMobileState();
 }
 
-class DashboardMobileState extends State<DashboardMobile>
+class ProjectDashboardMobileState extends State<ProjectDashboardMobile>
     with TickerProviderStateMixin {
   late AnimationController _projectAnimationController;
   late AnimationController _userAnimationController;
@@ -72,10 +72,10 @@ class DashboardMobileState extends State<DashboardMobile>
   var _projectPolygons = <ProjectPolygon>[];
   var _schedules = <FieldMonitorSchedule>[];
   var _audios = <Audio>[];
-  var _settings = <SettingsModel>[];
+  final _settings = <SettingsModel>[];
   User? user;
 
-  static const mm = '🎽🎽🎽🎽🎽🎽 DashboardMobile: 🎽';
+  static const mm = '🎽🎽🎽🎽🎽🎽 ProjectDashboardMobile: 🎽';
   bool networkAvailable = false;
   final dur = 600;
 
@@ -402,21 +402,17 @@ class DashboardMobileState extends State<DashboardMobile>
   void _setItems() {
     // items
     //     .add(BottomNavigationBarItem(icon: Icon(Icons.people), label: 'Users'));
-    items.add(const BottomNavigationBarItem(
-        icon: Icon(
-          Icons.home,
-        ),
-        label: 'Projects'));
-    items.add(const BottomNavigationBarItem(
+
+    items.add( const BottomNavigationBarItem(
         icon: Icon(
           Icons.person,
           color: Colors.pink,
         ),
         label: 'My Work'));
-    items.add(const BottomNavigationBarItem(
+    items.add( BottomNavigationBarItem(
         icon: Icon(
           Icons.send,
-          color: Colors.blue,
+          color: Theme.of(context).primaryColor,
         ),
         label: 'Send Message'));
   }
@@ -450,12 +446,8 @@ class DashboardMobileState extends State<DashboardMobile>
 
   Future<void> _doTheWork(bool forceRefresh) async {
     try {
-      if (user == null) {
-        throw Exception("Tax man is fucked! User is not found");
-      }
-
-      var bag = await organizationBloc.getOrganizationData(
-          organizationId: user!.organizationId!, forceRefresh: forceRefresh);
+      var bag = await projectBloc.getProjectData(
+          projectId: widget.project.projectId!, forceRefresh: forceRefresh);
       await _extractData(bag);
       setState(() {});
     } catch (e) {
@@ -533,15 +525,7 @@ class DashboardMobileState extends State<DashboardMobile>
           setState(() {});
         }
       });
-      userSubscriptionFCM = fcmBloc.userStream.listen((user) async {
-        pp('$mm: 🍎 🍎 user arrived... 🍎 🍎');
 
-        if (mounted) {
-          _users = await organizationBloc.getUsers(
-              organizationId: user.organizationId!, forceRefresh: false);
-          setState(() {});
-        }
-      });
       photoSubscriptionFCM = fcmBloc.photoStream.listen((user) async {
         pp('$mm: 🍎 🍎 photoSubscriptionFCM photo arrived... 🍎 🍎');
         if (mounted) {
@@ -554,29 +538,16 @@ class DashboardMobileState extends State<DashboardMobile>
       videoSubscriptionFCM = fcmBloc.videoStream.listen((Video message) async {
         pp('$mm: 🍎 🍎 videoSubscriptionFCM video arrived... 🍎 🍎');
         if (mounted) {
-          pp('DashboardMobile: 🍎 🍎 showMessageSnackbar: ${message.projectName} ... 🍎 🍎');
+          pp('ProjectDashboardMobile: 🍎 🍎 showMessageSnackbar: ${message.projectName} ... 🍎 🍎');
           _videos = await organizationBloc.getVideos(
               organizationId: user!.organizationId!, forceRefresh: false);
-          setState(() {
-          });
         }
       });
       audioSubscriptionFCM = fcmBloc.audioStream.listen((Audio message) async {
         pp('$mm: 🍎 🍎 audioSubscriptionFCM audio arrived... 🍎 🍎');
         if (mounted) {
-          _refreshData(false);
-        }
-      });
-      projectPositionSubscriptionFCM = fcmBloc.projectPositionStream.listen((ProjectPosition message) async {
-        pp('$mm: 🍎 🍎 projectPositionSubscriptionFCM position arrived... 🍎 🍎');
-        if (mounted) {
-          _refreshData(false);
-        }
-      });
-      projectPolygonSubscriptionFCM = fcmBloc.projectPolygonStream.listen((ProjectPolygon message) async {
-        pp('$mm: 🍎 🍎 projectPolygonSubscriptionFCM polygon arrived... 🍎 🍎');
-        if (mounted) {
-          _refreshData(false);
+          _audios = await organizationBloc.getAudios(
+              organizationId: user!.organizationId!, forceRefresh: false);
         }
       });
     } else {
@@ -689,7 +660,6 @@ class DashboardMobileState extends State<DashboardMobile>
             duration: const Duration(seconds: 1),
             child: const UserListMain()));
   }
-
   void _navigateToProjectMedia(Project project) {
     Navigator.push(
         context,
@@ -699,7 +669,6 @@ class DashboardMobileState extends State<DashboardMobile>
             duration: const Duration(seconds: 1),
             child: ProjectMediaListMobile(project: project)));
   }
-
   void _navigateToProjectMap(Project project) {
     Navigator.push(
         context,
@@ -717,68 +686,6 @@ class DashboardMobileState extends State<DashboardMobile>
       typePolygons = 4,
       typeSchedules = 5;
 
-  void _showProjectDialog(int destination) {
-    late String title;
-    switch (destination) {
-      case typePhoto:
-        title = 'Photos';
-        break;
-      case typeVideo:
-        title = 'Videos';
-        break;
-      case typeAudio:
-        title = 'Audio';
-        break;
-      case typePositions:
-        title = 'Map';
-        break;
-      case typePolygons:
-        title = 'Map';
-        break;
-    }
-
-    showDialog(
-        context: context,
-        barrierDismissible: true,
-        builder: (_) => Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Center(
-            child: Container(
-              color: Colors.black12,
-
-                  child: ProjectChooser(
-                    title: title,
-                      onSelected: (p1) {
-                        Navigator.of(context).pop();
-                        _onProjectSelected(p1, destination);
-                      },
-                      onClose: () {
-                        Navigator.pop(context);
-                      }),
-                ),
-          ),
-        ));
-  }
-
-  _onProjectSelected(Project p1, int destination) {
-    switch (destination) {
-      case typeVideo:
-        _navigateToProjectMedia(p1);
-        break;
-      case typeAudio:
-        _navigateToProjectMedia(p1);
-        break;
-      case typePhoto:
-        _navigateToProjectMedia(p1);
-        break;
-      case typePositions:
-        _navigateToProjectMap(p1);
-        break;
-      case typePolygons:
-        _navigateToProjectMap(p1);
-        break;
-    }
-  }
   // bool _showProjectChooser = false;
   // bool _showProjectSelected = false;
 
@@ -788,7 +695,7 @@ class DashboardMobileState extends State<DashboardMobile>
   Widget build(BuildContext context) {
     var style = GoogleFonts.secularOne(
         textStyle: Theme.of(context).textTheme.titleLarge,
-        fontWeight: FontWeight.w900);
+        fontWeight: FontWeight.w900, color: Theme.of(context).primaryColor);
     return SafeArea(
       child: WillStartForegroundTask(
         onWillStart: () async {
@@ -847,40 +754,18 @@ class DashboardMobileState extends State<DashboardMobile>
                 padding: const EdgeInsets.all(8.0),
                 child: Column(
                   children: [
-                    user == null
-                        ? const SizedBox()
-                        : Text(
-                            user!.organizationName!,
+                    const SizedBox(height: 20,),
+                    Text('Project Dashboard', style: myTextStyleSmall(context),),
+                     const SizedBox(height: 12,),
+                     Text(
+                            widget.project.name!,
                             style: GoogleFonts.lato(
-                              textStyle: Theme.of(context).textTheme.bodySmall,
-                              fontWeight: FontWeight.w900,
+                              textStyle: Theme.of(context).textTheme.titleLarge,
+                              fontWeight: FontWeight.w900, color: Theme.of(context).primaryColor
                             ),
                           ),
                     const SizedBox(
-                      height: 16,
-                    ),
-                    user == null
-                        ? const SizedBox()
-                        : Text(user!.name!,
-                            style: GoogleFonts.lato(
-                                textStyle:
-                                    Theme.of(context).textTheme.titleLarge,
-                                fontWeight: FontWeight.normal,
-                                color: Theme.of(context).primaryColor)),
-                    const SizedBox(
-                      height: 12,
-                    ),
-                    user == null
-                        ? const Text('')
-                        : Text(
-                            type,
-                            style: GoogleFonts.lato(
-                              textStyle: Theme.of(context).textTheme.bodySmall,
-                              fontWeight: FontWeight.normal,
-                            ),
-                          ),
-                    const SizedBox(
-                      height: 12,
+                      height: 28,
                     ),
                   ],
                 ),
@@ -911,75 +796,7 @@ class DashboardMobileState extends State<DashboardMobile>
                       child: GridView.count(
                         crossAxisCount: 2,
                         children: [
-                          GestureDetector(
-                            onTap: _navigateToProjectList,
-                            child: AnimatedBuilder(
-                              animation: _projectAnimationController,
-                              builder: (BuildContext context, Widget? child) {
-                                return FadeScaleTransition(
-                                  animation: _projectAnimationController,
-                                  child: child,
-                                );
-                              },
-                              child: Card(
-                                // color: Colors.brown[50],
-                                elevation: 8,
-                                shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(16.0)),
-                                child: Column(
-                                  children: [
-                                    const SizedBox(
-                                      height: 32,
-                                    ),
-                                    Text('${_projects.length}', style: style),
-                                    const SizedBox(
-                                      height: 8,
-                                    ),
-                                    Text(
-                                      'Projects',
-                                      style: Styles.greyLabelSmall,
-                                    )
-                                  ],
-                                ),
-                              ),
-                            ),
-                          ),
-                          GestureDetector(
-                            onTap: _navigateToUserList,
-                            child: AnimatedBuilder(
-                              animation: _userAnimationController,
-                              builder: (BuildContext context, Widget? child) {
-                                return FadeScaleTransition(
-                                  animation: _userAnimationController,
-                                  child: child,
-                                );
-                              },
-                              child: Card(
-                                // color: Colors.brown[50],
-                                elevation: 8,
-                                shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(16.0)),
-                                child: Column(
-                                  children: [
-                                    const SizedBox(
-                                      height: 32,
-                                    ),
-                                    Text(
-                                      '${_users.length}',
-                                      style: style,
-                                    ),
-                                    const SizedBox(
-                                      height: 8,
-                                    ),
-                                    Text(
-                                      'Users',
-                                      style: Styles.greyLabelSmall,
-                                    )
-                                  ],
-                                ),
-                              ),
-                            ),
-                          ),
+
                           AnimatedBuilder(
                             animation: _photoAnimationController,
                             builder: (BuildContext context, Widget? child) {
@@ -990,7 +807,7 @@ class DashboardMobileState extends State<DashboardMobile>
                             },
                             child: GestureDetector(
                               onTap: () {
-                                _showProjectDialog(typePhoto);
+                                _navigateToProjectMedia(widget.project);
                               },
                               child: Card(
                                 elevation: 8,
@@ -1024,7 +841,7 @@ class DashboardMobileState extends State<DashboardMobile>
                             },
                             child: GestureDetector(
                               onTap: () {
-                                _showProjectDialog(typeVideo);
+                                _navigateToProjectMedia(widget.project);
                               },
                               child: Card(
                                 elevation: 8,
@@ -1058,7 +875,7 @@ class DashboardMobileState extends State<DashboardMobile>
                             },
                             child: GestureDetector(
                               onTap: () {
-                                _showProjectDialog(typeAudio);
+                                _navigateToProjectMedia(widget.project);
                               },
                               child: Card(
                                 elevation: 8,
@@ -1092,7 +909,7 @@ class DashboardMobileState extends State<DashboardMobile>
                             },
                             child: GestureDetector(
                               onTap: () {
-                                _showProjectDialog(typePolygons);
+                                _navigateToProjectMap(widget.project);
                               },
                               child: Card(
                                 elevation: 8,
@@ -1127,7 +944,7 @@ class DashboardMobileState extends State<DashboardMobile>
                             },
                             child: GestureDetector(
                               onTap: () {
-                                _showProjectDialog(typePositions);
+                                _navigateToProjectMap(widget.project);
                               },
                               child: Card(
                                 elevation: 8,
@@ -1162,7 +979,7 @@ class DashboardMobileState extends State<DashboardMobile>
                             },
                             child: GestureDetector(
                               onTap: () {
-                                _showProjectDialog(typeSchedules);
+
                               },
                               child: Card(
                                 elevation: 8,
@@ -1235,17 +1052,3 @@ void showKillDialog({required String message, required BuildContext context}) {
 
 final mm = '${E.heartRed}${E.heartRed}${E.heartRed}${E.heartRed} Dashboard: ';
 
-StreamSubscription<String> listenForKill({required BuildContext context}) {
-  pp('\n$mm Kill message; listen for KILL message ...... 🍎🍎🍎🍎 ......');
-
-  var sub = fcmBloc.killStream.listen((event) {
-    pp('$mm Kill message arrived: 🍎🍎🍎🍎 $event 🍎🍎🍎🍎');
-    try {
-      showKillDialog(message: event, context: context);
-    } catch (e) {
-      pp(e);
-    }
-  });
-
-  return sub;
-}

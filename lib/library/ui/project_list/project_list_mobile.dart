@@ -11,6 +11,7 @@ import 'package:map_launcher/map_launcher.dart';
 import 'package:page_transition/page_transition.dart';
 import '../../../ui/audio/audio_mobile.dart';
 import '../../../ui/dashboard/dashboard_mobile.dart';
+import '../../../ui/dashboard/project_dashboard_mobile.dart';
 import '../../api/prefs_og.dart';
 import '../../bloc/admin_bloc.dart';
 import '../../bloc/fcm_bloc.dart';
@@ -282,7 +283,7 @@ class ProjectListMobileState extends State<ProjectListMobile>
             type: PageTransitionType.scale,
             alignment: Alignment.topLeft,
             duration: const Duration(milliseconds: 1500),
-            child: AudioMobile(project: p)));
+            child: AudioHandler(project: p)));
   }
 
   Future<void> _navigateToOrgMap() async {
@@ -334,6 +335,23 @@ class ProjectListMobileState extends State<ProjectListMobile>
               )));
     }
   }
+
+  void _navigateToProjectDashboard(Project p) async {
+    pp('.................. _navigateToProjectPolygonMap: ');
+
+    if (mounted) {
+      Navigator.push(
+          context,
+          PageTransition(
+              type: PageTransitionType.scale,
+              alignment: Alignment.topLeft,
+              duration: const Duration(milliseconds: 1000),
+              child: ProjectDashboardMobile(
+                project: p,
+              )));
+    }
+  }
+
 
   bool _showPositionChooser = false;
 
@@ -398,6 +416,21 @@ class ProjectListMobileState extends State<ProjectListMobile>
     List<FocusedMenuItem> menuItems = [];
     menuItems.add(
       FocusedMenuItem(
+          backgroundColor: Theme.of(context).primaryColor,
+
+          title: Text('Project Dashboard',
+              style: myTextStyleSmallBlack(context)),
+          trailingIcon: Icon(
+            Icons.dashboard,
+            color: Theme.of(context).primaryColor,
+          ),
+          onPressed: () {
+            _navigateToProjectDashboard(project);
+          }),
+    );
+    menuItems.add(
+      FocusedMenuItem(
+        backgroundColor: Theme.of(context).primaryColor,
           title: Text(
             'Project Directions',
             style: myTextStyleSmallBlack(context),
@@ -412,6 +445,8 @@ class ProjectListMobileState extends State<ProjectListMobile>
     );
     menuItems.add(
       FocusedMenuItem(
+          backgroundColor: Theme.of(context).primaryColor,
+
           title: Text(
             'Project Locations Map',
             style: myTextStyleSmallBlack(context),
@@ -427,6 +462,8 @@ class ProjectListMobileState extends State<ProjectListMobile>
 
     menuItems.add(
       FocusedMenuItem(
+          backgroundColor: Theme.of(context).primaryColor,
+
           title: Text('Photos & Videos',
               style: myTextStyleSmallBlack(context)),
           trailingIcon: Icon(
@@ -440,6 +477,8 @@ class ProjectListMobileState extends State<ProjectListMobile>
     );
     menuItems.add(
       FocusedMenuItem(
+          backgroundColor: Theme.of(context).primaryColor,
+
           title: Text('Create Audio',
               style: myTextStyleSmallBlack(context)),
           trailingIcon: Icon(
@@ -453,6 +492,8 @@ class ProjectListMobileState extends State<ProjectListMobile>
     );
     menuItems.add(
       FocusedMenuItem(
+          backgroundColor: Theme.of(context).primaryColor,
+
           title: Text('Start Monitoring',
               style: myTextStyleSmallBlack(context)),
           trailingIcon: Icon(
@@ -465,6 +506,8 @@ class ProjectListMobileState extends State<ProjectListMobile>
     );
     if (user!.userType == UserType.orgAdministrator) {
       menuItems.add(FocusedMenuItem(
+          backgroundColor: Theme.of(context).primaryColor,
+
           title: Text('Add Project Location',
               style: myTextStyleSmallBlack(context)),
           trailingIcon: Icon(
@@ -476,6 +519,8 @@ class ProjectListMobileState extends State<ProjectListMobile>
           }));
       menuItems.add(
         FocusedMenuItem(
+            backgroundColor: Theme.of(context).primaryColor,
+
             title: Text(
               'Create Project Areas',
               style: myTextStyleSmallBlack(context),
@@ -489,6 +534,8 @@ class ProjectListMobileState extends State<ProjectListMobile>
             }),
       );
       menuItems.add(FocusedMenuItem(
+          backgroundColor: Theme.of(context).primaryColor,
+
           title: Text('Edit Project',
               style: myTextStyleSmallBlack(context)),
           trailingIcon: Icon(

@@ -1,4 +1,5 @@
 import 'package:geo_monitor/library/data/project_polygon.dart';
+import 'package:geo_monitor/library/data/settings_model.dart';
 import 'package:hive/hive.dart';
 
 import '../functions.dart';
@@ -31,7 +32,11 @@ class DataBag {
   @HiveField(7)
   List<ProjectPolygon>? projectPolygons;
   @HiveField(8)
+  @HiveField(8)
   List<Audio>? audios;
+  @HiveField(9)
+  List<SettingsModel>? settings;
+
 
   DataBag({
     required this.photos,
@@ -41,7 +46,7 @@ class DataBag {
     required this.projects,
     required this.audios,
     required this.date, required this.users,
-    required this.projectPolygons,
+    required this.projectPolygons, required this.settings,
   });
 
   DataBag.fromJson(Map data) {
@@ -52,6 +57,14 @@ class DataBag {
       for (var element in m) {
         var pos = User.fromJson(element);
         users?.add(pos);
+      }
+    }
+    settings = [];
+    if (data['settings'] != null) {
+      List m = data['settings'];
+      for (var element in m) {
+        var pos = SettingsModel.fromJson(element);
+        settings?.add(pos);
       }
     }
     audios = [];
@@ -112,6 +125,12 @@ class DataBag {
     }
   }
   Map<String, dynamic> toJson() {
+    List mSettings = [];
+    if (settings != null) {
+      for (var r in settings!) {
+        mSettings.add(r.toJson());
+      }
+    }
     List mPhotos = [];
     if (photos != null) {
       for (var r in photos!) {
@@ -170,6 +189,7 @@ class DataBag {
       'projects': mProjects,
       'users': mUsers,
       'audios': mAudios,
+      'settings': mSettings,
       'date': date,
     };
     return map;

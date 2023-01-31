@@ -37,7 +37,6 @@ import '../data/video.dart';
 import '../functions.dart';
 import '../generic_functions.dart' as gen;
 import '../hive_util.dart';
-import '../ui/settings.dart';
 
 class DataAPI {
   static Map<String, String> headers = {
@@ -559,6 +558,25 @@ class DataAPI {
     }
   }
 
+  static Future<List<ProjectPolygon>> getProjectPolygons(
+      String projectId) async {
+    String? mURL = await getUrl();
+
+    try {
+      var result = await _sendHttpGET(
+          '${mURL!}getProjectPolygons?projectId=$projectId');
+      List<ProjectPolygon> list = [];
+      result.forEach((m) {
+        list.add(ProjectPolygon.fromJson(m));
+      });
+      await cacheManager.addProjectPolygons(polygons: list);
+      return list;
+    } catch (e) {
+      pp(e);
+      rethrow;
+    }
+  }
+
   static Future<List<Photo>> findPhotosByProject(String projectId) async {
     String? mURL = await getUrl();
 
@@ -607,7 +625,7 @@ class DataAPI {
         audios: [],
         projectPositions: [],
         projectPolygons: [],
-        date: DateTime.now().toIso8601String());
+        date: DateTime.now().toIso8601String(), settings: []);
     try {
       var result =
           await _sendHttpGET('${mURL!}getProjectData?projectId=$projectId');
@@ -620,6 +638,7 @@ class DataAPI {
       await cacheManager.addPhotos(photos: bag.photos!);
       await cacheManager.addVideos(videos: bag.videos!);
       await cacheManager.addAudios(audios: bag.audios!);
+      await cacheManager.addSettingsList(settings: bag.settings!);
       await cacheManager.addFieldMonitorSchedules(
           schedules: bag.fieldMonitorSchedules!);
     } catch (e) {

@@ -16,6 +16,8 @@ import '../data/location_request.dart';
 import '../data/location_response.dart';
 import '../data/org_message.dart';
 import '../data/position.dart';
+import '../data/project_polygon.dart';
+import '../data/project_position.dart';
 import '../data/settings_model.dart';
 import '../data/video.dart';
 import '../functions.dart';
@@ -42,6 +44,10 @@ class FCMBloc {
   final StreamController<User> _userController = StreamController.broadcast();
   final StreamController<Project> _projectController =
       StreamController.broadcast();
+  final StreamController<ProjectPosition> _projectPositionController =
+  StreamController.broadcast();
+  final StreamController<ProjectPolygon> _projectPolygonController =
+  StreamController.broadcast();
   final StreamController<Photo> _photoController = StreamController.broadcast();
   final StreamController<Video> _videoController = StreamController.broadcast();
   final StreamController<Audio> _audioController = StreamController.broadcast();
@@ -58,6 +64,9 @@ class FCMBloc {
   Stream<SettingsModel> get settingsStream => _settingsController.stream;
   Stream<User> get userStream => _userController.stream;
   Stream<Project> get projectStream => _projectController.stream;
+  Stream<ProjectPosition> get projectPositionStream => _projectPositionController.stream;
+  Stream<ProjectPolygon> get projectPolygonStream => _projectPolygonController.stream;
+
   Stream<Photo> get photoStream => _photoController.stream;
   Stream<Video> get videoStream => _videoController.stream;
   Stream<Audio> get audioStream => _audioController.stream;
@@ -75,6 +84,8 @@ class FCMBloc {
     _messageController.close();
     _settingsController.close();
     _killController.close();
+    _projectPositionController.close();
+    _projectPolygonController.close();
   }
 
   FCMBloc() {
@@ -135,6 +146,9 @@ class FCMBloc {
     }
 
     pp("$mm ..... subscribeToTopics ...........................");
+
+    // await prefsOGx.resetFCMSubscriptionFlag();
+
     bool flag = await prefsOGx.getFCMSubscriptionFlag();
     if (flag) {
       pp("\n\b$mm ..... app already subscribed to GeoMonitor FCM Topics ...... ✅✅✅?\n\n");
@@ -142,6 +156,12 @@ class FCMBloc {
     }
     await messaging.subscribeToTopic('projects_${user.organizationId}');
     pp("$mm ..... subscribed to topic: projects_${user.organizationId}");
+
+    await messaging.subscribeToTopic('projectPositions_${user.organizationId}');
+    pp("$mm ..... subscribed to topic: projectPositions_${user.organizationId}");
+
+    await messaging.subscribeToTopic('projectPolygons_${user.organizationId}');
+    pp("$mm ..... subscribed to topic: projectPolygons__${user.organizationId}");
 
     await messaging.subscribeToTopic('photos_${user.organizationId}');
     pp("$mm ..... subscribed to topic: photos_${user.organizationId}");
@@ -171,7 +191,7 @@ class FCMBloc {
     pp("$mm ..... subscribed to topic: settings_${user.organizationId}");
 
     await prefsOGx.setFCMSubscriptionFlag();
-    pp("$mm subscribeToTopics: 🍎 subscribed to all 10 organization topics 🍎");
+    pp("$mm subscribeToTopics: 🍎 subscribed to all 12 organization topics 🍎");
 
     return null;
   }
@@ -229,7 +249,7 @@ class FCMBloc {
     }
     if (data['user'] != null) {
       pp("$mm processFCMMessage  🔵 🔵 🔵 ........................... cache USER  🍎  🍎 ");
-      var m = jsonDecode(data['receivedUser']);
+      var m = jsonDecode(data['user']);
       var user = User.fromJson(m);
       await cacheManager.addUser(user: user);
       _userController.sink.add(user);
@@ -241,41 +261,43 @@ class FCMBloc {
       await cacheManager.addProject(project: project);
       _projectController.sink.add(project);
     }
+    if (data['projectPosition'] != null) {
+      pp("$mm processFCMMessage  🔵 🔵 🔵 ........................... cache PROJECT POSITION 🍎  🍎");
+      var m = jsonDecode(data['projectPosition']);
+      var projectPosition = ProjectPosition.fromJson(m);
+      await cacheManager.addProjectPosition(projectPosition: projectPosition);
+      _projectPositionController.sink.add(projectPosition);
+    }
+    if (data['projectPolygon'] != null) {
+      pp("$mm processFCMMessage  🔵 🔵 🔵 ........................... cache PROJECT POLYGON 🍎  🍎");
+      var m = jsonDecode(data['projectPolygon']);
+      var projectPolygon = ProjectPolygon.fromJson(m);
+      await cacheManager.addProjectPolygon(projectPolygon: projectPolygon);
+      _projectPolygonController.sink.add(projectPolygon);
+    }
     if (data['photo'] != null) {
       pp("$mm processFCMMessage  🔵 🔵 🔵 ........................... cache PHOTO  🍎  🍎");
       var m = jsonDecode(data['photo']);
       var photo = Photo.fromJson(m);
-      if (photo.userId == user!.userId) {
-        pp('$mm This message is about my own photo - not caching');
-      } else {
-        var res = await cacheManager.addPhoto(photo: photo);
-        pp('$mm Photo received added to local cache:  🔵 🔵 ${photo.projectName} result: $res, sending to photo stream');
-        _photoController.sink.add(photo);
-      }
+      var res = await cacheManager.addPhoto(photo: photo);
+      pp('$mm Photo received added to local cache:  🔵 🔵 ${photo.projectName} result: $res, sending to photo stream');
+      _photoController.sink.add(photo);
     }
     if (data['video'] != null) {
       pp("$mm processFCMMessage  🔵 🔵 🔵 ........................... cache VIDEO  🍎  🍎");
       var m = jsonDecode(data['video']);
       var video = Video.fromJson(m);
-      if (video.userId == user!.userId) {
-        pp('$mm This message is about my own audio - not caching');
-      } else {
-        await cacheManager.addVideo(video: video);
-        pp('$mm Video received added to local cache:  🔵 🔵 ${video.projectName}, sending to video stream');
-        _videoController.sink.add(video);
-      }
+      await cacheManager.addVideo(video: video);
+      pp('$mm Video received added to local cache:  🔵 🔵 ${video.projectName}, sending to video stream');
+      _videoController.sink.add(video);
     }
     if (data['audio'] != null) {
       pp("$mm processFCMMessage  🔵 🔵 🔵 ........................... cache AUDIO  🍎  🍎");
       var m = jsonDecode(data['audio']);
       var audio = Audio.fromJson(m);
-      if (audio.userId == user!.userId) {
-        pp('$mm This message is about my own audio - not caching');
-      } else {
-        await cacheManager.addAudio(audio: audio);
-        pp('$mm Audio received added to local cache:  🔵 🔵 ${audio.projectName}, sending to audio stream');
-        _audioController.sink.add(audio);
-      }
+      await cacheManager.addAudio(audio: audio);
+      pp('$mm Audio received added to local cache:  🔵 🔵 ${audio.projectName}, sending to audio stream');
+      _audioController.sink.add(audio);
     }
     if (data['condition'] != null) {
       pp("$mm processFCMMessage  🔵 🔵 🔵 ........................... cache CONDITION  🍎  🍎");

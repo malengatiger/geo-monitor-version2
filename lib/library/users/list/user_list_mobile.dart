@@ -1,9 +1,12 @@
+import 'dart:async';
+
 import 'package:animations/animations.dart';
 import 'package:badges/badges.dart' as bd;
 import 'package:flutter/material.dart';
 import 'package:flutter_libphonenumber/flutter_libphonenumber.dart';
 import 'package:focused_menu/focused_menu.dart';
 import 'package:focused_menu/modals.dart';
+import 'package:geo_monitor/library/generic_functions.dart';
 import 'package:geo_monitor/library/ui/maps_field_monitor/field_monitor_map_mobile.dart';
 import 'package:geo_monitor/library/ui/schedule/scheduler_mobile.dart';
 import 'package:geo_monitor/library/users/kill_user_page.dart';
@@ -51,11 +54,14 @@ class UserListMobileState extends State<UserListMobile>
     _listen();
   }
 
+  late StreamSubscription<User> _streamSubscription;
   void _listen() {
-    fcmBloc.userStream.listen((User user) {
+    _streamSubscription = fcmBloc.userStream.listen((User user) {
+      pp('$mm new user just arrived: ${user.toJson()}');
+
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('User has been added OK')));
+        _getData(false);
+        showToast(message: 'New User added to organization!', context: context);
       }
     });
   }
@@ -88,6 +94,7 @@ class UserListMobileState extends State<UserListMobile>
   @override
   void dispose() {
     _animationController.dispose();
+    _streamSubscription.cancel();
     super.dispose();
   }
 
@@ -288,9 +295,15 @@ class UserListMobileState extends State<UserListMobile>
                     ),
                     Expanded(
                       child: bd.Badge(
-                        badgeContent: Text(
-                          '${_users.length}',
-                          style: myTextStyleSmallBlack(context),
+                        badgeContent: InkWell(
+                          onTap: _sort,
+                          child: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Text(
+                              '${_users.length}',
+                              style: myTextStyleSmallBlack(context),
+                            ),
+                          ),
                         ),
                         badgeStyle:  bd.BadgeStyle(
                           badgeColor: Theme.of(context).primaryColor,
@@ -451,6 +464,8 @@ class UserListMobileState extends State<UserListMobile>
             child: SchedulerMobile(user)));
   }
 
+  bool sortedByName = false;
+
   Future<void> _navigateToKillPage(User user) async {
     await Navigator.push(
         context,
@@ -463,5 +478,27 @@ class UserListMobileState extends State<UserListMobile>
             )));
     pp('$mm ... back from KillPage; will refresh user list ....');
     _getData(true);
+  }
+
+  void _sort() {
+    if (sortedByName) {
+      _sortByNameDesc();
+    } else {
+      _sortByName();
+    }
+  }
+  void _sortByName() {
+    _users.sort((a,b) => a.name!.compareTo(b.name!));
+    sortedByName = true;
+    setState(() {
+
+    });
+  }
+  void _sortByNameDesc() {
+    _users.sort((a,b) => b.name!.compareTo(a.name!));
+    sortedByName = false;
+    setState(() {
+
+    });
   }
 }

@@ -26,15 +26,15 @@ import '../../library/generic_functions.dart';
 import '../../library/location/loc_bloc.dart';
 import '../dashboard/dashboard_mobile.dart';
 
-class AudioMobile extends StatefulWidget {
-  const AudioMobile({Key? key, required this.project}) : super(key: key);
+class AudioHandler extends StatefulWidget {
+  const AudioHandler({Key? key, required this.project}) : super(key: key);
 
   final Project project;
   @override
-  AudioMobileState createState() => AudioMobileState();
+  AudioHandlerState createState() => AudioHandlerState();
 }
 
-class AudioMobileState extends State<AudioMobile>
+class AudioHandlerState extends State<AudioHandler>
     with SingleTickerProviderStateMixin implements StorageBlocListener{
   late AnimationController _animationController;
 
@@ -122,17 +122,12 @@ class AudioMobileState extends State<AudioMobile>
     _timer?.cancel();
 
     _timer = Timer.periodic(const Duration(seconds: 1), (Timer t) {
-      if (seconds >= limitInSeconds) {
-        _recorderController.stop();
+      seconds = t.tick;
+      if (mounted) {
+        setState(() {
+
+        });
       }
-      // if (mounted) {
-      //   isRecording = false;
-      //   isPaused = false;
-      //   isStopped = true;
-      //   setState(() => seconds++);
-      //   showToast(message: 'Your recording limit has been reached', context: context);
-      //
-      // }
     });
   }
 

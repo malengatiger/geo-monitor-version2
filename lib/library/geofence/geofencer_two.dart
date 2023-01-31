@@ -135,8 +135,8 @@ class TheGreatGeofencer {
       required GeofenceRadius geofenceRadius,
       required GeofenceStatus geofenceStatus,
       required Location location}) async {
-    pp('$mm $xx _processing new GeofenceEvent;  🔵 ${geofence.data['projectName']} '
-        '🔵 with geofenceStatus: ${geofenceStatus.toString()}');
+    pp('$xx _processing new GeofenceEvent; 🔵 ${geofence.data['projectName']} '
+        '🔵geofenceStatus: ${geofenceStatus.toString()}');
     
     var loc = await locationBlocOG.getLocation();
 
@@ -162,7 +162,7 @@ class TheGreatGeofencer {
         case 'GeofenceStatus.DWELL':
           event.status = 'DWELL';
           var gfe = await DataAPI.addGeofenceEvent(event);
-          pp('$mm $xx geofence event added to database for ${event
+          pp('$xx geofence event added to database for ${event
               .projectName}');
           _streamController.sink.add(gfe);
           break;

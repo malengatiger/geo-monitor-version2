@@ -46,7 +46,6 @@ class ProjectMediaListMobileState extends State<ProjectMediaListMobile>
   late TabController _tabController;
   late StreamSubscription<String> killSubscription;
 
-
   var _photos = <Photo>[];
   User? user;
   static const mm = '🔆🔆🔆 MediaListMobile 💜💜 ';
@@ -92,7 +91,7 @@ class ProjectMediaListMobileState extends State<ProjectMediaListMobile>
       pp('$mm Videos received from projectVideoStream: 🏈 ${value.length}');
       if (mounted) {
         setState(() {});
-      }else {
+      } else {
         pp(' 😡😡😡 what the fuck? this thing is not mounted  😡😡😡');
       }
       _animationController.forward();
@@ -121,9 +120,7 @@ class ProjectMediaListMobileState extends State<ProjectMediaListMobile>
           projectId: widget.project.projectId!, forceRefresh: forceRefresh);
       pp('$mm bag has arrived safely! Yeah!! photos: ${bag.photos!.length} videos: ${bag.videos!.length}');
       _photos = bag.photos!;
-      setState(() {
-
-      });
+      setState(() {});
       _animationController.forward();
     } catch (e) {
       pp('$mm ...... refresh problem: $e');
@@ -149,13 +146,80 @@ class ProjectMediaListMobileState extends State<ProjectMediaListMobile>
     super.dispose();
   }
 
+  Audio? selectedAudio;
+  Video? selectedVideo;
+  void _navigateToPlayVideo() {
+    pp('... play audio from internets');
+    Navigator.push(
+        context,
+        PageTransition(
+            type: PageTransitionType.leftToRightWithFade,
+            alignment: Alignment.topLeft,
+            duration: const Duration(milliseconds: 1000),
+            child: PlayVideo(project: widget.project, video: selectedVideo!)));
+  }
+
+  AudioPlayer audioPlayer = AudioPlayer();
+  void _navigateToPlayAudio() {
+    pp('... play audio from internet ....');
+    audioPlayer.setUrl(selectedAudio!.url!);
+    audioPlayer.play();
+    // Navigator.push(
+    //     context,
+    //     PageTransition(
+    //         type: PageTransitionType.leftToRightWithFade,
+    //         alignment: Alignment.topLeft,
+    //         duration: const Duration(milliseconds: 1000),
+    //         child: PlayVideo(video: selectedAudio!)));
+  }
+
+  void _navigateToFullPhoto() {
+    pp('... about to navigate after waiting 100 ms');
+    Navigator.push(
+        context,
+        PageTransition(
+            type: PageTransitionType.leftToRightWithFade,
+            alignment: Alignment.topLeft,
+            duration: const Duration(milliseconds: 1000),
+            child: FullPhotoMobile(
+                project: widget.project, photo: selectedPhoto!)));
+    Future.delayed(const Duration(milliseconds: 100), () {});
+  }
+
+  void _navigateToMonitor() {
+    pp('... about to navigate after waiting 100 ms - should select project if null');
+
+    Future.delayed(const Duration(milliseconds: 100), () {
+      Navigator.of(context).pop();
+      Navigator.push(
+          context,
+          PageTransition(
+              type: PageTransitionType.leftToRightWithFade,
+              alignment: Alignment.topLeft,
+              duration: const Duration(milliseconds: 1500),
+              child: ProjectMonitorMobile(
+                project: widget.project,
+              )));
+    });
+  }
+
+  @override
+  onMediaSelected(mediaBag) {
+    // TODO: implement onMediaSelected
+    throw UnimplementedError();
+  }
+
   @override
   Widget build(BuildContext context) {
     _photos.sort((a, b) => b.created!.compareTo(a.created!));
     return SafeArea(
         child: Scaffold(
       appBar: AppBar(
-        leading: const SizedBox(),
+        leading: IconButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+            icon: const Icon(Icons.arrow_back_ios)),
         // title: Column(
         //   children: [
         //     Text(
@@ -186,16 +250,15 @@ class ProjectMediaListMobileState extends State<ProjectMediaListMobile>
                 size: 18,
                 color: Theme.of(context).primaryColor,
               )),
-          IconButton(
-              onPressed: () {
-
-                Navigator.of(context).pop();
-              },
-              icon: Icon(
-                Icons.close,
-                size: 18,
-                color: Theme.of(context).primaryColor,
-              )),
+          // IconButton(
+          //     onPressed: () {
+          //       Navigator.of(context).pop();
+          //     },
+          //     icon: Icon(
+          //       Icons.close,
+          //       size: 18,
+          //       color: Theme.of(context).primaryColor,
+          //     )),
         ],
         bottom: TabBar(
           controller: _tabController,
@@ -246,7 +309,9 @@ class ProjectMediaListMobileState extends State<ProjectMediaListMobile>
                   child: Card(
                     shape: getRoundedBorder(radius: 16),
                     elevation: 8,
-                    child: SizedBox(height: 200, width: 200,
+                    child: SizedBox(
+                      height: 200,
+                      width: 200,
                       child: Padding(
                         padding: const EdgeInsets.all(12.0),
                         child: Column(
@@ -351,70 +416,4 @@ class ProjectMediaListMobileState extends State<ProjectMediaListMobile>
       ),
     ));
   }
-
-  Audio? selectedAudio;
-  Video? selectedVideo;
-  void _navigateToPlayVideo() {
-    pp('... play audio from internets');
-    Navigator.push(
-        context,
-        PageTransition(
-            type: PageTransitionType.leftToRightWithFade,
-            alignment: Alignment.topLeft,
-            duration: const Duration(milliseconds: 1000),
-            child: PlayVideo(
-                project: widget.project,
-                video: selectedVideo!)));
-  }
-  AudioPlayer audioPlayer = AudioPlayer();
-  void _navigateToPlayAudio() {
-    pp('... play audio from internet ....');
-    audioPlayer.setUrl(selectedAudio!.url!);
-    audioPlayer.play();
-    // Navigator.push(
-    //     context,
-    //     PageTransition(
-    //         type: PageTransitionType.leftToRightWithFade,
-    //         alignment: Alignment.topLeft,
-    //         duration: const Duration(milliseconds: 1000),
-    //         child: PlayVideo(video: selectedAudio!)));
-  }
-
-  void _navigateToFullPhoto() {
-    pp('... about to navigate after waiting 100 ms');
-    Navigator.push(
-        context,
-        PageTransition(
-            type: PageTransitionType.leftToRightWithFade,
-            alignment: Alignment.topLeft,
-            duration: const Duration(milliseconds: 1000),
-            child: FullPhotoMobile(
-                project: widget.project,
-                photo: selectedPhoto!)));
-    Future.delayed(const Duration(milliseconds: 100), () {});
-  }
-
-  void _navigateToMonitor() {
-    pp('... about to navigate after waiting 100 ms - should select project if null');
-
-    Future.delayed(const Duration(milliseconds: 100), () {
-      Navigator.of(context).pop();
-      Navigator.push(
-          context,
-          PageTransition(
-              type: PageTransitionType.leftToRightWithFade,
-              alignment: Alignment.topLeft,
-              duration: const Duration(milliseconds: 1500),
-              child: ProjectMonitorMobile(
-                project: widget.project,
-              )));
-    });
-  }
-
-  @override
-  onMediaSelected(mediaBag) {
-    // TODO: implement onMediaSelected
-    throw UnimplementedError();
-  }
 }
-

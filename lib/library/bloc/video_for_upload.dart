@@ -1,9 +1,7 @@
 import 'package:hive/hive.dart';
 
-import '../data/video.dart';
 import '../data/position.dart';
 import '../data/project.dart';
-import '../data/video.dart';
 part 'video_for_upload.g.dart';
 
 @HiveType(typeId: 34)

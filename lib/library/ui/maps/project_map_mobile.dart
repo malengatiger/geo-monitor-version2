@@ -6,6 +6,7 @@ import 'package:animations/animations.dart';
 import 'package:badges/badges.dart' as bd;
 import 'package:flutter/material.dart';
 import 'package:geo_monitor/library/api/prefs_og.dart';
+import 'package:geo_monitor/library/bloc/fcm_bloc.dart';
 import 'package:geo_monitor/library/bloc/organization_bloc.dart';
 import 'package:geo_monitor/library/bloc/project_bloc.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -52,12 +53,15 @@ class ProjectMapMobileState extends State<ProjectMapMobile>
   bool busy = false;
   User? user;
   static const CameraPosition _kGooglePlex = CameraPosition(
-    target: LatLng(37.42796133580664, -122.085749655962),
+    target: LatLng(-25.85656, 27.7857),
     zoom: 14.4746,
   );
   final Set<Polygon> _polygons = HashSet<Polygon>();
+  final Set<Circle> circles = HashSet<Circle>();
   var projectPolygons = <ProjectPolygon>[];
   var projectPositions = <ProjectPosition>[];
+  late StreamSubscription<ProjectPosition> _positionStreamSubscription;
+  late StreamSubscription<ProjectPolygon> _polygonStreamSubscription;
 
   @override
   void initState() {
@@ -67,9 +71,61 @@ class ProjectMapMobileState extends State<ProjectMapMobile>
         reverseDuration: const Duration(milliseconds: 1500),
         vsync: this);
     super.initState();
-    _refreshData(false);
     _getUser();
     _setMarkerIcon();
+    _listen();
+  }
+
+  void _listen() async {
+    _positionStreamSubscription = fcmBloc.projectPositionStream.listen((event) async {
+      await _refreshData(false);
+      if (mounted) {
+        _addMarkers();
+        _buildCircles();
+        _buildProjectPolygons();
+
+        if (projectPositions.isNotEmpty) {
+          var p = projectPolygons.first.positions.first;
+          var lat = p.coordinates[1];
+          var lng = p.coordinates[0];
+          _animateCamera(latitude: lat, longitude: lng, zoom: 10.0);
+        }
+        // _animateCamera(latitude: 0.0, longitude: 0.0, zoom: 2.0);
+        setState(() {});
+      }
+    });
+    _polygonStreamSubscription = fcmBloc.projectPolygonStream.listen((event) async {
+      await _refreshData(false);
+
+      if (mounted) {
+        _addMarkers();
+        _buildCircles();
+        _buildProjectPolygons();
+        if (projectPolygons.isNotEmpty) {
+          var p = projectPolygons.first.positions.first;
+          var lat = p.coordinates[1];
+          var lng = p.coordinates[0];
+          _animateCamera(latitude: lat, longitude: lng, zoom: 10.0);
+        }
+        // _animateCamera(latitude: 0.0, longitude: 0.0, zoom: 2.0);
+        setState(() {});
+      }
+    });
+  }
+  void _buildCircles() {
+
+    pp('$mm drawing circles for project positions: ${projectPositions.length}, project: ${widget.project.toJson()}');
+    double? dist = widget.project.monitorMaxDistanceInMetres;
+    pp('$mm drawing circles for project positions: ${projectPositions.length}, monitorMaxDistanceInMetres: $dist == null? 100 : $dist');
+    for (var pos in projectPositions) {
+      circles.add(Circle(
+          center: LatLng(pos.position!.coordinates[1], pos.position!.coordinates[0]),
+          radius: dist ?? 300,
+          fillColor: Colors.black26,
+          strokeWidth: 4,
+          strokeColor: Colors.pink,
+          circleId: CircleId('${pos.projectId!}_${DateTime.now().microsecondsSinceEpoch}')));
+    }
   }
 
   void _setMarkerIcon() async {
@@ -86,10 +142,9 @@ class ProjectMapMobileState extends State<ProjectMapMobile>
 
   void _getUser() async {
     user = await prefsOGx.getUser();
-    _refreshData(false);
   }
 
-  void _refreshData(bool forceRefresh) async {
+  Future _refreshData(bool forceRefresh) async {
     setState(() {
       busy = true;
     });
@@ -98,6 +153,7 @@ class ProjectMapMobileState extends State<ProjectMapMobile>
           projectId: widget.project.projectId!, forceRefresh: forceRefresh);
       projectPositions = await projectBloc.getProjectPositions(
           projectId: widget.project.projectId!, forceRefresh: forceRefresh);
+
     } catch (e) {
       pp(e);
       if (mounted) {
@@ -113,6 +169,8 @@ class ProjectMapMobileState extends State<ProjectMapMobile>
   @override
   void dispose() {
     _animationController.dispose();
+    _polygonStreamSubscription.cancel();
+    _positionStreamSubscription.cancel();
     super.dispose();
   }
 
@@ -156,7 +214,7 @@ class ProjectMapMobileState extends State<ProjectMapMobile>
     if (projectPositions.isNotEmpty) {
       var lat = projectPositions.first.position!.coordinates[1];
       var lng = projectPositions.first.position!.coordinates[0];
-      _animateCamera(latitude: lat, longitude: lng, zoom: 10.0);
+      _animateCamera(latitude: lat, longitude: lng, zoom: 14.0);
     }
   }
 
@@ -291,6 +349,7 @@ class ProjectMapMobileState extends State<ProjectMapMobile>
       organizationBloc.addProjectPositionToStream(resultPosition);
       projectPositions.add(resultPosition);
       _addMarkers();
+      _buildCircles();
       setState(() {
 
       });
@@ -397,12 +456,15 @@ class ProjectMapMobileState extends State<ProjectMapMobile>
                   mapType: MapType.hybrid,
                   mapToolbarEnabled: true,
                   initialCameraPosition: _kGooglePlex,
-                  onMapCreated: (GoogleMapController controller) {
-                    pp('🍎🍎🍎........... GoogleMap onMapCreated ... ready to rumble!');
+                  onMapCreated: (GoogleMapController controller) async {
+                    pp('\n\\$mm 🍎🍎🍎........... GoogleMap onMapCreated ... ready to rumble!\n\n');
                     _mapController.complete(controller);
                     googleMapController = controller;
+                    await _refreshData(false);
                     _addMarkers();
                     _buildProjectPolygons();
+                    _buildCircles();
+                    _animateCamera(latitude: 0.0, longitude: 0.0, zoom: 2.0);
                     setState(() {});
                   },
                   // myLocationEnabled: true,
@@ -412,6 +474,7 @@ class ProjectMapMobileState extends State<ProjectMapMobile>
                   zoomControlsEnabled: true,
                   onLongPress: _onLongPress,
                   polygons: _polygons,
+                  circles: circles,
                 ),
               ),
             ),
@@ -605,7 +668,6 @@ class ProjectPositionChooser extends StatelessWidget {
   Widget build(BuildContext context) {
     var list = <local.Position>[];
     // projectPositions.sort((a,b) => a.created!.compareTo(b.created!));
-    pp('this sort breaks cause created is null');
     for (var value in projectPositions) {
       list.add(value.position!);
     }

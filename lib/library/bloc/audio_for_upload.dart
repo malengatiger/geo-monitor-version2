@@ -1,10 +1,7 @@
 import 'package:hive/hive.dart';
 
-import '../data/audio.dart';
-import '../data/audio.dart';
 import '../data/position.dart';
 import '../data/project.dart';
-import '../data/video.dart';
 part 'audio_for_upload.g.dart';
 
 @HiveType(typeId: 35)

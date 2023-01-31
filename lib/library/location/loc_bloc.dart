@@ -89,7 +89,7 @@ class LocationBlocOG {
     var pos = await getLocation();
 
     if (pos != null) {
-      var latLngFrom = LatLng(pos!.latitude!, pos.longitude!);
+      var latLngFrom = LatLng(pos.latitude!, pos.longitude!);
       var latLngTo = LatLng(latitude, longitude);
 
       var distanceBetweenPoints =

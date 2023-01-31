@@ -1,6 +1,5 @@
 import 'package:hive/hive.dart';
 
-import '../functions.dart';
 
 part 'settings_model.g.dart';
 

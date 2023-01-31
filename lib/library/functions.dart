@@ -175,6 +175,13 @@ TextStyle myNumberStyleLarger(BuildContext context) {
   );
 
 }
+TextStyle myNumberStyleLargest(BuildContext context) {
+  return GoogleFonts.secularOne(
+      textStyle: Theme.of(context).textTheme.headlineLarge,
+      fontWeight: FontWeight.w900, fontSize: 48
+  );
+
+}
 
 class Styles {
   static const reallyTiny = 10.0;

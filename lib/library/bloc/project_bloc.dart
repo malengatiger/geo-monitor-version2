@@ -1,5 +1,7 @@
 import 'dart:async';
 
+import 'package:geo_monitor/library/data/settings_model.dart';
+
 import '../api/data_api.dart';
 import '../api/prefs_og.dart';
 import '../data/audio.dart';
@@ -26,7 +28,7 @@ class ProjectBloc {
   ProjectBloc() {
     pp('$mm ProjectBloc constructed');
   }
-  final mm = '${E.appleRed}${E.appleRed}${E.appleRed} '
+  final mm = '💛️💛️💛️💛️💛️💛️ '
       'ProjectBloc';
   final StreamController<List<MonitorReport>> _reportController =
       StreamController.broadcast();
@@ -184,6 +186,32 @@ class ProjectBloc {
     return videos;
   }
 
+  Future<DataBag> getProjectData(
+      {required String projectId, required bool forceRefresh}) async {
+    List<Video> videos = await cacheManager.getProjectVideos(projectId);
+    List<Audio> audios = await cacheManager.getProjectAudios(projectId);
+    List<Photo> photos = await cacheManager.getProjectPhotos(projectId);
+    List<ProjectPosition> positions = await cacheManager.getProjectPositions(projectId);
+    List<ProjectPolygon> polygons = await cacheManager.getProjectPolygons(projectId: projectId);
+    List<SettingsModel> settings = await cacheManager.getProjectSettings(projectId);
+
+    var dataBag = DataBag(photos: photos, videos: videos, fieldMonitorSchedules: [], projectPositions: positions, projects: [],
+        audios: audios, date: DateTime.now().toUtc().toIso8601String(), users: [], projectPolygons: polygons, settings: settings);
+
+    if (videos.isEmpty || photos.isEmpty || audios.isEmpty || forceRefresh) {
+      dataBag = await DataAPI.getProjectData(projectId);
+    }
+    _projectVideoController.sink.add(videos);
+    pp('$mm getProjectData found: 💜 ${dataBag.videos!.length} videos ');
+    pp('$mm getProjectData found: 💜 ${dataBag.photos!.length} photos ');
+    pp('$mm getProjectData found: 💜 ${dataBag.audios!.length} audios ');
+    pp('$mm getProjectData found: 💜 ${dataBag.projectPositions!.length} positions ');
+    pp('$mm getProjectData found: 💜 ${dataBag.projectPolygons!.length} polygons ');
+    pp('$mm getProjectData found: 💜 ${dataBag.settings!.length} settings ');
+
+    return dataBag;
+  }
+
   Future<DataBag> refreshProjectData(
       {required String projectId, required bool forceRefresh}) async {
     pp('$mm refreshing project data ... photos, videos and schedules '
@@ -214,7 +242,7 @@ class ProjectBloc {
         audios: audios,
         date: DateTime.now().toUtc().toIso8601String(),
         users: [],
-        projectPolygons: polygons);
+        projectPolygons: polygons, settings: []);
     pp('$mm project data bag loaded: ... photos: ${photos.length}, videos: ${videos.length} and audios: ${audios.length} ...');
     return bag;
   }

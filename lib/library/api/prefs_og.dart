@@ -96,7 +96,7 @@ class PrefsOGx {
     var entry = box.read('country');
     if (entry != null) {
       country = Country.fromJson(entry);
-      pp("$mm getCountry 🧩  ${country!.name} retrieved");
+      pp("$mm getCountry 🧩  ${country.name} retrieved");
     }
 
     return country;
