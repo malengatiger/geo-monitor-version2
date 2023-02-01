@@ -84,7 +84,7 @@ class DashboardMobileState extends State<DashboardMobile>
     _setAnimationControllers();
     super.initState();
     _setItems();
-    _listenToStreams();
+    _listenToOrgStreams();
     _listenForFCM();
     _getAuthenticationStatus();
 
@@ -142,22 +142,6 @@ class DashboardMobileState extends State<DashboardMobile>
         _navigateToIntro();
       });
       //
-    }
-  }
-
-  void _listenToStreams() async {
-    var user = await prefsOGx.getUser();
-    if (user == null) return;
-    switch (user.userType) {
-      case UserType.orgExecutive:
-        _listenToOrgStreams();
-        break;
-      case UserType.orgAdministrator:
-        _listenToOrgStreams();
-        break;
-      case UserType.fieldMonitor:
-        _listenToMonitorStreams();
-        break;
     }
   }
 
@@ -288,70 +272,7 @@ class DashboardMobileState extends State<DashboardMobile>
 
       if (mounted) {
         setState(() {});
-        // _controller.reset();
         _projectAnimationController.forward();
-      }
-    });
-  }
-
-  void _listenToMonitorStreams() async {
-    projectSubscription = organizationBloc.projectStream.listen((event) {
-      _projects = event;
-      pp('$mm attempting to set state after projects delivered by stream: ${_projects.length} ... mounted: $mounted');
-      if (mounted) {
-        setState(() {});
-        _projectAnimationController.forward();
-      }
-    });
-    userSubscription = organizationBloc.usersStream.listen((event) {
-      _users = event;
-      pp('$mm attempting to set state after users delivered by stream: ${_users.length} ... mounted: $mounted');
-      if (mounted) {
-        setState(() {});
-        _userAnimationController.forward();
-      }
-    });
-    photoSubscription = organizationBloc.photoStream.listen((event) {
-      pp('$mm attempting to set state after photos delivered by stream: ${_photos.length} ... mounted: $mounted');
-      _photos = event;
-      if (mounted) {
-        setState(() {});
-        _photoAnimationController.forward();
-      }
-    });
-
-    videoSubscription = organizationBloc.videoStream.listen((event) {
-      _videos = event;
-      pp('$mm attempting to set state after videos delivered by stream: ${_videos.length} ... mounted: $mounted');
-
-      if (mounted) {
-        setState(() {});
-        _videoAnimationController.forward();
-      }
-    });
-    audioSubscription = organizationBloc.audioStream.listen((event) {
-      _audios = event;
-      pp('$mm attempting to set state after audios delivered by stream: ${_audios.length} ... mounted: $mounted');
-      if (mounted) {
-        setState(() {});
-        _audioAnimationController.forward();
-      }
-    });
-    projectPositionSubscription =
-        organizationBloc.projectPositionsStream.listen((event) {
-      _projectPositions = event;
-      pp('$mm attempting to set state after project positions delivered by stream: ${_projectPositions.length} ... mounted: $mounted');
-
-      if (mounted) {
-        setState(() {});
-      }
-    });
-    schedulesSubscription =
-        organizationBloc.fieldMonitorScheduleStream.listen((event) {
-      _schedules = event;
-      pp('$mm attempting to set state after fieldMonitorSchedules delivered by stream: ${_schedules.length} ... mounted: $mounted');
-      if (mounted) {
-        setState(() {});
       }
     });
   }
@@ -789,6 +710,9 @@ class DashboardMobileState extends State<DashboardMobile>
     var style = GoogleFonts.secularOne(
         textStyle: Theme.of(context).textTheme.titleLarge,
         fontWeight: FontWeight.w900);
+    var stylePrimary = GoogleFonts.secularOne(
+        textStyle: Theme.of(context).textTheme.titleLarge,
+        fontWeight: FontWeight.w900, color: Theme.of(context).primaryColor);
     return SafeArea(
       child: WillStartForegroundTask(
         onWillStart: () async {
@@ -1001,7 +925,7 @@ class DashboardMobileState extends State<DashboardMobile>
                                     const SizedBox(
                                       height: 32,
                                     ),
-                                    Text('${_photos.length}', style: style),
+                                    Text('${_photos.length}', style: stylePrimary),
                                     const SizedBox(
                                       height: 8,
                                     ),

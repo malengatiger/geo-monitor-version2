@@ -16,15 +16,18 @@ class AudioForUpload extends HiveObject {
   Position? position;
   @HiveField(6)
   String? date;
-
+  @HiveField(7)
+  String? audioId;
 
   AudioForUpload(
       {required this.filePath,
       required this.project,
       required this.position,
+      required this.audioId,
       required this.date});
 
   AudioForUpload.fromJson(Map data) {
+    audioId = data['audioId'];
     filePath = data['filePath'];
     date = data['date'];
 
@@ -38,11 +41,11 @@ class AudioForUpload extends HiveObject {
   }
   Map<String, dynamic> toJson() {
     Map<String, dynamic> map = {
+      'audioId': audioId,
       'filePath': filePath,
       'project': project == null ? null : project!.toJson(),
       'date': date,
-      'position':
-          position == null ? null : position!.toJson(),
+      'position': position == null ? null : position!.toJson(),
     };
     return map;
   }

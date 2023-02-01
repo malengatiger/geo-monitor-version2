@@ -20,18 +20,21 @@ class PhotoForUpload extends HiveObject {
   Position? position;
   @HiveField(6)
   String? date;
-
+  @HiveField(7)
+  String? photoId;
 
   PhotoForUpload(
       {required this.filePath,
       required this.thumbnailPath,
       this.projectPositionId,
-        this.projectPolygonId,
+      this.projectPolygonId,
       required this.project,
       required this.position,
+      required this.photoId,
       required this.date});
 
   PhotoForUpload.fromJson(Map data) {
+    photoId = data['photoId'];
     filePath = data['filePath'];
     thumbnailPath = data['thumbnailPath'];
     date = data['date'];
@@ -49,14 +52,14 @@ class PhotoForUpload extends HiveObject {
   }
   Map<String, dynamic> toJson() {
     Map<String, dynamic> map = {
+      'photoId': photoId,
       'filePath': filePath,
       'thumbnailPath': thumbnailPath,
       'project': project == null ? null : project!.toJson(),
       'projectPositionId': projectPositionId,
       'projectPolygonId': projectPolygonId,
       'date': date,
-      'position':
-          position == null ? null : position!.toJson(),
+      'position': position == null ? null : position!.toJson(),
     };
     return map;
   }

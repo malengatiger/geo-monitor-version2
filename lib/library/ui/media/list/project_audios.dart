@@ -258,22 +258,22 @@ class ProjectAudiosState extends State<ProjectAudios> {
                                         elevation: 4,
                                         shape: getRoundedBorder(radius: 12),
                                         child: Padding(
-                                          padding: const EdgeInsets.all(8.0),
+                                          padding: const EdgeInsets.all(6.0),
                                           child: SizedBox(
                                             height: 300,
                                             width: 300,
                                             child: Column(
                                               children: [
                                                 const SizedBox(
-                                                  height: 16,
+                                                  height: 12,
                                                 ),
                                                 const SizedBox(
-                                                  height: 32,
-                                                  width: 32,
+                                                  height: 28,
+                                                  width: 28,
                                                   child: CircleAvatar(
                                                     child: Icon(
                                                       Icons.mic,
-                                                      size: 28,
+                                                      size: 24,
                                                     ),
                                                   ),
                                                 ),

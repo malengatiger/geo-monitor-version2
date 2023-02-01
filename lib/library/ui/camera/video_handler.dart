@@ -14,6 +14,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:native_device_orientation/native_device_orientation.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:uuid/uuid.dart';
 
 import '../../../ui/dashboard/dashboard_mobile.dart';
 import '../../bloc/project_bloc.dart';
@@ -161,6 +162,7 @@ class VideoHandlerState extends State<VideoHandler>
           filePath: mFile.path,
           thumbnailPath: tFile.path,
           project: widget.project,
+          videoId: const Uuid().v4(),
           position: position,
           date: DateTime.now().toUtc().toIso8601String());
 

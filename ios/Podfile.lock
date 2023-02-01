@@ -107,6 +107,8 @@ PODS:
   - Flutter (1.0.0)
   - flutter_activity_recognition (0.0.1):
     - Flutter
+  - flutter_email_sender (0.0.1):
+    - Flutter
   - flutter_foreground_task (0.0.1):
     - Flutter
   - flutter_isolate (0.0.1):
@@ -227,6 +229,7 @@ DEPENDENCIES:
   - fl_location (from `.symlinks/plugins/fl_location/ios`)
   - Flutter (from `Flutter`)
   - flutter_activity_recognition (from `.symlinks/plugins/flutter_activity_recognition/ios`)
+  - flutter_email_sender (from `.symlinks/plugins/flutter_email_sender/ios`)
   - flutter_foreground_task (from `.symlinks/plugins/flutter_foreground_task/ios`)
   - flutter_isolate (from `.symlinks/plugins/flutter_isolate/ios`)
   - flutter_libphonenumber (from `.symlinks/plugins/flutter_libphonenumber/ios`)
@@ -310,6 +313,8 @@ EXTERNAL SOURCES:
     :path: Flutter
   flutter_activity_recognition:
     :path: ".symlinks/plugins/flutter_activity_recognition/ios"
+  flutter_email_sender:
+    :path: ".symlinks/plugins/flutter_email_sender/ios"
   flutter_foreground_task:
     :path: ".symlinks/plugins/flutter_foreground_task/ios"
   flutter_isolate:
@@ -392,6 +397,7 @@ SPEC CHECKSUMS:
   fl_location: 68b4a6c4aad2a453493ff66f196e0748280cf43e
   Flutter: f04841e97a9d0b0a8025694d0796dd46242b2854
   flutter_activity_recognition: 5c3b026997742b01e82424ef257db9640822ad77
+  flutter_email_sender: 02d7443217d8c41483223627972bfdc09f74276b
   flutter_foreground_task: 21ef182ab0a29a3005cc72cd70e5f45cb7f7f817
   flutter_isolate: 0edf5081826d071adf21759d1eb10ff5c24503b5
   flutter_libphonenumber: 8e7a8f974fda0f5915cf0af846879adf90b08f51

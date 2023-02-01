@@ -23,6 +23,7 @@ class PhotoForUploadAdapter extends TypeAdapter<PhotoForUpload> {
       projectPolygonId: fields[4] as String?,
       project: fields[2] as Project?,
       position: fields[5] as Position?,
+      photoId: fields[7] as String?,
       date: fields[6] as String?,
     );
   }
@@ -30,7 +31,7 @@ class PhotoForUploadAdapter extends TypeAdapter<PhotoForUpload> {
   @override
   void write(BinaryWriter writer, PhotoForUpload obj) {
     writer
-      ..writeByte(7)
+      ..writeByte(8)
       ..writeByte(0)
       ..write(obj.filePath)
       ..writeByte(1)
@@ -44,7 +45,9 @@ class PhotoForUploadAdapter extends TypeAdapter<PhotoForUpload> {
       ..writeByte(5)
       ..write(obj.position)
       ..writeByte(6)
-      ..write(obj.date);
+      ..write(obj.date)
+      ..writeByte(7)
+      ..write(obj.photoId);
   }
 
   @override

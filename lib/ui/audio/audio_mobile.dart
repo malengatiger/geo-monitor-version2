@@ -13,6 +13,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:record/record.dart';
+import 'package:uuid/uuid.dart';
 
 import '../../library/bloc/audio_for_upload.dart';
 import '../../library/bloc/cloud_storage_bloc.dart';
@@ -251,6 +252,7 @@ class AudioHandlerState extends State<AudioHandler>
           filePath: _recordedFile!.path,
           project: widget.project,
           position: position,
+          audioId: const Uuid().v4(),
           date: DateTime.now().toUtc().toIso8601String());
 
       await cacheManager.addAudioForUpload(audio: audioForUpload);

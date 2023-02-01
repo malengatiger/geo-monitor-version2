@@ -6,6 +6,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:geo_monitor/library/api/prefs_og.dart';
 import 'package:geo_monitor/library/data/settings_model.dart';
 import 'package:geo_monitor/library/hive_util.dart';
+import 'package:geo_monitor/library/users/org_registration.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
 import 'package:uuid/uuid.dart';
 
@@ -170,6 +171,7 @@ class PhoneLoginState extends State<PhoneLogin>
         if (user != null) {
           await prefsOGx.saveUser(user!);
           await cacheManager.addUser(user: user!);
+          await sendAuthenticationMail(user!);
           var list = await DataAPI.getOrganizationSettings(user!.organizationId!);
           for (var settings in list) {
             if (settings.projectId == null) {

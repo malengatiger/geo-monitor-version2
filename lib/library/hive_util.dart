@@ -544,7 +544,7 @@ class CacheManager {
     pp('$mm ${list.length} org settings list found in cache 🔵');
     return list;
   }
-  Future<List<VideoForUpload>> getVideoForUpload() async {
+  Future<List<VideoForUpload>> getVideosForUpload() async {
     List<VideoForUpload> list = [];
     var keys = _uploadVideoBox?.keys;
 
@@ -557,7 +557,7 @@ class CacheManager {
     pp('$mm ${list.length} VideoForUpload list found in cache 🔵');
     return list;
   }
-  Future<List<PhotoForUpload>> getPhotoForUpload() async {
+  Future<List<PhotoForUpload>> getPhotosForUpload() async {
     List<PhotoForUpload> list = [];
     var keys = _uploadPhotoBox?.keys;
 
@@ -887,12 +887,14 @@ class CacheManager {
     await _uploadPhotoBox?.delete(key);
     pp('$mm PhotoForUpload deleted from local cache:  🔵 🔵 ${photo.project!.name}');
   }
+
   Future removeUploadedAudio({required AudioForUpload audio}) async {
     var key =
         '${audio.project!.projectId}_${audio.date}';
     await _uploadAudioBox?.delete(key);
     pp('$mm AudioForUpload deleted from local cache: 🔵 🔵 ${audio.project!.name}');
   }
+
   Future removeUploadedVideo({required VideoForUpload video}) async {
     var key =
         '${video.project!.projectId}_${video.date}';

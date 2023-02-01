@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:geo_monitor/library/bloc/downloader.dart';
 import 'package:geo_monitor/library/data/settings_model.dart';
 import 'package:universal_platform/universal_platform.dart';
 
@@ -34,68 +35,68 @@ class OrganizationBloc {
       StreamController.broadcast();
   final StreamController<List<User>> userController =
       StreamController.broadcast();
-  final StreamController<List<Community>> _communityController =
+  final StreamController<List<Community>> communityController =
       StreamController.broadcast();
-  final StreamController<List<Questionnaire>> _questController =
+  final StreamController<List<Questionnaire>> questController =
       StreamController.broadcast();
-  final StreamController<List<Project>> _projController =
+  final StreamController<List<Project>> projController =
       StreamController.broadcast();
-  final StreamController<List<Photo>> _photoController =
+  final StreamController<List<Photo>> photoController =
       StreamController.broadcast();
-  final StreamController<List<Video>> _videoController =
+  final StreamController<List<Video>> videoController =
       StreamController.broadcast();
-  final StreamController<List<Audio>> _audioController =
+  final StreamController<List<Audio>> audioController =
       StreamController.broadcast();
 
 
-  final StreamController<List<ProjectPosition>> _projPositionsController =
+  final StreamController<List<ProjectPosition>> projPositionsController =
       StreamController.broadcast();
-  final StreamController<List<ProjectPolygon>> _projPolygonsController =
+  final StreamController<List<ProjectPolygon>> projPolygonsController =
       StreamController.broadcast();
-  final StreamController<List<ProjectPosition>> _projectPositionsController =
+  final StreamController<List<ProjectPosition>> projectPositionsController =
       StreamController.broadcast();
   final StreamController<List<FieldMonitorSchedule>>
-      _fieldMonitorScheduleController = StreamController.broadcast();
-  final StreamController<List<Country>> _countryController =
+      fieldMonitorScheduleController = StreamController.broadcast();
+  final StreamController<List<Country>> countryController =
       StreamController.broadcast();
 
-  final StreamController<Questionnaire> _activeQuestionnaireController =
+  final StreamController<Questionnaire> activeQuestionnaireController =
       StreamController.broadcast();
 
   Stream<List<MonitorReport>> get reportStream => _reportController.stream;
 
-  Stream<List<Community>> get communityStream => _communityController.stream;
+  Stream<List<Community>> get communityStream => communityController.stream;
 
   Stream<List<Questionnaire>> get questionnaireStream =>
-      _questController.stream;
+      questController.stream;
 
-  Stream<List<Project>> get projectStream => _projController.stream;
+  Stream<List<Project>> get projectStream => projController.stream;
 
   Stream<List<ProjectPosition>> get projectPositionsStream =>
-      _projPositionsController.stream;
+      projPositionsController.stream;
 
   Stream<List<ProjectPolygon>> get projectPolygonsStream =>
-      _projPolygonsController.stream;
+      projPolygonsController.stream;
 
-  Stream get countryStream => _countryController.stream;
+  Stream get countryStream => countryController.stream;
 
   Stream<List<User>> get usersStream => userController.stream;
 
-  Stream get activeQuestionnaireStream => _activeQuestionnaireController.stream;
+  Stream get activeQuestionnaireStream => activeQuestionnaireController.stream;
 
   Stream<List<FieldMonitorSchedule>> get fieldMonitorScheduleStream =>
-      _fieldMonitorScheduleController.stream;
-  Stream<List<Photo>> get photoStream => _photoController.stream;
+      fieldMonitorScheduleController.stream;
+  Stream<List<Photo>> get photoStream => photoController.stream;
 
-  Stream<List<Video>> get videoStream => _videoController.stream;
-  Stream<List<Audio>> get audioStream => _audioController.stream;
+  Stream<List<Video>> get videoStream => videoController.stream;
+  Stream<List<Audio>> get audioStream => audioController.stream;
 
   //
   Future<void> addProjectToStream(Project project) async {
     try {
       var p = await cacheManager.getOrganizationProjects();
       pp('$mm .... adding new project -- sending ${p.length} photos to project Stream ');
-      _projController.sink.add(p);
+      projController.sink.add(p);
     } catch (e) {
       pp('$mm problem with stream? 🔴🔴🔴 $e');
     }
@@ -106,7 +107,7 @@ class OrganizationBloc {
     try {
       var p = await cacheManager.getOrganizationPhotos();
       pp('$mm .... adding new photo -- sending ${p.length} photos to photoStream ');
-      _photoController.sink.add(p);
+      photoController.sink.add(p);
     } catch (e) {
       pp('$mm problem with stream? 🔴🔴🔴 $e');
     }
@@ -116,14 +117,14 @@ class OrganizationBloc {
     pp('$mm addVideoToStream ...');
     var p = await cacheManager.getOrganizationVideos();
     pp('$mm added new video -- sending ${p.length} videos to videoStream ');
-    _videoController.sink.add(p);
+    videoController.sink.add(p);
   }
 
   Future<void> addAudioToStream(Audio audio) async {
     pp('$mm addAudioToStream ...');
     var p = await cacheManager.getOrganizationAudios();
     pp('$mm added new audio -- sending ${p.length} audios to audioStream ');
-    _audioController.sink.add(p);
+    audioController.sink.add(p);
   }
 
   Future<void> addProjectPositionToStream(
@@ -132,7 +133,7 @@ class OrganizationBloc {
     var p = await cacheManager.getOrganizationProjectPositions(
         organizationId: projectPosition.organizationId!);
     pp('$mm added new projectPosition -- sending ${p.length} projectPositions to projectPositionsStream ');
-    _projectPositionsController.sink.add(p);
+    projectPositionsController.sink.add(p);
   }
 
   Future<void> addProjectPolygonToStream(ProjectPolygon projectPolygon) async {
@@ -140,7 +141,7 @@ class OrganizationBloc {
     var p = await cacheManager.getOrganizationProjectPolygons(
         organizationId: projectPolygon.organizationId!);
     pp('$mm added new projectPolygon -- sending ${p.length} projectPolygons to projectPolygonsStream ');
-    _projPolygonsController.sink.add(p);
+    projPolygonsController.sink.add(p);
   }
 
   Future<DataBag> getOrganizationData(
@@ -153,12 +154,13 @@ class OrganizationBloc {
 
     if (forceRefresh) {
       pp('$mm get data from server .....................; forceRefresh: $forceRefresh');
-      bag = await DataAPI.getOrganizationData(organizationId);
+      //bag = await DataAPI.getOrganizationData(organizationId);
+      DownloaderStarter.start();
     } else {
       if (bag.isEmpty()) {
         pp('$mm bag is empty. No organization data anywhere yet? ... '
             'will force refresh, forceRefresh: $forceRefresh');
-        bag = await DataAPI.getOrganizationData(organizationId);
+        DownloaderStarter.start();
       }
     }
     _putContentsOfBagIntoStreams(bag);
@@ -172,7 +174,7 @@ class OrganizationBloc {
       try {
         if (bag.photos != null) {
           bag.photos!.sort((a, b) => b.created!.compareTo(a.created!));
-          _photoController.sink.add(bag.photos!);
+          photoController.sink.add(bag.photos!);
         }
       } catch (e) {
         pp('$mm _putContentsOfBagIntoStreams photos ERROR - $e');
@@ -180,7 +182,7 @@ class OrganizationBloc {
       try {
         if (bag.videos != null) {
           bag.videos!.sort((a, b) => b.created!.compareTo(a.created!));
-          _videoController.sink.add(bag.videos!);
+          videoController.sink.add(bag.videos!);
         }
       } catch (e) {
         pp('$mm _putContentsOfBagIntoStreams videos ERROR - $e');
@@ -188,7 +190,7 @@ class OrganizationBloc {
       try {
         if (bag.audios != null) {
           bag.audios!.sort((a, b) => b.created!.compareTo(a.created!));
-          _audioController.sink.add(bag.audios!);
+          audioController.sink.add(bag.audios!);
         }
       } catch (e) {
         pp('$mm _putContentsOfBagIntoStreams audios ERROR - $e');
@@ -196,7 +198,7 @@ class OrganizationBloc {
       try {
         if (bag.fieldMonitorSchedules != null) {
           bag.fieldMonitorSchedules!.sort((a, b) => b.date!.compareTo(a.date!));
-          _fieldMonitorScheduleController.sink.add(bag.fieldMonitorSchedules!);
+          fieldMonitorScheduleController.sink.add(bag.fieldMonitorSchedules!);
         }
       } catch (e) {
         pp('$mm _putContentsOfBagIntoStreams fieldMonitorSchedules ERROR - $e');
@@ -212,7 +214,7 @@ class OrganizationBloc {
       try {
         if (bag.projects != null) {
           bag.projects!.sort((a, b) => a.name!.compareTo(b.name!));
-          _projController.sink.add(bag.projects!);
+          projController.sink.add(bag.projects!);
         }
       } catch (e) {
         pp('$mm _putContentsOfBagIntoStreams projects ERROR - $e');
@@ -221,7 +223,7 @@ class OrganizationBloc {
         if (bag.projectPositions != null) {
           // bag.projectPositions!
           //     .sort((a, b) => b.created!.compareTo(a.created!));
-          _projPositionsController.sink.add(bag.projectPositions!);
+          projPositionsController.sink.add(bag.projectPositions!);
         }
       } catch (e) {
         pp('$mm _putContentsOfBagIntoStreams projectPositions ERROR - $e');
@@ -229,7 +231,7 @@ class OrganizationBloc {
       try {
         if (bag.projectPolygons != null) {
           bag.projectPolygons!.sort((a, b) => b.created!.compareTo(a.created!));
-          _projPolygonsController.sink.add(bag.projectPolygons!);
+          projPolygonsController.sink.add(bag.projectPolygons!);
         }
       } catch (e) {
         pp('$mm _putContentsOfBagIntoStreams projectPolygons ERROR - $e');
@@ -273,7 +275,7 @@ class OrganizationBloc {
       pp('$mm getOrganizationProjectPositions found ${projectPositions.length} positions from remote database ');
       await cacheManager.addProjectPositions(positions: projectPositions);
     }
-    _projPositionsController.sink.add(projectPositions);
+    projPositionsController.sink.add(projectPositions);
     pp('$mm getOrganizationProjectPositions found: 💜 ${projectPositions.length} projectPositions from local or remote db ');
     return projectPositions;
   }
@@ -290,7 +292,7 @@ class OrganizationBloc {
       pp('$mm getProjectPolygons found ${projectPolygons.length} polygons from remote database ');
       await cacheManager.addProjectPolygons(polygons: projectPolygons);
     }
-    _projPolygonsController.sink.add(projectPolygons);
+    projPolygonsController.sink.add(projectPolygons);
     pp('$mm getProjectPolygons found: 💜 ${projectPolygons.length} polygons from local or remote db ');
     return projectPolygons;
   }
@@ -305,7 +307,7 @@ class OrganizationBloc {
       await cacheManager.addFieldMonitorSchedules(schedules: schedules);
     }
 
-    _fieldMonitorScheduleController.sink.add(schedules);
+    fieldMonitorScheduleController.sink.add(schedules);
     pp('$mm getOrgFieldMonitorSchedules found: 🔵 ${schedules.length} schedules ');
 
     return schedules;
@@ -320,7 +322,7 @@ class OrganizationBloc {
         photos = await DataAPI.getOrganizationPhotos(organizationId);
         await cacheManager.addPhotos(photos: photos);
       }
-      _photoController.sink.add(photos);
+      photoController.sink.add(photos);
       pp('$mm getPhotos found: 💜 ${photos.length} photos 💜 ');
     } catch (e) {
       pp('😈😈😈😈😈 MonitorBloc: getOrganizationPhotos FAILED: 😈😈😈😈😈 $e');
@@ -361,7 +363,7 @@ class OrganizationBloc {
         videos = await DataAPI.getOrganizationVideos(organizationId);
          await cacheManager.addVideos(videos: videos);
       }
-      _videoController.sink.add(videos);
+      videoController.sink.add(videos);
       pp('$mm getVideos found: 💜 ${videos.length} videos ');
     } catch (e) {
       pp('😈😈😈😈😈 MonitorBloc: getOrganizationVideos FAILED');
@@ -382,7 +384,7 @@ class OrganizationBloc {
         audios = await DataAPI.getOrganizationAudios(organizationId);
         if (android) await cacheManager.addAudios(audios: audios);
       }
-      _audioController.sink.add(audios);
+      audioController.sink.add(audios);
       pp('$mm getAudios found: 💜 ${audios.length} Audios ');
     } catch (e) {
       pp('😈😈😈😈😈 MonitorBloc: getOrganizationAudios FAILED');
@@ -400,7 +402,7 @@ class OrganizationBloc {
       if (projects.isEmpty || forceRefresh) {
         projects = await DataAPI.findProjectsByOrganization(organizationId);
       }
-      _projController.sink.add(projects);
+      projController.sink.add(projects);
       pp('💜💜💜💜 MonitorBloc: OrganizationProjects found: 💜 ${projects.length} projects ; organizationId: $organizationId💜');
       for (var project in projects) {
         pp('💜💜 Org PROJECT: ${project.name} 🍏 ${project.organizationName}  🍏 ${project.organizationId}');

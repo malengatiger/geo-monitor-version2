@@ -66,7 +66,7 @@ Future<void> _initializeGeoMonitor() async {
   //pp('THEME: user up top is: ${user!.name}');
   await dotenv.load(fileName: ".env");
   pp('$xx $heartBlue DotEnv has been loaded');
-  await Hive.initFlutter('data003');
+  await Hive.initFlutter('data004');
   await cacheManager.initialize(forceInitialization: false);
 
   if (settings != null) {

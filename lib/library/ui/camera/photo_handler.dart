@@ -10,6 +10,7 @@ import 'package:native_device_orientation/native_device_orientation.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:image/image.dart' as img;
+import 'package:uuid/uuid.dart';
 
 import '../../../ui/dashboard/dashboard_mobile.dart';
 import '../../api/prefs_og.dart';
@@ -185,6 +186,7 @@ class PhotoHandlerState extends State<PhotoHandler>
           thumbnailPath: tFile.path,
           project: widget.project,
           position: position,
+          photoId: const Uuid().v4(),
           date: DateTime.now().toUtc().toIso8601String());
       await cacheManager.addPhotoForUpload(photo: photoForUpload);
     }

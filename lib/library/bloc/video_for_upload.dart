@@ -20,17 +20,21 @@ class VideoForUpload extends HiveObject {
   Position? position;
   @HiveField(6)
   String? date;
+  @HiveField(7)
+  String? videoId;
 
   VideoForUpload(
       {required this.filePath,
+      required this.videoId,
       required this.thumbnailPath,
       this.projectPositionId,
-        this.projectPolygonId,
+      this.projectPolygonId,
       required this.project,
       required this.position,
       required this.date});
 
   VideoForUpload.fromJson(Map data) {
+    videoId = data['videoId'];
     filePath = data['filePath'];
     thumbnailPath = data['thumbnailPath'];
     date = data['date'];
@@ -49,13 +53,13 @@ class VideoForUpload extends HiveObject {
   Map<String, dynamic> toJson() {
     Map<String, dynamic> map = {
       'filePath': filePath,
+      'videoId': videoId,
       'thumbnailPath': thumbnailPath,
       'project': project == null ? null : project!.toJson(),
       'projectPositionId': projectPositionId,
       'projectPolygonId': projectPolygonId,
       'date': date,
-      'position':
-          position == null ? null : position!.toJson(),
+      'position': position == null ? null : position!.toJson(),
     };
     return map;
   }

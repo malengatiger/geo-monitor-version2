@@ -480,6 +480,7 @@ class DataAPI {
       await cacheManager.addPhotos(photos: bag.photos!);
       await cacheManager.addVideos(videos: bag.videos!);
       await cacheManager.addAudios(audios: bag.audios!);
+      await cacheManager.addSettingsList(settings: bag.settings!);
       await cacheManager.addFieldMonitorSchedules(
           schedules: bag.fieldMonitorSchedules!);
       pp('\n$mm Data returned from server, sending to caller ...');
@@ -683,12 +684,12 @@ class DataAPI {
       rethrow;
     }
   }
-  static Future<List<Audio>> findAudiosById(String projectId) async {
+  static Future<List<Audio>> findAudiosById(String audioId) async {
     String? mURL = await getUrl();
 
     try {
       var result =
-      await _sendHttpGET('${mURL!}getProjectAudios?projectId=$projectId');
+      await _sendHttpGET('${mURL!}findAudiosById?audioId=$audioId');
       List<Audio> list = [];
       result.forEach((m) {
         list.add(Audio.fromJson(m));
@@ -1416,6 +1417,67 @@ class DataAPI {
     }
   }
 
+  static Future<Photo?> findPhotoById(String photoId) async {
+    String? mURL = await getUrl();
+    assert(mURL != null);
+    var command = "findPhotoById?photoId=$photoId";
+
+    try {
+      pp('🐤🐤🐤🐤 DataAPI : ... 🥏 calling _callWebAPIPost .. 🥏 $mURL$command ');
+      var result = await _sendHttpGET(
+        '$mURL$command',
+      );
+      if (result is bool) {
+        return null;
+      }
+      pp(result);
+      return Photo.fromJson(result);
+    } catch (e) {
+      pp(e);
+      rethrow;
+    }
+  }
+  static Future<Video?> findVideoById(String videoId) async {
+    String? mURL = await getUrl();
+    assert(mURL != null);
+    var command = "findVideoById?videoId=$videoId";
+
+    try {
+      pp('🐤🐤🐤🐤 DataAPI : ... 🥏 calling _callWebAPIPost .. 🥏 $mURL$command ');
+      var result = await _sendHttpGET(
+        '$mURL$command',
+      );
+      if (result is bool) {
+        return null;
+      }
+      pp(result);
+      return Video.fromJson(result);
+    } catch (e) {
+      pp(e);
+      rethrow;
+    }
+  }
+  static Future<Audio?> findAudioById(String audioId) async {
+    String? mURL = await getUrl();
+    assert(mURL != null);
+    var command = "findAudioById?audioId=$audioId";
+
+    try {
+      pp('🐤🐤🐤🐤 DataAPI : ... 🥏 calling _callWebAPIPost .. 🥏 $mURL$command ');
+      var result = await _sendHttpGET(
+        '$mURL$command',
+      );
+      if (result is bool) {
+        return null;
+      }
+      pp(result);
+      return Audio.fromJson(result);
+    } catch (e) {
+      pp(e);
+      rethrow;
+    }
+  }
+
   static Future<User> findUserByUid(String uid) async {
     String? mURL = await getUrl();
     Map bag = {
@@ -1541,6 +1603,9 @@ class DataAPI {
       var end = DateTime.now();
       pp('$xz http GET call: 🔆 elapsed time for http: ${end.difference(start).inSeconds} seconds 🔆 \n\n');
 
+      if (resp.body.contains('not found')) {
+        return false;
+      }
       if (resp.statusCode != 200) {
         var msg =
             '😡 😡 The response is not 200; it is ${resp.statusCode}, NOT GOOD, throwing up !! 🥪 🥙 🌮  😡 ${resp.body}';

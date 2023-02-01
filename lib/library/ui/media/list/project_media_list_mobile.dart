@@ -71,7 +71,7 @@ class ProjectMediaListMobileState extends State<ProjectMediaListMobile>
 
     _listenToProjectStreams();
     _listenToPhotoStream();
-    //
+
   }
 
   void _listenToProjectStreams() async {
@@ -81,21 +81,23 @@ class ProjectMediaListMobileState extends State<ProjectMediaListMobile>
       pp('$mm Photos received from stream projectPhotoStream: 💙 ${value.length}');
       _photos = value;
       if (mounted) {
+        _animationController.forward();
         setState(() {});
       } else {
         pp(' 😡😡😡 what the fuck? this thing is not mounted  😡😡😡');
       }
-      _animationController.forward();
+
     });
 
     videoStreamSubscription = projectBloc.videoStream.listen((value) {
       pp('$mm Videos received from projectVideoStream: 🏈 ${value.length}');
       if (mounted) {
+        _animationController.forward();
         setState(() {});
       } else {
         pp(' 😡😡😡 what the fuck? this thing is not mounted  😡😡😡');
       }
-      _animationController.forward();
+
     });
   }
 

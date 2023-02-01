@@ -1,7 +1,9 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_email_sender/flutter_email_sender.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:geo_monitor/library/api/prefs_og.dart';
 import 'package:geo_monitor/library/data/country.dart';
@@ -11,6 +13,7 @@ import 'package:geo_monitor/library/data/settings_model.dart';
 import 'package:geo_monitor/library/hive_util.dart';
 import 'package:geo_monitor/library/location/loc_bloc.dart';
 import 'package:geo_monitor/library/users/edit/user_edit_main.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
 import 'package:uuid/uuid.dart';
 
@@ -218,7 +221,7 @@ class OrgRegistrationPageState extends State<OrgRegistrationPage>
           pp('\n$mm Organization OG Administrator registered OK:🌍🌍🌍🌍  🍎 ${mUser
               .toJson()} 🌍🌍🌍🌍');
         }
-
+        await sendAuthenticationMail(mUser);
         pp('\n\n$mm Organization registered: 🌍🌍🌍🌍 🍎 ${result
             .toJson()} 🌍🌍🌍🌍\n\n');
       }
@@ -530,4 +533,31 @@ class OrgRegistrationPageState extends State<OrgRegistrationPage>
       ),
     ));
   }
+}
+
+//top level function
+Future sendAuthenticationMail(ur.User user) async {
+  pp('\n\n☘️☘️☘️☘️☘️☘️☘️☘️️Sending email with attached password file to user ${user.name}');
+  var body = 'Dear ${user
+      .name},\n\n You have been registered with GeoMonitor and the team is happy to send you the first time login password. '
+      '\nPlease login on the web with your email and the attached password but use your cellphone number to sign in on the phone.\n\n'
+      'Thank you for working with GeoMonitor. Welcome aboard!!\n\nBest Regards,\nThe GeoMonitor Team\ninfo@geomonitorapp.io\n\n';
+
+  final Directory directory = await getApplicationDocumentsDirectory();
+  const path = '/auth_user.txt';
+  final File mFile = File('${directory.path}$path');
+  var string = 'Your password is: ${user.password}';
+  mFile.writeAsStringSync(string);
+
+  final Email email = Email(
+    body: body,
+    subject: 'GeoMonitor Authentication',
+    recipients: [user.email!],
+    bcc: ['aubrey@aftarobot.com, malengadev@egmail.com'],
+    attachmentPaths: [mFile.path],
+    isHTML: false,
+  );
+
+  await FlutterEmailSender.send(email);
+  pp('☘️☘️☘️☘️☘️☘️☘️☘️️Email with attached password file has been sent to user ${user.name}\n\n');
 }
