@@ -1,4 +1,6 @@
+import 'package:chewie/chewie.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:video_player/video_player.dart';
@@ -22,61 +24,95 @@ class PlayVideo extends StatefulWidget {
 class PlayVideoState extends State<PlayVideo>
     with SingleTickerProviderStateMixin {
   late AnimationController _animationController;
-  VideoPlayerController? videoController;
+  VideoPlayerController? _videoPlayerController;
+  late ChewieController _chewieController;
   VoidCallback? videoPlayerListener;
   static const mm = '🔵🔵🔵🔵 PlayVideoState 🍎 : ';
 
   int videoDurationInSeconds = 0;
   double videoDurationInMinutes = 0.0;
+  final double _aspectRatio = 16 / 9;
   @override
   void initState() {
     _animationController = AnimationController(vsync: this);
     super.initState();
     pp('PlayVideo initState: ${widget.video.toJson()}  🔵🔵');
-    videoController = VideoPlayerController.network(widget.video.url!)
+    _videoPlayerController = VideoPlayerController.network(widget.video.url!)
       ..initialize().then((_) {
         // Ensure the first frame is shown after the video is initialized, even before the play button has been pressed.
         pp('.......... doing shit with videoController ... setting state .... '
-            '$videoController 🍎DURATION: ${videoController!.value.duration} seconds!');
+            '$_videoPlayerController 🍎DURATION: ${_videoPlayerController!.value.duration} seconds!');
 
-        videoController!.addListener(_checkVideo);
+        _videoPlayerController!.addListener(_checkVideo);
         setState(() {
-          if (videoController != null) {
-            videoDurationInSeconds = videoController!.value.duration.inSeconds;
+          if (_videoPlayerController != null) {
+            videoDurationInSeconds = _videoPlayerController!.value.duration.inSeconds;
             videoDurationInMinutes = videoDurationInSeconds / 60;
-            videoController!.value.isPlaying
-                ? videoController!.pause()
-                : videoController!.play();
+            _videoPlayerController!.value.isPlaying
+                ? _videoPlayerController!.pause()
+                : _videoPlayerController!.play();
           }
         });
       });
   }
 
+  void _setChewie(String url) {
+    _videoPlayerController = VideoPlayerController.network(url);
+    _chewieController = ChewieController(
+      allowedScreenSleep: false,
+      allowFullScreen: true,
+      deviceOrientationsAfterFullScreen: [
+        DeviceOrientation.landscapeRight,
+        DeviceOrientation.landscapeLeft,
+        DeviceOrientation.portraitUp,
+        DeviceOrientation.portraitDown,
+      ],
+      videoPlayerController: _videoPlayerController!,
+      aspectRatio: _aspectRatio,
+      autoInitialize: true,
+      autoPlay: true,
+      showControls: true,
+    );
+    _chewieController.addListener(() {
+      if (_chewieController.isFullScreen) {
+        SystemChrome.setPreferredOrientations([
+          DeviceOrientation.landscapeRight,
+          DeviceOrientation.landscapeLeft,
+        ]);
+      } else {
+        SystemChrome.setPreferredOrientations([
+          DeviceOrientation.portraitUp,
+          DeviceOrientation.portraitDown,
+        ]);
+      }
+    });
+  }
+
   bool _showFloatingButton = true;
   void _checkVideo() {
-    if(videoController!.value.position == const Duration(seconds: 0, minutes: 0, hours: 0)) {
+    if(_videoPlayerController!.value.position == const Duration(seconds: 0, minutes: 0, hours: 0)) {
       pp('$mm video Started');
       setState(() {
         _showFloatingButton = false;
       });
     }
 
-    if (videoController!.value.isPlaying) {
+    if (_videoPlayerController!.value.isPlaying) {
       setState(() {
         _showFloatingButton = false;
       });
     }
-    if (videoController!.value.isBuffering) {
+    if (_videoPlayerController!.value.isBuffering) {
       setState(() {
         _showFloatingButton = false;
       });
     }
-    if (!videoController!.value.isPlaying) {
+    if (!_videoPlayerController!.value.isPlaying) {
       setState(() {
         _showFloatingButton = true;
       });
     }
-    if(videoController!.value.position == videoController!.value.duration) {
+    if(_videoPlayerController!.value.position == _videoPlayerController!.value.duration) {
       pp('$mm video Ended ....');
       setState(() {
         _showFloatingButton = true;
@@ -86,9 +122,9 @@ class PlayVideoState extends State<PlayVideo>
   @override
   void dispose() {
     _animationController.dispose();
-    if (videoController != null) {
+    if (_videoPlayerController != null) {
       pp('Disposing the videoController ... ');
-      videoController!.dispose();
+      _videoPlayerController!.dispose();
     }
     super.dispose();
   }
@@ -115,8 +151,8 @@ class PlayVideoState extends State<PlayVideo>
     var m = getFormattedDateLongWithTime(widget.video.created!, context);
     var elapsedMinutes = 0.0;
     var elapsedSeconds = 0;
-    if (videoController != null) {
-      elapsedSeconds = videoController!.value.position.inSeconds;
+    if (_videoPlayerController != null) {
+      elapsedSeconds = _videoPlayerController!.value.position.inSeconds;
       elapsedMinutes = (elapsedSeconds / 60);
     }
     return SafeArea(
@@ -190,29 +226,29 @@ class PlayVideoState extends State<PlayVideo>
             ),
           ),
         ),
-        body: videoController == null
+        body: _videoPlayerController == null
             ? const Center(
                 child: Text('Not ready yet!'),
               )
             : Stack(
                 children: [
                   Center(
-                    child: videoController!.value.isInitialized
+                    child: _videoPlayerController!.value.isInitialized
                         ? AspectRatio(
-                            aspectRatio: videoController!.value.aspectRatio,
+                            aspectRatio: _videoPlayerController!.value.aspectRatio,
                             child: GestureDetector(
                                 onTap: () {
                                   pp('$mm Tap happened! Pause the video if playing 🍎 ...');
-                                  if (videoController!.value.isPlaying) {
+                                  if (_videoPlayerController!.value.isPlaying) {
                                     if (mounted) {
                                       setState(() {
-                                        videoController!.pause();
+                                        _videoPlayerController!.pause();
                                         _showElapsed = true;
                                       });
                                     }
                                   }
                                 },
-                                child: VideoPlayer(videoController!)),
+                                child: VideoPlayer(_videoPlayerController!)),
                           )
                         : Center(
                             child: Card(
@@ -285,16 +321,16 @@ class PlayVideoState extends State<PlayVideo>
             ? FloatingActionButton(
             onPressed: () {
               setState(() {
-                if (videoController != null) {
+                if (_videoPlayerController != null) {
                   _showElapsed = false;
-                  videoController!.value.isPlaying
-                      ? videoController!.pause()
-                      : videoController!.play();
+                  _videoPlayerController!.value.isPlaying
+                      ? _videoPlayerController!.pause()
+                      : _videoPlayerController!.play();
                 }
               });
             },
             child: Icon(
-              videoController == null ? Icons.pause : Icons.play_arrow,
+              _videoPlayerController == null ? Icons.pause : Icons.play_arrow,
             ),
           ) : const SizedBox(),
 

@@ -155,12 +155,12 @@ class OrganizationBloc {
     if (forceRefresh) {
       pp('$mm get data from server .....................; forceRefresh: $forceRefresh');
       //bag = await DataAPI.getOrganizationData(organizationId);
-      DownloaderStarter.start();
+      downloaderStarter.start();
     } else {
       if (bag.isEmpty()) {
         pp('$mm bag is empty. No organization data anywhere yet? ... '
             'will force refresh, forceRefresh: $forceRefresh');
-        DownloaderStarter.start();
+        downloaderStarter.start();
       }
     }
     _putContentsOfBagIntoStreams(bag);

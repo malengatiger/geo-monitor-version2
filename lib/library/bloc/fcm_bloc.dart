@@ -149,11 +149,11 @@ class FCMBloc {
 
     // await prefsOGx.resetFCMSubscriptionFlag();
 
-    bool flag = await prefsOGx.getFCMSubscriptionFlag();
-    if (flag) {
-      pp("\n\b$mm ..... app already subscribed to GeoMonitor FCM Topics ...... ✅✅✅?\n\n");
-      return;
-    }
+    // bool flag = await prefsOGx.getFCMSubscriptionFlag();
+    // if (flag) {
+    //   pp("\n\b$mm ..... app already subscribed to GeoMonitor FCM Topics ...... ✅✅✅?\n\n");
+    //   return;
+    // }
     await messaging.subscribeToTopic('projects_${user.organizationId}');
     pp("$mm ..... subscribed to topic: projects_${user.organizationId}");
 

@@ -204,17 +204,21 @@ class DownloadParameters {
   });
 }
 
+final DownloaderStarter downloaderStarter = DownloaderStarter();
 /// starts the DownloaderService isolate to download org data
-class DownloaderStarter {
-  static late SendPort sendPort;
-  static final ReceivePort receivePort = ReceivePort();
-  static late Isolate isolate;
-  static const mm = '🥬🥬🥬🥬🥬🥬 DownloaderStarter: ';
-  static DataBag? dataBag;
-  static final StreamController<DataBag> _streamController = StreamController.broadcast();
-  static Stream<DataBag> get dataBagStream => _streamController.stream;
+///
 
-  static void start() async {
+class DownloaderStarter {
+   late SendPort sendPort;
+   final ReceivePort receivePort = ReceivePort();
+   late Isolate isolate;
+   IsolateChannel? channel;
+   static const mm = '🥬🥬🥬🥬🥬🥬 DownloaderStarter: ';
+   DataBag? dataBag;
+   final StreamController<DataBag> _streamController = StreamController.broadcast();
+   Stream<DataBag> get dataBagStream => _streamController.stream;
+
+   void start() async {
     pp('\n$mm ... starting DownloaderStarter ....');
     var user = await prefsOGx.getUser();
     if (user == null) {
@@ -229,7 +233,7 @@ class DownloaderStarter {
     await _createIsolate(params);
     pp('$mm isolate has been created ...');
   }
-  static void _handleDataBag(DataBag bag) async {
+   void _handleDataBag(DataBag bag) async {
     pp('\n$mm Data returned from server, adding to Hive cache ...');
 
     await cacheManager.addProjects(projects: bag.projects!);
@@ -249,10 +253,10 @@ class DownloaderStarter {
 
     _putContentsOfBagIntoStreams(bag);
 
-    pp('\n$mm organizationBloc.getOrganizationData has refreshed the bloc ...');
+    pp('\n\n$mm DownloaderStarter has refreshed the org data in cache and streams ...\n\n');
 
   }
-  static void _putContentsOfBagIntoStreams(DataBag bag) {
+   void _putContentsOfBagIntoStreams(DataBag bag) {
     pp('$mm _putContentsOfBagIntoStreams: .................................... '
         '🔵 send org data to streams ...');
     try {
@@ -329,40 +333,47 @@ class DownloaderStarter {
     }
   }
 
-  static Future _createIsolate(DownloadParameters cacheParameters) async {
+   Future _createIsolate(DownloadParameters cacheParameters) async {
     try {
       var errorReceivePort = ReceivePort();
-      IsolateChannel channel =
-      IsolateChannel(receivePort, cacheParameters.sendPort);
-      channel.stream.listen((data) async {
-        if (data != null) {
-          pp('$mm '
-              'Received downloader result ${E.appleRed} DownloaderMessage '
-              'statusCode: ${data['statusCode']} '
-              'type: ${data['type']} msg: ${data['message']} elapsed: ${data['elapsedSeconds']}');
-          try {
-            var msg = DownloaderMessage.fromJson(data);
-            switch (msg.type) {
-              case typeMessage:
-                pp('$mm message from isolate: 🔵🔵🔵${msg.toJson()}');
-                break;
-              case typeError:
-                pp('$mm error from isolate: 🔴🔴🔴${msg.toJson()}');
-                break;
-              case typeOrgData:
-                dataBag = DataBag.fromJson(msg.dataBagJson!);
-                _handleDataBag(dataBag!);
-                break;
-              default:
-                pp('$mm ${E.redDot}${E.redDot}${E.redDot}${E.redDot}'
-                    ' ........... type not available! wtf? ${E.redDot}');
-                break;
+      if (channel == null) {
+        channel = IsolateChannel(receivePort, cacheParameters.sendPort);
+        pp(
+            '$mm about to listen to isolate channel ... suspect error occurs here');
+        channel!.stream.listen((data) async {
+          if (data != null) {
+            pp('$mm '
+                'Received downloader result ${E.appleRed} DownloaderMessage '
+                'statusCode: ${data['statusCode']} '
+                'type: ${data['type']} msg: ${data['message']} elapsed: ${data['elapsedSeconds']}');
+            try {
+              var msg = DownloaderMessage.fromJson(data);
+              switch (msg.type) {
+                case typeMessage:
+                  pp('$mm message from isolate: 🔵🔵🔵${msg.toJson()}');
+                  break;
+                case typeError:
+                  pp('$mm error from isolate: 🔴🔴🔴${msg.toJson()}');
+                  break;
+                case typeOrgData:
+                  dataBag = DataBag.fromJson(msg.dataBagJson!);
+                  _handleDataBag(dataBag!);
+                  isolate.kill();
+                  pp('\n\n$mm 🔴🔴🔴 isolate killed: 🔴🔴🔴\n\n');
+                  break;
+                default:
+                  pp('$mm ${E.redDot}${E.redDot}${E.redDot}${E.redDot}'
+                      ' ........... type not available! wtf? ${E.redDot}');
+                  break;
+              }
+            } catch (e) {
+              //
             }
-          } catch (e) {
-            //
           }
-        }
-      });
+        });
+      } else {
+        pp('$mm Isolate channel is not null ...');
+      }
 
       isolate = await Isolate.spawn<DownloadParameters>(heavyTask, cacheParameters,
           paused: true,
