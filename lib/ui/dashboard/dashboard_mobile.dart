@@ -9,6 +9,7 @@ import 'package:geo_monitor/library/data/settings_model.dart';
 import 'package:geo_monitor/library/generic_functions.dart';
 import 'package:geo_monitor/library/ui/maps/project_map_mobile.dart';
 import 'package:geo_monitor/library/ui/media/list/project_media_list_mobile.dart';
+import 'package:geo_monitor/ui/chat/chat_page.dart';
 import 'package:geofence_service/geofence_service.dart';
 
 import 'package:get/get.dart';
@@ -323,12 +324,12 @@ class DashboardMobileState extends State<DashboardMobile>
   void _setItems() {
     // items
     //     .add(BottomNavigationBarItem(icon: Icon(Icons.people), label: 'Users'));
-    items.add(const BottomNavigationBarItem(
-        icon: Icon(
-          Icons.home,
-        ),
-        label: 'Projects'));
-    items.add(const BottomNavigationBarItem(
+    // items.add(const BottomNavigationBarItem(
+    //     icon: Icon(
+    //       Icons.home,
+    //     ),
+    //     label: 'Projects'));
+    items.add( const BottomNavigationBarItem(
         icon: Icon(
           Icons.person,
           color: Colors.pink,
@@ -509,18 +510,14 @@ class DashboardMobileState extends State<DashboardMobile>
 
   void _handleBottomNav(int value) {
     switch (value) {
-      case 0:
-        pp(' 🔆🔆🔆 Navigate to ProjectList');
-        _navigateToProjectList();
-        break;
 
-      case 1:
-        pp(' 🔆🔆🔆 Navigate to UserMediaList');
+      case 0:
+        pp('$mm 🔆🔆🔆 Navigate to UserMediaList');
         _navigateToUserMediaList();
         break;
 
-      case 2:
-        pp(' 🔆🔆🔆 Navigate to MessageSender');
+      case 1:
+        pp('$mm 🔆🔆🔆 Navigate to MessageSender');
         _navigateToMessageSender();
         break;
     }
@@ -560,7 +557,7 @@ class DashboardMobileState extends State<DashboardMobile>
             type: PageTransitionType.scale,
             alignment: Alignment.topLeft,
             duration: const Duration(seconds: 1),
-            child: MessageMain(user: user)));
+            child: const ChatPage()));
   }
 
   void _navigateToUserMediaList() async {

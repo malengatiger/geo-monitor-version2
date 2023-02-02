@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:animations/animations.dart';
 import 'package:flutter/material.dart';
 import 'package:geo_monitor/library/bloc/fcm_bloc.dart';
+import 'package:geo_monitor/library/ui/camera/chewie_video_player.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:page_transition/page_transition.dart';
 
@@ -140,6 +141,7 @@ class ProjectMediaListMobileState extends State<ProjectMediaListMobile>
 
   bool _showPhotoDetail = false;
   Photo? selectedPhoto;
+
   @override
   void dispose() {
     _animationController.dispose();
@@ -149,6 +151,7 @@ class ProjectMediaListMobileState extends State<ProjectMediaListMobile>
 
   Audio? selectedAudio;
   Video? selectedVideo;
+  int videoIndex = 0;
   void _navigateToPlayVideo() {
     pp('... play audio from internets');
     Navigator.push(
@@ -157,7 +160,7 @@ class ProjectMediaListMobileState extends State<ProjectMediaListMobile>
             type: PageTransitionType.leftToRightWithFade,
             alignment: Alignment.topLeft,
             duration: const Duration(milliseconds: 1000),
-            child: PlayVideo(project: widget.project, video: selectedVideo!)));
+            child: ChewieVideoPlayer(project: widget.project, videoIndex: videoIndex,)));
   }
 
   AudioPlayer audioPlayer = AudioPlayer();
@@ -339,10 +342,11 @@ class ProjectMediaListMobileState extends State<ProjectMediaListMobile>
                     ProjectVideos(
                       project: widget.project,
                       refresh: false,
-                      onVideoTapped: (Video video) {
+                      onVideoTapped: (Video video, int index) {
                         pp('🍎🍎🍎Video has been tapped: ${video.created!}');
                         setState(() {
                           selectedVideo = video;
+                          videoIndex = index;
                         });
                         _navigateToPlayVideo();
                       },

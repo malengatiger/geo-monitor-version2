@@ -80,7 +80,9 @@ class ProjectMonitorMobileState extends State<ProjectMonitorMobile>
       child: Scaffold(
         key: _key,
         appBar: AppBar(
-          leading: const SizedBox(),
+          leading:  IconButton(onPressed: (){
+            Navigator.of(context).pop();
+          }, icon: const Icon(Icons.arrow_back_ios)),
           title: Text('Starter',
               style: GoogleFonts.lato(
                 textStyle: Theme.of(context).textTheme.bodySmall,

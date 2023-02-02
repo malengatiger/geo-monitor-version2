@@ -11,10 +11,11 @@ import '../../../data/project.dart';
 import '../../../data/video.dart';
 import '../../../functions.dart';
 
+
 class ProjectVideos extends StatefulWidget {
   final Project project;
   final bool refresh;
-  final Function(Video) onVideoTapped;
+  final Function(Video, int) onVideoTapped;
 
   const ProjectVideos(
       {super.key,
@@ -124,7 +125,7 @@ class ProjectVideosState extends State<ProjectVideos> {
                             width: 300,
                             child: GestureDetector(
                               onTap: () {
-                                widget.onVideoTapped(video);
+                                widget.onVideoTapped(video,index);
                               },
                               child: CachedNetworkImage(
                                   imageUrl: video.thumbnailUrl!,

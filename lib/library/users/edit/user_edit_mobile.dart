@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:page_transition/page_transition.dart';
 import 'package:uuid/uuid.dart';
 
 import '../../api/data_api.dart';
@@ -11,6 +12,7 @@ import '../../data/country.dart';
 import '../../data/user.dart';
 import '../../functions.dart';
 import '../../generic_functions.dart';
+import '../avatar_editor.dart';
 import 'user_edit_main.dart';
 
 class UserEditMobile extends StatefulWidget {
@@ -192,6 +194,20 @@ class UserEditMobileState extends State<UserEditMobile>
         userType = 2;
       }
     }
+  }
+
+  void _navigateToAvatarBuilder() async {
+    Navigator.of(context).pop();
+    await Navigator.push(
+        context,
+        PageTransition(
+            type: PageTransitionType.scale,
+            alignment: Alignment.topLeft,
+            duration: const Duration(seconds: 2),
+            child: AvatarEditor(
+              user: widget.user!,
+            )));
+
   }
 
   @override
@@ -387,16 +403,33 @@ class UserEditMobileState extends State<UserEditMobile>
                                 backgroundColor: Colors.black,
                               ),
                             )
-                          : ElevatedButton(
-                              onPressed: _submit,
-                              child: Padding(
-                                padding: const EdgeInsets.all(12.0),
-                                child: Text(
-                                  'Submit User',
-                                  style: Styles.whiteSmall,
+                          : SizedBox(width: 200,
+                            child: ElevatedButton(
+                                onPressed: _submit,
+                                child: Padding(
+                                  padding: const EdgeInsets.all(12.0),
+                                  child: Text(
+                                    'Submit User',
+                                    style: myTextStyleSmall(context),
+                                  ),
                                 ),
                               ),
+                          ),
+                      const SizedBox(
+                        height: 24,
+                      ),
+                      SizedBox(width: 200,
+                        child: ElevatedButton(
+                          onPressed: _navigateToAvatarBuilder,
+                          child: Padding(
+                            padding: const EdgeInsets.all(12.0),
+                            child: Text(
+                              'Create Avatar',
+                              style: myTextStyleSmall(context),
                             ),
+                          ),
+                        ),
+                      ),
                       const SizedBox(
                         height: 40,
                       ),

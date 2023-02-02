@@ -349,6 +349,7 @@ class DataAPI {
       rethrow;
     }
   }
+
   static Future<int> updateAuthedUser(User user) async {
     pp('\n$mm updateAuthedUser started for ${user.name!}');
     String? mURL = await getUrl();

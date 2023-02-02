@@ -35,6 +35,11 @@ class User extends HiveObject {
   String? updated;
   @HiveField(14)
   int? active = 0;
+  //imageUrl, thumbnailUrl
+  @HiveField(15)
+  String? imageUrl;
+  @HiveField(16)
+  String? thumbnailUrl;
 
   User(
       {required this.name,
@@ -47,7 +52,7 @@ class User extends HiveObject {
       required this.organizationName,
       required this.organizationId,
       required this.countryId,
-        required this.active,
+        required this.active, this.imageUrl, this.thumbnailUrl,
       this.position,
       this.fcmRegistration,
         required this.password});
@@ -56,6 +61,8 @@ class User extends HiveObject {
     name = data['name'];
     userId = data['userId'];
     password = data['password'];
+    imageUrl = data['imageUrl'];
+    thumbnailUrl = data['thumbnailUrl'];
     active = data['active'];
     updated = data['updated'];
     countryId = data['countryId'];
@@ -77,6 +84,8 @@ class User extends HiveObject {
       'userId': userId,
       'countryId': countryId,
       'gender': gender,
+      'imageUrl': imageUrl,
+      'thumbnailUrl': thumbnailUrl,
       'password': password,
       'fcmRegistration': fcmRegistration,
       'email': email,

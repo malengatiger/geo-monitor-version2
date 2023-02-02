@@ -464,7 +464,7 @@ class ProjectListMobileState extends State<ProjectListMobile>
       FocusedMenuItem(
           backgroundColor: Theme.of(context).primaryColor,
 
-          title: Text('Photos & Videos',
+          title: Text('Photos & Video & Audio',
               style: myTextStyleSmallBlack(context)),
           trailingIcon: Icon(
             Icons.camera,
@@ -490,20 +490,20 @@ class ProjectListMobileState extends State<ProjectListMobile>
             _navigateToProjectAudio(project);
           }),
     );
-    menuItems.add(
-      FocusedMenuItem(
-          backgroundColor: Theme.of(context).primaryColor,
-
-          title: Text('Start Monitoring',
-              style: myTextStyleSmallBlack(context)),
-          trailingIcon: Icon(
-            Icons.lock_clock,
-            color: Theme.of(context).primaryColor,
-          ),
-          onPressed: () {
-            _navigateToMonitorStart(project);
-          }),
-    );
+    // menuItems.add(
+    //   FocusedMenuItem(
+    //       backgroundColor: Theme.of(context).primaryColor,
+    //
+    //       title: Text('Start Monitoring',
+    //           style: myTextStyleSmallBlack(context)),
+    //       trailingIcon: Icon(
+    //         Icons.lock_clock,
+    //         color: Theme.of(context).primaryColor,
+    //       ),
+    //       onPressed: () {
+    //         _navigateToMonitorStart(project);
+    //       }),
+    // );
     if (user!.userType == UserType.orgAdministrator) {
       menuItems.add(FocusedMenuItem(
           backgroundColor: Theme.of(context).primaryColor,

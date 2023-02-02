@@ -138,6 +138,8 @@ class ProjectBloc {
       photos = await DataAPI.findPhotosByProject(projectId);
       await cacheManager.addPhotos(photos: photos);
     }
+    photos.sort((a,b) => b.created!.compareTo(a.created!));
+
     _projectPhotoController.sink.add(photos);
     pp('$mm getPhotos found: 💜 ${photos.length} photos ');
 
@@ -184,6 +186,7 @@ class ProjectBloc {
     if (videos.isEmpty || forceRefresh) {
       videos = await DataAPI.findVideosById(projectId);
     }
+    videos.sort((a,b) => b.created!.compareTo(a.created!));
     _projectVideoController.sink.add(videos);
     pp('$mm getProjectVideos found: 💜 ${videos.length} videos ');
 
@@ -197,6 +200,8 @@ class ProjectBloc {
     if (audios.isEmpty || forceRefresh) {
       audios = await DataAPI.findAudiosById(projectId);
     }
+    audios.sort((a,b) => b.created!.compareTo(a.created!));
+
     _projectAudioController.sink.add(audios);
     pp('$mm getProjectAudios found: 💜 ${audios.length} audios ');
 

@@ -306,7 +306,9 @@ class PhotoHandlerState extends State<PhotoHandler>
     return SafeArea(
         child: Scaffold(
       appBar: AppBar(
-        leading: const SizedBox(),
+        leading: IconButton(onPressed: (){
+          Navigator.of(context).pop();
+        }, icon: const Icon(Icons.arrow_back_ios)),
         title: Text(
           '${widget.project.name}',
           style: myTextStyleSmall(context),

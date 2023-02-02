@@ -9,7 +9,7 @@ import 'package:geo_monitor/library/data/project.dart';
 import 'package:geo_monitor/library/data/project_position.dart';
 import 'package:geo_monitor/library/data/video.dart';
 import 'package:geo_monitor/library/emojis.dart';
-import 'package:geo_monitor/library/ui/camera/play_video.dart';
+import 'package:geo_monitor/library/ui/camera/chewie_video_player.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:native_device_orientation/native_device_orientation.dart';
 import 'package:page_transition/page_transition.dart';
@@ -109,7 +109,7 @@ class VideoHandlerState extends State<VideoHandler>
   }
 
   void _startVideo() async {
-    pp('$mm file taking started ....');
+    pp('$mm video making started ....');
     setState(() {
       videoIsReady = false;
     });
@@ -295,9 +295,8 @@ class VideoHandlerState extends State<VideoHandler>
             type: PageTransitionType.scale,
             alignment: Alignment.topLeft,
             duration: const Duration(seconds: 1),
-            child: PlayVideo(
+            child: ChewieVideoPlayer(
               project: widget.project,
-              video: _currentVideo!,
             )));
   }
 
