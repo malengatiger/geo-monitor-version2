@@ -70,6 +70,8 @@
         <string>comgooglemaps</string>
         <string>iosamap</string>
         <string>waze</string>
+        <string>sms</string>
+         <string>tel</string>
 
     </array>
     <key>CFBundleURLTypes</key>

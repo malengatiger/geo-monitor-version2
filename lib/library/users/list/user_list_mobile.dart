@@ -13,6 +13,7 @@ import 'package:geo_monitor/library/users/kill_user_page.dart';
 import 'package:geo_monitor/library/users/report/user_rpt_mobile.dart';
 
 import 'package:page_transition/page_transition.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../api/prefs_og.dart';
 import '../../bloc/fcm_bloc.dart';
@@ -106,8 +107,18 @@ class UserListMobileState extends State<UserListMobile>
     List<FocusedMenuItem> list = [];
 
     list.add(FocusedMenuItem(
+        title: Text('Call User', style: myTextStyleSmallBlack(context)),
+        // backgroundColor: Theme.of(context).primaryColor,
+        trailingIcon: Icon(
+          Icons.phone,
+          color: Theme.of(context).primaryColor,
+        ),
+        onPressed: () {
+          _navigateToPhone(user);
+        }));
+    list.add(FocusedMenuItem(
         title: Text('Send Message', style: myTextStyleSmallBlack(context)),
-        backgroundColor: Theme.of(context).primaryColor,
+        // backgroundColor: Theme.of(context).primaryColor,
         trailingIcon: Icon(
           Icons.send,
           color: Theme.of(context).primaryColor,
@@ -123,9 +134,7 @@ class UserListMobileState extends State<UserListMobile>
             'Edit User',
             style: myTextStyleSmallBlack(context),
           ),
-          backgroundColor: Theme
-              .of(context)
-              .primaryColor,
+
           trailingIcon: Icon(
             Icons.create,
             color: Theme
@@ -138,7 +147,6 @@ class UserListMobileState extends State<UserListMobile>
     }
     list.add(FocusedMenuItem(
         title: Text('View Report', style: myTextStyleSmallBlack(context)),
-        backgroundColor: Theme.of(context).primaryColor,
         trailingIcon: Icon(
           Icons.report,
           color: Theme.of(context).primaryColor,
@@ -151,7 +159,6 @@ class UserListMobileState extends State<UserListMobile>
       list.add(FocusedMenuItem(
           title: Text('Schedule FieldMonitor',
               style: myTextStyleSmallBlack(context)),
-          backgroundColor: Theme.of(context).primaryColor,
           trailingIcon: Icon(
             Icons.person,
             color: Theme.of(context).primaryColor,
@@ -163,7 +170,6 @@ class UserListMobileState extends State<UserListMobile>
 
       list.add(FocusedMenuItem(
           title: Text('Remove User', style: myTextStyleSmallBlack(context)),
-          backgroundColor: Theme.of(context).primaryColor,
           trailingIcon: Icon(
             Icons.cut,
             color: Theme.of(context).primaryColor,
@@ -270,7 +276,7 @@ class UserListMobileState extends State<UserListMobile>
                       ],
                     ),
                     const SizedBox(
-                      height: 48,
+                      height: 24,
                     ),
                     Expanded(
                       child: bd.Badge(
@@ -286,7 +292,7 @@ class UserListMobileState extends State<UserListMobile>
                         ),
                         badgeStyle:  bd.BadgeStyle(
                           badgeColor: Theme.of(context).primaryColor,
-                          elevation: 8, padding: const EdgeInsets.all(8),
+                          elevation: 8, padding: const EdgeInsets.all(4),
                         ),
                         position:  bd.BadgePosition.topEnd(top: -16, end: 12),
                         child: AnimatedBuilder(
@@ -327,9 +333,9 @@ class UserListMobileState extends State<UserListMobile>
                                           child: Row(
                                             children: [
                                               user.thumbnailUrl == null? const CircleAvatar(
-                                                radius: 28,
+                                                radius: 24,
                                               ): CircleAvatar(
-                                                radius: 28,
+                                                radius: 24,
                                                 backgroundImage: NetworkImage(user.thumbnailUrl!),
                                               ),
                                               const SizedBox(
@@ -416,6 +422,21 @@ class UserListMobileState extends State<UserListMobile>
             child: MessageMobile(
               user: user,
             )));
+  }
+
+  Future<void> _navigateToPhone(User user) async {
+    pp('$mm ... starting phone call ....');
+    final Uri phoneUri = Uri(
+        scheme: "tel",
+        path: user.cellphone!
+    );
+    try {
+      if (await canLaunchUrl(phoneUri)) {
+        await launchUrl(phoneUri);
+      }
+    } catch (error) {
+      throw("Cannot dial");
+    }
   }
 
   void _navigateToMap(User user) {

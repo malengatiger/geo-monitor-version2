@@ -22,6 +22,7 @@ import '../data/video.dart';
 import '../emojis.dart';
 import '../functions.dart';
 import '../hive_util.dart';
+import 'zip_bloc.dart';
 
 final OrganizationBloc organizationBloc = OrganizationBloc();
 
@@ -149,21 +150,24 @@ class OrganizationBloc {
     pp('$mm refreshing organization data ... photos, videos and schedules'
         ' ...forceRefresh: $forceRefresh');
 
-    DataBag bag =
+    DataBag? bag =
         await cacheManager.getOrganizationData(organizationId: organizationId);
 
     if (forceRefresh) {
       pp('$mm get data from server .....................; forceRefresh: $forceRefresh');
       //bag = await DataAPI.getOrganizationData(organizationId);
-      downloaderStarter.start();
+      // downloaderStarter.start();
+      bag = await zipBloc.getOrganizationDataZippedFile(organizationId);
     } else {
       if (bag.isEmpty()) {
         pp('$mm bag is empty. No organization data anywhere yet? ... '
             'will force refresh, forceRefresh: $forceRefresh');
-        downloaderStarter.start();
+        // downloaderStarter.start();
+        bag = await zipBloc.getOrganizationDataZippedFile(organizationId);
       }
     }
-    _putContentsOfBagIntoStreams(bag);
+
+    _putContentsOfBagIntoStreams(bag!);
     return bag;
   }
 

@@ -4,6 +4,7 @@ import 'package:animations/animations.dart';
 import 'package:firebase_auth/firebase_auth.dart' as fb;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:geo_monitor/library/bloc/zip_bloc.dart';
 import 'package:geo_monitor/library/data/geofence_event.dart';
 import 'package:geo_monitor/library/data/settings_model.dart';
 import 'package:geo_monitor/library/generic_functions.dart';
@@ -73,12 +74,11 @@ class DashboardMobileState extends State<DashboardMobile>
   var _projectPolygons = <ProjectPolygon>[];
   var _schedules = <FieldMonitorSchedule>[];
   var _audios = <Audio>[];
-  var _settings = <SettingsModel>[];
   User? user;
 
   static const mm = '🎽🎽🎽🎽🎽🎽 DashboardMobile: 🎽';
   bool networkAvailable = false;
-  final dur = 600;
+  final dur = 300;
 
   @override
   void initState() {
@@ -376,6 +376,7 @@ class DashboardMobileState extends State<DashboardMobile>
         throw Exception("Tax man is fucked! User is not found");
       }
 
+      pp('$mm testBag got here!!!!');
       var bag = await organizationBloc.getOrganizationData(
           organizationId: user!.organizationId!, forceRefresh: forceRefresh);
       await _extractData(bag);
@@ -591,7 +592,7 @@ class DashboardMobileState extends State<DashboardMobile>
       Navigator.push(
           context,
           PageTransition(
-              type: PageTransitionType.leftToRight,
+              type: PageTransitionType.rotate,
               alignment: Alignment.center,
               duration: const Duration(seconds: 1),
               child: const Settings()));

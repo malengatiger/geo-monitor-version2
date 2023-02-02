@@ -1,6 +1,7 @@
 import 'package:animated_splash_screen/animated_splash_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:geo_monitor/library/auth/app_auth.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:firebase_auth/firebase_auth.dart' as fb;
 import 'package:firebase_core/firebase_core.dart';
@@ -68,6 +69,8 @@ Future<void> _initializeGeoMonitor() async {
   pp('$xx $heartBlue DotEnv has been loaded');
   await Hive.initFlutter('data004');
   await cacheManager.initialize(forceInitialization: false);
+
+  await AppAuth.listenToFirebaseAuthentication();
 
   if (settings != null) {
     pp('\n\n$xx ${E.heartGreen}${E.heartGreen}}${E

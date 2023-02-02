@@ -95,8 +95,9 @@ class AvatarEditorState extends State<AvatarEditor>
     var m = (size / 1024 / 1024).toStringAsFixed(2);
     pp('$mm Picture taken is $m MB in size');
     await _uploadToCloud(mFile.path, tFile.path);
+    pp('\n\n$mm Picture taken has been uploaded OK');
     setState(() {
-
+      imageFile = null;
     });
     if (mounted) {
       showToast(
@@ -113,7 +114,6 @@ class AvatarEditorState extends State<AvatarEditor>
   String? url, thumbUrl;
 
   Future<int> _uploadToCloud(String filePath, String thumbnailPath) async {
-
     late UploadTask uploadTask;
     late TaskSnapshot taskSnapshot;
     try {
@@ -203,7 +203,21 @@ class AvatarEditorState extends State<AvatarEditor>
     return SafeArea(
         child: Scaffold(
       appBar: AppBar(
-        title:  Text('Avatar Builder', style: myTextStyleSmall(context),),
+        title: Text(
+          'Avatar Builder',
+          style: myTextStyleSmall(context),
+        ),
+        actions: [
+          imageFile == null
+              ? const SizedBox()
+              : IconButton(
+                  onPressed: _processFile,
+                  icon: Icon(
+                    Icons.check,
+                    size: 32,
+                    color: Theme.of(context).primaryColor,
+                  ))
+        ],
       ),
       body: Stack(
         children: [
@@ -248,7 +262,8 @@ class AvatarEditorState extends State<AvatarEditor>
                             ),
                           )
                         : SizedBox(
-                            height: 240, width: 460,
+                            height: 240,
+                            width: 400,
                             child: Column(
                               children: [
                                 TextButton(
@@ -285,13 +300,18 @@ class AvatarEditorState extends State<AvatarEditor>
               ),
             ),
           ),
-          imageFile == null? const SizedBox(): thumbUrl == null? const SizedBox():Positioned(
-            right: 4, top: 48,
-            child: CircleAvatar(
-              radius: 60, backgroundImage: NetworkImage(thumbUrl!),
-
-          ),
-          ),
+          imageFile == null
+              ? const SizedBox()
+              : thumbUrl == null
+                  ? const SizedBox()
+                  : Positioned(
+                      right: 4,
+                      top: 48,
+                      child: CircleAvatar(
+                        radius: 60,
+                        backgroundImage: NetworkImage(thumbUrl!),
+                      ),
+                    ),
         ],
       ),
     ));

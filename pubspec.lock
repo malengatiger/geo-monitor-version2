@@ -50,7 +50,7 @@ packages:
     source: hosted
     version: "2.0.7"
   archive:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: archive
       sha256: d6347d54a2d8028e0437e3c099f66fdb8ae02c4720c1e7534c9f24c10351f85d
@@ -1923,7 +1923,7 @@ packages:
     source: hosted
     version: "1.0.0+1"
   url_launcher:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: url_launcher
       sha256: "698fa0b4392effdc73e9e184403b627362eb5fbf904483ac9defbb1c2191d809"

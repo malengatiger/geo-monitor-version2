@@ -52,10 +52,9 @@ class PhoneLoginState extends State<PhoneLogin>
         reverseDuration: const Duration(milliseconds: 2000),
         vsync: this);
     super.initState();
-    firebaseAuth.authStateChanges().listen((user) {
-      pp('$mm firebaseAuth.authStateChanges: 🍎 $user');
-    });
+
   }
+
 
   void _start() async {
     pp('$mm _start: ....... Verifying phone number ...');

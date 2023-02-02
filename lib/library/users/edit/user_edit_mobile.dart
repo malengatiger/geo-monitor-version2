@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:geo_monitor/library/hive_util.dart';
+import 'package:geo_monitor/library/users/full_user_photo.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:uuid/uuid.dart';
 
@@ -244,6 +245,20 @@ class UserEditMobileState extends State<UserEditMobile>
               user: widget.user!,
             )));
   }
+
+  void _navigateToFullPhoto() async {
+    Navigator.of(context).pop();
+    await Navigator.push(
+        context,
+        PageTransition(
+            type: PageTransitionType.scale,
+            alignment: Alignment.topLeft,
+            duration: const Duration(seconds: 2),
+            child: FullUserPhoto(
+              user: widget.user!,
+            )));
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -496,10 +511,13 @@ class UserEditMobileState extends State<UserEditMobile>
                 child: CircleAvatar(radius: 24,))
                 : Positioned(
                     right: 2, top: 0,
-                    child: CircleAvatar(
-                      radius: 40,
-                    backgroundImage: NetworkImage(widget.user!.thumbnailUrl!),
-                  )),
+                    child: GestureDetector(
+                      onTap: _navigateToFullPhoto,
+                      child: CircleAvatar(
+                        radius: 40,
+                      backgroundImage: NetworkImage(widget.user!.thumbnailUrl!),
+                  ),
+                    )),
           ],
         ),
       ),

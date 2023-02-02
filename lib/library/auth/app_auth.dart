@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart' as dot;
+import 'package:geo_monitor/library/hive_util.dart';
 
 import '../api/data_api.dart';
 import '../api/prefs_og.dart';
@@ -10,70 +11,6 @@ import '../data/user.dart' as mon;
 
 class AppAuth {
   static FirebaseAuth? _auth;
-   
-  static Future isUserSignedIn() async {
-    pp('🥦 🥦  😎😎😎😎 AppAuth: isUserSignedIn :: 😎😎😎 about to initialize Firebase; 😎');
-    var app = await Firebase.initializeApp();
-    pp('😎😎😎😎 AppAuth: isUserSignedIn :: 😎😎😎 Firebase has been initialized; '
-        '😎 or not? 🍀🍀 app: ${app.options.databaseURL}');
-
-    var user = await prefsOGx.getUser();
-    if (user == null) {
-      pp('🦠🦠🦠 user is NOT signed in. 🦠 ');
-      return null;
-    } else {
-      pp('🦠🦠🦠 user is signed in. 🦠 .... ${user.toJson()}');
-      return user;
-    }
-  }
-
-  static Future<mon.User> createUser(
-      {required mon.User user,
-      required String password,}) async {
-    pp('AppAuth: 💜 💜 createUser: auth record to be created ... ${user.toJson()}');
-
-
-    UserCredential? fbUser = await _auth!
-        .createUserWithEmailAndPassword(email: user.email!, password: password)
-        .catchError((e) {
-      pp('👿👿👿 User create failed : $e');
-      throw e;
-    });
-
-    mon.User? mUser;
-    user.userId = fbUser.user!.uid;
-    var fcm = await fbUser.user!.getIdToken();
-    user.fcmRegistration = fcm;
-    mUser = await DataAPI.addUser(user);
-    pp('AppAuth: 💜 💜 createUser: added to database ... 💛️ 💛️ ${mUser.toJson()}');
-
-    String? url;
-    var status = dot.dotenv.env['status'];
-    if (status == 'dev') {
-      url = dot.dotenv.env['devURL'];
-    } else {
-      url = dot.dotenv.env['prodURL'];
-    }
-    //update auth user
-    if (url != null) {
-      var suffix = '/verify?userId=${user.userId}';
-      var finalUrl = 'https://fieldmonitor3.page.link/fieldmonitor$suffix';
-      pp('AppAuth: 💜 💜 createUser: link for user: $finalUrl ');
-      await _auth!.sendSignInLinkToEmail(
-          email: user.email!,
-          actionCodeSettings: ActionCodeSettings(
-              androidPackageName: 'com.boha.geo_monitor',
-              url: finalUrl,
-              androidInstallApp: true,
-              handleCodeInApp: true));
-
-      pp('AppAuth: 💜 💜 createUser: auth!.sendSignInLinkToEmail has executed ... email link should be sent ??? ');
-    }
-
-    pp('AppAuth:  💜 💜 💜 💜 createUser, after adding to Mongo database ....... ${mUser.toJson()}');
-
-    return mUser;
-  }
 
   static Future<String?> getAuthToken() async {
     _auth = FirebaseAuth.instance;
@@ -81,11 +18,63 @@ class AppAuth {
     if (_auth!.currentUser != null) {
       token = await _auth!.currentUser!.getIdToken();
     }
-    // pp('🌸🌸 Current user Firebase token: $token ');
+    if (token != null) {
+      ('$locks getAuthToken has a 🌸🌸 GOOD 🌸🌸 Firebase id token 🍎');
+    }
     return token;
   }
 
-  static const locks = '🔐🔐🔐🔐';
+  static final firebaseAuth = FirebaseAuth.instance;
+
+  static Future listenToFirebaseAuthentication() async {
+    pp('$locks listen to Firebase Authentication events .....: 🍎');
+    firebaseAuth.authStateChanges().listen((user) {
+      pp('$locks firebaseAuth.authStateChanges: 🍎 $user');
+    });
+    firebaseAuth.idTokenChanges().listen((event) async {
+      pp('$locks token changes from Firebase. will update the user ...');
+      var token = await event?.getIdToken();
+      await _checkUser(token);
+    }).onError((err, stackTrace){
+
+    });
+    firebaseAuth.userChanges().listen((event) async {
+      pp('$locks user changes from Firebase. will need to update the user, maybe ...');
+      var token = await event?.getIdToken();
+      await _checkUser(token);
+    });
+  }
+
+  static Future<void> _checkUser(String? token) async {
+    pp('$locks _checkUser token changes ...');
+    if (token != null) {
+      var user = await prefsOGx.getUser();
+      if (user != null) {
+        if (user.fcmRegistration != token) {
+          pp('\n\n$locks token has changed; different from cached token.  🥬🥬🥬 will update the user ...');
+
+          user.fcmRegistration = token;
+
+          var pswd = user.password;
+          user.password = null;
+          await DataAPI.updateUser(user);
+          user.password = pswd;
+
+          await prefsOGx.saveUser(user);
+          await cacheManager.addUser(user: user);
+
+          pp('$locks token has changed; 🥬🥬🥬 have updated the user ...');
+
+        } else {
+          pp('$locks No token changes from Firebase. 🔵🔵🔵 '
+              'No need to update the user ...');
+        }
+      }
+    }
+  }
+
+  static const locks = '🔐🔐🔐🔐🔐🔐🔐🔐 AppAuth: ';
+
   static Future<mon.User?> signIn({required String email, required String password}) async {
     pp('$locks Auth: signing in $email 🌸 $password  $locks');
     //var token = await _getAdminAuthenticationToken();

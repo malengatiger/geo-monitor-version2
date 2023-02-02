@@ -43,6 +43,10 @@ class DataAPI {
     'Content-type': 'application/json',
     'Accept': 'application/json',
   };
+  static Map<String, String> zipHeaders = {
+    'Content-type': 'application/json',
+    'Accept': 'application/zip',
+  };
 
   static String? activeURL;
   static bool isDevelopmentStatus = true;
