@@ -68,7 +68,9 @@ class AvatarEditorState extends State<AvatarEditor>
     File mImageFile = File(xFile!.path);
     pp('$mm _processFile 🔵🔵🔵 ....... file to upload, '
         'size: ${await mImageFile.length()} bytes🔵');
-
+    setState(() {
+      busy = true;
+    });
     var thumbnailFile = await getPhotoThumbnail(file: mImageFile);
 
     final Directory directory = await getApplicationDocumentsDirectory();
@@ -159,9 +161,6 @@ class AvatarEditorState extends State<AvatarEditor>
   Future _updateDatabase() async {
     pp('\n\n$mm User database entry to be updated: ${widget.user.name}\n');
 
-    setState(() {
-      busy = true;
-    });
     try {
       await DataAPI.updateUser(widget.user);
       var me = await prefsOGx.getUser();

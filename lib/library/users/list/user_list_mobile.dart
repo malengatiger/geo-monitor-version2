@@ -61,13 +61,14 @@ class UserListMobileState extends State<UserListMobile>
 
       if (mounted) {
         _getData(false);
-        showToast(message: 'New User added to organization!', context: context);
+        showToast(message: 'User added or modified!', context: context);
       }
     });
   }
 
   bool _showPlusIcon = false;
-  void _getData(bool forceRefresh) async {
+  bool _showEditorIcon = false;
+  Future _getData(bool forceRefresh) async {
     setState(() {
       busy = true;
     });
@@ -75,6 +76,9 @@ class UserListMobileState extends State<UserListMobile>
       _user = await prefsOGx.getUser();
       if (_user!.userType == UserType.orgAdministrator || _user!.userType == UserType.orgExecutive) {
         _showPlusIcon = true;
+      }
+      if (_user!.userType == UserType.fieldMonitor) {
+        _showEditorIcon = true;
       }
       _users = await organizationBloc.getUsers(
           organizationId: _user!.organizationId!, forceRefresh: forceRefresh);
@@ -111,19 +115,27 @@ class UserListMobileState extends State<UserListMobile>
         onPressed: () {
           _navigateToMessaging(user);
         }));
-    list.add(FocusedMenuItem(
-        title: Text(
-          'Edit User',
-          style: myTextStyleSmallBlack(context),
-        ),
-        backgroundColor: Theme.of(context).primaryColor,
-        trailingIcon: Icon(
-          Icons.create,
-          color: Theme.of(context).primaryColor,
-        ),
-        onPressed: () {
-          _navigateToUserEdit(user);
-        }));
+    if (_user!.userType == UserType.fieldMonitor) {
+       pp('$mm Field monitor cannot edit any other users');
+    } else {
+      list.add(FocusedMenuItem(
+          title: Text(
+            'Edit User',
+            style: myTextStyleSmallBlack(context),
+          ),
+          backgroundColor: Theme
+              .of(context)
+              .primaryColor,
+          trailingIcon: Icon(
+            Icons.create,
+            color: Theme
+                .of(context)
+                .primaryColor,
+          ),
+          onPressed: () {
+            _navigateToUserEdit(user);
+          }));
+    }
     list.add(FocusedMenuItem(
         title: Text('View Report', style: myTextStyleSmallBlack(context)),
         backgroundColor: Theme.of(context).primaryColor,
@@ -148,17 +160,7 @@ class UserListMobileState extends State<UserListMobile>
             _navigateToScheduler(user);
           }));
 
-      list.add(FocusedMenuItem(
-          title: Text('FieldMonitor Home Base',
-              style: myTextStyleSmallBlack(context)),
-          backgroundColor: Theme.of(context).primaryColor,
-          trailingIcon: Icon(
-            Icons.location_pin,
-            color: Theme.of(context).primaryColor,
-          ),
-          onPressed: () {
-            _navigateToMap(user);
-          }));
+
       list.add(FocusedMenuItem(
           title: Text('Remove User', style: myTextStyleSmallBlack(context)),
           backgroundColor: Theme.of(context).primaryColor,
@@ -171,36 +173,6 @@ class UserListMobileState extends State<UserListMobile>
           }));
     }
     // }
-    if (_user!.userType == UserType.fieldMonitor) {
-      if (_user!.userId == user.userId) {
-        list.add(FocusedMenuItem(
-            title: Text('FieldMonitor Home Base',
-                style: myTextStyleSmallBlack(context)),
-            backgroundColor: Theme.of(context).primaryColor,
-            trailingIcon: Icon(
-              Icons.location_pin,
-              color: Theme.of(context).primaryColor,
-            ),
-            onPressed: () {
-              _navigateToMap(user);
-            }));
-      } else {
-        list.add(FocusedMenuItem(
-            title: Text(
-              'Send Message',
-              style: myTextStyleSmall(context),
-            ),
-            backgroundColor: Theme.of(context).primaryColor,
-            trailingIcon: Icon(
-              Icons.send,
-              color: Theme.of(context).primaryColor,
-            ),
-            onPressed: () {
-              _navigateToMessaging(user);
-            }));
-      }
-    }
-
     return list;
   }
 
@@ -247,7 +219,14 @@ class UserListMobileState extends State<UserListMobile>
             onPressed: () {
               _navigateToUserEdit(null);
             },
-          ): const SizedBox()
+          ): const SizedBox(),
+
+          _showEditorIcon? IconButton(
+            icon: Icon(Icons.edit, size: 20, color: Theme.of(context).primaryColor),
+            onPressed: () {
+              _navigateToUserEdit(_user);
+            },
+          ): const SizedBox(),
         ],
       ),
       body: busy
@@ -347,26 +326,16 @@ class UserListMobileState extends State<UserListMobile>
                                               vertical: 6.0),
                                           child: Row(
                                             children: [
-                                              Text(
-                                                formattedNumber,
-                                                style: const TextStyle(
-                                                    fontSize: 8,
-                                                    fontWeight:
-                                                        FontWeight.normal),
+                                              user.thumbnailUrl == null? const CircleAvatar(
+                                                radius: 28,
+                                              ): CircleAvatar(
+                                                radius: 28,
+                                                backgroundImage: NetworkImage(user.thumbnailUrl!),
                                               ),
                                               const SizedBox(
-                                                width: 4,
-                                              ),
-                                              SizedBox(
                                                 width: 16,
-                                                height: 16,
-                                                child: Card(
-                                                    color: Theme.of(context)
-                                                        .primaryColor),
                                               ),
-                                              const SizedBox(
-                                                width: 8,
-                                              ),
+
                                               Flexible(
                                                 child: Row(
                                                   children: [
@@ -408,6 +377,11 @@ class UserListMobileState extends State<UserListMobile>
   }
 
   void _navigateToUserEdit(User? user) async {
+    if (_user!.userType == UserType.fieldMonitor) {
+      if (_user!.userId != user?.userId!) {
+        return;
+      }
+    }
     var result = await Navigator.push(
         context,
         PageTransition(

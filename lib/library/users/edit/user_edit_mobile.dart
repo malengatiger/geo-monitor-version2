@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:geo_monitor/library/hive_util.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:uuid/uuid.dart';
 
@@ -49,12 +50,26 @@ class UserEditMobileState extends State<UserEditMobile>
     setState(() {});
   }
 
-  void _setup() {
+  Future<void> _setup() async {
     if (widget.user != null) {
       nameController.text = widget.user!.name!;
       emailController.text = widget.user!.email!;
       cellphoneController.text = widget.user!.cellphone!;
       _setTypeRadio();
+      _setGenderRadio();
+      await _setCountry();
+    }
+  }
+  _setCountry() async {
+    if (widget.user != null) {
+      if (widget.user!.countryId != null) {
+        var countries = await cacheManager.getCountries();
+        for (var value in countries) {
+          if (widget.user!.countryId == value.countryId) {
+            country = value;
+          }
+        }
+      }
     }
   }
 
@@ -78,27 +93,28 @@ class UserEditMobileState extends State<UserEditMobile>
 
       return;
     }
+    if (gender == null) {
+      showToast(
+          context: context,
+          message: 'Please select user gender',
+          duration: const Duration(seconds: 2),
+          backgroundColor: Colors.pink,
+          textStyle: Styles.whiteSmall);
+      return;
+    }
+    if (type == null) {
+      showToast(
+          context: context,
+          message: 'Please select user type',
+          duration: const Duration(seconds: 2),
+          backgroundColor: Colors.pink,
+          textStyle: Styles.whiteSmall);
+      return;
+    }
     if (_formKey.currentState!.validate()) {
       //todo - validate
       pp('🔵🔵 ....... Submitting user data to create a new User!');
-      if (type == null) {
-        showToast(
-            context: context,
-            message: 'Please select user type',
-            duration: const Duration(seconds: 2),
-            backgroundColor: Colors.pink,
-            textStyle: Styles.whiteSmall);
-        return;
-      }
-      if (gender == null) {
-        showToast(
-            context: context,
-            message: 'Please select user gender',
-            duration: const Duration(seconds: 2),
-            backgroundColor: Colors.pink,
-            textStyle: Styles.whiteSmall);
-        return;
-      }
+
       setState(() {
         isBusy = true;
       });
@@ -116,7 +132,8 @@ class UserEditMobileState extends State<UserEditMobile>
               gender: gender,
               active: 0,
               created: DateTime.now().toUtc().toIso8601String(),
-              fcmRegistration: 'tbd', password: const Uuid().v4(),
+              fcmRegistration: 'tbd',
+              password: const Uuid().v4(),
               userId: 'tbd');
           pp('\n\n\n😡😡😡 _submit new user ......... ${user.toJson()}');
           try {
@@ -150,7 +167,11 @@ class UserEditMobileState extends State<UserEditMobile>
           widget.user!.email = emailController.text;
           widget.user!.cellphone = cellphoneController.text;
           widget.user!.userType = type;
-          pp('😡 😡 😡 _submit existing user for update, soon! 🌸 ......... ${widget.user!.toJson()}');
+          widget.user!.countryId = country!.countryId!;
+          widget.user!.gender = gender;
+
+          pp('\n\n😡😡😡 _submit existing user for update, check countryId 🌸 ......... '
+              '${widget.user!.toJson()} \n');
 
           try {
             await adminBloc.updateUser(widget.user!);
@@ -195,6 +216,21 @@ class UserEditMobileState extends State<UserEditMobile>
       }
     }
   }
+  void _setGenderRadio() {
+    if (widget.user != null) {
+      if (widget.user!.gender != null) {
+       gender = widget.user!.gender!;
+       switch(widget.user!.gender) {
+         case 'Male':
+           genderType = 0;
+           break;
+         case 'Female':
+           genderType = 1;
+           break;
+       }
+      }
+    }
+  }
 
   void _navigateToAvatarBuilder() async {
     Navigator.of(context).pop();
@@ -207,7 +243,6 @@ class UserEditMobileState extends State<UserEditMobile>
             child: AvatarEditor(
               user: widget.user!,
             )));
-
   }
 
   @override
@@ -246,199 +281,226 @@ class UserEditMobileState extends State<UserEditMobile>
             ),
           ),
         ),
-        body: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Card(
-            elevation: 4,
-            shape: getRoundedBorder(radius: 16),
-            child: Padding(
-              padding: const EdgeInsets.all(12.0),
-              child: SingleChildScrollView(
-                child: Form(
-                  key: _formKey,
-                  child: Column(
-                    children: [
-                      const SizedBox(
-                        height: 8,
-                      ),
-                      Row(
+        body: Stack(
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Card(
+                elevation: 4,
+                shape: getRoundedBorder(radius: 16),
+                child: Padding(
+                  padding: const EdgeInsets.all(12.0),
+                  child: SingleChildScrollView(
+                    child: Form(
+                      key: _formKey,
+                      child: Column(
                         children: [
-                          CountryChooser(onSelected: (c) {
-                            setState(() {
-                              country = c;
-                            });
-                          }),
-                          const SizedBox(width: 12,),
-                          country == null? const SizedBox(): Text('${country!.name}', style: myTextStyleMedium(context),),
-                        ],
-                      ),
-                      const SizedBox(
-                        height: 8,
-                      ),
-                      TextFormField(
-                        controller: nameController,
-                        keyboardType: TextInputType.text,
-                        style: myTextStyleSmall(context),
-                        decoration: InputDecoration(
-                            icon: Icon(
-                              Icons.person, size: 18,
-                              color: Theme.of(context).primaryColor,
-                            ),
-                            labelText: 'Name', hintStyle: myTextStyleSmall(context),
-                            hintText: 'Enter Full Name'),
-                        validator: (value) {
-                          if (value!.isEmpty) {
-                            return 'Please enter full name';
-                          }
-                          return null;
-                        },
-                      ),
-                      const SizedBox(
-                        height: 4,
-                      ),
-                      TextFormField(
-                        controller: emailController,
-                        keyboardType: TextInputType.emailAddress,
-                        style: myTextStyleSmall(context),
-                        decoration: InputDecoration(
-                            icon: Icon(
-                              Icons.email_outlined, size: 18,
-                              color: Theme.of(context).primaryColor,
-                            ),
-                            labelText: 'Email Address', hintStyle: myTextStyleSmall(context),
-                            hintText: 'Enter Email Address'),
-                        validator: (value) {
-                          if (value!.isEmpty) {
-                            return 'Please enter email address';
-                          }
-                          return null;
-                        },
-                      ),
-                      const SizedBox(
-                        height: 4,
-                      ),
-                      TextFormField(
-                        controller: cellphoneController,
-                        keyboardType: TextInputType.phone,
-                        style: myTextStyleSmall(context),
-                        decoration: InputDecoration(
-                            icon: Icon(
-                              Icons.phone, size: 18,
-                              color: Theme.of(context).primaryColor,
-                            ),
-                            labelText: 'Cellphone', hintStyle: myTextStyleSmall(context),
-                            hintText: 'Cellphone'),
-                        validator: (value) {
-                          if (value!.isEmpty) {
-                            return 'Please enter cellphone number';
-                          }
-                          return null;
-                        },
-                      ),
-
-                      const SizedBox(
-                        height: 16,
-                      ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: <Widget>[
-                          Radio(
-                            value: 0,
-                            groupValue: genderType,
-                            onChanged: _handleGenderValueChange,
+                          const SizedBox(
+                            height: 8,
                           ),
-                          Text(
-                            'Male',
-                            style: myTextStyleSmall(context),
-                          ),
-                          Radio(
-                            value: 1,
-                            groupValue: genderType,
-                            onChanged: _handleGenderValueChange,
-                          ),
-                          Text('Female', style: myTextStyleSmall(context)),
-                        ],
-                      ),
-                      const SizedBox(
-                        height: 16,
-                      ),
-                      Row(
-                        children: <Widget>[
-                          Radio(
-                            value: 0,
-                            groupValue: userType,
-                            onChanged: _handleRadioValueChange,
-                          ),
-                          Text(
-                            'Monitor',
-                            style: myTextStyleSmall(context),
-                          ),
-                          Radio(
-                            value: 1,
-                            groupValue: userType,
-                            onChanged: _handleRadioValueChange,
-                          ),
-                          Text('Admin', style: myTextStyleSmall(context)),
-                          Radio(
-                            value: 2,
-                            groupValue: userType,
-                            onChanged: _handleRadioValueChange,
-                          ),
-                          Text(
-                            'Exec',
-                            style: myTextStyleSmall(context),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(
-                        height: 16,
-                      ),
-
-                      isBusy
-                          ? const SizedBox(
-                              width: 48,
-                              height: 48,
-                              child: CircularProgressIndicator(
-                                strokeWidth: 8,
-                                backgroundColor: Colors.black,
+                          Row(
+                            children: [
+                              CountryChooser(onSelected: (c) {
+                                setState(() {
+                                  country = c;
+                                });
+                              }),
+                              const SizedBox(
+                                width: 12,
                               ),
-                            )
-                          : SizedBox(width: 200,
-                            child: ElevatedButton(
-                                onPressed: _submit,
-                                child: Padding(
-                                  padding: const EdgeInsets.all(12.0),
-                                  child: Text(
-                                    'Submit User',
-                                    style: myTextStyleSmall(context),
+                              country == null
+                                  ? const SizedBox()
+                                  : Text(
+                                      '${country!.name}',
+                                      style: myTextStyleMedium(context),
+                                    ),
+                            ],
+                          ),
+                          const SizedBox(
+                            height: 8,
+                          ),
+                          TextFormField(
+                            controller: nameController,
+                            keyboardType: TextInputType.text,
+                            style: myTextStyleSmall(context),
+                            decoration: InputDecoration(
+                                icon: Icon(
+                                  Icons.person,
+                                  size: 18,
+                                  color: Theme.of(context).primaryColor,
+                                ),
+                                labelText: 'Name',
+                                hintStyle: myTextStyleSmall(context),
+                                hintText: 'Enter Full Name'),
+                            validator: (value) {
+                              if (value!.isEmpty) {
+                                return 'Please enter full name';
+                              }
+                              return null;
+                            },
+                          ),
+                          const SizedBox(
+                            height: 4,
+                          ),
+                          TextFormField(
+                            controller: emailController,
+                            keyboardType: TextInputType.emailAddress,
+                            style: myTextStyleSmall(context),
+                            decoration: InputDecoration(
+                                icon: Icon(
+                                  Icons.email_outlined,
+                                  size: 18,
+                                  color: Theme.of(context).primaryColor,
+                                ),
+                                labelText: 'Email Address',
+                                hintStyle: myTextStyleSmall(context),
+                                hintText: 'Enter Email Address'),
+                            validator: (value) {
+                              if (value!.isEmpty) {
+                                return 'Please enter email address';
+                              }
+                              return null;
+                            },
+                          ),
+                          const SizedBox(
+                            height: 4,
+                          ),
+                          TextFormField(
+                            controller: cellphoneController,
+                            keyboardType: TextInputType.phone,
+                            style: myTextStyleSmall(context),
+                            decoration: InputDecoration(
+                                icon: Icon(
+                                  Icons.phone,
+                                  size: 18,
+                                  color: Theme.of(context).primaryColor,
+                                ),
+                                labelText: 'Cellphone',
+                                hintStyle: myTextStyleSmall(context),
+                                hintText: 'Cellphone'),
+                            validator: (value) {
+                              if (value!.isEmpty) {
+                                return 'Please enter cellphone number';
+                              }
+                              return null;
+                            },
+                          ),
+                          const SizedBox(
+                            height: 16,
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: <Widget>[
+                              Radio(
+                                value: 0,
+                                groupValue: genderType,
+                                onChanged: _handleGenderValueChange,
+                              ),
+                              Text(
+                                'Male',
+                                style: myTextStyleSmall(context),
+                              ),
+                              Radio(
+                                value: 1,
+                                groupValue: genderType,
+                                onChanged: _handleGenderValueChange,
+                              ),
+                              Text('Female', style: myTextStyleSmall(context)),
+                            ],
+                          ),
+                          const SizedBox(
+                            height: 16,
+                          ),
+                          Row(
+                            children: <Widget>[
+                              Radio(
+                                value: 0,
+                                groupValue: userType,
+                                onChanged: _handleRadioValueChange,
+                              ),
+                              Text(
+                                'Monitor',
+                                style: myTextStyleSmall(context),
+                              ),
+                              Radio(
+                                value: 1,
+                                groupValue: userType,
+                                onChanged: _handleRadioValueChange,
+                              ),
+                              Text('Admin', style: myTextStyleSmall(context)),
+                              Radio(
+                                value: 2,
+                                groupValue: userType,
+                                onChanged: _handleRadioValueChange,
+                              ),
+                              Text(
+                                'Exec',
+                                style: myTextStyleSmall(context),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(
+                            height: 16,
+                          ),
+                          isBusy
+                              ? const SizedBox(
+                                  width: 48,
+                                  height: 48,
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 8,
+                                    backgroundColor: Colors.black,
+                                  ),
+                                )
+                              : SizedBox(
+                                  width: 200,
+                                  child: ElevatedButton(
+                                    onPressed: _submit,
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(12.0),
+                                      child: Text(
+                                        'Submit User',
+                                        style: myTextStyleSmall(context),
+                                      ),
+                                    ),
                                   ),
                                 ),
-                              ),
+                          const SizedBox(
+                            height: 24,
                           ),
-                      const SizedBox(
-                        height: 24,
-                      ),
-                      SizedBox(width: 200,
-                        child: ElevatedButton(
-                          onPressed: _navigateToAvatarBuilder,
-                          child: Padding(
-                            padding: const EdgeInsets.all(12.0),
-                            child: Text(
-                              'Create Avatar',
-                              style: myTextStyleSmall(context),
+                          SizedBox(
+                            width: 200,
+                            child: ElevatedButton(
+                              onPressed: _navigateToAvatarBuilder,
+                              child: Padding(
+                                padding: const EdgeInsets.all(12.0),
+                                child: Text(
+                                  'Create Avatar',
+                                  style: myTextStyleSmall(context),
+                                ),
+                              ),
                             ),
                           ),
-                        ),
+                          const SizedBox(
+                            height: 40,
+                          ),
+                        ],
                       ),
-                      const SizedBox(
-                        height: 40,
-                      ),
-                    ],
+                    ),
                   ),
                 ),
               ),
             ),
-          ),
+            widget.user?.thumbnailUrl == null
+                ? const Positioned(
+                right:2, top: 0,
+                child: CircleAvatar(radius: 24,))
+                : Positioned(
+                    right: 2, top: 0,
+                    child: CircleAvatar(
+                      radius: 40,
+                    backgroundImage: NetworkImage(widget.user!.thumbnailUrl!),
+                  )),
+          ],
         ),
       ),
     );
