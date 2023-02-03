@@ -12,6 +12,7 @@ import '../api/data_api.dart';
 import '../api/prefs_og.dart';
 import '../data/audio.dart';
 import '../data/condition.dart';
+import '../data/geofence_event.dart';
 import '../data/location_request.dart';
 import '../data/location_response.dart';
 import '../data/org_message.dart';
@@ -60,8 +61,12 @@ class FCMBloc {
 
   final StreamController<SettingsModel> _settingsController =
       StreamController.broadcast();
+  final StreamController<GeofenceEvent> _geofenceController =
+  StreamController.broadcast();
 
+  Stream<GeofenceEvent> get geofenceStream => _geofenceController.stream;
   Stream<SettingsModel> get settingsStream => _settingsController.stream;
+
   Stream<User> get userStream => _userController.stream;
   Stream<Project> get projectStream => _projectController.stream;
   Stream<ProjectPosition> get projectPositionStream => _projectPositionController.stream;
@@ -76,6 +81,7 @@ class FCMBloc {
 
   User? user;
   void closeStreams() {
+    _geofenceController.close();
     _userController.close();
     _projectController.close();
     _photoController.close();
@@ -190,8 +196,15 @@ class FCMBloc {
     await messaging.subscribeToTopic('settings_${user.organizationId}');
     pp("$mm ..... subscribed to topic: settings_${user.organizationId}");
 
+    if (user!.userType != UserType.fieldMonitor) {
+      await messaging.subscribeToTopic('geofenceEvents_${user.organizationId}');
+      pp("$mm ..... subscribed to topic: geofenceEvents_${user
+          .organizationId}");
+    }
+
+    //geofenceEvents_
     await prefsOGx.setFCMSubscriptionFlag();
-    pp("$mm subscribeToTopics: 🍎 subscribed to all 12 organization topics 🍎");
+    pp("$mm subscribeToTopics: 🍎 subscribed to all 13 organization topics 🍎");
 
     return null;
   }
@@ -328,6 +341,14 @@ class FCMBloc {
         _settingsController.sink.add(msg);
         pp('$mm This is an organization-wide setting, hopefully the ui changes to new color ...');
       }
+    }
+    if (data['geofenceEvent'] != null) {
+      pp("$mm processFCMMessage  🔵 🔵 🔵 ........................... cache GEOFENCE EVENT  🍎  🍎");
+      var m = jsonDecode(data['geofenceEvent']);
+      var msg = GeofenceEvent.fromJson(m);
+      await cacheManager.addGeofenceEvent(geofenceEvent: msg);
+      _geofenceController.sink.add(msg);
+
     }
 
     return null;

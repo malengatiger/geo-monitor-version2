@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:geo_monitor/library/bloc/audio_for_upload.dart';
 import 'package:geo_monitor/library/bloc/photo_for_upload.dart';
 import 'package:geo_monitor/library/bloc/video_for_upload.dart';
+import 'package:geo_monitor/library/data/project_assignment.dart';
 import 'package:geo_monitor/library/data/settings_model.dart';
 import 'package:hive/hive.dart';
 
@@ -75,6 +76,7 @@ class CacheManager {
   LazyBox<PhotoForUpload>? _uploadPhotoBox;
   LazyBox<VideoForUpload>? _uploadVideoBox;
   LazyBox<AudioForUpload>? _uploadAudioBox;
+  LazyBox<ProjectAssignment>? _assignmentBox;
 
   bool _isInitialized = false;
 
@@ -165,6 +167,9 @@ class CacheManager {
     _projectPolygonBox =
         await Hive.openLazyBox<ProjectPolygon>('projectPolygons');
 
+    _assignmentBox = await Hive.openLazyBox<ProjectAssignment>('assignments');
+
+
     _failedPhotoBox = await Hive.openLazyBox<Photo>('failedPhotos');
     _failedVideoBox = await Hive.openLazyBox<Video>('failedVideos');
     _failedBagBox = await Hive.openLazyBox<FailedBag>('failedBags');
@@ -179,7 +184,11 @@ class CacheManager {
   }
 
   void _registerAdapters() {
-    p('$xx ... Registering Hive object adapters ...');
+    p('\n$xx ... Registering Hive object adapters ...');
+    if (!Hive.isAdapterRegistered(38)) {
+      Hive.registerAdapter(ProjectAssignmentAdapter());
+      p('$xx Hive ProjectAssignmentAdapter registered');
+    }
     if (!Hive.isAdapterRegistered(35)) {
       Hive.registerAdapter(AudioForUploadAdapter());
       p('$xx Hive AudioForUploadAdapter registered');
@@ -300,6 +309,22 @@ class CacheManager {
     await _locationResponseBox?.put(key, locationResponse);
 
     pp('$mm locationResponse added to local cache}');
+  }
+
+  Future addProjectAssignments(
+      {required List<ProjectAssignment> assignments}) async {
+    for (var ass in assignments) {
+      await addProjectAssignment(assignment: ass);
+    }
+
+    pp('$mm ProjectAssignments added to local cache: ${assignments.length}');
+  }
+  Future addProjectAssignment(
+      {required ProjectAssignment assignment}) async {
+    var key = '${assignment.projectId}_${assignment.userId}_${assignment.date}';
+    await _assignmentBox?.put(key, assignment);
+
+    pp('$mm ProjectAssignment added to local cache}');
   }
 
   Future addRegistration({required OrganizationRegistrationBag bag}) async {
@@ -606,6 +631,58 @@ class CacheManager {
     pp('$mm ${list.length} list found in cache 🔵');
     return list;
   }
+
+  Future<List<ProjectAssignment>> getProjectAssignments(String projectId) async {
+    List<ProjectAssignment> list = [];
+    var keys = _assignmentBox?.keys;
+
+    if (keys != null) {
+      for (var key in keys) {
+        var m = await _assignmentBox!.get(key);
+        if (m != null) {
+          if (projectId == m.projectId) {
+            list.add(m);
+          }
+        }
+      }
+    }
+    pp('$mm ${list.length} assignments found in cache 🔵');
+    return list;
+  }
+  Future<List<ProjectAssignment>> getUserProjectAssignments(String userId) async {
+    List<ProjectAssignment> list = [];
+    var keys = _assignmentBox?.keys;
+
+    if (keys != null) {
+      for (var key in keys) {
+        var m = await _assignmentBox!.get(key);
+        if (m != null) {
+          if (userId == m.userId) {
+            list.add(m);
+          }
+        }
+      }
+    }
+    pp('$mm ${list.length} assignments found in cache 🔵');
+    return list;
+  }
+  Future<List<ProjectAssignment>> getOrganizationProjectAssignments() async {
+    List<ProjectAssignment> list = [];
+    var keys = _assignmentBox?.keys;
+
+    if (keys != null) {
+      for (var key in keys) {
+        var m = await _assignmentBox!.get(key);
+        if (m != null) {
+            list.add(m);
+
+        }
+      }
+    }
+    pp('$mm ${list.length} assignments found in cache 🔵');
+    return list;
+  }
+
 
   Future<List<GeofenceEvent>> getGeofenceEventsByUser(String userId) async {
     var keys = _geofenceEventBox?.keys;

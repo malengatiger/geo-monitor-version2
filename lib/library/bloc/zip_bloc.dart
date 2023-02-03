@@ -18,6 +18,15 @@ class ZipBloc {
   static final client = http.Client();
   static int start = 0;
 
+  Future<DataBag?> getProjectDataZippedFile(String projectId) async {
+
+    pp('\n\n$xz getProjectDataZippedFile  🔆🔆🔆 projectId : 💙  $projectId  💙');
+    start = DateTime.now().millisecondsSinceEpoch;
+    var url = await DataAPI.getUrl();
+    var mUrl = '${url!}getProjectDataZippedFile?projectId=$projectId';
+
+    return _getDataBag(mUrl);
+  }
 
   Future<DataBag?> getOrganizationDataZippedFile(String organizationId) async {
     pp('\n\n$xz getOrganizationDataZippedFile  🔆🔆🔆 orgId : 💙  $organizationId  💙');
@@ -25,41 +34,46 @@ class ZipBloc {
     var url = await DataAPI.getUrl();
     var mUrl = '${url!}getOrganizationDataZippedFile?organizationId=$organizationId';
 
-    pp('$xz url for getting zipped file: mUrl: $mUrl');
-    http.Response response = await _sendHttpGET(mUrl);
+     return _getDataBag(mUrl);
+  }
+
+  Future<DataBag?> _getDataBag(String mUrl) async {
+
+    http.Response response = await _sendRequestToBackend(mUrl);
     var dir = await getApplicationDocumentsDirectory();
     File zipFile = File('${dir.path}/zip${DateTime.now().millisecondsSinceEpoch}.zip');
     zipFile.writeAsBytesSync(response.bodyBytes);
-    pp('$xz zipFile has been written? 🔵🔵🔵 ${await zipFile.length()} bytes in zipFile');
+
+    //create zip archive
     final inputStream = InputFileStream(zipFile.path);
     final archive = ZipDecoder().decodeBuffer(inputStream);
-    pp('$xz archive anyone? archive.files: ${archive.files.length} numberOfFiles: ${archive.numberOfFiles()}');
+
+    DataBag? dataBag;
+    //handle file inside zip archive
     for (var file in archive.files) {
       if (file.isFile) {
         var fileName = '${dir.path}/${file.name}';
         pp('$xz file from inside archive ... ${file.size} bytes 🔵 isCompressed: ${file.isCompressed} 🔵 zipped file name: ${file.name}');
         var outFile = File(fileName);
-        pp('$xz file to write zipped content; path: ${outFile.path}');
         outFile = await outFile.create(recursive: true);
         await outFile.writeAsBytes(file.content);
-        pp('$xz file after decompress ... ${await outFile.length()} bytes and 🍎 isCompressed: ${outFile.path} 🍎 uri: ${outFile.uri}');
+        pp('$xz file after decompress ... ${await outFile.length()} bytes  🍎 path: ${outFile.path} 🍎');
 
         if (outFile.existsSync()) {
-          pp('$xz outFile exists and has length of 🍎 ${await outFile.length()} bytes');
+          pp('$xz decompressed file exists and has length of 🍎 ${await outFile.length()} bytes');
           var m = outFile.readAsStringSync(encoding: utf8);
           var mJson = json.decode(m);
-          var bag = DataBag.fromJson(mJson);
-          pp('$xz getOrganizationDataZippedFile 🍎🍎🍎🍎 work may be done!');
-          _printDataBag(bag);
+          dataBag = DataBag.fromJson(mJson);
+          _printDataBag(dataBag);
+
           var end = DateTime.now().millisecondsSinceEpoch;
           var ms = (end - start)/1000;
           pp('$xz getOrganizationDataZippedFile 🍎🍎🍎🍎 work is done!, elapsed seconds: $ms\n\n');
-
-          return bag;
         }
       }
     }
-     return null;
+
+    return dataBag;
   }
 
   static Map<String, String> headers = {
@@ -68,7 +82,7 @@ class ZipBloc {
     'Content-Encoding': 'gzip',
     'Accept-Encoding': 'gzip, deflate'
   };
-  static Future<http.Response> _sendHttpGET(String mUrl) async {
+  static Future<http.Response> _sendRequestToBackend(String mUrl) async {
     pp('$xz http GET call:  🔆 🔆 🔆 calling : 💙  $mUrl  💙');
     var start = DateTime.now();
     var token = await AppAuth.getAuthToken();
@@ -110,6 +124,7 @@ class ZipBloc {
     }
 
   }
+
   void _printDataBag(DataBag bag) {
     final projects = bag.projects!.length;
     final users = bag.users!.length;
@@ -128,7 +143,7 @@ class ZipBloc {
     pp('$xz videos: $videos');
     pp('$xz audios: $audios');
     pp('$xz schedules: $schedules');
-    pp('$xz all org data listed above: 🔵🔵🔵 ${bag.date}');
+    pp('$xz data from backend listed above: 🔵🔵🔵 ${bag.date}');
   }
 
 }

@@ -31,13 +31,13 @@ class AppAuth {
     firebaseAuth.authStateChanges().listen((user) {
       pp('$locks firebaseAuth.authStateChanges: 🍎 $user');
     });
-    firebaseAuth.idTokenChanges().listen((event) async {
-      pp('$locks token changes from Firebase. will update the user ...');
-      var token = await event?.getIdToken();
-      await _checkUser(token);
-    }).onError((err, stackTrace){
-
-    });
+    // firebaseAuth.idTokenChanges().listen((event) async {
+    //   pp('$locks token changes from Firebase. will update the user ...');
+    //   var token = await event?.getIdToken();
+    //   await _checkUser(token);
+    // }).onError((err, stackTrace){
+    //
+    // });
     firebaseAuth.userChanges().listen((event) async {
       pp('$locks user changes from Firebase. will need to update the user, maybe ...');
       var token = await event?.getIdToken();

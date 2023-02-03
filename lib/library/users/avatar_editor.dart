@@ -57,7 +57,7 @@ class AvatarEditorState extends State<AvatarEditor>
         maxHeight: height,
         maxWidth: width,
         imageQuality: 100,
-        preferredCameraDevice: CameraDevice.front);
+        preferredCameraDevice: CameraDevice.rear);
 
     imageFile = File(xFile!.path);
 
