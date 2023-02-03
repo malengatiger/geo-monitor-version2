@@ -189,12 +189,6 @@ String getFakePhotoUrl() {
   }
 }
 
-String prettyPrint(Map json) {
-  JsonEncoder encoder =  const JsonEncoder.withIndent('  ');
-  String pretty = encoder.convert(json);
-  pp('🍐 🍐 🍐 🍐 🍐 PrettyPrint: $pretty 🍐🍐');
-  return pretty;
-}
 
 showCustomToast(
     {required String message,

@@ -10,6 +10,7 @@ import 'package:geo_monitor/library/data/settings_model.dart';
 import 'package:geo_monitor/library/generic_functions.dart';
 import 'package:geo_monitor/library/ui/maps/project_map_mobile.dart';
 import 'package:geo_monitor/library/ui/media/list/project_media_list_mobile.dart';
+import 'package:geo_monitor/library/ui/weather/daily_forecast_page.dart';
 import 'package:geo_monitor/ui/chat/chat_page.dart';
 import 'package:geofence_service/geofence_service.dart';
 
@@ -322,25 +323,26 @@ class DashboardMobileState extends State<DashboardMobile>
   var items = <BottomNavigationBarItem>[];
 
   void _setItems() {
-    // items
-    //     .add(BottomNavigationBarItem(icon: Icon(Icons.people), label: 'Users'));
-    // items.add(const BottomNavigationBarItem(
-    //     icon: Icon(
-    //       Icons.home,
-    //     ),
-    //     label: 'Projects'));
-    items.add( const BottomNavigationBarItem(
+    items.add(const BottomNavigationBarItem(
         icon: Icon(
           Icons.person,
           color: Colors.pink,
         ),
         label: 'My Work'));
+
     items.add(const BottomNavigationBarItem(
         icon: Icon(
           Icons.send,
           color: Colors.blue,
         ),
         label: 'Send Message'));
+
+    items.add(const BottomNavigationBarItem(
+        icon: Icon(
+          Icons.radar,
+          color: Colors.teal,
+        ),
+        label: 'Weather'));
   }
 
   String type = 'Unknown Rider';
@@ -480,8 +482,7 @@ class DashboardMobileState extends State<DashboardMobile>
           pp('DashboardMobile: 🍎 🍎 showMessageSnackbar: ${message.projectName} ... 🍎 🍎');
           _videos = await organizationBloc.getVideos(
               organizationId: user!.organizationId!, forceRefresh: false);
-          setState(() {
-          });
+          setState(() {});
         }
       });
       audioSubscriptionFCM = fcmBloc.audioStream.listen((Audio message) async {
@@ -490,13 +491,15 @@ class DashboardMobileState extends State<DashboardMobile>
           _refreshData(false);
         }
       });
-      projectPositionSubscriptionFCM = fcmBloc.projectPositionStream.listen((ProjectPosition message) async {
+      projectPositionSubscriptionFCM =
+          fcmBloc.projectPositionStream.listen((ProjectPosition message) async {
         pp('$mm: 🍎 🍎 projectPositionSubscriptionFCM position arrived... 🍎 🍎');
         if (mounted) {
           _refreshData(false);
         }
       });
-      projectPolygonSubscriptionFCM = fcmBloc.projectPolygonStream.listen((ProjectPolygon message) async {
+      projectPolygonSubscriptionFCM =
+          fcmBloc.projectPolygonStream.listen((ProjectPolygon message) async {
         pp('$mm: 🍎 🍎 projectPolygonSubscriptionFCM polygon arrived... 🍎 🍎');
         if (mounted) {
           _refreshData(false);
@@ -511,7 +514,6 @@ class DashboardMobileState extends State<DashboardMobile>
 
   void _handleBottomNav(int value) {
     switch (value) {
-
       case 0:
         pp('$mm 🔆🔆🔆 Navigate to UserMediaList');
         _navigateToUserMediaList();
@@ -520,6 +522,10 @@ class DashboardMobileState extends State<DashboardMobile>
       case 1:
         pp('$mm 🔆🔆🔆 Navigate to MessageSender');
         _navigateToMessageSender();
+        break;
+      case 2:
+        pp('$mm 🔆🔆🔆 Navigate to Weather');
+        _navigateToDailyForecast();
         break;
     }
   }
@@ -629,6 +635,16 @@ class DashboardMobileState extends State<DashboardMobile>
             child: ProjectMapMobile(project: project)));
   }
 
+  void _navigateToDailyForecast() {
+    Navigator.push(
+        context,
+        PageTransition(
+            type: PageTransitionType.scale,
+            alignment: Alignment.topLeft,
+            duration: const Duration(seconds: 1),
+            child: const DailyForecastPage()));
+  }
+
   static const typeVideo = 0,
       typeAudio = 1,
       typePhoto = 2,
@@ -660,13 +676,12 @@ class DashboardMobileState extends State<DashboardMobile>
         context: context,
         barrierDismissible: true,
         builder: (_) => Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Center(
-            child: Container(
-              color: Colors.black12,
-
+              padding: const EdgeInsets.all(16.0),
+              child: Center(
+                child: Container(
+                  color: Colors.black12,
                   child: ProjectChooser(
-                    title: title,
+                      title: title,
                       onSelected: (p1) {
                         Navigator.of(context).pop();
                         _onProjectSelected(p1, destination);
@@ -675,8 +690,8 @@ class DashboardMobileState extends State<DashboardMobile>
                         Navigator.pop(context);
                       }),
                 ),
-          ),
-        ));
+              ),
+            ));
   }
 
   _onProjectSelected(Project p1, int destination) {
@@ -710,7 +725,8 @@ class DashboardMobileState extends State<DashboardMobile>
         fontWeight: FontWeight.w900);
     var stylePrimary = GoogleFonts.secularOne(
         textStyle: Theme.of(context).textTheme.titleLarge,
-        fontWeight: FontWeight.w900, color: Theme.of(context).primaryColor);
+        fontWeight: FontWeight.w900,
+        color: Theme.of(context).primaryColor);
     return SafeArea(
       child: WillStartForegroundTask(
         onWillStart: () async {
@@ -923,7 +939,8 @@ class DashboardMobileState extends State<DashboardMobile>
                                     const SizedBox(
                                       height: 32,
                                     ),
-                                    Text('${_photos.length}', style: stylePrimary),
+                                    Text('${_photos.length}',
+                                        style: stylePrimary),
                                     const SizedBox(
                                       height: 8,
                                     ),

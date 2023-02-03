@@ -5,6 +5,10 @@ import 'package:geo_monitor/library/bloc/photo_for_upload.dart';
 import 'package:geo_monitor/library/bloc/video_for_upload.dart';
 import 'package:geo_monitor/library/data/project_assignment.dart';
 import 'package:geo_monitor/library/data/settings_model.dart';
+import 'package:geo_monitor/library/data/weather/daily_forecast.dart';
+import 'package:geo_monitor/library/data/weather/daily_units.dart';
+import 'package:geo_monitor/library/data/weather/hourly_forecast.dart';
+import 'package:geo_monitor/library/data/weather/hourly_units.dart';
 import 'package:hive/hive.dart';
 
 import 'bloc/failed_audio.dart';
@@ -78,6 +82,9 @@ class CacheManager {
   LazyBox<AudioForUpload>? _uploadAudioBox;
   LazyBox<ProjectAssignment>? _assignmentBox;
 
+  LazyBox<DailyForecast>? _dailyForecastBox;
+  LazyBox<HourlyForecast>? _hourlyForecastBox;
+
   bool _isInitialized = false;
 
   initialize({bool? forceInitialization = false}) async {
@@ -146,6 +153,9 @@ class CacheManager {
     _projectBox = await Hive.openLazyBox<Project>('projects');
     _positionBox = await Hive.openLazyBox<ProjectPosition>('positions');
 
+    _dailyForecastBox = await Hive.openLazyBox<DailyForecast>('dailyForecasts');
+    _hourlyForecastBox = await Hive.openLazyBox<HourlyForecast>('hourlyForecasts');
+
     _cityBox = await Hive.openLazyBox<City>('cities');
     _photoBox = await Hive.openLazyBox<Photo>('photos');
     _videoBox = await Hive.openLazyBox<Video>('videos');
@@ -185,6 +195,22 @@ class CacheManager {
 
   void _registerAdapters() {
     p('\n$xx ... Registering Hive object adapters ...');
+    if (!Hive.isAdapterRegistered(50)) {
+      Hive.registerAdapter(DailyForecastAdapter());
+      p('$xx Hive DailyForecastAdapter registered');
+    }
+    if (!Hive.isAdapterRegistered(51)) {
+      Hive.registerAdapter(DailyUnitsAdapter());
+      p('$xx Hive DailyUnitsAdapter registered');
+    }
+    if (!Hive.isAdapterRegistered(52)) {
+      Hive.registerAdapter(HourlyForecastAdapter());
+      p('$xx Hive HourlyForecastAdapter registered');
+    }
+    if (!Hive.isAdapterRegistered(53)) {
+      Hive.registerAdapter(HourlyUnitsAdapter());
+      p('$xx Hive HourlyUnitsAdapter registered');
+    }
     if (!Hive.isAdapterRegistered(38)) {
       Hive.registerAdapter(ProjectAssignmentAdapter());
       p('$xx Hive ProjectAssignmentAdapter registered');
@@ -309,6 +335,33 @@ class CacheManager {
     await _locationResponseBox?.put(key, locationResponse);
 
     pp('$mm locationResponse added to local cache}');
+  }
+
+  Future addDailyForecasts(
+      {required List<DailyForecast> forecasts}) async {
+    for (var fc in forecasts) {
+      await addDailyForecast(forecast: fc);
+    }
+  }
+  Future addDailyForecast(
+      {required DailyForecast forecast}) async {
+    var key = '${DateTime.now().millisecondsSinceEpoch}';
+    await _dailyForecastBox?.put(key, forecast);
+
+    pp('$mm DailyForecast added to local cache}');
+  }
+  Future addHourlyForecasts(
+      {required List<HourlyForecast> forecasts}) async {
+    for (var fc in forecasts) {
+      await addHourlyForecast(forecast: fc);
+    }
+  }
+  Future addHourlyForecast(
+      {required HourlyForecast forecast}) async {
+    var key = '${DateTime.now().millisecondsSinceEpoch}';
+    await _hourlyForecastBox?.put(key, forecast);
+
+    pp('$mm HourlyForecast added to local cache}');
   }
 
   Future addProjectAssignments(

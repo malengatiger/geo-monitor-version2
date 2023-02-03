@@ -28,6 +28,8 @@ class ProjectPolygon extends HiveObject {
 
   @HiveField(6)
   List<City> nearestCities = <City>[];
+  @HiveField(7)
+  String? name;
 
   ProjectPolygon(
       {required this.projectName,
@@ -35,14 +37,14 @@ class ProjectPolygon extends HiveObject {
       required this.created,
       required this.positions,
       required this.nearestCities,
-        required this.organizationId,
+        required this.organizationId, this.name,
       required this.projectId});
 
   ProjectPolygon.fromJson(Map data) {
     projectName = data['projectName'];
     projectId = data['projectId'];
     projectPolygonId = data['projectPolygonId'];
-    projectId = data['projectId'];
+    name = data['name'];
     organizationId = data['organizationId'];
     created = data['created'];
 
@@ -79,6 +81,7 @@ class ProjectPolygon extends HiveObject {
       'organizationId': organizationId,
       'projectPolygonId': projectPolygonId,
       'created': created,
+      'name': name,
       'positions': positionList,
       'nearestCities': cityList,
     };

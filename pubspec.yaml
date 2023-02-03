@@ -94,6 +94,7 @@ dependencies:
   mime: ^1.0.4
   url_launcher: ^6.1.8
   archive: ^3.3.6
+  lat_lng_to_timezone: ^0.2.0
 
 
 

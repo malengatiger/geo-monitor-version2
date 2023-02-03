@@ -26,6 +26,8 @@ class ProjectPosition extends HiveObject {
   PlaceMark? placemark;
   @HiveField(8)
   List<City>? nearestCities;
+  @HiveField(9)
+  String? name;
 
   ProjectPosition(
       {required this.projectName,
@@ -35,26 +37,22 @@ class ProjectPosition extends HiveObject {
       required this.position,
       this.placemark,
       required this.nearestCities,
-        required this.organizationId,
+        required this.organizationId, this.name,
       required this.projectId});
 
   ProjectPosition.fromJson(Map data) {
-    //pp(' 💜 ProjectPosition.fromJson: log 0');
     projectName = data['projectName'];
-    //pp(' 💜 ProjectPosition.fromJson: log 1');
     projectId = data['projectId'];
+    name = data['name'];
     projectPositionId = data['projectPositionId'];
-    //pp(' 💜 ProjectPosition.fromJson: log 2');
     caption = data['caption'];
     projectId = data['projectId'];
     organizationId = data['organizationId'];
     created = data['created'];
-    //pp(' 💜 ProjectPosition.fromJson: log 3');
 
     if (data['position'] != null) {
       position = Position.fromJson(data['position']);
     }
-    //pp(' 💜 ProjectPosition.fromJson: log 4');
     if (data['placemark'] != null) {
       placemark = PlaceMark.fromJson(data['placemark']);
     }

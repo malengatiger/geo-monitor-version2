@@ -34,6 +34,8 @@ import '../data/settings_model.dart';
 import '../data/user.dart';
 import '../data/video.dart';
 
+import '../data/weather/daily_forecast.dart';
+import '../data/weather/hourly_forecast.dart';
 import '../functions.dart';
 import '../generic_functions.dart' as gen;
 import '../hive_util.dart';
@@ -94,14 +96,11 @@ class DataAPI {
     }
   }
 
-
-  static Future<SettingsModel> addSettings(
-      SettingsModel settings) async {
+  static Future<SettingsModel> addSettings(SettingsModel settings) async {
     String? mURL = await getUrl();
     Map bag = settings.toJson();
     try {
-      var result =
-      await _callWebAPIPost('${mURL!}addSettings', bag);
+      var result = await _callWebAPIPost('${mURL!}addSettings', bag);
       var s = SettingsModel.fromJson(result);
       pp('$mm settings from db: ${s.toJson()}');
       await cacheManager.addSettings(settings: s);
@@ -127,6 +126,7 @@ class DataAPI {
       rethrow;
     }
   }
+
   static Future<LocationResponse> addLocationResponse(
       LocationResponse response) async {
     String? mURL = await getUrl();
@@ -273,11 +273,11 @@ class DataAPI {
       rethrow;
     }
   }
+
   static Future<int> deleteAuthUser(String userId) async {
     String? mURL = await getUrl();
     try {
-      var result = await _sendHttpGET(
-          '${mURL!}deleteAuthUser?userId=$userId');
+      var result = await _sendHttpGET('${mURL!}deleteAuthUser?userId=$userId');
       var res = result['result'];
       pp('$mm 🌿 🌿 🌿 deleteAuthUser returned: 🌿 $result');
       return res;
@@ -285,13 +285,14 @@ class DataAPI {
       pp(e);
       rethrow;
     }
-
   }
 
-  static Future<KillResponse> killUser({required String userId, required String killerId} ) async {
+  static Future<KillResponse> killUser(
+      {required String userId, required String killerId}) async {
     String? mURL = await getUrl();
     try {
-      var result = await _sendHttpGET('${mURL!}killUser?userId=$userId&killerId=$killerId');
+      var result = await _sendHttpGET(
+          '${mURL!}killUser?userId=$userId&killerId=$killerId');
       var resp = KillResponse.fromJson(result);
       return resp;
     } catch (e) {
@@ -299,7 +300,6 @@ class DataAPI {
       rethrow;
     }
   }
-
 
   static Future<OrganizationRegistrationBag> registerOrganization(
       OrganizationRegistrationBag orgBag) async {
@@ -323,8 +323,7 @@ class DataAPI {
     }
   }
 
-
-  static Future<User> createUser( User user) async {
+  static Future<User> createUser(User user) async {
     String? mURL = await getUrl();
     Map bag = user.toJson();
     pp('$mm️ User about to be sent to backend: check name: ☕️ $bag');
@@ -496,10 +495,12 @@ class DataAPI {
     }
   }
 
-  static Future<LocationRequest> sendLocationRequest(LocationRequest request) async {
+  static Future<LocationRequest> sendLocationRequest(
+      LocationRequest request) async {
     String? mURL = await getUrl();
     try {
-      var result = await _callWebAPIPost('${mURL!}sendLocationRequest', request.toJson());
+      var result = await _callWebAPIPost(
+          '${mURL!}sendLocationRequest', request.toJson());
       final bag = LocationRequest.fromJson(result);
       return bag;
     } catch (e) {
@@ -507,7 +508,6 @@ class DataAPI {
       rethrow;
     }
   }
-
 
   static Future<User?> getUserById({required String userId}) async {
     String? mURL = await getUrl();
@@ -569,13 +569,67 @@ class DataAPI {
     String? mURL = await getUrl();
 
     try {
-      var result = await _sendHttpGET(
-          '${mURL!}getProjectPolygons?projectId=$projectId');
+      var result =
+          await _sendHttpGET('${mURL!}getProjectPolygons?projectId=$projectId');
       List<ProjectPolygon> list = [];
       result.forEach((m) {
         list.add(ProjectPolygon.fromJson(m));
       });
       await cacheManager.addProjectPolygons(polygons: list);
+      return list;
+    } catch (e) {
+      pp(e);
+      rethrow;
+    }
+  }
+
+  static Future<List<DailyForecast>> getDailyForecast(
+      {required double latitude,
+      required double longitude,
+      required String timeZone,
+      required String projectPositionId, required String projectId, required String projectName}) async {
+    String? mURL = await getUrl();
+
+    try {
+      var result = await _sendHttpGET(
+          '${mURL!}getDailyForecasts?latitude=$latitude&longitude=$longitude&timeZone=$timeZone');
+      List<DailyForecast> list = [];
+      result.forEach((m) {
+        var fc = DailyForecast.fromJson(m);
+        fc.projectPositionId = projectPositionId;
+        fc.date = DateTime.now().toIso8601String();
+        fc.projectName = projectName;
+        fc.projectId = projectId;
+        list.add(fc);
+      });
+      await cacheManager.addDailyForecasts(forecasts: list);
+      return list;
+    } catch (e) {
+      pp(e);
+      rethrow;
+    }
+  }
+
+  static Future<List<HourlyForecast?>> getHourlyForecast(
+      {required double latitude,
+      required double longitude,
+      required String timeZone,
+      required String projectPositionId, required String projectId, required String projectName}) async {
+    String? mURL = await getUrl();
+
+    try {
+      var result = await _sendHttpGET(
+          '${mURL!}getDailyForecasts?latitude=$latitude&longitude=$longitude&timeZone=$timeZone');
+      List<HourlyForecast> list = [];
+      result.forEach((m) {
+        var fc = HourlyForecast.fromJson(m);
+        fc.projectPositionId = projectPositionId;
+        fc.date = DateTime.now().toIso8601String();
+        fc.projectName = projectName;
+        fc.projectId = projectId;
+        list.add(fc);
+      });
+      await cacheManager.addHourlyForecasts(forecasts: list);
       return list;
     } catch (e) {
       pp(e);
@@ -631,7 +685,8 @@ class DataAPI {
         audios: [],
         projectPositions: [],
         projectPolygons: [],
-        date: DateTime.now().toIso8601String(), settings: []);
+        date: DateTime.now().toIso8601String(),
+        settings: []);
     try {
       var result =
           await _sendHttpGET('${mURL!}getProjectData?projectId=$projectId');
@@ -689,12 +744,13 @@ class DataAPI {
       rethrow;
     }
   }
+
   static Future<List<Audio>> findAudiosById(String audioId) async {
     String? mURL = await getUrl();
 
     try {
       var result =
-      await _sendHttpGET('${mURL!}findAudiosById?audioId=$audioId');
+          await _sendHttpGET('${mURL!}findAudiosById?audioId=$audioId');
       List<Audio> list = [];
       result.forEach((m) {
         list.add(Audio.fromJson(m));
@@ -962,12 +1018,10 @@ class DataAPI {
   }
 
   static Future<List<ProjectPosition>> findProjectPositionsByLocation(
-      {
-        required String organizationId,
-        required double latitude,
-        required double longitude,
-        required double radiusInKM}) async {
-
+      {required String organizationId,
+      required double latitude,
+      required double longitude,
+      required double radiusInKM}) async {
     pp('$mm findProjectPositionsByLocation: 🍏 radiusInKM: $radiusInKM');
 
     String? mURL = await getUrl();
@@ -1210,6 +1264,7 @@ class DataAPI {
       rethrow;
     }
   }
+
   static Future<Audio> addAudio(Audio audio) async {
     String? mURL = await getUrl();
 
@@ -1227,6 +1282,7 @@ class DataAPI {
       rethrow;
     }
   }
+
   static Future<Rating> addRating(Rating rating) async {
     String? mURL = await getUrl();
 
@@ -1244,6 +1300,7 @@ class DataAPI {
       rethrow;
     }
   }
+
   static Future<Condition> addCondition(Condition condition) async {
     String? mURL = await getUrl();
 
@@ -1442,6 +1499,7 @@ class DataAPI {
       rethrow;
     }
   }
+
   static Future<Video?> findVideoById(String videoId) async {
     String? mURL = await getUrl();
     assert(mURL != null);
@@ -1462,6 +1520,7 @@ class DataAPI {
       rethrow;
     }
   }
+
   static Future<Audio?> findAudioById(String audioId) async {
     String? mURL = await getUrl();
     assert(mURL != null);
@@ -1546,11 +1605,13 @@ class DataAPI {
     }
     headers['Authorization'] = 'Bearer $token';
     try {
-      var resp = await client.post(
-        Uri.parse(mUrl),
-        body: mBag,
-        headers: headers,
-      ).timeout(const Duration(seconds: timeOutInSeconds));
+      var resp = await client
+          .post(
+            Uri.parse(mUrl),
+            body: mBag,
+            headers: headers,
+          )
+          .timeout(const Duration(seconds: timeOutInSeconds));
       if (resp.statusCode == 200) {
         pp('$xz http POST call RESPONSE: 💙💙 statusCode: 👌👌👌 ${resp.statusCode} 👌👌👌 💙 for $mUrl');
       } else {
@@ -1600,10 +1661,12 @@ class DataAPI {
     headers['Authorization'] = 'Bearer $token';
 
     try {
-      var resp = await client.get(
-        Uri.parse(mUrl),
-        headers: headers,
-      ).timeout(const Duration(seconds: timeOutInSeconds));
+      var resp = await client
+          .get(
+            Uri.parse(mUrl),
+            headers: headers,
+          )
+          .timeout(const Duration(seconds: timeOutInSeconds));
       pp('$xz http GET call RESPONSE: .... : 💙 statusCode: 👌👌👌 ${resp.statusCode} 👌👌👌 💙 for $mUrl');
       var end = DateTime.now();
       pp('$xz http GET call: 🔆 elapsed time for http: ${end.difference(start).inSeconds} seconds 🔆 \n\n');
@@ -1632,7 +1695,5 @@ class DataAPI {
       pp("$xz GET Request has timed out in $timeOutInSeconds seconds 👎");
       throw 'Request has timed out in $timeOutInSeconds seconds';
     }
-
   }
-
 }
