@@ -1,5 +1,6 @@
 import 'package:animated_splash_screen/animated_splash_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:geo_monitor/library/auth/app_auth.dart';
 import 'package:get_storage/get_storage.dart';
@@ -33,19 +34,28 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   firebaseApp = await Firebase.initializeApp(
       options: DefaultFirebaseOptions.currentPlatform);
-  pp('$xx'
+  pp('$xx main: '
       ' Firebase App has been initialized: ${firebaseApp.name}, checking for authed current user');
   fbAuthedUser = fb.FirebaseAuth.instance.currentUser;
-
-  runApp(const GeoMonitorApp());
+  if (fbAuthedUser == null) {
+    pp('$xx main: fbAuthedUser is NULL ${E.redDot}${E.redDot}${E.redDot}');
+  } else {
+    pp('$xx main: fbAuthedUser is OK! ${E.leaf}${E.leaf}${E.leaf}');
+  }
+  await SystemChrome.setPreferredOrientations([
+    DeviceOrientation.portraitUp,
+    DeviceOrientation.portraitDown,
+  ]);
 
   await _initializeGeoMonitor();
+  runApp(const GeoMonitorApp());
 }
  const xx = '🎽🎽🎽🎽🎽🎽initializeGeoMonitor: ';
 
 Future<void> _initializeGeoMonitor() async {
-  await GetStorage.init('GeoPreferences1');
-  pp('$xx ... GET CACHED SETTINGS; set themeIndex .............. ');
+
+  await GetStorage.init(cacheName);
+  pp('$xx _initializeGeoMonitor: ... GET CACHED SETTINGS; set themeIndex .............. ');
   var settings = await prefsOGx.getSettings();
   if (settings != null) {
     themeIndex = settings.themeIndex!;
@@ -53,51 +63,35 @@ Future<void> _initializeGeoMonitor() async {
   }
 
   if (fbAuthedUser != null) {
-    pp('$xx Firebase user is OK, checking cached user ...');
+    pp('$xx _initializeGeoMonitor: Firebase user is OK, checking cached user ...');
     var user = await prefsOGx.getUser();
     if (user == null) {
-      pp('$xx no cached user found, will sign out of Firebase ...');
+      pp('\n\n$xx no cached user found, will set fbAuthedUser to null ...');
       fbAuthedUser = null;
-      await fb.FirebaseAuth.instance.signOut();
+      //await fb.FirebaseAuth.instance.signOut();
     } else {
-      pp('GeoMonitor user is OK');
+      pp('$xx _initializeGeoMonitor: GeoMonitor user is OK');
     }
   } else {
-    pp('Firebase has no current user!');
+    pp('$xx Firebase has no current user!');
   }
   //user = await prefsOGx.getUser();
-  pp('$xx THEME: themeIndex up top is: $themeIndex ');
+  pp('$xx _initializeGeoMonitor: THEME: themeIndex up top is: $themeIndex ');
   //pp('THEME: user up top is: ${user!.name}');
   await dotenv.load(fileName: ".env");
   pp('$xx $heartBlue DotEnv has been loaded');
-  await Hive.initFlutter('data004');
+  await Hive.initFlutter('data005');
   await cacheManager.initialize(forceInitialization: false);
+  pp('$xx ${E.heartGreen}${E.heartGreen}}${E.heartGreen} '
+      '_initializeGeoMonitor: Hive initialized and boxCollection set up');
 
   await AppAuth.listenToFirebaseAuthentication();
 
   if (settings != null) {
     pp('\n\n$xx ${E.heartGreen}${E.heartGreen}}${E
-        .heartGreen} App Settings are 🍎${settings.toJson()}🍎\n\n');
+        .heartGreen} _initializeGeoMonitor: App Settings are 🍎${settings.toJson()}🍎\n\n');
   }
-  pp('$xx ${E.heartGreen}${E.heartGreen}}${E.heartGreen} '
-      'Hive initialized and boxCollection set up');
-}
 
-Future<void> _initializeFirebase() async {
-  firebaseApp = await Firebase.initializeApp(
-      options: DefaultFirebaseOptions.currentPlatform);
-  pp('$xx'
-      ' Firebase App has been initialized: ${firebaseApp.name}, checking for authed current user');
-  // await signOutForcedForTesting();
-  fbAuthedUser = fb.FirebaseAuth.instance.currentUser;
-  if (fbAuthedUser != null) {
-    //check if user exists
-    var user = await prefsOGx.getUser();
-    if (user == null) {
-      fbAuthedUser = null;
-      await fb.FirebaseAuth.instance.signOut();
-    }
-  }
 }
 
 Future<void> signOutForcedForTesting() async {
@@ -134,17 +128,12 @@ class GeoMonitorApp extends StatelessWidget {
             theme: themeBloc.getTheme(themeIndex).darkTheme,
             darkTheme: themeBloc.getTheme(themeIndex).darkTheme,
             themeMode: ThemeMode.dark,
-            // home: const StorageTesterPage(),
             home: AnimatedSplashScreen(
               duration: 2000,
               splash: const SplashWidget(),
               animationDuration: const Duration(milliseconds: 2000),
               curve: Curves.easeInCirc,
               splashIconSize: 160.0,
-              // nextScreen: const AudioMobile(),
-              // nextScreen: const CreditCardHandlerMobile(),
-              // nextScreen: const AppSettings(),
-              // nextScreen: const PlayVideoBetter(),
               nextScreen: fbAuthedUser == null
                   ? const IntroPageViewer()
                   : const DashboardMain(),

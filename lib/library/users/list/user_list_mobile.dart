@@ -103,46 +103,44 @@ class UserListMobileState extends State<UserListMobile>
     super.dispose();
   }
 
-  List<FocusedMenuItem> _getMenuItems(User user) {
+  List<FocusedMenuItem> _getMenuItems(User someUser) {
     List<FocusedMenuItem> list = [];
 
-    list.add(FocusedMenuItem(
-        title: Text('Call User', style: myTextStyleSmallBlack(context)),
-        // backgroundColor: Theme.of(context).primaryColor,
-        trailingIcon: Icon(
-          Icons.phone,
-          color: Theme.of(context).primaryColor,
-        ),
-        onPressed: () {
-          _navigateToPhone(user);
-        }));
-    list.add(FocusedMenuItem(
-        title: Text('Send Message', style: myTextStyleSmallBlack(context)),
-        // backgroundColor: Theme.of(context).primaryColor,
-        trailingIcon: Icon(
-          Icons.send,
-          color: Theme.of(context).primaryColor,
-        ),
-        onPressed: () {
-          _navigateToMessaging(user);
-        }));
+    if (someUser.userId != _user!.userId) {
+      list.add(FocusedMenuItem(
+          title: Text('Call User', style: myTextStyleSmallBlack(context)),
+          // backgroundColor: Theme.of(context).primaryColor,
+          trailingIcon: Icon(
+            Icons.phone,
+            color: Theme.of(context).primaryColor,
+          ),
+          onPressed: () {
+            _navigateToPhone(someUser);
+          }));
+      list.add(FocusedMenuItem(
+          title: Text('Send Message', style: myTextStyleSmallBlack(context)),
+          // backgroundColor: Theme.of(context).primaryColor,
+          trailingIcon: Icon(
+            Icons.send,
+            color: Theme.of(context).primaryColor,
+          ),
+          onPressed: () {
+            _navigateToMessaging(someUser);
+          }));
+    }
+
     if (_user!.userType == UserType.fieldMonitor) {
        // pp('$mm Field monitor cannot edit any other users');
-       list.add(FocusedMenuItem(
-           title: Text(
-             'Edit My Profile',
-             style: myTextStyleSmallBlack(context),
-           ),
-           trailingIcon: Icon(
-             Icons.create,
-             color: Theme
-                 .of(context)
-                 .primaryColor,
-           ),
-           onPressed: () {
-             _navigateToUserEdit(user);
-           }));
     } else {
+      list.add(FocusedMenuItem(
+          title: Text('View Report', style: myTextStyleSmallBlack(context)),
+          trailingIcon: Icon(
+            Icons.report,
+            color: Theme.of(context).primaryColor,
+          ),
+          onPressed: () {
+            _navigateToUserReport(someUser);
+          }));
       list.add(FocusedMenuItem(
           title: Text(
             'Edit User',
@@ -156,18 +154,10 @@ class UserListMobileState extends State<UserListMobile>
                 .primaryColor,
           ),
           onPressed: () {
-            _navigateToUserEdit(user);
+            _navigateToUserEdit(someUser);
           }));
     }
-    list.add(FocusedMenuItem(
-        title: Text('View Report', style: myTextStyleSmallBlack(context)),
-        trailingIcon: Icon(
-          Icons.report,
-          color: Theme.of(context).primaryColor,
-        ),
-        onPressed: () {
-          _navigateToUserReport(user);
-        }));
+
     if (_user!.userType == UserType.orgAdministrator ||
         _user!.userType == UserType.orgExecutive) {
       list.add(FocusedMenuItem(
@@ -178,9 +168,9 @@ class UserListMobileState extends State<UserListMobile>
             color: Theme.of(context).primaryColor,
           ),
           onPressed: () {
-            _navigateToScheduler(user);
+            _navigateToScheduler(someUser);
           }));
-
+//Sg55CHHMCsBzSxi
 
       list.add(FocusedMenuItem(
           title: Text('Remove User', style: myTextStyleSmallBlack(context)),
@@ -189,7 +179,7 @@ class UserListMobileState extends State<UserListMobile>
             color: Theme.of(context).primaryColor,
           ),
           onPressed: () {
-            _navigateToKillPage(user);
+            _navigateToKillPage(someUser);
           }));
     }
     // }
@@ -213,188 +203,6 @@ class UserListMobileState extends State<UserListMobile>
     return formattedNumber;
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return SafeArea(
-        child: Scaffold(
-      key: _key,
-      appBar: AppBar(
-        title: Text(
-          'Organization Users',
-          style: Styles.whiteTiny,
-        ),
-        actions: busy? [] : [
-          IconButton(
-            icon: Icon(
-              Icons.refresh,
-              size: 20,
-              color: Theme.of(context).primaryColor,
-            ),
-            onPressed: () {
-              _getData(true);
-            },
-          ),
-          _showPlusIcon? IconButton(
-            icon: Icon(Icons.add, size: 20, color: Theme.of(context).primaryColor),
-            onPressed: () {
-              _navigateToUserEdit(null);
-            },
-          ): const SizedBox(),
-
-          _showEditorIcon? IconButton(
-            icon: Icon(Icons.edit, size: 20, color: Theme.of(context).primaryColor),
-            onPressed: () {
-              _navigateToUserEdit(_user);
-            },
-          ): const SizedBox(),
-        ],
-      ),
-      body: busy
-          ? const Center(
-              child: SizedBox(
-                width: 16,
-                height: 16,
-                child: CircularProgressIndicator(
-                  strokeWidth: 2,
-                  backgroundColor: Colors.pink,
-                ),
-              ),
-            )
-          : Padding(
-              padding: const EdgeInsets.all(12.0),
-              child: Card(
-                elevation: 4,
-                shape: getRoundedBorder(radius: 16),
-                child: Column(
-                  children: [
-                    const SizedBox(
-                      height: 24,
-                    ),
-                    Text(
-                      _user!.organizationName!,
-                      style: myTextStyleLarge(context),
-                    ),
-                    const SizedBox(
-                      height: 12,
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(
-                          'Admins & Field Monitors',
-                          style: myTextStyleSmall(context),
-                        ),
-                        const SizedBox(
-                          width: 8,
-                        ),
-                      ],
-                    ),
-                    const SizedBox(
-                      height: 24,
-                    ),
-                    Expanded(
-                      child: bd.Badge(
-                        badgeContent: InkWell(
-                          onTap: _sort,
-                          child: Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Text(
-                              '${_users.length}',
-                              style: myTextStyleSmallBlack(context),
-                            ),
-                          ),
-                        ),
-                        badgeStyle:  bd.BadgeStyle(
-                          badgeColor: Theme.of(context).primaryColor,
-                          elevation: 8, padding: const EdgeInsets.all(4),
-                        ),
-                        position:  bd.BadgePosition.topEnd(top: -16, end: 12),
-                        child: AnimatedBuilder(
-                          animation: _animationController,
-                          builder: (BuildContext context, Widget? child) {
-                            return FadeScaleTransition(
-                              animation: _animationController,
-                              child: child,
-                            );
-                          },
-                          child: ListView.builder(
-                            itemCount: _users.length,
-                            itemBuilder: (BuildContext context, int index) {
-                              var user = _users.elementAt(index);
-                              final formattedNumber =
-                                  _getFormatted(user.cellphone!);
-                              return FocusedMenuHolder(
-                                menuOffset: 20,
-                                duration: const Duration(milliseconds: 300),
-                                menuItems: _getMenuItems(user),
-                                animateMenuItems: true,
-                                openWithTap: true,
-                                onPressed: () {
-                                  pp('$mm. 💛️💛️💛️ tapped FocusedMenuHolder ...');
-                                },
-                                child: Card(
-                                  elevation: 2,
-                                  shape: RoundedRectangleBorder(
-                                      borderRadius:
-                                          BorderRadius.circular(16.0)),
-                                  child: Padding(
-                                    padding: const EdgeInsets.all(4.0),
-                                    child: Column(
-                                      children: [
-                                        Padding(
-                                          padding: const EdgeInsets.symmetric(
-                                              vertical: 6.0),
-                                          child: Row(
-                                            children: [
-                                              user.thumbnailUrl == null? const CircleAvatar(
-                                                radius: 24,
-                                              ): CircleAvatar(
-                                                radius: 24,
-                                                backgroundImage: NetworkImage(user.thumbnailUrl!),
-                                              ),
-                                              const SizedBox(
-                                                width: 16,
-                                              ),
-
-                                              Flexible(
-                                                child: Row(
-                                                  children: [
-                                                    Text(
-                                                      user.name!,
-                                                      style: myTextStyleSmall(
-                                                          context),
-                                                    ),
-                                                  ],
-                                                ),
-                                              ),
-                                              const SizedBox(
-                                                height: 8,
-                                              ),
-
-                                              // const SizedBox(width:24, height: 24,
-                                              //   child: CircleAvatar(
-                                              //       backgroundImage: AssetImage(
-                                              //           'assets/batman.png')),
-                                              // ),
-                                            ],
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                              );
-                            },
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-    ));
-  }
 
   void _navigateToUserEdit(User? user) async {
     if (_user!.userType == UserType.fieldMonitor) {
@@ -511,4 +319,197 @@ class UserListMobileState extends State<UserListMobile>
 
     });
   }
+
+  @override
+  Widget build(BuildContext context) {
+    return SafeArea(
+        child: Scaffold(
+          key: _key,
+          appBar: AppBar(
+            title: Text(
+              'Organization Users',
+              style: Styles.whiteTiny,
+            ),
+            actions: busy? [] : [
+              IconButton(
+                icon: Icon(
+                  Icons.refresh,
+                  size: 20,
+                  color: Theme.of(context).primaryColor,
+                ),
+                onPressed: () {
+                  _getData(true);
+                },
+              ),
+              _showPlusIcon? IconButton(
+                icon: Icon(Icons.add, size: 20, color: Theme.of(context).primaryColor),
+                onPressed: () {
+                  _navigateToUserEdit(null);
+                },
+              ): const SizedBox(),
+
+              _showEditorIcon? IconButton(
+                icon: Icon(Icons.edit, size: 20, color: Theme.of(context).primaryColor),
+                onPressed: () {
+                  _navigateToUserEdit(_user);
+                },
+              ): const SizedBox(),
+            ],
+          ),
+          body: busy
+              ? const Center(
+            child: SizedBox(
+              width: 16,
+              height: 16,
+              child: CircularProgressIndicator(
+                strokeWidth: 2,
+                backgroundColor: Colors.pink,
+              ),
+            ),
+          )
+              : Padding(
+            padding: const EdgeInsets.all(12.0),
+            child: Card(
+              elevation: 4,
+              shape: getRoundedBorder(radius: 16),
+              child: Column(
+                children: [
+                  const SizedBox(
+                    height: 24,
+                  ),
+                  Text(
+                    _user!.organizationName!,
+                    style: myTextStyleLarge(context),
+                  ),
+                  const SizedBox(
+                    height: 12,
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        'Admins & Field Monitors',
+                        style: myTextStyleSmall(context),
+                      ),
+                      const SizedBox(
+                        width: 8,
+                      ),
+                    ],
+                  ),
+                  const SizedBox(
+                    height: 24,
+                  ),
+                  Expanded(
+                    child: bd.Badge(
+                      badgeContent: InkWell(
+                        onTap: _sort,
+                        child: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Text(
+                            '${_users.length}',
+                            style: myTextStyleSmallBlack(context),
+                          ),
+                        ),
+                      ),
+                      badgeStyle:  bd.BadgeStyle(
+                        badgeColor: Theme.of(context).primaryColor,
+                        elevation: 8, padding: const EdgeInsets.all(4),
+                      ),
+                      position:  bd.BadgePosition.topEnd(top: -16, end: 12),
+                      child: AnimatedBuilder(
+                        animation: _animationController,
+                        builder: (BuildContext context, Widget? child) {
+                          return FadeScaleTransition(
+                            animation: _animationController,
+                            child: child,
+                          );
+                        },
+                        child: ListView.builder(
+                          itemCount: _users.length,
+                          itemBuilder: (BuildContext context, int index) {
+                            var user = _users.elementAt(index);
+                            var created = DateTime.parse(user.created!);
+                            var now = DateTime.now();
+                            var ms = now.millisecondsSinceEpoch - created.millisecondsSinceEpoch;
+                            var deltaDays = Duration(milliseconds: ms).inDays;
+                            return FocusedMenuHolder(
+                              menuOffset: 20,
+                              duration: const Duration(milliseconds: 300),
+                              menuItems: _getMenuItems(user),
+                              animateMenuItems: true,
+                              openWithTap: true,
+                              onPressed: () {
+                                pp('$mm. 💛️💛️💛️ tapped FocusedMenuHolder ...');
+                              },
+                              child: Card(
+                                elevation: 2,
+                                shape: RoundedRectangleBorder(
+                                    borderRadius:
+                                    BorderRadius.circular(16.0)),
+                                child: Padding(
+                                  padding: const EdgeInsets.all(4.0),
+                                  child: Column(
+                                    children: [
+                                      Padding(
+                                        padding: const EdgeInsets.symmetric(
+                                            vertical: 6.0),
+                                        child: Row(
+                                          children: [
+                                            user.thumbnailUrl == null? const CircleAvatar(
+                                              radius: 24,
+                                            ): CircleAvatar(
+                                              radius: 24,
+                                              backgroundImage: NetworkImage(user.thumbnailUrl!),
+                                            ),
+                                            const SizedBox(
+                                              width: 16,
+                                            ),
+
+                                            Flexible(
+                                              child: Row(
+                                                children: [
+                                                  Text(
+                                                    user.name!,
+                                                    style: myTextStyleSmall(
+                                                        context),
+                                                  ),
+                                                  const SizedBox(width: 24,),
+                                                  deltaDays < 5? const SizedBox(width: 8, height: 8,
+                                                    child: CircularProgressIndicator(
+                                                      strokeWidth: 3, backgroundColor: Colors.pink,
+                                                    ),): const SizedBox(),
+                                                ],
+                                              ),
+                                            ),
+                                            const SizedBox(
+                                              height: 8,
+                                            ),
+
+                                            // const SizedBox(width:24, height: 24,
+                                            //   child: CircleAvatar(
+                                            //       backgroundImage: AssetImage(
+                                            //           'assets/batman.png')),
+                                            // ),
+                                          ],
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            );
+                          },
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ));
+  }
+
 }
+
+

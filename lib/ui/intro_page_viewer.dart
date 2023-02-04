@@ -3,13 +3,14 @@ import 'dart:async';
 import 'package:dots_indicator/dots_indicator.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart' as fb;
-import 'package:geo_monitor/library/api/prefs_og.dart';
-import 'package:geo_monitor/library/generic_functions.dart';
 import 'package:page_transition/page_transition.dart';
 
 
+import '../library/api/prefs_og.dart';
 import '../library/emojis.dart';
 import '../library/functions.dart';
+import '../library/generic_functions.dart';
+import '../library/hive_util.dart';
 import '../library/users/org_registration.dart';
 import '../library/data/user.dart' as ur;
 import '../library/users/phone_login.dart';
@@ -17,7 +18,7 @@ import 'dashboard/dashboard_mobile.dart';
 import 'intro_page_one.dart';
 
 class IntroPageViewer extends StatefulWidget {
-  const IntroPageViewer({Key? key}) : super(key: key);
+  const IntroPageViewer({Key? key, }) : super(key: key);
 
   @override
   IntroPageViewerState createState() => IntroPageViewerState();
@@ -32,9 +33,8 @@ class IntroPageViewerState extends State<IntroPageViewer>
   ur.User? user;
   late StreamSubscription<String> killSubscription;
 
-
   final mm =
-      '${E.pear}${E.pear}${E.pear}${E.pear} IntroPageViewer: ';
+      '${E.pear}${E.pear}${E.pear}${E.pear} IntroPageViewer: ${E.pear} ';
 
   @override
   void initState() {
@@ -43,16 +43,34 @@ class IntroPageViewerState extends State<IntroPageViewer>
     _getAuthenticationStatus();
     killSubscription = listenForKill(context: context);
 
-
   }
 
   void _getAuthenticationStatus() async {
-    var cUser = firebaseAuth.currentUser;
-    if (cUser != null) {
-      setState(() {
-        authed = true;
-      });
+    pp('\n\n$mm _getAuthenticationStatus ....... '
+        'check both Firebase user ang Geo user');
+    var user = await prefsOGx.getUser();
+    var firebaseUser = firebaseAuth.currentUser;
+
+    if (user != null && firebaseUser != null) {
+      pp('$mm _getAuthenticationStatus .......  '
+          '🥬🥬🥬auth is DEFINITELY authenticated and OK');
+      authed = true;
+    } else {
+      pp('$mm _getAuthenticationStatus ....... NOT AUTHENTICATED! '
+          '${E.redDot}${E.redDot}${E.redDot} ... will clean house!!');
+      authed = false;
+      //todo - ensure that the right thing gets done!
+      prefsOGx.deleteUser();
+      firebaseAuth.signOut();
+      cacheManager.initialize(forceInitialization: true);
+      pp('$mm _getAuthenticationStatus .......  '
+          '${E.redDot}${E.redDot}${E.redDot}'
+          'the device should be ready for sign in or registration');
     }
+    pp('$mm _getAuthenticationStatus ....... setting state ');
+    setState(() {
+
+    });
   }
 
   void _navigateToDashboard() {
@@ -70,6 +88,7 @@ class IntroPageViewerState extends State<IntroPageViewer>
       pp('User is null,  🔆 🔆 🔆 🔆 cannot navigate to Dashboard');
     }
   }
+
   void _navigateToDashboardWithoutUser() {
 
       Navigator.of(context).pop();
@@ -84,7 +103,9 @@ class IntroPageViewerState extends State<IntroPageViewer>
   }
 
   Future<void> _navigateToSignIn() async {
-    var result = await Navigator.push(
+    pp('$mm _navigateToSignIn ....... ');
+
+    await Navigator.push(
         context,
         PageTransition(
             type: PageTransitionType.scale,
@@ -92,15 +113,20 @@ class IntroPageViewerState extends State<IntroPageViewer>
             duration: const Duration(seconds: 1),
             child: const PhoneLogin()));
 
-    var user = await prefsOGx.getUser();
+    pp('$mm _navigateToSignIn ....... back from PhoneLogin with maybe a user ..');
+    user = await prefsOGx.getUser();
+    pp('\n\n$mm 😡😡Returned from sign in, checking if login succeeded 😡');
+
     if (user != null) {
-      pp('$mm 👌👌👌 Returned from sign in; will navigate to Dashboard :  👌👌👌 ${result.toJson()}');
+      pp('$mm _navigateToSignIn: 👌👌👌 Returned from sign in; '
+          'will navigate to Dashboard :  👌👌👌 ${user!.toJson()}');
       setState(() {
-        user = result;
+
       });
       _navigateToDashboard();
     } else {
-      pp('$mm 😡😡Returned from sign in; cached user not found. NOT GOOD! 😡');
+      pp('$mm 😡😡 Returned from sign in; cached user not found. '
+          '${E.redDot}${E.redDot} NOT GOOD! ${E.redDot}');
       if (mounted) {
         showToast(message: 'Phone Sign In Failed',
             duration: const Duration(seconds: 5),

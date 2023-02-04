@@ -52,7 +52,22 @@ class DailyForecastPageState extends State<DailyForecastPage>
       user = await prefsOGx.getUser();
       positions = await organizationBloc.getProjectPositions(
           organizationId: user!.organizationId!, forceRefresh: false);
+      //todo filter positions - use distance to identify what positions qualfy ..
+      //for now - 1 position per project
+      var map = HashMap<String, ProjectPosition>();
       for (var pos in positions) {
+        if (map.containsKey(pos.projectId)) {
+          //ignore
+        } else {
+          map[pos.projectId!] = pos;
+        }
+      }
+      //todo - map contains the first position of every project
+      //for now, take everyone but later filter with distance from here
+      var mPositions = map.values.toList();
+      pp('\n$mm getting daily forecast for project positions: ${mPositions.length} 🍎🍎🍎🍎');
+
+      for (var pos in mPositions) {
         String tz = latLngToTimezoneString(
             pos.position!.coordinates[1], pos.position!.coordinates[0]);
         final forecasts = await DataAPI.getDailyForecast(
@@ -63,12 +78,8 @@ class DailyForecastPageState extends State<DailyForecastPage>
             projectName: pos.projectName!,
             projectPositionId: pos.projectPositionId!);
 
-        pp('$mm daily forecast received: 🍎🍎🍎🍎 ${forecasts.length} 🍎🍎🍎🍎');
+        pp('$mm daily forecast received: ${pos.projectName} 🍎 ${forecasts.length} forecasts🍎🍎🍎🍎');
         //
-        if (forecasts.isNotEmpty) {
-          pp('$mm 🔵🔵🔵 First Daily Forecast: 🔵🔵🔵 '
-              '${prettyPrint(forecasts[0].toJson(), 'Daily Forecast')} 🔵');
-        }
         forecastBags
             .add(ForecastBag(projectPosition: pos, forecasts: forecasts));
       }
@@ -168,12 +179,12 @@ class _DayForecastCardState extends State<DayForecastCard> {
     return Stack(
       children: [
         SizedBox(
-          height: 360,
+          height: 400,
           child: Card(
             elevation: 4,
             shape: getRoundedBorder(radius: 16),
             child: Padding(
-              padding: const EdgeInsets.all(12.0),
+              padding: const EdgeInsets.all(8.0),
               child: Column(
                 children: [
                   const SizedBox(
@@ -203,17 +214,20 @@ class _DayForecastCardState extends State<DayForecastCard> {
                       ),
                       const SizedBox(width: 4,),
                        Text(' \u2103 ', style: myTextStyleMedium(context),),
-                      const SizedBox(width: 24,),
+                      const SizedBox(width: 16,),
                       const Image(
-                        width: 48, height: 48,
+                        width: 32, height: 32,
                         image: AssetImage('assets/weather/cloudy.png', ),
                       ),
-                      const SizedBox(width: 24,),
+                      const SizedBox(width: 12,),
                     ],
                   ),
                   const SizedBox(height: 12,),
                   SunriseSunset(sunrise: getFormattedDateHour(widget.forecast.sunrise!),
                       sunset: getFormattedDateHour( widget.forecast.sunset!)),
+                  Text('Rain : ${widget.forecast.rainSum}'),
+                  Text('Showers ${widget.forecast.showersSum}'),
+                  Text('Min Temperature:  ${widget.forecast.minTemperature}'),
                 ],
               ),
             ),
@@ -228,7 +242,7 @@ class SunriseSunset extends StatelessWidget {
   final String sunrise, sunset;
   @override
   Widget build(BuildContext context) {
-    return  SizedBox(height: 60, width: 300,
+    return  SizedBox(height: 60, width: 240,
       child: Column(
         children: [
           Row(mainAxisAlignment: MainAxisAlignment.center,

@@ -4,17 +4,9 @@ import 'package:animations/animations.dart';
 import 'package:firebase_auth/firebase_auth.dart' as fb;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:geo_monitor/library/bloc/zip_bloc.dart';
-import 'package:geo_monitor/library/data/geofence_event.dart';
-import 'package:geo_monitor/library/data/settings_model.dart';
-import 'package:geo_monitor/library/generic_functions.dart';
-import 'package:geo_monitor/library/ui/maps/project_map_mobile.dart';
-import 'package:geo_monitor/library/ui/media/list/project_media_list_mobile.dart';
-import 'package:geo_monitor/library/ui/weather/daily_forecast_page.dart';
-import 'package:geo_monitor/ui/chat/chat_page.dart';
+import 'package:geo_monitor/library/users/full_user_photo.dart';
 import 'package:geofence_service/geofence_service.dart';
 
-import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:universal_platform/universal_platform.dart';
@@ -28,22 +20,26 @@ import '../../library/bloc/uploader.dart';
 import '../../library/data/audio.dart';
 import '../../library/data/data_bag.dart';
 import '../../library/data/field_monitor_schedule.dart';
+import '../../library/data/geofence_event.dart';
 import '../../library/data/photo.dart';
 import '../../library/data/project.dart';
 import '../../library/data/project_polygon.dart';
 import '../../library/data/project_position.dart';
+import '../../library/data/settings_model.dart';
 import '../../library/data/user.dart';
 import '../../library/data/video.dart';
 import '../../library/emojis.dart';
 import '../../library/functions.dart';
 import '../../library/geofence/geofencer_two.dart';
+import '../../library/ui/maps/project_map_mobile.dart';
+import '../../library/ui/media/list/project_media_list_mobile.dart';
 import '../../library/ui/media/user_media_list/user_media_list_mobile.dart';
-import '../../library/ui/message/message_main.dart';
 import '../../library/ui/project_list/project_chooser.dart';
 import '../../library/ui/project_list/project_list_mobile.dart';
 import '../../library/ui/settings.dart';
+import '../../library/ui/weather/daily_forecast_page.dart';
 import '../../library/users/list/user_list_main.dart';
-import '../../main.dart';
+import '../chat/chat_page.dart';
 import '../intro_page_viewer.dart';
 
 class DashboardMobile extends StatefulWidget {
@@ -378,7 +374,6 @@ class DashboardMobileState extends State<DashboardMobile>
         throw Exception("Tax man is fucked! User is not found");
       }
 
-      pp('$mm testBag got here!!!!');
       var bag = await organizationBloc.getOrganizationData(
           organizationId: user!.organizationId!, forceRefresh: forceRefresh);
       await _extractData(bag);
@@ -592,6 +587,25 @@ class DashboardMobileState extends State<DashboardMobile>
     }
   }
 
+  Future<void> _navigateToFullUserPhoto() async {
+    pp('$mm .................. _navigateToFullUserPhoto  ....');
+    user = await prefsOGx.getUser();
+    if (user != null) {
+      if (mounted) {
+        Navigator.push(
+            context,
+            PageTransition(
+                type: PageTransitionType.scale,
+                alignment: Alignment.topLeft,
+                duration: const Duration(seconds: 1),
+                child: FullUserPhoto(user: user!)));
+        setState(() {
+
+        });
+      }
+    }
+  }
+
   void _navigateToSettings() {
     pp('$mm .................. _navigateToIntro to Settings ....');
     if (mounted) {
@@ -713,8 +727,6 @@ class DashboardMobileState extends State<DashboardMobile>
         break;
     }
   }
-  // bool _showProjectChooser = false;
-  // bool _showProjectSelected = false;
 
   Project? selectedProject;
 
@@ -748,6 +760,7 @@ class DashboardMobileState extends State<DashboardMobile>
         child: Scaffold(
           key: _key,
           appBar: AppBar(
+            leading: const SizedBox(),
             actions: [
               IconButton(
                   icon: Icon(
@@ -780,33 +793,58 @@ class DashboardMobileState extends State<DashboardMobile>
               )
             ],
             bottom: PreferredSize(
-              preferredSize: const Size.fromHeight(100),
+              preferredSize: const Size.fromHeight(120),
               child: Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: Column(
                   children: [
                     user == null
                         ? const SizedBox()
-                        : Text(
-                            user!.organizationName!,
-                            style: GoogleFonts.lato(
-                              textStyle: Theme.of(context).textTheme.bodySmall,
-                              fontWeight: FontWeight.w900,
-                            ),
+                        : Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text(
+                                user!.organizationName!,
+                                style: GoogleFonts.lato(
+                                  textStyle:
+                                      Theme.of(context).textTheme.bodySmall,
+                                  fontWeight: FontWeight.w900,
+                                ),
+                              ),
+                            ],
                           ),
                     const SizedBox(
                       height: 16,
                     ),
                     user == null
                         ? const SizedBox()
-                        : Text(user!.name!,
-                            style: GoogleFonts.lato(
-                                textStyle:
-                                    Theme.of(context).textTheme.titleLarge,
-                                fontWeight: FontWeight.normal,
-                                color: Theme.of(context).primaryColor)),
+                        : Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text(user!.name!,
+                                  style: GoogleFonts.lato(
+                                      textStyle: Theme.of(context)
+                                          .textTheme
+                                          .titleLarge,
+                                      fontWeight: FontWeight.normal,
+                                      color: Theme.of(context).primaryColor)),
+                              const SizedBox(
+                                width: 8,
+                              ),
+                              user!.thumbnailUrl == null
+                                  ? const SizedBox()
+                                  : GestureDetector(
+                                      onTap: _navigateToFullUserPhoto,
+                                      child: CircleAvatar(
+                                        backgroundImage:
+                                            NetworkImage(user!.thumbnailUrl!),
+                                        radius: 28,
+                                      ),
+                                    ),
+                            ],
+                          ),
                     const SizedBox(
-                      height: 12,
+                      height: 0,
                     ),
                     user == null
                         ? const Text('')
@@ -818,7 +856,7 @@ class DashboardMobileState extends State<DashboardMobile>
                             ),
                           ),
                     const SizedBox(
-                      height: 12,
+                      height: 4,
                     ),
                   ],
                 ),
@@ -910,7 +948,7 @@ class DashboardMobileState extends State<DashboardMobile>
                                       height: 8,
                                     ),
                                     Text(
-                                      'Users',
+                                      'Members',
                                       style: Styles.greyLabelSmall,
                                     )
                                   ],
@@ -1022,41 +1060,6 @@ class DashboardMobileState extends State<DashboardMobile>
                             ),
                           ),
                           AnimatedBuilder(
-                            animation: _polygonAnimationController,
-                            builder: (BuildContext context, Widget? child) {
-                              return FadeScaleTransition(
-                                animation: _polygonAnimationController,
-                                child: child,
-                              );
-                            },
-                            child: GestureDetector(
-                              onTap: () {
-                                _showProjectDialog(typePolygons);
-                              },
-                              child: Card(
-                                elevation: 8,
-                                shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(16.0)),
-                                child: Column(
-                                  children: [
-                                    const SizedBox(
-                                      height: 32,
-                                    ),
-                                    Text('${_projectPolygons.length}',
-                                        style: style),
-                                    const SizedBox(
-                                      height: 8,
-                                    ),
-                                    Text(
-                                      'Areas',
-                                      style: Styles.greyLabelSmall,
-                                    )
-                                  ],
-                                ),
-                              ),
-                            ),
-                          ),
-                          AnimatedBuilder(
                             animation: _positionAnimationController,
                             builder: (BuildContext context, Widget? child) {
                               return FadeScaleTransition(
@@ -1091,6 +1094,42 @@ class DashboardMobileState extends State<DashboardMobile>
                               ),
                             ),
                           ),
+                          AnimatedBuilder(
+                            animation: _polygonAnimationController,
+                            builder: (BuildContext context, Widget? child) {
+                              return FadeScaleTransition(
+                                animation: _polygonAnimationController,
+                                child: child,
+                              );
+                            },
+                            child: GestureDetector(
+                              onTap: () {
+                                _showProjectDialog(typePolygons);
+                              },
+                              child: Card(
+                                elevation: 8,
+                                shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(16.0)),
+                                child: Column(
+                                  children: [
+                                    const SizedBox(
+                                      height: 32,
+                                    ),
+                                    Text('${_projectPolygons.length}',
+                                        style: style),
+                                    const SizedBox(
+                                      height: 8,
+                                    ),
+                                    Text(
+                                      'Areas',
+                                      style: Styles.greyLabelSmall,
+                                    )
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ),
+
                           AnimatedBuilder(
                             animation: _polygonAnimationController,
                             builder: (BuildContext context, Widget? child) {

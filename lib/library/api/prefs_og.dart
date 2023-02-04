@@ -8,12 +8,13 @@ import '../data/user.dart';
 import '../functions.dart';
 
 final PrefsOGx prefsOGx = PrefsOGx();
+const String cacheName = 'GeoPreferences3';
 
 class PrefsOGx {
   static const mm = '🔵🔵🔵🔵🔵🔵 PrefsOGx 🔵🔵🔵 : ',
       bb = '🦠🦠🦠🦠🦠🦠🦠 PrefsOGx  🦠: ';
 
-  final box = GetStorage("GeoPreferences");
+  final box = GetStorage(cacheName);
 
   Future setFCMSubscriptionFlag() async {
     await box.write('fcm', true);
@@ -45,7 +46,7 @@ class PrefsOGx {
   }
 
   Future<User?> getUser() async {
-    pp('\n$mm ......... getting user from cache! ...');
+    // pp('\n$mm ......... getting user from cache! ...');
     User? user;
     var mJson = await box.read('user');
     if (mJson == null) {
@@ -54,7 +55,7 @@ class PrefsOGx {
       return null;
     } else {
       user = User.fromJson(mJson);
-      pp("$mm getUser 🧩 🧩 🧩 🧩 🧩 retrieved .. ${user.name}  🔴🔴");
+      pp("$mm getUser 🧩🧩🧩🧩🧩 retrieved .. ${user.name}  🔴🔴");
       return user;
     }
   }
@@ -66,7 +67,7 @@ class PrefsOGx {
   }
 
   Future<SettingsModel?> getSettings() async {
-    pp('\n$mm ......... getting settings from cache! ...');
+    // pp('\n$mm ......... getting settings from cache! ...');
     SettingsModel? settings;
     var mJson = await box.read('settings');
     if (mJson == null) {
