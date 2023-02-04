@@ -127,7 +127,7 @@ class UserListMobileState extends State<UserListMobile>
           _navigateToMessaging(user);
         }));
     if (_user!.userType == UserType.fieldMonitor) {
-       pp('$mm Field monitor cannot edit any other users');
+       // pp('$mm Field monitor cannot edit any other users');
        list.add(FocusedMenuItem(
            title: Text(
              'Edit My Profile',
