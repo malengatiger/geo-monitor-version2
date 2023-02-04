@@ -1069,14 +1069,14 @@ class CacheManager {
   Future addProject({required Project project}) async {
     var key = '${project.organizationId}_${project.projectId}';
     await _projectBox?.put(key, project);
-    pp('$mm Project added to local cache:  🔵 🔵 ${project.name} ');
+    // pp('$mm Project added to local cache:  🔵 🔵 ${project.name} ');
   }
 
   Future addProjectPosition({required ProjectPosition projectPosition}) async {
     var key =
         '${projectPosition.organizationId}_${projectPosition.projectId}_${projectPosition.projectPositionId}';
     await _positionBox?.put(key, projectPosition);
-    pp('$mm ProjectPosition added to local cache:  🔵 🔵 ${projectPosition.projectName} ');
+    // pp('$mm ProjectPosition added to local cache:  🔵 🔵 ${projectPosition.projectName} ');
   }
 
   Future addUser({required User user}) async {

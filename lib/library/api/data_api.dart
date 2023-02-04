@@ -1684,7 +1684,7 @@ class DataAPI {
       return mJson;
     } on SocketException {
       pp('$xz No Internet connection, really means that server cannot be reached 😑');
-      throw 'GeoMonitor server cannot be reached at this time. Please try later';
+      throw 'GeoMonitor server cannot be reached at this time. Please try again!';
     } on HttpException {
       pp("$xz HttpException occurred 😱");
       throw 'HttpException';

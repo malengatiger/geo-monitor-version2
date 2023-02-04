@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 import 'package:geo_monitor/library/api/data_api.dart';
+import 'package:geo_monitor/library/emojis.dart';
 import 'package:http/http.dart' as http;
 import 'package:path_provider/path_provider.dart';
 import 'package:archive/archive_io.dart';
@@ -10,6 +11,7 @@ import 'package:archive/archive_io.dart';
 import '../auth/app_auth.dart';
 import '../data/data_bag.dart';
 import '../functions.dart';
+import '../hive_util.dart';
 
 final ZipBloc zipBloc = ZipBloc();
 class ZipBloc {
@@ -34,7 +36,22 @@ class ZipBloc {
     var url = await DataAPI.getUrl();
     var mUrl = '${url!}getOrganizationDataZippedFile?organizationId=$organizationId';
 
-     return _getDataBag(mUrl);
+     var bag = await _getDataBag(mUrl);
+     //todo cache bag contents here
+    pp('\n$xz Data returned from server, adding to Hive cache ...');
+    await cacheManager.addProjects(projects: bag!.projects!);
+    await cacheManager.addProjectPolygons(polygons: bag.projectPolygons!);
+    await cacheManager.addProjectPositions(positions: bag.projectPositions!);
+    await cacheManager.deleteUsers();
+    await cacheManager.addUsers(users: bag.users!);
+    await cacheManager.addPhotos(photos: bag.photos!);
+    await cacheManager.addVideos(videos: bag.videos!);
+    await cacheManager.addAudios(audios: bag.audios!);
+    await cacheManager.addSettingsList(settings: bag.settings!);
+    await cacheManager.addFieldMonitorSchedules(
+        schedules: bag.fieldMonitorSchedules!);
+    pp('\n$xz Org Data saved in Hive cache ...');
+    return bag;
   }
 
   Future<DataBag?> _getDataBag(String mUrl) async {
@@ -110,8 +127,10 @@ class ZipBloc {
       }
       return resp;
     } on SocketException {
-      pp('$xz No Internet connection, really means that server cannot be reached 😑');
-      throw 'GeoMonitor server cannot be reached at this time. Please try later';
+      pp('\n\n$xz SocketException: ${E.redDot}${E.redDot}${E.redDot} '
+          'No Internet connection, really means that server cannot be reached; 😑'
+          ' ${E.redDot} this looks like a fuck up of some kind!!');
+      throw 'GeoMonitor server cannot be reached at this time. Please try again!';
     } on HttpException {
       pp("$xz HttpException occurred 😱");
       throw 'HttpException';
@@ -134,6 +153,7 @@ class ZipBloc {
     final videos = bag.videos!.length;
     final audios = bag.audios!.length;
     final schedules = bag.fieldMonitorSchedules!.length;
+
     pp('\n\n$xz all org data extracted from zipped file on: 🔵🔵🔵${bag.date}');
     pp('$xz projects: $projects');
     pp('$xz users: $users');

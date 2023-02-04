@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:dots_indicator/dots_indicator.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart' as fb;
+import 'package:geo_monitor/library/api/prefs_og.dart';
 import 'package:geo_monitor/library/generic_functions.dart';
 import 'package:page_transition/page_transition.dart';
 
@@ -83,7 +84,6 @@ class IntroPageViewerState extends State<IntroPageViewer>
   }
 
   Future<void> _navigateToSignIn() async {
-    //mainSetup();
     var result = await Navigator.push(
         context,
         PageTransition(
@@ -92,14 +92,15 @@ class IntroPageViewerState extends State<IntroPageViewer>
             duration: const Duration(seconds: 1),
             child: const PhoneLogin()));
 
-    if (result is ur.User) {
-      pp(' 👌👌👌 Returned from sign in; will navigate to Dashboard :  👌👌👌 ${result.toJson()}');
+    var user = await prefsOGx.getUser();
+    if (user != null) {
+      pp('$mm 👌👌👌 Returned from sign in; will navigate to Dashboard :  👌👌👌 ${result.toJson()}');
       setState(() {
         user = result;
       });
       _navigateToDashboard();
     } else {
-      pp(' 😡  😡  Returned from sign in is NOT a user :  😡 $result');
+      pp('$mm 😡😡Returned from sign in; cached user not found. NOT GOOD! 😡');
       if (mounted) {
         showToast(message: 'Phone Sign In Failed',
             duration: const Duration(seconds: 5),

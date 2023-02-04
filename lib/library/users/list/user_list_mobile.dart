@@ -128,6 +128,20 @@ class UserListMobileState extends State<UserListMobile>
         }));
     if (_user!.userType == UserType.fieldMonitor) {
        pp('$mm Field monitor cannot edit any other users');
+       list.add(FocusedMenuItem(
+           title: Text(
+             'Edit My Profile',
+             style: myTextStyleSmallBlack(context),
+           ),
+           trailingIcon: Icon(
+             Icons.create,
+             color: Theme
+                 .of(context)
+                 .primaryColor,
+           ),
+           onPressed: () {
+             _navigateToUserEdit(user);
+           }));
     } else {
       list.add(FocusedMenuItem(
           title: Text(
@@ -385,6 +399,7 @@ class UserListMobileState extends State<UserListMobile>
   void _navigateToUserEdit(User? user) async {
     if (_user!.userType == UserType.fieldMonitor) {
       if (_user!.userId != user?.userId!) {
+
         return;
       }
     }

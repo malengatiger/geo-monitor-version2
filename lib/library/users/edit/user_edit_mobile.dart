@@ -234,16 +234,25 @@ class UserEditMobileState extends State<UserEditMobile>
   }
 
   void _navigateToAvatarBuilder() async {
-    Navigator.of(context).pop();
-    await Navigator.push(
+    //Navigator.of(context).pop();
+    var user = await Navigator.push(
         context,
         PageTransition(
             type: PageTransitionType.scale,
             alignment: Alignment.topLeft,
             duration: const Duration(seconds: 2),
             child: AvatarEditor(
-              user: widget.user!,
+              user: widget.user!, goToDashboardWhenDone: false,
             )));
+    if (user is User) {
+      if (widget.user != null) {
+        widget.user!.imageUrl = user.imageUrl;
+        widget.user!.thumbnailUrl = user.thumbnailUrl;
+        setState(() {
+
+        });
+      }
+    }
   }
 
   void _navigateToFullPhoto() async {

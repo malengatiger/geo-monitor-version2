@@ -196,7 +196,7 @@ class FCMBloc {
     await messaging.subscribeToTopic('settings_${user.organizationId}');
     pp("$mm ..... subscribed to topic: settings_${user.organizationId}");
 
-    if (user!.userType != UserType.fieldMonitor) {
+    if (user.userType != UserType.fieldMonitor) {
       await messaging.subscribeToTopic('geofenceEvents_${user.organizationId}');
       pp("$mm ..... subscribed to topic: geofenceEvents_${user
           .organizationId}");
@@ -343,11 +343,14 @@ class FCMBloc {
       }
     }
     if (data['geofenceEvent'] != null) {
-      pp("$mm processFCMMessage  🔵 🔵 🔵 ........................... cache GEOFENCE EVENT  🍎  🍎");
-      var m = jsonDecode(data['geofenceEvent']);
-      var msg = GeofenceEvent.fromJson(m);
-      await cacheManager.addGeofenceEvent(geofenceEvent: msg);
-      _geofenceController.sink.add(msg);
+      if (user!.userType != UserType.fieldMonitor) {
+        pp(
+            "$mm processFCMMessage  🔵 🔵 🔵 ........................... cache GEOFENCE EVENT  🍎  🍎");
+        var m = jsonDecode(data['geofenceEvent']);
+        var msg = GeofenceEvent.fromJson(m);
+        await cacheManager.addGeofenceEvent(geofenceEvent: msg);
+        _geofenceController.sink.add(msg);
+      }
 
     }
 

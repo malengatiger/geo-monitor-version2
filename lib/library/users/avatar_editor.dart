@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -7,15 +8,18 @@ import 'package:geo_monitor/library/api/data_api.dart';
 import 'package:geo_monitor/library/api/prefs_og.dart';
 import 'package:geo_monitor/library/functions.dart';
 import 'package:geo_monitor/library/hive_util.dart';
+import 'package:geo_monitor/ui/dashboard/dashboard_mobile.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:page_transition/page_transition.dart';
 import 'package:path_provider/path_provider.dart';
 
 import '../data/user.dart';
 import '../generic_functions.dart';
 
 class AvatarEditor extends StatefulWidget {
-  const AvatarEditor({Key? key, required this.user}) : super(key: key);
+  const AvatarEditor({Key? key, required this.user, required this.goToDashboardWhenDone}) : super(key: key);
   final User user;
+  final bool goToDashboardWhenDone;
   @override
   AvatarEditorState createState() => AvatarEditorState();
 }
@@ -28,10 +32,17 @@ class AvatarEditorState extends State<AvatarEditor>
   final height = 800.0, width = 600.0;
   File? finalFile;
 
+  bool _showOldPhoto = false;
+  bool _showNewPhoto = false;
+
+
   @override
   void initState() {
     _controller = AnimationController(vsync: this);
     super.initState();
+    if (widget.user.thumbnailUrl != null) {
+      _showOldPhoto = true;
+    }
   }
 
   void _pickPhotoFromGallery() async {
@@ -61,7 +72,9 @@ class AvatarEditorState extends State<AvatarEditor>
 
     imageFile = File(xFile!.path);
 
-    setState(() {});
+    setState(() {
+      _showNewPhoto = true;
+    });
   }
 
   Future<void> _processFile() async {
@@ -94,10 +107,30 @@ class AvatarEditorState extends State<AvatarEditor>
     var size = await mFile.length();
     var m = (size / 1024 / 1024).toStringAsFixed(2);
     pp('$mm Picture taken is $m MB in size');
-    await _uploadToCloud(mFile.path, tFile.path);
+
+    var res = await _uploadToCloud(mFile.path, tFile.path);
+    if (res == 9) {
+      setState(() {
+        busy = false;
+      });
+      if (mounted) {
+        showToast(
+            context: context,
+            message: 'Photo upload failed, please try again in a minute',
+            backgroundColor: Theme
+                .of(context)
+                .primaryColor,
+            textStyle: Styles.whiteSmall,
+            toastGravity: ToastGravity.TOP,
+            duration: const Duration(seconds: 2));
+      }
+      return;
+    }
+
     pp('\n\n$mm Picture taken has been uploaded OK');
     setState(() {
-      imageFile = null;
+      _showOldPhoto = false;
+      _showNewPhoto = true;
     });
     if (mounted) {
       showToast(
@@ -107,8 +140,27 @@ class AvatarEditorState extends State<AvatarEditor>
           textStyle: Styles.whiteSmall,
           toastGravity: ToastGravity.TOP,
           duration: const Duration(seconds: 2));
+
+      //todo - might be from somewhere other than login
+      //_navigateToDashboard();
+
     }
   }
+
+  void _navigateToDashboard() async {
+    Navigator.of(context).pop(widget.user);
+    if (widget.goToDashboardWhenDone) {
+      await Navigator.push(
+          context,
+          PageTransition(
+              type: PageTransitionType.scale,
+              alignment: Alignment.topLeft,
+              duration: const Duration(seconds: 2),
+              child: DashboardMobile(user: widget.user,)));
+    }
+
+  }
+
 
   final photoStorageName = 'geoUserPhotos';
   String? url, thumbUrl;
@@ -149,7 +201,6 @@ class AvatarEditorState extends State<AvatarEditor>
       widget.user.imageUrl = url;
       widget.user.thumbnailUrl = thumbUrl;
       widget.user.updated = DateTime.now().toUtc().toIso8601String();
-
       await _updateDatabase();
       return 0;
     } catch (e) {
@@ -203,20 +254,20 @@ class AvatarEditorState extends State<AvatarEditor>
     return SafeArea(
         child: Scaffold(
       appBar: AppBar(
+        leading: IconButton(onPressed: _navigateToDashboard, icon: const Icon(Icons.arrow_back_ios)),
         title: Text(
-          'Avatar Builder',
+          'User Avatar Builder',
           style: myTextStyleSmall(context),
         ),
         actions: [
-          imageFile == null
-              ? const SizedBox()
-              : IconButton(
+          _showNewPhoto
+              ? IconButton(
                   onPressed: _processFile,
                   icon: Icon(
                     Icons.check,
                     size: 32,
                     color: Theme.of(context).primaryColor,
-                  ))
+                  )) : const SizedBox()
         ],
       ),
       body: Stack(
@@ -237,18 +288,32 @@ class AvatarEditorState extends State<AvatarEditor>
                       style: myTextStyleLargePrimaryColor(context),
                     ),
                     const SizedBox(
+                      height: 12,
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.all(28.0),
+                      child: Text('Please set up your profile picture. You can use an existing photo or take a new one with the camera',
+                      style: myTextStyleSmall(context),),
+                    ),
+                    const SizedBox(
                       height: 20,
                     ),
-                    imageFile == null
-                        ? const SizedBox()
-                        : SizedBox(
+                    _showNewPhoto
+                        ?  SizedBox(
                             width: 320,
                             height: 360,
                             child: Image.file(
                               imageFile!,
                               fit: BoxFit.cover,
                             ),
-                          ),
+                          ) : const SizedBox(),
+                    _showOldPhoto
+                        ?  SizedBox(
+                      width: 320,
+                      height: 360,
+                      child: CachedNetworkImage(imageUrl: widget.user.imageUrl!,
+                      fit: BoxFit.cover, fadeInDuration: const Duration(milliseconds: 500)),
+                    ) : const SizedBox(),
                     const SizedBox(
                       height: 24,
                     ),
@@ -306,12 +371,17 @@ class AvatarEditorState extends State<AvatarEditor>
                   ? const SizedBox()
                   : Positioned(
                       right: 4,
-                      top: 48,
+                      top: 100,
                       child: CircleAvatar(
                         radius: 60,
                         backgroundImage: NetworkImage(thumbUrl!),
                       ),
                     ),
+          busy? const Center(
+            child: SizedBox(height: 20, width: 20, child: CircularProgressIndicator(
+              strokeWidth: 4, backgroundColor: Colors.pink,
+            ),),
+          ) : const SizedBox(),
         ],
       ),
     ));

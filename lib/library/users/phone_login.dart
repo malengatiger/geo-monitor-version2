@@ -4,6 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:geo_monitor/library/api/prefs_og.dart';
+import 'package:geo_monitor/library/bloc/zip_bloc.dart';
 import 'package:geo_monitor/library/data/settings_model.dart';
 import 'package:geo_monitor/library/hive_util.dart';
 import 'package:geo_monitor/library/users/avatar_editor.dart';
@@ -129,8 +130,8 @@ class PhoneLoginState extends State<PhoneLogin>
     super.dispose();
   }
 
-  void _processRegistration() async {
-    pp('$mm process code sent and register organization, code: ${codeController.value.text}');
+  void _processSignIn() async {
+    pp('\n\n$mm _processSignIn ... sign in the user using code: ${codeController.value.text}');
     setState(() {
       busy = true;
     });
@@ -152,10 +153,12 @@ class PhoneLoginState extends State<PhoneLogin>
     UserCredential? userCred;
     try {
       pp('$mm .... start getting auth artifacts ...');
+
       PhoneAuthCredential authCredential = PhoneAuthProvider.credential(
           verificationId: phoneVerificationId!, smsCode: code!);
       userCred = await firebaseAuth.signInWithCredential(authCredential);
       pp('$mm firebase user credential obtained:  🍎 $userCred 🍎');
+
       if (userCred.user?.metadata != null) {
         var createDate = userCred.user?.metadata.creationTime;
         var now = DateTime.now().toUtc();
@@ -170,12 +173,13 @@ class PhoneLoginState extends State<PhoneLogin>
               'new phone but same number; 🍎 seconds: $seconds}');
         }
       }
-      pp('\n$mm seeking to acquire this user by their id:- 🌀🌀🌀...');
+
+      pp('\n$mm seeking to acquire this user from the Geo database by their id:- 🌀🌀🌀...');
       user = await DataAPI.getUserById(userId: userCred.user!.uid);
       if (user != null) {
+        pp('$mm GeoMonitor user found on db:  🍎 ${user!.name!} 🍎');
         await prefsOGx.saveUser(user!);
-        await cacheManager.addUser(user: user!);
-        await sendAuthenticationMail(user!);
+        await cacheManager.addUser(user: user!);;
         var list = await DataAPI.getOrganizationSettings(user!.organizationId!);
         for (var settings in list) {
           if (settings.projectId == null) {
@@ -206,30 +210,31 @@ class PhoneLoginState extends State<PhoneLogin>
               message: '${user!.name} has been signed in',
               context: context);
         }
+        pp('$mm getting GeoMonitor org data from the db using zip file:  🍎🍎');
+        zipBloc.getOrganizationDataZippedFile(user!.organizationId!);
         _navigateToAvatarBuilder();
         return;
       }
     } catch (e) {
-      pp(e);
-      String msg = 'User not found';
+      pp('\n\n\n $e \n\n\n');
+      String msg = '$e';
       if (msg.contains('dup key')) {
         msg = 'Duplicate organization name';
+      }
+      if (msg.contains('not found')) {
+        msg = 'User not found';
       }
       if (msg.contains('Bad response format')) {
         msg = 'This user does not exist in the database';
       }
-      if (userCred != null) {
-        var res = await DataAPI.deleteAuthUser(userCred.user!.uid);
-        if (res == 0) {
-          pp('$mm deleteAuthUser returned $res, 🌀🌀 cool if zero!!');
-        }
+      if (msg.contains('server cannot be reached')) {
+        msg = 'server cannot be reached';
       }
-
       if (mounted) {
         showToast(
-            duration: const Duration(seconds: 5),
+            duration: const Duration(seconds: 3),
             backgroundColor: Colors.pink.shade700,
-            textStyle: myTextStyleMediumBold(context),
+            textStyle: myTextStyleMedium(context),
             padding: 20.0,
             toastGravity: ToastGravity.CENTER,
             message: msg,
@@ -241,28 +246,21 @@ class PhoneLoginState extends State<PhoneLogin>
       return;
     }
 
-    _finis();
   }
 
   void _navigateToAvatarBuilder() async {
-    Navigator.of(context).pop();
-    await Navigator.push(
+    Navigator.of(context).pop(user!);
+    pp('$mm _navigateToAvatarBuilder .... after popping current page  🍎🍎');
+    Navigator.push(
         context,
         PageTransition(
             type: PageTransitionType.scale,
             alignment: Alignment.topLeft,
-            duration: const Duration(seconds: 2),
+            duration: const Duration(seconds: 1),
             child: AvatarEditor(
-              user: user!,
+              user: user!, goToDashboardWhenDone: true,
             )));
-    _finis();
-  }
 
-  void _finis() {
-    if (user == null) return;
-    if (mounted) {
-      Navigator.of(context).pop(user);
-    }
   }
 
   @override
@@ -429,7 +427,7 @@ class PhoneLoginState extends State<PhoneLogin>
                                                 )
                                               : ElevatedButton(
                                                   onPressed:
-                                                      _processRegistration,
+                                                      _processSignIn,
                                                   child: const Padding(
                                                     padding:
                                                         EdgeInsets.all(4.0),

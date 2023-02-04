@@ -35,22 +35,11 @@ void main() async {
       options: DefaultFirebaseOptions.currentPlatform);
   pp('$xx'
       ' Firebase App has been initialized: ${firebaseApp.name}, checking for authed current user');
-  // await signOutForcedForTesting();
   fbAuthedUser = fb.FirebaseAuth.instance.currentUser;
-  if (fbAuthedUser != null) {
-    pp('Firebase user is OK');
-    // var user = await prefsOGx.getUser();
-    // if (user == null) {
-    //   fbAuthedUser = null;
-    //   await fb.FirebaseAuth.instance.signOut();
-    // } else {
-    //   pp('GeoMonitor user is OK');
-    // }
-  } else {
-    pp('Firebase has no current user!');
-  }
-  await _initializeGeoMonitor();
+
   runApp(const GeoMonitorApp());
+
+  await _initializeGeoMonitor();
 }
  const xx = '🎽🎽🎽🎽🎽🎽initializeGeoMonitor: ';
 
@@ -61,6 +50,20 @@ Future<void> _initializeGeoMonitor() async {
   if (settings != null) {
     themeIndex = settings.themeIndex!;
     themeBloc.themeStreamController.sink.add(settings.themeIndex!);
+  }
+
+  if (fbAuthedUser != null) {
+    pp('$xx Firebase user is OK, checking cached user ...');
+    var user = await prefsOGx.getUser();
+    if (user == null) {
+      pp('$xx no cached user found, will sign out of Firebase ...');
+      fbAuthedUser = null;
+      await fb.FirebaseAuth.instance.signOut();
+    } else {
+      pp('GeoMonitor user is OK');
+    }
+  } else {
+    pp('Firebase has no current user!');
   }
   //user = await prefsOGx.getUser();
   pp('$xx THEME: themeIndex up top is: $themeIndex ');
