@@ -474,7 +474,7 @@ class UserListMobileState extends State<UserListMobile>
                                                         context),
                                                   ),
                                                   const SizedBox(width: 24,),
-                                                  deltaDays < 5? const SizedBox(width: 8, height: 8,
+                                                  deltaDays < 3? const SizedBox(width: 8, height: 8,
                                                     child: CircularProgressIndicator(
                                                       strokeWidth: 3, backgroundColor: Colors.pink,
                                                     ),): const SizedBox(),

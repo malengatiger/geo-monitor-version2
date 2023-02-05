@@ -168,6 +168,15 @@ TextStyle myNumberStyleLarge(BuildContext context) {
     fontWeight: FontWeight.w900,
   );
 }
+TextStyle myNumberStyleLargePrimaryColor(BuildContext context) {
+  return GoogleFonts.secularOne(
+    textStyle: Theme
+        .of(context)
+        .textTheme
+        .bodyLarge, color: Theme.of(context).primaryColor,
+    fontWeight: FontWeight.w900, fontSize: 24
+  );
+}
 TextStyle myNumberStyleLarger(BuildContext context) {
   return GoogleFonts.secularOne(
     textStyle: Theme.of(context).textTheme.bodyLarge,

@@ -9,10 +9,17 @@ import '../../functions.dart';
 import '../../hive_util.dart';
 
 class ProjectChooser extends StatefulWidget {
-  const ProjectChooser({Key? key, required this.onSelected, required this.onClose, required this.title}) : super(key: key);
+  const ProjectChooser(
+      {Key? key,
+      required this.onSelected,
+      required this.onClose,
+      required this.title,
+      required this.height})
+      : super(key: key);
   final Function(Project) onSelected;
   final Function onClose;
   final String title;
+  final double height;
 
   @override
   State<ProjectChooser> createState() => ProjectChooserState();
@@ -33,6 +40,7 @@ class ProjectChooserState extends State<ProjectChooser>
     super.initState();
     _getData();
   }
+
   @override
   void dispose() {
     _animationController.dispose();
@@ -74,7 +82,7 @@ class ProjectChooserState extends State<ProjectChooser>
         : Stack(
             children: [
               SizedBox(
-                height: 360,
+                height: widget.height,
                 // width: 400,
                 child: Card(
                   elevation: 4,
@@ -87,16 +95,24 @@ class ProjectChooserState extends State<ProjectChooser>
                         const SizedBox(
                           height: 8,
                         ),
-                        Row(mainAxisAlignment: MainAxisAlignment.end,
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.end,
                           children: [
                             Text(
-                              widget.title,
+                              'Project ${widget.title}',
                               style: myTextStyleMedium(context),
                             ),
-                            const SizedBox(width: 60,),
-                            IconButton(onPressed: ((){
-                              widget.onClose();
-                            }), icon: const Icon(Icons.close, size: 20.0,)),
+                            const SizedBox(
+                              width: 60,
+                            ),
+                            IconButton(
+                                onPressed: (() {
+                                  widget.onClose();
+                                }),
+                                icon: const Icon(
+                                  Icons.close,
+                                  size: 20.0,
+                                )),
                           ],
                         ),
                         const SizedBox(
@@ -112,13 +128,17 @@ class ProjectChooserState extends State<ProjectChooser>
                               );
                             },
                             child: bd.Badge(
-                              badgeContent: Text('${projects.length}',
-                                style: myTextStyleSmall(context),),
-                              badgeStyle:  bd.BadgeStyle(
-                                badgeColor: Theme.of(context).primaryColor,
-                                elevation: 8, padding: const EdgeInsets.all(8),
+                              badgeContent: Text(
+                                '${projects.length}',
+                                style: myTextStyleSmall(context),
                               ),
-                              position: bd.BadgePosition.topEnd(top: -12, end: 10),
+                              badgeStyle: bd.BadgeStyle(
+                                badgeColor: Theme.of(context).primaryColor,
+                                elevation: 8,
+                                padding: const EdgeInsets.all(8),
+                              ),
+                              position:
+                                  bd.BadgePosition.topEnd(top: -12, end: 10),
                               // badgeColor: Theme.of(context).primaryColor,
                               // padding: const EdgeInsets.all(8.0),
                               child: ListView.builder(
@@ -132,13 +152,14 @@ class ProjectChooserState extends State<ProjectChooser>
                                       child: Card(
                                         shape: getRoundedBorder(radius: 8),
                                         child: Padding(
-                                          padding: const EdgeInsets.all(10.0),
+                                          padding: const EdgeInsets.all(16.0),
                                           child: Row(
                                             children: [
                                               Container(
                                                 height: 4,
                                                 width: 4,
-                                                color: Theme.of(context).primaryColor,
+                                                color: Theme.of(context)
+                                                    .primaryColor,
                                               ),
                                               const SizedBox(
                                                 width: 12,
@@ -146,7 +167,8 @@ class ProjectChooserState extends State<ProjectChooser>
                                               Flexible(
                                                 child: Text(
                                                   project.name!,
-                                                  style: myTextStyleSmall(context),
+                                                  style:
+                                                      myTextStyleSmall(context),
                                                 ),
                                               )
                                             ],

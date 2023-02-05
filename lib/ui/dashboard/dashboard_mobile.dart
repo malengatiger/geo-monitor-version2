@@ -696,6 +696,7 @@ class DashboardMobileState extends State<DashboardMobile>
                   color: Colors.black12,
                   child: ProjectChooser(
                       title: title,
+                      height: 500,
                       onSelected: (p1) {
                         Navigator.of(context).pop();
                         _onProjectSelected(p1, destination);
