@@ -3,11 +3,12 @@ import 'package:flutter/material.dart';
 import 'package:geo_monitor/library/functions.dart';
 
 class IntroPage extends StatefulWidget {
-  const IntroPage({Key? key, required this.assetPath, required this.title, required this.text}) : super(key: key);
+  const IntroPage({Key? key, required this.assetPath, required this.title, required this.text, this.width}) : super(key: key);
 
   final String assetPath;
   final String title;
   final String text;
+  final double? width;
 
   @override
   IntroPageState createState() => IntroPageState();
@@ -57,7 +58,7 @@ class IntroPageState extends State<IntroPage>
       body: Stack(
         children: [
           Container(
-            width: double.infinity,
+            width: widget.width == null? double.infinity : widget.width!,
             height: double.infinity,
             decoration:  BoxDecoration(
               image: DecorationImage(

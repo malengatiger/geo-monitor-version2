@@ -19,9 +19,10 @@ class OrganizationRegistrationBagAdapter
     };
     return OrganizationRegistrationBag(
       organization: fields[0] as Organization?,
-      sampleProjectPosition: fields[1] as ProjectPosition?,
-      sampleUsers: (fields[2] as List?)?.cast<User>(),
-      sampleProject: fields[4] as Project?,
+      projectPosition: fields[1] as ProjectPosition?,
+      user: fields[2] as User?,
+      settings: fields[7] as SettingsModel?,
+      project: fields[4] as Project?,
       date: fields[3] as String?,
       latitude: fields[5] as double?,
       longitude: fields[6] as double?,
@@ -31,21 +32,23 @@ class OrganizationRegistrationBagAdapter
   @override
   void write(BinaryWriter writer, OrganizationRegistrationBag obj) {
     writer
-      ..writeByte(7)
+      ..writeByte(8)
       ..writeByte(0)
       ..write(obj.organization)
       ..writeByte(1)
-      ..write(obj.sampleProjectPosition)
+      ..write(obj.projectPosition)
       ..writeByte(2)
-      ..write(obj.sampleUsers)
+      ..write(obj.user)
       ..writeByte(3)
       ..write(obj.date)
       ..writeByte(4)
-      ..write(obj.sampleProject)
+      ..write(obj.project)
       ..writeByte(5)
       ..write(obj.latitude)
       ..writeByte(6)
-      ..write(obj.longitude);
+      ..write(obj.longitude)
+      ..writeByte(7)
+      ..write(obj.settings);
   }
 
   @override

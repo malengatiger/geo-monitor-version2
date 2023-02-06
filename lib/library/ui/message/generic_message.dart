@@ -89,11 +89,12 @@ class GenericMessageState extends State<GenericMessage> {
           const SizedBox(
             height: 2,
           ),
-          Padding(
-            padding: const EdgeInsets.all(8.0),
+          Container(
+            constraints: const BoxConstraints(
+              maxHeight: 300, minHeight: 60,
+            ),
             child: TextField(
-              minLines: 2,
-              maxLines: 6,
+              maxLines: null,
               decoration: const InputDecoration(
                 icon: Icon(Icons.message),
                 hintText: 'Enter message',

@@ -39,6 +39,7 @@ import '../data/weather/hourly_forecast.dart';
 import '../functions.dart';
 import '../generic_functions.dart' as gen;
 import '../hive_util.dart';
+import 'prefs_og.dart';
 
 class DataAPI {
   static Map<String, String> headers = {
@@ -309,11 +310,16 @@ class DataAPI {
     try {
       var result = await _callWebAPIPost('${mURL!}registerOrganization', bag);
       var u = OrganizationRegistrationBag.fromJson(result);
+      await prefsOGx.saveUser(u.user!);
       await cacheManager.addRegistration(bag: u);
-      await cacheManager.addUsers(users: u.sampleUsers!);
-      await cacheManager.addProject(project: u.sampleProject!);
+      await cacheManager.addUser(user: u.user!);
+      await cacheManager.addProject(project: u.project!);
+      await cacheManager.addSettings(settings: u.settings!);
+
+      await cacheManager.addOrganization(organization: u.organization!);
+
       await cacheManager.addProjectPosition(
-          projectPosition: u.sampleProjectPosition!);
+          projectPosition: u.projectPosition!);
       pp('$mm️ Organization RegistrationBag complete: org:: ☕️ ${u.organization!.name!}');
 
       return u;

@@ -3,72 +3,71 @@ import 'package:hive/hive.dart';
 import 'organization.dart';
 import 'project.dart';
 import 'project_position.dart';
+import 'settings_model.dart';
 import 'user.dart';
 part 'organization_registration_bag.g.dart';
-
 
 @HiveType(typeId: 21)
 class OrganizationRegistrationBag extends HiveObject {
   @HiveField(0)
   Organization? organization;
   @HiveField(1)
-  ProjectPosition? sampleProjectPosition;
+  ProjectPosition? projectPosition;
   @HiveField(2)
-  List<User>? sampleUsers;
+  User? user;
   @HiveField(3)
   String? date;
   @HiveField(4)
-  Project? sampleProject;
+  Project? project;
   @HiveField(5)
   double? latitude;
   @HiveField(6)
   double? longitude;
+  @HiveField(7)
+  SettingsModel? settings;
 
   OrganizationRegistrationBag(
       {required this.organization,
-      required this.sampleProjectPosition,
-      required this.sampleUsers,
-      required this.sampleProject,
-      required this.date, required this.latitude, required this.longitude});
+      required this.projectPosition,
+      required this.user,
+      this.settings,
+      required this.project,
+      required this.date,
+      required this.latitude,
+      required this.longitude});
 
   OrganizationRegistrationBag.fromJson(Map data) {
     latitude = data['latitude'];
     longitude = data['longitude'];
-    sampleUsers = [];
-    if (data['sampleUsers'] != null) {
-      List list = data['sampleUsers'];
-      for (var element in list) {
-        sampleUsers!.add(User.fromJson(element));
-      }
+    if (data['user'] != null) {
+      user = User.fromJson(data['user']);
     }
 
     date = data['date'];
-    if (data['sampleProject'] != null) {
-      sampleProject = Project.fromJson( data['sampleProject']);
+    if (data['project'] != null) {
+      project = Project.fromJson(data['project']);
     }
-    if (data['sampleProjectPosition'] != null) {
-      sampleProjectPosition = ProjectPosition.fromJson( data['sampleProjectPosition']);
+    if (data['projectPosition'] != null) {
+      projectPosition = ProjectPosition.fromJson(data['projectPosition']);
     }
     if (data['organization'] != null) {
-      organization = Organization.fromJson( data['organization']);
+      organization = Organization.fromJson(data['organization']);
     }
-
+    if (data['settings'] != null) {
+      settings = SettingsModel.fromJson(data['settings']);
+    }
   }
   Map<String, dynamic> toJson() {
-    List mList = [];
-    if (sampleUsers != null) {
-      for (var value in sampleUsers!) {
-        mList.add(value.toJson());
-      }
-    }
     Map<String, dynamic> map = {
-      'organization': organization == null? null: organization!.toJson(),
-      'sampleProjectPosition': sampleProjectPosition == null? null: sampleProjectPosition!.toJson(),
-      'sampleUsers': mList,
+      'organization': organization == null ? null : organization!.toJson(),
+      'projectPosition':
+          projectPosition == null ? null : projectPosition!.toJson(),
+      'user': user == null ? null : user!.toJson(),
+      'settings': settings == null ? null : settings!.toJson(),
       'latitude': latitude,
       'longitude': longitude,
       'date': date,
-      'sampleProject': sampleProject == null? null : sampleProject!.toJson(),
+      'project': project == null ? null : project!.toJson(),
     };
     return map;
   }

@@ -42,17 +42,17 @@ import '../../library/users/list/user_list_main.dart';
 import '../chat/chat_page.dart';
 import '../intro/intro_page_viewer.dart';
 
-class DashboardPortrait extends StatefulWidget {
-  const DashboardPortrait({
+class DashboardTabletPortrait extends StatefulWidget {
+  const DashboardTabletPortrait({
     Key? key,
-    this.user,
+    required this.user,
   }) : super(key: key);
-  final User? user;
+  final User user;
   @override
-  DashboardPortraitState createState() => DashboardPortraitState();
+  DashboardTabletPortraitState createState() => DashboardTabletPortraitState();
 }
 
-class DashboardPortraitState extends State<DashboardPortrait>
+class DashboardTabletPortraitState extends State<DashboardTabletPortrait>
     with TickerProviderStateMixin {
   late AnimationController _projectAnimationController;
   late AnimationController _userAnimationController;
@@ -73,7 +73,7 @@ class DashboardPortraitState extends State<DashboardPortrait>
   var _audios = <Audio>[];
   User? user;
 
-  static const mm = '🎽🎽🎽🎽🎽🎽 DashboardMobile: 🎽';
+  static const mm = '🎽🎽🎽🎽🎽🎽 DashboardTabletPortrait: 🎽';
   bool networkAvailable = false;
   final dur = 300;
 
@@ -86,7 +86,7 @@ class DashboardPortraitState extends State<DashboardPortrait>
     _listenForFCM();
     _getAuthenticationStatus();
 
-    if (widget.user != null) {
+    if (widget.user == null) {
       _refreshData(true);
     } else {
       _refreshData(false);
@@ -599,9 +599,7 @@ class DashboardPortraitState extends State<DashboardPortrait>
                 alignment: Alignment.topLeft,
                 duration: const Duration(seconds: 1),
                 child: FullUserPhoto(user: user!)));
-        setState(() {
-
-        });
+        setState(() {});
       }
     }
   }
@@ -740,464 +738,366 @@ class DashboardPortraitState extends State<DashboardPortrait>
         textStyle: Theme.of(context).textTheme.titleLarge,
         fontWeight: FontWeight.w900,
         color: Theme.of(context).primaryColor);
-    return SafeArea(
-      child: WillStartForegroundTask(
-        onWillStart: () async {
-          return geofenceService.isRunningService;
-        },
-        androidNotificationOptions: AndroidNotificationOptions(
-          channelId: 'geofence_service_notification_channel',
-          channelName: 'Geofence Service Notification',
-          channelDescription:
-              'This notification appears when the geofence service is running in the background.',
-          channelImportance: NotificationChannelImportance.LOW,
-          priority: NotificationPriority.LOW,
-          isSticky: false,
-        ),
-        iosNotificationOptions: const IOSNotificationOptions(),
-        notificationTitle: 'GeoMonitor Service is running',
-        notificationText: 'Tap to return to the app',
-        foregroundTaskOptions: const ForegroundTaskOptions(),
-        child: Scaffold(
-          key: _key,
-          appBar: AppBar(
-            leading: const SizedBox(),
-            actions: [
-              IconButton(
-                  icon: Icon(
-                    Icons.info_outline,
-                    size: 18,
-                    color: Theme.of(context).primaryColor,
-                  ),
-                  onPressed: _navigateToIntro),
-              user == null
-                  ? const SizedBox()
-                  : user!.userType == UserType.fieldMonitor
-                      ? const SizedBox()
-                      : IconButton(
-                          icon: Icon(
-                            Icons.settings,
-                            size: 18,
-                            color: Theme.of(context).primaryColor,
-                          ),
-                          onPressed: _navigateToSettings,
-                        ),
-              IconButton(
-                icon: Icon(
-                  Icons.refresh,
-                  size: 18,
-                  color: Theme.of(context).primaryColor,
-                ),
-                onPressed: () {
-                  _refreshData(true);
-                },
-              )
-            ],
-            bottom: PreferredSize(
-              preferredSize: const Size.fromHeight(120),
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Column(
-                  children: [
-                    user == null
-                        ? const SizedBox()
-                        : Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Text(
-                                user!.organizationName!,
-                                style: GoogleFonts.lato(
-                                  textStyle:
-                                      Theme.of(context).textTheme.bodySmall,
-                                  fontWeight: FontWeight.w900,
-                                ),
-                              ),
-                            ],
-                          ),
-                    const SizedBox(
-                      height: 16,
-                    ),
-                    user == null
-                        ? const SizedBox()
-                        : Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Text(user!.name!,
-                                  style: GoogleFonts.lato(
-                                      textStyle: Theme.of(context)
-                                          .textTheme
-                                          .titleLarge,
-                                      fontWeight: FontWeight.normal,
-                                      color: Theme.of(context).primaryColor)),
-                              const SizedBox(
-                                width: 8,
-                              ),
-                              user!.thumbnailUrl == null
-                                  ? const SizedBox()
-                                  : GestureDetector(
-                                      onTap: _navigateToFullUserPhoto,
-                                      child: CircleAvatar(
-                                        backgroundImage:
-                                            NetworkImage(user!.thumbnailUrl!),
-                                        radius: 28,
-                                      ),
-                                    ),
-                            ],
-                          ),
-                    const SizedBox(
-                      height: 0,
-                    ),
-                    user == null
-                        ? const Text('')
-                        : Text(
-                            type,
-                            style: GoogleFonts.lato(
-                              textStyle: Theme.of(context).textTheme.bodySmall,
-                              fontWeight: FontWeight.normal,
-                            ),
-                          ),
-                    const SizedBox(
-                      height: 4,
-                    ),
-                  ],
+    return Scaffold(
+      // appBar: AppBar(
+      //   title: const Text('Dashboard'),
+      // ),
+      body: busy
+          ? const Center(
+              child: SizedBox(
+                height: 24,
+                width: 24,
+                child: CircularProgressIndicator(
+                  strokeWidth: 6,
+                  backgroundColor: Colors.amber,
                 ),
               ),
-            ),
-          ),
-          // backgroundColor: Colors.brown[100],
-          bottomNavigationBar: BottomNavigationBar(
-            items: items,
-            onTap: _handleBottomNav,
-            elevation: 8,
-          ),
-          body: busy
-              ? const Center(
-                  child: SizedBox(
-                    height: 24,
-                    width: 24,
-                    child: CircularProgressIndicator(
-                      strokeWidth: 6,
-                      backgroundColor: Colors.amber,
-                    ),
-                  ),
-                )
-              : Stack(
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.all(12.0),
-                      child: GridView.count(
-                        crossAxisCount: 2,
-                        children: [
-                          GestureDetector(
-                            onTap: _navigateToProjectList,
-                            child: AnimatedBuilder(
-                              animation: _projectAnimationController,
-                              builder: (BuildContext context, Widget? child) {
-                                return FadeScaleTransition(
+            )
+          : Stack(
+              children: [
+                SingleChildScrollView(
+                  child: Column(
+                    children: [
+                      SizedBox(height: 100, child: Headline(user: widget.user)),
+                      SizedBox(height: 800,
+                        child: Padding(
+                          padding: const EdgeInsets.all(72.0),
+                          child: GridView.count(
+                            crossAxisCount: 3,
+                            children: [
+                              GestureDetector(
+                                onTap: _navigateToProjectList,
+                                child: AnimatedBuilder(
                                   animation: _projectAnimationController,
-                                  child: child,
-                                );
-                              },
-                              child: Card(
-                                // color: Colors.brown[50],
-                                elevation: 8,
-                                shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(16.0)),
-                                child: Column(
-                                  children: [
-                                    const SizedBox(
-                                      height: 32,
+                                  builder: (BuildContext context, Widget? child) {
+                                    return FadeScaleTransition(
+                                      animation: _projectAnimationController,
+                                      child: child,
+                                    );
+                                  },
+                                  child: Card(
+                                    // color: Colors.brown[50],
+                                    elevation: 8,
+                                    shape: RoundedRectangleBorder(
+                                        borderRadius:
+                                            BorderRadius.circular(16.0)),
+                                    child: Column(
+                                      children: [
+                                        const SizedBox(
+                                          height: 80,
+                                        ),
+                                        Text('${_projects.length}', style: style),
+                                        const SizedBox(
+                                          height: 8,
+                                        ),
+                                        Text(
+                                          'Projects',
+                                          style: Styles.greyLabelSmall,
+                                        )
+                                      ],
                                     ),
-                                    Text('${_projects.length}', style: style),
-                                    const SizedBox(
-                                      height: 8,
-                                    ),
-                                    Text(
-                                      'Projects',
-                                      style: Styles.greyLabelSmall,
-                                    )
-                                  ],
+                                  ),
                                 ),
                               ),
-                            ),
-                          ),
-                          GestureDetector(
-                            onTap: _navigateToUserList,
-                            child: AnimatedBuilder(
-                              animation: _userAnimationController,
-                              builder: (BuildContext context, Widget? child) {
-                                return FadeScaleTransition(
+                              GestureDetector(
+                                onTap: _navigateToUserList,
+                                child: AnimatedBuilder(
                                   animation: _userAnimationController,
-                                  child: child,
-                                );
-                              },
-                              child: Card(
-                                // color: Colors.brown[50],
-                                elevation: 8,
-                                shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(16.0)),
-                                child: Column(
-                                  children: [
-                                    const SizedBox(
-                                      height: 32,
+                                  builder: (BuildContext context, Widget? child) {
+                                    return FadeScaleTransition(
+                                      animation: _userAnimationController,
+                                      child: child,
+                                    );
+                                  },
+                                  child: Card(
+                                    // color: Colors.brown[50],
+                                    elevation: 8,
+                                    shape: RoundedRectangleBorder(
+                                        borderRadius:
+                                            BorderRadius.circular(16.0)),
+                                    child: Column(
+                                      children: [
+                                        const SizedBox(
+                                          height: 80,
+                                        ),
+                                        Text(
+                                          '${_users.length}',
+                                          style: style,
+                                        ),
+                                        const SizedBox(
+                                          height: 8,
+                                        ),
+                                        Text(
+                                          'Members',
+                                          style: Styles.greyLabelSmall,
+                                        )
+                                      ],
                                     ),
-                                    Text(
-                                      '${_users.length}',
-                                      style: style,
-                                    ),
-                                    const SizedBox(
-                                      height: 8,
-                                    ),
-                                    Text(
-                                      'Members',
-                                      style: Styles.greyLabelSmall,
-                                    )
-                                  ],
+                                  ),
                                 ),
                               ),
-                            ),
-                          ),
-                          AnimatedBuilder(
-                            animation: _photoAnimationController,
-                            builder: (BuildContext context, Widget? child) {
-                              return FadeScaleTransition(
+                              AnimatedBuilder(
                                 animation: _photoAnimationController,
-                                child: child,
-                              );
-                            },
-                            child: GestureDetector(
-                              onTap: () {
-                                _showProjectDialog(typePhoto);
-                              },
-                              child: Card(
-                                elevation: 8,
-                                shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(16.0)),
-                                child: Column(
-                                  children: [
-                                    const SizedBox(
-                                      height: 32,
+                                builder: (BuildContext context, Widget? child) {
+                                  return FadeScaleTransition(
+                                    animation: _photoAnimationController,
+                                    child: child,
+                                  );
+                                },
+                                child: GestureDetector(
+                                  onTap: () {
+                                    _showProjectDialog(typePhoto);
+                                  },
+                                  child: Card(
+                                    elevation: 8,
+                                    shape: RoundedRectangleBorder(
+                                        borderRadius:
+                                            BorderRadius.circular(16.0)),
+                                    child: Column(
+                                      children: [
+                                        const SizedBox(
+                                          height: 80,
+                                        ),
+                                        Text('${_photos.length}',
+                                            style: stylePrimary),
+                                        const SizedBox(
+                                          height: 8,
+                                        ),
+                                        Text(
+                                          'Photos',
+                                          style: Styles.greyLabelSmall,
+                                        )
+                                      ],
                                     ),
-                                    Text('${_photos.length}',
-                                        style: stylePrimary),
-                                    const SizedBox(
-                                      height: 8,
-                                    ),
-                                    Text(
-                                      'Photos',
-                                      style: Styles.greyLabelSmall,
-                                    )
-                                  ],
+                                  ),
                                 ),
                               ),
-                            ),
-                          ),
-                          AnimatedBuilder(
-                            animation: _videoAnimationController,
-                            builder: (BuildContext context, Widget? child) {
-                              return FadeScaleTransition(
+                              AnimatedBuilder(
                                 animation: _videoAnimationController,
-                                child: child,
-                              );
-                            },
-                            child: GestureDetector(
-                              onTap: () {
-                                _showProjectDialog(typeVideo);
-                              },
-                              child: Card(
-                                elevation: 8,
-                                shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(16.0)),
-                                child: Column(
-                                  children: [
-                                    const SizedBox(
-                                      height: 32,
+                                builder: (BuildContext context, Widget? child) {
+                                  return FadeScaleTransition(
+                                    animation: _videoAnimationController,
+                                    child: child,
+                                  );
+                                },
+                                child: GestureDetector(
+                                  onTap: () {
+                                    _showProjectDialog(typeVideo);
+                                  },
+                                  child: Card(
+                                    elevation: 8,
+                                    shape: RoundedRectangleBorder(
+                                        borderRadius:
+                                            BorderRadius.circular(16.0)),
+                                    child: Column(
+                                      children: [
+                                        const SizedBox(
+                                          height: 80,
+                                        ),
+                                        Text('${_videos.length}', style: style),
+                                        const SizedBox(
+                                          height: 8,
+                                        ),
+                                        Text(
+                                          'Videos',
+                                          style: Styles.greyLabelSmall,
+                                        )
+                                      ],
                                     ),
-                                    Text('${_videos.length}', style: style),
-                                    const SizedBox(
-                                      height: 8,
-                                    ),
-                                    Text(
-                                      'Videos',
-                                      style: Styles.greyLabelSmall,
-                                    )
-                                  ],
+                                  ),
                                 ),
                               ),
-                            ),
-                          ),
-                          AnimatedBuilder(
-                            animation: _audioAnimationController,
-                            builder: (BuildContext context, Widget? child) {
-                              return FadeScaleTransition(
+                              AnimatedBuilder(
                                 animation: _audioAnimationController,
-                                child: child,
-                              );
-                            },
-                            child: GestureDetector(
-                              onTap: () {
-                                _showProjectDialog(typeAudio);
-                              },
-                              child: Card(
-                                elevation: 8,
-                                shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(16.0)),
-                                child: Column(
-                                  children: [
-                                    const SizedBox(
-                                      height: 32,
+                                builder: (BuildContext context, Widget? child) {
+                                  return FadeScaleTransition(
+                                    animation: _audioAnimationController,
+                                    child: child,
+                                  );
+                                },
+                                child: GestureDetector(
+                                  onTap: () {
+                                    _showProjectDialog(typeAudio);
+                                  },
+                                  child: Card(
+                                    elevation: 8,
+                                    shape: RoundedRectangleBorder(
+                                        borderRadius:
+                                            BorderRadius.circular(16.0)),
+                                    child: Column(
+                                      children: [
+                                        const SizedBox(
+                                          height: 80,
+                                        ),
+                                        Text('${_audios.length}', style: style),
+                                        const SizedBox(
+                                          height: 8,
+                                        ),
+                                        Text(
+                                          'Audio Clips',
+                                          style: Styles.greyLabelSmall,
+                                        )
+                                      ],
                                     ),
-                                    Text('${_audios.length}', style: style),
-                                    const SizedBox(
-                                      height: 8,
-                                    ),
-                                    Text(
-                                      'Audio Clips',
-                                      style: Styles.greyLabelSmall,
-                                    )
-                                  ],
+                                  ),
                                 ),
                               ),
-                            ),
-                          ),
-                          AnimatedBuilder(
-                            animation: _positionAnimationController,
-                            builder: (BuildContext context, Widget? child) {
-                              return FadeScaleTransition(
+                              AnimatedBuilder(
                                 animation: _positionAnimationController,
-                                child: child,
-                              );
-                            },
-                            child: GestureDetector(
-                              onTap: () {
-                                _showProjectDialog(typePositions);
-                              },
-                              child: Card(
-                                elevation: 8,
-                                shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(16.0)),
-                                child: Column(
-                                  children: [
-                                    const SizedBox(
-                                      height: 32,
+                                builder: (BuildContext context, Widget? child) {
+                                  return FadeScaleTransition(
+                                    animation: _positionAnimationController,
+                                    child: child,
+                                  );
+                                },
+                                child: GestureDetector(
+                                  onTap: () {
+                                    _showProjectDialog(typePositions);
+                                  },
+                                  child: Card(
+                                    elevation: 8,
+                                    shape: RoundedRectangleBorder(
+                                        borderRadius:
+                                            BorderRadius.circular(16.0)),
+                                    child: Column(
+                                      children: [
+                                        const SizedBox(
+                                          height: 80,
+                                        ),
+                                        Text('${_projectPositions.length}',
+                                            style: style),
+                                        const SizedBox(
+                                          height: 8,
+                                        ),
+                                        Text(
+                                          'Locations',
+                                          style: Styles.greyLabelSmall,
+                                        )
+                                      ],
                                     ),
-                                    Text('${_projectPositions.length}',
-                                        style: style),
-                                    const SizedBox(
-                                      height: 8,
-                                    ),
-                                    Text(
-                                      'Locations',
-                                      style: Styles.greyLabelSmall,
-                                    )
-                                  ],
+                                  ),
                                 ),
                               ),
-                            ),
-                          ),
-                          AnimatedBuilder(
-                            animation: _polygonAnimationController,
-                            builder: (BuildContext context, Widget? child) {
-                              return FadeScaleTransition(
+                              AnimatedBuilder(
                                 animation: _polygonAnimationController,
-                                child: child,
-                              );
-                            },
-                            child: GestureDetector(
-                              onTap: () {
-                                _showProjectDialog(typePolygons);
-                              },
-                              child: Card(
-                                elevation: 8,
-                                shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(16.0)),
-                                child: Column(
-                                  children: [
-                                    const SizedBox(
-                                      height: 32,
+                                builder: (BuildContext context, Widget? child) {
+                                  return FadeScaleTransition(
+                                    animation: _polygonAnimationController,
+                                    child: child,
+                                  );
+                                },
+                                child: GestureDetector(
+                                  onTap: () {
+                                    _showProjectDialog(typePolygons);
+                                  },
+                                  child: Card(
+                                    elevation: 8,
+                                    shape: RoundedRectangleBorder(
+                                        borderRadius:
+                                            BorderRadius.circular(16.0)),
+                                    child: Column(
+                                      children: [
+                                        const SizedBox(
+                                          height: 80,
+                                        ),
+                                        Text('${_projectPolygons.length}',
+                                            style: style),
+                                        const SizedBox(
+                                          height: 8,
+                                        ),
+                                        Text(
+                                          'Areas',
+                                          style: Styles.greyLabelSmall,
+                                        )
+                                      ],
                                     ),
-                                    Text('${_projectPolygons.length}',
-                                        style: style),
-                                    const SizedBox(
-                                      height: 8,
-                                    ),
-                                    Text(
-                                      'Areas',
-                                      style: Styles.greyLabelSmall,
-                                    )
-                                  ],
+                                  ),
                                 ),
                               ),
-                            ),
-                          ),
-
-                          AnimatedBuilder(
-                            animation: _polygonAnimationController,
-                            builder: (BuildContext context, Widget? child) {
-                              return FadeScaleTransition(
+                              AnimatedBuilder(
                                 animation: _polygonAnimationController,
-                                child: child,
-                              );
-                            },
-                            child: GestureDetector(
-                              onTap: () {
-                                _showProjectDialog(typeSchedules);
-                              },
-                              child: Card(
-                                elevation: 8,
-                                shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(16.0)),
-                                child: Column(
-                                  children: [
-                                    const SizedBox(
-                                      height: 32,
+                                builder: (BuildContext context, Widget? child) {
+                                  return FadeScaleTransition(
+                                    animation: _polygonAnimationController,
+                                    child: child,
+                                  );
+                                },
+                                child: GestureDetector(
+                                  onTap: () {
+                                    _showProjectDialog(typeSchedules);
+                                  },
+                                  child: Card(
+                                    elevation: 8,
+                                    shape: RoundedRectangleBorder(
+                                        borderRadius:
+                                            BorderRadius.circular(16.0)),
+                                    child: Column(
+                                      children: [
+                                        const SizedBox(
+                                          height: 80,
+                                        ),
+                                        Text('${_schedules.length}',
+                                            style: style),
+                                        const SizedBox(
+                                          height: 8,
+                                        ),
+                                        Text(
+                                          'Schedules',
+                                          style: Styles.greyLabelSmall,
+                                        )
+                                      ],
                                     ),
-                                    Text('${_schedules.length}', style: style),
-                                    const SizedBox(
-                                      height: 8,
-                                    ),
-                                    Text(
-                                      'Schedules',
-                                      style: Styles.greyLabelSmall,
-                                    )
-                                  ],
+                                  ),
                                 ),
                               ),
-                            ),
+                            ],
                           ),
-                        ],
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
-        ),
-      ),
+              ],
+            ),
     );
   }
 }
 ///////
 
-class DashboardLandscape extends StatefulWidget {
-  const DashboardLandscape({Key? key}) : super(key: key);
+class DashboardTabletLandscape extends StatefulWidget {
+  const DashboardTabletLandscape({Key? key, required this.user})
+      : super(key: key);
 
+  final User user;
   @override
-  State<DashboardLandscape> createState() => _DashboardLandscapeState();
+  State<DashboardTabletLandscape> createState() =>
+      _DashboardTabletLandscapeState();
 }
 
-class _DashboardLandscapeState extends State<DashboardLandscape> {
+class _DashboardTabletLandscapeState extends State<DashboardTabletLandscape> {
   @override
   Widget build(BuildContext context) {
-    return  SafeArea(child: Scaffold(
+    return SafeArea(
+        child: Scaffold(
       appBar: AppBar(
         title: const Text('Geo Dashboard'),
       ),
       body: Stack(
         children: [
           Row(
-            children:  [
-              const DashboardPortrait(),
-              const SizedBox(width: 24,),
-              Container(color: Colors.teal,),
+            children: [
+              SizedBox(width: 600,
+                child: DashboardTabletPortrait(
+                  user: widget.user,
+                ),
+              ),
+              const SizedBox(
+                width: 24,
+              ),
+              Container(
+                color: Colors.teal,
+                width: 400,
+              ),
             ],
           )
         ],
@@ -1206,6 +1106,41 @@ class _DashboardLandscapeState extends State<DashboardLandscape> {
   }
 }
 
+class Headline extends StatelessWidget {
+  const Headline({Key? key, required this.user}) : super(key: key);
+  final User user;
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      height: 100,
+      child: Column(
+        children: [
+          const SizedBox(
+            height: 12,
+          ),
+          Text(
+            '${user.organizationName}',
+            style: GoogleFonts.lato(
+                textStyle: Theme.of(context).textTheme.bodyLarge,
+                fontWeight: FontWeight.w900, color: Theme.of(context).primaryColor,
+              fontSize: 24
+            ),
+          ),
+          const SizedBox(
+            height: 12,
+          ),
+          Text(
+            '${user.name}',
+            style: myTextStyleLarge(context),
+          ),
+          const SizedBox(
+            height: 0,
+          ),
+        ],
+      ),
+    );
+  }
+}
 
 //////
 void showKillDialog({required String message, required BuildContext context}) {

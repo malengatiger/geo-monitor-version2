@@ -980,12 +980,33 @@ bool get isInDebugMode {
   return inDebugMode;
 }
 
-const lorem =
-    'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Odio eu feugiat pretium nibh ipsum consequat nisl. '
-    'Dui sapien eget mi proin sed. Pellentesque id nibh tortor id aliquet lectus. Facilisis leo vel fringilla est. Orci dapibus ultrices in iaculis nunc sed. \n\n'
-    'In fermentum et sollicitudin ac orci. Posuere ac ut consequat semper viverra nam libero. Ligula ullamcorper malesuada proin libero nunc. Dictum sit amet justo donec. '
-    'Sem nulla pharetra diam sit amet nisl suscipit adipiscing. Libero volutpat sed cras ornare arcu dui vivamus arcu felis.';
+const lorem = 'Having a centralized platform to collect multimedia information and build video, audio, and photo timelines '
+    'can be a valuable tool for managers and executives to monitor long-running field operations. '
+    'This can provide a visual representation of the progress and status of field operations and help in '
+    'tracking changes over time. Timelines can also be used to identify any bottlenecks or issues that arise during field operations, allowing for quick and effective problem-solving. '
+    'The multimedia information collected can also be used for training and review purposes, allowing for '
+    'continuous improvement and optimization of field operations. Overall, building multimedia timelines '
+    'can provide valuable insights and information for managers and executives to make informed decisions and improve '
+    'the overall efficiency of field operations.\n\nYes, there are many use cases for monitoring and managing initiatives '
+    'using mobile devices and cloud platforms. The combination of mobile devices and cloud-based solutions can greatly improve '
+    'the efficiency and effectiveness of various initiatives, including infrastructure building projects, events, conferences, '
+    'school facilities, and ongoing activities of all types. By using mobile devices, field workers can collect and share multimedia information in real-time, '
+    'allowing for better coordination and communication. The use of cloud platforms can also provide additional benefits, '
+    'such as field worker authentication, cloud push messaging systems, data storage, and databases. This can help in centralizing information, '
+    'reducing the reliance on manual processes and paperwork, and improving the ability to make informed decisions and respond to changes in real-time. '
+    'Overall, utilizing mobile devices and cloud platforms can provide a '
+    'powerful solution for monitoring and managing various initiatives in a more efficient and effective manner.';
 
+const chatGPT1 = 'Offering a monthly or annual subscription model for a cloud-based field worker collaboration and '
+    'management solution can be a cost-effective solution for clients who want to improve their monitoring capabilities. '
+    'The subscription model can provide clients with access to powerful tools and features, such as real-time multimedia '
+    'sharing, a centralized command post, real-time notifications, and multimedia timelines, for a relatively low monthly '
+    'expense. This can help clients to reduce the costs associated with traditional manual processes and improve the '
+    'efficiency and effectiveness of their operations. Additionally, by offering the service as a subscription model, '
+    'the company can have the option to hire young people and students to perform digital field work, providing them with '
+    'valuable experience and training. Overall, the subscription model can provide a cost-effective and scalable '
+    'solution for clients, '
+    'while also providing opportunities for young people and students to gain hands-on experience in the field.';
 abstract class SnackBarListener {
   onActionPressed(int action);
 }

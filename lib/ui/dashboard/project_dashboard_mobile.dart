@@ -39,7 +39,7 @@ import '../../library/ui/project_list/project_chooser.dart';
 import '../../library/ui/project_list/project_list_mobile.dart';
 import '../../library/ui/settings.dart';
 import '../../library/users/list/user_list_main.dart';
-import '../intro_page_viewer.dart';
+import '../intro/intro_page_viewer.dart';
 import 'dashboard_mobile.dart';
 
 class ProjectDashboardMobile extends StatefulWidget {
@@ -632,7 +632,7 @@ class ProjectDashboardMobileState extends State<ProjectDashboardMobile>
               type: PageTransitionType.scale,
               alignment: Alignment.topLeft,
               duration: const Duration(seconds: 1),
-              child: const IntroPageViewer()));
+              child: const IntroPageViewerPortrait()));
     }
   }
 

@@ -156,7 +156,7 @@ class AvatarEditorState extends State<AvatarEditor>
               type: PageTransitionType.scale,
               alignment: Alignment.topLeft,
               duration: const Duration(seconds: 2),
-              child: DashboardMobile(user: widget.user,)));
+              child: DashboardPortrait(user: widget.user,)));
     }
 
   }

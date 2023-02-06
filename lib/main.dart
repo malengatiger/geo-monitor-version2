@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:geo_monitor/library/auth/app_auth.dart';
+import 'package:geo_monitor/ui/auth/auth_signin_main.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:firebase_auth/firebase_auth.dart' as fb;
 import 'package:firebase_core/firebase_core.dart';
@@ -20,7 +21,8 @@ import 'library/emojis.dart';
 import 'library/functions.dart';
 import 'library/hive_util.dart';
 import 'ui/dashboard/dashboard_main.dart';
-import 'ui/intro_page_viewer.dart';
+import 'ui/intro/intro_main.dart';
+import 'ui/intro/intro_page_viewer.dart';
 
 int themeIndex = 0;
 late FirebaseApp firebaseApp;
@@ -135,8 +137,9 @@ class GeoMonitorApp extends StatelessWidget {
               curve: Curves.easeInCirc,
               splashIconSize: 160.0,
               nextScreen: fbAuthedUser == null
-                  ? const IntroPageViewer()
+                  ? const IntroMain()
                   : const DashboardMain(),
+              // nextScreen: const AuthSignInMain(),
               splashTransition: SplashTransition.fadeTransition,
               pageTransitionType: PageTransitionType.leftToRight,
               backgroundColor: Colors.pink.shade900,
@@ -144,148 +147,6 @@ class GeoMonitorApp extends StatelessWidget {
 
           );
       }),
-    );
-  }
-}
-
-class StorageTesterPage extends StatefulWidget {
-  const StorageTesterPage({super.key,});
-
-  @override
-  State<StorageTesterPage> createState() => _StorageTesterPageState();
-}
-
-class _StorageTesterPageState extends State<StorageTesterPage> {
-  var countries = <Country>[];
-  bool busy = false;
-  final mm =
-      '${E.heartBlue}${E.heartBlue}${E.heartBlue}${E.heartBlue} Tester: ';
-  Country? mCountry;
-
-  @override
-  void initState() {
-    super.initState();
-    _getCountries();
-  }
-
-  void _getCountries() async {
-    pp('$mm .......... getting countries ....');
-    setState(() {
-      busy = true;
-    });
-    mCountry = await prefsOGx.getCountry();
-    countries = await cacheManager.getCountries();
-    if (countries.isEmpty) {
-      countries = await DataAPI.getCountries();
-    }
-    setState(() {
-      busy = false;
-    });
-  }
-
-  Future<void> _handleCountry(Country country) async {
-    pp('$mm country tapped: ${country.name!}');
-    setState(() {
-      mCountry = country;
-    });
-    prefsOGx.saveCountry(country);
-    var index = await themeBloc.changeToRandomTheme();
-    pp('$mm index theme set to: $index');
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title:  Text('Testing Storage', style: myTextStyleSmall(context),),
-      ),
-      body: Stack(
-        children: [
-          Center(
-            child: busy
-                ? const SizedBox(
-                    height: 24,
-                    width: 24,
-                    child: CircularProgressIndicator(
-                      strokeWidth: 6,
-                      backgroundColor: Colors.indigo,
-                    ),
-                  )
-                : Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: Card(
-                      elevation: 4,
-                      shape: getRoundedBorder(radius: 16),
-                      child: Column(
-                        children: [
-                          const SizedBox(
-                            height: 28,
-                          ),
-                          Text(
-                            'Countries',
-                            style: myTextStyleLarge(context),
-                          ),
-                          const SizedBox(
-                            height: 28,
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.all(16.0),
-                            child: Text(
-                              'A country that is selected should be stored in local cache, whatever type is finally selected. '
-                              'Let us choose the local cache carefully so that it performs the work necessary to handle cached objects quickly!',
-                              style: myTextStyleSmall(context),
-                            ),
-                          ),
-                          const SizedBox(
-                            height: 12,
-                          ),
-                          mCountry == null
-                              ? const SizedBox()
-                              : Text(
-                                  '${mCountry!.name}',
-                                  style: GoogleFonts.lato(
-                                      textStyle: Theme.of(context)
-                                          .textTheme
-                                          .bodyLarge,
-                                      fontWeight: FontWeight.w900, fontSize: 24,
-                                      color: Theme.of(context).primaryColor),
-                                ),
-                          const SizedBox(
-                            height: 20,
-                          ),
-                          Expanded(
-                            child: ListView.builder(
-                                itemCount: countries.length,
-                                itemBuilder: (_, index) {
-                                  var country = countries.elementAt(index);
-                                  return Padding(
-                                    padding: const EdgeInsets.all(8.0),
-                                    child: InkWell(
-                                      onTap: () {
-                                        _handleCountry(country);
-                                      },
-                                      child: Card(
-                                        elevation: 4,
-                                        shape: getRoundedBorder(radius: 16),
-                                        child: Padding(
-                                          padding: const EdgeInsets.all(16.0),
-                                          child: Text(
-                                            country.name!,
-                                            style: myTextStyleSmall(context),
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                  );
-                                }),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-          ),
-        ],
-      ),
     );
   }
 }
@@ -351,4 +212,149 @@ class SplashWidget extends StatelessWidget {
     );
   }
 }
+
+
+class StorageTesterPage extends StatefulWidget {
+  const StorageTesterPage({super.key,});
+
+  @override
+  State<StorageTesterPage> createState() => _StorageTesterPageState();
+}
+
+class _StorageTesterPageState extends State<StorageTesterPage> {
+  var countries = <Country>[];
+  bool busy = false;
+  final mm =
+      '${E.heartBlue}${E.heartBlue}${E.heartBlue}${E.heartBlue} Tester: ';
+  Country? mCountry;
+
+  @override
+  void initState() {
+    super.initState();
+    _getCountries();
+  }
+
+  void _getCountries() async {
+    pp('$mm .......... getting countries ....');
+    setState(() {
+      busy = true;
+    });
+    mCountry = await prefsOGx.getCountry();
+    countries = await cacheManager.getCountries();
+    if (countries.isEmpty) {
+      countries = await DataAPI.getCountries();
+    }
+    setState(() {
+      busy = false;
+    });
+  }
+
+  Future<void> _handleCountry(Country country) async {
+    pp('$mm country tapped: ${country.name!}');
+    setState(() {
+      mCountry = country;
+    });
+    prefsOGx.saveCountry(country);
+    var index = await themeBloc.changeToRandomTheme();
+    pp('$mm index theme set to: $index');
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title:  Text('Testing Storage', style: myTextStyleSmall(context),),
+      ),
+      body: Stack(
+        children: [
+          Center(
+            child: busy
+                ? const SizedBox(
+              height: 24,
+              width: 24,
+              child: CircularProgressIndicator(
+                strokeWidth: 6,
+                backgroundColor: Colors.indigo,
+              ),
+            )
+                : Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Card(
+                elevation: 4,
+                shape: getRoundedBorder(radius: 16),
+                child: Column(
+                  children: [
+                    const SizedBox(
+                      height: 28,
+                    ),
+                    Text(
+                      'Countries',
+                      style: myTextStyleLarge(context),
+                    ),
+                    const SizedBox(
+                      height: 28,
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: Text(
+                        'A country that is selected should be stored in local cache, whatever type is finally selected. '
+                            'Let us choose the local cache carefully so that it performs the work necessary to handle cached objects quickly!',
+                        style: myTextStyleSmall(context),
+                      ),
+                    ),
+                    const SizedBox(
+                      height: 12,
+                    ),
+                    mCountry == null
+                        ? const SizedBox()
+                        : Text(
+                      '${mCountry!.name}',
+                      style: GoogleFonts.lato(
+                          textStyle: Theme.of(context)
+                              .textTheme
+                              .bodyLarge,
+                          fontWeight: FontWeight.w900, fontSize: 24,
+                          color: Theme.of(context).primaryColor),
+                    ),
+                    const SizedBox(
+                      height: 20,
+                    ),
+                    Expanded(
+                      child: ListView.builder(
+                          itemCount: countries.length,
+                          itemBuilder: (_, index) {
+                            var country = countries.elementAt(index);
+                            return Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: InkWell(
+                                onTap: () {
+                                  _handleCountry(country);
+                                },
+                                child: Card(
+                                  elevation: 4,
+                                  shape: getRoundedBorder(radius: 16),
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(16.0),
+                                    child: Text(
+                                      country.name!,
+                                      style: myTextStyleSmall(context),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            );
+                          }),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+
 

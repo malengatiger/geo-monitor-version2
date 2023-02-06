@@ -8,29 +8,28 @@ import 'package:geo_monitor/library/bloc/zip_bloc.dart';
 import 'package:geo_monitor/library/data/settings_model.dart';
 import 'package:geo_monitor/library/hive_util.dart';
 import 'package:geo_monitor/library/users/avatar_editor.dart';
-import 'package:geo_monitor/library/users/org_registration.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
 import 'package:uuid/uuid.dart';
 
-import '../api/data_api.dart';
-import '../data/user.dart' as ur;
-import '../functions.dart';
-import '../generic_functions.dart';
+import '../../library/api/data_api.dart';
+import '../../library/data/user.dart' as ur;
+import '../../library/functions.dart';
+import '../../library/generic_functions.dart';
 
-class PhoneLogin extends StatefulWidget {
-  const PhoneLogin({Key? key}) : super(key: key);
+class AuthPhoneSignInMobile extends StatefulWidget {
+  const AuthPhoneSignInMobile({Key? key}) : super(key: key);
 
   @override
-  PhoneLoginState createState() => PhoneLoginState();
+  AuthPhoneSignInMobileState createState() => AuthPhoneSignInMobileState();
 }
 
-class PhoneLoginState extends State<PhoneLogin>
+class AuthPhoneSignInMobileState extends State<AuthPhoneSignInMobile>
     with SingleTickerProviderStateMixin {
   late AnimationController _animationController;
   bool _codeHasBeenSent = false;
   FirebaseAuth firebaseAuth = FirebaseAuth.instance;
-  final mm = '🥬🥬🥬🥬🥬🥬 PhoneLogin: ';
+  final mm = '🥬🥬🥬🥬🥬🥬 AuthMobile: ';
   String? phoneVerificationId;
   String? code;
   final phoneController = TextEditingController(text: "+27659990000");
@@ -267,80 +266,80 @@ class PhoneLoginState extends State<PhoneLogin>
   Widget build(BuildContext context) {
     return SafeArea(
         child: Scaffold(
-      appBar: AppBar(
-        title: Text(
-          'Phone Login',
-          style: myTextStyleSmall(context),
-        ),
-      ),
-      body: Stack(
-        children: [
-          SingleChildScrollView(
-            child: Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Card(
-                elevation: 4,
-                shape: getRoundedBorder(radius: 16),
-                child: Column(
-                  children: [
-                    busy
-                        ? Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: const [
-                              Padding(
-                                padding: EdgeInsets.all(12.0),
-                                child: SizedBox(
-                                  height: 16,
-                                  width: 16,
-                                  child: CircularProgressIndicator(
-                                    strokeWidth: 4,
-                                    backgroundColor: Colors.pink,
-                                  ),
+          appBar: AppBar(
+            title: Text(
+              'Phone Login',
+              style: myTextStyleSmall(context),
+            ),
+          ),
+          body: Stack(
+            children: [
+              SingleChildScrollView(
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Card(
+                    elevation: 4,
+                    shape: getRoundedBorder(radius: 16),
+                    child: Column(
+                      children: [
+                        busy
+                            ? Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: const [
+                            Padding(
+                              padding: EdgeInsets.all(12.0),
+                              child: SizedBox(
+                                height: 16,
+                                width: 16,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 4,
+                                  backgroundColor: Colors.pink,
                                 ),
                               ),
-                            ],
-                          )
-                        : const SizedBox(
-                            height: 12,
-                          ),
-                    const SizedBox(
-                      height: 24,
-                    ),
-                    Text(
-                      'Phone Authentication',
-                      style: myTextStyleLarge(context),
-                    ),
-                    const SizedBox(
-                      height: 16,
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.all(16.0),
-                      child: Form(
-                          key: _formKey,
-                          child: Column(
-                            children: [
-                              const SizedBox(
-                                height: 8,
-                              ),
-                              TextFormField(
-                                controller: phoneController,
-                                keyboardType: TextInputType.phone,
-                                decoration: const InputDecoration(
-                                    hintText: 'Enter Phone Number',
-                                    label: Text('Phone Number')),
-                                validator: (value) {
-                                  if (value == null || value.isEmpty) {
-                                    return 'Please enter Phone Number';
-                                  }
-                                  return null;
-                                },
-                              ),
-                              const SizedBox(
-                                height: 32,
-                              ),
-                              _codeHasBeenSent
-                                  ? const SizedBox()
-                                  : ElevatedButton(
+                            ),
+                          ],
+                        )
+                            : const SizedBox(
+                          height: 12,
+                        ),
+                        const SizedBox(
+                          height: 24,
+                        ),
+                        Text(
+                          'Phone Authentication',
+                          style: myTextStyleLarge(context),
+                        ),
+                        const SizedBox(
+                          height: 16,
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.all(16.0),
+                          child: Form(
+                              key: _formKey,
+                              child: Column(
+                                children: [
+                                  const SizedBox(
+                                    height: 8,
+                                  ),
+                                  TextFormField(
+                                    controller: phoneController,
+                                    keyboardType: TextInputType.phone,
+                                    decoration: const InputDecoration(
+                                        hintText: 'Enter Phone Number',
+                                        label: Text('Phone Number')),
+                                    validator: (value) {
+                                      if (value == null || value.isEmpty) {
+                                        return 'Please enter Phone Number';
+                                      }
+                                      return null;
+                                    },
+                                  ),
+                                  const SizedBox(
+                                    height: 32,
+                                  ),
+                                  _codeHasBeenSent
+                                      ? const SizedBox()
+                                      : ElevatedButton(
                                       onPressed: () {
                                         if (_formKey.currentState!.validate()) {
                                           _start();
@@ -350,103 +349,104 @@ class PhoneLoginState extends State<PhoneLogin>
                                         padding: EdgeInsets.all(4.0),
                                         child: Text('Verify Phone Number'),
                                       )),
-                              const SizedBox(
-                                height: 20,
-                              ),
-                              _codeHasBeenSent
-                                  ? SizedBox(
-                                      height: 200,
-                                      child: Column(
-                                        children: [
-                                          Text(
-                                            'Enter SMS pin code sent to ${phoneController.text}',
-                                            style: myTextStyleSmall(context),
-                                          ),
-                                          const SizedBox(
-                                            height: 16,
-                                          ),
-                                          Padding(
-                                            padding: const EdgeInsets.all(4.0),
-                                            child: PinCodeTextField(
-                                              length: 6,
-                                              obscureText: false,
-                                              textStyle:
-                                                  myNumberStyleLarge(context),
-                                              animationType: AnimationType.fade,
-                                              pinTheme: PinTheme(
-                                                shape: PinCodeFieldShape.box,
-                                                borderRadius:
-                                                    BorderRadius.circular(5),
-                                                fieldHeight: 50,
-                                                fieldWidth: 40,
-                                                activeFillColor:
-                                                    Theme.of(context)
-                                                        .colorScheme
-                                                        .background,
-                                              ),
-                                              animationDuration: const Duration(
-                                                  milliseconds: 300),
-                                              backgroundColor: Theme.of(context)
+                                  const SizedBox(
+                                    height: 20,
+                                  ),
+                                  _codeHasBeenSent
+                                      ? SizedBox(
+                                    height: 200,
+                                    child: Column(
+                                      children: [
+                                        Text(
+                                          'Enter SMS pin code sent to ${phoneController.text}',
+                                          style: myTextStyleSmall(context),
+                                        ),
+                                        const SizedBox(
+                                          height: 16,
+                                        ),
+                                        Padding(
+                                          padding: const EdgeInsets.all(4.0),
+                                          child: PinCodeTextField(
+                                            length: 6,
+                                            obscureText: false,
+                                            textStyle:
+                                            myNumberStyleLarge(context),
+                                            animationType: AnimationType.fade,
+                                            pinTheme: PinTheme(
+                                              shape: PinCodeFieldShape.box,
+                                              borderRadius:
+                                              BorderRadius.circular(5),
+                                              fieldHeight: 50,
+                                              fieldWidth: 40,
+                                              activeFillColor:
+                                              Theme.of(context)
                                                   .colorScheme
                                                   .background,
-                                              enableActiveFill: true,
-                                              errorAnimationController:
-                                                  errorController,
-                                              controller: codeController,
-                                              onCompleted: (v) {
-                                                pp("$mm PinCodeTextField: Completed: $v - should call submit ...");
-                                              },
-                                              onChanged: (value) {
-                                                pp(value);
-                                                setState(() {
-                                                  currentText = value;
-                                                });
-                                              },
-                                              beforeTextPaste: (text) {
-                                                pp("$mm Allowing to paste $text");
-                                                //if you return true then it will show the paste confirmation dialog. Otherwise if false, then nothing will happen.
-                                                //but you can show anything you want here, like your pop up saying wrong paste format or etc
-                                                return true;
-                                              },
-                                              appContext: context,
                                             ),
+                                            animationDuration: const Duration(
+                                                milliseconds: 300),
+                                            backgroundColor: Theme.of(context)
+                                                .colorScheme
+                                                .background,
+                                            enableActiveFill: true,
+                                            errorAnimationController:
+                                            errorController,
+                                            controller: codeController,
+                                            onCompleted: (v) {
+                                              pp("$mm PinCodeTextField: Completed: $v - should call submit ...");
+                                            },
+                                            onChanged: (value) {
+                                              pp(value);
+                                              setState(() {
+                                                currentText = value;
+                                              });
+                                            },
+                                            beforeTextPaste: (text) {
+                                              pp("$mm Allowing to paste $text");
+                                              //if you return true then it will show the paste confirmation dialog. Otherwise if false, then nothing will happen.
+                                              //but you can show anything you want here, like your pop up saying wrong paste format or etc
+                                              return true;
+                                            },
+                                            appContext: context,
                                           ),
-                                          const SizedBox(
-                                            height: 28,
+                                        ),
+                                        const SizedBox(
+                                          height: 28,
+                                        ),
+                                        busy
+                                            ? const SizedBox(
+                                          height: 16,
+                                          width: 16,
+                                          child:
+                                          CircularProgressIndicator(
+                                            strokeWidth: 4,
+                                            backgroundColor:
+                                            Colors.pink,
                                           ),
-                                          busy
-                                              ? const SizedBox(
-                                                  height: 16,
-                                                  width: 16,
-                                                  child:
-                                                      CircularProgressIndicator(
-                                                    strokeWidth: 4,
-                                                    backgroundColor:
-                                                        Colors.pink,
-                                                  ),
-                                                )
-                                              : ElevatedButton(
-                                                  onPressed:
-                                                      _processSignIn,
-                                                  child: const Padding(
-                                                    padding:
-                                                        EdgeInsets.all(4.0),
-                                                    child: Text('Send Code'),
-                                                  )),
-                                        ],
-                                      ),
-                                    )
-                                  : const SizedBox(),
-                            ],
-                          )),
-                    )
-                  ],
+                                        )
+                                            : ElevatedButton(
+                                            onPressed:
+                                            _processSignIn,
+                                            child: const Padding(
+                                              padding:
+                                              EdgeInsets.all(4.0),
+                                              child: Text('Send Code'),
+                                            )),
+                                      ],
+                                    ),
+                                  )
+                                      : const SizedBox(),
+                                ],
+                              )),
+                        )
+                      ],
+                    ),
+                  ),
                 ),
-              ),
-            ),
-          )
-        ],
-      ),
-    ));
+              )
+            ],
+          ),
+        ));
   }
 }
+

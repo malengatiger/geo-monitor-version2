@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:geo_monitor/library/api/prefs_og.dart';
+import 'package:geo_monitor/library/functions.dart';
+import 'package:geo_monitor/ui/dashboard/dashboard_tablet_portrait.dart';
 import 'package:responsive_builder/responsive_builder.dart';
 
+import '../../library/data/user.dart';
 import 'dashboard_desktop.dart';
 import 'dashboard_mobile.dart';
 import 'dashboard_tablet.dart';
@@ -16,12 +20,20 @@ class DashboardMain extends StatefulWidget {
 class DashboardMainState extends State<DashboardMain>
     with SingleTickerProviderStateMixin {
   late AnimationController _controller;
-  var isBusy = false;
+  var busy = false;
+  User? user;
 
   @override
   void initState() {
     _controller = AnimationController(vsync: this);
     super.initState();
+    _getUser();
+  }
+  void _getUser() async {
+    user = await prefsOGx.getUser();
+    setState(() {
+
+    });
   }
 
   @override
@@ -32,12 +44,16 @@ class DashboardMainState extends State<DashboardMain>
 
   @override
   Widget build(BuildContext context) {
-    return ScreenTypeLayout(
-      mobile: const DashboardMobile(
+    return user == null? const SizedBox() : ScreenTypeLayout(
+      mobile: const DashboardPortrait(
       ),
-      tablet: const DashboardTablet(
-      ),
-      desktop: const DashboardDesktop(
+      tablet: OrientationLayoutBuilder(
+        portrait: (context) {
+          return DashboardTabletPortrait(user: user!,);
+        },
+        landscape: (context){
+          return DashboardTabletLandscape(user: user!,);
+        },
       ),
     );
   }
