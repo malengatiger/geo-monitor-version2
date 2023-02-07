@@ -13,7 +13,7 @@ import 'package:geo_monitor/library/hive_util.dart';
 import 'package:geo_monitor/library/location/loc_bloc.dart';
 import 'package:geo_monitor/library/users/edit/user_edit_main.dart';
 import 'package:geo_monitor/ui/intro/intro_page_one_landscape.dart';
-import 'package:geo_monitor/ui/intro/intro_page_viewer.dart';
+import 'package:geo_monitor/ui/intro/intro_page_viewer_portrait.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
 import 'package:uuid/uuid.dart';
 
@@ -187,6 +187,7 @@ class AuthEmailRegistrationPortraitState
           longitude: loc.longitude);
 
       var resultBag = await DataAPI.registerOrganization(bag);
+      await prefsOGx.getUser();
 
       pp('\n$mm Organization OG Administrator registered OK: adding org settings default ...');
       pp('\n\n$mm Organization registered: 🌍🌍🌍🌍 🍎 resultBag: ${resultBag.toJson()} 🌍🌍🌍🌍\n\n');
@@ -473,47 +474,3 @@ class AuthEmailRegistrationPortraitState
 }
 
 ////
-class AuthEmailRegistrationLandscape extends StatefulWidget {
-  const AuthEmailRegistrationLandscape({Key? key}) : super(key: key);
-
-  @override
-  State<AuthEmailRegistrationLandscape> createState() =>
-      _AuthEmailRegistrationLandscapeState();
-}
-
-class _AuthEmailRegistrationLandscapeState
-    extends State<AuthEmailRegistrationLandscape> {
-  @override
-  Widget build(BuildContext context) {
-    return SafeArea(
-        child: Scaffold(
-      appBar: AppBar(
-        title: const Text('Geo Organization Registration'),
-      ),
-      body: Stack(
-        children: [
-          Row(
-            children:  [
-              const AuthEmailRegistrationPortrait(),
-              const SizedBox(
-                width: 0,
-              ),
-              Card(
-                shape: getRoundedBorder(radius: 16),
-                child: const Padding(
-                  padding: EdgeInsets.symmetric(vertical: 28.0),
-                  child: IntroPageLandscape(
-                    title: 'GeoMonitor',
-                    assetPath: 'assets/intro/pic2.jpg',
-                    text: lorem,
-                    width: 400,
-                  ),
-                ),
-              ),
-            ],
-          )
-        ],
-      ),
-    ));
-  }
-}

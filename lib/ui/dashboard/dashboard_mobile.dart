@@ -40,7 +40,7 @@ import '../../library/ui/settings.dart';
 import '../../library/ui/weather/daily_forecast_page.dart';
 import '../../library/users/list/user_list_main.dart';
 import '../chat/chat_page.dart';
-import '../intro/intro_page_viewer.dart';
+import '../intro/intro_page_viewer_portrait.dart';
 
 class DashboardPortrait extends StatefulWidget {
   const DashboardPortrait({

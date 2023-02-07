@@ -407,6 +407,8 @@ const typeUsers = 7, typeError = 17,
     typeVideos = 3,
     typeAudios = 4,
     typeSettings = 5,
+    typePositions = 11,
+    typePolygons = 12,
     typeSchedules = 6;
 
 const statusBusy = 200, statusDone = 201, statusError = 500;

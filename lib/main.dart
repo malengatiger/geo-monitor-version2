@@ -22,7 +22,7 @@ import 'library/functions.dart';
 import 'library/hive_util.dart';
 import 'ui/dashboard/dashboard_main.dart';
 import 'ui/intro/intro_main.dart';
-import 'ui/intro/intro_page_viewer.dart';
+import 'ui/intro/intro_page_viewer_portrait.dart';
 
 int themeIndex = 0;
 late FirebaseApp firebaseApp;

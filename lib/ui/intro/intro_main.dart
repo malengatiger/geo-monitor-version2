@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:geo_monitor/ui/intro/intro_page_viewer.dart';
+import 'package:geo_monitor/ui/intro/intro_page_viewer_portrait.dart';
 import 'package:responsive_builder/responsive_builder.dart';
+
+import 'intro_page_viewer_landscape.dart';
 
 class IntroMain extends StatefulWidget {
 

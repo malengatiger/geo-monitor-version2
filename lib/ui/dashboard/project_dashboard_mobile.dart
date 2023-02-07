@@ -39,7 +39,7 @@ import '../../library/ui/project_list/project_chooser.dart';
 import '../../library/ui/project_list/project_list_mobile.dart';
 import '../../library/ui/settings.dart';
 import '../../library/users/list/user_list_main.dart';
-import '../intro/intro_page_viewer.dart';
+import '../intro/intro_page_viewer_portrait.dart';
 import 'dashboard_mobile.dart';
 
 class ProjectDashboardMobile extends StatefulWidget {

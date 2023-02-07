@@ -4,7 +4,9 @@ import 'package:animations/animations.dart';
 import 'package:firebase_auth/firebase_auth.dart' as fb;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:geo_monitor/library/bloc/downloader.dart';
 import 'package:geo_monitor/library/users/full_user_photo.dart';
+import 'package:geo_monitor/ui/dashboard/dashboard_grid.dart';
 import 'package:geofence_service/geofence_service.dart';
 
 import 'package:google_fonts/google_fonts.dart';
@@ -40,7 +42,7 @@ import '../../library/ui/settings.dart';
 import '../../library/ui/weather/daily_forecast_page.dart';
 import '../../library/users/list/user_list_main.dart';
 import '../chat/chat_page.dart';
-import '../intro/intro_page_viewer.dart';
+import '../intro/intro_page_viewer_portrait.dart';
 
 class DashboardTabletPortrait extends StatefulWidget {
   const DashboardTabletPortrait({
@@ -62,15 +64,15 @@ class DashboardTabletPortraitState extends State<DashboardTabletPortrait>
   late AnimationController _polygonAnimationController;
   late AnimationController _audioAnimationController;
 
-  var busy = false;
-  var _projects = <Project>[];
-  var _users = <User>[];
-  var _photos = <Photo>[];
-  var _videos = <Video>[];
-  var _projectPositions = <ProjectPosition>[];
-  var _projectPolygons = <ProjectPolygon>[];
-  var _schedules = <FieldMonitorSchedule>[];
-  var _audios = <Audio>[];
+  // var busy = false;
+  // var _projects = <Project>[];
+  // var _users = <User>[];
+  // var _photos = <Photo>[];
+  // var _videos = <Video>[];
+  // var _projectPositions = <ProjectPosition>[];
+  // var _projectPolygons = <ProjectPolygon>[];
+  // var _schedules = <FieldMonitorSchedule>[];
+  // var _audios = <Audio>[];
   User? user;
 
   static const mm = '🎽🎽🎽🎽🎽🎽 DashboardTabletPortrait: 🎽';
@@ -82,15 +84,7 @@ class DashboardTabletPortraitState extends State<DashboardTabletPortrait>
     _setAnimationControllers();
     super.initState();
     _setItems();
-    _listenToOrgStreams();
-    _listenForFCM();
     _getAuthenticationStatus();
-
-    if (widget.user == null) {
-      _refreshData(true);
-    } else {
-      _refreshData(false);
-    }
     _subscribeToConnectivity();
     _subscribeToGeofenceStream();
     _buildGeofences();
@@ -181,106 +175,12 @@ class DashboardTabletPortraitState extends State<DashboardTabletPortrait>
     });
   }
 
-  // late StreamSubscription<>
-  late StreamSubscription<List<Project>> projectSubscription;
-  late StreamSubscription<List<User>> userSubscription;
-  late StreamSubscription<List<Photo>> photoSubscription;
-  late StreamSubscription<List<Video>> videoSubscription;
-  late StreamSubscription<List<Audio>> audioSubscription;
-  late StreamSubscription<List<ProjectPosition>> projectPositionSubscription;
-  late StreamSubscription<List<ProjectPolygon>> projectPolygonSubscription;
-  late StreamSubscription<List<FieldMonitorSchedule>> schedulesSubscription;
-
-  late StreamSubscription<Photo> photoSubscriptionFCM;
-  late StreamSubscription<Video> videoSubscriptionFCM;
-  late StreamSubscription<Audio> audioSubscriptionFCM;
-  late StreamSubscription<ProjectPosition> projectPositionSubscriptionFCM;
-  late StreamSubscription<ProjectPolygon> projectPolygonSubscriptionFCM;
-  late StreamSubscription<Project> projectSubscriptionFCM;
-  late StreamSubscription<User> userSubscriptionFCM;
-  late StreamSubscription<SettingsModel> settingsSubscriptionFCM;
-
-  late StreamSubscription<String> killSubscriptionFCM;
-
-  void _listenToOrgStreams() async {
-    projectSubscription = organizationBloc.projectStream.listen((event) {
-      _projects = event;
-      pp('$mm attempting to set state after projects delivered by stream: ${_projects.length} ... mounted: $mounted');
-      if (mounted) {
-        setState(() {});
-        _projectAnimationController.forward();
-      }
-    });
-    userSubscription = organizationBloc.usersStream.listen((event) {
-      _users = event;
-      pp('$mm attempting to set state after users delivered by stream: ${_users.length} ... mounted: $mounted');
-      if (mounted) {
-        setState(() {});
-        _userAnimationController.forward();
-      }
-    });
-    photoSubscription = organizationBloc.photoStream.listen((event) {
-      _photos = event;
-      pp('$mm attempting to set state after photos delivered by stream: ${_photos.length} ... mounted: $mounted');
-      if (mounted) {
-        setState(() {});
-      }
-      _photoAnimationController.forward();
-    });
-
-    videoSubscription = organizationBloc.videoStream.listen((event) {
-      _videos = event;
-      pp('$mm attempting to set state after videos delivered by stream: ${_videos.length} ... mounted: $mounted');
-      if (mounted) {
-        setState(() {});
-        _videoAnimationController.forward();
-      }
-    });
-    audioSubscription = organizationBloc.audioStream.listen((event) {
-      _audios = event;
-      pp('$mm attempting to set state after audios delivered by stream: ${_audios.length} ... mounted: $mounted');
-      if (mounted) {
-        setState(() {});
-        _audioAnimationController.forward();
-      }
-    });
-    projectPositionSubscription =
-        organizationBloc.projectPositionsStream.listen((event) {
-      _projectPositions = event;
-      pp('$mm attempting to set state after projectPositions delivered by stream: ${_projectPositions.length} ... mounted: $mounted');
-      if (mounted) {
-        setState(() {});
-        _projectAnimationController.forward();
-      }
-    });
-    projectPolygonSubscription =
-        organizationBloc.projectPolygonsStream.listen((event) {
-      _projectPolygons = event;
-      pp('$mm attempting to set state after projectPolygons delivered by stream: ${_projectPolygons.length} ... mounted: $mounted');
-      if (mounted) {
-        setState(() {});
-        _projectAnimationController.forward();
-      }
-    });
-
-    schedulesSubscription =
-        organizationBloc.fieldMonitorScheduleStream.listen((event) {
-      _schedules = event;
-      pp('$mm attempting to set state after schedules delivered by stream: ${_schedules.length} ... mounted: $mounted');
-
-      if (mounted) {
-        setState(() {});
-        _projectAnimationController.forward();
-      }
-    });
-  }
-
   void _startTimer() async {
     Future.delayed(const Duration(seconds: 5), () {
       Timer.periodic(const Duration(minutes: 30), (timer) async {
         pp('$mm ........ set state timer tick: ${timer.tick}');
         try {
-          _refreshData(false);
+          //_refreshData(false);
         } catch (e) {
           //ignore
         }
@@ -298,20 +198,7 @@ class DashboardTabletPortraitState extends State<DashboardTabletPortrait>
     _polygonAnimationController.dispose();
     _positionAnimationController.dispose();
     connectionSubscription.cancel();
-    projectPolygonSubscription.cancel();
-    projectPositionSubscription.cancel();
-    projectSubscription.cancel();
-    photoSubscription.cancel();
-    videoSubscription.cancel();
-    userSubscription.cancel();
-    audioSubscription.cancel();
-    projectPolygonSubscriptionFCM.cancel();
-    projectPositionSubscriptionFCM.cancel();
-    projectSubscriptionFCM.cancel();
-    photoSubscriptionFCM.cancel();
-    videoSubscriptionFCM.cancel();
-    userSubscriptionFCM.cancel();
-    audioSubscriptionFCM.cancel();
+
     geofenceSubscription.cancel();
     super.dispose();
   }
@@ -343,167 +230,6 @@ class DashboardTabletPortraitState extends State<DashboardTabletPortrait>
 
   String type = 'Unknown Rider';
 
-  void _refreshData(bool forceRefresh) async {
-    pp('$mm ............................................Refreshing data ....');
-    user = await prefsOGx.getUser();
-    if (user != null) {
-      if (user!.userType == UserType.orgAdministrator) {
-        type = 'Administrator';
-      }
-      if (user!.userType == UserType.orgExecutive) {
-        type = 'Executive';
-      }
-      if (user!.userType == UserType.fieldMonitor) {
-        type = 'Field Monitor';
-      }
-    } else {
-      throw Exception('No user cached on device');
-    }
-
-    if (mounted) {
-      setState(() {
-        busy = true;
-      });
-    }
-    await _doTheWork(forceRefresh);
-  }
-
-  Future<void> _doTheWork(bool forceRefresh) async {
-    try {
-      if (user == null) {
-        throw Exception("Tax man is fucked! User is not found");
-      }
-
-      var bag = await organizationBloc.getOrganizationData(
-          organizationId: user!.organizationId!, forceRefresh: forceRefresh);
-      await _extractData(bag);
-      setState(() {});
-    } catch (e) {
-      pp('$mm $e - will show snackbar ..');
-      showConnectionProblemSnackBar(
-          context: context,
-          message: 'Data refresh failed. Possible network problem - $e');
-    }
-    setState(() {
-      busy = false;
-    });
-
-    _projectAnimationController.reset();
-    _userAnimationController.reset();
-    _photoAnimationController.reset();
-    _videoAnimationController.reset();
-    _positionAnimationController.reset();
-    _polygonAnimationController.reset();
-    _audioAnimationController.reset();
-
-    _projectAnimationController.forward().then((value) {
-      _userAnimationController.forward().then((value) {
-        _photoAnimationController.forward().then((value) {
-          _videoAnimationController.forward().then((value) {
-            _positionAnimationController.forward().then((value) {
-              _polygonAnimationController.forward().then((value) {
-                _audioAnimationController.forward();
-              });
-            });
-          });
-        });
-      });
-    });
-  }
-
-  Future _extractData(DataBag bag) async {
-    pp('$mm ............ Extracting org data from bag');
-    _projects = bag.projects!;
-    _projectPositions = bag.projectPositions!;
-    _projectPolygons = bag.projectPolygons!;
-    _users = bag.users!;
-    _photos = bag.photos!;
-    _videos = bag.videos!;
-    _schedules = bag.fieldMonitorSchedules!;
-    _audios = bag.audios!;
-
-    pp('$mm ..... setting state after extracting org data from bag');
-    setState(() {});
-  }
-
-  void _listenForFCM() async {
-    var android = UniversalPlatform.isAndroid;
-    var ios = UniversalPlatform.isIOS;
-    await fcmBloc.initialize();
-    pp('$mm 🍎 🍎 🍎 🍎 FCM should be initialized!!  ... 🍎 🍎');
-    if (android || ios) {
-      pp('$mm 🍎 🍎 _listen to FCM message streams ... 🍎 🍎');
-      projectSubscriptionFCM =
-          fcmBloc.projectStream.listen((Project project) async {
-        if (mounted) {
-          pp('$mm: 🍎 🍎 projects arrived: ${project.name} ... 🍎 🍎');
-          _projects = await organizationBloc.getOrganizationProjects(
-              organizationId: user!.organizationId!, forceRefresh: false);
-          setState(() {});
-        }
-      });
-      if (mounted) {
-        killSubscriptionFCM = listenForKill(context: context);
-      }
-
-      settingsSubscriptionFCM = fcmBloc.settingsStream.listen((settings) async {
-        pp('$mm: 🍎🍎 settings arrived with themeIndex: ${settings.themeIndex}... 🍎🍎');
-        themeBloc.themeStreamController.sink.add(settings.themeIndex!);
-        if (mounted) {
-          setState(() {});
-        }
-      });
-      userSubscriptionFCM = fcmBloc.userStream.listen((user) async {
-        pp('$mm: 🍎 🍎 user arrived... 🍎 🍎');
-
-        if (mounted) {
-          _users = await organizationBloc.getUsers(
-              organizationId: user.organizationId!, forceRefresh: false);
-          setState(() {});
-        }
-      });
-      photoSubscriptionFCM = fcmBloc.photoStream.listen((user) async {
-        pp('$mm: 🍎 🍎 photoSubscriptionFCM photo arrived... 🍎 🍎');
-        if (mounted) {
-          _photos = await organizationBloc.getPhotos(
-              organizationId: user.organizationId!, forceRefresh: false);
-          setState(() {});
-        }
-      });
-
-      videoSubscriptionFCM = fcmBloc.videoStream.listen((Video message) async {
-        pp('$mm: 🍎 🍎 videoSubscriptionFCM video arrived... 🍎 🍎');
-        if (mounted) {
-          pp('DashboardMobile: 🍎 🍎 showMessageSnackbar: ${message.projectName} ... 🍎 🍎');
-          _videos = await organizationBloc.getVideos(
-              organizationId: user!.organizationId!, forceRefresh: false);
-          setState(() {});
-        }
-      });
-      audioSubscriptionFCM = fcmBloc.audioStream.listen((Audio message) async {
-        pp('$mm: 🍎 🍎 audioSubscriptionFCM audio arrived... 🍎 🍎');
-        if (mounted) {
-          _refreshData(false);
-        }
-      });
-      projectPositionSubscriptionFCM =
-          fcmBloc.projectPositionStream.listen((ProjectPosition message) async {
-        pp('$mm: 🍎 🍎 projectPositionSubscriptionFCM position arrived... 🍎 🍎');
-        if (mounted) {
-          _refreshData(false);
-        }
-      });
-      projectPolygonSubscriptionFCM =
-          fcmBloc.projectPolygonStream.listen((ProjectPolygon message) async {
-        pp('$mm: 🍎 🍎 projectPolygonSubscriptionFCM polygon arrived... 🍎 🍎');
-        if (mounted) {
-          _refreshData(false);
-        }
-      });
-    } else {
-      pp('App is running on the Web 👿👿👿firebase messaging is OFF 👿👿👿');
-    }
-  }
 
   final _key = GlobalKey<ScaffoldState>();
 
@@ -657,23 +383,16 @@ class DashboardTabletPortraitState extends State<DashboardTabletPortrait>
             child: const DailyForecastPage()));
   }
 
-  static const typeVideo = 0,
-      typeAudio = 1,
-      typePhoto = 2,
-      typePositions = 3,
-      typePolygons = 4,
-      typeSchedules = 5;
-
   void _showProjectDialog(int destination) {
     late String title;
     switch (destination) {
-      case typePhoto:
+      case typePhotos:
         title = 'Photos';
         break;
-      case typeVideo:
+      case typeVideos:
         title = 'Videos';
         break;
-      case typeAudio:
+      case typeAudios:
         title = 'Audio';
         break;
       case typePositions:
@@ -681,6 +400,9 @@ class DashboardTabletPortraitState extends State<DashboardTabletPortrait>
         break;
       case typePolygons:
         title = 'Map';
+        break;
+      case typeSchedules:
+        title = 'Schedules';
         break;
     }
 
@@ -709,13 +431,13 @@ class DashboardTabletPortraitState extends State<DashboardTabletPortrait>
 
   _onProjectSelected(Project p1, int destination) {
     switch (destination) {
-      case typeVideo:
+      case typeVideos:
         _navigateToProjectMedia(p1);
         break;
-      case typeAudio:
+      case typeAudios:
         _navigateToProjectMedia(p1);
         break;
-      case typePhoto:
+      case typePhotos:
         _navigateToProjectMedia(p1);
         break;
       case typePositions:
@@ -731,13 +453,7 @@ class DashboardTabletPortraitState extends State<DashboardTabletPortrait>
 
   @override
   Widget build(BuildContext context) {
-    var style = GoogleFonts.secularOne(
-        textStyle: Theme.of(context).textTheme.titleLarge,
-        fontWeight: FontWeight.w900);
-    var stylePrimary = GoogleFonts.secularOne(
-        textStyle: Theme.of(context).textTheme.titleLarge,
-        fontWeight: FontWeight.w900,
-        color: Theme.of(context).primaryColor);
+
     return Scaffold(
       // appBar: AppBar(
       //   title: const Text('Dashboard'),
@@ -755,308 +471,31 @@ class DashboardTabletPortraitState extends State<DashboardTabletPortrait>
             )
           : Stack(
               children: [
-                SingleChildScrollView(
-                  child: Column(
-                    children: [
-                      SizedBox(height: 100, child: Headline(user: widget.user)),
-                      SizedBox(height: 800,
-                        child: Padding(
-                          padding: const EdgeInsets.all(72.0),
-                          child: GridView.count(
-                            crossAxisCount: 3,
-                            children: [
-                              GestureDetector(
-                                onTap: _navigateToProjectList,
-                                child: AnimatedBuilder(
-                                  animation: _projectAnimationController,
-                                  builder: (BuildContext context, Widget? child) {
-                                    return FadeScaleTransition(
-                                      animation: _projectAnimationController,
-                                      child: child,
-                                    );
-                                  },
-                                  child: Card(
-                                    // color: Colors.brown[50],
-                                    elevation: 8,
-                                    shape: RoundedRectangleBorder(
-                                        borderRadius:
-                                            BorderRadius.circular(16.0)),
-                                    child: Column(
-                                      children: [
-                                        const SizedBox(
-                                          height: 80,
-                                        ),
-                                        Text('${_projects.length}', style: style),
-                                        const SizedBox(
-                                          height: 8,
-                                        ),
-                                        Text(
-                                          'Projects',
-                                          style: Styles.greyLabelSmall,
-                                        )
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                              ),
-                              GestureDetector(
-                                onTap: _navigateToUserList,
-                                child: AnimatedBuilder(
-                                  animation: _userAnimationController,
-                                  builder: (BuildContext context, Widget? child) {
-                                    return FadeScaleTransition(
-                                      animation: _userAnimationController,
-                                      child: child,
-                                    );
-                                  },
-                                  child: Card(
-                                    // color: Colors.brown[50],
-                                    elevation: 8,
-                                    shape: RoundedRectangleBorder(
-                                        borderRadius:
-                                            BorderRadius.circular(16.0)),
-                                    child: Column(
-                                      children: [
-                                        const SizedBox(
-                                          height: 80,
-                                        ),
-                                        Text(
-                                          '${_users.length}',
-                                          style: style,
-                                        ),
-                                        const SizedBox(
-                                          height: 8,
-                                        ),
-                                        Text(
-                                          'Members',
-                                          style: Styles.greyLabelSmall,
-                                        )
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                              ),
-                              AnimatedBuilder(
-                                animation: _photoAnimationController,
-                                builder: (BuildContext context, Widget? child) {
-                                  return FadeScaleTransition(
-                                    animation: _photoAnimationController,
-                                    child: child,
-                                  );
-                                },
-                                child: GestureDetector(
-                                  onTap: () {
-                                    _showProjectDialog(typePhoto);
-                                  },
-                                  child: Card(
-                                    elevation: 8,
-                                    shape: RoundedRectangleBorder(
-                                        borderRadius:
-                                            BorderRadius.circular(16.0)),
-                                    child: Column(
-                                      children: [
-                                        const SizedBox(
-                                          height: 80,
-                                        ),
-                                        Text('${_photos.length}',
-                                            style: stylePrimary),
-                                        const SizedBox(
-                                          height: 8,
-                                        ),
-                                        Text(
-                                          'Photos',
-                                          style: Styles.greyLabelSmall,
-                                        )
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                              ),
-                              AnimatedBuilder(
-                                animation: _videoAnimationController,
-                                builder: (BuildContext context, Widget? child) {
-                                  return FadeScaleTransition(
-                                    animation: _videoAnimationController,
-                                    child: child,
-                                  );
-                                },
-                                child: GestureDetector(
-                                  onTap: () {
-                                    _showProjectDialog(typeVideo);
-                                  },
-                                  child: Card(
-                                    elevation: 8,
-                                    shape: RoundedRectangleBorder(
-                                        borderRadius:
-                                            BorderRadius.circular(16.0)),
-                                    child: Column(
-                                      children: [
-                                        const SizedBox(
-                                          height: 80,
-                                        ),
-                                        Text('${_videos.length}', style: style),
-                                        const SizedBox(
-                                          height: 8,
-                                        ),
-                                        Text(
-                                          'Videos',
-                                          style: Styles.greyLabelSmall,
-                                        )
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                              ),
-                              AnimatedBuilder(
-                                animation: _audioAnimationController,
-                                builder: (BuildContext context, Widget? child) {
-                                  return FadeScaleTransition(
-                                    animation: _audioAnimationController,
-                                    child: child,
-                                  );
-                                },
-                                child: GestureDetector(
-                                  onTap: () {
-                                    _showProjectDialog(typeAudio);
-                                  },
-                                  child: Card(
-                                    elevation: 8,
-                                    shape: RoundedRectangleBorder(
-                                        borderRadius:
-                                            BorderRadius.circular(16.0)),
-                                    child: Column(
-                                      children: [
-                                        const SizedBox(
-                                          height: 80,
-                                        ),
-                                        Text('${_audios.length}', style: style),
-                                        const SizedBox(
-                                          height: 8,
-                                        ),
-                                        Text(
-                                          'Audio Clips',
-                                          style: Styles.greyLabelSmall,
-                                        )
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                              ),
-                              AnimatedBuilder(
-                                animation: _positionAnimationController,
-                                builder: (BuildContext context, Widget? child) {
-                                  return FadeScaleTransition(
-                                    animation: _positionAnimationController,
-                                    child: child,
-                                  );
-                                },
-                                child: GestureDetector(
-                                  onTap: () {
-                                    _showProjectDialog(typePositions);
-                                  },
-                                  child: Card(
-                                    elevation: 8,
-                                    shape: RoundedRectangleBorder(
-                                        borderRadius:
-                                            BorderRadius.circular(16.0)),
-                                    child: Column(
-                                      children: [
-                                        const SizedBox(
-                                          height: 80,
-                                        ),
-                                        Text('${_projectPositions.length}',
-                                            style: style),
-                                        const SizedBox(
-                                          height: 8,
-                                        ),
-                                        Text(
-                                          'Locations',
-                                          style: Styles.greyLabelSmall,
-                                        )
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                              ),
-                              AnimatedBuilder(
-                                animation: _polygonAnimationController,
-                                builder: (BuildContext context, Widget? child) {
-                                  return FadeScaleTransition(
-                                    animation: _polygonAnimationController,
-                                    child: child,
-                                  );
-                                },
-                                child: GestureDetector(
-                                  onTap: () {
-                                    _showProjectDialog(typePolygons);
-                                  },
-                                  child: Card(
-                                    elevation: 8,
-                                    shape: RoundedRectangleBorder(
-                                        borderRadius:
-                                            BorderRadius.circular(16.0)),
-                                    child: Column(
-                                      children: [
-                                        const SizedBox(
-                                          height: 80,
-                                        ),
-                                        Text('${_projectPolygons.length}',
-                                            style: style),
-                                        const SizedBox(
-                                          height: 8,
-                                        ),
-                                        Text(
-                                          'Areas',
-                                          style: Styles.greyLabelSmall,
-                                        )
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                              ),
-                              AnimatedBuilder(
-                                animation: _polygonAnimationController,
-                                builder: (BuildContext context, Widget? child) {
-                                  return FadeScaleTransition(
-                                    animation: _polygonAnimationController,
-                                    child: child,
-                                  );
-                                },
-                                child: GestureDetector(
-                                  onTap: () {
-                                    _showProjectDialog(typeSchedules);
-                                  },
-                                  child: Card(
-                                    elevation: 8,
-                                    shape: RoundedRectangleBorder(
-                                        borderRadius:
-                                            BorderRadius.circular(16.0)),
-                                    child: Column(
-                                      children: [
-                                        const SizedBox(
-                                          height: 80,
-                                        ),
-                                        Text('${_schedules.length}',
-                                            style: style),
-                                        const SizedBox(
-                                          height: 8,
-                                        ),
-                                        Text(
-                                          'Schedules',
-                                          style: Styles.greyLabelSmall,
-                                        )
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
+                DashboardGrid(onTypeTapped: (type) {
+                  switch (type) {
+                    case typeProjects:
+                      _navigateToProjectList();
+                      break;
+                    case typeUsers:
+                      _navigateToUserList();
+                      break;
+                    case typePhotos:
+                      _showProjectDialog(typePhotos);
+                      break;
+                    case typeVideos:
+                      _showProjectDialog(typeVideos);
+                      break;
+                    case typeAudios:
+                      _showProjectDialog(typeAudios);
+                      break;
+                    case typePositions:
+                      _showProjectDialog(typePositions);
+                      break;
+                    case typePolygons:
+                      _showProjectDialog(typePolygons);
+                      break;
+                  }
+                }),
               ],
             ),
     );

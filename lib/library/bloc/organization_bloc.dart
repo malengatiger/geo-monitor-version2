@@ -155,14 +155,11 @@ class OrganizationBloc {
 
     if (forceRefresh) {
       pp('$mm get data from server .....................; forceRefresh: $forceRefresh');
-      //bag = await DataAPI.getOrganizationData(organizationId);
-      // downloaderStarter.start();
       bag = await zipBloc.getOrganizationDataZippedFile(organizationId);
     } else {
       if (bag.isEmpty()) {
         pp('$mm bag is empty. No organization data anywhere yet? ... '
             'will force refresh, forceRefresh: $forceRefresh');
-        // downloaderStarter.start();
         bag = await zipBloc.getOrganizationDataZippedFile(organizationId);
       }
     }
@@ -285,14 +282,14 @@ class OrganizationBloc {
   }
 
   Future<List<ProjectPolygon>> getProjectPolygons(
-      {required String projectId, required bool forceRefresh}) async {
+      {required String organizationId, required bool forceRefresh}) async {
     var projectPolygons = await cacheManager.getOrganizationProjectPolygons(
-        organizationId: projectId);
+        organizationId: organizationId);
     pp('$mm getProjectPolygons found ${projectPolygons.length} polygons in local cache ');
 
     if (projectPolygons.isEmpty || forceRefresh) {
       projectPolygons =
-      await DataAPI.getProjectPolygons(projectId);
+      await DataAPI.getProjectPolygons(organizationId);
       pp('$mm getProjectPolygons found ${projectPolygons.length} polygons from remote database ');
       await cacheManager.addProjectPolygons(polygons: projectPolygons);
     }

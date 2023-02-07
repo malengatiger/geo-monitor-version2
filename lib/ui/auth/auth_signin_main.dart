@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:geo_monitor/ui/auth/auth_phone_signin_mobile.dart';
-import 'package:geo_monitor/ui/auth/auth_email_link_tablet.dart';
+import 'package:geo_monitor/ui/auth/auth_email_signin_tablet_portrait.dart';
 import 'package:responsive_builder/responsive_builder.dart';
 
 class AuthSignInMain extends StatelessWidget {
@@ -12,7 +12,7 @@ class AuthSignInMain extends StatelessWidget {
       mobile: const AuthPhoneSignInMobile(),
       tablet: OrientationLayoutBuilder(
         portrait: (context) {
-          return const AuthEmailLinkSignInTabletPortrait();
+          return const AuthEmailSignInTabletPortrait(showHeader: true,);
         },
         landscape: (context){
           return const AuthEmailLinkSignInTabletLandscape();
