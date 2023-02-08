@@ -8,7 +8,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:geo_monitor/library/api/prefs_og.dart';
 import 'package:geo_monitor/library/data/audio.dart';
 import 'package:geo_monitor/library/hive_util.dart';
-import 'package:geo_monitor/library/ui/settings.dart';
+import 'package:geo_monitor/library/ui/settings/settings_mobile.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:path_provider/path_provider.dart';

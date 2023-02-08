@@ -60,7 +60,7 @@ class ProjectSelectorState extends State<ProjectSelector>
   @override
   Widget build(BuildContext context) {
     return DropdownButton(
-        hint: Text('Projects', style: myTextStyleSmall(context),),
+        hint: Text('Select Project', style: myTextStyleMedium(context),),
         items: items, onChanged: onChanged);
   }
 

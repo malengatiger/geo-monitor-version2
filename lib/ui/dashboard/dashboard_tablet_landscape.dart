@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:geo_monitor/library/bloc/organization_bloc.dart';
+import 'package:geo_monitor/library/ui/settings/settings_main.dart';
 import 'package:geo_monitor/ui/dashboard/dashboard_grid.dart';
 import 'package:geo_monitor/ui/intro/intro_main.dart';
 import 'package:page_transition/page_transition.dart';
@@ -10,10 +11,13 @@ import '../../library/data/project.dart';
 import '../../library/data/user.dart';
 import '../../library/functions.dart';
 import '../../library/generic_functions.dart';
+import '../../library/ui/maps/project_map_mobile.dart';
+import '../../library/ui/media/list/project_media_list_mobile.dart';
 import '../../library/ui/media/user_media_list/user_media_list_mobile.dart';
 import '../../library/ui/project_list/project_chooser.dart';
 import '../../library/ui/project_list/project_list_main.dart';
-import '../../library/ui/settings.dart';
+import '../../library/ui/settings/settings_form.dart';
+import '../../library/ui/settings/settings_mobile.dart';
 import '../../library/users/full_user_photo.dart';
 import '../../library/users/list/user_list_main.dart';
 import '../chat/chat_page.dart';
@@ -136,7 +140,7 @@ class _DashboardTabletLandscapeState extends State<DashboardTabletLandscape> {
   }
 
   void _navigateToSettings() {
-    pp('$mm .................. _navigateToIntro to Settings ....');
+    pp('$mm .................. _navigateToSettings to Settings ....');
     if (mounted) {
       Navigator.push(
           context,
@@ -144,7 +148,7 @@ class _DashboardTabletLandscapeState extends State<DashboardTabletLandscape> {
               type: PageTransitionType.rotate,
               alignment: Alignment.center,
               duration: const Duration(seconds: 1),
-              child: const Settings()));
+              child: const SettingsMain()));
     }
   }
 
@@ -162,28 +166,28 @@ class _DashboardTabletLandscapeState extends State<DashboardTabletLandscape> {
             )));
   }
 
-  void _navigateToProjectMedia(Project? project) {
+  void _navigateToProjectMedia(Project project) {
     pp('$mm _navigateToProjectMedia ...');
 
-    // Navigator.push(
-    //     context,
-    //     PageTransition(
-    //         type: PageTransitionType.scale,
-    //         alignment: Alignment.topLeft,
-    //         duration: const Duration(seconds: 1),
-    //         child: ProjectMediaListMobile(project: project)));
+    Navigator.push(
+        context,
+        PageTransition(
+            type: PageTransitionType.scale,
+            alignment: Alignment.topLeft,
+            duration: const Duration(seconds: 1),
+            child: ProjectMediaListMobile(project: project)));
   }
 
   void _navigateToProjectMap(Project project) {
     pp('$mm _navigateToProjectMap ...');
 
-    // Navigator.push(
-    //     context,
-    //     PageTransition(
-    //         type: PageTransitionType.scale,
-    //         alignment: Alignment.topLeft,
-    //         duration: const Duration(seconds: 1),
-    //         child: ProjectMapMobile(project: project)));
+    Navigator.push(
+        context,
+        PageTransition(
+            type: PageTransitionType.scale,
+            alignment: Alignment.topLeft,
+            duration: const Duration(seconds: 1),
+            child: ProjectMapMobile(project: project)));
   }
 
   void _navigateToDailyForecast() {
@@ -268,18 +272,52 @@ class _DashboardTabletLandscapeState extends State<DashboardTabletLandscape> {
 
   @override
   Widget build(BuildContext context) {
+    var size = MediaQuery.of(context).size;
     return SafeArea(
         child: Scaffold(
       appBar: AppBar(
+        centerTitle: true,
         title: const Text('Geo Dashboard'),
+        actions: [
+          IconButton(
+              icon: Icon(
+                Icons.info_outline,
+                size: 24,
+                color: Theme.of(context).primaryColor,
+              ),
+              onPressed: _navigateToIntro),
+          user == null
+              ? const SizedBox()
+              : user!.userType == UserType.fieldMonitor
+              ? const SizedBox()
+              : IconButton(
+            icon: Icon(
+              Icons.settings,
+              size: 24,
+              color: Theme.of(context).primaryColor,
+            ),
+            onPressed: _navigateToSettings,
+          ),
+          IconButton(
+            icon: Icon(
+              Icons.refresh,
+              size: 24,
+              color: Theme.of(context).primaryColor,
+            ),
+            onPressed: () {
+              _getData(true);
+            },
+          )
+        ],
       ),
       body: Stack(
         children: [
           Row(
             children: [
               SizedBox(
-                width: 600,
+                width: size.width/2,
                 child: DashboardGrid(
+                  topPadding: 24,
                   onTypeTapped: (type) {
                     switch (type) {
                       case typeProjects:
@@ -310,13 +348,8 @@ class _DashboardTabletLandscapeState extends State<DashboardTabletLandscape> {
                   },
                 ),
               ),
-              const SizedBox(
-                width: 24,
-              ),
-              Container(
-                color: Theme.of(context).primaryColor,
-                width: 400,
-              ),
+              GeoPlaceHolder(width:size.width/2,),
+
             ],
           )
         ],

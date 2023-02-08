@@ -41,7 +41,8 @@ import '../../library/ui/media/list/project_media_list_mobile.dart';
 import '../../library/ui/media/user_media_list/user_media_list_mobile.dart';
 import '../../library/ui/project_list/project_chooser.dart';
 import '../../library/ui/project_list/project_list_mobile.dart';
-import '../../library/ui/settings.dart';
+import '../../library/ui/settings/settings_main.dart';
+import '../../library/ui/settings/settings_mobile.dart';
 import '../../library/ui/weather/daily_forecast_page.dart';
 import '../../library/users/list/user_list_main.dart';
 import '../chat/chat_page.dart';
@@ -362,7 +363,7 @@ class DashboardTabletPortraitState extends State<DashboardTabletPortrait>
               type: PageTransitionType.rotate,
               alignment: Alignment.center,
               duration: const Duration(seconds: 1),
-              child: const Settings()));
+              child: const SettingsMain()));
     }
   }
 
@@ -485,17 +486,56 @@ class DashboardTabletPortraitState extends State<DashboardTabletPortrait>
   Widget build(BuildContext context) {
 
     return Scaffold(
-      // appBar: AppBar(
-      //   title: const Text('Dashboard'),
-      // ),
+      appBar: AppBar(
+          centerTitle: true,
+        title: const Text('Geo Dashboard'),
+        actions: [
+          IconButton(
+              icon: Icon(
+                Icons.info_outline,
+                size: 28,
+                color: Theme.of(context).primaryColor,
+              ),
+              onPressed: _navigateToIntro),
+          user == null
+              ? const SizedBox()
+              : user!.userType == UserType.fieldMonitor
+              ? const SizedBox()
+              : IconButton(
+            icon: Icon(
+              Icons.settings,
+              size: 28,
+              color: Theme.of(context).primaryColor,
+            ),
+            onPressed: _navigateToSettings,
+          ),
+          IconButton(
+            icon: Icon(
+              Icons.refresh,
+              size: 28,
+              color: Theme.of(context).primaryColor,
+            ),
+            onPressed: () {
+              _getData(true);
+            },
+          )
+        ],
+      ),
       body: busy
-          ? const Center(
-              child: SizedBox(
-                height: 24,
-                width: 24,
-                child: CircularProgressIndicator(
-                  strokeWidth: 6,
-                  backgroundColor: Colors.amber,
+          ?  Center(
+              child: Card(
+                elevation: 16,
+                shape: getRoundedBorder(radius: 12),
+                child: const Padding(
+                  padding: EdgeInsets.all(20.0),
+                  child: SizedBox(
+                    height: 24,
+                    width: 24,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 6,
+                      backgroundColor: Colors.amber,
+                    ),
+                  ),
                 ),
               ),
             )

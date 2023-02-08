@@ -37,7 +37,7 @@ import '../../library/ui/media/user_media_list/user_media_list_mobile.dart';
 import '../../library/ui/message/message_main.dart';
 import '../../library/ui/project_list/project_chooser.dart';
 import '../../library/ui/project_list/project_list_mobile.dart';
-import '../../library/ui/settings.dart';
+import '../../library/ui/settings/settings_mobile.dart';
 import '../../library/users/list/user_list_main.dart';
 import '../intro/intro_page_viewer_portrait.dart';
 import 'dashboard_mobile.dart';
@@ -499,8 +499,7 @@ class ProjectDashboardMobileState extends State<ProjectDashboardMobile>
   void _listenForFCM() async {
     var android = UniversalPlatform.isAndroid;
     var ios = UniversalPlatform.isIOS;
-    await fcmBloc.initialize();
-    pp('$mm 🍎 🍎 🍎 🍎 FCM should be initialized!!  ... 🍎 🍎');
+
     if (android || ios) {
       pp('$mm 🍎 🍎 _listen to FCM message streams ... 🍎 🍎');
       projectSubscriptionFCM =
@@ -645,7 +644,7 @@ class ProjectDashboardMobileState extends State<ProjectDashboardMobile>
               type: PageTransitionType.leftToRight,
               alignment: Alignment.center,
               duration: const Duration(seconds: 1),
-              child: const Settings()));
+              child: const SettingsMobile()));
     }
   }
   void _navigateToProjectMedia(Project project) {

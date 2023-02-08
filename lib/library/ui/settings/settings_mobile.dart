@@ -1,25 +1,25 @@
 import 'package:flutter/material.dart';
 import 'package:uuid/uuid.dart';
 
-import '../api/data_api.dart';
-import '../api/prefs_og.dart';
-import '../bloc/theme_bloc.dart';
-import '../data/project.dart';
-import '../data/settings_model.dart';
-import '../data/user.dart';
-import '../functions.dart';
-import '../generic_functions.dart';
-import '../hive_util.dart';
-import '../project_selector.dart';
+import '../../api/data_api.dart';
+import '../../api/prefs_og.dart';
+import '../../bloc/theme_bloc.dart';
+import '../../data/project.dart';
+import '../../data/settings_model.dart';
+import '../../data/user.dart';
+import '../../functions.dart';
+import '../../generic_functions.dart';
+import '../../hive_util.dart';
+import '../../project_selector.dart';
 
-class Settings extends StatefulWidget {
-  const Settings({Key? key}) : super(key: key);
+class SettingsMobile extends StatefulWidget {
+  const SettingsMobile({Key? key}) : super(key: key);
 
   @override
-  SettingsState createState() => SettingsState();
+  SettingsMobileState createState() => SettingsMobileState();
 }
 
-class SettingsState extends State<Settings>
+class SettingsMobileState extends State<SettingsMobile>
     with SingleTickerProviderStateMixin {
   late AnimationController _animationController;
 

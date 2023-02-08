@@ -36,7 +36,7 @@ import '../../library/ui/media/list/project_media_list_mobile.dart';
 import '../../library/ui/media/user_media_list/user_media_list_mobile.dart';
 import '../../library/ui/project_list/project_chooser.dart';
 import '../../library/ui/project_list/project_list_mobile.dart';
-import '../../library/ui/settings.dart';
+import '../../library/ui/settings/settings_mobile.dart';
 import '../../library/ui/weather/daily_forecast_page.dart';
 import '../../library/users/list/user_list_main.dart';
 import '../chat/chat_page.dart';
@@ -429,8 +429,6 @@ class DashboardPortraitState extends State<DashboardPortrait>
   void _listenForFCM() async {
     var android = UniversalPlatform.isAndroid;
     var ios = UniversalPlatform.isIOS;
-    await fcmBloc.initialize();
-    pp('$mm 🍎 🍎 🍎 🍎 FCM should be initialized!!  ... 🍎 🍎');
     if (android || ios) {
       pp('$mm 🍎 🍎 _listen to FCM message streams ... 🍎 🍎');
       projectSubscriptionFCM =
@@ -615,7 +613,7 @@ class DashboardPortraitState extends State<DashboardPortrait>
               type: PageTransitionType.rotate,
               alignment: Alignment.center,
               duration: const Duration(seconds: 1),
-              child: const Settings()));
+              child: const SettingsMobile()));
     }
   }
 

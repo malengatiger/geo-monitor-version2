@@ -24,10 +24,7 @@ import 'dashboard_tablet_portrait.dart';
 
 class DashboardGrid extends StatefulWidget {
   const DashboardGrid(
-      {Key? key,
-      required this.onTypeTapped,
-      this.totalHeight,
-      this.topPadding})
+      {Key? key, required this.onTypeTapped, this.totalHeight, this.topPadding})
       : super(key: key);
   final Function(int) onTypeTapped;
   final double? totalHeight;
@@ -249,7 +246,6 @@ class _DashboardGridState extends State<DashboardGrid>
   void _listenForFCM() async {
     var android = UniversalPlatform.isAndroid;
     var ios = UniversalPlatform.isIOS;
-    await fcmBloc.initialize();
     pp('$mm 🍎 🍎 🍎 🍎 FCM should be initialized!!  ... 🍎 🍎');
     if (android || ios) {
       pp('$mm 🍎 🍎 _listen to FCM message streams ... 🍎 🍎');
@@ -357,7 +353,10 @@ class _DashboardGridState extends State<DashboardGrid>
 
   @override
   Widget build(BuildContext context) {
-
+    var stylePrimary = GoogleFonts.secularOne(
+        textStyle: Theme.of(context).textTheme.titleLarge,
+        fontWeight: FontWeight.w900,
+        color: Theme.of(context).primaryColor);
     return Scaffold(
       body: SingleChildScrollView(
         child: Column(
@@ -382,6 +381,7 @@ class _DashboardGridState extends State<DashboardGrid>
                       },
                       child: DashboardElement(
                         title: 'Projects',
+                        topPadding: 32,
                         number: _projects.length,
                         onTapped: () {
                           widget.onTypeTapped(typeProjects);
@@ -397,6 +397,7 @@ class _DashboardGridState extends State<DashboardGrid>
                       child: DashboardElement(
                         title: 'Members',
                         number: _users.length,
+                        topPadding: 32,
                         onTapped: () {
                           widget.onTypeTapped(typeUsers);
                         },
@@ -411,6 +412,11 @@ class _DashboardGridState extends State<DashboardGrid>
                       child: DashboardElement(
                         title: 'Photos',
                         number: _photos.length,
+                        topPadding: 32,
+                        textStyle: GoogleFonts.secularOne(
+                            textStyle: Theme.of(context).textTheme.titleLarge,
+                            fontWeight: FontWeight.w900,
+                            color: Theme.of(context).primaryColor),
                         onTapped: () {
                           widget.onTypeTapped(typePhotos);
                         },
@@ -424,6 +430,7 @@ class _DashboardGridState extends State<DashboardGrid>
                       },
                       child: DashboardElement(
                         title: 'Videos',
+                        topPadding: 32,
                         number: _videos.length,
                         onTapped: () {
                           widget.onTypeTapped(typeVideos);
@@ -438,7 +445,12 @@ class _DashboardGridState extends State<DashboardGrid>
                       },
                       child: DashboardElement(
                         title: 'Audio Clips',
+                        topPadding: 32,
                         number: _audios.length,
+                        textStyle: GoogleFonts.secularOne(
+                            textStyle: Theme.of(context).textTheme.titleLarge,
+                            fontWeight: FontWeight.w900,
+                            color: Theme.of(context).primaryColor),
                         onTapped: () {
                           widget.onTypeTapped(typeAudios);
                         },
@@ -452,6 +464,7 @@ class _DashboardGridState extends State<DashboardGrid>
                       },
                       child: DashboardElement(
                         title: 'Locations',
+                        topPadding: 32,
                         number: _projectPositions.length,
                         onTapped: () {
                           widget.onTypeTapped(typePositions);
@@ -466,7 +479,12 @@ class _DashboardGridState extends State<DashboardGrid>
                       },
                       child: DashboardElement(
                         title: 'Areas',
+                        topPadding: 32,
                         number: _projectPolygons.length,
+                        textStyle: GoogleFonts.secularOne(
+                            textStyle: Theme.of(context).textTheme.titleLarge,
+                            fontWeight: FontWeight.w900,
+                            color: Theme.of(context).primaryColor),
                         onTapped: () {
                           widget.onTypeTapped(typePolygons);
                         },
@@ -480,6 +498,7 @@ class _DashboardGridState extends State<DashboardGrid>
                       },
                       child: DashboardElement(
                         title: 'Schedules',
+                        topPadding: 32,
                         number: _schedules.length,
                         onTapped: () {
                           widget.onTypeTapped(typeSchedules);
@@ -521,8 +540,9 @@ class DashboardElement extends StatelessWidget {
     var style = GoogleFonts.secularOne(
         textStyle: Theme.of(context).textTheme.titleLarge,
         fontWeight: FontWeight.w900);
+
     return GestureDetector(
-      onTap: (){
+      onTap: () {
         onTapped();
       },
       child: Card(
@@ -533,7 +553,7 @@ class DashboardElement extends StatelessWidget {
             child: Column(
               children: [
                 SizedBox(
-                  height: topPadding == null ? 40 : topPadding!,
+                  height: topPadding == null ? 72 : topPadding!,
                 ),
                 Text('$number', style: textStyle == null ? style : textStyle!),
                 const SizedBox(
