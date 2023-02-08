@@ -11,12 +11,14 @@ import '../../data/project.dart';
 import '../../data/user.dart';
 import '../../functions.dart';
 import '../project_location/project_location_main.dart';
+
 class ProjectEditTabletLandscape extends StatefulWidget {
   final Project? project;
   const ProjectEditTabletLandscape({this.project, super.key});
 
   @override
-  ProjectEditTabletLandscapeState createState() => ProjectEditTabletLandscapeState();
+  ProjectEditTabletLandscapeState createState() =>
+      ProjectEditTabletLandscapeState();
 }
 
 class ProjectEditTabletLandscapeState extends State<ProjectEditTabletLandscape>
@@ -82,7 +84,8 @@ class ProjectEditTabletLandscapeState extends State<ProjectEditTabletLandscape>
               communities: [],
               monitorReports: [],
               nearestCities: [],
-              projectPositions: [], ratings: [],
+              projectPositions: [],
+              ratings: [],
               projectId: uuid.v4());
           var m = await adminBloc.addProject(mProject);
           pp('🎽 🎽 🎽 _submit: new project added .........  ${m.toJson()}');
@@ -104,14 +107,13 @@ class ProjectEditTabletLandscapeState extends State<ProjectEditTabletLandscape>
         setState(() {
           isBusy = false;
         });
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Failed: $e')));
-
+        ScaffoldMessenger.of(context)
+            .showSnackBar(SnackBar(content: Text('Failed: $e')));
       }
     }
   }
 
   void _navigateToProjectLocation(Project mProject) async {
-
     pp(' 😡 _navigateToProjectLocation  😡 😡 😡 ${mProject.name}');
     await Navigator.push(
         context,
@@ -176,8 +178,17 @@ class ProjectEditTabletLandscapeState extends State<ProjectEditTabletLandscape>
           padding: const EdgeInsets.all(12.0),
           child: Row(
             children: [
-              ProjectEditCard(project: widget.project, width: 600,),
-              Container(width: 400, color: Theme.of(context).primaryColor,)
+              ProjectEditCard(
+                project: widget.project,
+                width: 600,
+                onDone: (project) {
+                  _navigateToProjectLocation(project);
+                },
+              ),
+              Container(
+                width: 400,
+                color: Theme.of(context).primaryColor,
+              )
             ],
           ),
         ),

@@ -5,6 +5,7 @@ import 'package:geo_monitor/library/ui/maps/project_map_main.dart';
 import 'package:geo_monitor/library/ui/project_edit/project_edit_main.dart';
 import 'package:geo_monitor/library/ui/project_list/project_list_card.dart';
 import 'package:geo_monitor/library/ui/project_monitor/project_monitor_main.dart';
+import 'package:geo_monitor/library/ui/settings/settings_form.dart';
 import 'package:map_launcher/map_launcher.dart';
 import 'package:page_transition/page_transition.dart';
 
@@ -22,13 +23,15 @@ import '../maps/project_polygon_map_mobile.dart';
 import '../media/list/project_media_list_mobile.dart';
 import '../project_location/project_location_main.dart';
 import '../schedule/project_schedules_mobile.dart';
+
 class ProjectListTabletLandscape extends StatefulWidget {
   final mon.User? user;
 
   const ProjectListTabletLandscape({this.user, super.key});
 
   @override
-  ProjectListTabletLandscapeState createState() => ProjectListTabletLandscapeState();
+  ProjectListTabletLandscapeState createState() =>
+      ProjectListTabletLandscapeState();
 }
 
 class ProjectListTabletLandscapeState extends State<ProjectListTabletLandscape>
@@ -50,9 +53,8 @@ class ProjectListTabletLandscapeState extends State<ProjectListTabletLandscape>
     });
     try {
       user = await prefsOGx.getUser();
-      projects = await organizationBloc
-          .getOrganizationProjects(organizationId: user!.organizationId!,
-          forceRefresh: forceRefresh);
+      projects = await organizationBloc.getOrganizationProjects(
+          organizationId: user!.organizationId!, forceRefresh: forceRefresh);
     } catch (e) {
       pp(e);
       if (mounted) {
@@ -70,6 +72,7 @@ class ProjectListTabletLandscapeState extends State<ProjectListTabletLandscape>
     _controller.dispose();
     super.dispose();
   }
+
   void _navigateToDetail(Project? p) {
     if (user!.userType == UserType.fieldMonitor) {
       Navigator.push(
@@ -80,7 +83,8 @@ class ProjectListTabletLandscapeState extends State<ProjectListTabletLandscape>
               duration: const Duration(milliseconds: 1500),
               child: ProjectEditMain(p)));
     }
-    if (user!.userType! == UserType.orgAdministrator || user!.userType == UserType.orgExecutive) {
+    if (user!.userType! == UserType.orgAdministrator ||
+        user!.userType == UserType.orgExecutive) {
       Navigator.push(
           context,
           PageTransition(
@@ -108,7 +112,7 @@ class ProjectListTabletLandscapeState extends State<ProjectListTabletLandscape>
             type: PageTransitionType.scale,
             alignment: Alignment.topLeft,
             duration: const Duration(milliseconds: 1500),
-            child: ProjectMonitorMain( p)));
+            child: ProjectMonitorMain(p)));
   }
 
   void _navigateToProjectMedia(Project p) {
@@ -210,7 +214,6 @@ class ProjectListTabletLandscapeState extends State<ProjectListTabletLandscape>
     }
   }
 
-
   bool _showPositionChooser = false;
 
   void _navigateToDirections(
@@ -232,29 +235,49 @@ class ProjectListTabletLandscapeState extends State<ProjectListTabletLandscape>
         latitude: p1.coordinates[1], longitude: p1.coordinates[0]);
   }
 
-
-
   @override
   Widget build(BuildContext context) {
-    return SafeArea(child: Scaffold(
+    final size = MediaQuery.of(context).size;
+    final width = size.width;
+    return SafeArea(
+        child: Scaffold(
       appBar: AppBar(
+        centerTitle: true,
+        title: Text('Geo Projects', style: myTextStyleLarge(context),),
         actions: [
-          IconButton(onPressed: (){
-            _getData(true);
-          }, icon: Icon(Icons.refresh, color: Theme.of(context).primaryColor,))
+          IconButton(
+              onPressed: () {
+                _getData(true);
+              },
+              icon: Icon(
+                Icons.refresh,
+                color: Theme.of(context).primaryColor,
+              ))
         ],
       ),
       body: Row(
         children: [
-          user == null? const SizedBox():ProjectListCard(projects: projects, width: 600,
-              navigateToDetail: _navigateToDetail,
-              navigateToProjectLocation: _navigateToProjectLocation,
-              navigateToProjectMedia: _navigateToProjectMedia,
-              navigateToProjectMap: _navigateToProjectMap,
-              navigateToProjectPolygonMap: _navigateToProjectPolygonMap,
-              navigateToProjectDashboard: _navigateToProjectDashboard,
-              user: user!),
-          Container(width: 400, color: Theme.of(context).primaryColor,),
+          user == null
+              ? const SizedBox()
+              : Card(
+                child: Padding(
+                  padding: const EdgeInsets.all(20.0),
+                  child: ProjectListCard(
+                      projects: projects,
+                      width: width/2,
+                      horizontalPadding: 24,
+                      navigateToDetail: _navigateToDetail,
+                      navigateToProjectLocation: _navigateToProjectLocation,
+                      navigateToProjectMedia: _navigateToProjectMedia,
+                      navigateToProjectMap: _navigateToProjectMap,
+                      navigateToProjectPolygonMap: _navigateToProjectPolygonMap,
+                      navigateToProjectDashboard: _navigateToProjectDashboard,
+                      user: user!),
+                ),
+              ),
+          GeoPlaceHolder(
+            width: (width/2) - 64,
+          ),
         ],
       ),
     ));

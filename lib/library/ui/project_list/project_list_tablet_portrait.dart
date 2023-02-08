@@ -13,6 +13,7 @@ import 'package:map_launcher/map_launcher.dart';
 import 'package:page_transition/page_transition.dart';
 import '../../../ui/audio/audio_mobile.dart';
 import '../../../ui/dashboard/dashboard_mobile.dart';
+import '../../../ui/dashboard/project_dashboard_main.dart';
 import '../../../ui/dashboard/project_dashboard_mobile.dart';
 import '../../api/prefs_og.dart';
 import '../../bloc/admin_bloc.dart';
@@ -37,13 +38,14 @@ import '../project_location/project_location_main.dart';
 import '../project_monitor/project_monitor_mobile.dart';
 import '../schedule/project_schedules_mobile.dart';
 
-
 class ProjectListTabletPortrait extends StatefulWidget {
-  const ProjectListTabletPortrait({super.key, this.project, required this.instruction});
+  const ProjectListTabletPortrait(
+      {super.key, this.project, required this.instruction});
   final Project? project;
   final int instruction;
   @override
-  ProjectListTabletPortraitState createState() => ProjectListTabletPortraitState();
+  ProjectListTabletPortraitState createState() =>
+      ProjectListTabletPortraitState();
 }
 
 class ProjectListTabletPortraitState extends State<ProjectListTabletPortrait>
@@ -56,7 +58,6 @@ class ProjectListTabletPortraitState extends State<ProjectListTabletPortrait>
   var userTypeLabel = 'Unknown User Type';
   final mm = '🔵🔵🔵🔵 ProjectListTabletPortrait:  ';
   late StreamSubscription<String> killSubscription;
-
 
   @override
   void initState() {
@@ -87,9 +88,7 @@ class ProjectListTabletPortraitState extends State<ProjectListTabletPortrait>
       projects.sort((a, b) => a.name!.compareTo(b.name!));
 
       if (mounted) {
-        setState(() {
-
-        });
+        setState(() {});
       }
     });
   }
@@ -102,22 +101,20 @@ class ProjectListTabletPortraitState extends State<ProjectListTabletPortrait>
       _sortByName();
     }
   }
+
   void _sortByName() {
     projects.sort((a, b) => a.name!.compareTo(b.name!));
     sortedByName = true;
     if (mounted) {
-      setState(() {
-
-      });
+      setState(() {});
     }
   }
+
   void _sortByDate() {
     projects.sort((a, b) => b.created!.compareTo(a.created!));
     sortedByName = false;
     if (mounted) {
-      setState(() {
-
-      });
+      setState(() {});
     }
   }
 
@@ -138,7 +135,7 @@ class ProjectListTabletPortraitState extends State<ProjectListTabletPortrait>
     setState(() {
       isBusy = false;
     });
-    switch(widget.instruction) {
+    switch (widget.instruction) {
       case goToMedia:
         _navigateToProjectMedia(widget.project!);
         break;
@@ -174,7 +171,6 @@ class ProjectListTabletPortraitState extends State<ProjectListTabletPortrait>
   }
 
   Future refreshProjects(bool forceRefresh) async {
-
     pp('$mm 🥏 🥏 🥏 .................... refresh projects: forceRefresh: $forceRefresh');
     if (mounted) {
       setState(() {
@@ -219,7 +215,8 @@ class ProjectListTabletPortraitState extends State<ProjectListTabletPortrait>
     //           duration: const Duration(milliseconds: 1500),
     //           child: ProjectEditMobile(p)));
     // }
-    if (user!.userType! == UserType.orgAdministrator || user!.userType == UserType.orgExecutive) {
+    if (user!.userType! == UserType.orgAdministrator ||
+        user!.userType == UserType.orgExecutive) {
       Navigator.push(
           context,
           PageTransition(
@@ -231,6 +228,7 @@ class ProjectListTabletPortraitState extends State<ProjectListTabletPortrait>
   }
 
   void _navigateToProjectLocation(Project p) {
+    pp('_navigateToProjectLocation .......................${p.name}');
     Navigator.push(
         context,
         PageTransition(
@@ -343,12 +341,11 @@ class ProjectListTabletPortraitState extends State<ProjectListTabletPortrait>
               type: PageTransitionType.scale,
               alignment: Alignment.topLeft,
               duration: const Duration(milliseconds: 1000),
-              child: ProjectDashboardMobile(
+              child: ProjectDashboardMain(
                 project: p,
               )));
     }
   }
-
 
   bool _showPositionChooser = false;
 
@@ -363,7 +360,7 @@ class ProjectListTabletPortraitState extends State<ProjectListTabletPortrait>
     await availableMaps.first.showDirections(destination: coordinates);
   }
 
-  _onPositionSelected(Position p1) {
+  void _onPositionSelected(Position p1) {
     setState(() {
       _showPositionChooser = false;
     });
@@ -371,7 +368,7 @@ class ProjectListTabletPortraitState extends State<ProjectListTabletPortrait>
         latitude: p1.coordinates[1], longitude: p1.coordinates[0]);
   }
 
-  _onClose() {
+  void _onClose() {
     setState(() {
       _showPositionChooser = false;
     });
@@ -414,9 +411,8 @@ class ProjectListTabletPortraitState extends State<ProjectListTabletPortrait>
     menuItems.add(
       FocusedMenuItem(
           backgroundColor: Theme.of(context).primaryColor,
-
-          title: Text('Project Dashboard',
-              style: myTextStyleSmallBlack(context)),
+          title:
+              Text('Project Dashboard', style: myTextStyleSmallBlack(context)),
           trailingIcon: Icon(
             Icons.dashboard,
             color: Theme.of(context).primaryColor,
@@ -427,7 +423,7 @@ class ProjectListTabletPortraitState extends State<ProjectListTabletPortrait>
     );
     menuItems.add(
       FocusedMenuItem(
-        backgroundColor: Theme.of(context).primaryColor,
+          backgroundColor: Theme.of(context).primaryColor,
           title: Text(
             'Project Directions',
             style: myTextStyleSmallBlack(context),
@@ -443,7 +439,6 @@ class ProjectListTabletPortraitState extends State<ProjectListTabletPortrait>
     menuItems.add(
       FocusedMenuItem(
           backgroundColor: Theme.of(context).primaryColor,
-
           title: Text(
             'Project Locations Map',
             style: myTextStyleSmallBlack(context),
@@ -460,7 +455,6 @@ class ProjectListTabletPortraitState extends State<ProjectListTabletPortrait>
     menuItems.add(
       FocusedMenuItem(
           backgroundColor: Theme.of(context).primaryColor,
-
           title: Text('Photos & Video & Audio',
               style: myTextStyleSmallBlack(context)),
           trailingIcon: Icon(
@@ -475,9 +469,7 @@ class ProjectListTabletPortraitState extends State<ProjectListTabletPortrait>
     menuItems.add(
       FocusedMenuItem(
           backgroundColor: Theme.of(context).primaryColor,
-
-          title: Text('Create Audio',
-              style: myTextStyleSmallBlack(context)),
+          title: Text('Create Audio', style: myTextStyleSmallBlack(context)),
           trailingIcon: Icon(
             Icons.camera,
             color: Theme.of(context).primaryColor,
@@ -504,7 +496,6 @@ class ProjectListTabletPortraitState extends State<ProjectListTabletPortrait>
     if (user!.userType == UserType.orgAdministrator) {
       menuItems.add(FocusedMenuItem(
           backgroundColor: Theme.of(context).primaryColor,
-
           title: Text('Add Project Location',
               style: myTextStyleSmallBlack(context)),
           trailingIcon: Icon(
@@ -517,7 +508,6 @@ class ProjectListTabletPortraitState extends State<ProjectListTabletPortrait>
       menuItems.add(
         FocusedMenuItem(
             backgroundColor: Theme.of(context).primaryColor,
-
             title: Text(
               'Create Project Areas',
               style: myTextStyleSmallBlack(context),
@@ -532,9 +522,7 @@ class ProjectListTabletPortraitState extends State<ProjectListTabletPortrait>
       );
       menuItems.add(FocusedMenuItem(
           backgroundColor: Theme.of(context).primaryColor,
-
-          title: Text('Edit Project',
-              style: myTextStyleSmallBlack(context)),
+          title: Text('Edit Project', style: myTextStyleSmallBlack(context)),
           trailingIcon: Icon(
             Icons.create,
             color: Theme.of(context).primaryColor,
@@ -593,7 +581,8 @@ class ProjectListTabletPortraitState extends State<ProjectListTabletPortrait>
       );
     }
     if (user != null) {
-      if (user!.userType == UserType.orgAdministrator || user!.userType == UserType.orgExecutive) {
+      if (user!.userType == UserType.orgAdministrator ||
+          user!.userType == UserType.orgExecutive) {
         list.add(
           IconButton(
             icon: Icon(
@@ -613,209 +602,218 @@ class ProjectListTabletPortraitState extends State<ProjectListTabletPortrait>
 
   @override
   Widget build(BuildContext context) {
+    final width = MediaQuery.of(context).size.width;
     return SafeArea(
-      child: Scaffold(
-          key: _key,
-          appBar: AppBar(
-            actions: _getActions(),
-            bottom: PreferredSize(
-              preferredSize:
-              Size.fromHeight(isProjectsByLocation ? 200 : 160),
-              child: Column(
-                children: [
-                  Text(
-                      user == null
-                          ? 'Unknown User'
-                          : user!.organizationName!,
-                      style: myTextStyleMediumBold(context)),
-                  const SizedBox(
-                    height: 16,
-                  ),
-                  Text('Organization Projects', style: myTextStyleSmall(context),),
-                  const SizedBox(
-                    height: 8,
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: [
-                      isProjectsByLocation
-                          ? Row(
-                        children: [
-                          SliderTheme(
-                            data: SliderTheme.of(context).copyWith(
-                              activeTrackColor: Theme.of(context).primaryColor,
-                              inactiveTrackColor: Colors.pink[100],
-                              trackShape:
-                              const RoundedRectSliderTrackShape(),
-                              trackHeight: 2.0,
-                              thumbShape:
-                              const RoundSliderThumbShape(
-                                  enabledThumbRadius: 12.0),
-                              thumbColor: Colors.pinkAccent,
-                              overlayColor:
-                              Colors.pink.withAlpha(32),
-                              overlayShape:
-                              const RoundSliderOverlayShape(
-                                  overlayRadius: 28.0),
-                              tickMarkShape:
-                              const RoundSliderTickMarkShape(),
-                              activeTickMarkColor: Colors.indigo[700],
-                              inactiveTickMarkColor:
-                              Colors.pink[100],
-                              valueIndicatorShape:
-                              const PaddleSliderValueIndicatorShape(),
-                              valueIndicatorColor:
-                              Colors.pinkAccent,
-                              valueIndicatorTextStyle:
-                              myTextStyleSmall(context),
-                            ),
-                            child: Slider(
-                              value: sliderValue,
-                              min: 20,
-                              max: 200,
-                              divisions: 5,
-                              label: '$sliderValue',
-                              onChanged: _onSliderChanged,
-                            ),
-                          ),
-                          Text(
-                            '$sliderValue',
-                            style: myNumberStyleMedium(context),
-                          )
-                        ],
-                      )
-                          : Container(),
-                      const SizedBox(
-                        width: 24,
-                      ),
-                    ],
-                  ),
-                  const SizedBox(
-                    height: 32,
-                  ),
-                ],
+        child: Scaffold(
+            key: _key,
+            appBar: AppBar(
+              actions: _getActions(),
+              bottom: PreferredSize(
+                preferredSize:
+                    Size.fromHeight(isProjectsByLocation ? 200 : 160),
+                child: Column(
+                  children: [
+                    Text(
+                        user == null ? 'Unknown User' : user!.organizationName!,
+                        style: myTextStyleMediumBold(context)),
+                    const SizedBox(
+                      height: 16,
+                    ),
+                    Text(
+                      'Organization Projects',
+                      style: myTextStyleSmall(context),
+                    ),
+                    const SizedBox(
+                      height: 8,
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        isProjectsByLocation
+                            ? Row(
+                                children: [
+                                  SliderTheme(
+                                    data: SliderTheme.of(context).copyWith(
+                                      activeTrackColor:
+                                          Theme.of(context).primaryColor,
+                                      inactiveTrackColor: Colors.pink[100],
+                                      trackShape:
+                                          const RoundedRectSliderTrackShape(),
+                                      trackHeight: 2.0,
+                                      thumbShape: const RoundSliderThumbShape(
+                                          enabledThumbRadius: 12.0),
+                                      thumbColor: Colors.pinkAccent,
+                                      overlayColor: Colors.pink.withAlpha(32),
+                                      overlayShape:
+                                          const RoundSliderOverlayShape(
+                                              overlayRadius: 28.0),
+                                      tickMarkShape:
+                                          const RoundSliderTickMarkShape(),
+                                      activeTickMarkColor: Colors.indigo[700],
+                                      inactiveTickMarkColor: Colors.pink[100],
+                                      valueIndicatorShape:
+                                          const PaddleSliderValueIndicatorShape(),
+                                      valueIndicatorColor: Colors.pinkAccent,
+                                      valueIndicatorTextStyle:
+                                          myTextStyleSmall(context),
+                                    ),
+                                    child: Slider(
+                                      value: sliderValue,
+                                      min: 3,
+                                      max: 50,
+                                      divisions: 5,
+                                      label: '$sliderValue',
+                                      onChanged: _onSliderChanged,
+                                    ),
+                                  ),
+                                  Text(
+                                    '$sliderValue',
+                                    style: myNumberStyleMedium(context),
+                                  )
+                                ],
+                              )
+                            : Container(),
+                        const SizedBox(
+                          width: 24,
+                        ),
+                      ],
+                    ),
+                    const SizedBox(
+                      height: 32,
+                    ),
+                  ],
+                ),
               ),
             ),
-          ),
-          // backgroundColor: Colors.brown[100],
-          body: isBusy
-              ? Center(
-            child: Column(
-              children: [
-                const SizedBox(
-                  height: 100,
-                ),
-                const SizedBox(
-                  width: 20,
-                  height: 20,
-                  child: CircularProgressIndicator(
-                    strokeWidth: 4,
-                    backgroundColor: Colors.pink,
-                  ),
-                ),
-                const SizedBox(
-                  height: 20,
-                ),
-                Text(
-                  isProjectsByLocation
-                      ? 'Finding Projects within $sliderValue KM'
-                      : 'Finding Organization Projects ...',
-                  style: myTextStyleMedium(context),
-                ),
-              ],
-            ),
-          )
-              : Padding(
-              padding: const EdgeInsets.all(12.0),
-              child: projects.isEmpty
-                  ? Center(
-                child: Text('Projects Not Found',
-                    style: GoogleFonts.lato(
-                        textStyle: Theme.of(context)
-                            .textTheme
-                            .bodyLarge,
-                        fontWeight: FontWeight.w900)),
-              )
-                  : Stack(
-                children: [
-                  GestureDetector(
-                    onTap: _sort,
-                    child: bd.Badge(
-                      badgeStyle:  bd.BadgeStyle(
-                        badgeColor: Theme.of(context).primaryColor,
-                        elevation: 8, padding: const EdgeInsets.all(8),
-                      ),
-                      position:
-                      bd.BadgePosition.topEnd(top: -8, end: -2),
-                      badgeContent: Padding(
-                        padding: const EdgeInsets.all(4.0),
-                        child: Text('${projects.length}',
-                            style: myNumberStyleSmall(context)),
-                      ),
-
-                      child: Padding(
-                        padding: const EdgeInsets.all(48.0),
-                        child: AnimatedBuilder(
-                          animation: _animationController,
-                          builder: (BuildContext context,
-                              Widget? child) {
-                            return FadeScaleTransition(
-                              animation: _animationController,
-                              child: child,
-                            );
-                          },
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 72.0),
-                            child: user == null? const SizedBox():ProjectListCard(projects: projects,
-                            width: 600, navigateToDetail: (p ) {
-                              _navigateToDetail(p);
-                              }, navigateToProjectLocation: (p ) {
-                              _navigateToProjectMap(p);
-                              }, navigateToProjectMedia: (p ) {
-                                _navigateToProjectMedia(p);
-
-                              }, navigateToProjectMap: (p ) {
-                                _navigateToProjectMap(p);
-
-                              }, navigateToProjectPolygonMap: (p ) {
-                                _navigateToProjectPolygonMap(p);
-
-                              }, navigateToProjectDashboard: (p ) {
-                                _navigateToProjectDashboard(p);
-
-                              }, user: user!,),
-
+            // backgroundColor: Colors.brown[100],
+            body: isBusy
+                ? Center(
+                    child: Column(
+                      children: [
+                        const SizedBox(
+                          height: 100,
+                        ),
+                        const SizedBox(
+                          width: 20,
+                          height: 20,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 4,
+                            backgroundColor: Colors.pink,
                           ),
                         ),
-                      ),
-                    ),
-                  ),
-                  _showPositionChooser
-                      ? Positioned(
-                    child: AnimatedBuilder(
-                      animation: _animationController,
-                      builder: (BuildContext context,
-                          Widget? child) {
-                        return FadeScaleTransition(
-                          animation: _animationController,
-                          child: child,
-                        );
-                      },
-                      child: ProjectLocationChooser(
-                        onSelected: _onPositionSelected,
-                        onClose: _onClose,
-                        projectPositions: positions,
-                        polygons: polygons,
-                      ),
+                        const SizedBox(
+                          height: 20,
+                        ),
+                        Text(
+                          isProjectsByLocation
+                              ? 'Finding Projects within $sliderValue KM'
+                              : 'Finding Organization Projects ...',
+                          style: myTextStyleMedium(context),
+                        ),
+                      ],
                     ),
                   )
-                      : const SizedBox(),
-                ],
-              )))
-    );
+                : Padding(
+                    padding: const EdgeInsets.all(12.0),
+                    child: projects.isEmpty
+                        ? Center(
+                            child: Text('Projects Not Found',
+                                style: GoogleFonts.lato(
+                                    textStyle:
+                                        Theme.of(context).textTheme.bodyLarge,
+                                    fontWeight: FontWeight.w900)),
+                          )
+                        : Stack(
+                            children: [
+                              GestureDetector(
+                                onTap: _sort,
+                                child: bd.Badge(
+                                  badgeStyle: bd.BadgeStyle(
+                                    badgeColor: Theme.of(context).primaryColor,
+                                    elevation: 8,
+                                    padding: const EdgeInsets.all(16),
+                                  ),
+                                  position:
+                                      bd.BadgePosition.topEnd(top: 8, end: 80),
+                                  badgeContent: Padding(
+                                    padding: const EdgeInsets.all(4.0),
+                                    child: Text('${projects.length}',
+                                        style: myNumberStyleSmall(context)),
+                                  ),
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(48.0),
+                                    child: AnimatedBuilder(
+                                      animation: _animationController,
+                                      builder: (BuildContext context,
+                                          Widget? child) {
+                                        return FadeScaleTransition(
+                                          animation: _animationController,
+                                          child: child,
+                                        );
+                                      },
+                                      child: Padding(
+                                        padding: const EdgeInsets.symmetric(
+                                            horizontal: 60.0),
+                                        child: user == null
+                                            ? const SizedBox()
+                                            : ProjectListCard(
+                                                projects: projects,
+                                                width: width,
+                                                horizontalPadding: 24,
+                                                navigateToDetail: (p) {
+                                                  _navigateToDetail(p);
+                                                },
+                                                navigateToProjectLocation: (p) {
+                                                  _navigateToProjectMap(p);
+                                                },
+                                                navigateToProjectMedia: (p) {
+                                                  _navigateToProjectMedia(p);
+                                                },
+                                                navigateToProjectMap: (p) {
+                                                  _navigateToProjectMap(p);
+                                                },
+                                                navigateToProjectPolygonMap:
+                                                    (p) {
+                                                  _navigateToProjectPolygonMap(
+                                                      p);
+                                                },
+                                                navigateToProjectDashboard:
+                                                    (p) {
+                                                  _navigateToProjectDashboard(
+                                                      p);
+                                                },
+                                                user: user!,
+                                              ),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              _showPositionChooser
+                                  ? Positioned(
+                                      child: AnimatedBuilder(
+                                        animation: _animationController,
+                                        builder: (BuildContext context,
+                                            Widget? child) {
+                                          return FadeScaleTransition(
+                                            animation: _animationController,
+                                            child: child,
+                                          );
+                                        },
+                                        child: ProjectLocationChooser(
+                                          onSelected: _onPositionSelected,
+                                          onClose: _onClose,
+                                          projectPositions: positions,
+                                          polygons: polygons,
+                                        ),
+                                      ),
+                                    )
+                                  : const SizedBox(),
+                            ],
+                          ))));
   }
 
-  double sliderValue = 10.0;
+  double sliderValue = 3.0;
   void _onSliderChanged(double value) {
     pp('ProjectListTabletPortrait  🥏 🥏 🥏 🥏 🥏 _onSliderChanged: $value');
     setState(() {

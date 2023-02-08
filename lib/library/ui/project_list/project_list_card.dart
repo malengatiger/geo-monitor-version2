@@ -18,12 +18,13 @@ class ProjectListCard extends StatelessWidget {
       required this.navigateToProjectMap,
       required this.navigateToProjectPolygonMap,
       required this.navigateToProjectDashboard,
-      required this.user})
+      required this.user, required this.horizontalPadding})
       : super(key: key);
 
   final List<Project> projects;
   final User user;
   final double width;
+  final double horizontalPadding;
 
   final Function(Project) navigateToDetail;
   final Function(Project) navigateToProjectLocation;
@@ -38,7 +39,7 @@ class ProjectListCard extends StatelessWidget {
       List<FocusedMenuItem> menuItems = [];
       menuItems.add(
         FocusedMenuItem(
-            backgroundColor: Theme.of(context).primaryColor,
+            // backgroundColor: Theme.of(context).primaryColor,
             title: Text('Project Dashboard',
                 style: myTextStyleSmallBlack(context)),
             trailingIcon: Icon(
@@ -51,7 +52,7 @@ class ProjectListCard extends StatelessWidget {
       );
       menuItems.add(
         FocusedMenuItem(
-            backgroundColor: Theme.of(context).primaryColor,
+            // backgroundColor: Theme.of(context).primaryColor,
             title: Text(
               'Project Directions',
               style: myTextStyleSmallBlack(context),
@@ -66,7 +67,7 @@ class ProjectListCard extends StatelessWidget {
       );
       menuItems.add(
         FocusedMenuItem(
-            backgroundColor: Theme.of(context).primaryColor,
+            // backgroundColor: Theme.of(context).primaryColor,
             title: Text(
               'Project Locations Map',
               style: myTextStyleSmallBlack(context),
@@ -82,7 +83,7 @@ class ProjectListCard extends StatelessWidget {
 
       menuItems.add(
         FocusedMenuItem(
-            backgroundColor: Theme.of(context).primaryColor,
+            // backgroundColor: Theme.of(context).primaryColor,
             title: Text('Photos & Video & Audio',
                 style: myTextStyleSmallBlack(context)),
             trailingIcon: Icon(
@@ -96,10 +97,10 @@ class ProjectListCard extends StatelessWidget {
       );
       menuItems.add(
         FocusedMenuItem(
-            backgroundColor: Theme.of(context).primaryColor,
+            // backgroundColor: Theme.of(context).primaryColor,
             title: Text('Create Audio', style: myTextStyleSmallBlack(context)),
             trailingIcon: Icon(
-              Icons.camera,
+              Icons.mic,
               color: Theme.of(context).primaryColor,
             ),
             onPressed: () {
@@ -111,7 +112,7 @@ class ProjectListCard extends StatelessWidget {
       if (user.userType == UserType.orgAdministrator ||
           user.userType == UserType.orgExecutive) {
         menuItems.add(FocusedMenuItem(
-            backgroundColor: Theme.of(context).primaryColor,
+            // backgroundColor: Theme.of(context).primaryColor,
             title: Text('Add Project Location',
                 style: myTextStyleSmallBlack(context)),
             trailingIcon: Icon(
@@ -123,7 +124,7 @@ class ProjectListCard extends StatelessWidget {
             }));
         menuItems.add(
           FocusedMenuItem(
-              backgroundColor: Theme.of(context).primaryColor,
+              // backgroundColor: Theme.of(context).primaryColor,
               title: Text(
                 'Create Project Areas',
                 style: myTextStyleSmallBlack(context),
@@ -137,7 +138,7 @@ class ProjectListCard extends StatelessWidget {
               }),
         );
         menuItems.add(FocusedMenuItem(
-            backgroundColor: Theme.of(context).primaryColor,
+            // backgroundColor: Theme.of(context).primaryColor,
             title: Text('Edit Project', style: myTextStyleSmallBlack(context)),
             trailingIcon: Icon(
               Icons.create,
@@ -166,39 +167,42 @@ class ProjectListCard extends StatelessWidget {
             onPressed: () {
               pp('💛️💛️💛️ not sure what I pressed ...');
             },
-            child: Card(
-              elevation: 4,
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(16.0)),
-              child: Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Column(
-                  children: [
-                    const SizedBox(
-                      height: 8,
-                    ),
-                    Row(
-                      children: [
-                        Opacity(
-                          opacity: 0.9,
-                          child: Icon(
-                            Icons.water_damage,
-                            color: Theme.of(context).primaryColor,
+            child: Padding(
+              padding: EdgeInsets.symmetric(horizontal: horizontalPadding),
+              child: Card(
+                elevation: 4,
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(16.0)),
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Column(
+                    children: [
+                      const SizedBox(
+                        height: 8,
+                      ),
+                      Row(
+                        children: [
+                          Opacity(
+                            opacity: 0.9,
+                            child: Icon(
+                              Icons.water_damage,
+                              color: Theme.of(context).primaryColor,
+                            ),
                           ),
-                        ),
-                        const SizedBox(
-                          width: 8,
-                        ),
-                        Flexible(
-                          child: Text(mProject.name!,
-                              style: myTextStyleMedium(context)),
-                        )
-                      ],
-                    ),
-                    const SizedBox(
-                      height: 4,
-                    ),
-                  ],
+                          const SizedBox(
+                            width: 8,
+                          ),
+                          Flexible(
+                            child: Text(mProject.name!,
+                                style: myTextStyleMedium(context)),
+                          )
+                        ],
+                      ),
+                      const SizedBox(
+                        height: 4,
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),

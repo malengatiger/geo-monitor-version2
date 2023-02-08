@@ -24,7 +24,7 @@ class ProjectEditTabletPortraitState extends State<ProjectEditTabletPortrait>
   late AnimationController _controller;
   var nameController = TextEditingController();
   var descController = TextEditingController();
-  var maxController = TextEditingController(text: '50.0');
+  var maxController = TextEditingController(text: '500.0');
   var isBusy = false;
 
   User? admin;
@@ -135,7 +135,7 @@ class ProjectEditTabletPortraitState extends State<ProjectEditTabletPortrait>
         appBar: AppBar(
           title: Text(
             'Project Editor',
-            style: Styles.whiteSmall,
+            style: myTextStyleLarge(context),
           ),
           actions: [
             widget.project == null
@@ -150,12 +150,12 @@ class ProjectEditTabletPortraitState extends State<ProjectEditTabletPortrait>
                   )
           ],
           bottom: PreferredSize(
-            preferredSize: const Size.fromHeight(100),
+            preferredSize: const Size.fromHeight(160),
             child: Column(
               children: [
                 Text(
                   widget.project == null ? 'New Project' : 'Edit Project',
-                  style: Styles.blackBoldMedium,
+                  style: myTextStyleMedium(context),
                 ),
                 const SizedBox(
                   height: 8,
@@ -165,7 +165,7 @@ class ProjectEditTabletPortraitState extends State<ProjectEditTabletPortrait>
                   style: myTextStyleLarge(context),
                 ),
                 const SizedBox(
-                  height: 20,
+                  height: 48,
                 )
               ],
             ),
@@ -175,7 +175,11 @@ class ProjectEditTabletPortraitState extends State<ProjectEditTabletPortrait>
         body: Padding(
           padding: const EdgeInsets.all(12.0),
           child: SingleChildScrollView(
-            child: Center(child: ProjectEditCard(project: widget.project,)),
+            child: Center(child: ProjectEditCard(
+              onDone: (project) {
+                _navigateToProjectLocation(project);
+              },
+              project: widget.project,)),
           ),
         ),
       ),

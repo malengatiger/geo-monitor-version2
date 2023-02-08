@@ -360,7 +360,7 @@ class DashboardTabletPortraitState extends State<DashboardTabletPortrait>
       Navigator.push(
           context,
           PageTransition(
-              type: PageTransitionType.rotate,
+              type: PageTransitionType.scale,
               alignment: Alignment.center,
               duration: const Duration(seconds: 1),
               child: const SettingsMain()));
@@ -541,7 +541,9 @@ class DashboardTabletPortraitState extends State<DashboardTabletPortrait>
             )
           : Stack(
               children: [
-                DashboardGrid(onTypeTapped: (type) {
+                DashboardGrid(
+                    topPadding: 72,
+                    onTypeTapped: (type) {
                   switch (type) {
                     case typeProjects:
                       _navigateToProjectList();

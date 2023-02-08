@@ -6,15 +6,17 @@ import 'package:uuid/uuid.dart';
 
 import '../../bloc/admin_bloc.dart';
 import '../../bloc/organization_bloc.dart';
+import '../../bloc/project_bloc.dart';
 import '../../data/project.dart';
 import '../../data/user.dart';
 import '../project_location/project_location_main.dart';
 
 class ProjectEditCard extends StatefulWidget {
-  const ProjectEditCard({Key? key, required this.project, this.width}) : super(key: key);
-
+  const ProjectEditCard({Key? key, required this.project, this.width, required this.onDone}) : super(key: key);
   final Project? project;
   final double? width;
+
+  final Function(Project) onDone;
 
   @override
   ProjectEditCardState createState() => ProjectEditCardState();
@@ -80,12 +82,16 @@ class ProjectEditCardState extends State<ProjectEditCard>
           var m = await adminBloc.updateProject(widget.project!);
           pp('🎽 🎽 🎽 _submit: new project updated .........  ${m.toJson()}');
         }
+
+        await projectBloc.getProjectData(
+            projectId: mProject.projectId!, forceRefresh: true);
+        widget.onDone(mProject);
+        if (mounted) {
+          Navigator.of(context).pop();
+        }
         setState(() {
           busy = false;
         });
-        organizationBloc.getOrganizationProjects(
-            organizationId: mProject.organizationId!, forceRefresh: true);
-        _navigateToProjectLocation(mProject);
       } catch (e) {
         setState(() {
           busy = false;
@@ -95,21 +101,6 @@ class ProjectEditCardState extends State<ProjectEditCard>
       }
     }
   }
-  void _navigateToProjectLocation(Project mProject) async {
-
-    pp(' 😡 _navigateToProjectLocation  😡 😡 😡 ${mProject.name}');
-    await Navigator.push(
-        context,
-        PageTransition(
-            type: PageTransitionType.scale,
-            alignment: Alignment.bottomRight,
-            duration: const Duration(seconds: 1),
-            child: ProjectLocationMain(mProject)));
-    if (mounted) {
-      Navigator.pop(context);
-    }
-  }
-
 
   @override
   Widget build(BuildContext context) {

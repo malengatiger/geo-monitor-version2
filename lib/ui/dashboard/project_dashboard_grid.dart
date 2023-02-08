@@ -9,6 +9,7 @@ import '../../library/api/prefs_og.dart';
 import '../../library/bloc/connection_check.dart';
 import '../../library/bloc/fcm_bloc.dart';
 import '../../library/bloc/organization_bloc.dart';
+import '../../library/bloc/project_bloc.dart';
 import '../../library/bloc/theme_bloc.dart';
 import '../../library/data/audio.dart';
 import '../../library/data/field_monitor_schedule.dart';
@@ -22,19 +23,25 @@ import '../../library/data/video.dart';
 import '../../library/functions.dart';
 import 'dashboard_tablet_portrait.dart';
 
-class DashboardGrid extends StatefulWidget {
-  const DashboardGrid(
-      {Key? key, required this.onTypeTapped, this.totalHeight, this.topPadding})
+class ProjectDashboardGrid extends StatefulWidget {
+  const ProjectDashboardGrid(
+      {Key? key,
+      required this.onTypeTapped,
+      this.totalHeight,
+      this.topPadding,
+      required this.project, required this.showProjectName})
       : super(key: key);
   final Function(int) onTypeTapped;
   final double? totalHeight;
   final double? topPadding;
+  final Project project;
+  final bool showProjectName;
 
   @override
-  State<DashboardGrid> createState() => _DashboardGridState();
+  State<ProjectDashboardGrid> createState() => _ProjectDashboardGridState();
 }
 
-class _DashboardGridState extends State<DashboardGrid>
+class _ProjectDashboardGridState extends State<ProjectDashboardGrid>
     with TickerProviderStateMixin {
   // late AnimationController _projectAnimationController;
   // late AnimationController _userAnimationController;
@@ -73,7 +80,7 @@ class _DashboardGridState extends State<DashboardGrid>
   var _audios = <Audio>[];
   final dur = 2000;
   User? user;
-  final mm = '🔵🔵🔵🔵 DashboardGrid:  🍎 ';
+  final mm = '🔵🔵🔵🔵 ProjectDashboardGrid:  🍎 ';
 
   late StreamSubscription<String> killSubscriptionFCM;
 
@@ -83,18 +90,20 @@ class _DashboardGridState extends State<DashboardGrid>
     super.initState();
     _setupData(false);
     _listenForFCM();
-    _listenToOrgStreams();
+    _listenToProjectStreams();
   }
 
   void _setupData(bool forceRefresh) async {
     user = await prefsOGx.getUser();
     pp('$mm ..... getting org data ...');
-    setState(() {
-      busy = true;
-    });
+    if (mounted) {
+      setState(() {
+        busy = true;
+      });
+    }
     try {
-      var dataBag = await organizationBloc.getOrganizationData(
-          organizationId: user!.organizationId!, forceRefresh: forceRefresh);
+      var dataBag = await projectBloc.getProjectData(
+          projectId: widget.project!.projectId!, forceRefresh: forceRefresh);
       _projects = dataBag.projects!;
       _users = dataBag.users!;
       _photos = dataBag.photos!;
@@ -104,7 +113,9 @@ class _DashboardGridState extends State<DashboardGrid>
       _projectPositions = dataBag.projectPositions!;
       _schedules = dataBag.fieldMonitorSchedules!;
 
-      setState(() {});
+      if (mounted) {
+        setState(() {});
+      }
       // _projectAnimationController.reset();
       // _userAnimationController.reset();
       // _photoAnimationController.reset();
@@ -134,9 +145,11 @@ class _DashboardGridState extends State<DashboardGrid>
             message: 'Data refresh failed. Possible network problem - $e');
       }
     }
-    setState(() {
-      busy = false;
-    });
+    if (mounted) {
+      setState(() {
+        busy = false;
+      });
+    }
   }
 
   // void _setAnimationControllers() {
@@ -170,8 +183,8 @@ class _DashboardGridState extends State<DashboardGrid>
   //       vsync: this);
   // }
 
-  void _listenToOrgStreams() async {
-    projectSubscription = organizationBloc.projectStream.listen((event) {
+  void _listenToProjectStreams() async {
+    projectSubscription = projectBloc.projectStream.listen((event) {
       _projects = event;
       pp('$mm attempting to set state after projects delivered by stream: ${_projects.length} ... mounted: $mounted');
       if (mounted) {
@@ -187,7 +200,7 @@ class _DashboardGridState extends State<DashboardGrid>
         // _userAnimationController.forward();
       }
     });
-    photoSubscription = organizationBloc.photoStream.listen((event) {
+    photoSubscription = projectBloc.photoStream.listen((event) {
       _photos = event;
       pp('$mm attempting to set state after photos delivered by stream: ${_photos.length} ... mounted: $mounted');
       if (mounted) {
@@ -196,7 +209,7 @@ class _DashboardGridState extends State<DashboardGrid>
       // _photoAnimationController.forward();
     });
 
-    videoSubscription = organizationBloc.videoStream.listen((event) {
+    videoSubscription = projectBloc.videoStream.listen((event) {
       _videos = event;
       pp('$mm attempting to set state after videos delivered by stream: ${_videos.length} ... mounted: $mounted');
       if (mounted) {
@@ -204,7 +217,7 @@ class _DashboardGridState extends State<DashboardGrid>
         // _videoAnimationController.forward();
       }
     });
-    audioSubscription = organizationBloc.audioStream.listen((event) {
+    audioSubscription = projectBloc.audioStream.listen((event) {
       _audios = event;
       pp('$mm attempting to set state after audios delivered by stream: ${_audios.length} ... mounted: $mounted');
       if (mounted) {
@@ -213,7 +226,7 @@ class _DashboardGridState extends State<DashboardGrid>
       }
     });
     projectPositionSubscription =
-        organizationBloc.projectPositionsStream.listen((event) {
+        projectBloc.projectPositionsStream.listen((event) {
       _projectPositions = event;
       pp('$mm attempting to set state after projectPositions delivered by stream: ${_projectPositions.length} ... mounted: $mounted');
       if (mounted) {
@@ -222,7 +235,7 @@ class _DashboardGridState extends State<DashboardGrid>
       }
     });
     projectPolygonSubscription =
-        organizationBloc.projectPolygonsStream.listen((event) {
+        projectBloc.projectPolygonsStream.listen((event) {
       _projectPolygons = event;
       pp('$mm attempting to set state after projectPolygons delivered by stream: ${_projectPolygons.length} ... mounted: $mounted');
       if (mounted) {
@@ -232,7 +245,7 @@ class _DashboardGridState extends State<DashboardGrid>
     });
 
     schedulesSubscription =
-        organizationBloc.fieldMonitorScheduleStream.listen((event) {
+        projectBloc.fieldMonitorScheduleStream.listen((event) {
       _schedules = event;
       pp('$mm attempting to set state after schedules delivered by stream: ${_schedules.length} ... mounted: $mounted');
 
@@ -353,10 +366,6 @@ class _DashboardGridState extends State<DashboardGrid>
 
   @override
   Widget build(BuildContext context) {
-    var stylePrimary = GoogleFonts.secularOne(
-        textStyle: Theme.of(context).textTheme.titleLarge,
-        fontWeight: FontWeight.w900,
-        color: Theme.of(context).primaryColor);
     return Scaffold(
       body: SingleChildScrollView(
         child: Column(
@@ -364,9 +373,10 @@ class _DashboardGridState extends State<DashboardGrid>
             SizedBox(
               height: widget.topPadding == null ? 48 : widget.topPadding!,
             ),
-            user == null
-                ? const SizedBox()
-                : SizedBox(height: 100, child: Headline(user: user!)),
+            widget.showProjectName? Text(
+              '${widget.project.name}',
+              style: myTextStyleLargePrimaryColor(context),
+            ) : const SizedBox(),
             SizedBox(
               height: widget.totalHeight == null ? 900 : widget.totalHeight!,
               child: Padding(
@@ -374,35 +384,6 @@ class _DashboardGridState extends State<DashboardGrid>
                 child: GridView.count(
                   crossAxisCount: 3,
                   children: [
-                    GestureDetector(
-                      onTap: () {
-                        pp('$mm widget on tapped: typeProjects $typeProjects ...');
-                        widget.onTypeTapped(typeProjects);
-                      },
-                      child: DashboardElement(
-                        title: 'Projects',
-                        topPadding: widget.topPadding,
-                        number: _projects.length,
-                        onTapped: () {
-                          widget.onTypeTapped(typeProjects);
-                        },
-                      ),
-                    ),
-                    GestureDetector(
-                      onTap: () {
-                        pp('$mm widget on tapped: typeUsers $typeUsers ...');
-
-                        widget.onTypeTapped(typeUsers);
-                      },
-                      child: DashboardElement(
-                        title: 'Members',
-                        number: _users.length,
-                        topPadding: widget.topPadding,
-                        onTapped: () {
-                          widget.onTypeTapped(typeUsers);
-                        },
-                      ),
-                    ),
                     GestureDetector(
                       onTap: () {
                         pp('$mm widget on tapped: typePhotos $typePhotos ...');

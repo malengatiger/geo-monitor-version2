@@ -145,7 +145,7 @@ class _DashboardTabletLandscapeState extends State<DashboardTabletLandscape> {
       Navigator.push(
           context,
           PageTransition(
-              type: PageTransitionType.rotate,
+              type: PageTransitionType.scale,
               alignment: Alignment.center,
               duration: const Duration(seconds: 1),
               child: const SettingsMain()));

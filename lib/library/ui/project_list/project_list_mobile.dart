@@ -674,8 +674,8 @@ class ProjectListMobileState extends State<ProjectListMobile>
                             ),
                             child: Slider(
                               value: sliderValue,
-                              min: 20,
-                              max: 200,
+                              min: 3,
+                              max: 50,
                               divisions: 5,
                               label: '$sliderValue',
                               onChanged: _onSliderChanged,
@@ -864,7 +864,7 @@ class ProjectListMobileState extends State<ProjectListMobile>
     );
   }
 
-  double sliderValue = 10.0;
+  double sliderValue = 3.0;
   void _onSliderChanged(double value) {
     pp('ProjectListMobile  🥏 🥏 🥏 🥏 🥏 _onSliderChanged: $value');
     setState(() {
