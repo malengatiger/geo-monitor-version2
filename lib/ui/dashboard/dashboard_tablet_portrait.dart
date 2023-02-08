@@ -5,6 +5,8 @@ import 'package:firebase_auth/firebase_auth.dart' as fb;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:geo_monitor/library/bloc/downloader.dart';
+import 'package:geo_monitor/library/ui/project_list/project_list_main.dart';
+import 'package:geo_monitor/library/ui/project_list/project_list_tablet_portrait.dart';
 import 'package:geo_monitor/library/users/full_user_photo.dart';
 import 'package:geo_monitor/ui/dashboard/dashboard_grid.dart';
 import 'package:geofence_service/geofence_service.dart';
@@ -32,6 +34,7 @@ import '../../library/data/user.dart';
 import '../../library/data/video.dart';
 import '../../library/emojis.dart';
 import '../../library/functions.dart';
+import '../../library/generic_functions.dart';
 import '../../library/geofence/geofencer_two.dart';
 import '../../library/ui/maps/project_map_mobile.dart';
 import '../../library/ui/media/list/project_media_list_mobile.dart';
@@ -64,15 +67,15 @@ class DashboardTabletPortraitState extends State<DashboardTabletPortrait>
   late AnimationController _polygonAnimationController;
   late AnimationController _audioAnimationController;
 
-  // var busy = false;
-  // var _projects = <Project>[];
-  // var _users = <User>[];
-  // var _photos = <Photo>[];
-  // var _videos = <Video>[];
-  // var _projectPositions = <ProjectPosition>[];
-  // var _projectPolygons = <ProjectPolygon>[];
-  // var _schedules = <FieldMonitorSchedule>[];
-  // var _audios = <Audio>[];
+  var busy = false;
+  var _projects = <Project>[];
+  var _users = <User>[];
+  var _photos = <Photo>[];
+  var _videos = <Video>[];
+  var _projectPositions = <ProjectPosition>[];
+  var _projectPolygons = <ProjectPolygon>[];
+  var _schedules = <FieldMonitorSchedule>[];
+  var _audios = <Audio>[];
   User? user;
 
   static const mm = '🎽🎽🎽🎽🎽🎽 DashboardTabletPortrait: 🎽';
@@ -89,8 +92,29 @@ class DashboardTabletPortraitState extends State<DashboardTabletPortrait>
     _subscribeToGeofenceStream();
     _buildGeofences();
     _startTimer();
-
+    _getData(false);
     uploader.startTimer(const Duration(seconds: 60));
+  }
+
+  void _getData(bool forceRefresh) async {
+    setState(() {
+      busy = true;
+    });
+    try {
+      user = await prefsOGx.getUser();
+      var bag = await organizationBloc.getOrganizationData(organizationId: user!.organizationId!, forceRefresh: forceRefresh);
+      _users = bag.users!;
+      _photos = bag.photos!;
+    } catch (e) {
+      pp(e);
+      if (mounted) {
+        showToast(message: '$e', context: context);
+      }
+    }
+
+    setState(() {
+      busy = false;
+    });
   }
 
   void _setAnimationControllers() {
@@ -254,16 +278,15 @@ class DashboardTabletPortraitState extends State<DashboardTabletPortrait>
   int instruction = stayOnList;
   void _navigateToProjectList() {
     if (selectedProject != null) {
+      pp('$mm _navigateToProjectList ...');
+
       Navigator.push(
           context,
           PageTransition(
               type: PageTransitionType.scale,
               alignment: Alignment.topLeft,
               duration: const Duration(seconds: 1),
-              child: ProjectListMobile(
-                instruction: instruction,
-                project: selectedProject,
-              )));
+              child: const ProjectListMain()));
       selectedProject = null;
     } else {
       Navigator.push(
@@ -272,9 +295,7 @@ class DashboardTabletPortraitState extends State<DashboardTabletPortrait>
               type: PageTransitionType.scale,
               alignment: Alignment.topLeft,
               duration: const Duration(seconds: 1),
-              child: ProjectListMobile(
-                instruction: instruction,
-              )));
+              child: const ProjectListMain()));
     }
   }
 
@@ -289,6 +310,8 @@ class DashboardTabletPortraitState extends State<DashboardTabletPortrait>
   }
 
   void _navigateToUserMediaList() async {
+    pp('$mm _navigateToUserMediaList ...');
+
     if (mounted) {
       Navigator.push(
           context,
@@ -344,16 +367,19 @@ class DashboardTabletPortraitState extends State<DashboardTabletPortrait>
   }
 
   void _navigateToUserList() {
+    pp('$mm _navigateToUserList ...');
     Navigator.push(
         context,
         PageTransition(
             type: PageTransitionType.scale,
             alignment: Alignment.topLeft,
             duration: const Duration(seconds: 1),
-            child: const UserListMain()));
+            child:  UserListMain(user: user!, users: _users,)));
   }
 
   void _navigateToProjectMedia(Project project) {
+    pp('$mm _navigateToProjectMedia ...');
+
     Navigator.push(
         context,
         PageTransition(
@@ -364,6 +390,8 @@ class DashboardTabletPortraitState extends State<DashboardTabletPortrait>
   }
 
   void _navigateToProjectMap(Project project) {
+    pp('$mm _navigateToProjectMap ...');
+
     Navigator.push(
         context,
         PageTransition(
@@ -384,6 +412,8 @@ class DashboardTabletPortraitState extends State<DashboardTabletPortrait>
   }
 
   void _showProjectDialog(int destination) {
+    pp('$mm _showProjectDialog ...');
+
     late String title;
     switch (destination) {
       case typePhotos:
@@ -503,47 +533,6 @@ class DashboardTabletPortraitState extends State<DashboardTabletPortrait>
 }
 ///////
 
-class DashboardTabletLandscape extends StatefulWidget {
-  const DashboardTabletLandscape({Key? key, required this.user})
-      : super(key: key);
-
-  final User user;
-  @override
-  State<DashboardTabletLandscape> createState() =>
-      _DashboardTabletLandscapeState();
-}
-
-class _DashboardTabletLandscapeState extends State<DashboardTabletLandscape> {
-  @override
-  Widget build(BuildContext context) {
-    return SafeArea(
-        child: Scaffold(
-      appBar: AppBar(
-        title: const Text('Geo Dashboard'),
-      ),
-      body: Stack(
-        children: [
-          Row(
-            children: [
-              SizedBox(width: 600,
-                child: DashboardTabletPortrait(
-                  user: widget.user,
-                ),
-              ),
-              const SizedBox(
-                width: 24,
-              ),
-              Container(
-                color: Colors.teal,
-                width: 400,
-              ),
-            ],
-          )
-        ],
-      ),
-    ));
-  }
-}
 
 class Headline extends StatelessWidget {
   const Headline({Key? key, required this.user}) : super(key: key);

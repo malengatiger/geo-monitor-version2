@@ -626,7 +626,7 @@ class DashboardPortraitState extends State<DashboardPortrait>
             type: PageTransitionType.scale,
             alignment: Alignment.topLeft,
             duration: const Duration(seconds: 1),
-            child: const UserListMain()));
+            child: UserListMain(user: user!, users: _users,)));
   }
 
   void _navigateToProjectMedia(Project project) {

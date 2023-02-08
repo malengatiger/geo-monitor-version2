@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:geo_monitor/library/auth/app_auth.dart';
+import 'package:geo_monitor/library/users/list/user_list_main.dart';
 import 'package:geo_monitor/ui/auth/auth_signin_main.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:firebase_auth/firebase_auth.dart' as fb;
@@ -139,7 +140,7 @@ class GeoMonitorApp extends StatelessWidget {
               nextScreen: fbAuthedUser == null
                   ? const IntroMain()
                   : const DashboardMain(),
-              // nextScreen: const AuthSignInMain(),
+              // nextScreen: const UserListMain(),
               splashTransition: SplashTransition.fadeTransition,
               pageTransitionType: PageTransitionType.leftToRight,
               backgroundColor: Colors.pink.shade900,

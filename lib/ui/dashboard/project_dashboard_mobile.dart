@@ -648,16 +648,6 @@ class ProjectDashboardMobileState extends State<ProjectDashboardMobile>
               child: const Settings()));
     }
   }
-
-  void _navigateToUserList() {
-    Navigator.push(
-        context,
-        PageTransition(
-            type: PageTransitionType.scale,
-            alignment: Alignment.topLeft,
-            duration: const Duration(seconds: 1),
-            child: const UserListMain()));
-  }
   void _navigateToProjectMedia(Project project) {
     Navigator.push(
         context,

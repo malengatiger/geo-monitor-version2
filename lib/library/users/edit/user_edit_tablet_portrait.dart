@@ -18,15 +18,19 @@ import '../avatar_editor.dart';
 import 'country_chooser.dart';
 import 'user_edit_main.dart';
 
-class UserEditMobile extends StatefulWidget {
+class UserEditTabletPortrait extends StatefulWidget {
   final ar.User? user;
-  const UserEditMobile(this.user, {super.key});
+  final double externalPadding, internalPadding;
+
+  const UserEditTabletPortrait({super.key, this.user, required this.externalPadding, required this.internalPadding});
+
+
 
   @override
-  UserEditMobileState createState() => UserEditMobileState();
+  UserEditTabletPortraitState createState() => UserEditTabletPortraitState();
 }
 
-class UserEditMobileState extends State<UserEditMobile>
+class UserEditTabletPortraitState extends State<UserEditTabletPortrait>
     with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   var nameController = TextEditingController();
@@ -62,7 +66,8 @@ class UserEditMobileState extends State<UserEditMobile>
       await _setCountry();
     }
   }
-  _setCountry() async {
+
+  Future _setCountry() async {
     if (widget.user != null) {
       if (widget.user!.countryId != null) {
         var countries = await cacheManager.getCountries();
@@ -140,7 +145,7 @@ class UserEditMobileState extends State<UserEditMobile>
           pp('\n\n\n😡😡😡 _submit new user ......... ${user.toJson()}');
           try {
             var mUser = await DataAPI.createUser(user);
-            pp('\n🍎🍎🍎🍎 UserEditMobile: 🍎 A user has been created:  🍎 '
+            pp('\n🍎🍎🍎🍎 UserEditTabletPortrait: 🍎 A user has been created:  🍎 '
                 '${mUser.toJson()}\b');
             gender = null;
             type = null;
@@ -218,18 +223,19 @@ class UserEditMobileState extends State<UserEditMobile>
       }
     }
   }
+
   void _setGenderRadio() {
     if (widget.user != null) {
       if (widget.user!.gender != null) {
-       gender = widget.user!.gender!;
-       switch(widget.user!.gender) {
-         case 'Male':
-           genderType = 0;
-           break;
-         case 'Female':
-           genderType = 1;
-           break;
-       }
+        gender = widget.user!.gender!;
+        switch (widget.user!.gender) {
+          case 'Male':
+            genderType = 0;
+            break;
+          case 'Female':
+            genderType = 1;
+            break;
+        }
       }
     }
   }
@@ -243,15 +249,14 @@ class UserEditMobileState extends State<UserEditMobile>
             alignment: Alignment.topLeft,
             duration: const Duration(seconds: 2),
             child: AvatarEditor(
-              user: widget.user!, goToDashboardWhenDone: false,
+              user: widget.user!,
+              goToDashboardWhenDone: false,
             )));
     if (user is User) {
       if (widget.user != null) {
         widget.user!.imageUrl = user.imageUrl;
         widget.user!.thumbnailUrl = user.thumbnailUrl;
-        setState(() {
-
-        });
+        setState(() {});
       }
     }
   }
@@ -269,7 +274,6 @@ class UserEditMobileState extends State<UserEditMobile>
             )));
   }
 
-
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -277,30 +281,30 @@ class UserEditMobileState extends State<UserEditMobile>
         key: _key,
         appBar: AppBar(
           title: Text(
-            'User Editor',
-            style: myTextStyleSmall(context),
+            'Geo Member Editor',
+            style: myTextStyleLarge(context),
           ),
           bottom: PreferredSize(
-            preferredSize: const Size.fromHeight(60),
+            preferredSize: const Size.fromHeight(120),
             child: Column(
               children: [
                 Text(
                   widget.user == null
                       ? 'New Monitor User'
                       : 'Edit Monitor User',
-                  style: myTextStyleSmall(context),
+                  style: myTextStyleMedium(context),
                 ),
                 admin == null
                     ? Container()
                     : const SizedBox(
-                        height: 8,
+                        height: 16,
                       ),
                 Text(
                   admin == null ? '' : admin!.organizationName!,
                   style: myTextStyleLarge(context),
                 ),
                 const SizedBox(
-                  height: 20,
+                  height: 48,
                 )
               ],
             ),
@@ -309,12 +313,12 @@ class UserEditMobileState extends State<UserEditMobile>
         body: Stack(
           children: [
             Padding(
-              padding: const EdgeInsets.all(8.0),
+              padding: EdgeInsets.all(widget.externalPadding),
               child: Card(
                 elevation: 4,
                 shape: getRoundedBorder(radius: 16),
                 child: Padding(
-                  padding: const EdgeInsets.all(12.0),
+                  padding: EdgeInsets.all(widget.internalPadding),
                   child: SingleChildScrollView(
                     child: Form(
                       key: _formKey,
@@ -517,16 +521,21 @@ class UserEditMobileState extends State<UserEditMobile>
             ),
             widget.user?.thumbnailUrl == null
                 ? const Positioned(
-                right:2, top: 0,
-                child: CircleAvatar(radius: 24,))
+                    right: 36,
+                    top: 36,
+                    child: CircleAvatar(
+                      radius: 48,
+                    ))
                 : Positioned(
-                    right: 2, top: 0,
+                    right: 36,
+                    top: 16,
                     child: GestureDetector(
                       onTap: _navigateToFullPhoto,
                       child: CircleAvatar(
-                        radius: 40,
-                      backgroundImage: NetworkImage(widget.user!.thumbnailUrl!),
-                  ),
+                        radius: 86,
+                        backgroundImage:
+                            NetworkImage(widget.user!.thumbnailUrl!),
+                      ),
                     )),
           ],
         ),

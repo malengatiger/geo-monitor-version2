@@ -16,7 +16,7 @@ class AuthRegistrationMain extends StatelessWidget {
       mobile: const AuthPhoneRegistrationMobile(),
       tablet: OrientationLayoutBuilder(
         portrait: (context) {
-          return const AuthEmailRegistrationPortrait();
+          return const AuthEmailRegistrationPortrait(amInsideLandscape: false,);
         },
         landscape: (context){
           return const AuthEmailRegistrationLandscape();

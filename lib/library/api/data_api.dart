@@ -319,7 +319,7 @@ class DataAPI {
       await cacheManager.addOrganization(organization: u.organization!);
       await cacheManager.addProjectPosition(projectPosition: u.projectPosition!);
 
-      pp('$mm️ Organization registered! 😡😡 RegistrationBag arrived from backend server: org:: ☕️ ${u.organization!.name!}');
+      pp('$mm️ Organization registered! 😡😡 RegistrationBag arrived from backend server and cached in Hive; org:: ☕️ ${u.organization!.name!}');
 
       return u;
     } catch (e) {

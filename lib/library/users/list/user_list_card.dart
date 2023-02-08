@@ -1,0 +1,263 @@
+import 'package:flutter/material.dart';
+import 'package:focused_menu/focused_menu.dart';
+import 'package:focused_menu/modals.dart';
+import 'package:badges/badges.dart' as bd;
+
+import '../../data/user.dart';
+import '../../functions.dart';
+
+class UserListCard extends StatelessWidget {
+  const UserListCard(
+      {Key? key,
+      required this.users,
+      required this.deviceUser,
+      required this.navigateToPhone,
+      required this.navigateToMessaging,
+      required this.navigateToUserReport,
+      required this.navigateToUserEdit,
+      required this.navigateToScheduler,
+      required this.navigateToKillPage,
+      required this.amInLandscape,
+      required this.badgeTapped})
+      : super(key: key);
+
+  final List<User> users;
+  final User deviceUser;
+  final bool amInLandscape;
+
+  final Function(User) navigateToPhone;
+  final Function(User) navigateToMessaging;
+  final Function(User) navigateToUserReport;
+
+  final Function(User) navigateToUserEdit;
+  final Function(User) navigateToScheduler;
+  final Function(User) navigateToKillPage;
+  final Function() badgeTapped;
+
+  List<FocusedMenuItem> _getMenuItems(User someUser, BuildContext context) {
+    List<FocusedMenuItem> list = [];
+
+    if (someUser.userId != deviceUser.userId) {
+      list.add(FocusedMenuItem(
+          title: Text('Call User', style: myTextStyleSmallBlack(context)),
+          // backgroundColor: Theme.of(context).primaryColor,
+          trailingIcon: Icon(
+            Icons.phone,
+            color: Theme.of(context).primaryColor,
+          ),
+          onPressed: () {
+            navigateToPhone(someUser);
+          }));
+      list.add(FocusedMenuItem(
+          title: Text('Send Message', style: myTextStyleSmallBlack(context)),
+          // backgroundColor: Theme.of(context).primaryColor,
+          trailingIcon: Icon(
+            Icons.send,
+            color: Theme.of(context).primaryColor,
+          ),
+          onPressed: () {
+            navigateToMessaging(someUser);
+          }));
+    }
+
+    if (deviceUser.userType == UserType.fieldMonitor) {
+      // pp('$mm Field monitor cannot edit any other users');
+    } else {
+      list.add(FocusedMenuItem(
+          title: Text('View Report', style: myTextStyleSmallBlack(context)),
+          trailingIcon: Icon(
+            Icons.report,
+            color: Theme.of(context).primaryColor,
+          ),
+          onPressed: () {
+            navigateToUserReport(someUser);
+          }));
+      list.add(FocusedMenuItem(
+          title: Text(
+            'Edit User',
+            style: myTextStyleSmallBlack(context),
+          ),
+          trailingIcon: Icon(
+            Icons.create,
+            color: Theme.of(context).primaryColor,
+          ),
+          onPressed: () {
+            navigateToUserEdit(someUser);
+          }));
+    }
+
+    if (deviceUser.userType == UserType.orgAdministrator ||
+        deviceUser.userType == UserType.orgExecutive) {
+      list.add(FocusedMenuItem(
+          title: Text('Schedule FieldMonitor',
+              style: myTextStyleSmallBlack(context)),
+          trailingIcon: Icon(
+            Icons.person,
+            color: Theme.of(context).primaryColor,
+          ),
+          onPressed: () {
+            navigateToScheduler(someUser);
+          }));
+      list.add(FocusedMenuItem(
+          title: Text('Remove User', style: myTextStyleSmallBlack(context)),
+          trailingIcon: Icon(
+            Icons.cut,
+            color: Theme.of(context).primaryColor,
+          ),
+          onPressed: () {
+            navigateToKillPage(someUser);
+          }));
+    }
+    // }
+    return list;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+
+    return Card(
+      elevation: 4,
+      shape: getRoundedBorder(radius: 16),
+      child: Padding(
+        padding: amInLandscape
+            ? const EdgeInsets.symmetric(horizontal: 24.0)
+            : const EdgeInsets.symmetric(horizontal: 48.0),
+        child: Column(
+          children: [
+            const SizedBox(
+              height: 48,
+            ),
+            Text(
+              deviceUser.organizationName!,
+              style: myTextStyleMedium(context),
+            ),
+            const SizedBox(
+              height: 12,
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  'Admins & Field Monitors',
+                  style: myTextStyleSmall(context),
+                ),
+                const SizedBox(
+                  width: 8,
+                ),
+              ],
+            ),
+            SizedBox(
+              height: amInLandscape? 48:60,
+            ),
+            Expanded(
+              child: InkWell(
+                onTap: () {
+                  badgeTapped();
+                },
+                child: bd.Badge(
+                  badgeContent: Padding(
+                    padding: const EdgeInsets.all(12.0),
+                    child: Text(
+                      '${users.length}',
+                      style: myTextStyleSmall(context),
+                    ),
+                  ),
+                  badgeStyle: bd.BadgeStyle(
+                    badgeColor: Theme.of(context).primaryColor,
+                    elevation: 8,
+                    padding: const EdgeInsets.all(4),
+                  ),
+                  position: bd.BadgePosition.topEnd(top: -24, end: 4),
+                  child: ListView.builder(
+                    itemCount: users.length,
+                    itemBuilder: (BuildContext context, int index) {
+                      var mUser = users.elementAt(index);
+                      var created = DateTime.parse(mUser.created!);
+                      var now = DateTime.now();
+                      var ms = now.millisecondsSinceEpoch -
+                          created.millisecondsSinceEpoch;
+                      var deltaDays = Duration(milliseconds: ms).inDays;
+                      return FocusedMenuHolder(
+                        menuOffset: 20,
+                        duration: const Duration(milliseconds: 300),
+                        menuItems: _getMenuItems(mUser, context),
+                        animateMenuItems: true,
+                        openWithTap: true,
+                        onPressed: () {
+                          pp('💛️💛️💛💛️💛️💛💛️💛️💛️ tapped FocusedMenuHolder ...');
+                        },
+                        child: Card(
+                          elevation: 2,
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(16.0)),
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 8.0, vertical: 4.0),
+                            child: Column(
+                              children: [
+                                Padding(
+                                  padding:
+                                      const EdgeInsets.symmetric(vertical: 6.0),
+                                  child: Row(
+                                    children: [
+                                      mUser.thumbnailUrl == null
+                                          ? const CircleAvatar(
+                                              radius: 24,
+                                            )
+                                          : CircleAvatar(
+                                              radius: 24,
+                                              backgroundImage: NetworkImage(
+                                                  mUser.thumbnailUrl!),
+                                            ),
+                                      const SizedBox(
+                                        width: 16,
+                                      ),
+
+                                      Flexible(
+                                        child: Row(
+                                          children: [
+                                            Text(
+                                              mUser.name!,
+                                              style: myTextStyleSmall(context),
+                                            ),
+                                            const SizedBox(
+                                              width: 24,
+                                            ),
+                                            deltaDays < 3
+                                                ? const SizedBox(
+                                                    width: 8,
+                                                    height: 8,
+                                                    child:
+                                                        CircularProgressIndicator(
+                                                      strokeWidth: 3,
+                                                      backgroundColor:
+                                                          Colors.pink,
+                                                    ),
+                                                  )
+                                                : const SizedBox(),
+                                          ],
+                                        ),
+                                      ),
+                                      const SizedBox(
+                                        height: 0,
+                                      ),
+
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}

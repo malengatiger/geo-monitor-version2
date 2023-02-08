@@ -8,6 +8,7 @@ import '../../library/data/user.dart';
 import 'dashboard_desktop.dart';
 import 'dashboard_mobile.dart';
 import 'dashboard_tablet.dart';
+import 'dashboard_tablet_landscape.dart';
 
 
 class DashboardMain extends StatefulWidget {

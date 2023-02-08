@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:animations/animations.dart';
 import 'package:flutter/material.dart';
 import 'package:geo_monitor/library/bloc/downloader.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -39,14 +38,14 @@ class DashboardGrid extends StatefulWidget {
 }
 
 class _DashboardGridState extends State<DashboardGrid>
-    with SingleTickerProviderStateMixin {
-  late AnimationController _projectAnimationController;
-  late AnimationController _userAnimationController;
-  late AnimationController _photoAnimationController;
-  late AnimationController _videoAnimationController;
-  late AnimationController _positionAnimationController;
-  late AnimationController _polygonAnimationController;
-  late AnimationController _audioAnimationController;
+    with TickerProviderStateMixin {
+  // late AnimationController _projectAnimationController;
+  // late AnimationController _userAnimationController;
+  // late AnimationController _photoAnimationController;
+  // late AnimationController _videoAnimationController;
+  // late AnimationController _positionAnimationController;
+  // late AnimationController _polygonAnimationController;
+  // late AnimationController _audioAnimationController;
 
   late StreamSubscription<List<Project>> projectSubscription;
   late StreamSubscription<List<User>> userSubscription;
@@ -83,7 +82,7 @@ class _DashboardGridState extends State<DashboardGrid>
 
   @override
   void initState() {
-    _setAnimationControllers();
+    //_setAnimationControllers();
     super.initState();
     _setupData(false);
     _listenForFCM();
@@ -109,27 +108,27 @@ class _DashboardGridState extends State<DashboardGrid>
       _schedules = dataBag.fieldMonitorSchedules!;
 
       setState(() {});
-      _projectAnimationController.reset();
-      _userAnimationController.reset();
-      _photoAnimationController.reset();
-      _videoAnimationController.reset();
-      _positionAnimationController.reset();
-      _polygonAnimationController.reset();
-      _audioAnimationController.reset();
-
-      _projectAnimationController.forward().then((value) {
-        _userAnimationController.forward().then((value) {
-          _photoAnimationController.forward().then((value) {
-            _videoAnimationController.forward().then((value) {
-              _positionAnimationController.forward().then((value) {
-                _polygonAnimationController.forward().then((value) {
-                  _audioAnimationController.forward();
-                });
-              });
-            });
-          });
-        });
-      });
+      // _projectAnimationController.reset();
+      // _userAnimationController.reset();
+      // _photoAnimationController.reset();
+      // _videoAnimationController.reset();
+      // _positionAnimationController.reset();
+      // _polygonAnimationController.reset();
+      // _audioAnimationController.reset();
+      //
+      // _projectAnimationController.forward().then((value) {
+      //   _userAnimationController.forward().then((value) {
+      //     _photoAnimationController.forward().then((value) {
+      //       _videoAnimationController.forward().then((value) {
+      //         _positionAnimationController.forward().then((value) {
+      //           _polygonAnimationController.forward().then((value) {
+      //             _audioAnimationController.forward();
+      //           });
+      //         });
+      //       });
+      //     });
+      //   });
+      // });
     } catch (e) {
       pp('$mm $e - will show snackbar ..');
       if (mounted) {
@@ -143,36 +142,36 @@ class _DashboardGridState extends State<DashboardGrid>
     });
   }
 
-  void _setAnimationControllers() {
-    _projectAnimationController = AnimationController(
-        duration: Duration(milliseconds: dur),
-        reverseDuration: Duration(milliseconds: dur),
-        vsync: this);
-    _audioAnimationController = AnimationController(
-        duration: Duration(milliseconds: dur),
-        reverseDuration: Duration(milliseconds: dur),
-        vsync: this);
-    _userAnimationController = AnimationController(
-        duration: Duration(milliseconds: dur),
-        reverseDuration: Duration(milliseconds: dur),
-        vsync: this);
-    _photoAnimationController = AnimationController(
-        duration: Duration(milliseconds: dur),
-        reverseDuration: Duration(milliseconds: dur),
-        vsync: this);
-    _videoAnimationController = AnimationController(
-        duration: Duration(milliseconds: dur),
-        reverseDuration: Duration(milliseconds: dur),
-        vsync: this);
-    _polygonAnimationController = AnimationController(
-        duration: Duration(milliseconds: dur),
-        reverseDuration: Duration(milliseconds: dur),
-        vsync: this);
-    _positionAnimationController = AnimationController(
-        duration: Duration(milliseconds: dur),
-        reverseDuration: Duration(milliseconds: dur),
-        vsync: this);
-  }
+  // void _setAnimationControllers() {
+  //   _projectAnimationController = AnimationController(
+  //       duration: Duration(milliseconds: dur),
+  //       reverseDuration: Duration(milliseconds: dur),
+  //       vsync: this);
+  //   _audioAnimationController = AnimationController(
+  //       duration: Duration(milliseconds: dur),
+  //       reverseDuration: Duration(milliseconds: dur),
+  //       vsync: this);
+  //   _userAnimationController = AnimationController(
+  //       duration: Duration(milliseconds: dur),
+  //       reverseDuration: Duration(milliseconds: dur),
+  //       vsync: this);
+  //   _photoAnimationController = AnimationController(
+  //       duration: Duration(milliseconds: dur),
+  //       reverseDuration: Duration(milliseconds: dur),
+  //       vsync: this);
+  //   _videoAnimationController = AnimationController(
+  //       duration: Duration(milliseconds: dur),
+  //       reverseDuration: Duration(milliseconds: dur),
+  //       vsync: this);
+  //   _polygonAnimationController = AnimationController(
+  //       duration: Duration(milliseconds: dur),
+  //       reverseDuration: Duration(milliseconds: dur),
+  //       vsync: this);
+  //   _positionAnimationController = AnimationController(
+  //       duration: Duration(milliseconds: dur),
+  //       reverseDuration: Duration(milliseconds: dur),
+  //       vsync: this);
+  // }
 
   void _listenToOrgStreams() async {
     projectSubscription = organizationBloc.projectStream.listen((event) {
@@ -180,7 +179,7 @@ class _DashboardGridState extends State<DashboardGrid>
       pp('$mm attempting to set state after projects delivered by stream: ${_projects.length} ... mounted: $mounted');
       if (mounted) {
         setState(() {});
-        _projectAnimationController.forward();
+        // _projectAnimationController.forward();
       }
     });
     userSubscription = organizationBloc.usersStream.listen((event) {
@@ -188,7 +187,7 @@ class _DashboardGridState extends State<DashboardGrid>
       pp('$mm attempting to set state after users delivered by stream: ${_users.length} ... mounted: $mounted');
       if (mounted) {
         setState(() {});
-        _userAnimationController.forward();
+        // _userAnimationController.forward();
       }
     });
     photoSubscription = organizationBloc.photoStream.listen((event) {
@@ -197,7 +196,7 @@ class _DashboardGridState extends State<DashboardGrid>
       if (mounted) {
         setState(() {});
       }
-      _photoAnimationController.forward();
+      // _photoAnimationController.forward();
     });
 
     videoSubscription = organizationBloc.videoStream.listen((event) {
@@ -205,7 +204,7 @@ class _DashboardGridState extends State<DashboardGrid>
       pp('$mm attempting to set state after videos delivered by stream: ${_videos.length} ... mounted: $mounted');
       if (mounted) {
         setState(() {});
-        _videoAnimationController.forward();
+        // _videoAnimationController.forward();
       }
     });
     audioSubscription = organizationBloc.audioStream.listen((event) {
@@ -213,7 +212,7 @@ class _DashboardGridState extends State<DashboardGrid>
       pp('$mm attempting to set state after audios delivered by stream: ${_audios.length} ... mounted: $mounted');
       if (mounted) {
         setState(() {});
-        _audioAnimationController.forward();
+        // _audioAnimationController.forward();
       }
     });
     projectPositionSubscription =
@@ -222,7 +221,7 @@ class _DashboardGridState extends State<DashboardGrid>
       pp('$mm attempting to set state after projectPositions delivered by stream: ${_projectPositions.length} ... mounted: $mounted');
       if (mounted) {
         setState(() {});
-        _projectAnimationController.forward();
+        // _projectAnimationController.forward();
       }
     });
     projectPolygonSubscription =
@@ -231,7 +230,7 @@ class _DashboardGridState extends State<DashboardGrid>
       pp('$mm attempting to set state after projectPolygons delivered by stream: ${_projectPolygons.length} ... mounted: $mounted');
       if (mounted) {
         setState(() {});
-        _projectAnimationController.forward();
+        // _projectAnimationController.forward();
       }
     });
 
@@ -242,7 +241,7 @@ class _DashboardGridState extends State<DashboardGrid>
 
       if (mounted) {
         setState(() {});
-        _projectAnimationController.forward();
+        // _projectAnimationController.forward();
       }
     });
   }
@@ -331,12 +330,12 @@ class _DashboardGridState extends State<DashboardGrid>
 
   @override
   void dispose() {
-    _projectAnimationController.dispose();
-    _photoAnimationController.dispose();
-    _videoAnimationController.dispose();
-    _audioAnimationController.dispose();
-    _positionAnimationController.dispose();
-    _polygonAnimationController.dispose();
+    // _projectAnimationController.dispose();
+    // _photoAnimationController.dispose();
+    // _videoAnimationController.dispose();
+    // _audioAnimationController.dispose();
+    // _positionAnimationController.dispose();
+    // _polygonAnimationController.dispose();
 
     projectPolygonSubscription.cancel();
     projectPositionSubscription.cancel();
@@ -372,184 +371,119 @@ class _DashboardGridState extends State<DashboardGrid>
             SizedBox(
               height: widget.totalHeight == null ? 900 : widget.totalHeight!,
               child: Padding(
-                padding: const EdgeInsets.all(72.0),
+                padding: const EdgeInsets.all(60.0),
                 child: GridView.count(
                   crossAxisCount: 3,
                   children: [
                     GestureDetector(
                       onTap: () {
+                        pp('$mm widget on tapped: typeProjects $typeProjects ...');
                         widget.onTypeTapped(typeProjects);
                       },
-                      child: AnimatedBuilder(
-                        animation: _projectAnimationController,
-                        builder: (BuildContext context, Widget? child) {
-                          return FadeScaleTransition(
-                            animation: _projectAnimationController,
-                            child: child,
-                          );
+                      child: DashboardElement(
+                        title: 'Projects',
+                        number: _projects.length,
+                        onTapped: () {
+                          widget.onTypeTapped(typeProjects);
                         },
-                        child: DashboardElement(
-                          title: 'Projects',
-                          number: _projects.length,
-                          elementIndex: 0,
-                          onTapped: () {
-                            widget.onTypeTapped(typeProjects);
-                          },
-                        ),
                       ),
                     ),
                     GestureDetector(
                       onTap: () {
+                        pp('$mm widget on tapped: typeUsers $typeUsers ...');
+
                         widget.onTypeTapped(typeUsers);
                       },
-                      child: AnimatedBuilder(
-                        animation: _userAnimationController,
-                        builder: (BuildContext context, Widget? child) {
-                          return FadeScaleTransition(
-                            animation: _userAnimationController,
-                            child: child,
-                          );
+                      child: DashboardElement(
+                        title: 'Members',
+                        number: _users.length,
+                        onTapped: () {
+                          widget.onTypeTapped(typeUsers);
                         },
-                        child: DashboardElement(
-                          title: 'Members',
-                          number: _users.length,
-                          elementIndex: 0,
-                          onTapped: () {
-                            widget.onTypeTapped(typeUsers);
-                          },
-                        ),
                       ),
                     ),
-                    AnimatedBuilder(
-                      animation: _photoAnimationController,
-                      builder: (BuildContext context, Widget? child) {
-                        return FadeScaleTransition(
-                          animation: _photoAnimationController,
-                          child: child,
-                        );
+                    GestureDetector(
+                      onTap: () {
+                        pp('$mm widget on tapped: typePhotos $typePhotos ...');
+
+                        widget.onTypeTapped(typePhotos);
                       },
-                      child: GestureDetector(
-                        onTap: () {
+                      child: DashboardElement(
+                        title: 'Photos',
+                        number: _photos.length,
+                        onTapped: () {
                           widget.onTypeTapped(typePhotos);
                         },
-                        child: DashboardElement(
-                          title: 'Photos',
-                          number: _photos.length,
-                          elementIndex: 0,
-                          onTapped: () {
-                            widget.onTypeTapped(typePhotos);
-                          },
-                        ),
                       ),
                     ),
-                    AnimatedBuilder(
-                      animation: _videoAnimationController,
-                      builder: (BuildContext context, Widget? child) {
-                        return FadeScaleTransition(
-                          animation: _videoAnimationController,
-                          child: child,
-                        );
+                    GestureDetector(
+                      onTap: () {
+                        pp('$mm widget on tapped: typeVideos $typeVideos ...');
+
+                        widget.onTypeTapped(typeVideos);
                       },
-                      child: GestureDetector(
-                        onTap: () {
+                      child: DashboardElement(
+                        title: 'Videos',
+                        number: _videos.length,
+                        onTapped: () {
                           widget.onTypeTapped(typeVideos);
                         },
-                        child: DashboardElement(
-                          title: 'Videos',
-                          number: _videos.length,
-                          elementIndex: 0,
-                          onTapped: () {
-                            widget.onTypeTapped(typeVideos);
-                          },
-                        ),
                       ),
                     ),
-                    AnimatedBuilder(
-                      animation: _audioAnimationController,
-                      builder: (BuildContext context, Widget? child) {
-                        return FadeScaleTransition(
-                          animation: _audioAnimationController,
-                          child: child,
-                        );
+                    GestureDetector(
+                      onTap: () {
+                        pp('$mm widget on tapped: typeAudios $typeAudios ...');
+
+                        widget.onTypeTapped(typeAudios);
                       },
-                      child: GestureDetector(
-                        onTap: () {
+                      child: DashboardElement(
+                        title: 'Audio Clips',
+                        number: _audios.length,
+                        onTapped: () {
                           widget.onTypeTapped(typeAudios);
                         },
-                        child: DashboardElement(
-                          title: 'Audio Clips',
-                          number: _audios.length,
-                          elementIndex: 0,
-                          onTapped: () {
-                            widget.onTypeTapped(typeAudios);
-                          },
-                        ),
                       ),
                     ),
-                    AnimatedBuilder(
-                      animation: _positionAnimationController,
-                      builder: (BuildContext context, Widget? child) {
-                        return FadeScaleTransition(
-                          animation: _positionAnimationController,
-                          child: child,
-                        );
+                    GestureDetector(
+                      onTap: () {
+                        pp('$mm widget on tapped: typePositions $typePositions ...');
+
+                        widget.onTypeTapped(typePositions);
                       },
-                      child: GestureDetector(
-                        onTap: () {
+                      child: DashboardElement(
+                        title: 'Locations',
+                        number: _projectPositions.length,
+                        onTapped: () {
                           widget.onTypeTapped(typePositions);
                         },
-                        child: DashboardElement(
-                          title: 'Locations',
-                          number: _projectPositions.length,
-                          elementIndex: 0,
-                          onTapped: () {
-                            widget.onTypeTapped(typePositions);
-                          },
-                        ),
                       ),
                     ),
-                    AnimatedBuilder(
-                      animation: _polygonAnimationController,
-                      builder: (BuildContext context, Widget? child) {
-                        return FadeScaleTransition(
-                          animation: _polygonAnimationController,
-                          child: child,
-                        );
+                    GestureDetector(
+                      onTap: () {
+                        pp('$mm widget on tapped: typePolygons $typePolygons ...');
+
+                        widget.onTypeTapped(typePolygons);
                       },
-                      child: GestureDetector(
-                        onTap: () {
+                      child: DashboardElement(
+                        title: 'Areas',
+                        number: _projectPolygons.length,
+                        onTapped: () {
                           widget.onTypeTapped(typePolygons);
                         },
-                        child: DashboardElement(
-                          title: 'Areas',
-                          number: _projectPolygons.length,
-                          elementIndex: 0,
-                          onTapped: () {
-                            widget.onTypeTapped(typePolygons);
-                          },
-                        ),
                       ),
                     ),
-                    AnimatedBuilder(
-                      animation: _polygonAnimationController,
-                      builder: (BuildContext context, Widget? child) {
-                        return FadeScaleTransition(
-                          animation: _polygonAnimationController,
-                          child: child,
-                        );
+                    GestureDetector(
+                      onTap: () {
+                        pp('$mm widget on tapped: typeSchedules $typeSchedules ...');
+
+                        widget.onTypeTapped(typeSchedules);
                       },
-                      child: GestureDetector(
-                        onTap: () {
+                      child: DashboardElement(
+                        title: 'Schedules',
+                        number: _schedules.length,
+                        onTapped: () {
                           widget.onTypeTapped(typeSchedules);
                         },
-                        child: DashboardElement(
-                          title: 'Field Schedules',
-                          number: _schedules.length,
-                          elementIndex: 0,
-                          onTapped: () {
-                            widget.onTypeTapped(typeSchedules);
-                          },
-                        ),
                       ),
                     ),
                   ],
@@ -570,7 +504,6 @@ class DashboardElement extends StatelessWidget {
       {Key? key,
       required this.number,
       required this.title,
-      required this.elementIndex,
       this.height,
       this.topPadding,
       this.textStyle,
@@ -578,7 +511,6 @@ class DashboardElement extends StatelessWidget {
       required this.onTapped})
       : super(key: key);
   final int number;
-  final int elementIndex;
   final String title;
   final double? height, topPadding;
   final TextStyle? textStyle, labelTitleStyle;
@@ -589,28 +521,31 @@ class DashboardElement extends StatelessWidget {
     var style = GoogleFonts.secularOne(
         textStyle: Theme.of(context).textTheme.titleLarge,
         fontWeight: FontWeight.w900);
-    var stylePrimary = GoogleFonts.secularOne(
-        textStyle: Theme.of(context).textTheme.titleLarge,
-        fontWeight: FontWeight.w900,
-        color: Theme.of(context).primaryColor);
-
-    return SizedBox(
-      height: height == null ? 200 : height!,
-      child: Center(
-        child: Column(
-          children: [
-            SizedBox(
-              height: topPadding == null ? 80 : topPadding!,
+    return GestureDetector(
+      onTap: (){
+        onTapped();
+      },
+      child: Card(
+        shape: getRoundedBorder(radius: 16),
+        child: SizedBox(
+          height: height == null ? 240 : height!,
+          child: Center(
+            child: Column(
+              children: [
+                SizedBox(
+                  height: topPadding == null ? 40 : topPadding!,
+                ),
+                Text('$number', style: textStyle == null ? style : textStyle!),
+                const SizedBox(
+                  height: 8,
+                ),
+                Text(
+                  title,
+                  style: Styles.greyLabelSmall,
+                )
+              ],
             ),
-            Text('$number', style: textStyle == null ? style : textStyle!),
-            const SizedBox(
-              height: 8,
-            ),
-            Text(
-              title,
-              style: Styles.greyLabelSmall,
-            )
-          ],
+          ),
         ),
       ),
     );

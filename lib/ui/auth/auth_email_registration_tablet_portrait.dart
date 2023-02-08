@@ -21,10 +21,12 @@ import '../../library/api/data_api.dart';
 import '../../library/data/user.dart' as ur;
 import '../../library/functions.dart';
 import '../../library/generic_functions.dart';
+import '../../library/users/edit/country_chooser.dart';
 
 class AuthEmailRegistrationPortrait extends StatefulWidget {
-  const AuthEmailRegistrationPortrait({Key? key}) : super(key: key);
+  const AuthEmailRegistrationPortrait({Key? key, required this.amInsideLandscape}) : super(key: key);
 
+  final bool amInsideLandscape;
   @override
   AuthEmailRegistrationPortraitState createState() =>
       AuthEmailRegistrationPortraitState();
@@ -103,18 +105,25 @@ class AuthEmailRegistrationPortraitState
       var userCred = await firebaseAuth.createUserWithEmailAndPassword(
           email: email, password: password!);
       pp('\n$mm createUserWithEmailAndPassword: firebase user credential obtained:  🍎 $userCred');
+
       await firebaseAuth.signInWithEmailAndPassword(
           email: email, password: password!);
       pp('\n\n$mm signInWithEmailAndPassword: firebase user signed in with email/password, userCred:  🍎 $userCred \n');
 
-      await _doTheRegistration(userCred);
+      await _doTheRegistration(userCred, password!);
+
       if (mounted) {
         showToast(
             duration: const Duration(seconds: 2),
             message: '${orgNameController.value.text} registered',
             padding: 24,
             context: context);
-        Navigator.of(context).pop(user);
+
+        if (widget.amInsideLandscape) {
+          //todo - what do we do here, Boss! .....
+        } else {
+          Navigator.of(context).pop(user);
+        }
       }
     } catch (e) {
       pp(e);
@@ -138,7 +147,7 @@ class AuthEmailRegistrationPortraitState
     _popOut();
   }
 
-  Future<void> _doTheRegistration(UserCredential userCred) async {
+  Future<void> _doTheRegistration(UserCredential userCred, String password) async {
     var org = Organization(
         name: orgNameController.value.text,
         countryId: country!.countryId,
@@ -147,35 +156,38 @@ class AuthEmailRegistrationPortraitState
         countryName: country!.name,
         organizationId: const Uuid().v4());
 
+    user = ur.User(
+        name: adminController.value.text,
+        email: emailController.value.text,
+        userId: userCred.user!.uid,
+        cellphone: phoneController.value.text,
+        created: DateTime.now().toUtc().toIso8601String(),
+        userType: ur.UserType.orgAdministrator,
+        gender: null,
+        active: 0,
+        organizationName: orgNameController.value.text,
+        organizationId: org.organizationId,
+        countryId: country!.countryId,
+        password: password);
+
+    await prefsOGx.saveUser(user!);
+
+    var mSettings = await DataAPI.addSettings(SettingsModel(
+        distanceFromProject: 100,
+        photoSize: 0,
+        maxVideoLengthInMinutes: 3,
+        maxAudioLengthInMinutes: 10,
+        themeIndex: 0,
+        settingsId: const Uuid().v4(),
+        created: DateTime.now().toUtc().toIso8601String(),
+        organizationId: org.organizationId,
+        projectId: null));
+
+    await prefsOGx.saveSettings(mSettings);
+
     var loc = await locationBlocOG.getLocation();
 
     if (loc != null) {
-      var gender = 'Unknown';
-      user = ur.User(
-          name: adminController.value.text,
-          email: emailController.value.text,
-          userId: userCred.user!.uid,
-          cellphone: phoneController.value.text,
-          created: DateTime.now().toUtc().toIso8601String(),
-          userType: ur.UserType.orgAdministrator,
-          gender: gender,
-          active: 0,
-          organizationName: orgNameController.value.text,
-          organizationId: org.organizationId,
-          countryId: country!.countryId,
-          password: passwordController.value.text);
-
-      var mSettings = await DataAPI.addSettings(SettingsModel(
-          distanceFromProject: 100,
-          photoSize: 0,
-          maxVideoLengthInMinutes: 3,
-          maxAudioLengthInMinutes: 10,
-          themeIndex: 0,
-          settingsId: const Uuid().v4(),
-          created: DateTime.now().toUtc().toIso8601String(),
-          organizationId: org.organizationId,
-          projectId: null));
-
       var bag = OrganizationRegistrationBag(
           organization: org,
           projectPosition: null,
@@ -187,10 +199,16 @@ class AuthEmailRegistrationPortraitState
           longitude: loc.longitude);
 
       var resultBag = await DataAPI.registerOrganization(bag);
+      await firebaseAuth.signOut();
+      var cred = await firebaseAuth.signInWithEmailAndPassword(email: user!.email!, password: password);
+      pp('$mm cred after signing in again after auth update: 🍎 $cred 🍎');
       await prefsOGx.getUser();
 
-      pp('\n$mm Organization OG Administrator registered OK: adding org settings default ...');
       pp('\n\n$mm Organization registered: 🌍🌍🌍🌍 🍎 resultBag: ${resultBag.toJson()} 🌍🌍🌍🌍\n\n');
+    } else {
+      if (mounted) {
+        showToast(message: 'Unable to obtain device location', context: context);
+      }
     }
   }
 
@@ -219,250 +237,247 @@ class AuthEmailRegistrationPortraitState
           child: SingleChildScrollView(
             child: Column(
               children: [
-                Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Card(
-                    elevation: 4,
-                    shape: getRoundedBorder(radius: 16),
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 48.0),
-                      child: SizedBox(
-                        width: 420,
-                        child: SingleChildScrollView(
-                          child: Column(
-                            children: [
-                              busy
-                                  ? Row(
-                                      mainAxisAlignment: MainAxisAlignment.center,
-                                      children: const [
-                                        Padding(
-                                          padding: EdgeInsets.all(12.0),
-                                          child: SizedBox(
-                                            height: 16,
-                                            width: 16,
-                                            child: CircularProgressIndicator(
-                                              strokeWidth: 4,
-                                              backgroundColor: Colors.pink,
-                                            ),
+                Card(
+                  elevation: 4,
+                  shape: getRoundedBorder(radius: 16),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 32.0),
+                    child: SizedBox(
+                      width: 500,
+                      child: SingleChildScrollView(
+                        child: Column(
+                          children: [
+                            busy
+                                ? Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: const [
+                                      Padding(
+                                        padding: EdgeInsets.all(12.0),
+                                        child: SizedBox(
+                                          height: 20,
+                                          width: 20,
+                                          child: CircularProgressIndicator(
+                                            strokeWidth: 6,
+                                            backgroundColor: Colors.pink,
                                           ),
                                         ),
-                                      ],
-                                    )
-                                  : const SizedBox(
-                                      height: 12,
-                                    ),
-                              const SizedBox(
-                                height: 24,
-                              ),
-                              Text(
-                                'Organization Registration',
-                                style: myTextStyleLarge(context),
-                              ),
-                              const SizedBox(
-                                height: 24,
-                              ),
-                              Padding(
-                                padding:
-                                    const EdgeInsets.symmetric(horizontal: 28.0),
-                                child: Row(
-                                  children: [
-                                    CountryChooser(
-                                        onSelected: _onCountrySelected),
-                                    const SizedBox(
-                                      width: 24,
-                                    ),
-                                    country == null
-                                        ? const SizedBox()
-                                        : Text(
-                                            '${country!.name}',
-                                            style: myTextStyleSmall(context),
-                                          ),
-                                  ],
-                                ),
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.all(16.0),
-                                child: SingleChildScrollView(
-                                  child: SizedBox(
-                                    width: 420,
-                                    child: Form(
-                                        key: _formKey,
-                                        child: Column(
-                                          children: [
-                                            TextFormField(
-                                              controller: orgNameController,
-                                              keyboardType: TextInputType.text,
-                                              decoration: InputDecoration(
-                                                  hintText:
-                                                      'Enter Organization Name',
-                                                  hintStyle:
-                                                      myTextStyleSmall(context),
-                                                  enabledBorder:
-                                                      OutlineInputBorder(
-                                                    borderSide: BorderSide(
-                                                        width: 0.6,
-                                                        color: Theme.of(context)
-                                                            .primaryColor), //<-- SEE HERE
-                                                  ),
-                                                  label: Text(
-                                                    'Organization Name',
-                                                    style:
-                                                        myTextStyleSmall(context),
-                                                  )),
-                                              validator: (value) {
-                                                if (value == null ||
-                                                    value.isEmpty) {
-                                                  return 'Please enter Organization Name';
-                                                }
-                                                return null;
-                                              },
-                                            ),
-                                            const SizedBox(
-                                              height: 20,
-                                            ),
-                                            TextFormField(
-                                              controller: adminController,
-                                              keyboardType: TextInputType.text,
-                                              decoration: InputDecoration(
-                                                  hintText:
-                                                      'Enter Administrator Name',
-                                                  hintStyle:
-                                                      myTextStyleSmall(context),
-                                                  enabledBorder:
-                                                      OutlineInputBorder(
-                                                    borderSide: BorderSide(
-                                                        width: 0.6,
-                                                        color: Theme.of(context)
-                                                            .primaryColor), //<-- SEE HERE
-                                                  ),
-                                                  label: Text(
-                                                    'Administrator Name',
-                                                    style:
-                                                        myTextStyleSmall(context),
-                                                  )),
-                                              validator: (value) {
-                                                if (value == null ||
-                                                    value.isEmpty) {
-                                                  return 'Please enter Administrator Name';
-                                                }
-                                                return null;
-                                              },
-                                            ),
-                                            const SizedBox(
-                                              height: 20,
-                                            ),
-                                            TextFormField(
-                                              controller: phoneController,
-                                              keyboardType: TextInputType.phone,
-                                              decoration: InputDecoration(
-                                                  hintText: 'Enter Phone Number',
-                                                  enabledBorder:
-                                                      OutlineInputBorder(
-                                                    borderSide: BorderSide(
-                                                        width: 0.6,
-                                                        color: Theme.of(context)
-                                                            .primaryColor), //<-- SEE HERE
-                                                  ),
-                                                  label:
-                                                      const Text('Phone Number')),
-                                              validator: (value) {
-                                                if (value == null ||
-                                                    value.isEmpty) {
-                                                  return 'Please enter Phone Number';
-                                                }
-                                                return null;
-                                              },
-                                            ),
-                                            const SizedBox(
-                                              height: 20,
-                                            ),
-                                            TextFormField(
-                                              controller: emailController,
-                                              keyboardType: TextInputType.text,
-                                              decoration: InputDecoration(
-                                                  hintText: 'Enter Email Address',
-                                                  hintStyle:
-                                                      myTextStyleSmall(context),
-                                                  enabledBorder:
-                                                      OutlineInputBorder(
-                                                    borderSide: BorderSide(
-                                                        width: 0.6,
-                                                        color: Theme.of(context)
-                                                            .primaryColor), //<-- SEE HERE
-                                                  ),
-                                                  label: Text(
-                                                    'Email Address',
-                                                    style:
-                                                        myTextStyleSmall(context),
-                                                  )),
-                                              validator: (value) {
-                                                if (value == null ||
-                                                    value.isEmpty) {
-                                                  return 'Please enter Email address';
-                                                }
-                                                return null;
-                                              },
-                                            ),
-                                            const SizedBox(
-                                              height: 20,
-                                            ),
-                                            TextFormField(
-                                              controller: passwordController,
-                                              keyboardType:
-                                                  TextInputType.visiblePassword,
-                                              decoration: InputDecoration(
-                                                  hintText: 'Enter Password',
-                                                  hintStyle:
-                                                      myTextStyleSmall(context),
-                                                  enabledBorder:
-                                                      OutlineInputBorder(
-                                                    borderSide: BorderSide(
-                                                        width: 0.6,
-                                                        color: Theme.of(context)
-                                                            .primaryColor), //<-- SEE HERE
-                                                  ),
-                                                  label: Text(
-                                                    'Password',
-                                                    style:
-                                                        myTextStyleSmall(context),
-                                                  )),
-                                              validator: (value) {
-                                                if (value == null ||
-                                                    value.isEmpty) {
-                                                  return 'Please enter password';
-                                                }
-                                                return null;
-                                              },
-                                            ),
-                                            const SizedBox(
-                                              height: 64,
-                                            ),
-                                            ElevatedButton(
-                                                onPressed: () {
-                                                  _submitRegistration();
-                                                },
-                                                child: const Padding(
-                                                  padding: EdgeInsets.all(12.0),
-                                                  child:
-                                                      Text('Submit Registration'),
-                                                )),
-                                            const SizedBox(
-                                              height: 48,
-                                            ),
-                                          ],
-                                        )),
+                                      ),
+                                    ],
+                                  )
+                                : const SizedBox(
+                                    height: 12,
                                   ),
+                            const SizedBox(
+                              height: 12,
+                            ),
+                            Text(
+                              'Organization Registration',
+                              style: myTextStyleLarge(context),
+                            ),
+                            const SizedBox(
+                              height: 24,
+                            ),
+                            Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 48.0),
+                              child: Row(
+                                children: [
+                                  CountryChooser(
+                                      onSelected: _onCountrySelected),
+                                  const SizedBox(
+                                    width: 64,
+                                  ),
+                                  country == null
+                                      ? const SizedBox()
+                                      : Text(
+                                          '${country!.name}',
+                                          style: myTextStyleMedium(context),
+                                        ),
+                                ],
+                              ),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.all(16.0),
+                              child: SingleChildScrollView(
+                                child: SizedBox(
+                                  width: 400,
+                                  child: Form(
+                                      key: _formKey,
+                                      child: Column(
+                                        children: [
+                                          TextFormField(
+                                            controller: orgNameController,
+                                            keyboardType: TextInputType.text,
+                                            decoration: InputDecoration(
+                                                hintText:
+                                                    'Enter Organization Name',
+                                                hintStyle:
+                                                    myTextStyleSmall(context),
+                                                enabledBorder:
+                                                    OutlineInputBorder(
+                                                  borderSide: BorderSide(
+                                                      width: 0.6,
+                                                      color: Theme.of(context)
+                                                          .primaryColor), //<-- SEE HERE
+                                                ),
+                                                label: Text(
+                                                  'Organization Name',
+                                                  style:
+                                                      myTextStyleSmall(context),
+                                                )),
+                                            validator: (value) {
+                                              if (value == null ||
+                                                  value.isEmpty) {
+                                                return 'Please enter Organization Name';
+                                              }
+                                              return null;
+                                            },
+                                          ),
+                                          const SizedBox(
+                                            height: 16,
+                                          ),
+                                          TextFormField(
+                                            controller: adminController,
+                                            keyboardType: TextInputType.text,
+                                            decoration: InputDecoration(
+                                                hintText:
+                                                    'Enter Administrator Name',
+                                                hintStyle:
+                                                    myTextStyleSmall(context),
+                                                enabledBorder:
+                                                    OutlineInputBorder(
+                                                  borderSide: BorderSide(
+                                                      width: 0.6,
+                                                      color: Theme.of(context)
+                                                          .primaryColor), //<-- SEE HERE
+                                                ),
+                                                label: Text(
+                                                  'Administrator Name',
+                                                  style:
+                                                      myTextStyleSmall(context),
+                                                )),
+                                            validator: (value) {
+                                              if (value == null ||
+                                                  value.isEmpty) {
+                                                return 'Please enter Administrator Name';
+                                              }
+                                              return null;
+                                            },
+                                          ),
+                                          const SizedBox(
+                                            height: 16,
+                                          ),
+                                          TextFormField(
+                                            controller: phoneController,
+                                            keyboardType: TextInputType.phone,
+                                            decoration: InputDecoration(
+                                                hintText: 'Enter CellPhone Number',
+                                                enabledBorder:
+                                                    OutlineInputBorder(
+                                                  borderSide: BorderSide(
+                                                      width: 0.6,
+                                                      color: Theme.of(context)
+                                                          .primaryColor), //<-- SEE HERE
+                                                ),
+                                                label:
+                                                    const Text('CellPhone Number')),
+                                            validator: (value) {
+                                              if (value == null ||
+                                                  value.isEmpty) {
+                                                return 'Please enter Cell Phone Number';
+                                              }
+                                              return null;
+                                            },
+                                          ),
+                                          const SizedBox(
+                                            height: 16,
+                                          ),
+                                          TextFormField(
+                                            controller: emailController,
+                                            keyboardType: TextInputType.text,
+                                            decoration: InputDecoration(
+                                                hintText: 'Enter Email Address',
+                                                hintStyle:
+                                                    myTextStyleSmall(context),
+                                                enabledBorder:
+                                                    OutlineInputBorder(
+                                                  borderSide: BorderSide(
+                                                      width: 0.6,
+                                                      color: Theme.of(context)
+                                                          .primaryColor), //<-- SEE HERE
+                                                ),
+                                                label: Text(
+                                                  'Email Address',
+                                                  style:
+                                                      myTextStyleSmall(context),
+                                                )),
+                                            validator: (value) {
+                                              if (value == null ||
+                                                  value.isEmpty) {
+                                                return 'Please enter Email address';
+                                              }
+                                              return null;
+                                            },
+                                          ),
+                                          const SizedBox(
+                                            height: 16,
+                                          ),
+                                          TextFormField(
+                                            controller: passwordController,
+                                            keyboardType:
+                                                TextInputType.visiblePassword,
+                                            decoration: InputDecoration(
+                                                hintText: 'Enter Password',
+                                                hintStyle:
+                                                    myTextStyleSmall(context),
+                                                enabledBorder:
+                                                    OutlineInputBorder(
+                                                  borderSide: BorderSide(
+                                                      width: 0.6,
+                                                      color: Theme.of(context)
+                                                          .primaryColor), //<-- SEE HERE
+                                                ),
+                                                label: Text(
+                                                  'Password',
+                                                  style:
+                                                      myTextStyleSmall(context),
+                                                )),
+                                            validator: (value) {
+                                              if (value == null ||
+                                                  value.isEmpty) {
+                                                return 'Please enter password';
+                                              }
+                                              return null;
+                                            },
+                                          ),
+                                          const SizedBox(
+                                            height: 48,
+                                          ),
+                                          ElevatedButton(
+                                              onPressed: () {
+                                                _submitRegistration();
+                                              },
+                                              child: const Padding(
+                                                padding: EdgeInsets.all(12.0),
+                                                child:
+                                                    Text('Submit Registration'),
+                                              )),
+                                          const SizedBox(
+                                            height: 12,
+                                          ),
+                                        ],
+                                      )),
                                 ),
-                              )
-                            ],
-                          ),
+                              ),
+                            )
+                          ],
                         ),
                       ),
                     ),
                   ),
                 ),
                 const SizedBox(
-                  height: 24,
+                  height: 12,
                 ),
               ],
             ),

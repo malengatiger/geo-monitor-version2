@@ -1,61 +1,26 @@
 import 'package:flutter/material.dart';
+import 'package:geo_monitor/library/users/list/user_list_tablet_portrait.dart';
 import 'package:responsive_builder/responsive_builder.dart';
-import '../../api/prefs_og.dart';
 import '../../data/user.dart';
-import 'user_list_desktop.dart';
 import 'user_list_mobile.dart';
-import 'user_list_tablet.dart';
+import 'user_list_tablet_landscape.dart';
 
-class UserListMain extends StatefulWidget {
-  const UserListMain({Key? key}) : super(key: key);
-
-  @override
-  UserListMainState createState() => UserListMainState();
-}
-
-class UserListMainState extends State<UserListMain> {
-  User? _user;
-  bool isBusy = false;
-
-  @override
-  void initState() {
-    super.initState();
-    _getUser();
-  }
-
-  void _getUser() async {
-    setState(() {
-      isBusy = true;
-    });
-    _user = await prefsOGx.getUser();
-    setState(() {
-      isBusy = false;
-    });
-  }
-
+class UserListMain extends StatelessWidget {
+  const UserListMain({Key? key, required this.user, required this.users}) : super(key: key);
+  final User user;
+  final List<User> users;
   @override
   Widget build(BuildContext context) {
-    return isBusy
-        ? SafeArea(
-            child: Scaffold(
-              appBar: AppBar(
-                title: const Text('Organization Users Loading'),
-                bottom: PreferredSize(
-                  preferredSize: const Size.fromHeight(100),
-                  child: Column(),
-                ),
-              ),
-              body: const Center(
-                child: CircularProgressIndicator(
-                  strokeWidth: 8,
-                ),
-              ),
-            ),
-          )
-        : ScreenTypeLayout(
-            mobile: const UserListMobile(),
-            tablet: UserListTablet(_user!),
-            desktop: UserListDesktop(_user!),
-          );
+    return ScreenTypeLayout(
+      mobile: const UserListMobile(),
+      tablet: OrientationLayoutBuilder(
+        portrait: (context) {
+          return const UserListTabletPortrait(amInLandscape: false,);
+        },
+        landscape: (context) {
+          return  const UserListTabletLandscape();
+        },
+      ),
+    );
   }
 }
