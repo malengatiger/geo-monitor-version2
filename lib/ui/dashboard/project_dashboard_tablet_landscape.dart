@@ -9,9 +9,11 @@ import 'package:page_transition/page_transition.dart';
 
 import '../../library/data/project.dart';
 import '../../library/functions.dart';
+import '../../library/ui/geo_activity.dart';
 
 class ProjectDashboardTabletLandscape extends StatefulWidget {
-  const ProjectDashboardTabletLandscape({Key? key, required this.project}) : super(key: key);
+  const ProjectDashboardTabletLandscape({Key? key, required this.project})
+      : super(key: key);
 
   final Project project;
 
@@ -44,8 +46,9 @@ class ProjectDashboardTabletLandscapeState
             type: PageTransitionType.scale,
             alignment: Alignment.topLeft,
             duration: const Duration(seconds: 1),
-            child: ProjectMediaListMobile(project: widget.project,)));
-
+            child: ProjectMediaListMobile(
+              project: widget.project,
+            )));
   }
 
   _navigateToPositionsMap() async {
@@ -55,8 +58,9 @@ class ProjectDashboardTabletLandscapeState
             type: PageTransitionType.scale,
             alignment: Alignment.topLeft,
             duration: const Duration(seconds: 1),
-            child: ProjectMapMobile(project: widget.project,)));
-
+            child: ProjectMapMobile(
+              project: widget.project,
+            )));
   }
 
   _navigateToPolygonsMap() async {
@@ -66,37 +70,43 @@ class ProjectDashboardTabletLandscapeState
             type: PageTransitionType.scale,
             alignment: Alignment.topLeft,
             duration: const Duration(seconds: 1),
-            child: ProjectPolygonMapMobile(project: widget.project,)));
-
+            child: ProjectPolygonMapMobile(
+              project: widget.project,
+            )));
   }
 
   @override
   Widget build(BuildContext context) {
     final width = MediaQuery.of(context).size.width;
-    return SafeArea(child: Scaffold(
+    return SafeArea(
+        child: Scaffold(
       appBar: AppBar(
-        title:  Text('Project Dashboard', style: myTextStyleLarge(context),),
+        title: Text(
+          'Project Dashboard',
+          style: myTextStyleLarge(context),
+        ),
       ),
-
       body: Row(
         children: [
           SizedBox(
-              width: width/2,
+              width: width / 2,
               height: 500,
               child: Center(
                 child: ProjectDashboardGrid(
                     topPadding: 32,
                     showProjectName: true,
-                    onTypeTapped: onTypeTapped, project: widget.project),
-              )),
-          GeoPlaceHolder(width: width/2),
+                    onTypeTapped: onTypeTapped,
+                    project: widget.project),
+              ),
+          ),
+          GeoActivity(width: width/2,),
         ],
       ),
     ));
   }
 
   onTypeTapped(int p1) {
-    switch(p1) {
+    switch (p1) {
       case typePhotos:
         _navigateToMedia();
         break;

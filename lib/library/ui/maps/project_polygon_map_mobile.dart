@@ -65,8 +65,8 @@ class ProjectPolygonMapMobileState extends State<ProjectPolygonMapMobile>
       user = await prefsOGx.getUser();
       projectPolygons = await projectBloc.getProjectPolygons(
           projectId: widget.project.projectId!, forceRefresh: forceRefresh);
-      projectPositions = await projectBloc.getProjectPositions(projectId: widget.project.projectId!,
-          forceRefresh: forceRefresh);
+      projectPositions = await projectBloc.getProjectPositions(
+          projectId: widget.project.projectId!, forceRefresh: forceRefresh);
       var loc = await locationBlocOG.getLocation();
       if (loc != null) {
         _latitude = loc.latitude!;
@@ -89,7 +89,8 @@ class ProjectPolygonMapMobileState extends State<ProjectPolygonMapMobile>
     markers.clear();
     for (var pos in projectPositions) {
       var marker = Marker(
-          position: LatLng(pos.position!.coordinates.elementAt(1), pos.position!.coordinates.elementAt(0)),
+          position: LatLng(pos.position!.coordinates.elementAt(1),
+              pos.position!.coordinates.elementAt(0)),
           markerId: MarkerId(DateTime.now().toIso8601String()));
       _positionMarkers.add(marker);
     }
@@ -98,6 +99,7 @@ class ProjectPolygonMapMobileState extends State<ProjectPolygonMapMobile>
     _animateCamera(zoom: 12.6, position: projectPositions.first.position!);
     setState(() {});
   }
+
   void _buildProjectPolygons({required bool animateToLast}) {
     pp('$mm _buildProjectPolygons happening ... projectPolygons: ${projectPolygons.length}');
     _polygons.clear();
@@ -168,10 +170,11 @@ class ProjectPolygonMapMobileState extends State<ProjectPolygonMapMobile>
   void _onLongPress(LatLng latLng) {
     pp('$mm long pressed location: 🍎 $latLng');
     var isOK = checkIfLocationIsWithinPolygons(
-        latitude: latLng.latitude, longitude: latLng.longitude, polygons: projectPolygons);
+        latitude: latLng.latitude,
+        longitude: latLng.longitude,
+        polygons: projectPolygons);
     pp('$mm long pressed location found in any of the project\'s 🍎 '
-        'polygons; isWithin the polygons: $isOK - ${isOK? E.leaf: E.redDot}');
-
+        'polygons; isWithin the polygons: $isOK - ${isOK ? E.leaf : E.redDot}');
 
     if (user!.userType == UserType.fieldMonitor) {
       pp('$mm FieldMonitor not allowed to create polygon, 🔶 quitting!');
@@ -183,14 +186,13 @@ class ProjectPolygonMapMobileState extends State<ProjectPolygonMapMobile>
         toastGravity: ToastGravity.TOP,
         textStyle: myTextStyleSmall(context),
         backgroundColor: Theme.of(context).primaryColor,
-        message: 'Area point no. ${_myPoints.length}', context: context);
+        message: 'Area point no. ${_myPoints.length}',
+        context: context);
 
     if (_myPoints.length > 1) {
       _drawPolygon();
     }
-
   }
-
 
   Future<void> _submitNewPolygon() async {
     pp('\n\n$mm _submitNewPolygon started. 🍏🍏adding polygon to project ...'
@@ -217,6 +219,8 @@ class ProjectPolygonMapMobileState extends State<ProjectPolygonMapMobile>
       pp('$mm Positions in this project polygon: ${positions.length}; 🔷 polygon about to be created');
       var pos = ProjectPolygon(
           projectName: widget.project.name,
+          userId: user!.userId,
+          userName: user!.name,
           projectPolygonId: const Uuid().v4(),
           created: DateTime.now().toUtc().toIso8601String(),
           positions: positions,
@@ -243,22 +247,17 @@ class ProjectPolygonMapMobileState extends State<ProjectPolygonMapMobile>
     });
   }
 
-  void _animateCamera({required double zoom, required local.Position position}) {
+  void _animateCamera(
+      {required double zoom, required local.Position position}) {
     CameraPosition? first = CameraPosition(
       target: LatLng(
-          position
-              .coordinates
-              .elementAt(1),
-          position
-              .coordinates
-              .elementAt(0)),
+          position.coordinates.elementAt(1), position.coordinates.elementAt(0)),
       zoom: zoom,
     );
 
     googleMapController!.animateCamera(CameraUpdate.newCameraPosition(first));
     setState(() {});
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -289,20 +288,41 @@ class ProjectPolygonMapMobileState extends State<ProjectPolygonMapMobile>
                       'Project Monitoring Areas',
                       style: myTextStyleSmall(context),
                     ),
-                    const SizedBox(width: 28,),
-                    busy? const SizedBox(width: 16, height: 16,
-                    child: CircularProgressIndicator(
-                      strokeWidth: 4, backgroundColor: Colors.pink,
-                    ),):const SizedBox(),
+                    const SizedBox(
+                      width: 28,
+                    ),
+                    busy
+                        ? const SizedBox(
+                            width: 16,
+                            height: 16,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 4,
+                              backgroundColor: Colors.pink,
+                            ),
+                          )
+                        : const SizedBox(),
                   ],
                 ),
-                const SizedBox(height: 20,),
-                Row(mainAxisAlignment: MainAxisAlignment.end,
+                const SizedBox(
+                  height: 20,
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
                   children: [
-                    Flexible(child: Text('${widget.project.name}', style: myTextStyleMedium(context),)),
-                    const SizedBox(width: 16,),
-                    ProjectPolygonChooser(projectPolygons: projectPolygons, onSelected: onSelected),
-                    const SizedBox(width: 8,),
+                    Flexible(
+                        child: Text(
+                      '${widget.project.name}',
+                      style: myTextStyleMedium(context),
+                    )),
+                    const SizedBox(
+                      width: 16,
+                    ),
+                    ProjectPolygonChooser(
+                        projectPolygons: projectPolygons,
+                        onSelected: onSelected),
+                    const SizedBox(
+                      width: 8,
+                    ),
                   ],
                 ),
                 const SizedBox(
@@ -312,10 +332,15 @@ class ProjectPolygonMapMobileState extends State<ProjectPolygonMapMobile>
             ),
           ),
           actions: [
-            IconButton(onPressed: (){
-               _getData(true);
-            }, icon: Icon(Icons.refresh, size: 20,
-              color: Theme.of(context).primaryColor,)),
+            IconButton(
+                onPressed: () {
+                  _getData(true);
+                },
+                icon: Icon(
+                  Icons.refresh,
+                  size: 20,
+                  color: Theme.of(context).primaryColor,
+                )),
             _myPoints.length > 2
                 ? IconButton(
                     onPressed: () {
@@ -339,11 +364,13 @@ class ProjectPolygonMapMobileState extends State<ProjectPolygonMapMobile>
                       size: 16,
                       color: Theme.of(context).primaryColor,
                     )),
-
-            IconButton(onPressed: (){
-
-            }, icon: Icon(Icons.close, size: 20,
-              color: Theme.of(context).primaryColor,)),
+            IconButton(
+                onPressed: () {},
+                icon: Icon(
+                  Icons.close,
+                  size: 20,
+                  color: Theme.of(context).primaryColor,
+                )),
           ],
         ),
         body: Stack(
@@ -351,13 +378,15 @@ class ProjectPolygonMapMobileState extends State<ProjectPolygonMapMobile>
             GestureDetector(
               onTap: () {
                 if (projectPositions.isNotEmpty) {
-                  _animateCamera(zoom: 10.0, position: projectPositions.first.position!);
+                  _animateCamera(
+                      zoom: 10.0, position: projectPositions.first.position!);
                 }
               },
               child: bd.Badge(
-                badgeStyle:  bd.BadgeStyle(
+                badgeStyle: bd.BadgeStyle(
                   badgeColor: Theme.of(context).primaryColor,
-                  elevation: 8, padding: const EdgeInsets.all(8),
+                  elevation: 8,
+                  padding: const EdgeInsets.all(8),
                 ),
                 badgeContent: Text(
                   '${projectPolygons.length}',
@@ -392,8 +421,6 @@ class ProjectPolygonMapMobileState extends State<ProjectPolygonMapMobile>
     );
   }
 
-
-
   onSelected(Position p1) {
     _animateCamera(zoom: 14.6, position: p1);
   }
@@ -401,9 +428,7 @@ class ProjectPolygonMapMobileState extends State<ProjectPolygonMapMobile>
 
 class ProjectPolygonChooser extends StatelessWidget {
   const ProjectPolygonChooser(
-      {Key? key,
-        required this.projectPolygons,
-        required this.onSelected})
+      {Key? key, required this.projectPolygons, required this.onSelected})
       : super(key: key);
   final List<ProjectPolygon> projectPolygons;
   final Function(local.Position) onSelected;
@@ -411,7 +436,7 @@ class ProjectPolygonChooser extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     var list = <local.Position>[];
-    projectPolygons.sort((a,b) => a.created!.compareTo(b.created!));
+    projectPolygons.sort((a, b) => a.created!.compareTo(b.created!));
 
     for (var value in projectPolygons) {
       list.add(value.positions.first);
@@ -425,11 +450,17 @@ class ProjectPolygonChooser extends StatelessWidget {
           value: pos,
           child: Row(
             children: [
-              Text('Area No. ', style: myTextStyleSmall(context),),
+              Text(
+                'Area No. ',
+                style: myTextStyleSmall(context),
+              ),
               const SizedBox(
                 width: 8,
               ),
-              Text('$cnt', style: myNumberStyleSmall(context),),
+              Text(
+                '$cnt',
+                style: myNumberStyleSmall(context),
+              ),
             ],
           ),
         ),
@@ -446,4 +477,3 @@ class ProjectPolygonChooser extends StatelessWidget {
         });
   }
 }
-

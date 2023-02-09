@@ -110,8 +110,6 @@ class ProjectPhotosTabletState extends State<ProjectPhotosTablet> with SingleTic
                   itemCount: photos.length,
                   itemBuilder: (context, index) {
                     var photo = photos.elementAt(index);
-                    // var dt =
-                    // getFormattedDateShortestWithTime(photo.created!, context);
 
                     return Stack(
                       children: [

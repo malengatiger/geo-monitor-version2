@@ -395,6 +395,8 @@ class ProjectMediaListTabletState extends State<ProjectMediaListTablet>
                         },
                         child: PhotoDetails(
                           photo: selectedPhoto!,
+                          separatorPadding: 12,
+                          width: 480,
                           onClose: () {
                             setState(() {
                               _showPhotoDetail = false;

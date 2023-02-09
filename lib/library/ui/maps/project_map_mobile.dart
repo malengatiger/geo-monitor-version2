@@ -336,6 +336,8 @@ class ProjectMapMobileState extends State<ProjectMapMobile>
 
       var pos = ProjectPosition(
           projectName: widget.project.name,
+          userId: user!.userId,
+          userName: user!.name,
           caption: 'tbd',
           projectPositionId: const Uuid().v4(),
           created: DateTime.now().toUtc().toIso8601String(),

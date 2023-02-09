@@ -25,13 +25,15 @@ class ProjectPolygonAdapter extends TypeAdapter<ProjectPolygon> {
       organizationId: fields[4] as String?,
       name: fields[7] as String?,
       projectId: fields[1] as String?,
+      userId: fields[8] as String?,
+      userName: fields[9] as String?,
     );
   }
 
   @override
   void write(BinaryWriter writer, ProjectPolygon obj) {
     writer
-      ..writeByte(8)
+      ..writeByte(10)
       ..writeByte(0)
       ..write(obj.projectName)
       ..writeByte(1)
@@ -47,7 +49,11 @@ class ProjectPolygonAdapter extends TypeAdapter<ProjectPolygon> {
       ..writeByte(6)
       ..write(obj.nearestCities)
       ..writeByte(7)
-      ..write(obj.name);
+      ..write(obj.name)
+      ..writeByte(8)
+      ..write(obj.userId)
+      ..writeByte(9)
+      ..write(obj.userName);
   }
 
   @override

@@ -132,7 +132,6 @@ class ProjectLocationMobileState extends State<ProjectLocationMobile>
           projectId: widget.project.projectId!, forceRefresh: forceRefresh);
 
       pp('$mx _projectPositions found: ${_projectPositions.length}; checking location within project monitorDistance...');
-
     } catch (e) {
       pp(e);
       if (mounted) {
@@ -157,8 +156,10 @@ class ProjectLocationMobileState extends State<ProjectLocationMobile>
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
             duration: const Duration(seconds: 5),
             backgroundColor: Theme.of(context).colorScheme.error,
-            content: Text('There is a project location here already for ${widget.project.name}',
-              style: myTextStyleMedium(context),)));
+            content: Text(
+              'There is a project location here already for ${widget.project.name}',
+              style: myTextStyleMedium(context),
+            )));
       }
       return;
     }
@@ -192,6 +193,8 @@ class ProjectLocationMobileState extends State<ProjectLocationMobile>
       }
       var org = await prefsOGx.getUser();
       var loc = ProjectPosition(
+          userId: user!.userId,
+          userName: user!.name,
           placemark: pm == null ? null : PlaceMark.getPlaceMark(placemark: pm),
           projectName: widget.project.name,
           caption: 'tbd',
@@ -243,7 +246,6 @@ class ProjectLocationMobileState extends State<ProjectLocationMobile>
               duration: const Duration(milliseconds: 1000),
               child: ProjectPolygonMapMobile(
                 project: widget.project,
-
               )));
     }
   }
@@ -307,7 +309,7 @@ class ProjectLocationMobileState extends State<ProjectLocationMobile>
                   ),
                   Text(
                     'If you want to create a new Project Area tap the map icon at top right '
-                        'to go to a map that will help you do that',
+                    'to go to a map that will help you do that',
                     style: myTextStyleMedium(context),
                   ),
                   const SizedBox(
@@ -347,10 +349,12 @@ class ProjectLocationMobileState extends State<ProjectLocationMobile>
               );
             },
             child: bd.Badge(
-              badgeContent: Text('${_projectPositions.length + _projectPolygons.length}'),
-              badgeStyle:  bd.BadgeStyle(
+              badgeContent:
+                  Text('${_projectPositions.length + _projectPolygons.length}'),
+              badgeStyle: bd.BadgeStyle(
                 badgeColor: Theme.of(context).primaryColor,
-                elevation: 8, padding: const EdgeInsets.all(8),
+                elevation: 8,
+                padding: const EdgeInsets.all(8),
               ),
               position: bd.BadgePosition.topEnd(top: -8, end: 16),
               child: Card(
@@ -362,67 +366,72 @@ class ProjectLocationMobileState extends State<ProjectLocationMobile>
                     const SizedBox(
                       height: 24,
                     ),
-                     Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Column(
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Column(
+                        children: [
+                          Text(
+                            'Current Location',
+                            style: myTextStyleLarge(context),
+                          ),
+                          const SizedBox(
+                            height: 24,
+                          ),
+                          Padding(
+                            padding:
+                                const EdgeInsets.symmetric(horizontal: 20.0),
+                            child: Row(
                               children: [
-                                Text(
-                                  'Current Location',
-                                  style: myTextStyleLarge(context),
+                                SizedBox(
+                                  width: 80,
+                                  child: Text(
+                                    'Latitude',
+                                    style: myTextStyleSmall(context),
+                                  ),
                                 ),
                                 const SizedBox(
-                                  height: 24,
+                                  width: 12,
                                 ),
-                                Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 20.0),
-                                  child: Row(
-                                    children: [
-                                      SizedBox(
-                                        width: 80,
-                                        child: Text(
-                                          'Latitude',
-                                          style: myTextStyleSmall(context),
-                                        ),
-                                      ),
-                                      const SizedBox(
-                                        width: 12,
-                                      ),
-                                      _position == null? const SizedBox(): Text(
+                                _position == null
+                                    ? const SizedBox()
+                                    : Text(
                                         _position!.latitude!.toStringAsFixed(6),
                                         style: myNumberStyleLarge(context),
                                       ),
-                                    ],
-                                  ),
-                                ),
-                                const SizedBox(
-                                  height: 12,
-                                ),
-                                Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 20.0),
-                                  child: Row(
-                                    children: [
-                                      SizedBox(
-                                        width: 80,
-                                        child: Text(
-                                          'Longitude',
-                                          style: myTextStyleSmall(context),
-                                        ),
-                                      ),
-                                      const SizedBox(
-                                        width: 12,
-                                      ),
-                                      _position == null? const SizedBox() :Text(
-                                        _position!.longitude!.toStringAsFixed(6),
-                                        style: myNumberStyleLarge(context),
-                                      ),
-                                    ],
-                                  ),
-                                ),
                               ],
                             ),
                           ),
+                          const SizedBox(
+                            height: 12,
+                          ),
+                          Padding(
+                            padding:
+                                const EdgeInsets.symmetric(horizontal: 20.0),
+                            child: Row(
+                              children: [
+                                SizedBox(
+                                  width: 80,
+                                  child: Text(
+                                    'Longitude',
+                                    style: myTextStyleSmall(context),
+                                  ),
+                                ),
+                                const SizedBox(
+                                  width: 12,
+                                ),
+                                _position == null
+                                    ? const SizedBox()
+                                    : Text(
+                                        _position!.longitude!
+                                            .toStringAsFixed(6),
+                                        style: myNumberStyleLarge(context),
+                                      ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
                     const SizedBox(
                       height: 12,
                     ),
@@ -438,11 +447,12 @@ class ProjectLocationMobileState extends State<ProjectLocationMobile>
                         : ElevatedButton(
                             onPressed: _submit,
                             style: ButtonStyle(
-                              shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-                                  RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(16.0),
-                                      // side: const BorderSide(color: Colors.pink)
-                                  ),
+                              shape: MaterialStateProperty.all<
+                                  RoundedRectangleBorder>(
+                                RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(16.0),
+                                  // side: const BorderSide(color: Colors.pink)
+                                ),
                               ),
                               elevation: MaterialStateProperty.all<double>(8.0),
                             ),

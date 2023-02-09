@@ -29,21 +29,31 @@ class ProjectPosition extends HiveObject {
   @HiveField(9)
   String? name;
 
+  @HiveField(10)
+  String? userId;
+  @HiveField(11)
+  String? userName;
+
   ProjectPosition(
       {required this.projectName,
       required this.caption,
-        required this.projectPositionId,
+      required this.projectPositionId,
       required this.created,
       required this.position,
       this.placemark,
       required this.nearestCities,
-        required this.organizationId, this.name,
+      required this.organizationId,
+      this.name,
+      required this.userId,
+      required this.userName,
       required this.projectId});
 
   ProjectPosition.fromJson(Map data) {
     projectName = data['projectName'];
     projectId = data['projectId'];
     name = data['name'];
+    userId = data['userId'];
+    userName = data['userName'];
     projectPositionId = data['projectPositionId'];
     caption = data['caption'];
     projectId = data['projectId'];
@@ -75,6 +85,8 @@ class ProjectPosition extends HiveObject {
     Map<String, dynamic> map = {
       'projectName': projectName,
       'projectId': projectId,
+      'userId': userId,
+      'userName': userName,
       'organizationId': organizationId,
       'projectPositionId': projectPositionId,
       'caption': caption,

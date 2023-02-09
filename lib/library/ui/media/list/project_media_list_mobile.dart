@@ -390,6 +390,8 @@ class ProjectMediaListMobileState extends State<ProjectMediaListMobile>
                         },
                         child: PhotoDetails(
                           photo: selectedPhoto!,
+                          separatorPadding: 4,
+                          width: 300,
                           onClose: () {
                             setState(() {
                               _showPhotoDetail = false;

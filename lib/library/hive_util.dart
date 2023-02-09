@@ -3,6 +3,8 @@ import 'dart:math';
 import 'package:geo_monitor/library/bloc/audio_for_upload.dart';
 import 'package:geo_monitor/library/bloc/photo_for_upload.dart';
 import 'package:geo_monitor/library/bloc/video_for_upload.dart';
+import 'package:geo_monitor/library/data/activity_model.dart';
+import 'package:geo_monitor/library/data/activity_type_enum.dart';
 import 'package:geo_monitor/library/data/project_assignment.dart';
 import 'package:geo_monitor/library/data/settings_model.dart';
 import 'package:geo_monitor/library/data/weather/daily_forecast.dart';
@@ -85,6 +87,8 @@ class CacheManager {
   LazyBox<DailyForecast>? _dailyForecastBox;
   LazyBox<HourlyForecast>? _hourlyForecastBox;
 
+  LazyBox<ActivityModel>? _activityBox;
+
   bool _isInitialized = false;
 
   initialize({bool? forceInitialization = false}) async {
@@ -148,6 +152,8 @@ class CacheManager {
   }
 
   Future<void> _openBoxes() async {
+    _activityBox = await Hive.openLazyBox<ActivityModel>('activities');
+
     _orgBox = await Hive.openLazyBox<Organization>('organizations');
     _settingsBox = await Hive.openLazyBox<SettingsModel>('settings');
     _projectBox = await Hive.openLazyBox<Project>('projects');
@@ -195,6 +201,14 @@ class CacheManager {
 
   void _registerAdapters() {
     p('\n$xx ... Registering Hive object adapters ...');
+    if (!Hive.isAdapterRegistered(61)) {
+      Hive.registerAdapter(ActivityTypeAdapter());
+      p('$xx Hive ActivityTypeAdapter registered');
+    }
+    if (!Hive.isAdapterRegistered(60)) {
+      Hive.registerAdapter(ActivityModelAdapter());
+      p('$xx Hive ActivityModelAdapter registered');
+    }
     if (!Hive.isAdapterRegistered(50)) {
       Hive.registerAdapter(DailyForecastAdapter());
       p('$xx Hive DailyForecastAdapter registered');
@@ -328,6 +342,32 @@ class CacheManager {
       '${E.appleRed}${E.appleRed}${E.appleRed}${E.appleRed} CacheManager: ';
   var random = Random(DateTime.now().millisecondsSinceEpoch);
 
+  Future addActivityModel(
+      {required ActivityModel activity}) async {
+    late String key;
+    if (activity.projectId == null) {
+      key = '${DateTime.parse(activity.date!).millisecondsSinceEpoch}_${activity.userId}';
+    } else {
+      key = '${DateTime.parse(activity.date!).millisecondsSinceEpoch}_${activity.projectId}_${activity.userId}';
+    }
+    await _activityBox?.put(key, activity);
+
+    pp('$mm ActivityModel added to local cache}');
+  }
+  Future<List<ActivityModel>> getActivities() async {
+    List<ActivityModel> list = [];
+    var keys = _activityBox?.keys;
+    if (keys != null) {
+      for (var key in keys) {
+        var act = await _activityBox?.get(key);
+        list.add(act!);
+      }
+    }
+    pp('$mm ${list.length} org activities list found in cache 🔵');
+    return list;
+  }
+
+
   Future addLocationResponse(
       {required LocationResponse locationResponse}) async {
     pp('$mm .... addLocationResponse .....');
@@ -343,6 +383,7 @@ class CacheManager {
       await addDailyForecast(forecast: fc);
     }
   }
+
   Future addDailyForecast(
       {required DailyForecast forecast}) async {
     var key = '${DateTime.now().millisecondsSinceEpoch}';
@@ -896,6 +937,55 @@ class CacheManager {
     return mList;
   }
 
+  Future<Video?> getVideoById(String id) async {
+    var keys = _videoBox?.keys;
+    Video? vid;
+    if (keys != null) {
+      for (var key in keys) {
+        var m = await _videoBox!.get(key);
+        if (m != null) {
+          if (m.videoId == id) {
+            vid = m;
+            break;
+          }
+        }
+      }
+    }
+    return vid;
+  }
+  Future<Photo?> getPhotoById(String id) async {
+    var keys = _photoBox?.keys;
+    Photo? photo;
+    if (keys != null) {
+      for (var key in keys) {
+        var m = await _photoBox!.get(key);
+        if (m != null) {
+          if (m.photoId == id) {
+            photo = m;
+            break;
+          }
+        }
+      }
+    }
+    return photo;
+  }
+  Future<Audio?> getAudioById(String id) async {
+    var keys = _audioBox?.keys;
+    Audio? audio;
+    if (keys != null) {
+      for (var key in keys) {
+        var m = await _audioBox!.get(key);
+        if (m != null) {
+          if (m.audioId == id) {
+            audio = m;
+            break;
+          }
+        }
+      }
+    }
+    return audio;
+  }
+
   Future<List<Audio>> getProjectAudios(String projectId) async {
     var keys = _audioBox?.keys;
     List<Audio> mList = [];
@@ -999,7 +1089,7 @@ class CacheManager {
 
   Future addPhoto({required Photo photo}) async {
     var key =
-        '${photo.organizationId}_${photo.projectId}_${photo.userId}_${photo.created}';
+        '${photo.organizationId}_${photo.projectId}_${photo.userId}_${photo.photoId}_${photo.created}';
     await _photoBox?.put(key, photo);
     // pp('$mm Photo added to local cache:  🔵 🔵 ${photo.projectName}');
   }
@@ -1107,7 +1197,7 @@ class CacheManager {
 
   Future addVideo({required Video video}) async {
     var key =
-        '${video.organizationId}_${video.projectId}_${video.userId}_${video.created}';
+        '${video.organizationId}_${video.projectId}_${video.userId}_${video.videoId}_${video.created}';
     await _videoBox?.put(key, video);
     // pp('$mm Video added to local cache:  🔵 🔵 ${video.projectName}');
   }
@@ -1115,7 +1205,7 @@ class CacheManager {
   Future addAudio({required Audio audio}) async {
     try {
       var key =
-          '${audio.organizationId}_${audio.projectId}_${audio.userId}_${audio.created}';
+          '${audio.organizationId}_${audio.projectId}_${audio.userId}_${audio.audioId}_${audio.created}';
       await _audioBox?.put(key, audio);
       // pp('$mm looks like hive has cached an audio object');
       return 0;

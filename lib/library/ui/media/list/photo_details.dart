@@ -5,16 +5,17 @@ import '../../../data/photo.dart';
 import '../../../functions.dart';
 
 class PhotoDetails extends StatelessWidget {
-  const PhotoDetails({Key? key, required this.photo, required this.onClose})
+  const PhotoDetails({Key? key, required this.photo, required this.onClose, required this.width, required this.separatorPadding})
       : super(key: key);
   final Photo photo;
   final Function onClose;
+  final double width;
+  final double separatorPadding;
 
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      width: 300,
-      // height: 420,
+      width: width + 8,
       child: Card(
         elevation: 8,
         shape:
@@ -38,17 +39,24 @@ class PhotoDetails extends StatelessWidget {
               ),
               Text(
                 photo.projectName!,
-                style: myTextStyleSmall(context)
+                style: myTextStyleMedium(context)
               ),
-              const SizedBox(
-                height: 0,
+               SizedBox(
+                height: separatorPadding,
               ),
               Text(
                 getFormattedDateShortWithTime(photo.created!, context),
-                style: myTextStyleMedium(context),
+                style: myTextStyleSmall(context),
+              ),
+               SizedBox(
+                height: separatorPadding,
+              ),
+              Text('${photo.userName}', style: myTextStyleMediumPrimaryColor(context),),
+               SizedBox(
+                height: separatorPadding,
               ),
               SizedBox(
-                width: 240,
+                width: width,
                 child: Card(
                   shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(16.0)),

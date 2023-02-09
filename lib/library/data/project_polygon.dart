@@ -6,7 +6,6 @@ import '../data/position.dart';
 part 'project_polygon.g.dart';
 
 @HiveType(typeId: 19)
-
 class ProjectPolygon extends HiveObject {
   @HiveField(0)
   String? projectName;
@@ -31,18 +30,28 @@ class ProjectPolygon extends HiveObject {
   @HiveField(7)
   String? name;
 
+  @HiveField(8)
+  String? userId;
+  @HiveField(9)
+  String? userName;
+
   ProjectPolygon(
       {required this.projectName,
-        required this.projectPolygonId,
+      required this.projectPolygonId,
       required this.created,
       required this.positions,
       required this.nearestCities,
-        required this.organizationId, this.name,
-      required this.projectId});
+      required this.organizationId,
+      this.name,
+      required this.projectId,
+      required this.userId,
+      required this.userName});
 
   ProjectPolygon.fromJson(Map data) {
     projectName = data['projectName'];
     projectId = data['projectId'];
+    userId = data['userId'];
+    userName = data['userName'];
     projectPolygonId = data['projectPolygonId'];
     name = data['name'];
     organizationId = data['organizationId'];
@@ -78,6 +87,8 @@ class ProjectPolygon extends HiveObject {
     Map<String, dynamic> map = {
       'projectName': projectName,
       'projectId': projectId,
+      'userId': userId,
+      'userName': userName,
       'organizationId': organizationId,
       'projectPolygonId': projectPolygonId,
       'created': created,

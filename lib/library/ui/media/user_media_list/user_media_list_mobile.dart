@@ -265,6 +265,8 @@ class MediaListMobileState extends State<UserMediaListMobile>
                         },
                         child: PhotoDetails(
                           photo: selectedPhoto!,
+                          separatorPadding: 8,
+                          width: 300,
                           onClose: () {
                             _animationController.reverse().then((value) {
                               setState(() {

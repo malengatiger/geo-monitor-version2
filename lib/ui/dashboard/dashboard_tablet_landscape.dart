@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:geo_monitor/library/bloc/organization_bloc.dart';
+import 'package:geo_monitor/library/ui/geo_activity.dart';
 import 'package:geo_monitor/library/ui/settings/settings_main.dart';
 import 'package:geo_monitor/ui/dashboard/dashboard_grid.dart';
 import 'package:geo_monitor/ui/intro/intro_main.dart';
@@ -352,7 +353,7 @@ class _DashboardTabletLandscapeState extends State<DashboardTabletLandscape> {
                   },
                 ),
               ),
-              GeoPlaceHolder(width:size.width/2,),
+              GeoActivity(width: size.width/2,),
 
             ],
           )
