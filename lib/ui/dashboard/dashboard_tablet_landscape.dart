@@ -7,6 +7,7 @@ import 'package:page_transition/page_transition.dart';
 
 import '../../library/api/prefs_og.dart';
 import '../../library/bloc/downloader.dart';
+import '../../library/bloc/uploader.dart';
 import '../../library/data/project.dart';
 import '../../library/data/user.dart';
 import '../../library/functions.dart';
@@ -40,6 +41,9 @@ class _DashboardTabletLandscapeState extends State<DashboardTabletLandscape> {
   void initState() {
     super.initState();
     _getData(false);
+
+    uploader.startTimer(const Duration(seconds: 30));
+
   }
 
   void _getData(bool forceRefresh) async {

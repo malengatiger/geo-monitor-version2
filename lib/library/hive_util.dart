@@ -619,7 +619,9 @@ class CacheManager {
         list.add(mSettings!);
       }
     }
-    pp('$mm ${list.length} org settings list found in cache 🔵');
+    if (list.isNotEmpty) {
+      pp('$mm ${list.length} org settings list found in cache 🔵');
+    }
     return list;
   }
   Future<List<VideoForUpload>> getVideosForUpload() async {
@@ -632,7 +634,9 @@ class CacheManager {
         list.add(video!);
       }
     }
-    pp('$mm ${list.length} VideoForUpload list found in cache 🔵');
+    if (list.isNotEmpty) {
+      pp('$mm ${list.length} VideoForUpload list found in cache 🔵');
+    }
     return list;
   }
   Future<List<PhotoForUpload>> getPhotosForUpload() async {
@@ -645,7 +649,9 @@ class CacheManager {
         list.add(photo!);
       }
     }
-    pp('$mm ${list.length} PhotoForUpload list found in cache 🔵');
+    if (list.isNotEmpty) {
+      pp('$mm ${list.length} PhotoForUpload list found in cache 🔵');
+    }
     return list;
   }
 

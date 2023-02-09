@@ -42,9 +42,9 @@ class CloudStorageBloc {
     _mediaStreamController.close();
   }
 
-  final photoStorageName = 'geoPhotos';
-  final videoStorageName = 'geoVideos';
-  final audioStorageName = 'geoAudios';
+  final photoStorageName = 'geoPhotos3';
+  final videoStorageName = 'geoVideos3';
+  final audioStorageName = 'geoAudios3';
 
   final StreamController<Photo> _photoStreamController =
       StreamController.broadcast();

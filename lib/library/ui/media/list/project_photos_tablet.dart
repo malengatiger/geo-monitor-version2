@@ -11,20 +11,20 @@ import '../../../data/photo.dart';
 import '../../../data/project.dart';
 import '../../../functions.dart';
 
-class ProjectPhotos extends StatefulWidget {
+class ProjectPhotosTablet extends StatefulWidget {
 
 
   final Project project;
   final bool refresh;
   final Function(Photo) onPhotoTapped;
 
-  const ProjectPhotos({super.key, required this.project, required this.refresh, required this.onPhotoTapped});
+  const ProjectPhotosTablet({super.key, required this.project, required this.refresh, required this.onPhotoTapped});
 
   @override
-  State<ProjectPhotos> createState() => ProjectPhotosState();
+  State<ProjectPhotosTablet> createState() => ProjectPhotosTabletState();
 }
 
-class ProjectPhotosState extends State<ProjectPhotos> with SingleTickerProviderStateMixin{
+class ProjectPhotosTabletState extends State<ProjectPhotosTablet> with SingleTickerProviderStateMixin{
   late AnimationController _animationController;
   var photos = <Photo>[];
   bool loading = false;
@@ -85,14 +85,14 @@ class ProjectPhotosState extends State<ProjectPhotos> with SingleTickerProviderS
           )),
     ) :Column(
       children: [
-        SizedBox(
-          height: 60,
-          child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 16.0),
-            child: Text(widget.project.name!,
-              style: myTextStyleMediumBold(context),),
-          ),
-        ),
+        // SizedBox(
+        //   height: 60,
+        //   child: Padding(
+        //     padding: const EdgeInsets.symmetric(vertical: 16.0),
+        //     child: Text(widget.project.name!,
+        //       style: myTextStyleMediumBold(context),),
+        //   ),
+        // ),
          Expanded(
             child: bd.Badge(
               position: bd.BadgePosition.topEnd(top: 4, end: 4),
@@ -106,7 +106,7 @@ class ProjectPhotosState extends State<ProjectPhotos> with SingleTickerProviderS
               ),),
               child: GridView.builder(
                   gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisSpacing: 1, crossAxisCount: 2, mainAxisSpacing: 1),
+                      crossAxisSpacing: 1, crossAxisCount: 5, mainAxisSpacing: 1),
                   itemCount: photos.length,
                   itemBuilder: (context, index) {
                     var photo = photos.elementAt(index);

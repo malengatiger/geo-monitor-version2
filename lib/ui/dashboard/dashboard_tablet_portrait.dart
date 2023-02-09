@@ -91,10 +91,9 @@ class DashboardTabletPortraitState extends State<DashboardTabletPortrait>
     _getAuthenticationStatus();
     _subscribeToConnectivity();
     _subscribeToGeofenceStream();
-    _buildGeofences();
     _startTimer();
     _getData(false);
-    uploader.startTimer(const Duration(seconds: 60));
+    uploader.startTimer(const Duration(seconds: 30));
   }
 
   void _getData(bool forceRefresh) async {
@@ -160,12 +159,6 @@ class DashboardTabletPortraitState extends State<DashboardTabletPortrait>
       });
       //
     }
-  }
-
-  void _buildGeofences() async {
-    pp('\n$mm _buildGeofences starting ........................');
-    await theGreatGeofencer.buildGeofences();
-    pp('$mm _buildGeofences should be done and dusted ....');
   }
 
   late StreamSubscription<bool> connectionSubscription;

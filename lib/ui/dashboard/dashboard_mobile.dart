@@ -92,11 +92,10 @@ class DashboardPortraitState extends State<DashboardPortrait>
       _refreshData(false);
     }
     _subscribeToConnectivity();
-    _subscribeToGeofenceStream();
-    _buildGeofences();
+    _subscribeToGeofenceStream();;
     _startTimer();
 
-    uploader.startTimer(const Duration(seconds: 60));
+    uploader.startTimer(const Duration(seconds: 30));
   }
 
   void _setAnimationControllers() {
@@ -143,11 +142,7 @@ class DashboardPortraitState extends State<DashboardPortrait>
     }
   }
 
-  void _buildGeofences() async {
-    pp('\n$mm _buildGeofences starting ........................');
-    await theGreatGeofencer.buildGeofences();
-    pp('$mm _buildGeofences should be done and dusted ....');
-  }
+
 
   late StreamSubscription<bool> connectionSubscription;
   Future<void> _subscribeToConnectivity() async {

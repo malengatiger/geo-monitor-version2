@@ -431,7 +431,7 @@ class UserListMobileState extends State<UserListMobile>
                             var created = DateTime.parse(user.created!);
                             var now = DateTime.now();
                             var ms = now.millisecondsSinceEpoch - created.millisecondsSinceEpoch;
-                            var deltaDays = Duration(milliseconds: ms).inDays;
+                            var deltaHours = Duration(milliseconds: ms).inHours;
                             return FocusedMenuHolder(
                               menuOffset: 20,
                               duration: const Duration(milliseconds: 300),
@@ -474,7 +474,7 @@ class UserListMobileState extends State<UserListMobile>
                                                         context),
                                                   ),
                                                   const SizedBox(width: 24,),
-                                                  deltaDays < 3? const SizedBox(width: 8, height: 8,
+                                                  deltaHours < 4? const SizedBox(width: 8, height: 8,
                                                     child: CircularProgressIndicator(
                                                       strokeWidth: 3, backgroundColor: Colors.pink,
                                                     ),): const SizedBox(),

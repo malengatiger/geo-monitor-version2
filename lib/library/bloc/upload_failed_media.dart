@@ -16,8 +16,8 @@ class UploadFailedMedia implements StorageBlocListener {
   late Timer _timer;
   bool isStarted = false;
   Random rand = Random(DateTime.now().millisecondsSinceEpoch);
-  final photoStorageName = 'geoPhotos';
-  final videoStorageName = 'geoVideos';
+  final photoStorageName = 'geoPhotos3';
+  final videoStorageName = 'geoVideos3';
 
   void startTimer(Duration duration) {
     _timer = Timer.periodic(duration, (timer) async {

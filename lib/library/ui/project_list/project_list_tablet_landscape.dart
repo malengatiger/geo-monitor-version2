@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:geo_monitor/library/api/prefs_og.dart';
 import 'package:geo_monitor/library/bloc/organization_bloc.dart';
 import 'package:geo_monitor/library/ui/maps/project_map_main.dart';
+import 'package:geo_monitor/library/ui/media/list/project_media_main.dart';
 import 'package:geo_monitor/library/ui/project_edit/project_edit_main.dart';
 import 'package:geo_monitor/library/ui/project_list/project_list_card.dart';
 import 'package:geo_monitor/library/ui/project_monitor/project_monitor_main.dart';
@@ -123,7 +124,7 @@ class ProjectListTabletLandscapeState extends State<ProjectListTabletLandscape>
             type: PageTransitionType.scale,
             alignment: Alignment.topLeft,
             duration: const Duration(milliseconds: 1500),
-            child: ProjectMediaListMobile(project: p)));
+            child: ProjectMediaMain(project: p)));
   }
 
   void _navigateToProjectSchedules(Project p) {

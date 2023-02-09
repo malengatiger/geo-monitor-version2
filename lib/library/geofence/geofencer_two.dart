@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:geo_monitor/library/bloc/organization_bloc.dart';
 import 'package:geo_monitor/library/data/position.dart';
 import 'package:geofence_service/geofence_service.dart';
 import 'package:geofence_service/models/geofence.dart' as geo;
@@ -37,7 +38,7 @@ class TheGreatGeofencer {
 
   // Future initialize() async {
   //   pp('$mm Create a [GeofenceService] instance and set options.....');
-  //   geofenceService = GeofenceService.instance.setup(
+  //   var geofenceService = GeofenceService.instance.setup(
   //       interval: 5000,
   //       accuracy: 100,
   //       loiteringDelayMs: 30000,
@@ -78,17 +79,18 @@ class TheGreatGeofencer {
     }
     await locationBlocOG.requestPermission();
     pp('$mm buildGeofences .... build geofences for the organization 🌀 ${_user!.organizationName}  🌀 \n\n');
-    var loc = await locationBlocOG.getLocation();
-    var list = <ProjectPosition>[];
-    try {
-      if (loc != null) {
-        list = await _findProjectPositionsByLocation(
-            organizationId: _user!.organizationId!,
-            latitude: loc.latitude!,
-            longitude: loc.longitude!,
-            radiusInKM: radiusInKM ?? defaultRadiusInKM);
-      }
+    var list = await organizationBloc.getProjectPositions(
+        organizationId: _user!.organizationId!, forceRefresh: false);
 
+    // var loc = await locationBlocOG.getLocation();
+    try {
+      // if (loc != null) {
+      //   list = await _findProjectPositionsByLocation(
+      //       organizationId: _user!.organizationId!,
+      //       latitude: loc.latitude!,
+      //       longitude: loc.longitude!,
+      //       radiusInKM: radiusInKM ?? defaultRadiusInKM);
+      // }
       for (var pos in list) {
         await addGeofence(projectPosition: pos);
       }
@@ -137,7 +139,7 @@ class TheGreatGeofencer {
       required Location location}) async {
     pp('$xx _processing new GeofenceEvent; 🔵 ${geofence.data['projectName']} '
         '🔵geofenceStatus: ${geofenceStatus.toString()}');
-    
+
     var loc = await locationBlocOG.getLocation();
 
     if (loc != null) {
@@ -162,21 +164,17 @@ class TheGreatGeofencer {
         case 'GeofenceStatus.DWELL':
           event.status = 'DWELL';
           var gfe = await DataAPI.addGeofenceEvent(event);
-          pp('$xx geofence event added to database for ${event
-              .projectName}');
+          pp('$xx geofence event added to database for ${event.projectName}');
           _streamController.sink.add(gfe);
           break;
         case 'GeofenceStatus.EXIT':
           event.status = 'EXIT';
           var gfe = await DataAPI.addGeofenceEvent(event);
-          pp('$mm $xx geofence event added to database for ${event
-              .projectName}');
+          pp('$mm $xx geofence event added to database for ${event.projectName}');
           _streamController.sink.add(gfe);
           break;
       }
     }
-
-
   }
 
   Future addGeofence({required ProjectPosition projectPosition}) async {

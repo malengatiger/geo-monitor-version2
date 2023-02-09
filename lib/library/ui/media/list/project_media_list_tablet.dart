@@ -4,6 +4,9 @@ import 'package:animations/animations.dart';
 import 'package:flutter/material.dart';
 import 'package:geo_monitor/library/bloc/fcm_bloc.dart';
 import 'package:geo_monitor/library/ui/camera/chewie_video_player.dart';
+import 'package:geo_monitor/library/ui/media/list/project_audios_tablet.dart';
+import 'package:geo_monitor/library/ui/media/list/project_photos_tablet.dart';
+import 'package:geo_monitor/library/ui/media/list/project_videos_tablet.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:page_transition/page_transition.dart';
 
@@ -27,16 +30,16 @@ import 'project_audios_mobile.dart';
 import 'project_photos_mobile.dart';
 import 'project_videos_mobile.dart';
 
-class ProjectMediaListMobile extends StatefulWidget {
+class ProjectMediaListTablet extends StatefulWidget {
   final Project project;
 
-  const ProjectMediaListMobile({super.key, required this.project});
+  const ProjectMediaListTablet({super.key, required this.project});
 
   @override
-  ProjectMediaListMobileState createState() => ProjectMediaListMobileState();
+  ProjectMediaListTabletState createState() => ProjectMediaListTabletState();
 }
 
-class ProjectMediaListMobileState extends State<ProjectMediaListMobile>
+class ProjectMediaListTabletState extends State<ProjectMediaListTablet>
     with TickerProviderStateMixin
     implements MediaGridListener {
   late AnimationController _animationController;
@@ -212,6 +215,8 @@ class ProjectMediaListMobileState extends State<ProjectMediaListMobile>
     return SafeArea(
         child: Scaffold(
       appBar: AppBar(
+        centerTitle: true,
+        title: Text('${widget.project.name}'),
         leading: IconButton(
             onPressed: () {
               Navigator.of(context).pop();
@@ -327,7 +332,7 @@ class ProjectMediaListMobileState extends State<ProjectMediaListMobile>
               : TabBarView(
                   controller: _tabController,
                   children: [
-                    ProjectPhotosMobile(
+                    ProjectPhotosTablet(
                       project: widget.project,
                       refresh: false,
                       onPhotoTapped: (Photo photo) {
@@ -339,7 +344,7 @@ class ProjectMediaListMobileState extends State<ProjectMediaListMobile>
                         _animationController.forward();
                       },
                     ),
-                    ProjectVideosMobile(
+                    ProjectVideosTablet(
                       project: widget.project,
                       refresh: false,
                       onVideoTapped: (Video video, int index) {
@@ -351,7 +356,7 @@ class ProjectMediaListMobileState extends State<ProjectMediaListMobile>
                         _navigateToPlayVideo();
                       },
                     ),
-                    ProjectAudios(
+                    ProjectAudiosTablet(
                       project: widget.project,
                       refresh: false,
                       onAudioTapped: (Audio audio) {

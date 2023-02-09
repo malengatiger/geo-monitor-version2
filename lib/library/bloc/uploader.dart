@@ -35,9 +35,9 @@ class Uploader {
 
   bool busy = false;
   Random rand = Random(DateTime.now().millisecondsSinceEpoch);
-  final photoStorageName = 'geoPhotos';
-  final videoStorageName = 'geoVideos';
-  final audioStorageName = 'geoAudios';
+  final photoStorageName = 'geoPhotos3';
+  final videoStorageName = 'geoVideos3';
+  final audioStorageName = 'geoAudios3';
 
   AudioPlayer audioPlayer = AudioPlayer();
   ur.User? user;
@@ -93,13 +93,18 @@ class Uploader {
     user = await prefsOGx.getUser();
     if (user == null) return;
     Timer.periodic(duration, (timer) async {
-      pp('\n\n$mm ......... Timer tick:  🍎🍎🍎🍎🍎🍎🍎 ${timer.tick} 🍎 at: '
+      pp('\n$mm ......... Timer tick: 🍎🍎🍎🍎🍎🍎🍎 ${timer.tick} 🍎 at: '
           '${DateTime.now().toIso8601String()}');
 
-      pp('$mm photos uploaded so far: ${photosUploaded.length}');
-      pp('$mm videos uploaded so far: ${videosUploaded.length}');
-      pp('$mm audios uploaded so far: ${audiosUploaded.length}');
-
+      if (photosUploaded.isNotEmpty) {
+        pp('$mm photos uploaded so far: ${photosUploaded.length}');
+      }
+      if (videosUploaded.isNotEmpty) {
+        pp('$mm videos uploaded so far: ${videosUploaded.length}');
+      }
+      if (audiosUploaded.isNotEmpty) {
+        pp('$mm audios uploaded so far: ${audiosUploaded.length}');
+      }
       await _uploadPhotos();
       await _uploadAudios();
       await _uploadVideos();

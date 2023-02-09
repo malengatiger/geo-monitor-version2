@@ -95,7 +95,6 @@ class ProjectDashboardMobileState extends State<ProjectDashboardMobile>
     }
     _subscribeToConnectivity();
     _subscribeToGeofenceStream();
-    _buildGeofences();
     _startTimer();
   }
 
@@ -157,12 +156,6 @@ class ProjectDashboardMobileState extends State<ProjectDashboardMobile>
         _listenToMonitorStreams();
         break;
     }
-  }
-
-  void _buildGeofences() async {
-    pp('\n$mm _buildGeofences starting ........................');
-    await theGreatGeofencer.buildGeofences();
-    pp('$mm _buildGeofences should be done and dusted ....');
   }
 
   late StreamSubscription<bool> connectionSubscription;
@@ -407,10 +400,10 @@ class ProjectDashboardMobileState extends State<ProjectDashboardMobile>
           color: Colors.pink,
         ),
         label: 'My Work'));
-    items.add( BottomNavigationBarItem(
+    items.add( const BottomNavigationBarItem(
         icon: Icon(
           Icons.send,
-          color: Theme.of(context).primaryColor,
+          color: Colors.blue,
         ),
         label: 'Send Message'));
   }

@@ -20,6 +20,7 @@ import 'library/bloc/theme_bloc.dart';
 import 'library/data/country.dart';
 import 'library/emojis.dart';
 import 'library/functions.dart';
+import 'library/geofence/geofencer_two.dart';
 import 'library/hive_util.dart';
 import 'ui/dashboard/dashboard_main.dart';
 import 'ui/intro/intro_main.dart';
@@ -50,7 +51,6 @@ void main() async {
     DeviceOrientation.portraitDown,
   ]);
 
-  await _initializeGeoMonitor();
   runApp(const GeoMonitorApp());
 }
  const xx = '🎽🎽🎽🎽🎽🎽initializeGeoMonitor: ';
@@ -90,12 +90,21 @@ Future<void> _initializeGeoMonitor() async {
 
   await AppAuth.listenToFirebaseAuthentication();
 
+  _buildGeofences();
+
   if (settings != null) {
     pp('\n\n$xx ${E.heartGreen}${E.heartGreen}}${E
         .heartGreen} _initializeGeoMonitor: App Settings are 🍎${settings.toJson()}🍎\n\n');
   }
 
 }
+
+void _buildGeofences() async {
+  pp('\n$xx _buildGeofences starting ........................');
+  theGreatGeofencer.buildGeofences();
+  pp('$xx _buildGeofences should be done and dusted ....');
+}
+
 
 Future<void> signOutForcedForTesting() async {
   await fb.FirebaseAuth.instance.signOut();
@@ -152,9 +161,23 @@ class GeoMonitorApp extends StatelessWidget {
   }
 }
 
-class SplashWidget extends StatelessWidget {
+class SplashWidget extends StatefulWidget {
   const SplashWidget({Key? key}) : super(key: key);
 
+  @override
+  State<SplashWidget> createState() => _SplashWidgetState();
+}
+
+class _SplashWidgetState extends State<SplashWidget> {
+
+  @override
+  void initState() {
+    super.initState();
+    _performSetup();
+  }
+  void _performSetup() async {
+    _initializeGeoMonitor();
+  }
   @override
   Widget build(BuildContext context) {
     return Padding(

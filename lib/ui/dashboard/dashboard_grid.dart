@@ -139,37 +139,6 @@ class _DashboardGridState extends State<DashboardGrid>
     });
   }
 
-  // void _setAnimationControllers() {
-  //   _projectAnimationController = AnimationController(
-  //       duration: Duration(milliseconds: dur),
-  //       reverseDuration: Duration(milliseconds: dur),
-  //       vsync: this);
-  //   _audioAnimationController = AnimationController(
-  //       duration: Duration(milliseconds: dur),
-  //       reverseDuration: Duration(milliseconds: dur),
-  //       vsync: this);
-  //   _userAnimationController = AnimationController(
-  //       duration: Duration(milliseconds: dur),
-  //       reverseDuration: Duration(milliseconds: dur),
-  //       vsync: this);
-  //   _photoAnimationController = AnimationController(
-  //       duration: Duration(milliseconds: dur),
-  //       reverseDuration: Duration(milliseconds: dur),
-  //       vsync: this);
-  //   _videoAnimationController = AnimationController(
-  //       duration: Duration(milliseconds: dur),
-  //       reverseDuration: Duration(milliseconds: dur),
-  //       vsync: this);
-  //   _polygonAnimationController = AnimationController(
-  //       duration: Duration(milliseconds: dur),
-  //       reverseDuration: Duration(milliseconds: dur),
-  //       vsync: this);
-  //   _positionAnimationController = AnimationController(
-  //       duration: Duration(milliseconds: dur),
-  //       reverseDuration: Duration(milliseconds: dur),
-  //       vsync: this);
-  // }
-
   void _listenToOrgStreams() async {
     projectSubscription = organizationBloc.projectStream.listen((event) {
       _projects = event;
@@ -246,7 +215,7 @@ class _DashboardGridState extends State<DashboardGrid>
   void _listenForFCM() async {
     var android = UniversalPlatform.isAndroid;
     var ios = UniversalPlatform.isIOS;
-    pp('$mm 🍎 🍎 🍎 🍎 FCM should be initialized!!  ... 🍎 🍎');
+    pp('$mm 🍎 🍎 🍎 🍎 _listenForFCM: FCM should be initialized!!  ... 🍎 🍎');
     if (android || ios) {
       pp('$mm 🍎 🍎 _listen to FCM message streams ... 🍎 🍎');
       projectSubscriptionFCM =

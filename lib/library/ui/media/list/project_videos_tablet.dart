@@ -12,22 +12,22 @@ import '../../../data/video.dart';
 import '../../../functions.dart';
 
 
-class ProjectVideos extends StatefulWidget {
+class ProjectVideosTablet extends StatefulWidget {
   final Project project;
   final bool refresh;
   final Function(Video, int) onVideoTapped;
 
-  const ProjectVideos(
+  const ProjectVideosTablet(
       {super.key,
       required this.project,
       required this.refresh,
       required this.onVideoTapped});
 
   @override
-  State<ProjectVideos> createState() => ProjectVideosState();
+  State<ProjectVideosTablet> createState() => ProjectVideosTabletState();
 }
 
-class ProjectVideosState extends State<ProjectVideos> {
+class ProjectVideosTabletState extends State<ProjectVideosTablet> {
   var videos = <Video>[];
   bool loading = false;
   late StreamSubscription<Video> videoStreamSubscriptionFCM;
@@ -100,11 +100,7 @@ class ProjectVideosState extends State<ProjectVideos> {
                 // padding: const EdgeInsets.all(12.0),
                 badgeContent: Text(
                   '${videos.length}',
-                  style: GoogleFonts.lato(
-                      textStyle: Theme.of(context).textTheme.bodySmall,
-                      fontWeight: FontWeight.normal,
-                      color: Colors.white,
-                      fontSize: 10),
+                  style: myTextStyleMedium(context),
                 ),
                 // badgeColor: Colors.black,
                 // elevation: 16,
@@ -112,7 +108,7 @@ class ProjectVideosState extends State<ProjectVideos> {
                     gridDelegate:
                         const SliverGridDelegateWithFixedCrossAxisCount(
                             crossAxisSpacing: 1,
-                            crossAxisCount: 2,
+                            crossAxisCount: 5,
                             mainAxisSpacing: 1),
                     itemCount: videos.length,
                     itemBuilder: (context, index) {
