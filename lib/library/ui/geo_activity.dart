@@ -6,6 +6,8 @@ import 'package:flutter/scheduler.dart';
 import 'package:geo_monitor/library/data/activity_model.dart';
 import 'package:geo_monitor/library/data/activity_type_enum.dart';
 import 'package:geo_monitor/library/hive_util.dart';
+import 'package:geo_monitor/library/ui/maps/photo_map_tablet.dart';
+import 'package:page_transition/page_transition.dart';
 import 'package:photo_view/photo_view.dart';
 import 'package:responsive_builder/responsive_builder.dart';
 import 'package:universal_platform/universal_platform.dart';
@@ -20,6 +22,8 @@ import '../data/settings_model.dart';
 import '../data/user.dart';
 import '../data/video.dart';
 import '../functions.dart';
+import 'camera/chewie_video_player.dart';
+import 'maps/project_map_main.dart';
 
 class GeoActivity extends StatefulWidget {
   const GeoActivity({
@@ -120,6 +124,32 @@ class GeoActivityState extends State<GeoActivity>
   Video? video;
   Audio? audio;
 
+  void _navigateToPlayVideo() {
+    pp('... play audio from internets');
+    // Navigator.push(
+    //     context,
+    //     PageTransition(
+    //         type: PageTransitionType.leftToRightWithFade,
+    //         alignment: Alignment.topLeft,
+    //         duration: const Duration(milliseconds: 1000),
+    //         child: ChewieVideoPlayer(project: widget.project, videoIndex: videoIndex,)));
+  }
+  void _navigateToPhotoMap() {
+    pp('$mm _navigateToPhotoMap ...');
+
+    if (mounted) {
+      Navigator.push(
+          context,
+          PageTransition(
+              type: PageTransitionType.scale,
+              alignment: Alignment.topLeft,
+              duration: const Duration(milliseconds: 1000),
+              child: PhotoMapTablet(
+                photo: photo!,
+              )));
+    }
+  }
+
   @override
   void dispose() {
     _controller.dispose();
@@ -185,31 +215,99 @@ class GeoActivityState extends State<GeoActivity>
         ),
         _showPhoto
             ? Positioned(
-               left: 0, top: 60,
+                left: 0,
+                top: 60,
                 child: SizedBox(
-                width: 400,
-                height: 600,
-                // color: Theme.of(context).primaryColor,
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: GestureDetector(
-                    onTap: (){
-                      setState(() {
-                        _showPhoto = false;
-                      });
-                    },
-                    child: Card(
-                      shape: getRoundedBorder(radius: 16),
-                      elevation: 8,
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 28.0, vertical: 16.0),
-                        child: InteractiveViewer(
-                            child: CachedNetworkImage(imageUrl: photo!.url!)),
+                  width: 400,
+                  height: 600,
+                  // color: Theme.of(context).primaryColor,
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: GestureDetector(
+                      onTap: () {
+                        setState(() {
+                          _showPhoto = false;
+                        });
+                      },
+                      child: Card(
+                        shape: getRoundedBorder(radius: 16),
+                        elevation: 8,
+                        child: Column(
+                          children: [
+                            const SizedBox(
+                              height: 12,
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                              child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Text(
+                                    '${photo!.projectName}',
+                                    style: myTextStyleLarge(context),
+                                  ),
+                                  IconButton(onPressed: (){
+                                    pp('$mm .... put photo on a map!');
+                                    _navigateToPhotoMap();
+
+                                  }, icon:  Icon(Icons.location_on,
+                                    color: Theme.of(context).primaryColor,
+                                    size: 24,)),
+                                ],
+                              ),
+                            ),
+                            const SizedBox(
+                              height: 12,
+                            ),
+                            Text(
+                              '${photo!.userName}',
+                              style: myTextStyleSmallBold(context),
+                            ),
+                            const SizedBox(
+                              height: 4,
+                            ),
+                            Text(
+                              getFormattedDateShortWithTime(
+                                  photo!.created!, context),
+                              style: myTextStyleTiny(context),
+                            ),
+                            const SizedBox(
+                              height: 12,
+                            ),
+                            Expanded(
+                              child: Padding(
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 2.0, vertical: 2.0),
+                                child: InteractiveViewer(
+                                    child: CachedNetworkImage(
+                                        fit: BoxFit.cover,
+                                        progressIndicatorBuilder: (context, url,
+                                                downloadProgress) =>
+                                            Center(
+                                                child: SizedBox(
+                                                    width: 24,
+                                                    height: 24,
+                                                    child: CircularProgressIndicator(
+                                                        backgroundColor:
+                                                            Theme.of(context)
+                                                                .primaryColor,
+                                                        value: downloadProgress
+                                                            .progress))),
+                                        errorWidget: (context, url, error) =>
+                                            const Icon(Icons.error),
+                                        fadeInDuration:
+                                            const Duration(milliseconds: 1500),
+                                        fadeInCurve: Curves.easeInOutCirc,
+                                        placeholderFadeInDuration:
+                                            const Duration(milliseconds: 1500),
+                                        imageUrl: photo!.url!)),
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                   ),
-                ),
-              ))
+                ))
             : const SizedBox(),
         _showVideo
             ? Positioned(
@@ -396,8 +494,12 @@ class _ActivityListState extends State<ActivityList> {
         child: Column(
           children: [
             Row(
-              mainAxisAlignment: MainAxisAlignment.end,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
+                Padding(
+                  padding: const EdgeInsets.only(left:28.0),
+                  child: Text('Activity Stream', style: myTextStyleMediumBold(context),),
+                ),
                 TextButton(
                     onPressed: () {
                       _scrollToBottom();

@@ -9,17 +9,16 @@ import 'package:page_transition/page_transition.dart';
 import '../../library/api/prefs_og.dart';
 import '../../library/bloc/downloader.dart';
 import '../../library/bloc/uploader.dart';
+import '../../library/data/data_bag.dart';
 import '../../library/data/project.dart';
 import '../../library/data/user.dart';
 import '../../library/functions.dart';
 import '../../library/generic_functions.dart';
+import '../../library/ui/maps/project_map_main.dart';
 import '../../library/ui/maps/project_map_mobile.dart';
 import '../../library/ui/media/list/project_media_list_mobile.dart';
-import '../../library/ui/media/user_media_list/user_media_list_mobile.dart';
 import '../../library/ui/project_list/project_chooser.dart';
 import '../../library/ui/project_list/project_list_main.dart';
-import '../../library/ui/settings/settings_form.dart';
-import '../../library/ui/settings/settings_mobile.dart';
 import '../../library/users/full_user_photo.dart';
 import '../../library/users/list/user_list_main.dart';
 import '../chat/chat_page.dart';
@@ -38,6 +37,7 @@ class _DashboardTabletLandscapeState extends State<DashboardTabletLandscape> {
   final mm = '🍎🍎🍎🍎DashboardTabletLandscape: ';
   var users = <User>[];
   User? user;
+  DataBag? dataBag;
   @override
   void initState() {
     super.initState();
@@ -53,7 +53,7 @@ class _DashboardTabletLandscapeState extends State<DashboardTabletLandscape> {
     });
     try {
       user = await prefsOGx.getUser();
-      users = await organizationBloc.getUsers(organizationId: user!.organizationId!, forceRefresh: forceRefresh);
+      dataBag = await organizationBloc.getOrganizationData(organizationId: user!.organizationId!, forceRefresh: forceRefresh);
     } catch (e) {
       pp(e);
       if (mounted) {
@@ -99,20 +99,6 @@ class _DashboardTabletLandscapeState extends State<DashboardTabletLandscape> {
             child: const ChatPage()));
   }
 
-  // void _navigateToUserMediaList() async {
-  //   pp('$mm _navigateToUserMediaList ...');
-  //
-  //   if (mounted) {
-  //     Navigator.push(
-  //         context,
-  //         PageTransition(
-  //             type: PageTransitionType.scale,
-  //             alignment: Alignment.topLeft,
-  //             duration: const Duration(seconds: 1),
-  //             child: UserMediaListMobile(user: user!)));
-  //   }
-  // }
-
   void _navigateToIntro() {
     pp('$mm .................. _navigateToIntro to Intro ....');
     if (mounted) {
@@ -125,7 +111,6 @@ class _DashboardTabletLandscapeState extends State<DashboardTabletLandscape> {
               child: const IntroMain()));
     }
   }
-
 
   Future<void> _navigateToFullUserPhoto() async {
     pp('$mm .................. _navigateToFullUserPhoto  ....');
@@ -186,13 +171,17 @@ class _DashboardTabletLandscapeState extends State<DashboardTabletLandscape> {
   void _navigateToProjectMap(Project project) {
     pp('$mm _navigateToProjectMap ...');
 
-    Navigator.push(
-        context,
-        PageTransition(
-            type: PageTransitionType.scale,
-            alignment: Alignment.topLeft,
-            duration: const Duration(seconds: 1),
-            child: ProjectMapMobile(project: project)));
+    if (mounted) {
+      Navigator.push(
+          context,
+          PageTransition(
+              type: PageTransitionType.scale,
+              alignment: Alignment.topLeft,
+              duration: const Duration(milliseconds: 1000),
+              child: ProjectMapMain(
+                project: project,
+              )));
+    }
   }
 
   void _navigateToDailyForecast() {
@@ -310,6 +299,7 @@ class _DashboardTabletLandscapeState extends State<DashboardTabletLandscape> {
               color: Theme.of(context).primaryColor,
             ),
             onPressed: () {
+              pp('$mm =======================> requesting refresh .......');
               _getData(true);
             },
           )
@@ -321,7 +311,8 @@ class _DashboardTabletLandscapeState extends State<DashboardTabletLandscape> {
             children: [
               SizedBox(
                 width: size.width/2,
-                child: DashboardGrid(
+                child: dataBag == null? const SizedBox() : DashboardGrid(
+                  dataBag: dataBag!,
                   topPadding: 24,
                   onTypeTapped: (type) {
                     switch (type) {

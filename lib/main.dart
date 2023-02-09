@@ -3,8 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:geo_monitor/library/auth/app_auth.dart';
-import 'package:geo_monitor/library/users/list/user_list_main.dart';
-import 'package:geo_monitor/ui/auth/auth_signin_main.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:firebase_auth/firebase_auth.dart' as fb;
 import 'package:firebase_core/firebase_core.dart';
@@ -24,7 +22,6 @@ import 'library/geofence/geofencer_two.dart';
 import 'library/hive_util.dart';
 import 'ui/dashboard/dashboard_main.dart';
 import 'ui/intro/intro_main.dart';
-import 'ui/intro/intro_page_viewer_portrait.dart';
 
 int themeIndex = 0;
 late FirebaseApp firebaseApp;
@@ -83,7 +80,7 @@ Future<void> _initializeGeoMonitor() async {
   //pp('THEME: user up top is: ${user!.name}');
   await dotenv.load(fileName: ".env");
   pp('$xx $heartBlue DotEnv has been loaded');
-  await Hive.initFlutter('data005');
+  await Hive.initFlutter(hiveName);
   await cacheManager.initialize(forceInitialization: false);
   pp('$xx ${E.heartGreen}${E.heartGreen}}${E.heartGreen} '
       '_initializeGeoMonitor: Hive initialized and boxCollection set up');

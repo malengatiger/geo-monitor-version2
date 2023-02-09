@@ -82,6 +82,7 @@ class DashboardTabletPortraitState extends State<DashboardTabletPortrait>
   static const mm = '🎽🎽🎽🎽🎽🎽 DashboardTabletPortrait: 🎽';
   bool networkAvailable = false;
   final dur = 300;
+  DataBag? dataBag;
 
   @override
   void initState() {
@@ -102,9 +103,9 @@ class DashboardTabletPortraitState extends State<DashboardTabletPortrait>
     });
     try {
       user = await prefsOGx.getUser();
-      var bag = await organizationBloc.getOrganizationData(organizationId: user!.organizationId!, forceRefresh: forceRefresh);
-      _users = bag.users!;
-      _photos = bag.photos!;
+      dataBag = await organizationBloc.getOrganizationData(organizationId: user!.organizationId!, forceRefresh: forceRefresh);
+      _users = dataBag!.users!;
+      _photos = dataBag!.photos!;
     } catch (e) {
       pp(e);
       if (mounted) {
@@ -534,7 +535,8 @@ class DashboardTabletPortraitState extends State<DashboardTabletPortrait>
             )
           : Stack(
               children: [
-                DashboardGrid(
+                dataBag == null? const SizedBox(): DashboardGrid(
+                    dataBag: dataBag!,
                     topPadding: 72,
                     onTypeTapped: (type) {
                   switch (type) {

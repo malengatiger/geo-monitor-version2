@@ -85,11 +85,9 @@ class ProjectMapMainState extends State<ProjectMapMain> {
             ),
             tablet: ProjectMapTablet(
               project: widget.project,
-              projectPositions: _positions,
             ),
-            desktop: ProjectMapDesktop(
+            desktop: ProjectMapTablet(
               project: widget.project,
-              projectPositions: _positions,
             ),
           );
   }

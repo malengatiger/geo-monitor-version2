@@ -86,11 +86,7 @@ class DashboardPortraitState extends State<DashboardPortrait>
     _listenForFCM();
     _getAuthenticationStatus();
 
-    if (widget.user != null) {
-      _refreshData(true);
-    } else {
-      _refreshData(false);
-    }
+    _refreshData(false);
     _subscribeToConnectivity();
     _subscribeToGeofenceStream();;
     _startTimer();
@@ -826,7 +822,7 @@ class DashboardPortraitState extends State<DashboardPortrait>
                                 width: 8,
                               ),
                               user!.thumbnailUrl == null
-                                  ? const SizedBox()
+                                  ? const CircleAvatar()
                                   : GestureDetector(
                                       onTap: _navigateToFullUserPhoto,
                                       child: CircleAvatar(

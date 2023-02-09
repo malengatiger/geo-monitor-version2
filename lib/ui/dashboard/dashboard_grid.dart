@@ -11,6 +11,7 @@ import '../../library/bloc/fcm_bloc.dart';
 import '../../library/bloc/organization_bloc.dart';
 import '../../library/bloc/theme_bloc.dart';
 import '../../library/data/audio.dart';
+import '../../library/data/data_bag.dart';
 import '../../library/data/field_monitor_schedule.dart';
 import '../../library/data/photo.dart';
 import '../../library/data/project.dart';
@@ -24,11 +25,16 @@ import 'dashboard_tablet_portrait.dart';
 
 class DashboardGrid extends StatefulWidget {
   const DashboardGrid(
-      {Key? key, required this.onTypeTapped, this.totalHeight, this.topPadding})
+      {Key? key,
+      required this.onTypeTapped,
+      this.totalHeight,
+      this.topPadding,
+       required this.dataBag})
       : super(key: key);
   final Function(int) onTypeTapped;
   final double? totalHeight;
   final double? topPadding;
+  final DataBag dataBag;
 
   @override
   State<DashboardGrid> createState() => _DashboardGridState();
@@ -79,30 +85,27 @@ class _DashboardGridState extends State<DashboardGrid>
 
   @override
   void initState() {
-    //_setAnimationControllers();
     super.initState();
-    _setupData(false);
+    pp('\n\n$mm we are in initState ... ');
+    _setupData();
     _listenForFCM();
     _listenToOrgStreams();
   }
 
-  void _setupData(bool forceRefresh) async {
+  void _setupData() async {
     user = await prefsOGx.getUser();
-    pp('$mm ..... getting org data ...');
     setState(() {
       busy = true;
     });
     try {
-      var dataBag = await organizationBloc.getOrganizationData(
-          organizationId: user!.organizationId!, forceRefresh: forceRefresh);
-      _projects = dataBag.projects!;
-      _users = dataBag.users!;
-      _photos = dataBag.photos!;
-      _videos = dataBag.videos!;
-      _audios = dataBag.audios!;
-      _projectPolygons = dataBag.projectPolygons!;
-      _projectPositions = dataBag.projectPositions!;
-      _schedules = dataBag.fieldMonitorSchedules!;
+      _projects = widget.dataBag.projects!;
+      _users = widget.dataBag.users!;
+      _photos = widget.dataBag.photos!;
+      _videos = widget.dataBag.videos!;
+      _audios = widget.dataBag.audios!;
+      _projectPolygons = widget.dataBag.projectPolygons!;
+      _projectPositions = widget.dataBag.projectPositions!;
+      _schedules = widget.dataBag.fieldMonitorSchedules!;
 
       setState(() {});
       // _projectAnimationController.reset();

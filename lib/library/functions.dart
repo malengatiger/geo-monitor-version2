@@ -105,6 +105,12 @@ TextStyle myTextStyleSmall(BuildContext context) {
     fontWeight: FontWeight.normal,
   );
 }
+TextStyle myTextStyleSmallBold(BuildContext context) {
+  return GoogleFonts.lato(
+    textStyle: Theme.of(context).textTheme.bodySmall,
+    fontWeight: FontWeight.w900,
+  );
+}
 TextStyle myTextStyleSmallPrimaryColor(BuildContext context) {
   return GoogleFonts.lato(
     textStyle: Theme.of(context).textTheme.bodySmall,

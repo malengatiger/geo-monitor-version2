@@ -165,11 +165,10 @@ class ProjectListTabletLandscapeState extends State<ProjectListTabletLandscape>
 
   void _navigateToProjectMap(Project p) async {
     pp('.................. _navigateToProjectMap: ');
-
-    var positions = await projectBloc.getProjectPositions(
-        projectId: p.projectId!, forceRefresh: false);
-    var polygons = await projectBloc.getProjectPolygons(
-        projectId: p.projectId!, forceRefresh: false);
+    // var positions = await projectBloc.getProjectPositions(
+    //     projectId: p.projectId!, forceRefresh: false);
+    // var polygons = await projectBloc.getProjectPolygons(
+    //     projectId: p.projectId!, forceRefresh: false);
     if (mounted) {
       Navigator.push(
           context,
