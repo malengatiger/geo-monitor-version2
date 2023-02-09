@@ -11,6 +11,7 @@ import 'package:page_transition/page_transition.dart';
 import 'package:photo_view/photo_view.dart';
 import 'package:responsive_builder/responsive_builder.dart';
 import 'package:universal_platform/universal_platform.dart';
+import 'package:badges/badges.dart' as bd;
 
 import '../bloc/fcm_bloc.dart';
 import '../data/audio.dart';
@@ -134,6 +135,7 @@ class GeoActivityState extends State<GeoActivity>
     //         duration: const Duration(milliseconds: 1000),
     //         child: ChewieVideoPlayer(project: widget.project, videoIndex: videoIndex,)));
   }
+
   void _navigateToPhotoMap() {
     pp('$mm _navigateToPhotoMap ...');
 
@@ -238,20 +240,26 @@ class GeoActivityState extends State<GeoActivity>
                               height: 12,
                             ),
                             Padding(
-                              padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                              child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 20.0),
+                              child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
                                 children: [
                                   Text(
                                     '${photo!.projectName}',
                                     style: myTextStyleLarge(context),
                                   ),
-                                  IconButton(onPressed: (){
-                                    pp('$mm .... put photo on a map!');
-                                    _navigateToPhotoMap();
-
-                                  }, icon:  Icon(Icons.location_on,
-                                    color: Theme.of(context).primaryColor,
-                                    size: 24,)),
+                                  IconButton(
+                                      onPressed: () {
+                                        pp('$mm .... put photo on a map!');
+                                        _navigateToPhotoMap();
+                                      },
+                                      icon: Icon(
+                                        Icons.location_on,
+                                        color: Theme.of(context).primaryColor,
+                                        size: 24,
+                                      )),
                                 ],
                               ),
                             ),
@@ -497,8 +505,11 @@ class _ActivityListState extends State<ActivityList> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Padding(
-                  padding: const EdgeInsets.only(left:28.0),
-                  child: Text('Activity Stream', style: myTextStyleMediumBold(context),),
+                  padding: const EdgeInsets.only(left: 28.0),
+                  child: Text(
+                    'Activity Stream',
+                    style: myTextStyleMediumBold(context),
+                  ),
                 ),
                 TextButton(
                     onPressed: () {
@@ -514,17 +525,24 @@ class _ActivityListState extends State<ActivityList> {
               height: 0,
             ),
             Expanded(
-              child: ListView.builder(
-                  itemCount: widget.models.length,
-                  controller: listScrollController,
-                  itemBuilder: (_, index) {
-                    var act = widget.models.elementAt(index);
-                    return GestureDetector(
-                        onTap: () {
-                          _handleTappedActivity(act);
-                        },
-                        child: ActivityCard(activityModel: act));
-                  }),
+              child: bd.Badge(
+                badgeContent: Text('${widget.models.length}', style: myTextStyleSmall(context),),
+                badgeStyle: const bd.BadgeStyle(
+                    elevation: 8,
+                    badgeColor: Colors.pink,
+                    padding: EdgeInsets.all(8.0)),
+                child: ListView.builder(
+                    itemCount: widget.models.length,
+                    controller: listScrollController,
+                    itemBuilder: (_, index) {
+                      var act = widget.models.elementAt(index);
+                      return GestureDetector(
+                          onTap: () {
+                            _handleTappedActivity(act);
+                          },
+                          child: ActivityCard(activityModel: act));
+                    }),
+              ),
             ),
           ],
         ),

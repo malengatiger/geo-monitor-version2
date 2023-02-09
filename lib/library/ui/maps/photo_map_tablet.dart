@@ -47,7 +47,6 @@ class PhotoMapTabletState extends State<PhotoMapTablet>
   Map<MarkerId, Marker> markers = <MarkerId, Marker>{};
   var random = Random(DateTime.now().millisecondsSinceEpoch);
   final _key = GlobalKey<ScaffoldState>();
-  bool _showNewPositionUI = false;
   bool busy = false;
   User? user;
   static const CameraPosition _kGooglePlex = CameraPosition(
