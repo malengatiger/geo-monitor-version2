@@ -1,19 +1,13 @@
-import 'package:flutter/material.dart';
-
 import 'dart:async';
 
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:fluttertoast/fluttertoast.dart';
+import 'package:flutter/material.dart';
 import 'package:geo_monitor/library/api/prefs_og.dart';
 import 'package:geo_monitor/library/data/country.dart';
 import 'package:geo_monitor/library/data/organization.dart';
 import 'package:geo_monitor/library/data/organization_registration_bag.dart';
 import 'package:geo_monitor/library/data/settings_model.dart';
-import 'package:geo_monitor/library/hive_util.dart';
 import 'package:geo_monitor/library/location/loc_bloc.dart';
-import 'package:geo_monitor/library/users/edit/user_edit_main.dart';
-import 'package:geo_monitor/ui/intro/intro_page_one_landscape.dart';
-import 'package:geo_monitor/ui/intro/intro_page_viewer_portrait.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
 import 'package:uuid/uuid.dart';
 
@@ -24,7 +18,9 @@ import '../../library/generic_functions.dart';
 import '../../library/users/edit/country_chooser.dart';
 
 class AuthEmailRegistrationPortrait extends StatefulWidget {
-  const AuthEmailRegistrationPortrait({Key? key, required this.amInsideLandscape}) : super(key: key);
+  const AuthEmailRegistrationPortrait(
+      {Key? key, required this.amInsideLandscape})
+      : super(key: key);
 
   final bool amInsideLandscape;
   @override
@@ -147,7 +143,8 @@ class AuthEmailRegistrationPortraitState
     _popOut();
   }
 
-  Future<void> _doTheRegistration(UserCredential userCred, String password) async {
+  Future<void> _doTheRegistration(
+      UserCredential userCred, String password) async {
     var org = Organization(
         name: orgNameController.value.text,
         countryId: country!.countryId,
@@ -181,7 +178,8 @@ class AuthEmailRegistrationPortraitState
         settingsId: const Uuid().v4(),
         created: DateTime.now().toUtc().toIso8601String(),
         organizationId: org.organizationId,
-        projectId: null));
+        projectId: null,
+        activityStreamHours: 12));
 
     await prefsOGx.saveSettings(mSettings);
 
@@ -200,14 +198,16 @@ class AuthEmailRegistrationPortraitState
 
       var resultBag = await DataAPI.registerOrganization(bag);
       await firebaseAuth.signOut();
-      var cred = await firebaseAuth.signInWithEmailAndPassword(email: user!.email!, password: password);
+      var cred = await firebaseAuth.signInWithEmailAndPassword(
+          email: user!.email!, password: password);
       pp('$mm cred after signing in again after auth update: 🍎 $cred 🍎');
       await prefsOGx.getUser();
 
       pp('\n\n$mm Organization registered: 🌍🌍🌍🌍 🍎 resultBag: ${resultBag.toJson()} 🌍🌍🌍🌍\n\n');
     } else {
       if (mounted) {
-        showToast(message: 'Unable to obtain device location', context: context);
+        showToast(
+            message: 'Unable to obtain device location', context: context);
       }
     }
   }
@@ -371,7 +371,8 @@ class AuthEmailRegistrationPortraitState
                                             controller: phoneController,
                                             keyboardType: TextInputType.phone,
                                             decoration: InputDecoration(
-                                                hintText: 'Enter CellPhone Number',
+                                                hintText:
+                                                    'Enter CellPhone Number',
                                                 enabledBorder:
                                                     OutlineInputBorder(
                                                   borderSide: BorderSide(
@@ -379,8 +380,8 @@ class AuthEmailRegistrationPortraitState
                                                       color: Theme.of(context)
                                                           .primaryColor), //<-- SEE HERE
                                                 ),
-                                                label:
-                                                    const Text('CellPhone Number')),
+                                                label: const Text(
+                                                    'CellPhone Number')),
                                             validator: (value) {
                                               if (value == null ||
                                                   value.isEmpty) {

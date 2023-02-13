@@ -7,17 +7,16 @@ import 'package:flutter/services.dart';
 import 'package:geo_monitor/library/data/project_polygon.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:google_maps_utils/google_maps_utils.dart';
+import 'package:image/image.dart' as img;
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:intl/intl.dart';
-import 'package:google_maps_utils/google_maps_utils.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:video_thumbnail/video_thumbnail.dart' as vt;
 
 import 'data/position.dart';
 import 'data/project_position.dart';
 import 'location/loc_bloc.dart';
-import 'package:video_thumbnail/video_thumbnail.dart' as vt;
-import 'package:image/image.dart' as img;
-
 
 List<String> logs = [];
 bool busy = false;
@@ -79,14 +78,15 @@ Color getRandomPastelColor() {
   _colors.add(Colors.brown.shade50);
   _colors.add(Colors.cyan.shade50);
 
-  _rand =
-      Random(DateTime.now().millisecondsSinceEpoch * _rand.nextInt(10000));
+  _rand = Random(DateTime.now().millisecondsSinceEpoch * _rand.nextInt(10000));
   int index = _rand.nextInt(_colors.length - 1);
   return _colors.elementAt(index);
 }
 
-Future<bool>  isLocationValid({required ProjectPosition projectPosition, required double validDistance}) async {
- pp('😡😡😡😡😡😡 checking if user is within monitoring range of project: ${projectPosition.projectName} 😡😡');
+Future<bool> isLocationValid(
+    {required ProjectPosition projectPosition,
+    required double validDistance}) async {
+  pp('😡😡😡😡😡😡 checking if user is within monitoring range of project: ${projectPosition.projectName} 😡😡');
   var distance = await locationBlocOG.getDistanceFromCurrentPosition(
       latitude: projectPosition.position!.coordinates[1],
       longitude: projectPosition.position!.coordinates[0]);
@@ -95,7 +95,7 @@ Future<bool>  isLocationValid({required ProjectPosition projectPosition, require
     pp('😡😡😡😡😡😡 user is cool! - within range ${projectPosition.projectName}');
     return true;
   }
- pp('😡😡😡😡😡😡 user is NOT cool! - NOT within range ${projectPosition.projectName}');
+  pp('😡😡😡😡😡😡 user is NOT cool! - NOT within range ${projectPosition.projectName}');
   return false;
 }
 
@@ -105,103 +105,119 @@ TextStyle myTextStyleSmall(BuildContext context) {
     fontWeight: FontWeight.normal,
   );
 }
+
 TextStyle myTextStyleSmallBold(BuildContext context) {
   return GoogleFonts.lato(
     textStyle: Theme.of(context).textTheme.bodySmall,
     fontWeight: FontWeight.w900,
   );
 }
+
+TextStyle myTextStyleSmallBoldPrimaryColor(BuildContext context) {
+  return GoogleFonts.lato(
+      textStyle: Theme.of(context).textTheme.bodySmall,
+      fontWeight: FontWeight.w900,
+      color: Theme.of(context).primaryColor);
+}
+
 TextStyle myTextStyleSmallPrimaryColor(BuildContext context) {
   return GoogleFonts.lato(
-    textStyle: Theme.of(context).textTheme.bodySmall,
-    fontWeight: FontWeight.normal, color: Theme.of(context).primaryColor
-  );
+      textStyle: Theme.of(context).textTheme.bodySmall,
+      fontWeight: FontWeight.normal,
+      color: Theme.of(context).primaryColor);
 }
+
 TextStyle myTextStyleTiny(BuildContext context) {
   return GoogleFonts.lato(
     textStyle: Theme.of(context).textTheme.bodySmall,
-    fontWeight: FontWeight.normal, fontSize: 10,
+    fontWeight: FontWeight.normal,
+    fontSize: 10,
   );
 }
+
 TextStyle myTextStyleSmallBlack(BuildContext context) {
   return GoogleFonts.lato(
-    textStyle: Theme.of(context).textTheme.bodySmall,
-    fontWeight: FontWeight.normal, color: Colors.black
-  );
+      textStyle: Theme.of(context).textTheme.bodySmall,
+      fontWeight: FontWeight.normal,
+      color: Colors.black);
 }
+
 TextStyle myTextStyleMedium(BuildContext context) {
   return GoogleFonts.lato(
     textStyle: Theme.of(context).textTheme.bodyMedium,
     fontWeight: FontWeight.normal,
   );
 }
+
 TextStyle myTextStyleMediumPrimaryColor(BuildContext context) {
   return GoogleFonts.lato(
-    textStyle: Theme.of(context).textTheme.bodyMedium,
-    fontWeight: FontWeight.normal, color: Theme.of(context).primaryColor
-  );
+      textStyle: Theme.of(context).textTheme.bodyMedium,
+      fontWeight: FontWeight.normal,
+      color: Theme.of(context).primaryColor);
 }
+
 TextStyle myTextStyleMediumBold(BuildContext context) {
   return GoogleFonts.lato(
     textStyle: Theme.of(context).textTheme.bodyMedium,
     fontWeight: FontWeight.w900,
   );
 }
+
 TextStyle myTextStyleLarge(BuildContext context) {
   return GoogleFonts.lato(
-    textStyle: Theme.of(context).textTheme.bodyLarge,
-    fontWeight: FontWeight.w900, fontSize: 20
-  );
+      textStyle: Theme.of(context).textTheme.bodyLarge,
+      fontWeight: FontWeight.w900,
+      fontSize: 20);
 }
+
 TextStyle myTextStyleLargePrimaryColor(BuildContext context) {
   return GoogleFonts.lato(
-    textStyle: Theme.of(context).textTheme.bodyLarge,
-    fontWeight: FontWeight.w900, color: Theme.of(context).primaryColor
-  );
+      textStyle: Theme.of(context).textTheme.bodyLarge,
+      fontWeight: FontWeight.w900,
+      color: Theme.of(context).primaryColor);
 }
+
 TextStyle myNumberStyleSmall(BuildContext context) {
   return GoogleFonts.secularOne(
     textStyle: Theme.of(context).textTheme.bodyMedium,
     fontWeight: FontWeight.w900,
   );
 }
+
 TextStyle myNumberStyleMedium(BuildContext context) {
   return GoogleFonts.secularOne(
     textStyle: Theme.of(context).textTheme.bodyMedium,
     fontWeight: FontWeight.w900,
   );
 }
+
 TextStyle myNumberStyleLarge(BuildContext context) {
   return GoogleFonts.secularOne(
-    textStyle: Theme
-        .of(context)
-        .textTheme
-        .bodyLarge,
+    textStyle: Theme.of(context).textTheme.bodyLarge,
     fontWeight: FontWeight.w900,
   );
 }
+
 TextStyle myNumberStyleLargePrimaryColor(BuildContext context) {
   return GoogleFonts.secularOne(
-    textStyle: Theme
-        .of(context)
-        .textTheme
-        .bodyLarge, color: Theme.of(context).primaryColor,
-    fontWeight: FontWeight.w900, fontSize: 24
-  );
+      textStyle: Theme.of(context).textTheme.bodyLarge,
+      color: Theme.of(context).primaryColor,
+      fontWeight: FontWeight.w900,
+      fontSize: 24);
 }
+
 TextStyle myNumberStyleLarger(BuildContext context) {
   return GoogleFonts.secularOne(
-    textStyle: Theme.of(context).textTheme.bodyLarge,
-    fontWeight: FontWeight.w900, fontSize: 28
-  );
-
+      textStyle: Theme.of(context).textTheme.bodyLarge,
+      fontWeight: FontWeight.w900,
+      fontSize: 28);
 }
+
 TextStyle myNumberStyleLargest(BuildContext context) {
   return GoogleFonts.secularOne(
       textStyle: Theme.of(context).textTheme.headlineLarge,
-      fontWeight: FontWeight.w900, fontSize: 48
-  );
-
+      fontWeight: FontWeight.w900,
+      fontSize: 48);
 }
 
 class Styles {
@@ -592,18 +608,18 @@ class Styles {
 prettyPrint(Map map, String name) {
   pp('$name \t{\n');
 
-    map.forEach((key, val) {
-      pp('\t$key : $val ,\n');
-    });
-    pp('}\n\n');
-
+  map.forEach((key, val) {
+    pp('\t$key : $val ,\n');
+  });
+  pp('}\n\n');
 }
 
 Future<File> getImageFileFromAssets(String path) async {
   final byteData = await rootBundle.load('assets/$path');
 
   final file = File('${(await getTemporaryDirectory()).path}/$path');
-  await file.writeAsBytes(byteData.buffer.asUint8List(byteData.offsetInBytes, byteData.lengthInBytes));
+  await file.writeAsBytes(byteData.buffer
+      .asUint8List(byteData.offsetInBytes, byteData.lengthInBytes));
 
   return file;
 }
@@ -624,6 +640,7 @@ LatLngBounds boundsFromLatLngList(List<LatLng> list) {
   }
   return LatLngBounds(northeast: LatLng(x1!, y1!), southwest: LatLng(x0!, y0!));
 }
+
 Future<File> getPhotoThumbnail({required File file}) async {
   final Directory directory = await getApplicationDocumentsDirectory();
 
@@ -656,17 +673,16 @@ Future<File> getVideoThumbnail(File file) async {
     pp('🔷🔷Video thumbnail created. length: ${await thumbFile.length()} 🔷🔷🔷');
     return thumbFile;
   } catch (e) {
-      pp('ERROR: $e');
-      var m = await getImageFileFromAssets('assets/intro/small.jpg');
-      return m;
+    pp('ERROR: $e');
+    var m = await getImageFileFromAssets('assets/intro/small.jpg');
+    return m;
   }
-
 }
 
 pp(dynamic msg) {
   var time = getFormattedDateHourMinSec(DateTime.now().toString());
   if (kReleaseMode) {
-     return;
+    return;
   }
   if (kDebugMode) {
     if (msg is String) {
@@ -675,8 +691,8 @@ pp(dynamic msg) {
       print('$time ==> $msg');
     }
   }
-
 }
+
 getRoundedBorder({required double radius}) {
   return RoundedRectangleBorder(borderRadius: BorderRadius.circular(radius));
 }
@@ -824,7 +840,8 @@ int getIntDate(String date, BuildContext context) {
   }
 }
 
-String getFormattedDateHourMinute({required DateTime date, required BuildContext? context}) {
+String getFormattedDateHourMinute(
+    {required DateTime date, required BuildContext? context}) {
   initializeDateFormatting();
 
   try {
@@ -834,6 +851,25 @@ String getFormattedDateHourMinute({required DateTime date, required BuildContext
     } else {
       Locale myLocale = Localizations.localeOf(context);
       var dateFormat = DateFormat('HH:mm', myLocale.toString());
+      return dateFormat.format(date);
+    }
+  } catch (e) {
+    pp(e);
+    return 'NoDate';
+  }
+}
+
+String getFormattedDateHourMinuteSecond(
+    {required DateTime date, required BuildContext? context}) {
+  initializeDateFormatting();
+
+  try {
+    if (context == null) {
+      var dateFormat = DateFormat('HH:mm:ss');
+      return dateFormat.format(date);
+    } else {
+      Locale myLocale = Localizations.localeOf(context);
+      var dateFormat = DateFormat('HH:mm:ss', myLocale.toString());
       return dateFormat.format(date);
     }
   } catch (e) {
@@ -947,16 +983,6 @@ String getFormattedDateHourMinSec(String date) {
   }
 }
 
-String? getFormattedDateHourMinuteSecond() {
-  var format = DateFormat.Hms();
-  try {
-    DateTime d = DateTime.now();
-    return format.format(d.toUtc());
-  } catch (e) {
-    rethrow;
-  }
-}
-
 String getFormattedNumber(int number, BuildContext context) {
   Locale myLocale = Localizations.localeOf(context);
   var val = '${myLocale.languageCode}_${myLocale.countryCode!}';
@@ -977,7 +1003,7 @@ String getFormattedAmount(String amount, BuildContext context) {
   Locale myLocale = Localizations.localeOf(context);
   var val = '${myLocale.languageCode}_${myLocale.countryCode!}';
   //pp('getFormattedAmount ----------- locale is  $val');
-  final oCcy =  NumberFormat("#,##0.00", val);
+  final oCcy = NumberFormat("#,##0.00", val);
   try {
     double m = double.parse(amount);
     return oCcy.format(m);
@@ -992,7 +1018,8 @@ bool get isInDebugMode {
   return inDebugMode;
 }
 
-const lorem = 'Having a centralized platform to collect multimedia information and build video, audio, and photo timelines '
+const lorem =
+    'Having a centralized platform to collect multimedia information and build video, audio, and photo timelines '
     'can be a valuable tool for managers and executives to monitor long-running field operations. '
     'This can provide a visual representation of the progress and status of field operations and help in '
     'tracking changes over time. Timelines can also be used to identify any bottlenecks or issues that arise during field operations, allowing for quick and effective problem-solving. '
@@ -1009,7 +1036,8 @@ const lorem = 'Having a centralized platform to collect multimedia information a
     'Overall, utilizing mobile devices and cloud platforms can provide a '
     'powerful solution for monitoring and managing various initiatives in a more efficient and effective manner.';
 
-const chatGPT1 = 'Offering a monthly or annual subscription model for a cloud-based field worker collaboration and '
+const chatGPT1 =
+    'Offering a monthly or annual subscription model for a cloud-based field worker collaboration and '
     'management solution can be a cost-effective solution for clients who want to improve their monitoring capabilities. '
     'The subscription model can provide clients with access to powerful tools and features, such as real-time multimedia '
     'sharing, a centralized command post, real-time notifications, and multimedia timelines, for a relatively low monthly '
@@ -1019,19 +1047,21 @@ const chatGPT1 = 'Offering a monthly or annual subscription model for a cloud-ba
     'valuable experience and training. Overall, the subscription model can provide a cost-effective and scalable '
     'solution for clients, '
     'while also providing opportunities for young people and students to gain hands-on experience in the field.';
+
 abstract class SnackBarListener {
   onActionPressed(int action);
 }
-ProjectPolygon? getPolygonUserIsWithin({required List<ProjectPolygon> polygons,
-  required double latitude,required double longitude}) {
-  pp('🍎🍎 getPolygonUserIsWithin: location: 🍎 lat: $latitude lng: $longitude ' );
+
+ProjectPolygon? getPolygonUserIsWithin(
+    {required List<ProjectPolygon> polygons,
+    required double latitude,
+    required double longitude}) {
+  pp('🍎🍎 getPolygonUserIsWithin: location: 🍎 lat: $latitude lng: $longitude ');
 
   ProjectPolygon? polygon;
   for (var p in polygons) {
     var isWithinPolygon = checkIfLocationIsWithinPolygon(
-        positions: p.positions,
-        latitude: latitude,
-        longitude: longitude);
+        positions: p.positions, latitude: latitude, longitude: longitude);
     if (isWithinPolygon) {
       polygon = p;
     }
@@ -1046,15 +1076,15 @@ ProjectPolygon? getPolygonUserIsWithin({required List<ProjectPolygon> polygons,
   return polygon;
 }
 
-bool checkIfLocationIsWithinPolygons({required List<ProjectPolygon> polygons,
-  required double latitude,required double longitude}) {
-  pp('🍎🍎 checkIfLocationIsWithinPolygons: location: 🍎 lat: $latitude lng: $longitude ' );
+bool checkIfLocationIsWithinPolygons(
+    {required List<ProjectPolygon> polygons,
+    required double latitude,
+    required double longitude}) {
+  pp('🍎🍎 checkIfLocationIsWithinPolygons: location: 🍎 lat: $latitude lng: $longitude ');
   int positiveCount = 0;
   for (var polygon in polygons) {
     var isWithinPolygon = checkIfLocationIsWithinPolygon(
-        positions: polygon.positions,
-        latitude: latitude,
-        longitude: longitude);
+        positions: polygon.positions, latitude: latitude, longitude: longitude);
     if (isWithinPolygon) {
       positiveCount++;
     }
@@ -1071,16 +1101,20 @@ bool checkIfLocationIsWithinPolygons({required List<ProjectPolygon> polygons,
   return false;
 }
 
-bool checkIfLocationIsWithinPolygon({required List<Position> positions, required double latitude, required double longitude}) {
+bool checkIfLocationIsWithinPolygon(
+    {required List<Position> positions,
+    required double latitude,
+    required double longitude}) {
   var polygonPoints = <Point>[];
-  var point = Point(latitude,longitude);
+  var point = Point(latitude, longitude);
   for (var position in positions) {
     polygonPoints.add(Point(position.coordinates[1], position.coordinates[0]));
   }
   return _isWithinPolygon(polygonPoints: polygonPoints, point: point);
 }
 
-bool _isWithinPolygon({required List<Point> polygonPoints, required Point point}) {
+bool _isWithinPolygon(
+    {required List<Point> polygonPoints, required Point point}) {
   bool contains = PolyUtils.containsLocationPoly(point, polygonPoints);
   pp('🔵🔵🔵 isWithinPolygon: point is inside polygon?: $contains');
 

@@ -1,5 +1,5 @@
-
 import 'package:hive/hive.dart';
+
 part 'activity_type_enum.g.dart';
 
 @HiveType(typeId: 61)
@@ -32,4 +32,58 @@ enum ActivityType {
   locationResponse,
   @HiveField(13)
   kill,
+}
+
+ActivityType getActivityType(String type) {
+  switch (type) {
+    case "locationRequest":
+      return ActivityType.locationRequest;
+      break;
+    case "locationResponse":
+      return ActivityType.locationResponse;
+      break;
+    case "geofenceEventAdded":
+      return ActivityType.geofenceEventAdded;
+      break;
+    case "userAddedOrModified":
+      return ActivityType.userAddedOrModified;
+      break;
+    case "polygonAdded":
+      return ActivityType.polygonAdded;
+      break;
+    case "positionAdded":
+      return ActivityType.positionAdded;
+      break;
+    case "audioAdded":
+      return ActivityType.audioAdded;
+      break;
+    case "videoAdded":
+      return ActivityType.videoAdded;
+      break;
+    case "photoAdded":
+      return ActivityType.photoAdded;
+      break;
+    case "projectAdded":
+      return ActivityType.projectAdded;
+      break;
+    case "kill":
+      return ActivityType.kill;
+      break;
+    case "conditionAdded":
+      return ActivityType.conditionAdded;
+      break;
+    case "messageAdded":
+      return ActivityType.messageAdded;
+      break;
+    case "settingsChanged":
+      return ActivityType.settingsChanged;
+      break;
+  }
+  throw Exception('Invalid activity type enum');
+}
+
+extension ParseToString on ActivityType {
+  String toShortString() {
+    return toString().split('.').last;
+  }
 }

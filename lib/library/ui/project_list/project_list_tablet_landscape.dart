@@ -12,7 +12,6 @@ import 'package:page_transition/page_transition.dart';
 
 import '../../../ui/audio/audio_mobile.dart';
 import '../../../ui/dashboard/project_dashboard_mobile.dart';
-import '../../bloc/project_bloc.dart';
 import '../../data/position.dart';
 import '../../data/project.dart';
 import '../../data/user.dart' as mon;
@@ -21,7 +20,6 @@ import '../../functions.dart';
 import '../../generic_functions.dart';
 import '../maps/org_map_mobile.dart';
 import '../maps/project_polygon_map_mobile.dart';
-import '../media/list/project_media_list_mobile.dart';
 import '../project_location/project_location_main.dart';
 import '../schedule/project_schedules_mobile.dart';
 
@@ -76,13 +74,7 @@ class ProjectListTabletLandscapeState extends State<ProjectListTabletLandscape>
 
   void _navigateToDetail(Project? p) {
     if (user!.userType == UserType.fieldMonitor) {
-      Navigator.push(
-          context,
-          PageTransition(
-              type: PageTransitionType.scale,
-              alignment: Alignment.topLeft,
-              duration: const Duration(milliseconds: 1500),
-              child: ProjectEditMain(p)));
+      pp('$mm Field Monitors not allowed to edit or create a project');
     }
     if (user!.userType! == UserType.orgAdministrator ||
         user!.userType == UserType.orgExecutive) {
@@ -243,7 +235,10 @@ class ProjectListTabletLandscapeState extends State<ProjectListTabletLandscape>
         child: Scaffold(
       appBar: AppBar(
         centerTitle: true,
-        title: Text('Geo Projects', style: myTextStyleLarge(context),),
+        title: Text(
+          'Geo Projects',
+          style: myTextStyleLarge(context),
+        ),
         actions: [
           IconButton(
               onPressed: () {
@@ -252,7 +247,19 @@ class ProjectListTabletLandscapeState extends State<ProjectListTabletLandscape>
               icon: Icon(
                 Icons.refresh,
                 color: Theme.of(context).primaryColor,
-              ))
+              )),
+          user == null
+              ? const SizedBox()
+              : user!.userType != UserType.fieldMonitor
+                  ? IconButton(
+                      onPressed: () {
+                        _navigateToDetail(null);
+                      },
+                      icon: Icon(
+                        Icons.add,
+                        color: Theme.of(context).primaryColor,
+                      ))
+                  : const SizedBox(),
         ],
       ),
       body: Row(
@@ -260,23 +267,24 @@ class ProjectListTabletLandscapeState extends State<ProjectListTabletLandscape>
           user == null
               ? const SizedBox()
               : Card(
-                child: Padding(
-                  padding: const EdgeInsets.all(20.0),
-                  child: ProjectListCard(
-                      projects: projects,
-                      width: width/2,
-                      horizontalPadding: 24,
-                      navigateToDetail: _navigateToDetail,
-                      navigateToProjectLocation: _navigateToProjectLocation,
-                      navigateToProjectMedia: _navigateToProjectMedia,
-                      navigateToProjectMap: _navigateToProjectMap,
-                      navigateToProjectPolygonMap: _navigateToProjectPolygonMap,
-                      navigateToProjectDashboard: _navigateToProjectDashboard,
-                      user: user!),
+                  child: Padding(
+                    padding: const EdgeInsets.all(20.0),
+                    child: ProjectListCard(
+                        projects: projects,
+                        width: width / 2,
+                        horizontalPadding: 24,
+                        navigateToDetail: _navigateToDetail,
+                        navigateToProjectLocation: _navigateToProjectLocation,
+                        navigateToProjectMedia: _navigateToProjectMedia,
+                        navigateToProjectMap: _navigateToProjectMap,
+                        navigateToProjectPolygonMap:
+                            _navigateToProjectPolygonMap,
+                        navigateToProjectDashboard: _navigateToProjectDashboard,
+                        user: user!),
+                  ),
                 ),
-              ),
           GeoPlaceHolder(
-            width: (width/2) - 64,
+            width: (width / 2) - 64,
           ),
         ],
       ),

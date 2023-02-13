@@ -43,7 +43,7 @@ import 'functions.dart';
 import 'generic_functions.dart';
 
 const stillWorking = 201, doneCaching = 200;
-const String hiveName = 'GeoHive1';
+const String hiveName = 'GeoHive3';
 CacheManager cacheManager = CacheManager._instance;
 
 class CacheManager {
@@ -161,7 +161,8 @@ class CacheManager {
     _positionBox = await Hive.openLazyBox<ProjectPosition>('positions');
 
     _dailyForecastBox = await Hive.openLazyBox<DailyForecast>('dailyForecasts');
-    _hourlyForecastBox = await Hive.openLazyBox<HourlyForecast>('hourlyForecasts');
+    _hourlyForecastBox =
+        await Hive.openLazyBox<HourlyForecast>('hourlyForecasts');
 
     _cityBox = await Hive.openLazyBox<City>('cities');
     _photoBox = await Hive.openLazyBox<Photo>('photos');
@@ -185,7 +186,6 @@ class CacheManager {
         await Hive.openLazyBox<ProjectPolygon>('projectPolygons');
 
     _assignmentBox = await Hive.openLazyBox<ProjectAssignment>('assignments');
-
 
     _failedPhotoBox = await Hive.openLazyBox<Photo>('failedPhotos');
     _failedVideoBox = await Hive.openLazyBox<Video>('failedVideos');
@@ -343,18 +343,56 @@ class CacheManager {
       '${E.appleRed}${E.appleRed}${E.appleRed}${E.appleRed} CacheManager: ';
   var random = Random(DateTime.now().millisecondsSinceEpoch);
 
-  Future addActivityModel(
-      {required ActivityModel activity}) async {
+  Future addActivityModel({required ActivityModel activity}) async {
     late String key;
     if (activity.projectId == null) {
-      key = '${DateTime.parse(activity.date!).millisecondsSinceEpoch}_${activity.userId}';
+      key =
+          '${DateTime.parse(activity.date!).millisecondsSinceEpoch}_${activity.userId}';
     } else {
-      key = '${DateTime.parse(activity.date!).millisecondsSinceEpoch}_${activity.projectId}_${activity.userId}';
+      key =
+          '${DateTime.parse(activity.date!).millisecondsSinceEpoch}_${activity.projectId}_${activity.userId}';
     }
     await _activityBox?.put(key, activity);
 
     pp('$mm ActivityModel added to local cache}');
   }
+
+  Future addActivityModels({required List<ActivityModel> activities}) async {
+    late String key;
+    for (var activity in activities) {
+      if (activity.projectId == null) {
+        key =
+            '${DateTime.parse(activity.date!).millisecondsSinceEpoch}_${activity.userId}';
+      } else {
+        key =
+            '${DateTime.parse(activity.date!).millisecondsSinceEpoch}_${activity.projectId}_${activity.userId}';
+      }
+      await _activityBox?.put(key, activity);
+    }
+
+    pp('$mm ${activities.length} ActivityModels added to local cache}');
+  }
+
+  Future<List<ActivityModel>> getActivitiesWithinHours(int hours) async {
+    var cutoffDate = DateTime.now().subtract(Duration(hours: hours));
+    List<ActivityModel> list = [];
+    var keys = _activityBox?.keys;
+    if (keys != null) {
+      for (var key in keys) {
+        var act = await _activityBox?.get(key);
+        if (act != null) {
+          var actDate = DateTime.parse(act.date!);
+          if (actDate.millisecondsSinceEpoch >=
+              cutoffDate.millisecondsSinceEpoch) {
+            list.add(act);
+          }
+        }
+      }
+    }
+    pp('$mm ${list.length} org activities list found in cache 🔵');
+    return list;
+  }
+
   Future<List<ActivityModel>> getActivities() async {
     List<ActivityModel> list = [];
     var keys = _activityBox?.keys;
@@ -368,7 +406,6 @@ class CacheManager {
     return list;
   }
 
-
   Future addLocationResponse(
       {required LocationResponse locationResponse}) async {
     pp('$mm .... addLocationResponse .....');
@@ -378,28 +415,26 @@ class CacheManager {
     pp('$mm locationResponse added to local cache}');
   }
 
-  Future addDailyForecasts(
-      {required List<DailyForecast> forecasts}) async {
+  Future addDailyForecasts({required List<DailyForecast> forecasts}) async {
     for (var fc in forecasts) {
       await addDailyForecast(forecast: fc);
     }
   }
 
-  Future addDailyForecast(
-      {required DailyForecast forecast}) async {
+  Future addDailyForecast({required DailyForecast forecast}) async {
     var key = '${DateTime.now().millisecondsSinceEpoch}';
     await _dailyForecastBox?.put(key, forecast);
 
     pp('$mm DailyForecast added to local cache}');
   }
-  Future addHourlyForecasts(
-      {required List<HourlyForecast> forecasts}) async {
+
+  Future addHourlyForecasts({required List<HourlyForecast> forecasts}) async {
     for (var fc in forecasts) {
       await addHourlyForecast(forecast: fc);
     }
   }
-  Future addHourlyForecast(
-      {required HourlyForecast forecast}) async {
+
+  Future addHourlyForecast({required HourlyForecast forecast}) async {
     var key = '${DateTime.now().millisecondsSinceEpoch}';
     await _hourlyForecastBox?.put(key, forecast);
 
@@ -414,8 +449,8 @@ class CacheManager {
 
     pp('$mm ProjectAssignments added to local cache: ${assignments.length}');
   }
-  Future addProjectAssignment(
-      {required ProjectAssignment assignment}) async {
+
+  Future addProjectAssignment({required ProjectAssignment assignment}) async {
     var key = '${assignment.projectId}_${assignment.userId}_${assignment.date}';
     await _assignmentBox?.put(key, assignment);
 
@@ -444,18 +479,21 @@ class CacheManager {
 
     pp('$mm AudioForUpload added to local cache: ${audio.project!.name}');
   }
+
   Future addVideoForUpload({required VideoForUpload video}) async {
     var key = '${video.project!.projectId!}_${video.date}';
     await _uploadVideoBox?.put(key, video);
 
     pp('$mm VideoForUpload added to local cache: ${video.project!.name}');
   }
+
   Future addPhotoForUpload({required PhotoForUpload photo}) async {
     var key = '${photo.project!.projectId!}_${photo.date}';
     await _uploadPhotoBox?.put(key, photo);
 
     pp('$mm PhotoForUpload added to local cache: ${photo.project!.name}');
   }
+
   Future addOrganizationSettingsList(List<SettingsModel> settings) async {
     for (var value in settings) {
       await addSettings(settings: value);
@@ -463,9 +501,9 @@ class CacheManager {
   }
 
   Future addSettingsList({required List<SettingsModel> settings}) async {
-   for (var m in settings) {
-     await addSettings(settings: m);
-   }
+    for (var m in settings) {
+      await addSettings(settings: m);
+    }
 
     pp('$mm SettingsModels added to local cache: ${settings.length}');
   }
@@ -651,6 +689,7 @@ class CacheManager {
 
     return list;
   }
+
   Future<List<AudioForUpload>> getAudioForUpload() async {
     List<AudioForUpload> list = [];
     var keys = _uploadAudioBox?.keys;
@@ -666,6 +705,7 @@ class CacheManager {
     }
     return list;
   }
+
   Future<List<VideoForUpload>> getVideosForUpload() async {
     List<VideoForUpload> list = [];
     var keys = _uploadVideoBox?.keys;
@@ -681,6 +721,7 @@ class CacheManager {
     }
     return list;
   }
+
   Future<List<PhotoForUpload>> getPhotosForUpload() async {
     List<PhotoForUpload> list = [];
     var keys = _uploadPhotoBox?.keys;
@@ -696,7 +737,6 @@ class CacheManager {
     }
     return list;
   }
-
 
   Future<List<SettingsModel>> getOrganizationSettings() async {
     List<SettingsModel> list = [];
@@ -733,7 +773,8 @@ class CacheManager {
     return list;
   }
 
-  Future<List<ProjectAssignment>> getProjectAssignments(String projectId) async {
+  Future<List<ProjectAssignment>> getProjectAssignments(
+      String projectId) async {
     List<ProjectAssignment> list = [];
     var keys = _assignmentBox?.keys;
 
@@ -750,7 +791,9 @@ class CacheManager {
     pp('$mm ${list.length} assignments found in cache 🔵');
     return list;
   }
-  Future<List<ProjectAssignment>> getUserProjectAssignments(String userId) async {
+
+  Future<List<ProjectAssignment>> getUserProjectAssignments(
+      String userId) async {
     List<ProjectAssignment> list = [];
     var keys = _assignmentBox?.keys;
 
@@ -767,6 +810,7 @@ class CacheManager {
     pp('$mm ${list.length} assignments found in cache 🔵');
     return list;
   }
+
   Future<List<ProjectAssignment>> getOrganizationProjectAssignments() async {
     List<ProjectAssignment> list = [];
     var keys = _assignmentBox?.keys;
@@ -775,8 +819,7 @@ class CacheManager {
       for (var key in keys) {
         var m = await _assignmentBox!.get(key);
         if (m != null) {
-            list.add(m);
-
+          list.add(m);
         }
       }
     }
@@ -784,6 +827,19 @@ class CacheManager {
     return list;
   }
 
+  Future<User?> getUserById(String userId) async {
+    var keys = _userBox?.keys;
+    User? user;
+    if (keys != null) {
+      for (var key in keys) {
+        if (key.contains(userId)) {
+          var e = await _userBox?.get(key);
+          user = e;
+        }
+      }
+    }
+    return user;
+  }
 
   Future<List<GeofenceEvent>> getGeofenceEventsByUser(String userId) async {
     var keys = _geofenceEventBox?.keys;
@@ -840,7 +896,8 @@ class CacheManager {
         audios: audios,
         projectPolygons: polygons,
         date: DateTime.now().toUtc().toIso8601String(),
-        users: users, settings: settings);
+        users: users,
+        settings: settings);
 
     pp('$mm getOrganizationData: 🍎projects: ${projects.length} '
         '🍎users: ${users.length} 🍎photos: ${photos.length}'
@@ -899,6 +956,9 @@ class CacheManager {
       }
     }
     pp('$mm Project photos found: ${mList.length}');
+    if (mList.isNotEmpty) {
+      pp('$mm LAST PHOTO: ${mList.last.toJson()}');
+    }
     return mList;
   }
 
@@ -954,6 +1014,7 @@ class CacheManager {
     }
     return vid;
   }
+
   Future<Photo?> getPhotoById(String id) async {
     var keys = _photoBox?.keys;
     Photo? photo;
@@ -970,6 +1031,7 @@ class CacheManager {
     }
     return photo;
   }
+
   Future<Audio?> getAudioById(String id) async {
     var keys = _audioBox?.keys;
     Audio? audio;
@@ -1109,22 +1171,19 @@ class CacheManager {
   }
 
   Future removeUploadedPhoto({required PhotoForUpload photo}) async {
-    var key =
-        '${photo.project!.projectId}_${photo.date}';
+    var key = '${photo.project!.projectId}_${photo.date}';
     await _uploadPhotoBox?.delete(key);
     pp('$mm PhotoForUpload deleted from local cache:  🔵 🔵 ${photo.project!.name}');
   }
 
   Future removeUploadedAudio({required AudioForUpload audio}) async {
-    var key =
-        '${audio.project!.projectId}_${audio.date}';
+    var key = '${audio.project!.projectId}_${audio.date}';
     await _uploadAudioBox?.delete(key);
     pp('$mm AudioForUpload deleted from local cache: 🔵 🔵 ${audio.project!.name}');
   }
 
   Future removeUploadedVideo({required VideoForUpload video}) async {
-    var key =
-        '${video.project!.projectId}_${video.date}';
+    var key = '${video.project!.projectId}_${video.date}';
     await _uploadVideoBox?.delete(key);
     pp('$mm VideoForUpload deleted from local cache:  🔵 🔵 ${video.project!.name}');
   }

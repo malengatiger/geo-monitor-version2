@@ -1,6 +1,5 @@
 import 'package:hive/hive.dart';
 
-
 part 'settings_model.g.dart';
 
 @HiveType(typeId: 30)
@@ -23,17 +22,20 @@ class SettingsModel {
   String? organizationId;
   @HiveField(8)
   String? projectId;
+  @HiveField(9)
+  int? activityStreamHours;
 
   SettingsModel(
       {required this.distanceFromProject,
-        required this.photoSize,
-        required this.maxVideoLengthInMinutes,
-        required this.maxAudioLengthInMinutes,
-        required this.themeIndex,
-        required this.settingsId,
-        required this.created,
-        required this.organizationId,
-        required this.projectId});
+      required this.photoSize,
+      required this.maxVideoLengthInMinutes,
+      required this.maxAudioLengthInMinutes,
+      required this.themeIndex,
+      required this.settingsId,
+      required this.created,
+      required this.organizationId,
+      required this.projectId,
+      required this.activityStreamHours});
 
   SettingsModel.fromJson(Map data) {
     // pp('🌀🌀🌀🌀 data json from server $data');
@@ -41,6 +43,7 @@ class SettingsModel {
     photoSize = data['photoSize'];
     settingsId = data['settingsId'];
     created = data['created'];
+    activityStreamHours = data['activityStreamHours'];
     organizationId = data['organizationId'];
 
     if (data['projectId'] != null) {
@@ -61,6 +64,7 @@ class SettingsModel {
       'projectId': projectId,
       'organizationId': organizationId,
       'created': created,
+      'activityStreamHours': activityStreamHours,
       'settingsId': settingsId,
       'themeIndex': themeIndex,
       'maxVideoLengthInMinutes': maxVideoLengthInMinutes,

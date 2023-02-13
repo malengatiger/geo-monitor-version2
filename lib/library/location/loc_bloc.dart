@@ -62,7 +62,6 @@ class LocationBlocOG {
   }
 
   Future<LocationData?> getLocation() async {
-
     _serviceEnabled = await location.serviceEnabled();
     if (!_serviceEnabled) {
       _serviceEnabled = await location.requestService();
@@ -101,11 +100,11 @@ class LocationBlocOG {
     return 0.0;
   }
 
-  Future<double> getDistance(
+  double getDistance(
       {required double latitude,
       required double longitude,
       required double toLatitude,
-      required double toLongitude}) async {
+      required double toLongitude}) {
     var latLngFrom = LatLng(latitude, longitude);
     var latLngTo = LatLng(toLatitude, toLongitude);
 

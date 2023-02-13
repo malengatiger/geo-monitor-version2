@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:geo_monitor/library/ui/project_edit/project_edit_card.dart';
-import 'package:google_fonts/google_fonts.dart';
-
 import 'package:page_transition/page_transition.dart';
 import 'package:uuid/uuid.dart';
+
 import '../../api/prefs_og.dart';
 import '../../bloc/admin_bloc.dart';
 import '../../bloc/organization_bloc.dart';
@@ -11,12 +10,14 @@ import '../../data/project.dart';
 import '../../data/user.dart';
 import '../../functions.dart';
 import '../project_location/project_location_main.dart';
+
 class ProjectEditTabletPortrait extends StatefulWidget {
   final Project? project;
   const ProjectEditTabletPortrait({this.project, super.key});
 
   @override
-  ProjectEditTabletPortraitState createState() => ProjectEditTabletPortraitState();
+  ProjectEditTabletPortraitState createState() =>
+      ProjectEditTabletPortraitState();
 }
 
 class ProjectEditTabletPortraitState extends State<ProjectEditTabletPortrait>
@@ -82,7 +83,8 @@ class ProjectEditTabletPortraitState extends State<ProjectEditTabletPortrait>
               communities: [],
               monitorReports: [],
               nearestCities: [],
-              projectPositions: [], ratings: [],
+              projectPositions: [],
+              ratings: [],
               projectId: uuid.v4());
           var m = await adminBloc.addProject(mProject);
           pp('🎽 🎽 🎽 _submit: new project added .........  ${m.toJson()}');
@@ -104,14 +106,13 @@ class ProjectEditTabletPortraitState extends State<ProjectEditTabletPortrait>
         setState(() {
           isBusy = false;
         });
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Failed: $e')));
-
+        ScaffoldMessenger.of(context)
+            .showSnackBar(SnackBar(content: Text('Failed: $e')));
       }
     }
   }
 
   void _navigateToProjectLocation(Project mProject) async {
-
     pp(' 😡 _navigateToProjectLocation  😡 😡 😡 ${mProject.name}');
     await Navigator.push(
         context,
@@ -175,11 +176,16 @@ class ProjectEditTabletPortraitState extends State<ProjectEditTabletPortrait>
         body: Padding(
           padding: const EdgeInsets.all(12.0),
           child: SingleChildScrollView(
-            child: Center(child: ProjectEditCard(
-              onDone: (project) {
+            child: Center(
+                child: ProjectEditCard(
+              onCancel: () {
+                Navigator.of(context).pop();
+              },
+              project: widget.project,
+              navigateToLocation: (project) {
                 _navigateToProjectLocation(project);
               },
-              project: widget.project,)),
+            )),
           ),
         ),
       ),

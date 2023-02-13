@@ -24,13 +24,15 @@ class LocationResponseAdapter extends TypeAdapter<LocationResponse> {
       locationResponseId: fields[4] as String?,
       organizationId: fields[2] as String?,
       organizationName: fields[5] as String?,
+      requesterId: fields[7] as String?,
+      requesterName: fields[8] as String?,
     );
   }
 
   @override
   void write(BinaryWriter writer, LocationResponse obj) {
     writer
-      ..writeByte(7)
+      ..writeByte(9)
       ..writeByte(0)
       ..write(obj.date)
       ..writeByte(1)
@@ -44,7 +46,11 @@ class LocationResponseAdapter extends TypeAdapter<LocationResponse> {
       ..writeByte(5)
       ..write(obj.organizationName)
       ..writeByte(6)
-      ..write(obj.position);
+      ..write(obj.position)
+      ..writeByte(7)
+      ..write(obj.requesterId)
+      ..writeByte(8)
+      ..write(obj.requesterName);
   }
 
   @override

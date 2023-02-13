@@ -5,12 +5,15 @@ import 'dart:io';
 
 import 'package:flutter_dotenv/flutter_dotenv.dart' as dot;
 import 'package:geo_monitor/library/bloc/connection_check.dart';
+import 'package:geo_monitor/library/data/activity_model.dart';
 import 'package:geo_monitor/library/data/location_request.dart';
 import 'package:geo_monitor/library/data/organization_registration_bag.dart';
 import 'package:geo_monitor/library/data/project_polygon.dart';
 import 'package:geo_monitor/library/emojis.dart';
 import 'package:http/http.dart' as http;
+
 import '../auth/app_auth.dart';
+import '../bloc/organization_bloc.dart';
 import '../data/audio.dart';
 import '../data/city.dart';
 import '../data/community.dart';
@@ -33,7 +36,6 @@ import '../data/section.dart';
 import '../data/settings_model.dart';
 import '../data/user.dart';
 import '../data/video.dart';
-
 import '../data/weather/daily_forecast.dart';
 import '../data/weather/hourly_forecast.dart';
 import '../functions.dart';
@@ -223,7 +225,7 @@ class DataAPI {
     try {
       List result = await _sendHttpGET(
           '${mURL!}getOrganizationSettings?organizationId=$organizationId');
-      pp(result);
+
       for (var element in result) {
         mList.add(SettingsModel.fromJson(element));
       }
@@ -233,6 +235,31 @@ class DataAPI {
       }
 
       pp('🌿 🌿 🌿 getOrganizationSettings returned: 🌿 ${mList.length}');
+      return mList;
+    } catch (e) {
+      pp(e);
+      rethrow;
+    }
+  }
+
+  static Future<List<ActivityModel>> getOrganizationActivity(
+      String organizationId, int hours) async {
+    String? mURL = await getUrl();
+    List<ActivityModel> mList = [];
+    try {
+      List result = await _sendHttpGET(
+          '${mURL!}getOrganizationActivity?organizationId=$organizationId&hours=$hours');
+
+      for (var element in result) {
+        mList.add(ActivityModel.fromJson(element));
+      }
+      if (mList.isNotEmpty) {
+        mList.sort((a, b) => b.date!.compareTo(a.date!));
+        await cacheManager.addActivityModels(activities: mList);
+        organizationBloc.activityController.sink.add(mList);
+      }
+
+      pp('🌿 🌿 🌿 getOrganizationActivity returned: 🌿 ${mList.length}');
       return mList;
     } catch (e) {
       pp(e);
@@ -317,7 +344,8 @@ class DataAPI {
       await cacheManager.addProject(project: u.project!);
       await cacheManager.addSettings(settings: u.settings!);
       await cacheManager.addOrganization(organization: u.organization!);
-      await cacheManager.addProjectPosition(projectPosition: u.projectPosition!);
+      await cacheManager.addProjectPosition(
+          projectPosition: u.projectPosition!);
 
       pp('$mm️ Organization registered! 😡😡 RegistrationBag arrived from backend server and cached in Hive; org:: ☕️ ${u.organization!.name!}');
 
@@ -592,7 +620,9 @@ class DataAPI {
       {required double latitude,
       required double longitude,
       required String timeZone,
-      required String projectPositionId, required String projectId, required String projectName}) async {
+      required String projectPositionId,
+      required String projectId,
+      required String projectName}) async {
     String? mURL = await getUrl();
 
     try {
@@ -619,7 +649,9 @@ class DataAPI {
       {required double latitude,
       required double longitude,
       required String timeZone,
-      required String projectPositionId, required String projectId, required String projectName}) async {
+      required String projectPositionId,
+      required String projectId,
+      required String projectName}) async {
     String? mURL = await getUrl();
 
     try {
@@ -1476,7 +1508,7 @@ class DataAPI {
       var result = await _sendHttpGET(
         '$mURL$command',
       );
-      pp(result);
+
       return User.fromJson(result);
     } catch (e) {
       pp(e);
@@ -1497,7 +1529,7 @@ class DataAPI {
       if (result is bool) {
         return null;
       }
-      pp(result);
+
       return Photo.fromJson(result);
     } catch (e) {
       pp(e);
@@ -1518,7 +1550,7 @@ class DataAPI {
       if (result is bool) {
         return null;
       }
-      pp(result);
+
       return Video.fromJson(result);
     } catch (e) {
       pp(e);
@@ -1539,7 +1571,7 @@ class DataAPI {
       if (result is bool) {
         return null;
       }
-      pp(result);
+
       return Audio.fromJson(result);
     } catch (e) {
       pp(e);

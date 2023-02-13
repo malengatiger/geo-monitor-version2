@@ -14,12 +14,14 @@ class ProjectChooser extends StatefulWidget {
       required this.onSelected,
       required this.onClose,
       required this.title,
-      required this.height})
+      required this.height,
+      required this.width})
       : super(key: key);
   final Function(Project) onSelected;
   final Function onClose;
   final String title;
   final double height;
+  final double width;
 
   @override
   State<ProjectChooser> createState() => ProjectChooserState();
@@ -82,7 +84,7 @@ class ProjectChooserState extends State<ProjectChooser>
         : Stack(
             children: [
               SizedBox(
-                height: widget.height,
+                height: widget.height, width: widget.width,
                 // width: 400,
                 child: Card(
                   elevation: 4,

@@ -1,22 +1,21 @@
 import 'dart:async';
 
 import 'package:dots_indicator/dots_indicator.dart';
-import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart' as fb;
+import 'package:flutter/material.dart';
 import 'package:geo_monitor/ui/auth/auth_registration_main.dart';
 import 'package:geo_monitor/ui/auth/auth_signin_main.dart';
 import 'package:geo_monitor/ui/dashboard/dashboard_main.dart';
 import 'package:page_transition/page_transition.dart';
 
 import '../../library/api/prefs_og.dart';
+import '../../library/data/user.dart' as ur;
 import '../../library/emojis.dart';
 import '../../library/functions.dart';
 import '../../library/generic_functions.dart';
 import '../../library/hive_util.dart';
-import '../../library/data/user.dart' as ur;
 import '../dashboard/dashboard_mobile.dart';
 import '../intro/intro_page_one.dart';
-import 'intro_page_one_landscape.dart';
 
 class IntroPageViewerPortrait extends StatefulWidget {
   const IntroPageViewerPortrait({
@@ -188,36 +187,29 @@ class IntroPageViewerPortraitState extends State<IntroPageViewerPortrait>
         child: Scaffold(
       appBar: AppBar(
         title: Text(
-          'GeoMonitor',
+          'Geo Information',
           style: myTextStyleLarge(context),
         ),
-        bottom: PreferredSize(preferredSize: const Size.fromHeight(48), child: authed
-            ? Row(
-          children: [
-            IconButton(
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
-                icon: const Icon(Icons.close)),
-          ],
-        )
-            : Card(
-          elevation: 4,
-          color: Colors.black26,
-          // shape: getRoundedBorder(radius: 16),
-          child: Row(mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              TextButton(
-                  onPressed: onSignIn, child: const Text('Sign In')),
-              const SizedBox(
-                width: 120,
-              ),
-              TextButton(
-                  onPressed: onRegistration,
-                  child: const Text('Register Organization')),
-            ],
-          ),
-        ),),
+        bottom: PreferredSize(
+          preferredSize: Size.fromHeight(authed ? 4 : 48),
+          child: authed
+              ? const SizedBox()
+              : Card(
+                  elevation: 4,
+                  color: Colors.black26,
+                  // shape: getRoundedBorder(radius: 16),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      TextButton(
+                          onPressed: onSignIn, child: const Text('Sign In')),
+                      TextButton(
+                          onPressed: onRegistration,
+                          child: const Text('Register Organization')),
+                    ],
+                  ),
+                ),
+        ),
       ),
       body: Stack(
         children: [
@@ -300,63 +292,8 @@ class IntroPageViewerPortraitState extends State<IntroPageViewerPortrait>
               ),
             ),
           ),
-          // authed
-          //     ? Positioned(
-          //         right: 12,
-          //         child: SizedBox(
-          //           width: 48,
-          //           height: 48,
-          //           child: Card(
-          //             shape: getRoundedBorder(radius: 48),
-          //             child: IconButton(
-          //                 onPressed: () {
-          //                   //Navigator.of(context).pop();
-          //                   _navigateToDashboardWithoutUser();
-          //                 },
-          //                 icon: Icon(
-          //                   Icons.close,
-          //                   size: 18,
-          //                   color: Theme.of(context).primaryColor,
-          //                 )),
-          //           ),
-          //         ))
-          //     : Positioned(
-          //         left: 16,
-          //         right: 16,
-          //         child: SizedBox(
-          //           width: 300,
-          //           height: 60,
-          //           child: Card(
-          //             elevation: 4,
-          //             color: Colors.black12,
-          //             shape: getRoundedBorder(radius: 16),
-          //             child: Row(
-          //               mainAxisAlignment: MainAxisAlignment.center,
-          //               children: [
-          //                 TextButton(
-          //                     onPressed: onSignIn,
-          //                     child: Text(
-          //                       'Sign In',
-          //                       style: myTextStyleSmall(context),
-          //                     )),
-          //                 const SizedBox(
-          //                   width: 48,
-          //                 ),
-          //                 TextButton(
-          //                     onPressed: onRegistration,
-          //                     child: Text(
-          //                       'Register Organization',
-          //                       style: myTextStyleSmall(context),
-          //                     )),
-          //               ],
-          //             ),
-          //           ),
-          //         ),
-          //       )
         ],
       ),
     ));
   }
 }
-
-

@@ -1,16 +1,14 @@
 import 'dart:async';
 
-import 'package:animations/animations.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:firebase_auth/firebase_auth.dart' as fb;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:geo_monitor/library/bloc/downloader.dart';
 import 'package:geo_monitor/library/ui/project_list/project_list_main.dart';
-import 'package:geo_monitor/library/ui/project_list/project_list_tablet_portrait.dart';
 import 'package:geo_monitor/library/users/full_user_photo.dart';
+import 'package:geo_monitor/ui/activity/geo_activity.dart';
 import 'package:geo_monitor/ui/dashboard/dashboard_grid.dart';
-import 'package:geofence_service/geofence_service.dart';
-
 import 'package:google_fonts/google_fonts.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:universal_platform/universal_platform.dart';
@@ -19,30 +17,25 @@ import '../../library/api/prefs_og.dart';
 import '../../library/bloc/connection_check.dart';
 import '../../library/bloc/fcm_bloc.dart';
 import '../../library/bloc/organization_bloc.dart';
-import '../../library/bloc/theme_bloc.dart';
 import '../../library/bloc/uploader.dart';
 import '../../library/data/audio.dart';
 import '../../library/data/data_bag.dart';
-import '../../library/data/field_monitor_schedule.dart';
 import '../../library/data/geofence_event.dart';
 import '../../library/data/photo.dart';
 import '../../library/data/project.dart';
-import '../../library/data/project_polygon.dart';
-import '../../library/data/project_position.dart';
-import '../../library/data/settings_model.dart';
 import '../../library/data/user.dart';
 import '../../library/data/video.dart';
 import '../../library/emojis.dart';
 import '../../library/functions.dart';
 import '../../library/generic_functions.dart';
 import '../../library/geofence/geofencer_two.dart';
+import '../../library/ui/maps/photo_map_tablet.dart';
 import '../../library/ui/maps/project_map_mobile.dart';
 import '../../library/ui/media/list/project_media_list_mobile.dart';
 import '../../library/ui/media/user_media_list/user_media_list_mobile.dart';
 import '../../library/ui/project_list/project_chooser.dart';
 import '../../library/ui/project_list/project_list_mobile.dart';
 import '../../library/ui/settings/settings_main.dart';
-import '../../library/ui/settings/settings_mobile.dart';
 import '../../library/ui/weather/daily_forecast_page.dart';
 import '../../library/users/list/user_list_main.dart';
 import '../chat/chat_page.dart';
@@ -69,14 +62,7 @@ class DashboardTabletPortraitState extends State<DashboardTabletPortrait>
   late AnimationController _audioAnimationController;
 
   var busy = false;
-  var _projects = <Project>[];
   var _users = <User>[];
-  var _photos = <Photo>[];
-  var _videos = <Video>[];
-  var _projectPositions = <ProjectPosition>[];
-  var _projectPolygons = <ProjectPolygon>[];
-  var _schedules = <FieldMonitorSchedule>[];
-  var _audios = <Audio>[];
   User? user;
 
   static const mm = '🎽🎽🎽🎽🎽🎽 DashboardTabletPortrait: 🎽';
@@ -94,7 +80,7 @@ class DashboardTabletPortraitState extends State<DashboardTabletPortrait>
     _subscribeToGeofenceStream();
     _startTimer();
     _getData(false);
-    uploader.startTimer(const Duration(seconds: 30));
+    uploader.startTimer(const Duration(seconds: 15));
   }
 
   void _getData(bool forceRefresh) async {
@@ -103,9 +89,9 @@ class DashboardTabletPortraitState extends State<DashboardTabletPortrait>
     });
     try {
       user = await prefsOGx.getUser();
-      dataBag = await organizationBloc.getOrganizationData(organizationId: user!.organizationId!, forceRefresh: forceRefresh);
+      dataBag = await organizationBloc.getOrganizationData(
+          organizationId: user!.organizationId!, forceRefresh: forceRefresh);
       _users = dataBag!.users!;
-      _photos = dataBag!.photos!;
     } catch (e) {
       pp(e);
       if (mounted) {
@@ -185,12 +171,6 @@ class DashboardTabletPortraitState extends State<DashboardTabletPortrait>
     geofenceSubscription =
         theGreatGeofencer.geofenceEventStream.listen((event) {
       pp('\n$mm geofenceEvent delivered by geofenceStream: ${event.projectName} ...');
-      // if (mounted) {
-      //   showToast(
-      //       message:
-      //           'Geofence triggered for ${event.projectName}',
-      //       context: context);
-      // }
     });
   }
 
@@ -206,6 +186,44 @@ class DashboardTabletPortraitState extends State<DashboardTabletPortrait>
       });
     });
   }
+
+  bool _showPhoto = false;
+  bool _showVideo = false;
+  bool _showAudio = false;
+
+  void _displayPhoto(Photo photo) async {
+    pp('$mm _displayPhoto ...');
+    this.photo = photo;
+    setState(() {
+      _showPhoto = true;
+      _showVideo = false;
+      _showAudio = false;
+    });
+  }
+
+  void _displayVideo(Video video) async {
+    pp('$mm _displayVideo ...');
+    this.video = video;
+    setState(() {
+      _showPhoto = false;
+      _showVideo = true;
+      _showAudio = false;
+    });
+  }
+
+  void _displayAudio(Audio audio) async {
+    pp('$mm _displayAudio ...');
+    this.audio = audio;
+    setState(() {
+      _showPhoto = false;
+      _showVideo = false;
+      _showAudio = true;
+    });
+  }
+
+  Photo? photo;
+  Video? video;
+  Audio? audio;
 
   @override
   void dispose() {
@@ -248,7 +266,6 @@ class DashboardTabletPortraitState extends State<DashboardTabletPortrait>
   }
 
   String type = 'Unknown Rider';
-
 
   final _key = GlobalKey<ScaffoldState>();
 
@@ -369,7 +386,10 @@ class DashboardTabletPortraitState extends State<DashboardTabletPortrait>
             type: PageTransitionType.scale,
             alignment: Alignment.topLeft,
             duration: const Duration(seconds: 1),
-            child:  UserListMain(user: user!, users: _users,)));
+            child: UserListMain(
+              user: user!,
+              users: _users,
+            )));
   }
 
   void _navigateToProjectMedia(Project project) {
@@ -442,6 +462,7 @@ class DashboardTabletPortraitState extends State<DashboardTabletPortrait>
                   child: ProjectChooser(
                       title: title,
                       height: 500,
+                      width: 500,
                       onSelected: (p1) {
                         Navigator.of(context).pop();
                         _onProjectSelected(p1, destination);
@@ -474,14 +495,32 @@ class DashboardTabletPortraitState extends State<DashboardTabletPortrait>
     }
   }
 
+  void _navigateToPhotoMap() {
+    pp('$mm _navigateToPhotoMap ...');
+
+    if (mounted) {
+      if (photo == null) return;
+      Navigator.push(
+          context,
+          PageTransition(
+              type: PageTransitionType.scale,
+              alignment: Alignment.topLeft,
+              duration: const Duration(milliseconds: 1000),
+              child: PhotoMapTablet(
+                photo: photo!,
+              )));
+    }
+  }
+
   Project? selectedProject;
 
   @override
   Widget build(BuildContext context) {
-
+    final width = MediaQuery.of(context).size.width;
+    final height = MediaQuery.of(context).size.height;
     return Scaffold(
       appBar: AppBar(
-          centerTitle: true,
+        centerTitle: true,
         title: const Text('Geo Dashboard'),
         actions: [
           IconButton(
@@ -494,15 +533,15 @@ class DashboardTabletPortraitState extends State<DashboardTabletPortrait>
           user == null
               ? const SizedBox()
               : user!.userType == UserType.fieldMonitor
-              ? const SizedBox()
-              : IconButton(
-            icon: Icon(
-              Icons.settings,
-              size: 28,
-              color: Theme.of(context).primaryColor,
-            ),
-            onPressed: _navigateToSettings,
-          ),
+                  ? const SizedBox()
+                  : IconButton(
+                      icon: Icon(
+                        Icons.settings,
+                        size: 28,
+                        color: Theme.of(context).primaryColor,
+                      ),
+                      onPressed: _navigateToSettings,
+                    ),
           IconButton(
             icon: Icon(
               Icons.refresh,
@@ -516,7 +555,7 @@ class DashboardTabletPortraitState extends State<DashboardTabletPortrait>
         ],
       ),
       body: busy
-          ?  Center(
+          ? Center(
               child: Card(
                 elevation: 16,
                 shape: getRoundedBorder(radius: 12),
@@ -535,34 +574,183 @@ class DashboardTabletPortraitState extends State<DashboardTabletPortrait>
             )
           : Stack(
               children: [
-                dataBag == null? const SizedBox(): DashboardGrid(
-                    dataBag: dataBag!,
-                    topPadding: 72,
-                    onTypeTapped: (type) {
-                  switch (type) {
-                    case typeProjects:
-                      _navigateToProjectList();
-                      break;
-                    case typeUsers:
-                      _navigateToUserList();
-                      break;
-                    case typePhotos:
-                      _showProjectDialog(typePhotos);
-                      break;
-                    case typeVideos:
-                      _showProjectDialog(typeVideos);
-                      break;
-                    case typeAudios:
-                      _showProjectDialog(typeAudios);
-                      break;
-                    case typePositions:
-                      _showProjectDialog(typePositions);
-                      break;
-                    case typePolygons:
-                      _showProjectDialog(typePolygons);
-                      break;
-                  }
-                }),
+                dataBag == null
+                    ? const SizedBox()
+                    : Row(
+                        children: [
+                          SizedBox(
+                            width: (width / 2) + 120,
+                            child: DashboardGrid(
+                                dataBag: dataBag!,
+                                topPadding: 40,
+                                onTypeTapped: (type) {
+                                  switch (type) {
+                                    case typeProjects:
+                                      _navigateToProjectList();
+                                      break;
+                                    case typeUsers:
+                                      _navigateToUserList();
+                                      break;
+                                    case typePhotos:
+                                      _showProjectDialog(typePhotos);
+                                      break;
+                                    case typeVideos:
+                                      _showProjectDialog(typeVideos);
+                                      break;
+                                    case typeAudios:
+                                      _showProjectDialog(typeAudios);
+                                      break;
+                                    case typePositions:
+                                      _showProjectDialog(typePositions);
+                                      break;
+                                    case typePolygons:
+                                      _showProjectDialog(typePolygons);
+                                      break;
+                                  }
+                                }),
+                          ),
+                          GeoActivity(
+                            width: 240,
+                            thinMode: true,
+                            showPhoto: (photo) {
+                              _displayPhoto(photo);
+                            },
+                            showVideo: (video) {
+                              _displayVideo(video);
+                            },
+                            showAudio: (audio) {
+                              _displayAudio(audio);
+                            },
+                          ),
+                        ],
+                      ),
+                _showPhoto
+                    ? Positioned(
+                        left: 100,
+                        right: 100,
+                        top: 12,
+                        child: SizedBox(
+                          width: 600,
+                          height: 800,
+                          // color: Theme.of(context).primaryColor,
+                          child: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: GestureDetector(
+                              onTap: () {
+                                setState(() {
+                                  _showPhoto = false;
+                                });
+                              },
+                              child: Card(
+                                shape: getRoundedBorder(radius: 16),
+                                elevation: 8,
+                                child: SingleChildScrollView(
+                                  child: Column(
+                                    children: [
+                                      const SizedBox(
+                                        height: 12,
+                                      ),
+                                      Padding(
+                                        padding: const EdgeInsets.symmetric(
+                                            horizontal: 48.0),
+                                        child: Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceBetween,
+                                          children: [
+                                            Text(
+                                              '${photo!.projectName}',
+                                              style:
+                                                  myTextStyleLargePrimaryColor(
+                                                      context),
+                                            ),
+                                            IconButton(
+                                                onPressed: () {
+                                                  pp('$mm .... put photo on a map!');
+                                                  _navigateToPhotoMap();
+                                                },
+                                                icon: Icon(
+                                                  Icons.location_on,
+                                                  color: Theme.of(context)
+                                                      .primaryColor,
+                                                  size: 24,
+                                                )),
+                                          ],
+                                        ),
+                                      ),
+                                      const SizedBox(
+                                        height: 12,
+                                      ),
+                                      Text(
+                                        '${photo!.userName}',
+                                        style: myTextStyleSmallBold(context),
+                                      ),
+                                      const SizedBox(
+                                        height: 4,
+                                      ),
+                                      Text(
+                                        getFormattedDateShortWithTime(
+                                            photo!.created!, context),
+                                        style: myTextStyleTiny(context),
+                                      ),
+                                      const SizedBox(
+                                        height: 12,
+                                      ),
+                                      Padding(
+                                        padding: const EdgeInsets.symmetric(
+                                            horizontal: 2.0, vertical: 2.0),
+                                        child: InteractiveViewer(
+                                            child: CachedNetworkImage(
+                                                fit: BoxFit.fill,
+                                                progressIndicatorBuilder: (context,
+                                                        url,
+                                                        downloadProgress) =>
+                                                    Center(
+                                                        child: SizedBox(
+                                                            width: 20,
+                                                            height: 20,
+                                                            child: CircularProgressIndicator(
+                                                                backgroundColor:
+                                                                    Colors.pink,
+                                                                value: downloadProgress
+                                                                    .progress))),
+                                                errorWidget:
+                                                    (context, url, error) =>
+                                                        const Icon(Icons.error),
+                                                fadeInDuration: const Duration(
+                                                    milliseconds: 1500),
+                                                fadeInCurve:
+                                                    Curves.easeInOutCirc,
+                                                placeholderFadeInDuration:
+                                                    const Duration(milliseconds: 1500),
+                                                imageUrl: photo!.url!)),
+                                      ),
+                                      const SizedBox(
+                                        height: 24,
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ))
+                    : const SizedBox(),
+                _showVideo
+                    ? Positioned(
+                        child: Container(
+                        width: 480,
+                        height: 640,
+                        color: Colors.red,
+                      ))
+                    : const SizedBox(),
+                _showAudio
+                    ? Positioned(
+                        child: Container(
+                        width: 480,
+                        height: 640,
+                        color: Colors.green,
+                      ))
+                    : const SizedBox(),
               ],
             ),
     );
@@ -570,14 +758,15 @@ class DashboardTabletPortraitState extends State<DashboardTabletPortrait>
 }
 ///////
 
-
 class Headline extends StatelessWidget {
-  const Headline({Key? key, required this.user}) : super(key: key);
+  const Headline({Key? key, required this.user, required this.paddingLeft})
+      : super(key: key);
   final User user;
+  final double paddingLeft;
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: 100,
+      height: 160,
       child: Column(
         children: [
           const SizedBox(
@@ -587,16 +776,30 @@ class Headline extends StatelessWidget {
             '${user.organizationName}',
             style: GoogleFonts.lato(
                 textStyle: Theme.of(context).textTheme.bodyLarge,
-                fontWeight: FontWeight.w900, color: Theme.of(context).primaryColor,
-              fontSize: 24
-            ),
+                fontWeight: FontWeight.w900,
+                color: Theme.of(context).primaryColor,
+                fontSize: 24),
           ),
           const SizedBox(
             height: 12,
           ),
-          Text(
-            '${user.name}',
-            style: myTextStyleLarge(context),
+          Padding(
+            padding: EdgeInsets.only(left: paddingLeft),
+            child: Row(
+              children: [
+                CircleAvatar(
+                  backgroundImage: NetworkImage(user.thumbnailUrl!),
+                  radius: 28,
+                ),
+                const SizedBox(
+                  width: 28,
+                ),
+                Text(
+                  '${user.name}',
+                  style: myTextStyleLarge(context),
+                ),
+              ],
+            ),
           ),
           const SizedBox(
             height: 0,

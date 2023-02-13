@@ -19,11 +19,12 @@ class WriteFailedMedia {
 
   void startTimer(Duration duration) {
     _timer = Timer.periodic(duration, (timer) async {
-      pp('\n\n$mm ... Timer tick: ${timer.tick} at ${DateTime.now().toIso8601String()}');
+      pp('$mm ... Timer tick: ${timer.tick} at ${DateTime.now().toIso8601String()}');
       await writeFailedMedia();
     });
     isStarted = true;
   }
+
   void stopTimer() {
     if (isStarted) {
       _timer.cancel();
@@ -65,12 +66,13 @@ class WriteFailedMedia {
     pp('$mm ${bags.length} failed audio written to database');
   }
 
-  Future writePhoto({required Photo photo}) async  {
+  Future writePhoto({required Photo photo}) async {
     await DataAPI.addPhoto(photo);
     pp('$mm failed photo written to DB');
     return true;
   }
-  Future writeAudio({required Audio audio}) async  {
+
+  Future writeAudio({required Audio audio}) async {
     await DataAPI.addAudio(audio);
     pp('$mm failed audio written to DB');
     return true;
@@ -86,9 +88,9 @@ class WriteFailedMedia {
     pp('$mm delete failed bag from cache ...');
     await cacheManager.removeFailedBag(bag: bag);
   }
+
   Future _deleteAudio(FailedAudio failedAudio) async {
     pp('$mm delete failed adio from cache ...');
-    await cacheManager.removeFailedAudio( failedAudio: failedAudio);
+    await cacheManager.removeFailedAudio(failedAudio: failedAudio);
   }
-
 }

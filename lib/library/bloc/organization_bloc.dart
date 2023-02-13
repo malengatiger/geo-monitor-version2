@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:geo_monitor/library/bloc/downloader.dart';
+import 'package:geo_monitor/library/data/activity_model.dart';
 import 'package:geo_monitor/library/data/settings_model.dart';
 import 'package:universal_platform/universal_platform.dart';
 
@@ -49,7 +49,6 @@ class OrganizationBloc {
   final StreamController<List<Audio>> audioController =
       StreamController.broadcast();
 
-
   final StreamController<List<ProjectPosition>> projPositionsController =
       StreamController.broadcast();
   final StreamController<List<ProjectPolygon>> projPolygonsController =
@@ -60,6 +59,8 @@ class OrganizationBloc {
       fieldMonitorScheduleController = StreamController.broadcast();
   final StreamController<List<Country>> countryController =
       StreamController.broadcast();
+  final StreamController<List<ActivityModel>> activityController =
+      StreamController.broadcast();
 
   final StreamController<Questionnaire> activeQuestionnaireController =
       StreamController.broadcast();
@@ -68,8 +69,7 @@ class OrganizationBloc {
 
   Stream<List<Community>> get communityStream => communityController.stream;
 
-  Stream<List<Questionnaire>> get questionnaireStream =>
-      questController.stream;
+  Stream<List<Questionnaire>> get questionnaireStream => questController.stream;
 
   Stream<List<Project>> get projectStream => projController.stream;
 
@@ -82,6 +82,8 @@ class OrganizationBloc {
   Stream get countryStream => countryController.stream;
 
   Stream<List<User>> get usersStream => userController.stream;
+
+  Stream<List<ActivityModel>> get activityStream => activityController.stream;
 
   Stream get activeQuestionnaireStream => activeQuestionnaireController.stream;
 
@@ -288,8 +290,7 @@ class OrganizationBloc {
     pp('$mm getProjectPolygons found ${projectPolygons.length} polygons in local cache ');
 
     if (projectPolygons.isEmpty || forceRefresh) {
-      projectPolygons =
-      await DataAPI.getProjectPolygons(organizationId);
+      projectPolygons = await DataAPI.getProjectPolygons(organizationId);
       pp('$mm getProjectPolygons found ${projectPolygons.length} polygons from remote database ');
       await cacheManager.addProjectPolygons(polygons: projectPolygons);
     }
@@ -332,6 +333,7 @@ class OrganizationBloc {
 
     return photos;
   }
+
   Future<List<SettingsModel>> getSettings(
       {required String organizationId, required bool forceRefresh}) async {
     var settingsList = <SettingsModel>[];
@@ -357,12 +359,11 @@ class OrganizationBloc {
       {required String organizationId, required bool forceRefresh}) async {
     var videos = <Video>[];
     try {
-
-        videos = await cacheManager.getVideos();
+      videos = await cacheManager.getVideos();
 
       if (videos.isEmpty || forceRefresh) {
         videos = await DataAPI.getOrganizationVideos(organizationId);
-         await cacheManager.addVideos(videos: videos);
+        await cacheManager.addVideos(videos: videos);
       }
       videoController.sink.add(videos);
       pp('$mm getVideos found: 💜 ${videos.length} videos ');
@@ -414,6 +415,26 @@ class OrganizationBloc {
     }
 
     return projects;
+  }
+
+  Future<List<ActivityModel>> getOrganizationActivity(
+      {required String organizationId,
+      required int hours,
+      required bool forceRefresh}) async {
+    try {
+      var activities = await cacheManager.getActivitiesWithinHours(hours);
+
+      if (activities.isEmpty || forceRefresh) {
+        activities =
+            await DataAPI.getOrganizationActivity(organizationId, hours);
+      }
+      activityController.sink.add(activities);
+      pp('$mm 💜💜💜💜 getOrganizationActivity found: 💜 ${activities.length} activities ; organizationId: $organizationId 💜');
+      return activities;
+    } catch (e) {
+      pp('$mm $e');
+      rethrow;
+    }
   }
 
   Future<Organization?> getOrganizationById(

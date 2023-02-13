@@ -15,8 +15,8 @@ import 'package:uuid/uuid.dart';
 import '../../api/data_api.dart';
 import '../../data/city.dart';
 import '../../data/photo.dart';
-import '../../data/project.dart';
 import '../../data/position.dart' as local;
+import '../../data/project.dart';
 import '../../data/project_polygon.dart';
 import '../../data/project_position.dart';
 import '../../data/user.dart';
@@ -30,10 +30,11 @@ class ProjectMapMobile extends StatefulWidget {
   // final List<ProjectPolygon> projectPolygons;
   final Photo? photo;
 
-  const ProjectMapMobile(
-      {super.key,
-      required this.project,
-      this.photo,});
+  const ProjectMapMobile({
+    super.key,
+    required this.project,
+    this.photo,
+  });
 
   @override
   ProjectMapMobileState createState() => ProjectMapMobileState();
@@ -77,7 +78,8 @@ class ProjectMapMobileState extends State<ProjectMapMobile>
   }
 
   void _listen() async {
-    _positionStreamSubscription = fcmBloc.projectPositionStream.listen((event) async {
+    _positionStreamSubscription =
+        fcmBloc.projectPositionStream.listen((event) async {
       await _refreshData(false);
       if (mounted) {
         _addMarkers();
@@ -85,16 +87,17 @@ class ProjectMapMobileState extends State<ProjectMapMobile>
         _buildProjectPolygons();
 
         if (projectPositions.isNotEmpty) {
-          var p = projectPolygons.first.positions.first;
-          var lat = p.coordinates[1];
-          var lng = p.coordinates[0];
+          var p = projectPositions.first;
+          var lat = p.position!.coordinates[1];
+          var lng = p.position!.coordinates[0];
           _animateCamera(latitude: lat, longitude: lng, zoom: 10.0);
         }
         // _animateCamera(latitude: 0.0, longitude: 0.0, zoom: 2.0);
         setState(() {});
       }
     });
-    _polygonStreamSubscription = fcmBloc.projectPolygonStream.listen((event) async {
+    _polygonStreamSubscription =
+        fcmBloc.projectPolygonStream.listen((event) async {
       await _refreshData(false);
 
       if (mounted) {
@@ -112,27 +115,30 @@ class ProjectMapMobileState extends State<ProjectMapMobile>
       }
     });
   }
-  void _buildCircles() {
 
+  void _buildCircles() {
     pp('$mm drawing circles for project positions: ${projectPositions.length}, project: ${widget.project.toJson()}');
     double? dist = widget.project.monitorMaxDistanceInMetres;
     pp('$mm drawing circles for project positions: ${projectPositions.length}, monitorMaxDistanceInMetres: $dist == null? 100 : $dist');
     for (var pos in projectPositions) {
       circles.add(Circle(
-          center: LatLng(pos.position!.coordinates[1], pos.position!.coordinates[0]),
+          center: LatLng(
+              pos.position!.coordinates[1], pos.position!.coordinates[0]),
           radius: dist ?? 300,
           fillColor: Colors.black26,
           strokeWidth: 4,
           strokeColor: Colors.pink,
-          circleId: CircleId('${pos.projectId!}_${DateTime.now().microsecondsSinceEpoch}')));
+          circleId: CircleId(
+              '${pos.projectId!}_${DateTime.now().microsecondsSinceEpoch}')));
     }
   }
 
   void _setMarkerIcon() async {
     BitmapDescriptor.fromAssetImage(
-        const ImageConfiguration(size: Size(4.0,4.0)), "assets/avatar.png",)
-        .then(
-          (icon) {
+      const ImageConfiguration(size: Size(4.0, 4.0)),
+      "assets/avatar.png",
+    ).then(
+      (icon) {
         setState(() {
           markerIcon = icon;
         });
@@ -153,7 +159,6 @@ class ProjectMapMobileState extends State<ProjectMapMobile>
           projectId: widget.project.projectId!, forceRefresh: forceRefresh);
       projectPositions = await projectBloc.getProjectPositions(
           projectId: widget.project.projectId!, forceRefresh: forceRefresh);
-
     } catch (e) {
       pp(e);
       if (mounted) {
@@ -352,9 +357,7 @@ class ProjectMapMobileState extends State<ProjectMapMobile>
       projectPositions.add(resultPosition);
       _addMarkers();
       _buildCircles();
-      setState(() {
-
-      });
+      setState(() {});
     } catch (e) {
       pp(e);
       if (mounted) {
@@ -398,18 +401,25 @@ class ProjectMapMobileState extends State<ProjectMapMobile>
                 Row(
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
-                    const SizedBox(width: 12,),
+                    const SizedBox(
+                      width: 12,
+                    ),
                     Flexible(
                       child: Text(
                         widget.project.name!,
                         style: myTextStyleSmall(context),
                       ),
                     ),
-                    const SizedBox(width: 28,),
-                    ProjectPositionChooser(projectPositions: projectPositions,
-                        projectPolygons: projectPolygons, onSelected: _onSelected),
-
-                    const SizedBox(width: 12,),
+                    const SizedBox(
+                      width: 28,
+                    ),
+                    ProjectPositionChooser(
+                        projectPositions: projectPositions,
+                        projectPolygons: projectPolygons,
+                        onSelected: _onSelected),
+                    const SizedBox(
+                      width: 12,
+                    ),
                     busy
                         ? const SizedBox(
                             width: 48,
@@ -447,9 +457,10 @@ class ProjectMapMobileState extends State<ProjectMapMobile>
                 }
               },
               child: bd.Badge(
-                badgeStyle:  bd.BadgeStyle(
+                badgeStyle: bd.BadgeStyle(
                   badgeColor: Theme.of(context).primaryColor,
-                  elevation: 8, padding: const EdgeInsets.all(8),
+                  elevation: 8,
+                  padding: const EdgeInsets.all(8),
                 ),
                 badgeContent:
                     Text('${projectPositions.length + projectPolygons.length}'),
@@ -642,7 +653,10 @@ class ProjectMapMobileState extends State<ProjectMapMobile>
     );
   }
 
-  void _animateCamera({required double latitude, required double longitude, required double zoom}) {
+  void _animateCamera(
+      {required double latitude,
+      required double longitude,
+      required double zoom}) {
     final CameraPosition cameraPosition = CameraPosition(
       target: LatLng(latitude, longitude),
       zoom: zoom,
@@ -652,7 +666,8 @@ class ProjectMapMobileState extends State<ProjectMapMobile>
   }
 
   _onSelected(local.Position p1) {
-    _animateCamera(latitude: p1.coordinates[1], longitude: p1.coordinates[0], zoom: 14.6);
+    _animateCamera(
+        latitude: p1.coordinates[1], longitude: p1.coordinates[0], zoom: 14.6);
   }
 }
 
@@ -688,11 +703,17 @@ class ProjectPositionChooser extends StatelessWidget {
           value: pos,
           child: Row(
             children: [
-               Text('Location No. ', style: myTextStyleSmall(context),),
+              Text(
+                'Location No. ',
+                style: myTextStyleSmall(context),
+              ),
               const SizedBox(
                 width: 8,
               ),
-              Text('$cnt', style: myNumberStyleSmall(context),),
+              Text(
+                '$cnt',
+                style: myNumberStyleSmall(context),
+              ),
             ],
           ),
         ),

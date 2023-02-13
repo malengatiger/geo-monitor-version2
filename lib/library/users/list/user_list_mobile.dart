@@ -1,29 +1,23 @@
 import 'dart:async';
 
-import 'package:animations/animations.dart';
-import 'package:badges/badges.dart' as bd;
 import 'package:flutter/material.dart';
-import 'package:flutter_libphonenumber/flutter_libphonenumber.dart';
-import 'package:focused_menu/focused_menu.dart';
-import 'package:focused_menu/modals.dart';
-import 'package:geo_monitor/library/generic_functions.dart';
-import 'package:geo_monitor/library/ui/maps_field_monitor/field_monitor_map_mobile.dart';
 import 'package:geo_monitor/library/ui/schedule/scheduler_mobile.dart';
 import 'package:geo_monitor/library/users/kill_user_page.dart';
+import 'package:geo_monitor/library/users/list/user_list_card.dart';
 import 'package:geo_monitor/library/users/report/user_rpt_mobile.dart';
-
 import 'package:page_transition/page_transition.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../api/prefs_og.dart';
 import '../../bloc/fcm_bloc.dart';
+import '../../bloc/location_request_handler.dart';
 import '../../bloc/organization_bloc.dart';
+import '../../data/user.dart';
 import '../../emojis.dart';
 import '../../functions.dart';
-import '../../hive_util.dart';
+import '../../generic_functions.dart';
 import '../../ui/message/message_mobile.dart';
-import '../../data/user.dart';
-import '../edit/user_edit_mobile.dart';
+import '../edit/user_edit_main.dart';
 
 class UserListMobile extends StatefulWidget {
   // final User user;
@@ -37,9 +31,9 @@ class UserListMobileState extends State<UserListMobile>
     with SingleTickerProviderStateMixin {
   late AnimationController _animationController;
   bool busy = false;
-  var _users = <User>[];
+  var users = <User>[];
   final _key = GlobalKey<ScaffoldState>();
-  User? _user;
+  User? user;
   final mm =
       '${E.diamond}${E.diamond}${E.diamond}${E.diamond} UserListMobile: ';
 
@@ -62,7 +56,6 @@ class UserListMobileState extends State<UserListMobile>
 
       if (mounted) {
         _getData(false);
-        showToast(message: 'User added or modified!', context: context);
       }
     });
   }
@@ -74,17 +67,18 @@ class UserListMobileState extends State<UserListMobile>
       busy = true;
     });
     try {
-      _user = await prefsOGx.getUser();
-      if (_user!.userType == UserType.orgAdministrator || _user!.userType == UserType.orgExecutive) {
+      user = await prefsOGx.getUser();
+      if (user!.userType == UserType.orgAdministrator ||
+          user!.userType == UserType.orgExecutive) {
         _showPlusIcon = true;
       }
-      if (_user!.userType == UserType.fieldMonitor) {
+      if (user!.userType == UserType.fieldMonitor) {
         _showEditorIcon = true;
       }
-      _users = await organizationBloc.getUsers(
-          organizationId: _user!.organizationId!, forceRefresh: forceRefresh);
-      _users.sort((a, b) => (a.name!.compareTo(b.name!)));
-      pp('.......................... users to work with: ${_users.length}');
+      users = await organizationBloc.getUsers(
+          organizationId: user!.organizationId!, forceRefresh: forceRefresh);
+      users.sort((a, b) => (a.name!.compareTo(b.name!)));
+      pp('.......................... users to work with: ${users.length}');
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Organization user refresh failed: $e')));
@@ -103,129 +97,7 @@ class UserListMobileState extends State<UserListMobile>
     super.dispose();
   }
 
-  List<FocusedMenuItem> _getMenuItems(User someUser) {
-    List<FocusedMenuItem> list = [];
-
-    if (someUser.userId != _user!.userId) {
-      list.add(FocusedMenuItem(
-          title: Text('Call User', style: myTextStyleSmallBlack(context)),
-          // backgroundColor: Theme.of(context).primaryColor,
-          trailingIcon: Icon(
-            Icons.phone,
-            color: Theme.of(context).primaryColor,
-          ),
-          onPressed: () {
-            _navigateToPhone(someUser);
-          }));
-      list.add(FocusedMenuItem(
-          title: Text('Send Message', style: myTextStyleSmallBlack(context)),
-          // backgroundColor: Theme.of(context).primaryColor,
-          trailingIcon: Icon(
-            Icons.send,
-            color: Theme.of(context).primaryColor,
-          ),
-          onPressed: () {
-            _navigateToMessaging(someUser);
-          }));
-    }
-
-    if (_user!.userType == UserType.fieldMonitor) {
-       // pp('$mm Field monitor cannot edit any other users');
-    } else {
-      list.add(FocusedMenuItem(
-          title: Text('View Report', style: myTextStyleSmallBlack(context)),
-          trailingIcon: Icon(
-            Icons.report,
-            color: Theme.of(context).primaryColor,
-          ),
-          onPressed: () {
-            _navigateToUserReport(someUser);
-          }));
-      list.add(FocusedMenuItem(
-          title: Text(
-            'Edit User',
-            style: myTextStyleSmallBlack(context),
-          ),
-
-          trailingIcon: Icon(
-            Icons.create,
-            color: Theme
-                .of(context)
-                .primaryColor,
-          ),
-          onPressed: () {
-            _navigateToUserEdit(someUser);
-          }));
-    }
-
-    if (_user!.userType == UserType.orgAdministrator ||
-        _user!.userType == UserType.orgExecutive) {
-      list.add(FocusedMenuItem(
-          title: Text('Schedule FieldMonitor',
-              style: myTextStyleSmallBlack(context)),
-          trailingIcon: Icon(
-            Icons.person,
-            color: Theme.of(context).primaryColor,
-          ),
-          onPressed: () {
-            _navigateToScheduler(someUser);
-          }));
-//Sg55CHHMCsBzSxi
-
-      list.add(FocusedMenuItem(
-          title: Text('Remove User', style: myTextStyleSmallBlack(context)),
-          trailingIcon: Icon(
-            Icons.cut,
-            color: Theme.of(context).primaryColor,
-          ),
-          onPressed: () {
-            _navigateToKillPage(someUser);
-          }));
-    }
-    // }
-    return list;
-  }
-
-  String _getFormatted(String cellphone) {
-    final formattedNumber = FlutterLibphonenumber().formatNumberSync(cellphone,
-        country: CountryWithPhoneCode(
-            phoneCode: '27',
-            countryCode: 'ZA',
-            exampleNumberMobileNational: '0825678899',
-            exampleNumberFixedLineNational: '0124456766',
-            phoneMaskMobileNational: '00000 000000',
-            phoneMaskFixedLineNational: '00000 000000',
-            exampleNumberMobileInternational: '+27 65 747 1234',
-            exampleNumberFixedLineInternational: '+27 65 747 1234',
-            phoneMaskMobileInternational: '+00 00 000 0000',
-            phoneMaskFixedLineInternational: '+00 00 000 0000',
-            countryName: 'South Africa'));
-    return formattedNumber;
-  }
-
-
-  void _navigateToUserEdit(User? user) async {
-    if (_user!.userType == UserType.fieldMonitor) {
-      if (_user!.userId != user?.userId!) {
-
-        return;
-      }
-    }
-    var result = await Navigator.push(
-        context,
-        PageTransition(
-            type: PageTransitionType.scale,
-            alignment: Alignment.topLeft,
-            duration: const Duration(seconds: 1),
-            child: UserEditMobile(user)));
-
-    if (result != null) {
-      _users = await cacheManager.getUsers();
-    }
-    setState(() {});
-  }
-
-  void _navigateToUserReport(User user) {
+  void navigateToUserReport(User user) {
     Navigator.push(
         context,
         PageTransition(
@@ -235,7 +107,7 @@ class UserListMobileState extends State<UserListMobile>
             child: UserReportMobile(user)));
   }
 
-  void _navigateToMessaging(User user) {
+  void navigateToMessaging(User user) {
     Navigator.push(
         context,
         PageTransition(
@@ -247,32 +119,19 @@ class UserListMobileState extends State<UserListMobile>
             )));
   }
 
-  Future<void> _navigateToPhone(User user) async {
-    pp('$mm ... starting phone call ....');
-    final Uri phoneUri = Uri(
-        scheme: "tel",
-        path: user.cellphone!
-    );
+  Future<void> navigateToPhone(User user) async {
+    pp('💛️💛️💛 ... starting phone call ....');
+    final Uri phoneUri = Uri(scheme: "tel", path: user.cellphone!);
     try {
       if (await canLaunchUrl(phoneUri)) {
         await launchUrl(phoneUri);
       }
     } catch (error) {
-      throw("Cannot dial");
+      throw ("Cannot dial");
     }
   }
 
-  void _navigateToMap(User user) {
-    Navigator.push(
-        context,
-        PageTransition(
-            type: PageTransitionType.scale,
-            alignment: Alignment.bottomLeft,
-            duration: const Duration(seconds: 1),
-            child: FieldMonitorMapMobile(user)));
-  }
-
-  void _navigateToScheduler(User user) {
+  void navigateToScheduler(User user) {
     Navigator.push(
         context,
         PageTransition(
@@ -283,8 +142,22 @@ class UserListMobileState extends State<UserListMobile>
   }
 
   bool sortedByName = false;
+  void navigateToUserEdit(User? user) async {
+    if (user!.userType == UserType.fieldMonitor) {
+      if (user.userId != user.userId!) {
+        return;
+      }
+    }
+    Navigator.push(
+        context,
+        PageTransition(
+            type: PageTransitionType.scale,
+            alignment: Alignment.topLeft,
+            duration: const Duration(seconds: 1),
+            child: UserEditMain(user)));
+  }
 
-  Future<void> _navigateToKillPage(User user) async {
+  Future<void> navigateToKillPage(User user) async {
     await Navigator.push(
         context,
         PageTransition(
@@ -294,8 +167,33 @@ class UserListMobileState extends State<UserListMobile>
             child: KillUserPage(
               user: user,
             )));
-    pp('$mm ... back from KillPage; will refresh user list ....');
-    _getData(true);
+    pp('💛️💛️💛 ... back from KillPage; will refresh user list ....');
+  }
+
+  void _sendLocationRequest(User otherUser) async {
+    setState(() {
+      busy = true;
+    });
+    try {
+      var user = await prefsOGx.getUser();
+      await locationRequestHandler.sendLocationRequest(
+          requesterId: user!.userId!,
+          requesterName: user.name!,
+          userId: otherUser.userId!,
+          userName: otherUser.name!);
+      if (mounted) {
+        showToast(message: 'Location request sent', context: context);
+      }
+    } catch (e) {
+      pp(e);
+      if (mounted) {
+        showToast(message: '$e', context: context);
+      }
+    }
+
+    setState(() {
+      busy = false;
+    });
   }
 
   void _sort() {
@@ -305,211 +203,112 @@ class UserListMobileState extends State<UserListMobile>
       _sortByName();
     }
   }
+
   void _sortByName() {
-    _users.sort((a,b) => a.name!.compareTo(b.name!));
+    users.sort((a, b) => a.name!.compareTo(b.name!));
     sortedByName = true;
-    setState(() {
-
-    });
+    setState(() {});
   }
-  void _sortByNameDesc() {
-    _users.sort((a,b) => b.name!.compareTo(a.name!));
-    sortedByName = false;
-    setState(() {
 
-    });
+  void _sortByNameDesc() {
+    users.sort((a, b) => b.name!.compareTo(a.name!));
+    sortedByName = false;
+    setState(() {});
   }
 
   @override
   Widget build(BuildContext context) {
     return SafeArea(
-        child: Scaffold(
-          key: _key,
-          appBar: AppBar(
-            title: Text(
-              'Organization Users',
-              style: Styles.whiteTiny,
-            ),
-            actions: busy? [] : [
-              IconButton(
-                icon: Icon(
-                  Icons.refresh,
-                  size: 20,
-                  color: Theme.of(context).primaryColor,
-                ),
-                onPressed: () {
-                  _getData(true);
-                },
-              ),
-              _showPlusIcon? IconButton(
-                icon: Icon(Icons.add, size: 20, color: Theme.of(context).primaryColor),
-                onPressed: () {
-                  _navigateToUserEdit(null);
-                },
-              ): const SizedBox(),
-
-              _showEditorIcon? IconButton(
-                icon: Icon(Icons.edit, size: 20, color: Theme.of(context).primaryColor),
-                onPressed: () {
-                  _navigateToUserEdit(_user);
-                },
-              ): const SizedBox(),
-            ],
+      child: Scaffold(
+        key: _key,
+        appBar: AppBar(
+          title: Text(
+            'Members',
+            style: myTextStyleLarge(context),
           ),
-          body: busy
-              ? const Center(
-            child: SizedBox(
-              width: 16,
-              height: 16,
-              child: CircularProgressIndicator(
-                strokeWidth: 2,
-                backgroundColor: Colors.pink,
-              ),
-            ),
-          )
-              : Padding(
-            padding: const EdgeInsets.all(12.0),
-            child: Card(
-              elevation: 4,
-              shape: getRoundedBorder(radius: 16),
-              child: Column(
+          actions: busy
+              ? []
+              : [
+                  IconButton(
+                    icon: Icon(
+                      Icons.refresh,
+                      size: 20,
+                      color: Theme.of(context).primaryColor,
+                    ),
+                    onPressed: () {
+                      _getData(true);
+                    },
+                  ),
+                  _showPlusIcon
+                      ? IconButton(
+                          icon: Icon(Icons.add,
+                              size: 20, color: Theme.of(context).primaryColor),
+                          onPressed: () {
+                            navigateToUserEdit(null);
+                          },
+                        )
+                      : const SizedBox(),
+                  _showEditorIcon
+                      ? IconButton(
+                          icon: Icon(Icons.edit,
+                              size: 20, color: Theme.of(context).primaryColor),
+                          onPressed: () {
+                            navigateToUserEdit(user);
+                          },
+                        )
+                      : const SizedBox(),
+                ],
+        ),
+        body: busy
+            ? const Center(
+                child: SizedBox(
+                  width: 16,
+                  height: 16,
+                  child: CircularProgressIndicator(
+                    strokeWidth: 2,
+                    backgroundColor: Colors.pink,
+                  ),
+                ),
+              )
+            : Column(
                 children: [
                   const SizedBox(
                     height: 24,
                   ),
-                  Text(
-                    _user!.organizationName!,
-                    style: myTextStyleLarge(context),
-                  ),
-                  const SizedBox(
-                    height: 12,
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        'Admins & Field Monitors',
-                        style: myTextStyleSmall(context),
-                      ),
-                      const SizedBox(
-                        width: 8,
-                      ),
-                    ],
-                  ),
-                  const SizedBox(
-                    height: 24,
-                  ),
                   Expanded(
-                    child: bd.Badge(
-                      badgeContent: InkWell(
-                        onTap: _sort,
-                        child: Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Text(
-                            '${_users.length}',
-                            style: myTextStyleSmallBlack(context),
-                          ),
-                        ),
-                      ),
-                      badgeStyle:  bd.BadgeStyle(
-                        badgeColor: Theme.of(context).primaryColor,
-                        elevation: 8, padding: const EdgeInsets.all(4),
-                      ),
-                      position:  bd.BadgePosition.topEnd(top: -16, end: 12),
-                      child: AnimatedBuilder(
-                        animation: _animationController,
-                        builder: (BuildContext context, Widget? child) {
-                          return FadeScaleTransition(
-                            animation: _animationController,
-                            child: child,
-                          );
-                        },
-                        child: ListView.builder(
-                          itemCount: _users.length,
-                          itemBuilder: (BuildContext context, int index) {
-                            var user = _users.elementAt(index);
-                            var created = DateTime.parse(user.created!);
-                            var now = DateTime.now();
-                            var ms = now.millisecondsSinceEpoch - created.millisecondsSinceEpoch;
-                            var deltaHours = Duration(milliseconds: ms).inHours;
-                            return FocusedMenuHolder(
-                              menuOffset: 20,
-                              duration: const Duration(milliseconds: 300),
-                              menuItems: _getMenuItems(user),
-                              animateMenuItems: true,
-                              openWithTap: true,
-                              onPressed: () {
-                                pp('$mm. 💛️💛️💛️ tapped FocusedMenuHolder ...');
-                              },
-                              child: Card(
-                                elevation: 2,
-                                shape: RoundedRectangleBorder(
-                                    borderRadius:
-                                    BorderRadius.circular(16.0)),
-                                child: Padding(
-                                  padding: const EdgeInsets.all(4.0),
-                                  child: Column(
-                                    children: [
-                                      Padding(
-                                        padding: const EdgeInsets.symmetric(
-                                            vertical: 6.0),
-                                        child: Row(
-                                          children: [
-                                            user.thumbnailUrl == null? const CircleAvatar(
-                                              radius: 24,
-                                            ): CircleAvatar(
-                                              radius: 24,
-                                              backgroundImage: NetworkImage(user.thumbnailUrl!),
-                                            ),
-                                            const SizedBox(
-                                              width: 16,
-                                            ),
-
-                                            Flexible(
-                                              child: Row(
-                                                children: [
-                                                  Text(
-                                                    user.name!,
-                                                    style: myTextStyleSmall(
-                                                        context),
-                                                  ),
-                                                  const SizedBox(width: 24,),
-                                                  deltaHours < 4? const SizedBox(width: 8, height: 8,
-                                                    child: CircularProgressIndicator(
-                                                      strokeWidth: 3, backgroundColor: Colors.pink,
-                                                    ),): const SizedBox(),
-                                                ],
-                                              ),
-                                            ),
-                                            const SizedBox(
-                                              height: 8,
-                                            ),
-
-                                            // const SizedBox(width:24, height: 24,
-                                            //   child: CircleAvatar(
-                                            //       backgroundImage: AssetImage(
-                                            //           'assets/batman.png')),
-                                            // ),
-                                          ],
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            );
-                          },
-                        ),
-                      ),
+                    child: UserListCard(
+                      amInLandscape: true,
+                      users: users,
+                      deviceUser: user!,
+                      navigateToLocationRequest: (mUser) {
+                        _sendLocationRequest(mUser);
+                      },
+                      navigateToPhone: (mUser) {
+                        navigateToPhone(mUser);
+                      },
+                      navigateToMessaging: (user) {
+                        navigateToMessaging(user);
+                      },
+                      navigateToUserReport: (user) {
+                        navigateToUserReport(user);
+                      },
+                      navigateToUserEdit: (user) {
+                        navigateToUserEdit(user);
+                      },
+                      navigateToScheduler: (user) {
+                        navigateToScheduler(user);
+                      },
+                      navigateToKillPage: (user) {
+                        navigateToKillPage(user);
+                      },
+                      badgeTapped: () {
+                        _sort();
+                      },
                     ),
                   ),
                 ],
               ),
-            ),
-          ),
-        ));
+      ),
+    );
   }
-
 }
-
-

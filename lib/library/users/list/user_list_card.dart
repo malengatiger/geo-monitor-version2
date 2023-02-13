@@ -1,7 +1,7 @@
+import 'package:badges/badges.dart' as bd;
 import 'package:flutter/material.dart';
 import 'package:focused_menu/focused_menu.dart';
 import 'package:focused_menu/modals.dart';
-import 'package:badges/badges.dart' as bd;
 
 import '../../data/user.dart';
 import '../../functions.dart';
@@ -18,7 +18,8 @@ class UserListCard extends StatelessWidget {
       required this.navigateToScheduler,
       required this.navigateToKillPage,
       required this.amInLandscape,
-      required this.badgeTapped})
+      required this.badgeTapped,
+      required this.navigateToLocationRequest})
       : super(key: key);
 
   final List<User> users;
@@ -32,6 +33,7 @@ class UserListCard extends StatelessWidget {
   final Function(User) navigateToUserEdit;
   final Function(User) navigateToScheduler;
   final Function(User) navigateToKillPage;
+  final Function(User) navigateToLocationRequest;
   final Function() badgeTapped;
 
   List<FocusedMenuItem> _getMenuItems(User someUser, BuildContext context) {
@@ -89,6 +91,16 @@ class UserListCard extends StatelessWidget {
     if (deviceUser.userType == UserType.orgAdministrator ||
         deviceUser.userType == UserType.orgExecutive) {
       list.add(FocusedMenuItem(
+          title: Text('Request Member Location',
+              style: myTextStyleSmallBlack(context)),
+          trailingIcon: Icon(
+            Icons.location_on,
+            color: Theme.of(context).primaryColor,
+          ),
+          onPressed: () {
+            navigateToLocationRequest(someUser);
+          }));
+      list.add(FocusedMenuItem(
           title: Text('Schedule FieldMonitor',
               style: myTextStyleSmallBlack(context)),
           trailingIcon: Icon(
@@ -114,18 +126,17 @@ class UserListCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-
     return Card(
       elevation: 4,
       shape: getRoundedBorder(radius: 16),
       child: Padding(
         padding: amInLandscape
             ? const EdgeInsets.symmetric(horizontal: 24.0)
-            : const EdgeInsets.symmetric(horizontal: 48.0),
+            : const EdgeInsets.symmetric(horizontal: 12.0),
         child: Column(
           children: [
             const SizedBox(
-              height: 48,
+              height: 32,
             ),
             Text(
               deviceUser.organizationName!,
@@ -147,7 +158,7 @@ class UserListCard extends StatelessWidget {
               ],
             ),
             SizedBox(
-              height: amInLandscape? 48:60,
+              height: amInLandscape ? 48 : 60,
             ),
             Expanded(
               child: InkWell(
@@ -176,7 +187,7 @@ class UserListCard extends StatelessWidget {
                       var now = DateTime.now();
                       var ms = now.millisecondsSinceEpoch -
                           created.millisecondsSinceEpoch;
-                      var deltaDays = Duration(milliseconds: ms).inDays;
+                      var deltaHours = Duration(milliseconds: ms).inHours;
                       return FocusedMenuHolder(
                         menuOffset: 20,
                         duration: const Duration(milliseconds: 300),
@@ -190,63 +201,57 @@ class UserListCard extends StatelessWidget {
                           elevation: 2,
                           shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(16.0)),
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 8.0, vertical: 4.0),
-                            child: Column(
-                              children: [
-                                Padding(
-                                  padding:
-                                      const EdgeInsets.symmetric(vertical: 6.0),
-                                  child: Row(
-                                    children: [
-                                      mUser.thumbnailUrl == null
-                                          ? const CircleAvatar(
-                                              radius: 24,
-                                            )
-                                          : CircleAvatar(
-                                              radius: 24,
-                                              backgroundImage: NetworkImage(
-                                                  mUser.thumbnailUrl!),
-                                            ),
-                                      const SizedBox(
-                                        width: 16,
+                          child: Column(
+                            children: [
+                              Padding(
+                                padding:
+                                    const EdgeInsets.symmetric(vertical: 6.0),
+                                child: Row(
+                                  children: [
+                                    mUser.thumbnailUrl == null
+                                        ? const CircleAvatar(
+                                            radius: 20,
+                                          )
+                                        : CircleAvatar(
+                                            radius: 20,
+                                            backgroundImage: NetworkImage(
+                                                mUser.thumbnailUrl!),
+                                          ),
+                                    const SizedBox(
+                                      width: 8,
+                                    ),
+                                    Flexible(
+                                      child: Row(
+                                        children: [
+                                          Text(
+                                            mUser.name!,
+                                            style: myTextStyleSmall(context),
+                                          ),
+                                          const SizedBox(
+                                            width: 8,
+                                          ),
+                                          deltaHours < 4
+                                              ? const SizedBox(
+                                                  width: 8,
+                                                  height: 8,
+                                                  child:
+                                                      CircularProgressIndicator(
+                                                    strokeWidth: 3,
+                                                    backgroundColor:
+                                                        Colors.pink,
+                                                  ),
+                                                )
+                                              : const SizedBox(),
+                                        ],
                                       ),
-
-                                      Flexible(
-                                        child: Row(
-                                          children: [
-                                            Text(
-                                              mUser.name!,
-                                              style: myTextStyleSmall(context),
-                                            ),
-                                            const SizedBox(
-                                              width: 24,
-                                            ),
-                                            deltaDays < 3
-                                                ? const SizedBox(
-                                                    width: 8,
-                                                    height: 8,
-                                                    child:
-                                                        CircularProgressIndicator(
-                                                      strokeWidth: 3,
-                                                      backgroundColor:
-                                                          Colors.pink,
-                                                    ),
-                                                  )
-                                                : const SizedBox(),
-                                          ],
-                                        ),
-                                      ),
-                                      const SizedBox(
-                                        height: 0,
-                                      ),
-
-                                    ],
-                                  ),
+                                    ),
+                                    const SizedBox(
+                                      height: 0,
+                                    ),
+                                  ],
                                 ),
-                              ],
-                            ),
+                              ),
+                            ],
                           ),
                         ),
                       );

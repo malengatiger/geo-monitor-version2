@@ -1,40 +1,53 @@
 import 'package:hive/hive.dart';
+
 part 'location_request.g.dart';
-/*
-private String organizationId, created, administratorId, response;
- */
+
 @HiveType(typeId: 23)
 class LocationRequest extends HiveObject {
   @HiveField(0)
   String? organizationId;
   @HiveField(1)
-  String? administratorId;
+  String? requesterId;
   @HiveField(2)
   String? created;
   @HiveField(3)
-  String? response;
- 
+  String? requesterName;
+  @HiveField(4)
+  String? userId;
+  @HiveField(5)
+  String? userName;
+  @HiveField(6)
+  String? organizationName;
+
+  //private String , , , ;
+  //     private String , userName, organizationName;
+
   LocationRequest(
       {required this.organizationId,
-        this.administratorId,
-        required this.created,
-        required this.response,}); // LocationRequest({required this.organizationId, this.userId, required this.created});
+      this.requesterId,
+      required this.created,
+      required this.requesterName,
+      required this.userName,
+      required this.userId,
+      required this.organizationName}); // LocationRequest({required this.organizationId, this.userId, required this.created});
 
   LocationRequest.fromJson(Map data) {
     // pp(data);
     organizationId = data['organizationId'];
-    administratorId = data['administratorId'];
-    created = data['created'];
-    response = data['response'];
+    requesterId = data['requesterId'];
 
+    userId = data['userId'];
+    userName = data['userName'];
+    organizationName = data['organizationName'];
+    created = data['created'];
+    requesterName = data['requesterName'];
   }
   Map<String, dynamic> toJson() {
     Map<String, dynamic> map = {
       'organizationId': organizationId,
-      'administratorId': administratorId,
+      'requesterId': requesterId,
       'created': created,
-      'response': response,
-
+      'requesterName': requesterName,
     };
     return map;
   }

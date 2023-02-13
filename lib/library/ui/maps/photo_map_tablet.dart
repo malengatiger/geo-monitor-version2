@@ -1,29 +1,18 @@
 import 'dart:async';
-import 'dart:collection';
 import 'dart:math';
 
 import 'package:animations/animations.dart';
-import 'package:badges/badges.dart' as bd;
 import 'package:flutter/material.dart';
 import 'package:geo_monitor/library/api/prefs_og.dart';
-import 'package:geo_monitor/library/bloc/fcm_bloc.dart';
-import 'package:geo_monitor/library/bloc/organization_bloc.dart';
-import 'package:geo_monitor/library/bloc/project_bloc.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:intl/intl.dart';
-import 'package:uuid/uuid.dart';
 
-import '../../api/data_api.dart';
-import '../../data/city.dart';
 import '../../data/photo.dart';
-import '../../data/project.dart';
 import '../../data/position.dart' as local;
 import '../../data/project_polygon.dart';
 import '../../data/project_position.dart';
 import '../../data/user.dart';
-import '../../emojis.dart';
 import '../../functions.dart';
-import '../../location/loc_bloc.dart';
 
 class PhotoMapTablet extends StatefulWidget {
   final Photo photo;
@@ -90,7 +79,6 @@ class PhotoMapTabletState extends State<PhotoMapTablet>
   }
 
   GoogleMapController? googleMapController;
-  double _latitude = 0.0, _longitude = 0.0;
 
   Future<void> _addMarker() async {
     pp('$mm _addMarker for photo: ....... 🍎 ');
@@ -107,8 +95,7 @@ class PhotoMapTabletState extends State<PhotoMapTablet>
       // icon: markerIcon,
       position: latLng,
       infoWindow: InfoWindow(
-          title: widget.photo.projectName,
-          snippet: 'Photo was taken here'),
+          title: widget.photo.projectName, snippet: 'Photo was taken here'),
       onTap: () {
         _onMarkerTapped();
       },
@@ -116,7 +103,8 @@ class PhotoMapTabletState extends State<PhotoMapTablet>
     markers[markerId] = marker;
 
     googleMapController = await _mapController.future;
-    _animateCamera(latitude: latLng.latitude, longitude: latLng.longitude, zoom: 14.0);
+    _animateCamera(
+        latitude: latLng.latitude, longitude: latLng.longitude, zoom: 14.0);
   }
 
   void _onMarkerTapped() {
@@ -124,10 +112,24 @@ class PhotoMapTabletState extends State<PhotoMapTablet>
   }
 
   bool isWithin = false;
+  void _animateCamera(
+      {required double latitude,
+      required double longitude,
+      required double zoom}) {
+    final CameraPosition cameraPosition = CameraPosition(
+      target: LatLng(latitude, longitude),
+      zoom: zoom,
+    );
+    googleMapController!
+        .animateCamera(CameraUpdate.newCameraPosition(cameraPosition));
+  }
+
+  bool _showLargePhoto = false;
 
   @override
   Widget build(BuildContext context) {
-    String formattedDate = DateFormat.yMMMEd().format(DateTime.parse(widget.photo.created!));
+    String formattedDate =
+        DateFormat.yMMMEd().format(DateTime.parse(widget.photo.created!));
     var time = TimeOfDay.fromDateTime(DateTime.parse(widget.photo.created!));
     return SafeArea(
       child: Scaffold(
@@ -156,7 +158,6 @@ class PhotoMapTabletState extends State<PhotoMapTablet>
                     const SizedBox(
                       width: 28,
                     ),
-
                     busy
                         ? const SizedBox(
                             width: 48,
@@ -200,9 +201,71 @@ class PhotoMapTabletState extends State<PhotoMapTablet>
               compassEnabled: true,
               buildingsEnabled: true,
               zoomControlsEnabled: true,
-
             ),
-             Positioned(
+            _showLargePhoto
+                ? Positioned(
+                    child: AnimatedBuilder(
+                      animation: _animationController,
+                      builder: (BuildContext context, Widget? child) {
+                        return FadeScaleTransition(
+                          animation: _animationController,
+                          child: child,
+                        );
+                      },
+                      child: GestureDetector(
+                        onTap: () {
+                          setState(() {
+                            _showLargePhoto = !_showLargePhoto;
+                          });
+                          _animationController.reset();
+                          _animationController.forward();
+                        },
+                        child: Card(
+                          elevation: 8,
+                          color: Colors.black38,
+                          child: SizedBox(
+                            height: 660,
+                            width: 480,
+                            child: Column(
+                              children: [
+                                const SizedBox(
+                                  height: 8,
+                                ),
+                                Expanded(
+                                  child: InteractiveViewer(
+                                    child: Image.network(
+                                      widget.photo.url!,
+                                      height: 600,
+                                      width: 460,
+                                      fit: BoxFit.cover,
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(
+                                  height: 8,
+                                ),
+                                Text(
+                                  '$formattedDate ${time.hour}:${time.minute}',
+                                  style: myTextStyleSmall(context),
+                                ),
+                                const SizedBox(
+                                  height: 8,
+                                ),
+                                Text(
+                                  '${widget.photo.userName}',
+                                  style: myTextStyleSmall(context),
+                                ),
+                                const SizedBox(
+                                  height: 8,
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  )
+                : Positioned(
                     left: 12,
                     top: 12,
                     child: AnimatedBuilder(
@@ -213,60 +276,61 @@ class PhotoMapTabletState extends State<PhotoMapTablet>
                           child: child,
                         );
                       },
-                      child: Card(
-                        elevation: 8,
-                        color: Colors.black38,
-                        child: SizedBox(
-                          height: 420,
-                          width: 220,
-                          child: Column(
-                            children: [
-                              const SizedBox(
-                                height: 12,
-                              ),
-                              Image.network(
-                                widget.photo.thumbnailUrl!,
-                                width: 220,
-                                height: 340,
-                                fit: BoxFit.fill,
-                              ),
-                              const SizedBox(
-                                height: 8,
-                              ),
-                              Text(
-                                '$formattedDate ${time.hour}:${time.minute}',
-                                style: myTextStyleSmall(context),
-                              ),
-                              const SizedBox(
-                                height: 8,
-                              ),
-                              Text('${widget.photo.userName}', style: myTextStyleSmall(context),),
-                              const SizedBox(
-                                height: 8,
-                              ),
-                            ],
+                      child: GestureDetector(
+                        onTap: () {
+                          setState(() {
+                            _showLargePhoto = !_showLargePhoto;
+                          });
+                          _animationController.reset();
+                          _animationController.forward();
+                        },
+                        child: Card(
+                          elevation: 8,
+                          color: Colors.black38,
+                          child: SizedBox(
+                            height: 420,
+                            width: 220,
+                            child: Column(
+                              children: [
+                                const SizedBox(
+                                  height: 12,
+                                ),
+                                InteractiveViewer(
+                                  child: Image.network(
+                                    widget.photo.thumbnailUrl!,
+                                    width: 220,
+                                    height: 340,
+                                    fit: BoxFit.fill,
+                                  ),
+                                ),
+                                const SizedBox(
+                                  height: 8,
+                                ),
+                                Text(
+                                  '$formattedDate ${time.hour}:${time.minute}',
+                                  style: myTextStyleSmall(context),
+                                ),
+                                const SizedBox(
+                                  height: 8,
+                                ),
+                                Text(
+                                  '${widget.photo.userName}',
+                                  style: myTextStyleSmall(context),
+                                ),
+                                const SizedBox(
+                                  height: 8,
+                                ),
+                              ],
+                            ),
                           ),
                         ),
                       ),
                     ),
                   ),
-
           ],
         ),
       ),
     );
-  }
-
-  void _animateCamera(
-      {required double latitude,
-      required double longitude,
-      required double zoom}) {
-    final CameraPosition cameraPosition = CameraPosition(
-      target: LatLng(latitude, longitude),
-      zoom: zoom,
-    );
-    googleMapController!
-        .animateCamera(CameraUpdate.newCameraPosition(cameraPosition));
   }
 
   _onSelected(local.Position p1) {

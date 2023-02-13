@@ -14,7 +14,6 @@ import '../../project_selector.dart';
 
 class SettingsForm extends StatefulWidget {
   const SettingsForm({Key? key, required this.padding}) : super(key: key);
-
   final double padding;
   @override
   State<SettingsForm> createState() => _SettingsFormState();
@@ -22,13 +21,17 @@ class SettingsForm extends StatefulWidget {
 
 class _SettingsFormState extends State<SettingsForm> {
   final _formKey = GlobalKey<FormState>();
+  final mm = '🥨🥨🥨🥨🥨SettingsForm: ';
   User? user;
   var orgSettings = <SettingsModel>[];
   Project? selectedProject;
   SettingsModel? settingsModel;
-  var distController = TextEditingController(text: '100');
+
+  var distController = TextEditingController(text: '200');
   var videoController = TextEditingController(text: '5');
   var audioController = TextEditingController(text: '60');
+  var activityController = TextEditingController(text: '12');
+
   int photoSize = 0;
   int currentThemeIndex = 0;
   int groupValue = 0;
@@ -38,32 +41,15 @@ class _SettingsFormState extends State<SettingsForm> {
   @override
   void initState() {
     super.initState();
-    _getOrganizationSettings();
-
+    _getSettings();
   }
 
-  void _getOrganizationSettings() async {
-    pp('🍎🍎 ............. getting user from prefs ...');
+  void _getSettings() async {
+    pp('$mm 🍎🍎 ............. getting user from prefs ...');
     user = await prefsOGx.getUser();
-    pp('🍎🍎 user is here, huh? ${user!.toJson()}');
-    setState(() {
-      busy = true;
-    });
-    try {
-      orgSettings = await cacheManager.getOrganizationSettings();
-      _getSettings();
-    } catch (e) {
-      pp(e);
-      if (mounted) {
-        showToast(
-            duration: const Duration(seconds: 5),
-            message: '$e',
-            context: context);
-      }
-    }
-    setState(() {
-      busy = false;
-    });
+    settingsModel = await prefsOGx.getSettings();
+    pp('$mm 🍎🍎 user is here, huh? ${user!.toJson()}');
+    _setExistingSettings();
   }
 
   void onSelected(Project p1) {
@@ -72,18 +58,32 @@ class _SettingsFormState extends State<SettingsForm> {
     });
   }
 
-  void _getSettings() async {
-    settingsModel = await prefsOGx.getSettings();
-    settingsModel ??= SettingsModel(distanceFromProject: 500,
-          photoSize: 1, maxVideoLengthInMinutes: 2, maxAudioLengthInMinutes: 15, themeIndex: 0,
-          settingsId: const Uuid().v4(),
-          created: DateTime.now().toUtc().toIso8601String(),
-          organizationId: user!.organizationId!, projectId: null);
+  void _setExistingSettings() async {
+    if (settingsModel != null) {
+      if (settingsModel!.activityStreamHours == null ||
+          settingsModel!.activityStreamHours == 0) {
+        settingsModel!.activityStreamHours = 18;
+        await prefsOGx.saveSettings(settingsModel!);
+      }
+    }
+    settingsModel ??= SettingsModel(
+        distanceFromProject: 500,
+        photoSize: 1,
+        maxVideoLengthInMinutes: 2,
+        maxAudioLengthInMinutes: 15,
+        themeIndex: 0,
+        settingsId: const Uuid().v4(),
+        created: DateTime.now().toUtc().toIso8601String(),
+        organizationId: user!.organizationId!,
+        projectId: null,
+        activityStreamHours: 12);
 
     currentThemeIndex = settingsModel!.themeIndex!;
     distController.text = '${settingsModel?.distanceFromProject}';
     videoController.text = '${settingsModel?.maxVideoLengthInMinutes}';
     audioController.text = '${settingsModel?.maxAudioLengthInMinutes}';
+    activityController.text = '${settingsModel?.activityStreamHours}';
+
     if (settingsModel?.photoSize == 0) {
       photoSize = 0;
       groupValue = 0;
@@ -100,31 +100,35 @@ class _SettingsFormState extends State<SettingsForm> {
     setState(() {});
   }
 
-  void writeSettingsToDatabase() async {
+  void _writeSettingsToDatabase() async {
     if (user == null) {
       pp('\n\n\n\n🌀🌀🌀🌀 user is null, what the fuck?\n');
       return;
     }
     if (_formKey.currentState!.validate()) {
-      pp('🔵🔵🔵 writing settings to remote database ... currentThemeIndex: $currentThemeIndex');
+      var date = DateTime.now().toUtc().toIso8601String();
+      pp('$mm 🔵🔵🔵 writing settings to remote database ... '
+          'currentThemeIndex: $currentThemeIndex 🔆🔆🔆 and date: $date} 🔆 stream hours: ${activityController.value.text}');
       settingsModel = SettingsModel(
-          distanceFromProject: int.parse(distController.value.text),
-          photoSize: groupValue,
-          maxVideoLengthInMinutes: int.parse(videoController.value.text),
-          maxAudioLengthInMinutes: int.parse(audioController.value.text),
-          themeIndex: currentThemeIndex,
-          settingsId: const Uuid().v4(),
-          created: DateTime.now().toUtc().toIso8601String(),
-          organizationId: user!.organizationId,
-          projectId:
-              selectedProject == null ? null : selectedProject!.projectId);
+        distanceFromProject: int.parse(distController.value.text),
+        photoSize: groupValue,
+        maxVideoLengthInMinutes: int.parse(videoController.value.text),
+        maxAudioLengthInMinutes: int.parse(audioController.value.text),
+        themeIndex: currentThemeIndex,
+        settingsId: const Uuid().v4(),
+        created: date,
+        organizationId: user!.organizationId,
+        projectId: selectedProject == null ? null : selectedProject!.projectId,
+        activityStreamHours: int.parse(activityController.value.text),
+      );
 
       pp('🌸 🌸 🌸 🌸 🌸 ... about to save settings: ${settingsModel!.toJson()}');
       if (settingsModel!.projectId == null) {
         await prefsOGx.saveSettings(settingsModel!);
         themeBloc.themeStreamController.sink.add(settingsModel!.themeIndex!);
       }
-      await sendSettings();
+      await cacheManager.addSettings(settings: settingsModel!);
+      await _sendSettings();
     }
     if (mounted) {
       showToast(
@@ -135,8 +139,8 @@ class _SettingsFormState extends State<SettingsForm> {
     }
   }
 
-  Future sendSettings() async {
-    pp('\n\n🔵🔵🔵 settings sent to database: ${settingsModel!.toJson()}');
+  Future _sendSettings() async {
+    pp('\n\n$mm sendSettings: 🔵🔵🔵 settings sent to database: ${settingsModel!.toJson()}');
     setState(() {
       busyWritingToDB = true;
     });
@@ -200,9 +204,22 @@ class _SettingsFormState extends State<SettingsForm> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [
+                      busyWritingToDB
+                          ? const SizedBox(
+                              width: 16,
+                              height: 16,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 4,
+                                backgroundColor: Colors.pink,
+                              ),
+                            )
+                          : const SizedBox(),
+                      const SizedBox(
+                        width: 24,
+                      ),
                       IconButton(
                           onPressed: () {
-                            sendSettings();
+                            _writeSettingsToDatabase();
                           },
                           icon: Icon(
                             Icons.check,
@@ -212,7 +229,7 @@ class _SettingsFormState extends State<SettingsForm> {
                     ],
                   ),
                   const SizedBox(
-                    height: 48,
+                    height: 12,
                   ),
                   selectedProject == null
                       ? const SizedBox()
@@ -260,7 +277,7 @@ class _SettingsFormState extends State<SettingsForm> {
                     ),
                   ),
                   const SizedBox(
-                    height: 20,
+                    height: 12,
                   ),
                   SizedBox(
                     width: 260,
@@ -284,7 +301,7 @@ class _SettingsFormState extends State<SettingsForm> {
                     ),
                   ),
                   const SizedBox(
-                    height: 20,
+                    height: 12,
                   ),
                   SizedBox(
                     width: 260,
@@ -308,7 +325,32 @@ class _SettingsFormState extends State<SettingsForm> {
                     ),
                   ),
                   const SizedBox(
-                    height: 28,
+                    height: 12,
+                  ),
+                  SizedBox(
+                    width: 260,
+                    child: TextFormField(
+                      controller: activityController,
+                      keyboardType: TextInputType.number,
+                      validator: (value) {
+                        if (value!.isEmpty) {
+                          return 'Please enter the number of hours your activity stream must show';
+                        }
+                        pp('💜💜💜💜 activityController: validated value is $value');
+                        return null;
+                      },
+                      decoration: InputDecoration(
+                        hintText: 'Enter activity stream length in hours',
+                        label: Text(
+                          'Activity Stream Audio Length in Hours',
+                          style: myTextStyleSmall(context),
+                        ),
+                        hintStyle: myTextStyleSmall(context),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(
+                    height: 12,
                   ),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.start,
@@ -346,7 +388,7 @@ class _SettingsFormState extends State<SettingsForm> {
                     ],
                   ),
                   const SizedBox(
-                    height: 16,
+                    height: 8,
                   ),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.start,
@@ -430,23 +472,32 @@ class GeoPlaceHolder extends StatelessWidget {
   final double width;
   @override
   Widget build(BuildContext context) {
-    return Container(width: width,
+    return Container(
+      width: width,
       color: Theme.of(context).primaryColor,
       child: Center(
         child: Card(
           elevation: 4,
-
           shape: getRoundedBorder(radius: 16),
-          child: SizedBox(height: 140, width: 300,
+          child: SizedBox(
+            height: 140,
+            width: 300,
             child: Column(
               children: [
-                const SizedBox(height: 28,),
+                const SizedBox(
+                  height: 28,
+                ),
                 Text(
                   'Geo PlaceHolder',
                   style: myNumberStyleLarge(context),
                 ),
-                const SizedBox(height: 24,),
-                Text('Geo content coming soon!', style: myTextStyleMedium(context),)
+                const SizedBox(
+                  height: 24,
+                ),
+                Text(
+                  'Geo content coming soon!',
+                  style: myTextStyleMedium(context),
+                )
               ],
             ),
           ),

@@ -29,7 +29,8 @@ class ProjectDashboardGrid extends StatefulWidget {
       required this.onTypeTapped,
       this.totalHeight,
       this.topPadding,
-      required this.project, required this.showProjectName})
+      required this.project,
+      required this.showProjectName})
       : super(key: key);
   final Function(int) onTypeTapped;
   final double? totalHeight;
@@ -103,7 +104,7 @@ class _ProjectDashboardGridState extends State<ProjectDashboardGrid>
     }
     try {
       var dataBag = await projectBloc.getProjectData(
-          projectId: widget.project!.projectId!, forceRefresh: forceRefresh);
+          projectId: widget.project.projectId!, forceRefresh: forceRefresh);
       _projects = dataBag.projects!;
       _users = dataBag.users!;
       _photos = dataBag.photos!;
@@ -373,10 +374,12 @@ class _ProjectDashboardGridState extends State<ProjectDashboardGrid>
             SizedBox(
               height: widget.topPadding == null ? 48 : widget.topPadding!,
             ),
-            widget.showProjectName? Text(
-              '${widget.project.name}',
-              style: myTextStyleLargePrimaryColor(context),
-            ) : const SizedBox(),
+            widget.showProjectName
+                ? Text(
+                    '${widget.project.name}',
+                    style: myTextStyleLargePrimaryColor(context),
+                  )
+                : const SizedBox(),
             SizedBox(
               height: widget.totalHeight == null ? 900 : widget.totalHeight!,
               child: Padding(

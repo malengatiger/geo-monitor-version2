@@ -1,12 +1,12 @@
 import 'package:animated_splash_screen/animated_splash_screen.dart';
+import 'package:firebase_auth/firebase_auth.dart' as fb;
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:geo_monitor/library/auth/app_auth.dart';
 import 'package:get_storage/get_storage.dart';
-import 'package:firebase_auth/firebase_auth.dart' as fb;
-import 'package:firebase_core/firebase_core.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hive_flutter/adapters.dart';
 import 'package:page_transition/page_transition.dart';
@@ -28,8 +28,8 @@ late FirebaseApp firebaseApp;
 fb.User? fbAuthedUser;
 final mx =
     '${E.heartGreen}${E.heartGreen}${E.heartGreen}${E.heartGreen} main: ';
-final GlobalKey<ScaffoldMessengerState> rootScaffoldMessengerKey = GlobalKey<ScaffoldMessengerState>();
-
+final GlobalKey<ScaffoldMessengerState> rootScaffoldMessengerKey =
+    GlobalKey<ScaffoldMessengerState>();
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -38,10 +38,21 @@ void main() async {
   pp('$xx main: '
       ' Firebase App has been initialized: ${firebaseApp.name}, checking for authed current user');
   fbAuthedUser = fb.FirebaseAuth.instance.currentUser;
+  await GetStorage.init(cacheName);
+
+  /// check user auth status
   if (fbAuthedUser == null) {
     pp('$xx main: fbAuthedUser is NULL ${E.redDot}${E.redDot}${E.redDot}');
   } else {
-    pp('$xx main: fbAuthedUser is OK! ${E.leaf}${E.leaf}${E.leaf}');
+    pp('$xx main: fbAuthedUser is OK! check whether user exists, '
+        'auth could be from old instance of app${E.leaf}${E.leaf}${E.leaf}');
+    var user = await prefsOGx.getUser();
+    if (user == null) {
+      pp('$xx main: 🔴🔴🔴 user is null; cleanup necessary! '
+          '🔴fbAuthedUser will be set to null');
+      await fb.FirebaseAuth.instance.signOut();
+      fbAuthedUser = null;
+    }
   }
   await SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
@@ -50,11 +61,10 @@ void main() async {
 
   runApp(const GeoMonitorApp());
 }
- const xx = '🎽🎽🎽🎽🎽🎽initializeGeoMonitor: ';
+
+const xx = '🎽🎽🎽🎽🎽🎽initializeGeoMonitor: ';
 
 Future<void> _initializeGeoMonitor() async {
-
-  await GetStorage.init(cacheName);
   pp('$xx _initializeGeoMonitor: ... GET CACHED SETTINGS; set themeIndex .............. ');
   var settings = await prefsOGx.getSettings();
   if (settings != null) {
@@ -90,10 +100,8 @@ Future<void> _initializeGeoMonitor() async {
   _buildGeofences();
 
   if (settings != null) {
-    pp('\n\n$xx ${E.heartGreen}${E.heartGreen}}${E
-        .heartGreen} _initializeGeoMonitor: App Settings are 🍎${settings.toJson()}🍎\n\n');
+    pp('\n\n$xx ${E.heartGreen}${E.heartGreen}}${E.heartGreen} _initializeGeoMonitor: App Settings are 🍎${settings.toJson()}🍎\n\n');
   }
-
 }
 
 void _buildGeofences() async {
@@ -101,7 +109,6 @@ void _buildGeofences() async {
   theGreatGeofencer.buildGeofences();
   pp('$xx _buildGeofences should be done and dusted ....');
 }
-
 
 Future<void> signOutForcedForTesting() async {
   await fb.FirebaseAuth.instance.signOut();
@@ -130,30 +137,29 @@ class GeoMonitorApp extends StatelessWidget {
                   'main: theme index has changed to ${snapshot.data}\n\n');
               themeIndex = snapshot.data!;
             }
-          return MaterialApp(
-            scaffoldMessengerKey: rootScaffoldMessengerKey,
-            debugShowCheckedModeBanner: false,
-            title: 'GeoMonitor',
-            theme: themeBloc.getTheme(themeIndex).darkTheme,
-            darkTheme: themeBloc.getTheme(themeIndex).darkTheme,
-            themeMode: ThemeMode.dark,
-            home: AnimatedSplashScreen(
-              duration: 2000,
-              splash: const SplashWidget(),
-              animationDuration: const Duration(milliseconds: 2000),
-              curve: Curves.easeInCirc,
-              splashIconSize: 160.0,
-              nextScreen: fbAuthedUser == null
-                  ? const IntroMain()
-                  : const DashboardMain(),
-              // nextScreen: const UserListMain(),
-              splashTransition: SplashTransition.fadeTransition,
-              pageTransitionType: PageTransitionType.leftToRight,
-              backgroundColor: Colors.pink.shade900,
-            ),
-
-          );
-      }),
+            return MaterialApp(
+              scaffoldMessengerKey: rootScaffoldMessengerKey,
+              debugShowCheckedModeBanner: false,
+              title: 'GeoMonitor',
+              theme: themeBloc.getTheme(themeIndex).darkTheme,
+              darkTheme: themeBloc.getTheme(themeIndex).darkTheme,
+              themeMode: ThemeMode.dark,
+              home: AnimatedSplashScreen(
+                duration: 2000,
+                splash: const SplashWidget(),
+                animationDuration: const Duration(milliseconds: 2000),
+                curve: Curves.easeInCirc,
+                splashIconSize: 160.0,
+                nextScreen: fbAuthedUser == null
+                    ? const IntroMain()
+                    : const DashboardMain(),
+                // nextScreen: const UserListMain(),
+                splashTransition: SplashTransition.fadeTransition,
+                pageTransitionType: PageTransitionType.leftToRight,
+                backgroundColor: Colors.pink.shade900,
+              ),
+            );
+          }),
     );
   }
 }
@@ -166,15 +172,16 @@ class SplashWidget extends StatefulWidget {
 }
 
 class _SplashWidgetState extends State<SplashWidget> {
-
   @override
   void initState() {
     super.initState();
     _performSetup();
   }
+
   void _performSetup() async {
     _initializeGeoMonitor();
   }
+
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -234,9 +241,10 @@ class _SplashWidgetState extends State<SplashWidget> {
   }
 }
 
-
 class StorageTesterPage extends StatefulWidget {
-  const StorageTesterPage({super.key,});
+  const StorageTesterPage({
+    super.key,
+  });
 
   @override
   State<StorageTesterPage> createState() => _StorageTesterPageState();
@@ -284,98 +292,98 @@ class _StorageTesterPageState extends State<StorageTesterPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title:  Text('Testing Storage', style: myTextStyleSmall(context),),
+        title: Text(
+          'Testing Storage',
+          style: myTextStyleSmall(context),
+        ),
       ),
       body: Stack(
         children: [
           Center(
             child: busy
                 ? const SizedBox(
-              height: 24,
-              width: 24,
-              child: CircularProgressIndicator(
-                strokeWidth: 6,
-                backgroundColor: Colors.indigo,
-              ),
-            )
+                    height: 24,
+                    width: 24,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 6,
+                      backgroundColor: Colors.indigo,
+                    ),
+                  )
                 : Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Card(
-                elevation: 4,
-                shape: getRoundedBorder(radius: 16),
-                child: Column(
-                  children: [
-                    const SizedBox(
-                      height: 28,
-                    ),
-                    Text(
-                      'Countries',
-                      style: myTextStyleLarge(context),
-                    ),
-                    const SizedBox(
-                      height: 28,
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.all(16.0),
-                      child: Text(
-                        'A country that is selected should be stored in local cache, whatever type is finally selected. '
-                            'Let us choose the local cache carefully so that it performs the work necessary to handle cached objects quickly!',
-                        style: myTextStyleSmall(context),
+                    padding: const EdgeInsets.all(16.0),
+                    child: Card(
+                      elevation: 4,
+                      shape: getRoundedBorder(radius: 16),
+                      child: Column(
+                        children: [
+                          const SizedBox(
+                            height: 28,
+                          ),
+                          Text(
+                            'Countries',
+                            style: myTextStyleLarge(context),
+                          ),
+                          const SizedBox(
+                            height: 28,
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.all(16.0),
+                            child: Text(
+                              'A country that is selected should be stored in local cache, whatever type is finally selected. '
+                              'Let us choose the local cache carefully so that it performs the work necessary to handle cached objects quickly!',
+                              style: myTextStyleSmall(context),
+                            ),
+                          ),
+                          const SizedBox(
+                            height: 12,
+                          ),
+                          mCountry == null
+                              ? const SizedBox()
+                              : Text(
+                                  '${mCountry!.name}',
+                                  style: GoogleFonts.lato(
+                                      textStyle:
+                                          Theme.of(context).textTheme.bodyLarge,
+                                      fontWeight: FontWeight.w900,
+                                      fontSize: 24,
+                                      color: Theme.of(context).primaryColor),
+                                ),
+                          const SizedBox(
+                            height: 20,
+                          ),
+                          Expanded(
+                            child: ListView.builder(
+                                itemCount: countries.length,
+                                itemBuilder: (_, index) {
+                                  var country = countries.elementAt(index);
+                                  return Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: InkWell(
+                                      onTap: () {
+                                        _handleCountry(country);
+                                      },
+                                      child: Card(
+                                        elevation: 4,
+                                        shape: getRoundedBorder(radius: 16),
+                                        child: Padding(
+                                          padding: const EdgeInsets.all(16.0),
+                                          child: Text(
+                                            country.name!,
+                                            style: myTextStyleSmall(context),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  );
+                                }),
+                          ),
+                        ],
                       ),
                     ),
-                    const SizedBox(
-                      height: 12,
-                    ),
-                    mCountry == null
-                        ? const SizedBox()
-                        : Text(
-                      '${mCountry!.name}',
-                      style: GoogleFonts.lato(
-                          textStyle: Theme.of(context)
-                              .textTheme
-                              .bodyLarge,
-                          fontWeight: FontWeight.w900, fontSize: 24,
-                          color: Theme.of(context).primaryColor),
-                    ),
-                    const SizedBox(
-                      height: 20,
-                    ),
-                    Expanded(
-                      child: ListView.builder(
-                          itemCount: countries.length,
-                          itemBuilder: (_, index) {
-                            var country = countries.elementAt(index);
-                            return Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: InkWell(
-                                onTap: () {
-                                  _handleCountry(country);
-                                },
-                                child: Card(
-                                  elevation: 4,
-                                  shape: getRoundedBorder(radius: 16),
-                                  child: Padding(
-                                    padding: const EdgeInsets.all(16.0),
-                                    child: Text(
-                                      country.name!,
-                                      style: myTextStyleSmall(context),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            );
-                          }),
-                    ),
-                  ],
-                ),
-              ),
-            ),
+                  ),
           ),
         ],
       ),
     );
   }
 }
-
-
-

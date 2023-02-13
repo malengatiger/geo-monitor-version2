@@ -1,22 +1,26 @@
 import 'package:flutter/material.dart';
 import 'package:geo_monitor/library/api/prefs_og.dart';
 import 'package:geo_monitor/library/functions.dart';
-import 'package:page_transition/page_transition.dart';
 import 'package:uuid/uuid.dart';
 
 import '../../bloc/admin_bloc.dart';
-import '../../bloc/organization_bloc.dart';
 import '../../bloc/project_bloc.dart';
 import '../../data/project.dart';
 import '../../data/user.dart';
-import '../project_location/project_location_main.dart';
 
 class ProjectEditCard extends StatefulWidget {
-  const ProjectEditCard({Key? key, required this.project, this.width, required this.onDone}) : super(key: key);
+  const ProjectEditCard(
+      {Key? key,
+      required this.project,
+      this.width,
+      required this.onCancel,
+      required this.navigateToLocation})
+      : super(key: key);
+
   final Project? project;
   final double? width;
-
-  final Function(Project) onDone;
+  final Function(Project) navigateToLocation;
+  final Function() onCancel;
 
   @override
   ProjectEditCardState createState() => ProjectEditCardState();
@@ -32,13 +36,13 @@ class ProjectEditCardState extends State<ProjectEditCard>
   bool busy = false;
   User? admin;
 
-
   @override
   void initState() {
     _controller = AnimationController(vsync: this);
     super.initState();
     _getUser();
   }
+
   void _getUser() async {
     admin = await prefsOGx.getUser();
   }
@@ -48,199 +52,242 @@ class ProjectEditCardState extends State<ProjectEditCard>
     _controller.dispose();
     super.dispose();
   }
+
+  Project? project;
   void _submit() async {
     if (_formKey.currentState!.validate()) {
       setState(() {
         busy = true;
       });
       try {
-        Project mProject;
+        var dist = double.parse(maxController.text);
         if (widget.project == null) {
           pp('😡 😡 😡 _submit new project ......... ${nameController.text}');
           var uuid = const Uuid();
-          mProject = Project(
+          project = Project(
               name: nameController.text,
               description: descController.text,
               organizationId: admin!.organizationId!,
               organizationName: admin!.organizationName!,
               created: DateTime.now().toUtc().toIso8601String(),
-              monitorMaxDistanceInMetres: double.parse(maxController.text),
+              monitorMaxDistanceInMetres: dist,
               photos: [],
               videos: [],
               communities: [],
               monitorReports: [],
               nearestCities: [],
-              projectPositions: [], ratings: [],
+              projectPositions: [],
+              ratings: [],
               projectId: uuid.v4());
-          var m = await adminBloc.addProject(mProject);
-          pp('🎽 🎽 🎽 _submit: new project added .........  ${m.toJson()}');
+          project = await adminBloc.addProject(project!);
+          pp('🎽 🎽 🎽 _submit: new project added .........  ${project!.toJson()}');
         } else {
           pp('😡 😡 😡 _submit existing project for update, soon! 🌸 ......... ');
+
           widget.project!.name = nameController.text;
           widget.project!.description = descController.text;
-          mProject = widget.project!;
+
+          widget.project!.monitorMaxDistanceInMetres = dist;
+          project = widget.project;
+
           var m = await adminBloc.updateProject(widget.project!);
           pp('🎽 🎽 🎽 _submit: new project updated .........  ${m.toJson()}');
         }
 
+        /// refresh data from backend ...
         await projectBloc.getProjectData(
-            projectId: mProject.projectId!, forceRefresh: true);
-        widget.onDone(mProject);
-        if (mounted) {
-          Navigator.of(context).pop();
-        }
-        setState(() {
-          busy = false;
-        });
-      } catch (e) {
-        setState(() {
-          busy = false;
-        });
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Failed: $e')));
+            projectId: project!.projectId!, forceRefresh: true);
 
+        ///a chance to create locations for the project
+        widget.navigateToLocation(project!);
+      } catch (e) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+              duration: const Duration(seconds: 5),
+              content: Text('Failed: $e')));
+        }
       }
     }
+    setState(() {
+      busy = false;
+    });
   }
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(width: widget.width ?? 600,
+    var width = MediaQuery.of(context).size.width;
+    return SizedBox(
+      width: widget.width ?? width,
       child: Card(
         elevation: 4,
-        shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16.0)),
+        shape: getRoundedBorder(radius: 16),
         child: Padding(
           padding: const EdgeInsets.all(12.0),
-          child: Form(
-            key: _formKey,
-            child: Padding(
-              padding: const EdgeInsets.all(28.0),
-              child: Column(
-                children: [
-                  const SizedBox(
-                    height: 72,
-                  ),
-                  TextFormField(
-                    controller: nameController,
-                    keyboardType: TextInputType.text,
-                    style: myTextStyleMedium(context),
-                    decoration: InputDecoration(
-                        icon: Icon(
-                          Icons.event,
-                          color: Theme.of(context).primaryColor,
-                        ),
-                        labelText: 'Project Name',
-                        hintText: 'Enter Project Name'),
-                    validator: (value) {
-                      if (value!.isEmpty) {
-                        return 'Please enter Project name';
-                      }
-                      return null;
-                    },
-                  ),
-                  const SizedBox(
-                    height: 8,
-                  ),
-                  TextFormField(
-                    controller: descController,
-                    keyboardType: TextInputType.multiline,
-                    style: myTextStyleMedium(context),
-                    minLines: 2, //Normal textInputField will be displayed
-                    maxLines:
-                    6, // when user presses enter it will adapt to it
-                    decoration: InputDecoration(
-
-                        icon: Icon(
-                          Icons.info_outline,
-                          color: Theme.of(context).primaryColor,
-                        ),
-                        labelText: 'Description',
-                        hintText: 'Enter Description'),
-                    validator: (value) {
-                      if (value!.isEmpty) {
-                        return 'Please enter Description';
-                      }
-                      return null;
-                    },
-                  ),
-                  const SizedBox(
-                    height: 8,
-                  ),
-                  TextFormField(
-                    controller: maxController,
-                    keyboardType: TextInputType.number,
-                    decoration: InputDecoration(
-                        icon: Icon(
-                          Icons.camera_enhance_outlined,
-                          color: Theme.of(context).primaryColor,
-                        ),
-                        labelText: 'Max Monitor Distance in Metres',
-                        hintText:
-                        'Enter Maximum Monitor Distance in metres'),
-                    validator: (value) {
-                      if (value!.isEmpty) {
-                        return 'Please enter Maximum Monitor Distance in Metres';
-                      }
-                      return null;
-                    },
-                  ),
-                  const SizedBox(
-                    height: 48,
-                  ),
-                  busy
-                      ? const SizedBox(
-                    width: 48,
-                    height: 48,
-                    child: CircularProgressIndicator(
-                      strokeWidth: 8,
-                      backgroundColor: Colors.black,
+          child: SingleChildScrollView(
+            child: Form(
+              key: _formKey,
+              child: Padding(
+                padding: const EdgeInsets.all(28.0),
+                child: Column(
+                  children: [
+                    const SizedBox(
+                      height: 8,
                     ),
-                  )
-                      : Column(
-                    children: [
-                      widget.project == null
-                          ? Container()
-                          : SizedBox(
-                        width: 220,
-                        child: ElevatedButton(
-
-                          child: Padding(
-                            padding: const EdgeInsets.all(12.0),
-                            child: Text(
-                              'Add Location',
-                              style: Styles.whiteSmall,
-                            ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        IconButton(
+                            onPressed: () {
+                              widget.onCancel();
+                            },
+                            icon: Icon(
+                              Icons.close,
+                              color: Theme.of(context).primaryColor,
+                            )),
+                      ],
+                    ),
+                    const SizedBox(
+                      height: 16,
+                    ),
+                    TextFormField(
+                      controller: nameController,
+                      keyboardType: TextInputType.text,
+                      style: myTextStyleMedium(context),
+                      decoration: InputDecoration(
+                          icon: Icon(
+                            Icons.event,
+                            color: Theme.of(context).primaryColor,
                           ),
-                          onPressed: () {
-                            // _navigateToProjectLocation(
-                            //     widget.project!);
-                          },
-                        ),
-                      ),
-                      widget.project == null
-                          ? Container(height: 64,)
-                          : const SizedBox(
-                        height: 64,
-                      ),
-                      SizedBox(
-                        width: 220,
-                        child: ElevatedButton(
-                          onPressed: _submit,
-                          child: Padding(
-                            padding: const EdgeInsets.all(12.0),
-                            child: Text(
-                              'Submit Project',
-                              style: myTextStyleMedium(context),
-                            ),
+                          labelText: 'Project Name',
+                          hintText: 'Enter Project Name'),
+                      validator: (value) {
+                        if (value!.isEmpty) {
+                          return 'Please enter Project name';
+                        }
+                        return null;
+                      },
+                    ),
+                    const SizedBox(
+                      height: 8,
+                    ),
+                    TextFormField(
+                      controller: descController,
+                      keyboardType: TextInputType.multiline,
+                      style: myTextStyleMedium(context),
+                      minLines: 4, //Normal textInputField will be displayed
+                      maxLines:
+                          6, // when user presses enter it will adapt to it
+                      decoration: InputDecoration(
+                          icon: Icon(
+                            Icons.info_outline,
+                            color: Theme.of(context).primaryColor,
                           ),
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(
-                    height: 40,
-                  ),
-                ],
+                          labelText: 'Description of the Project',
+                          hintText: 'Enter Description'),
+                      validator: (value) {
+                        if (value!.isEmpty) {
+                          return 'Please enter Description';
+                        }
+                        return null;
+                      },
+                    ),
+                    const SizedBox(
+                      height: 8,
+                    ),
+                    TextFormField(
+                      controller: maxController,
+                      keyboardType: TextInputType.number,
+                      style: myTextStyleMedium(context),
+                      decoration: InputDecoration(
+                          icon: Icon(
+                            Icons.camera_enhance_outlined,
+                            color: Theme.of(context).primaryColor,
+                          ),
+                          labelText: 'Max Monitor Distance in Metres',
+                          hintText: 'Enter Maximum Monitor Distance in metres'),
+                      validator: (value) {
+                        if (value!.isEmpty) {
+                          return 'Please enter Maximum Monitor Distance in Metres';
+                        }
+                        return null;
+                      },
+                    ),
+                    const SizedBox(
+                      height: 16,
+                    ),
+                    busy
+                        ? const SizedBox(
+                            width: 20,
+                            height: 20,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 4,
+                              backgroundColor: Colors.pink,
+                            ),
+                          )
+                        : Column(
+                            children: [
+                              const SizedBox(
+                                height: 24,
+                              ),
+                              project == null
+                                  ? const SizedBox()
+                                  : SizedBox(
+                                      width: 400,
+                                      child: Row(
+                                        children: [
+                                          IconButton(
+                                            onPressed: () {
+                                              widget
+                                                  .navigateToLocation(project!);
+                                            },
+                                            icon: Icon(
+                                              Icons.location_on,
+                                              color: Theme.of(context)
+                                                  .primaryColor,
+                                            ),
+                                          ),
+                                          const SizedBox(
+                                            width: 8,
+                                          ),
+                                          project == null
+                                              ? const SizedBox()
+                                              : TextButton(
+                                                  child: Text(
+                                                    'Add Project Location',
+                                                    style: myTextStyleMedium(
+                                                        context),
+                                                  ),
+                                                  onPressed: () {
+                                                    widget.navigateToLocation(
+                                                        project!);
+                                                  },
+                                                ),
+                                        ],
+                                      ),
+                                    ),
+                              const SizedBox(
+                                height: 24,
+                              ),
+                              SizedBox(
+                                width: 220,
+                                child: ElevatedButton(
+                                  onPressed: _submit,
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(12.0),
+                                    child: Text(
+                                      'Submit Project',
+                                      style: myTextStyleMedium(context),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                    const SizedBox(
+                      height: 8,
+                    ),
+                  ],
+                ),
               ),
             ),
           ),
@@ -248,6 +295,4 @@ class ProjectEditCardState extends State<ProjectEditCard>
       ),
     );
   }
-
-
 }

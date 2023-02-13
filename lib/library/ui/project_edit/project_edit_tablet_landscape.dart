@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:geo_monitor/library/ui/project_edit/project_edit_card.dart';
-import 'package:google_fonts/google_fonts.dart';
-
+import 'package:geo_monitor/library/ui/settings/settings_form.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:uuid/uuid.dart';
+
 import '../../api/prefs_og.dart';
 import '../../bloc/admin_bloc.dart';
 import '../../bloc/organization_bloc.dart';
@@ -131,13 +131,14 @@ class ProjectEditTabletLandscapeState extends State<ProjectEditTabletLandscape>
 
   @override
   Widget build(BuildContext context) {
+    var width = MediaQuery.of(context).size.width;
     return SafeArea(
       child: Scaffold(
         key: _key,
         appBar: AppBar(
           title: Text(
             'Project Editor',
-            style: Styles.whiteSmall,
+            style: myTextStyleLarge(context),
           ),
           actions: [
             widget.project == null
@@ -152,45 +153,69 @@ class ProjectEditTabletLandscapeState extends State<ProjectEditTabletLandscape>
                   )
           ],
           bottom: PreferredSize(
-            preferredSize: const Size.fromHeight(100),
+            preferredSize: const Size.fromHeight(80),
             child: Column(
               children: [
-                Text(
-                  widget.project == null ? 'New Project' : 'Edit Project',
-                  style: Styles.blackBoldMedium,
+                const SizedBox(
+                  height: 28,
+                ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 64.0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      Text(
+                        widget.project == null
+                            ? 'Create New Project'
+                            : 'Edit Project',
+                        style: myTextStyleMedium(context),
+                      ),
+                    ],
+                  ),
                 ),
                 const SizedBox(
                   height: 8,
                 ),
-                Text(
-                  admin == null ? '' : admin!.organizationName!,
-                  style: myTextStyleLarge(context),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 64.0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      Text(
+                        admin == null ? '' : admin!.organizationName!,
+                        style: myTextStyleLargePrimaryColor(context),
+                      ),
+                    ],
+                  ),
                 ),
                 const SizedBox(
-                  height: 20,
+                  height: 8,
                 )
               ],
             ),
           ),
         ),
         // backgroundColor: Colors.brown[100],
-        body: Padding(
-          padding: const EdgeInsets.all(12.0),
-          child: Row(
-            children: [
-              ProjectEditCard(
+        body: Row(
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(48.0),
+              child: ProjectEditCard(
                 project: widget.project,
-                width: 600,
-                onDone: (project) {
+                width: width / 2,
+                onCancel: () {
+                  pp('.... cancelling ... ');
+                  Navigator.of(context).pop();
+                },
+                navigateToLocation: (project) {
                   _navigateToProjectLocation(project);
                 },
               ),
-              Container(
-                width: 400,
-                color: Theme.of(context).primaryColor,
-              )
-            ],
-          ),
+            ),
+            GeoPlaceHolder(
+              width: (width / 2) - 100,
+            ),
+          ],
         ),
       ),
     );

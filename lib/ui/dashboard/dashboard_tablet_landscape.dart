@@ -1,7 +1,9 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:geo_monitor/library/bloc/organization_bloc.dart';
-import 'package:geo_monitor/library/ui/geo_activity.dart';
+import 'package:geo_monitor/library/ui/media/list/project_media_main.dart';
 import 'package:geo_monitor/library/ui/settings/settings_main.dart';
+import 'package:geo_monitor/ui/activity/geo_activity.dart';
 import 'package:geo_monitor/ui/dashboard/dashboard_grid.dart';
 import 'package:geo_monitor/ui/intro/intro_main.dart';
 import 'package:page_transition/page_transition.dart';
@@ -9,14 +11,16 @@ import 'package:page_transition/page_transition.dart';
 import '../../library/api/prefs_og.dart';
 import '../../library/bloc/downloader.dart';
 import '../../library/bloc/uploader.dart';
+import '../../library/data/audio.dart';
 import '../../library/data/data_bag.dart';
+import '../../library/data/photo.dart';
 import '../../library/data/project.dart';
 import '../../library/data/user.dart';
+import '../../library/data/video.dart';
 import '../../library/functions.dart';
 import '../../library/generic_functions.dart';
+import '../../library/ui/maps/photo_map_tablet.dart';
 import '../../library/ui/maps/project_map_main.dart';
-import '../../library/ui/maps/project_map_mobile.dart';
-import '../../library/ui/media/list/project_media_list_mobile.dart';
 import '../../library/ui/project_list/project_chooser.dart';
 import '../../library/ui/project_list/project_list_main.dart';
 import '../../library/users/full_user_photo.dart';
@@ -38,13 +42,14 @@ class _DashboardTabletLandscapeState extends State<DashboardTabletLandscape> {
   var users = <User>[];
   User? user;
   DataBag? dataBag;
+  bool busy = false;
+
   @override
   void initState() {
     super.initState();
     _getData(false);
 
-    uploader.startTimer(const Duration(seconds: 30));
-
+    uploader.startTimer(const Duration(seconds: 15));
   }
 
   void _getData(bool forceRefresh) async {
@@ -53,7 +58,8 @@ class _DashboardTabletLandscapeState extends State<DashboardTabletLandscape> {
     });
     try {
       user = await prefsOGx.getUser();
-      dataBag = await organizationBloc.getOrganizationData(organizationId: user!.organizationId!, forceRefresh: forceRefresh);
+      dataBag = await organizationBloc.getOrganizationData(
+          organizationId: user!.organizationId!, forceRefresh: forceRefresh);
     } catch (e) {
       pp(e);
       if (mounted) {
@@ -165,7 +171,7 @@ class _DashboardTabletLandscapeState extends State<DashboardTabletLandscape> {
             type: PageTransitionType.scale,
             alignment: Alignment.topLeft,
             duration: const Duration(seconds: 1),
-            child: ProjectMediaListMobile(project: project)));
+            child: ProjectMediaMain(project: project)));
   }
 
   void _navigateToProjectMap(Project project) {
@@ -230,6 +236,7 @@ class _DashboardTabletLandscapeState extends State<DashboardTabletLandscape> {
                   child: ProjectChooser(
                       title: title,
                       height: 500,
+                      width: 500,
                       onSelected: (p1) {
                         Navigator.of(context).pop();
                         _onProjectSelected(p1, destination);
@@ -263,6 +270,59 @@ class _DashboardTabletLandscapeState extends State<DashboardTabletLandscape> {
   }
 
   Project? selectedProject;
+  bool _showPhoto = false;
+  bool _showVideo = false;
+  bool _showAudio = false;
+
+  void _displayPhoto(Photo photo) async {
+    pp('$mm _displayPhoto ...');
+    this.photo = photo;
+    setState(() {
+      _showPhoto = true;
+      _showVideo = false;
+      _showAudio = false;
+    });
+  }
+
+  void _displayVideo(Video video) async {
+    pp('$mm _displayVideo ...');
+    this.video = video;
+    setState(() {
+      _showPhoto = false;
+      _showVideo = true;
+      _showAudio = false;
+    });
+  }
+
+  void _displayAudio(Audio audio) async {
+    pp('$mm _displayAudio ...');
+    this.audio = audio;
+    setState(() {
+      _showPhoto = false;
+      _showVideo = false;
+      _showAudio = true;
+    });
+  }
+
+  Photo? photo;
+  Video? video;
+  Audio? audio;
+
+  void _navigateToPhotoMap() {
+    pp('$mm _navigateToPhotoMap ...');
+
+    if (mounted) {
+      Navigator.push(
+          context,
+          PageTransition(
+              type: PageTransitionType.scale,
+              alignment: Alignment.topLeft,
+              duration: const Duration(milliseconds: 1000),
+              child: PhotoMapTablet(
+                photo: photo!,
+              )));
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -283,15 +343,15 @@ class _DashboardTabletLandscapeState extends State<DashboardTabletLandscape> {
           user == null
               ? const SizedBox()
               : user!.userType == UserType.fieldMonitor
-              ? const SizedBox()
-              : IconButton(
-            icon: Icon(
-              Icons.settings,
-              size: 24,
-              color: Theme.of(context).primaryColor,
-            ),
-            onPressed: _navigateToSettings,
-          ),
+                  ? const SizedBox()
+                  : IconButton(
+                      icon: Icon(
+                        Icons.settings,
+                        size: 24,
+                        color: Theme.of(context).primaryColor,
+                      ),
+                      onPressed: _navigateToSettings,
+                    ),
           IconButton(
             icon: Icon(
               Icons.refresh,
@@ -310,44 +370,194 @@ class _DashboardTabletLandscapeState extends State<DashboardTabletLandscape> {
           Row(
             children: [
               SizedBox(
-                width: size.width/2,
-                child: dataBag == null? const SizedBox() : DashboardGrid(
-                  dataBag: dataBag!,
-                  topPadding: 24,
-                  onTypeTapped: (type) {
-                    switch (type) {
-                      case typeProjects:
-                        _navigateToProjectList();
-                        break;
-                      case typeUsers:
-                        _navigateToUserList();
-                        break;
-                      case typePhotos:
-                        _showProjectDialog(typePhotos);
-                        break;
-                      case typeVideos:
-                        _showProjectDialog(typeVideos);
-                        break;
-                      case typeAudios:
-                        _showProjectDialog(typeAudios);
-                        break;
-                      case typePositions:
-                        _showProjectDialog(typePositions);
-                        break;
-                      case typePolygons:
-                        _showProjectDialog(typePolygons);
-                        break;
-                      case typeSchedules:
-                        _showProjectDialog(typeSchedules);
-                        break;
-                    }
-                  },
-                ),
+                width: (size.width / 2) + 60,
+                child: dataBag == null
+                    ? const SizedBox()
+                    : DashboardGrid(
+                        dataBag: dataBag!,
+                        topPadding: 24,
+                        onTypeTapped: (type) {
+                          switch (type) {
+                            case typeProjects:
+                              _navigateToProjectList();
+                              break;
+                            case typeUsers:
+                              _navigateToUserList();
+                              break;
+                            case typePhotos:
+                              _showProjectDialog(typePhotos);
+                              break;
+                            case typeVideos:
+                              _showProjectDialog(typeVideos);
+                              break;
+                            case typeAudios:
+                              _showProjectDialog(typeAudios);
+                              break;
+                            case typePositions:
+                              _showProjectDialog(typePositions);
+                              break;
+                            case typePolygons:
+                              _showProjectDialog(typePolygons);
+                              break;
+                            case typeSchedules:
+                              _showProjectDialog(typeSchedules);
+                              break;
+                          }
+                        },
+                      ),
               ),
-              GeoActivity(width: size.width/2,),
-
+              GeoActivity(
+                width: (size.width / 2) - 100,
+                thinMode: false,
+                showPhoto: (photo) {
+                  _displayPhoto(photo);
+                },
+                showVideo: (video) {
+                  _displayVideo(video);
+                },
+                showAudio: (audio) {
+                  _displayAudio(audio);
+                },
+              ),
             ],
-          )
+          ),
+          busy
+              ? const Positioned(
+                  left: 80,
+                  top: 140,
+                  child: Card(
+                    child: Center(
+                      child: SizedBox(
+                        width: 16,
+                        height: 16,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 4,
+                          backgroundColor: Colors.pink,
+                        ),
+                      ),
+                    ),
+                  ),
+                )
+              : const SizedBox(),
+          _showPhoto
+              ? Positioned(
+                  left: 0,
+                  top: 0,
+                  child: SizedBox(
+                    width: 420,
+                    height: 640,
+                    // color: Theme.of(context).primaryColor,
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: GestureDetector(
+                        onTap: () {
+                          setState(() {
+                            _showPhoto = false;
+                          });
+                        },
+                        child: Card(
+                          shape: getRoundedBorder(radius: 16),
+                          elevation: 8,
+                          child: Column(
+                            children: [
+                              const SizedBox(
+                                height: 12,
+                              ),
+                              Padding(
+                                padding:
+                                    const EdgeInsets.symmetric(horizontal: 8.0),
+                                child: Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Text(
+                                      '${photo!.projectName}',
+                                      style: myTextStyleMediumPrimaryColor(
+                                          context),
+                                    ),
+                                    IconButton(
+                                        onPressed: () {
+                                          pp('$mm .... put photo on a map!');
+                                          _navigateToPhotoMap();
+                                        },
+                                        icon: Icon(
+                                          Icons.location_on,
+                                          color: Theme.of(context).primaryColor,
+                                          size: 24,
+                                        )),
+                                  ],
+                                ),
+                              ),
+                              const SizedBox(
+                                height: 12,
+                              ),
+                              Text(
+                                '${photo!.userName}',
+                                style: myTextStyleSmallBold(context),
+                              ),
+                              const SizedBox(
+                                height: 4,
+                              ),
+                              Text(
+                                getFormattedDateShortWithTime(
+                                    photo!.created!, context),
+                                style: myTextStyleTiny(context),
+                              ),
+                              const SizedBox(
+                                height: 12,
+                              ),
+                              Expanded(
+                                child: Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 2.0, vertical: 2.0),
+                                  child: InteractiveViewer(
+                                      child: CachedNetworkImage(
+                                          fit: BoxFit.cover,
+                                          progressIndicatorBuilder: (context,
+                                                  url, downloadProgress) =>
+                                              Center(
+                                                  child: SizedBox(
+                                                      width: 24,
+                                                      height: 24,
+                                                      child: CircularProgressIndicator(
+                                                          backgroundColor:
+                                                              Theme.of(context)
+                                                                  .primaryColor,
+                                                          value: downloadProgress
+                                                              .progress))),
+                                          errorWidget: (context, url, error) =>
+                                              const Icon(Icons.error),
+                                          fadeInDuration: const Duration(
+                                              milliseconds: 1500),
+                                          fadeInCurve: Curves.easeInOutCirc,
+                                          placeholderFadeInDuration:
+                                              const Duration(milliseconds: 1500),
+                                          imageUrl: photo!.url!)),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                  ))
+              : const SizedBox(),
+          _showVideo
+              ? Positioned(
+                  child: Container(
+                  width: 480,
+                  height: 640,
+                  color: Colors.red,
+                ))
+              : const SizedBox(),
+          _showAudio
+              ? Positioned(
+                  child: Container(
+                  width: 480,
+                  height: 640,
+                  color: Colors.green,
+                ))
+              : const SizedBox(),
         ],
       ),
     ));

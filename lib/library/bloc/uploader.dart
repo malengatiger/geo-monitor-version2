@@ -33,7 +33,6 @@ class Uploader {
 
   Uploader._internal();
 
-  bool busy = false;
   Random rand = Random(DateTime.now().millisecondsSinceEpoch);
   final photoStorageName = 'geoPhotos3';
   final videoStorageName = 'geoVideos3';
@@ -86,6 +85,7 @@ class Uploader {
 
   Future<void> startTimer(Duration duration) async {
     pp('$mm Uploader timer starting .... duration in seconds: ${duration.inSeconds}');
+    bool iAmBusy = false;
     photosUploaded.clear();
     videosUploaded.clear();
     audiosUploaded.clear();
@@ -93,7 +93,7 @@ class Uploader {
     user = await prefsOGx.getUser();
     if (user == null) return;
     Timer.periodic(duration, (timer) async {
-      pp('\n$mm ......... Timer tick: 🍎🍎🍎🍎🍎🍎🍎 ${timer.tick} 🍎 at: '
+      pp('$mm ......... Timer tick: 🍎🍎🍎🍎🍎🍎🍎 ${timer.tick} 🍎 at: '
           '${DateTime.now().toIso8601String()}');
 
       if (photosUploaded.isNotEmpty) {
@@ -105,12 +105,17 @@ class Uploader {
       if (audiosUploaded.isNotEmpty) {
         pp('$mm audios uploaded so far: ${audiosUploaded.length}');
       }
-      await _uploadPhotos();
-      await _uploadAudios();
-      await _uploadVideos();
+      if (!iAmBusy) {
+        pp('$mm upload process not busy,  🎽 🎽 🎽 will start uploads ...iAmBusy: $iAmBusy');
+        iAmBusy = true;
+        await _uploadPhotos();
+        await _uploadAudios();
+        await _uploadVideos();
+        iAmBusy = false;
+      } else {
+        pp('$mm upload process iAmBusy, will wait for next timer tick');
+      }
     });
-
-    busy = true;
   }
 
   Future _uploadPhotos() async {
@@ -119,15 +124,58 @@ class Uploader {
       pp('$mm photos to be uploaded: ${list.length} .... ');
     }
     var cnt = 0;
-    for (var m in list) {
-      var result = await _sendPhotoToCloud(m);
-      if (result == 0) {
-        cnt++;
+    for (var photoForUpload in list) {
+      var positions = await cacheManager
+          .getProjectPositions(photoForUpload.project!.projectId!);
+      for (var projectPosition in positions) {
+        var dist = getDistance(
+            latitude: photoForUpload.position!.coordinates[1],
+            longitude: photoForUpload.position!.coordinates[0],
+            toLatitude: projectPosition.position!.coordinates[1],
+            toLongitude: projectPosition.position!.coordinates[0]);
+
+        if (dist <= photoForUpload.project!.monitorMaxDistanceInMetres!) {
+          pp('$mm photo was taken within project boundary .... will be uploaded.');
+          var result = await _sendPhotoToCloud(photoForUpload);
+          if (result == 0) {
+            cnt++;
+          }
+          break;
+        }
+      }
+      var polygons = await cacheManager.getProjectPolygons(
+          projectId: photoForUpload.project!.projectId!);
+
+      var isWithin = checkIfLocationIsWithinPolygons(
+          polygons: polygons,
+          latitude: photoForUpload.position!.coordinates[1],
+          longitude: photoForUpload.position!.coordinates[0]);
+
+      if (isWithin) {
+        pp('$mm photo was taken within project area boundary .... will be uploaded.');
+        var result = await _sendPhotoToCloud(photoForUpload);
+        if (result == 0) {
+          cnt++;
+        }
       }
     }
     if (cnt > 0) {
       pp('\n\n$mm ................. 🍎🍎photos uploaded: $cnt\n');
     }
+  }
+
+  double getDistance(
+      {required double latitude,
+      required double longitude,
+      required double toLatitude,
+      required double toLongitude}) {
+    var dist = locationBlocOG.getDistance(
+        latitude: latitude,
+        longitude: longitude,
+        toLatitude: toLatitude,
+        toLongitude: toLongitude);
+
+    return dist;
   }
 
   Future<int> _sendPhotoToCloud(PhotoForUpload value) async {
@@ -239,14 +287,40 @@ class Uploader {
     }
 
     var cnt = 0;
-    for (var value in list) {
-      var result = await _sendVideoToCloud(value);
-      if (result == 0) {
-        cnt++;
+    for (var videoForUpload in list) {
+      var positions = await cacheManager
+          .getProjectPositions(videoForUpload.project!.projectId!);
+      for (var projectPosition in positions) {
+        var dist = getDistance(
+            latitude: videoForUpload.position!.coordinates[1],
+            longitude: videoForUpload.position!.coordinates[0],
+            toLatitude: projectPosition.position!.coordinates[1],
+            toLongitude: projectPosition.position!.coordinates[0]);
+        if (dist <= videoForUpload.project!.monitorMaxDistanceInMetres!) {
+          pp('$mm video was taken within project boundary .... will be uploaded.');
+          var result = await _sendVideoToCloud(videoForUpload);
+          if (result == 0) {
+            cnt++;
+          }
+          break;
+        }
       }
-    }
-    if (cnt > 0) {
-      pp('\n\n$mm .................. 🍎🍎 videos uploaded: $cnt \n');
+      var polygons = await cacheManager.getProjectPolygons(
+          projectId: videoForUpload.project!.projectId!);
+      var isWithin = checkIfLocationIsWithinPolygons(
+          polygons: polygons,
+          latitude: videoForUpload.position!.coordinates[1],
+          longitude: videoForUpload.position!.coordinates[0]);
+      if (isWithin) {
+        pp('$mm video was taken within project area boundary .... will be uploaded.');
+        var result = await _sendVideoToCloud(videoForUpload);
+        if (result == 0) {
+          cnt++;
+        }
+      }
+      if (cnt > 0) {
+        pp('\n\n$mm .................. 🍎🍎 videos uploaded: $cnt \n');
+      }
     }
   }
 

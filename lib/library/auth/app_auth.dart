@@ -1,13 +1,11 @@
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart' as dot;
 import 'package:geo_monitor/library/hive_util.dart';
 
 import '../api/data_api.dart';
 import '../api/prefs_og.dart';
 import '../data/country.dart';
-import '../functions.dart';
 import '../data/user.dart' as mon;
+import '../functions.dart';
 
 class AppAuth {
   static FirebaseAuth? _auth;
@@ -57,14 +55,18 @@ class AppAuth {
 
           var pswd = user.password;
           user.password = null;
-          await DataAPI.updateUser(user);
-          user.password = pswd;
+          try {
+            await DataAPI.updateUser(user);
+            user.password = pswd;
 
-          await prefsOGx.saveUser(user);
-          await cacheManager.addUser(user: user);
+            await prefsOGx.saveUser(user);
+            await cacheManager.addUser(user: user);
 
-          pp('$locks token has changed; 🥬🥬🥬 have updated the user ...');
-
+            pp('$locks token has changed; 🥬🥬🥬 have updated the user ...');
+          } catch (e) {
+            pp('$locks ... a bit of an issue here, Sir! - $e '
+                '- 🔵🔵🔵 do we need to worry about this??');
+          }
         } else {
           pp('$locks No token changes from Firebase. 🔵🔵🔵 '
               'No need to update the user ...');
@@ -75,7 +77,8 @@ class AppAuth {
 
   static const locks = '🔐🔐🔐🔐🔐🔐🔐🔐 AppAuth: ';
 
-  static Future<mon.User?> signIn({required String email, required String password}) async {
+  static Future<mon.User?> signIn(
+      {required String email, required String password}) async {
     pp('$locks Auth: signing in $email 🌸 $password  $locks');
     //var token = await _getAdminAuthenticationToken();
     _auth = FirebaseAuth.instance;
@@ -112,8 +115,6 @@ class AppAuth {
           break;
         }
       }
-
-
     } else {
       pp('👿👿 Countries not found');
     }
@@ -121,5 +122,4 @@ class AppAuth {
   }
 
   static Future getCountry() async {}
-
 }

@@ -4,9 +4,9 @@ import 'package:animations/animations.dart';
 import 'package:firebase_auth/firebase_auth.dart' as fb;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:geo_monitor/library/ui/settings/settings_main.dart';
 import 'package:geo_monitor/library/users/full_user_photo.dart';
 import 'package:geofence_service/geofence_service.dart';
-
 import 'package:google_fonts/google_fonts.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:universal_platform/universal_platform.dart';
@@ -36,7 +36,6 @@ import '../../library/ui/media/list/project_media_list_mobile.dart';
 import '../../library/ui/media/user_media_list/user_media_list_mobile.dart';
 import '../../library/ui/project_list/project_chooser.dart';
 import '../../library/ui/project_list/project_list_mobile.dart';
-import '../../library/ui/settings/settings_mobile.dart';
 import '../../library/ui/weather/daily_forecast_page.dart';
 import '../../library/users/list/user_list_main.dart';
 import '../chat/chat_page.dart';
@@ -88,10 +87,11 @@ class DashboardPortraitState extends State<DashboardPortrait>
 
     _refreshData(false);
     _subscribeToConnectivity();
-    _subscribeToGeofenceStream();;
+    _subscribeToGeofenceStream();
+    ;
     _startTimer();
 
-    uploader.startTimer(const Duration(seconds: 30));
+    uploader.startTimer(const Duration(seconds: 15));
   }
 
   void _setAnimationControllers() {
@@ -137,8 +137,6 @@ class DashboardPortraitState extends State<DashboardPortrait>
       //
     }
   }
-
-
 
   late StreamSubscription<bool> connectionSubscription;
   Future<void> _subscribeToConnectivity() async {
@@ -588,9 +586,7 @@ class DashboardPortraitState extends State<DashboardPortrait>
                 alignment: Alignment.topLeft,
                 duration: const Duration(seconds: 1),
                 child: FullUserPhoto(user: user!)));
-        setState(() {
-
-        });
+        setState(() {});
       }
     }
   }
@@ -604,7 +600,7 @@ class DashboardPortraitState extends State<DashboardPortrait>
               type: PageTransitionType.rotate,
               alignment: Alignment.center,
               duration: const Duration(seconds: 1),
-              child: const SettingsMobile()));
+              child: const SettingsMain()));
     }
   }
 
@@ -615,7 +611,10 @@ class DashboardPortraitState extends State<DashboardPortrait>
             type: PageTransitionType.scale,
             alignment: Alignment.topLeft,
             duration: const Duration(seconds: 1),
-            child: UserListMain(user: user!, users: _users,)));
+            child: UserListMain(
+              user: user!,
+              users: _users,
+            )));
   }
 
   void _navigateToProjectMedia(Project project) {
@@ -686,6 +685,7 @@ class DashboardPortraitState extends State<DashboardPortrait>
                   child: ProjectChooser(
                       title: title,
                       height: 500,
+                      width: 400,
                       onSelected: (p1) {
                         Navigator.of(context).pop();
                         _onProjectSelected(p1, destination);
@@ -1119,7 +1119,6 @@ class DashboardPortraitState extends State<DashboardPortrait>
                               ),
                             ),
                           ),
-
                           AnimatedBuilder(
                             animation: _polygonAnimationController,
                             builder: (BuildContext context, Widget? child) {
@@ -1176,17 +1175,22 @@ class DashboardLandscape extends StatefulWidget {
 class _DashboardLandscapeState extends State<DashboardLandscape> {
   @override
   Widget build(BuildContext context) {
-    return  SafeArea(child: Scaffold(
+    return SafeArea(
+        child: Scaffold(
       appBar: AppBar(
         title: const Text('Geo Dashboard'),
       ),
       body: Stack(
         children: [
           Row(
-            children:  [
+            children: [
               const DashboardPortrait(),
-              const SizedBox(width: 24,),
-              Container(color: Colors.teal,),
+              const SizedBox(
+                width: 24,
+              ),
+              Container(
+                color: Colors.teal,
+              ),
             ],
           )
         ],
@@ -1194,7 +1198,6 @@ class _DashboardLandscapeState extends State<DashboardLandscape> {
     ));
   }
 }
-
 
 //////
 void showKillDialog({required String message, required BuildContext context}) {

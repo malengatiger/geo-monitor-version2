@@ -29,11 +29,13 @@ class DashboardGrid extends StatefulWidget {
       required this.onTypeTapped,
       this.totalHeight,
       this.topPadding,
-       required this.dataBag})
+      required this.dataBag,
+      this.leftPadding})
       : super(key: key);
   final Function(int) onTypeTapped;
   final double? totalHeight;
   final double? topPadding;
+  final double? leftPadding;
   final DataBag dataBag;
 
   @override
@@ -338,7 +340,14 @@ class _DashboardGridState extends State<DashboardGrid>
             ),
             user == null
                 ? const SizedBox()
-                : SizedBox(height: 100, child: Headline(user: user!)),
+                : SizedBox(
+                    height: 120,
+                    child: Headline(
+                      user: user!,
+                      paddingLeft: widget.leftPadding == null
+                          ? 100
+                          : widget.leftPadding!,
+                    )),
             SizedBox(
               height: widget.totalHeight == null ? 900 : widget.totalHeight!,
               child: Padding(

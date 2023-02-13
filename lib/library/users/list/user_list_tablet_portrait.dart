@@ -1,30 +1,27 @@
 import 'dart:async';
 
-import 'package:animations/animations.dart';
-import 'package:badges/badges.dart' as bd;
 import 'package:flutter/material.dart';
 import 'package:flutter_libphonenumber/flutter_libphonenumber.dart';
-import 'package:focused_menu/focused_menu.dart';
 import 'package:focused_menu/modals.dart';
-import 'package:geo_monitor/library/generic_functions.dart';
+import 'package:geo_monitor/library/bloc/location_request_handler.dart';
 import 'package:geo_monitor/library/ui/maps_field_monitor/field_monitor_map_mobile.dart';
 import 'package:geo_monitor/library/ui/schedule/scheduler_mobile.dart';
 import 'package:geo_monitor/library/users/edit/user_edit_main.dart';
 import 'package:geo_monitor/library/users/kill_user_page.dart';
 import 'package:geo_monitor/library/users/list/user_list_card.dart';
 import 'package:geo_monitor/library/users/report/user_rpt_mobile.dart';
-
 import 'package:page_transition/page_transition.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../api/prefs_og.dart';
 import '../../bloc/fcm_bloc.dart';
 import '../../bloc/organization_bloc.dart';
+import '../../data/user.dart';
 import '../../emojis.dart';
 import '../../functions.dart';
+import '../../generic_functions.dart';
 import '../../hive_util.dart';
 import '../../ui/message/message_mobile.dart';
-import '../../data/user.dart';
 
 class UserListTabletPortrait extends StatefulWidget {
   // final User user;
@@ -64,7 +61,6 @@ class UserListTabletPortraitState extends State<UserListTabletPortrait>
 
       if (mounted) {
         _getData(false);
-        showToast(message: 'User added or modified!', context: context);
       }
     });
   }
@@ -77,7 +73,8 @@ class UserListTabletPortraitState extends State<UserListTabletPortrait>
     });
     try {
       _user = await prefsOGx.getUser();
-      if (_user!.userType == UserType.orgAdministrator || _user!.userType == UserType.orgExecutive) {
+      if (_user!.userType == UserType.orgAdministrator ||
+          _user!.userType == UserType.orgExecutive) {
         _showPlusIcon = true;
       }
       if (_user!.userType == UserType.fieldMonitor) {
@@ -132,7 +129,7 @@ class UserListTabletPortraitState extends State<UserListTabletPortrait>
     }
 
     if (_user!.userType == UserType.fieldMonitor) {
-       // pp('$mm Field monitor cannot edit any other users');
+      // pp('$mm Field monitor cannot edit any other users');
     } else {
       list.add(FocusedMenuItem(
           title: Text('View Report', style: myTextStyleSmallBlack(context)),
@@ -148,12 +145,9 @@ class UserListTabletPortraitState extends State<UserListTabletPortrait>
             'Edit User',
             style: myTextStyleSmallBlack(context),
           ),
-
           trailingIcon: Icon(
             Icons.create,
-            color: Theme
-                .of(context)
-                .primaryColor,
+            color: Theme.of(context).primaryColor,
           ),
           onPressed: () {
             _navigateToUserEdit(someUser);
@@ -208,7 +202,6 @@ class UserListTabletPortraitState extends State<UserListTabletPortrait>
   void _navigateToUserEdit(User? user) async {
     if (_user!.userType == UserType.fieldMonitor) {
       if (_user!.userId != user?.userId!) {
-
         return;
       }
     }
@@ -236,6 +229,32 @@ class UserListTabletPortraitState extends State<UserListTabletPortrait>
             child: UserReportMobile(user)));
   }
 
+  void _sendLocationRequest(User otherUser) async {
+    setState(() {
+      busy = true;
+    });
+    try {
+      var user = await prefsOGx.getUser();
+      await locationRequestHandler.sendLocationRequest(
+          requesterId: user!.userId!,
+          requesterName: user.name!,
+          userId: otherUser.userId!,
+          userName: otherUser.name!);
+      if (mounted) {
+        showToast(message: 'Location request sent', context: context);
+      }
+    } catch (e) {
+      pp(e);
+      if (mounted) {
+        showToast(message: '$e', context: context);
+      }
+    }
+
+    setState(() {
+      busy = false;
+    });
+  }
+
   void _navigateToMessaging(User user) {
     Navigator.push(
         context,
@@ -250,16 +269,13 @@ class UserListTabletPortraitState extends State<UserListTabletPortrait>
 
   Future<void> _navigateToPhone(User user) async {
     pp('$mm ... starting phone call ....');
-    final Uri phoneUri = Uri(
-        scheme: "tel",
-        path: user.cellphone!
-    );
+    final Uri phoneUri = Uri(scheme: "tel", path: user.cellphone!);
     try {
       if (await canLaunchUrl(phoneUri)) {
         await launchUrl(phoneUri);
       }
     } catch (error) {
-      throw("Cannot dial");
+      throw ("Cannot dial");
     }
   }
 
@@ -306,24 +322,21 @@ class UserListTabletPortraitState extends State<UserListTabletPortrait>
       _sortByName();
     }
   }
+
   void _sortByName() {
-    _users.sort((a,b) => a.name!.compareTo(b.name!));
+    _users.sort((a, b) => a.name!.compareTo(b.name!));
     sortedByName = true;
-    setState(() {
-
-    });
+    setState(() {});
   }
-  void _sortByNameDesc() {
-    _users.sort((a,b) => b.name!.compareTo(a.name!));
-    sortedByName = false;
-    setState(() {
 
-    });
+  void _sortByNameDesc() {
+    _users.sort((a, b) => b.name!.compareTo(a.name!));
+    sortedByName = false;
+    setState(() {});
   }
 
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
       key: _key,
       appBar: AppBar(
@@ -331,67 +344,80 @@ class UserListTabletPortraitState extends State<UserListTabletPortrait>
           'Organization Users',
           style: Styles.whiteTiny,
         ),
-        actions: busy? [] : [
-          IconButton(
-            icon: Icon(
-              Icons.refresh,
-              size: 20,
-              color: Theme.of(context).primaryColor,
-            ),
-            onPressed: () {
-              _getData(true);
-            },
-          ),
-          _showPlusIcon? IconButton(
-            icon: Icon(Icons.add, size: 20, color: Theme.of(context).primaryColor),
-            onPressed: () {
-              _navigateToUserEdit(null);
-            },
-          ): const SizedBox(),
-
-          _showEditorIcon? IconButton(
-            icon: Icon(Icons.edit, size: 20, color: Theme.of(context).primaryColor),
-            onPressed: () {
-              _navigateToUserEdit(_user);
-            },
-          ): const SizedBox(),
-        ],
+        actions: busy
+            ? []
+            : [
+                IconButton(
+                  icon: Icon(
+                    Icons.refresh,
+                    size: 20,
+                    color: Theme.of(context).primaryColor,
+                  ),
+                  onPressed: () {
+                    _getData(true);
+                  },
+                ),
+                _showPlusIcon
+                    ? IconButton(
+                        icon: Icon(Icons.add,
+                            size: 20, color: Theme.of(context).primaryColor),
+                        onPressed: () {
+                          _navigateToUserEdit(null);
+                        },
+                      )
+                    : const SizedBox(),
+                _showEditorIcon
+                    ? IconButton(
+                        icon: Icon(Icons.edit,
+                            size: 20, color: Theme.of(context).primaryColor),
+                        onPressed: () {
+                          _navigateToUserEdit(_user);
+                        },
+                      )
+                    : const SizedBox(),
+              ],
       ),
       body: busy
           ? const Center(
-        child: SizedBox(
-          width: 16,
-          height: 16,
-          child: CircularProgressIndicator(
-            strokeWidth: 2,
-            backgroundColor: Colors.pink,
-          ),
-        ),
-      )
+              child: SizedBox(
+                width: 16,
+                height: 16,
+                child: CircularProgressIndicator(
+                  strokeWidth: 2,
+                  backgroundColor: Colors.pink,
+                ),
+              ),
+            )
           : Padding(
-        padding: const EdgeInsets.all(72.0),
-        child: UserListCard(
-          amInLandscape: false,
-          badgeTapped: _sort,
-          users: _users, deviceUser: _user!, navigateToPhone: (user ) {
-          _navigateToPhone(user);
-        }, navigateToMessaging: (user ) {
-          _navigateToMessaging(user);
-        }, navigateToUserReport: (user ) {
-          _navigateToUserReport(user);
-        }, navigateToUserEdit: (user ) {
-          _navigateToUserEdit(user);
-        }, navigateToScheduler: (user ) {
-          _navigateToScheduler(user);
-        }, navigateToKillPage: (user ) {
-          _navigateToKillPage(user);
-        },
-        ),
-      ),
+              padding: const EdgeInsets.all(72.0),
+              child: UserListCard(
+                amInLandscape: false,
+                badgeTapped: _sort,
+                users: _users,
+                deviceUser: _user!,
+                navigateToLocationRequest: (user) {
+                  _sendLocationRequest(user);
+                },
+                navigateToPhone: (user) {
+                  _navigateToPhone(user);
+                },
+                navigateToMessaging: (user) {
+                  _navigateToMessaging(user);
+                },
+                navigateToUserReport: (user) {
+                  _navigateToUserReport(user);
+                },
+                navigateToUserEdit: (user) {
+                  _navigateToUserEdit(user);
+                },
+                navigateToScheduler: (user) {
+                  _navigateToScheduler(user);
+                },
+                navigateToKillPage: (user) {
+                  _navigateToKillPage(user);
+                },
+              ),
+            ),
     );
   }
 }
-
-
-
-

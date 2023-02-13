@@ -1,11 +1,11 @@
 import 'package:hive/hive.dart';
+
 import '../data/position.dart';
 
 part 'location_response.g.dart';
 
 @HiveType(typeId: 27)
 class LocationResponse extends HiveObject {
-  
   @HiveField(0)
   String? date;
   @HiveField(1)
@@ -20,22 +20,27 @@ class LocationResponse extends HiveObject {
   String? organizationName;
   @HiveField(6)
   Position? position;
-  
+  @HiveField(7)
+  String? requesterId;
+  @HiveField(8)
+  String? requesterName;
 
-
-  LocationResponse(
-      {
-      required this.position,
-      required this.date,
-      required this.userId,
-      required this.userName,
-      required this.locationResponseId,
-      required this.organizationId,
-      required this.organizationName,
-      });
+  LocationResponse({
+    required this.position,
+    required this.date,
+    required this.userId,
+    required this.userName,
+    required this.locationResponseId,
+    required this.organizationId,
+    required this.organizationName,
+    required this.requesterId,
+    required this.requesterName,
+  });
 
   LocationResponse.fromJson(Map data) {
-   
+    requesterId = data['requesterId'];
+    requesterName = data['requesterName'];
+
     date = data['date'];
     organizationId = data['organizationId'];
     userId = data['userId'];
@@ -45,18 +50,18 @@ class LocationResponse extends HiveObject {
     if (data['position'] != null) {
       position = Position.fromJson(data['position']);
     }
-  
   }
   Map<String, dynamic> toJson() {
     Map<String, dynamic> map = {
       'date': date,
+      'requesterName': requesterName,
+      'requesterId': requesterId,
       'userId': userId,
       'organizationId': organizationId,
       'userName': userName,
       'locationResponseId': locationResponseId,
       'organizationName': organizationName,
-      'position':
-      position == null ? null : position!.toJson()
+      'position': position == null ? null : position!.toJson()
     };
     return map;
   }

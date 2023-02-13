@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:geo_monitor/library/api/prefs_og.dart';
 import 'package:geo_monitor/library/bloc/organization_bloc.dart';
+import 'package:geo_monitor/library/ui/settings/settings_form.dart';
 import 'package:geo_monitor/library/users/list/user_list_card.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:url_launcher/url_launcher.dart';
+
+import '../../bloc/location_request_handler.dart';
 import '../../data/user.dart';
 import '../../functions.dart';
 import '../../generic_functions.dart';
@@ -15,11 +18,13 @@ import '../kill_user_page.dart';
 import '../report/user_rpt_mobile.dart';
 
 class UserListTabletLandscape extends StatefulWidget {
-  const UserListTabletLandscape({Key? key, }) : super(key: key);
-
+  const UserListTabletLandscape({
+    Key? key,
+  }) : super(key: key);
 
   @override
-  State<UserListTabletLandscape> createState() => _UserListTabletLandscapeState();
+  State<UserListTabletLandscape> createState() =>
+      _UserListTabletLandscapeState();
 }
 
 class _UserListTabletLandscapeState extends State<UserListTabletLandscape> {
@@ -30,15 +35,16 @@ class _UserListTabletLandscapeState extends State<UserListTabletLandscape> {
     super.initState();
     _getData(false);
   }
- final mm = '🔵🔵🔵🔵🔵🔵 UserListTabletLandscape: ';
-  void _getData(bool forceRefresh) async {
 
+  final mm = '🔵🔵🔵🔵🔵🔵 UserListTabletLandscape: ';
+  void _getData(bool forceRefresh) async {
     setState(() {
       busy = true;
     });
     try {
       user = await prefsOGx.getUser();
-      users = await organizationBloc.getUsers(organizationId: user!.organizationId!, forceRefresh: forceRefresh);
+      users = await organizationBloc.getUsers(
+          organizationId: user!.organizationId!, forceRefresh: forceRefresh);
       p('$mm data refreshed, users: ${users.length}');
     } catch (e) {
       pp(e);
@@ -75,16 +81,13 @@ class _UserListTabletLandscapeState extends State<UserListTabletLandscape> {
 
   Future<void> navigateToPhone(User user) async {
     pp('💛️💛️💛 ... starting phone call ....');
-    final Uri phoneUri = Uri(
-        scheme: "tel",
-        path: user.cellphone!
-    );
+    final Uri phoneUri = Uri(scheme: "tel", path: user.cellphone!);
     try {
       if (await canLaunchUrl(phoneUri)) {
         await launchUrl(phoneUri);
       }
     } catch (error) {
-      throw("Cannot dial");
+      throw ("Cannot dial");
     }
   }
 
@@ -112,7 +115,6 @@ class _UserListTabletLandscapeState extends State<UserListTabletLandscape> {
   void navigateToUserEdit(User? user) async {
     if (user!.userType == UserType.fieldMonitor) {
       if (user.userId != user.userId!) {
-
         return;
       }
     }
@@ -123,7 +125,6 @@ class _UserListTabletLandscapeState extends State<UserListTabletLandscape> {
             alignment: Alignment.topLeft,
             duration: const Duration(seconds: 1),
             child: UserEditMain(user)));
-
   }
 
   Future<void> navigateToKillPage(User user) async {
@@ -137,8 +138,34 @@ class _UserListTabletLandscapeState extends State<UserListTabletLandscape> {
               user: user,
             )));
     pp('💛️💛️💛 ... back from KillPage; will refresh user list ....');
-
   }
+
+  void _sendLocationRequest(User otherUser) async {
+    setState(() {
+      busy = true;
+    });
+    try {
+      var user = await prefsOGx.getUser();
+      await locationRequestHandler.sendLocationRequest(
+          requesterId: user!.userId!,
+          requesterName: user.name!,
+          userId: otherUser.userId!,
+          userName: otherUser.name!);
+      if (mounted) {
+        showToast(message: 'Location request sent', context: context);
+      }
+    } catch (e) {
+      pp(e);
+      if (mounted) {
+        showToast(message: '$e', context: context);
+      }
+    }
+
+    setState(() {
+      busy = false;
+    });
+  }
+
   void _sort() {
     if (sortedByName) {
       _sortByNameDesc();
@@ -146,57 +173,79 @@ class _UserListTabletLandscapeState extends State<UserListTabletLandscape> {
       _sortByName();
     }
   }
+
   void _sortByName() {
-    users.sort((a,b) => a.name!.compareTo(b.name!));
+    users.sort((a, b) => a.name!.compareTo(b.name!));
     sortedByName = true;
-    setState(() {
-
-    });
+    setState(() {});
   }
+
   void _sortByNameDesc() {
-    users.sort((a,b) => b.name!.compareTo(a.name!));
+    users.sort((a, b) => b.name!.compareTo(a.name!));
     sortedByName = false;
-    setState(() {
-
-    });
+    setState(() {});
   }
+
   @override
   Widget build(BuildContext context) {
-
-    return  Scaffold(
+    var mWidth = MediaQuery.of(context).size.width;
+    return Scaffold(
       appBar: AppBar(
+        title: Text(
+          'Organization Members',
+          style: myTextStyleLarge(context),
+        ),
         actions: [
-          IconButton(onPressed: (){
-            _getData(true);
-          }, icon: Icon(Icons.refresh, color: Theme.of(context).primaryColor,))
+          IconButton(
+              onPressed: () {
+                _getData(true);
+              },
+              icon: Icon(
+                Icons.refresh,
+                color: Theme.of(context).primaryColor,
+              ))
         ],
       ),
       body: Row(
         children: [
-          SizedBox(width: 620, child: UserListCard(amInLandscape: true,
-            users: users, deviceUser: user!, navigateToPhone: (mUser ) {
-              navigateToPhone(mUser);
-            }, navigateToMessaging: (user ) {
-              navigateToMessaging(user);
-            }, navigateToUserReport: (user ) {
-              navigateToUserReport(user);
-
-            }, navigateToUserEdit: (user ) {
-              navigateToUserEdit(user);
-
-            }, navigateToScheduler: (user ) {
-              navigateToScheduler(user);
-
-            }, navigateToKillPage: (user ) {
-              navigateToKillPage(user);
-
-            }, badgeTapped: () {
-             _sort();
-            },)),
-          Container(width: 460, color: Theme.of(context).primaryColor,),
+          user == null
+              ? const SizedBox()
+              : SizedBox(
+                  width: mWidth / 2,
+                  child: UserListCard(
+                    amInLandscape: true,
+                    users: users,
+                    deviceUser: user!,
+                    navigateToLocationRequest: (mUser) {
+                      _sendLocationRequest(mUser);
+                    },
+                    navigateToPhone: (mUser) {
+                      navigateToPhone(mUser);
+                    },
+                    navigateToMessaging: (user) {
+                      navigateToMessaging(user);
+                    },
+                    navigateToUserReport: (user) {
+                      navigateToUserReport(user);
+                    },
+                    navigateToUserEdit: (user) {
+                      navigateToUserEdit(user);
+                    },
+                    navigateToScheduler: (user) {
+                      navigateToScheduler(user);
+                    },
+                    navigateToKillPage: (user) {
+                      navigateToKillPage(user);
+                    },
+                    badgeTapped: () {
+                      _sort();
+                    },
+                  )),
+          GeoPlaceHolder(
+            width: mWidth / 2,
+          ),
         ],
       ),
     );
   }
-
 }

@@ -24,14 +24,26 @@ class ActivityModelAdapter extends TypeAdapter<ActivityModel> {
       userName: fields[4] as String?,
       projectId: fields[5] as String?,
       projectName: fields[6] as String?,
-      typeId: fields[7] as String?,
+      organizationId: fields[8] as String?,
+      organizationName: fields[7] as String?,
+      locationResponse: fields[19] as LocationResponse?,
+      video: fields[10] as Video?,
+      project: fields[13] as Project?,
+      photo: fields[9] as Photo?,
+      projectPosition: fields[14] as ProjectPosition?,
+      audio: fields[11] as Audio?,
+      projectPolygon: fields[15] as ProjectPolygon?,
+      locationRequest: fields[18] as LocationRequest?,
+      user: fields[12] as User?,
+      geofenceEvent: fields[17] as GeofenceEvent?,
+      orgMessage: fields[16] as OrgMessage?,
     );
   }
 
   @override
   void write(BinaryWriter writer, ActivityModel obj) {
     writer
-      ..writeByte(8)
+      ..writeByte(20)
       ..writeByte(0)
       ..write(obj.activityTypeId)
       ..writeByte(1)
@@ -47,7 +59,31 @@ class ActivityModelAdapter extends TypeAdapter<ActivityModel> {
       ..writeByte(6)
       ..write(obj.projectName)
       ..writeByte(7)
-      ..write(obj.typeId);
+      ..write(obj.organizationName)
+      ..writeByte(8)
+      ..write(obj.organizationId)
+      ..writeByte(9)
+      ..write(obj.photo)
+      ..writeByte(10)
+      ..write(obj.video)
+      ..writeByte(11)
+      ..write(obj.audio)
+      ..writeByte(12)
+      ..write(obj.user)
+      ..writeByte(13)
+      ..write(obj.project)
+      ..writeByte(14)
+      ..write(obj.projectPosition)
+      ..writeByte(15)
+      ..write(obj.projectPolygon)
+      ..writeByte(16)
+      ..write(obj.orgMessage)
+      ..writeByte(17)
+      ..write(obj.geofenceEvent)
+      ..writeByte(18)
+      ..write(obj.locationRequest)
+      ..writeByte(19)
+      ..write(obj.locationResponse);
   }
 
   @override

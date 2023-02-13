@@ -5,31 +5,28 @@ import 'package:firebase_auth/firebase_auth.dart' as auth;
 import 'package:firebase_messaging/firebase_messaging.dart' as fb;
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:geo_monitor/library/bloc/location_request_handler.dart';
 import 'package:geo_monitor/library/data/activity_model.dart';
 import 'package:universal_platform/universal_platform.dart';
-import 'package:uuid/uuid.dart';
 
 import '../api/data_api.dart';
 import '../api/prefs_og.dart';
-import '../data/activity_type_enum.dart';
 import '../data/audio.dart';
 import '../data/condition.dart';
 import '../data/geofence_event.dart';
 import '../data/location_request.dart';
 import '../data/location_response.dart';
 import '../data/org_message.dart';
-import '../data/position.dart';
+import '../data/photo.dart';
+import '../data/project.dart';
 import '../data/project_polygon.dart';
 import '../data/project_position.dart';
 import '../data/settings_model.dart';
+import '../data/user.dart';
 import '../data/video.dart';
 import '../functions.dart';
 import '../generic_functions.dart';
 import '../hive_util.dart';
-import '../data/photo.dart';
-import '../data/project.dart';
-import '../data/user.dart';
-import '../location/loc_bloc.dart';
 import 'organization_bloc.dart';
 import 'theme_bloc.dart';
 
@@ -45,6 +42,9 @@ class FCMBloc {
   fb.FirebaseMessaging messaging = fb.FirebaseMessaging.instance;
 
   final StreamController<User> _userController = StreamController.broadcast();
+  final StreamController<LocationResponse> _locationResponseController =
+      StreamController.broadcast();
+
   final StreamController<Project> _projectController =
       StreamController.broadcast();
   final StreamController<ProjectPosition> _projectPositionController =
@@ -54,6 +54,7 @@ class FCMBloc {
   final StreamController<Photo> _photoController = StreamController.broadcast();
   final StreamController<Video> _videoController = StreamController.broadcast();
   final StreamController<Audio> _audioController = StreamController.broadcast();
+
   final StreamController<ActivityModel> _activityController =
       StreamController.broadcast();
 
@@ -69,6 +70,8 @@ class FCMBloc {
       StreamController.broadcast();
 
   Stream<ActivityModel> get activityStream => _activityController.stream;
+  Stream<LocationResponse> get locationResponseStream =>
+      _locationResponseController.stream;
 
   Stream<GeofenceEvent> get geofenceStream => _geofenceController.stream;
   Stream<SettingsModel> get settingsStream => _settingsController.stream;
@@ -112,11 +115,24 @@ class FCMBloc {
     var android = UniversalPlatform.isAndroid;
     var ios = UniversalPlatform.isIOS;
 
+    NotificationSettings settings = await messaging.requestPermission(
+      alert: true,
+      announcement: false,
+      badge: true,
+      carPlay: false,
+      criticalAlert: false,
+      provisional: false,
+      sound: true,
+    );
+
+    pp('$mm initialize: User granted permission: ${settings.authorizationStatus}');
+
     if (android || ios) {
       messaging.setAutoInitEnabled(true);
       messaging.onTokenRefresh.listen((newToken) {
         pp("$mm onTokenRefresh: 🍎 🍎 🍎 update user: token: $newToken ... 🍎 🍎 ");
-        // _updateUser(newToken);
+        user!.fcmRegistration = newToken;
+        DataAPI.updateUser(user!);
       });
 
       // initialise the plugin. app_icon needs to be a added as a drawable resource to the Android head project
@@ -143,8 +159,11 @@ class FCMBloc {
         // RemoteNotification? notification = message.notification;
         // AndroidNotification? android = message.notification?.android;
         pp("\n\n$mm onMessage: 🍎 🍎 data: ${message.data} ... 🍎 🍎\n ");
-        _processFCMMessage(message);
+        processFCMMessage(message);
       });
+
+      FirebaseMessaging.onBackgroundMessage(
+          _firebaseMessagingBackgroundHandler);
 
       FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
         pp('$mm onMessageOpenedApp:  🍎 🍎 A new onMessageOpenedApp event was published! ${message.data}');
@@ -160,7 +179,6 @@ class FCMBloc {
     }
 
     pp("$mm ..... subscribeToTopics ...........................");
-
     // await prefsOGx.resetFCMSubscriptionFlag();
 
     // bool flag = await prefsOGx.getFCMSubscriptionFlag();
@@ -168,6 +186,9 @@ class FCMBloc {
     //   pp("\n\b$mm ..... app already subscribed to GeoMonitor FCM Topics ...... ✅✅✅?\n\n");
     //   return;
     // }
+    await messaging.subscribeToTopic('activities_${user.organizationId}');
+    pp("$mm ..... subscribed to topic: activities_${user.organizationId}");
+
     await messaging.subscribeToTopic('projects_${user.organizationId}');
     pp("$mm ..... subscribed to topic: projects_${user.organizationId}");
 
@@ -198,26 +219,28 @@ class FCMBloc {
     await messaging.subscribeToTopic('kill_${user.organizationId}');
     pp("$mm ..... subscribed to topic: kill_${user.organizationId}");
 
-    await messaging.subscribeToTopic('locationRequest_${user.organizationId}');
-    pp("$mm ..... subscribed to topic: locationRequest_${user.organizationId}");
+    await messaging.subscribeToTopic('locationRequests_${user.organizationId}');
+    pp("$mm ..... subscribed to topic: locationRequests_${user.organizationId}");
+
+    await messaging
+        .subscribeToTopic('locationResponses_${user.organizationId}');
+    pp("$mm ..... subscribed to topic: locationResponses_${user.organizationId}");
 
     await messaging.subscribeToTopic('settings_${user.organizationId}');
     pp("$mm ..... subscribed to topic: settings_${user.organizationId}");
 
-    if (user.userType != UserType.fieldMonitor) {
-      await messaging.subscribeToTopic('geofenceEvents_${user.organizationId}');
-      pp("$mm ..... subscribed to topic: geofenceEvents_${user.organizationId}");
-    }
+    await messaging.subscribeToTopic('geofenceEvents_${user.organizationId}');
+    pp("$mm ..... subscribed to topic: geofenceEvents_${user.organizationId}");
 
     //geofenceEvents_
     await prefsOGx.setFCMSubscriptionFlag();
-    pp("$mm subscribeToTopics: 🍎 subscribed to all 13 organization topics 🍎");
+    pp("$mm subscribeToTopics: 🍎 subscribed to all 14 organization topics 🍎");
 
     return null;
   }
 
   final blue = '🔵 🔵 🔵';
-  Future _processFCMMessage(fb.RemoteMessage message) async {
+  Future processFCMMessage(fb.RemoteMessage message) async {
     pp('\n\n$mm processFCMMessage: $blue processing newly arrived FCM message; messageId:: ${message.messageId}');
 
     Map data = message.data;
@@ -230,15 +253,9 @@ class FCMBloc {
       pp("$mm processFCMMessage:  $blue ........................... 🍎🍎🍎🍎🍎🍎kill USER!!  🍎  🍎 ");
       var m = jsonDecode(data['kill']);
       var receivedUser = User.fromJson(m);
-      _handleActivity(
-          type: ActivityType.kill,
-          typeId: null,
-          projectId: null,
-          projectName: null,
-          userId: receivedUser.userId!,
-          userName: receivedUser.name!);
+
       if (receivedUser.userId! == user!.userId!) {
-        pp("$mm processFCMMessage  $blue This user is about to be killed: ${receivedUser.name!} ......");
+        pp("$mm processFCMMessage  $blue This act is about to be killed: ${receivedUser.name!} ......");
         prefsOGx.deleteUser();
         auth.FirebaseAuth.instance.signOut();
         pp('$mm 🌀🌀🌀🌀  🍎 Signed out of Firebase!!! 🍎 ');
@@ -255,38 +272,34 @@ class FCMBloc {
       pp("$mm processFCMMessage  🔵 🔵 🔵 ........................... LOCATION REQUEST  🍎  🍎 ");
       var m = jsonDecode(data['locationRequest']);
       var req = LocationRequest.fromJson(m);
-      _handleActivity(
-          type: ActivityType.locationRequest,
-          projectId: null,
-          projectName: null,
-          typeId: null,
-          userId: m.userId!,
-          userName: m.userName!);
-      if (user!.organizationId == req.organizationId) {
-        var loc = await locationBlocOG.getLocation();
-        if (loc != null) {
-          var locResp = LocationResponse(
-              position: Position(
-                  coordinates: [loc.longitude, loc.latitude], type: 'Point'),
-              date: DateTime.now().toUtc().toIso8601String(),
-              userId: user.userId,
-              userName: user.name,
-              locationResponseId: const Uuid().v4(),
-              organizationId: user.organizationId,
-              organizationName: user.organizationName);
 
-          pp('$mm responding to location request ...');
-          var result = await DataAPI.addLocationResponse(locResp);
-          await cacheManager.addLocationResponse(locationResponse: result);
-          _handleActivity(
-              type: ActivityType.locationResponse,
-              projectId: null,
-              projectName: null,
-              typeId: null,
-              userId: result.userId!,
-              userName: result.userName!);
-        }
+      if (user!.userId == req.userId) {
+        pp("$mm processFCMMessage  🔵 🔵 🔵 ........................... sending location response");
+        await locationRequestHandler.sendLocationResponse(
+            requesterId: req.requesterId!, requesterName: req.requesterName!);
+
+        pp('$mm act responded to location request');
       }
+    }
+    if (data['locationResponse'] != null) {
+      pp("$mm processFCMMessage  🔵 🔵 🔵 ........................... LOCATION RESPONSE  🍎  🍎 ");
+      var m = jsonDecode(data['locationResponse']);
+      var locationResponse = LocationResponse.fromJson(m);
+
+      if (user!.userId == locationResponse.requesterId) {
+        pp('$mm act responded to location request ... do something with response');
+        await cacheManager.addLocationResponse(
+            locationResponse: locationResponse);
+
+        _locationResponseController.sink.add(locationResponse);
+      }
+    }
+    if (data['activity'] != null) {
+      pp("$mm processFCMMessage  🔵 🔵 🔵 ........................... cache ACTIVITY  🍎  🍎 ");
+      var m = jsonDecode(data['activity']);
+      var act = ActivityModel.fromJson(m);
+      await cacheManager.addActivityModel(activity: act);
+      _activityController.sink.add(act);
     }
     if (data['user'] != null) {
       pp("$mm processFCMMessage  🔵 🔵 🔵 ........................... cache USER  🍎  🍎 ");
@@ -294,13 +307,6 @@ class FCMBloc {
       var user = User.fromJson(m);
       await cacheManager.addUser(user: user);
       _userController.sink.add(user);
-      _handleActivity(
-          type: ActivityType.userAddedOrModified,
-          projectId: null,
-          projectName: null,
-          typeId: user.userId,
-          userId: user.userId!,
-          userName: user.name!);
     }
     if (data['project'] != null) {
       pp("$mm processFCMMessage  🔵 🔵 🔵 ........................... cache PROJECT  🍎  🍎");
@@ -308,13 +314,6 @@ class FCMBloc {
       var project = Project.fromJson(m);
       await cacheManager.addProject(project: project);
       _projectController.sink.add(project);
-      _handleActivity(
-          type: ActivityType.projectAdded,
-          projectId: project.projectId,
-          projectName: project.name,
-          typeId: project.projectId,
-          userId: null,
-          userName: null);
     }
     if (data['projectPosition'] != null) {
       pp("$mm processFCMMessage  🔵 🔵 🔵 ........................... cache PROJECT POSITION 🍎  🍎");
@@ -322,13 +321,6 @@ class FCMBloc {
       var projectPosition = ProjectPosition.fromJson(m);
       await cacheManager.addProjectPosition(projectPosition: projectPosition);
       _projectPositionController.sink.add(projectPosition);
-      _handleActivity(
-          type: ActivityType.positionAdded,
-          projectId: projectPosition.projectId,
-          projectName: projectPosition.projectName,
-          userId: projectPosition.userId!,
-          typeId: projectPosition.projectPositionId,
-          userName: projectPosition.userName!);
     }
     if (data['projectPolygon'] != null) {
       pp("$mm processFCMMessage  🔵 🔵 🔵 ........................... cache PROJECT POLYGON 🍎  🍎");
@@ -336,13 +328,6 @@ class FCMBloc {
       var projectPolygon = ProjectPolygon.fromJson(m);
       await cacheManager.addProjectPolygon(projectPolygon: projectPolygon);
       _projectPolygonController.sink.add(projectPolygon);
-      _handleActivity(
-          type: ActivityType.polygonAdded,
-          projectId: projectPolygon.projectId,
-          projectName: projectPolygon.projectName,
-          userId: projectPolygon.userId!,
-          typeId: projectPolygon.projectPolygonId,
-          userName: projectPolygon.userName!);
     }
     if (data['photo'] != null) {
       pp("$mm processFCMMessage  🔵 🔵 🔵 ........................... cache PHOTO  🍎  🍎");
@@ -351,13 +336,6 @@ class FCMBloc {
       var res = await cacheManager.addPhoto(photo: photo);
       pp('$mm Photo received added to local cache:  🔵 🔵 ${photo.projectName} result: $res, sending to photo stream');
       _photoController.sink.add(photo);
-      _handleActivity(
-          type: ActivityType.photoAdded,
-          projectId: photo.projectId,
-          projectName: photo.projectName,
-          userId: photo.userId!,
-          typeId: photo.photoId,
-          userName: photo.userName!);
     }
     if (data['video'] != null) {
       pp("$mm processFCMMessage  🔵 🔵 🔵 ........................... cache VIDEO  🍎  🍎");
@@ -366,13 +344,6 @@ class FCMBloc {
       await cacheManager.addVideo(video: video);
       pp('$mm Video received added to local cache:  🔵 🔵 ${video.projectName}, sending to video stream');
       _videoController.sink.add(video);
-      _handleActivity(
-          type: ActivityType.videoAdded,
-          projectId: video.projectId,
-          projectName: video.projectName,
-          userId: video.userId!,
-          typeId: video.videoId,
-          userName: video.userName!);
     }
     if (data['audio'] != null) {
       pp("$mm processFCMMessage  🔵 🔵 🔵 ........................... cache AUDIO  🍎  🍎");
@@ -381,13 +352,6 @@ class FCMBloc {
       await cacheManager.addAudio(audio: audio);
       pp('$mm Audio received added to local cache:  🔵 🔵 ${audio.projectName}, sending to audio stream');
       _audioController.sink.add(audio);
-      _handleActivity(
-          type: ActivityType.audioAdded,
-          projectId: audio.projectId,
-          projectName: audio.projectName,
-          userId: audio.userId!,
-          typeId: audio.audioId,
-          userName: audio.userName!);
     }
     if (data['condition'] != null) {
       pp("$mm processFCMMessage  🔵 🔵 🔵 ........................... cache CONDITION  🍎  🍎");
@@ -396,13 +360,6 @@ class FCMBloc {
       await cacheManager.addCondition(condition: condition);
       pp('$mm condition received added to local cache:  🔵 🔵 ${condition.projectName}, sending to condition stream');
       _conditionController.sink.add(condition);
-      _handleActivity(
-          type: ActivityType.conditionAdded,
-          projectId: condition.projectId,
-          projectName: condition.projectName,
-          userId: condition.userId!,
-          typeId: condition.conditionId,
-          userName: condition.userName!);
     }
     if (data['message'] != null) {
       pp("$mm processFCMMessage  🔵 🔵 🔵 ........................... cache ORG MESSAGE  🍎  🍎");
@@ -412,13 +369,6 @@ class FCMBloc {
       if (user!.userId != msg.adminId) {
         _messageController.sink.add(msg);
       }
-      _handleActivity(
-          type: ActivityType.messageAdded,
-          userId: msg.userId!,
-          userName: msg.name!,
-          projectId: null,
-          typeId: msg.orgMessageId,
-          projectName: null);
     }
     if (data['settings'] != null) {
       pp("$mm processFCMMessage  🔵 🔵 🔵 ........................... cache SETTINGS and change THEME  🍎  🍎");
@@ -426,59 +376,25 @@ class FCMBloc {
       var msg = SettingsModel.fromJson(m);
       await cacheManager.addSettings(settings: msg);
       if (msg.projectId == null) {
-        pp('$mm This is an organization-wide setting, update the user cached settings ...');
+        pp('$mm This is an organization-wide setting, update the act cached settings ...');
         await prefsOGx.saveSettings(msg);
         await themeBloc.changeToTheme(msg.themeIndex!);
         _settingsController.sink.add(msg);
-        _handleActivity(
-            type: ActivityType.settingsChanged,
-            userId: null,
-            typeId: msg.settingsId,
-            userName: null,
-            projectId: null,
-            projectName: null);
+
         pp('$mm This is an organization-wide setting, hopefully the ui changes to new color ...');
       }
     }
+
     if (data['geofenceEvent'] != null) {
-      if (user!.userType != UserType.fieldMonitor) {
-        pp("$mm processFCMMessage  🔵 🔵 🔵 ........................... cache GEOFENCE EVENT  🍎  🍎");
-        var m = jsonDecode(data['geofenceEvent']);
-        var msg = GeofenceEvent.fromJson(m);
-        await cacheManager.addGeofenceEvent(geofenceEvent: msg);
-        _geofenceController.sink.add(msg);
-        _handleActivity(
-            type: ActivityType.geofenceEventAdded,
-            userId: msg.user!.userId!,
-            userName: msg.user!.name!,
-            typeId: msg.geofenceEventId,
-            projectId: null,
-            projectName: null);
-      }
+      pp("$mm processFCMMessage  🔵 🔵 🔵 ........................... cache GEOFENCE EVENT  🍎  🍎");
+      var m = jsonDecode(data['geofenceEvent']);
+      var msg = GeofenceEvent.fromJson(m);
+
+      await cacheManager.addGeofenceEvent(geofenceEvent: msg);
+      _geofenceController.sink.add(msg);
     }
 
     return null;
-  }
-
-  Future<ActivityModel> _handleActivity(
-      {required ActivityType type,
-      required String? userId,
-      required String? userName,
-      required String? projectId,
-      required String? projectName, required String? typeId}) async {
-    var act = ActivityModel(
-        activityTypeId: const Uuid().v4(),
-        activityType: type,
-        typeId: typeId,
-        date: DateTime.now().toIso8601String(),
-        userId: userId,
-        userName: userName,
-        projectId: projectId,
-        projectName: projectName);
-
-    await cacheManager.addActivityModel(activity: act);
-    _activityController.sink.add(act);
-    return act;
   }
 
   Future<void> _handleCache(User receivedUser) async {
@@ -500,44 +416,9 @@ class FCMBloc {
   }
 }
 
-Future<dynamic> myBackgroundMessageHandler(Map<String, dynamic> message) async {
-  pp("$mm  🦠 🦠 🦠 🦠 🦠 myBackgroundMessageHandler   🦠 🦠 🦠 🦠 🦠 ........................... $message");
-  Map data = message['data'];
-
-  pp("$mm myBackgroundMessageHandler   🦠 🦠 🦠........................... cache USER  🍎  🍎 string data: $data");
-  if (data['user'] != null) {
-    var m = jsonDecode(data['user']);
-    var user = User.fromJson(m);
-    cacheManager.addUser(user: user);
-  }
-  if (data['project'] != null) {
-    pp("$mm myBackgroundMessageHandler   🦠 🦠 🦠 ........................... cache PROJECT  🍎  🍎");
-    var m = jsonDecode(data['project']);
-    var project = Project.fromJson(m);
-    cacheManager.addProject(project: project);
-  }
-  if (data['photo'] != null) {
-    pp("$mm myBackgroundMessageHandler   🦠 🦠 🦠 ........................... cache PHOTO  🍎  🍎");
-    var m = jsonDecode(data['photo']);
-    var photo = Photo.fromJson(m);
-    cacheManager.addPhoto(photo: photo);
-  }
-  if (data['video'] != null) {
-    pp("$mm myBackgroundMessageHandler   🦠 🦠 🦠 ........................... cache VIDEO  🍎  🍎");
-    var m = jsonDecode(data['video']);
-    var video = Video.fromJson(m);
-    cacheManager.addVideo(video: video);
-  }
-  if (data['condition'] != null) {
-    pp("$mm myBackgroundMessageHandler   🦠 🦠 🦠 ........................... cache CONDITION  🍎  🍎");
-    var m = jsonDecode(data['condition']);
-    var condition = Condition.fromJson(m);
-    cacheManager.addCondition(condition: condition);
-  }
-  if (data['message'] != null) {
-    pp("$mm myBackgroundMessageHandler  🦠 🦠 🦠 ........................... cache ORG MESSAGE  🍎  🍎");
-    var m = jsonDecode(data['message']);
-    var msg = OrgMessage.fromJson(m);
-    cacheManager.addOrgMessage(message: msg);
-  }
+Future<void> _firebaseMessagingBackgroundHandler(
+    fb.RemoteMessage message) async {
+  pp('\n\n\n$mm Received FCM messaging while in the background ... ');
+  pp("\n\n$mm onMessage: 🍎 🍎 data: ${message.data} ... 🍎 🍎\n ");
+  fcmBloc.processFCMMessage(message);
 }
