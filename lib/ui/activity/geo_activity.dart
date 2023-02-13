@@ -97,14 +97,33 @@ class GeoActivityState extends State<GeoActivity>
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      children: [
-        Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: SizedBox(
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: SizedBox(
+        width: widget.width,
+        child: ScreenTypeLayout(
+          mobile: ActivityList(
             width: widget.width,
-            child: ScreenTypeLayout(
-              mobile: ActivityList(
+            onPhotoTapped: (photo) {
+              widget.showPhoto(photo);
+            },
+            onVideoTapped: (video) {
+              widget.showVideo(video);
+            },
+            onAudioTapped: (audio) {
+              widget.showAudio(audio);
+            },
+            onUserTapped: (user) {},
+            onProjectTapped: (project) {},
+            onProjectPositionTapped: (projectPosition) {},
+            onPolygonTapped: (projectPolygon) {},
+            onGeofenceEventTapped: (geofenceEvent) {},
+            onOrgMessage: (orgMessage) {},
+            thinMode: widget.thinMode,
+          ),
+          tablet: OrientationLayoutBuilder(
+            portrait: (context) {
+              return ActivityList(
                 width: widget.width,
                 onPhotoTapped: (photo) {
                   widget.showPhoto(photo);
@@ -122,68 +141,32 @@ class GeoActivityState extends State<GeoActivity>
                 onGeofenceEventTapped: (geofenceEvent) {},
                 onOrgMessage: (orgMessage) {},
                 thinMode: widget.thinMode,
-              ),
-              tablet: OrientationLayoutBuilder(
-                portrait: (context) {
-                  return ActivityList(
-                    width: widget.width,
-                    onPhotoTapped: (photo) {
-                      widget.showPhoto(photo);
-                    },
-                    onVideoTapped: (video) {
-                      widget.showVideo(video);
-                    },
-                    onAudioTapped: (audio) {
-                      widget.showAudio(audio);
-                    },
-                    onUserTapped: (user) {},
-                    onProjectTapped: (project) {},
-                    onProjectPositionTapped: (projectPosition) {},
-                    onPolygonTapped: (projectPolygon) {},
-                    onGeofenceEventTapped: (geofenceEvent) {},
-                    onOrgMessage: (orgMessage) {},
-                    thinMode: widget.thinMode,
-                  );
+              );
+            },
+            landscape: (context) {
+              return ActivityList(
+                width: widget.width,
+                thinMode: widget.thinMode,
+                onPhotoTapped: (photo) {
+                  widget.showPhoto(photo);
                 },
-                landscape: (context) {
-                  return ActivityList(
-                    width: widget.width,
-                    thinMode: widget.thinMode,
-                    onPhotoTapped: (photo) {
-                      widget.showPhoto(photo);
-                    },
-                    onVideoTapped: (video) {
-                      widget.showVideo(video);
-                    },
-                    onAudioTapped: (audio) {
-                      widget.showAudio(audio);
-                    },
-                    onUserTapped: (user) {},
-                    onProjectTapped: (project) {},
-                    onProjectPositionTapped: (projectPosition) {},
-                    onPolygonTapped: (projectPolygon) {},
-                    onGeofenceEventTapped: (geofenceEvent) {},
-                    onOrgMessage: (orgMessage) {},
-                  );
+                onVideoTapped: (video) {
+                  widget.showVideo(video);
                 },
-              ),
-            ),
+                onAudioTapped: (audio) {
+                  widget.showAudio(audio);
+                },
+                onUserTapped: (user) {},
+                onProjectTapped: (project) {},
+                onProjectPositionTapped: (projectPosition) {},
+                onPolygonTapped: (projectPolygon) {},
+                onGeofenceEventTapped: (geofenceEvent) {},
+                onOrgMessage: (orgMessage) {},
+              );
+            },
           ),
         ),
-        busy
-            ? const Positioned(
-                right: 100,
-                top: 20,
-                child: SizedBox(
-                  width: 16,
-                  height: 16,
-                  child: CircularProgressIndicator(
-                    strokeWidth: 4,
-                    backgroundColor: Colors.pink,
-                  ),
-                ))
-            : const SizedBox(),
-      ],
+      ),
     );
   }
 }

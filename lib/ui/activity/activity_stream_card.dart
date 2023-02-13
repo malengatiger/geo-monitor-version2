@@ -186,40 +186,45 @@ class ActivityStreamCardState extends State<ActivityStreamCard> {
             shape: getRoundedBorder(radius: 16),
             child: Padding(
               padding: const EdgeInsets.only(left: 8.0),
-              child: Column(
-                children: [
-                  const SizedBox(
-                    height: 12,
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-                      Text(
-                        dt,
-                        style: myTextStyleSmallBoldPrimaryColor(context),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(
-                    height: 12,
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      icon,
-                      const SizedBox(
-                        width: 12,
-                      ),
-                      Text(
-                        msg,
-                        style: myTextStyleTiny(context),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(
-                    height: 12,
-                  ),
-                ],
+              child: SizedBox(
+                height: 80,
+                child: Column(
+                  children: [
+                    const SizedBox(
+                      height: 12,
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        Text(
+                          dt,
+                          style: myTextStyleSmallBoldPrimaryColor(context),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(
+                      height: 12,
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        icon,
+                        const SizedBox(
+                          width: 12,
+                        ),
+                        Flexible(
+                          child: Text(
+                            msg,
+                            style: myTextStyleTiny(context),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(
+                      height: 12,
+                    ),
+                  ],
+                ),
               ),
             ),
           )
@@ -340,7 +345,7 @@ class ActivityStreamCardState extends State<ActivityStreamCard> {
         icon =
             Icon(Icons.location_history, color: Theme.of(context).primaryColor);
         message =
-            'Location request responded to by ${widget.model.locationRequest!.userName}';
+            'Location request responded to by ${widget.model.locationResponse!.userName}';
         return _getGeneric(icon, message);
         break;
       case ActivityType.kill:

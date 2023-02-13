@@ -579,7 +579,7 @@ class DashboardTabletPortraitState extends State<DashboardTabletPortrait>
                     : Row(
                         children: [
                           SizedBox(
-                            width: (width / 2) + 120,
+                            width: (width / 2) + 100,
                             child: DashboardGrid(
                                 dataBag: dataBag!,
                                 topPadding: 40,
@@ -610,7 +610,7 @@ class DashboardTabletPortraitState extends State<DashboardTabletPortrait>
                                 }),
                           ),
                           GeoActivity(
-                            width: 240,
+                            width: 280,
                             thinMode: true,
                             showPhoto: (photo) {
                               _displayPhoto(photo);

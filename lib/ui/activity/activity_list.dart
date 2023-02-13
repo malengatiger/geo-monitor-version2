@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:badges/badges.dart' as bd;
 import 'package:flutter/material.dart';
-import 'package:flutter/scheduler.dart';
 import 'package:geo_monitor/library/bloc/fcm_bloc.dart';
 import 'package:geo_monitor/library/bloc/organization_bloc.dart';
 
@@ -70,18 +69,6 @@ class _ActivityListState extends State<ActivityList> {
     _listenToFCM();
   }
 
-  void _scrollToTop() async {
-    settings = await prefsOGx.getSettings();
-    Future.delayed(const Duration(milliseconds: 200), () {
-      SchedulerBinding.instance.addPostFrameCallback((_) {
-        listScrollController.animateTo(
-            listScrollController.position.minScrollExtent,
-            duration: const Duration(milliseconds: 1000),
-            curve: Curves.fastOutSlowIn);
-      });
-    });
-  }
-
   void _getData(bool forceRefresh) async {
     setState(() {
       busy = true;
@@ -112,7 +99,6 @@ class _ActivityListState extends State<ActivityList> {
             forceRefresh: forceRefresh);
       }
       _sortDescending();
-      _scrollToTop();
     } catch (e) {
       pp(e);
       if (mounted) {
@@ -128,7 +114,7 @@ class _ActivityListState extends State<ActivityList> {
     pp('$mm ... _listenToFCM activityStream ...');
 
     subscription = fcmBloc.activityStream.listen((ActivityModel model) {
-      pp('$mm activityStream delivered activity data ... ${model.toJson()}');
+      pp('$mm activityStream delivered activity data ... ${model.date!}');
       models.insert(0, model);
       if (mounted) {
         setState(() {});
@@ -208,57 +194,63 @@ class _ActivityListState extends State<ActivityList> {
     return widget.thinMode
         ? SizedBox(
             width: widget.width,
-            child: Column(
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.only(left: 20.0),
-                      child: Text(
-                        'Last ${settings == null ? 12 : settings!.activityStreamHours!} hours',
-                        style: myTextStyleSmallBold(context),
+            child: SingleChildScrollView(
+              child: Column(
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.only(
+                            left: 20.0, top: 12, bottom: 8),
+                        child: bd.Badge(
+                          badgeContent: Text(
+                            '${models.length}',
+                            style: myTextStyleSmall(context),
+                          ),
+                          badgeStyle: const bd.BadgeStyle(
+                              elevation: 8,
+                              badgeColor: Colors.pink,
+                              padding: EdgeInsets.all(12.0)),
+                          child: Padding(
+                            padding: const EdgeInsets.only(top: 16.0),
+                            child: TextButton(
+                              onPressed: () {
+                                _getData(true);
+                              },
+                              child: Text(
+                                'Activity Last ${settings == null ? 12 : settings!.activityStreamHours!} hours',
+                                style: myTextStyleSmallBold(context),
+                              ),
+                            ),
+                          ),
+                        ),
                       ),
-                    ),
-                  ],
-                ),
-                const SizedBox(
-                  height: 12,
-                ),
-                Expanded(
-                  child: InkWell(
-                    onTap: () {
-                      _getData(true);
-                    },
-                    child: bd.Badge(
-                      badgeContent: Text(
-                        '${models.length}',
-                        style: myTextStyleSmall(context),
-                      ),
-                      badgeStyle: const bd.BadgeStyle(
-                          elevation: 8,
-                          badgeColor: Colors.pink,
-                          padding: EdgeInsets.all(8.0)),
-                      child: ListView.builder(
-                          itemCount: models.length,
-                          controller: listScrollController,
-                          itemBuilder: (_, index) {
-                            var act = models.elementAt(index);
-                            return GestureDetector(
-                                onTap: () {
-                                  _handleTappedActivity(act);
-                                },
-                                child: ActivityStreamCard(
-                                  model: act,
-                                  frontPadding: 36,
-                                  thinMode: widget.thinMode,
-                                  width: widget.thinMode ? 160 : widget.width,
-                                ));
-                          }),
-                    ),
+                    ],
                   ),
-                ),
-              ],
+                  const SizedBox(
+                    height: 4,
+                  ),
+                  ListView.builder(
+                      shrinkWrap: true,
+                      itemCount: models.length,
+                      controller: listScrollController,
+                      itemBuilder: (_, index) {
+                        var act = models.elementAt(index);
+                        return GestureDetector(
+                          onTap: () {
+                            _handleTappedActivity(act);
+                          },
+                          child: ActivityStreamCard(
+                            model: act,
+                            frontPadding: 36,
+                            thinMode: widget.thinMode,
+                            width: widget.thinMode ? 160 : widget.width,
+                          ),
+                        );
+                      }),
+                ],
+              ),
             ),
           )
         : Padding(
@@ -288,6 +280,7 @@ class _ActivityListState extends State<ActivityList> {
                         _getData(true);
                       },
                       child: bd.Badge(
+                        position: bd.BadgePosition.topStart(),
                         badgeContent: Text(
                           '${models.length}',
                           style: myTextStyleSmall(context),
@@ -295,7 +288,7 @@ class _ActivityListState extends State<ActivityList> {
                         badgeStyle: const bd.BadgeStyle(
                             elevation: 8,
                             badgeColor: Colors.pink,
-                            padding: EdgeInsets.all(8.0)),
+                            padding: EdgeInsets.all(16.0)),
                         child: ListView.builder(
                             itemCount: models.length,
                             controller: listScrollController,

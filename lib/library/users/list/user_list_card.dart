@@ -19,12 +19,14 @@ class UserListCard extends StatelessWidget {
       required this.navigateToKillPage,
       required this.amInLandscape,
       required this.badgeTapped,
-      required this.navigateToLocationRequest})
+      required this.navigateToLocationRequest,
+      required this.avatarRadius})
       : super(key: key);
 
   final List<User> users;
   final User deviceUser;
   final bool amInLandscape;
+  final double avatarRadius;
 
   final Function(User) navigateToPhone;
   final Function(User) navigateToMessaging;
@@ -140,7 +142,7 @@ class UserListCard extends StatelessWidget {
             ),
             Text(
               deviceUser.organizationName!,
-              style: myTextStyleMedium(context),
+              style: myTextStyleLargePrimaryColor(context),
             ),
             const SizedBox(
               height: 12,
@@ -204,16 +206,16 @@ class UserListCard extends StatelessWidget {
                           child: Column(
                             children: [
                               Padding(
-                                padding:
-                                    const EdgeInsets.symmetric(vertical: 6.0),
+                                padding: const EdgeInsets.symmetric(
+                                    vertical: 6.0, horizontal: 20),
                                 child: Row(
                                   children: [
                                     mUser.thumbnailUrl == null
-                                        ? const CircleAvatar(
-                                            radius: 20,
+                                        ? CircleAvatar(
+                                            radius: avatarRadius,
                                           )
                                         : CircleAvatar(
-                                            radius: 20,
+                                            radius: avatarRadius,
                                             backgroundImage: NetworkImage(
                                                 mUser.thumbnailUrl!),
                                           ),

@@ -47,6 +47,8 @@ class LocationRequest extends HiveObject {
       'organizationId': organizationId,
       'requesterId': requesterId,
       'created': created,
+      'userId': userId,
+      'userName': userName,
       'requesterName': requesterName,
     };
     return map;

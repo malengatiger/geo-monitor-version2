@@ -279,6 +279,7 @@ class UserListMobileState extends State<UserListMobile>
                     child: UserListCard(
                       amInLandscape: true,
                       users: users,
+                      avatarRadius: 20,
                       deviceUser: user!,
                       navigateToLocationRequest: (mUser) {
                         _sendLocationRequest(mUser);

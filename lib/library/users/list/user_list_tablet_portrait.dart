@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_libphonenumber/flutter_libphonenumber.dart';
 import 'package:focused_menu/modals.dart';
 import 'package:geo_monitor/library/bloc/location_request_handler.dart';
+import 'package:geo_monitor/library/data/location_response.dart';
+import 'package:geo_monitor/library/ui/maps/location_response_map.dart';
 import 'package:geo_monitor/library/ui/maps_field_monitor/field_monitor_map_mobile.dart';
 import 'package:geo_monitor/library/ui/schedule/scheduler_mobile.dart';
 import 'package:geo_monitor/library/users/edit/user_edit_main.dart';
@@ -55,14 +57,99 @@ class UserListTabletPortraitState extends State<UserListTabletPortrait>
   }
 
   late StreamSubscription<User> _streamSubscription;
+  late StreamSubscription<LocationResponse> _locationResponseSubscription;
+
+  LocationResponse? locationResponse;
+
   void _listen() {
     _streamSubscription = fcmBloc.userStream.listen((User user) {
       pp('$mm new user just arrived: ${user.toJson()}');
-
       if (mounted) {
         _getData(false);
       }
     });
+    _locationResponseSubscription =
+        fcmBloc.locationResponseStream.listen((LocationResponse event) {
+      pp('$mm locationResponseStream delivered ... response: ${event.toJson()}');
+      locationResponse = event;
+      if (mounted) {
+        setState(() {});
+        _showLocationResponseDialog();
+      }
+    });
+  }
+
+  void _showLocationResponseDialog() async {
+    showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (_) => AlertDialog(
+              shape: getRoundedBorder(radius: 16),
+              title: Text(
+                "Location Response",
+                style: myTextStyleLarge(context),
+              ),
+              content: SizedBox(
+                height: 160.0,
+                child: Card(
+                  color: Theme.of(context).primaryColor,
+                  shape: getRoundedBorder(radius: 16),
+                  child: Padding(
+                    padding: const EdgeInsets.all(20.0),
+                    child: Column(
+                      children: <Widget>[
+                        Text(
+                          locationResponse == null
+                              ? ''
+                              : locationResponse!.userName!,
+                          style: myTextStyleMediumBold(context),
+                        ),
+                        const SizedBox(
+                          height: 12,
+                        ),
+                        const Padding(
+                          padding: EdgeInsets.all(8.0),
+                          child: Text(
+                              'Your location request has received a response. Do you want to see the response on a map?'),
+                        )
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+              actions: <Widget>[
+                TextButton(
+                  child: const Text(
+                    'NO',
+                    style: TextStyle(color: Colors.grey),
+                  ),
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                ),
+                TextButton(
+                  child: const Text(
+                    'YES',
+                    style: TextStyle(color: Colors.grey),
+                  ),
+                  onPressed: () {
+                    _navigateToLocationResponseMap();
+                  },
+                ),
+              ],
+            ));
+  }
+
+  void _navigateToLocationResponseMap() async {
+    Navigator.push(
+        context,
+        PageTransition(
+            type: PageTransitionType.scale,
+            alignment: Alignment.topLeft,
+            duration: const Duration(seconds: 1),
+            child: LocationResponseMap(
+              locationResponse: locationResponse!,
+            )));
   }
 
   bool _showPlusIcon = false;
@@ -235,11 +322,13 @@ class UserListTabletPortraitState extends State<UserListTabletPortrait>
     });
     try {
       var user = await prefsOGx.getUser();
+
       await locationRequestHandler.sendLocationRequest(
           requesterId: user!.userId!,
           requesterName: user.name!,
           userId: otherUser.userId!,
           userName: otherUser.name!);
+
       if (mounted) {
         showToast(message: 'Location request sent', context: context);
       }
@@ -340,9 +429,10 @@ class UserListTabletPortraitState extends State<UserListTabletPortrait>
     return Scaffold(
       key: _key,
       appBar: AppBar(
+        centerTitle: true,
         title: Text(
           'Organization Users',
-          style: Styles.whiteTiny,
+          style: myTextStyleLarge(context),
         ),
         actions: busy
             ? []
@@ -393,6 +483,7 @@ class UserListTabletPortraitState extends State<UserListTabletPortrait>
               child: UserListCard(
                 amInLandscape: false,
                 badgeTapped: _sort,
+                avatarRadius: 32,
                 users: _users,
                 deviceUser: _user!,
                 navigateToLocationRequest: (user) {
