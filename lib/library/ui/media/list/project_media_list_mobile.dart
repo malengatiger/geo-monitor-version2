@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:animations/animations.dart';
 import 'package:flutter/material.dart';
-import 'package:geo_monitor/library/bloc/fcm_bloc.dart';
 import 'package:geo_monitor/library/ui/camera/chewie_video_player.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:page_transition/page_transition.dart';
@@ -12,13 +11,12 @@ import '../../../api/prefs_og.dart';
 import '../../../bloc/cloud_storage_bloc.dart';
 import '../../../bloc/project_bloc.dart';
 import '../../../data/audio.dart';
+import '../../../data/photo.dart';
+import '../../../data/project.dart';
 import '../../../data/user.dart';
 import '../../../data/video.dart';
 import '../../../emojis.dart';
 import '../../../functions.dart';
-import '../../../data/photo.dart';
-import '../../../data/project.dart';
-import '../../camera/play_video.dart';
 import '../../project_monitor/project_monitor_mobile.dart';
 import '../full_photo/full_photo_mobile.dart';
 import 'media_grid.dart';
@@ -72,7 +70,6 @@ class ProjectMediaListMobileState extends State<ProjectMediaListMobile>
 
     _listenToProjectStreams();
     _listenToPhotoStream();
-
   }
 
   void _listenToProjectStreams() async {
@@ -87,7 +84,6 @@ class ProjectMediaListMobileState extends State<ProjectMediaListMobile>
       } else {
         pp(' 😡😡😡 what the fuck? this thing is not mounted  😡😡😡');
       }
-
     });
 
     videoStreamSubscription = projectBloc.videoStream.listen((value) {
@@ -98,7 +94,6 @@ class ProjectMediaListMobileState extends State<ProjectMediaListMobile>
       } else {
         pp(' 😡😡😡 what the fuck? this thing is not mounted  😡😡😡');
       }
-
     });
   }
 
@@ -160,7 +155,10 @@ class ProjectMediaListMobileState extends State<ProjectMediaListMobile>
             type: PageTransitionType.leftToRightWithFade,
             alignment: Alignment.topLeft,
             duration: const Duration(milliseconds: 1000),
-            child: ChewieVideoPlayer(project: widget.project, videoIndex: videoIndex,)));
+            child: ChewieVideoPlayer(
+              project: widget.project,
+              videoIndex: videoIndex,
+            )));
   }
 
   AudioPlayer audioPlayer = AudioPlayer();

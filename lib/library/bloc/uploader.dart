@@ -45,29 +45,52 @@ class Uploader {
   final videosUploaded = <VideoForUpload>[];
   final audiosUploaded = <AudioForUpload>[];
 
-  bool photoHasBeenUploaded(PhotoForUpload photo) {
+  Future<bool> photoHasBeenUploaded(PhotoForUpload photo) async {
+    var deleteList = <PhotoForUpload>[];
     for (var value in photosUploaded) {
       if (photo.photoId == value.photoId) {
-        return true;
+        deleteList.add(value);
       }
+    }
+    for (var value1 in deleteList) {
+      await cacheManager.removeUploadedPhoto(photo: photo);
+    }
+    if (deleteList.isNotEmpty) {
+      return true;
     }
     return false;
   }
 
-  bool videoHasBeenUploaded(VideoForUpload video) {
+  Future<bool> videoHasBeenUploaded(VideoForUpload video) async {
+    var deleteList = <VideoForUpload>[];
+
     for (var value in videosUploaded) {
       if (video.videoId == value.videoId) {
-        return true;
+        deleteList.add(value);
       }
+    }
+    for (var value1 in deleteList) {
+      await cacheManager.removeUploadedVideo(video: video);
+    }
+    if (deleteList.isNotEmpty) {
+      return true;
     }
     return false;
   }
 
-  bool audioHasBeenUploaded(AudioForUpload audio) {
+  Future<bool> audioHasBeenUploaded(AudioForUpload audio) async {
+    var deleteList = <AudioForUpload>[];
+
     for (var value in audiosUploaded) {
       if (audio.audioId == value.audioId) {
-        return true;
+        deleteList.add(value);
       }
+    }
+    for (var value1 in deleteList) {
+      await cacheManager.removeUploadedAudio(audio: audio);
+    }
+    if (deleteList.isNotEmpty) {
+      return true;
     }
     return false;
   }
@@ -128,7 +151,7 @@ class Uploader {
       var positions = await cacheManager
           .getProjectPositions(photoForUpload.project!.projectId!);
       for (var projectPosition in positions) {
-        var dist = getDistance(
+        var dist = await getDistance(
             latitude: photoForUpload.position!.coordinates[1],
             longitude: photoForUpload.position!.coordinates[0],
             toLatitude: projectPosition.position!.coordinates[1],
@@ -164,12 +187,12 @@ class Uploader {
     }
   }
 
-  double getDistance(
+  Future<double> getDistance(
       {required double latitude,
       required double longitude,
       required double toLatitude,
-      required double toLongitude}) {
-    var dist = locationBlocOG.getDistance(
+      required double toLongitude}) async {
+    var dist = await locationBlocOG.getDistance(
         latitude: latitude,
         longitude: longitude,
         toLatitude: toLatitude,
@@ -178,9 +201,9 @@ class Uploader {
     return dist;
   }
 
-  Future<int> _sendPhotoToCloud(PhotoForUpload value) async {
-    var isUploaded = photoHasBeenUploaded(value);
-    if (isUploaded) {
+  Future<int> _sendPhotoToCloud(PhotoForUpload photoForUploading) async {
+    var isUploaded = photoHasBeenUploaded(photoForUploading);
+    if (await isUploaded) {
       pp('$mm isUploaded duplicate of this photo was found on uploaded list, already uploaded; quit!');
       return 9;
     }
@@ -191,14 +214,14 @@ class Uploader {
     try {
       //upload main file
       var fileName =
-          'photo@${value.project!.projectId}@${DateTime.now().toUtc().toIso8601String()}.${'jpg'}';
+          'photo@${photoForUploading.project!.projectId}@${DateTime.now().toUtc().toIso8601String()}.${'jpg'}';
       var firebaseStorageRef = FirebaseStorage.instance
           .ref()
           .child(photoStorageName)
           .child(fileName);
-      var file = File(value.filePath!);
+      var file = File(photoForUploading.filePath!);
       if (!file.existsSync()) {
-        await cacheManager.removeUploadedPhoto(photo: value);
+        await cacheManager.removeUploadedPhoto(photo: photoForUploading);
         return 9;
       }
       pp('$mm️ uploadPhoto ☕️☕️☕️☕️☕️☕️☕️file path: \n${file.path}');
@@ -210,15 +233,15 @@ class Uploader {
       _printSnapshot(taskSnapshot, 'PHOTO');
       // upload thumbnail here
       final thumbName =
-          'thumbnail@${value.project!.projectId}@${DateTime.now().toUtc().toIso8601String()}.${'jpg'}';
+          'thumbnail@${photoForUploading.project!.projectId}@${DateTime.now().toUtc().toIso8601String()}.${'jpg'}';
       final firebaseStorageRef2 = FirebaseStorage.instance
           .ref()
           .child(photoStorageName)
           .child(thumbName);
 
-      var thumbnailFile = File(value.thumbnailPath!);
+      var thumbnailFile = File(photoForUploading.thumbnailPath!);
       if (!thumbnailFile.existsSync()) {
-        await cacheManager.removeUploadedPhoto(photo: value);
+        await cacheManager.removeUploadedPhoto(photo: photoForUploading);
         return 9;
       }
       final thumbUploadTask = firebaseStorageRef2.putFile(thumbnailFile);
@@ -235,11 +258,11 @@ class Uploader {
     Photo? photo;
     try {
       var distance = await locationBlocOG.getDistanceFromCurrentPosition(
-          latitude: value.position!.coordinates[1],
-          longitude: value.position!.coordinates[0]);
+          latitude: photoForUploading.position!.coordinates[1],
+          longitude: photoForUploading.position!.coordinates[0]);
 
       var height = 0, width = 0;
-      var file = File(value.filePath!);
+      var file = File(photoForUploading.filePath!);
       decodeImageFromList(file.readAsBytesSync(), (image) {
         height = image.height;
         width = image.width;
@@ -251,25 +274,25 @@ class Uploader {
       photo = Photo(
           url: url,
           caption: 'tbd',
-          created: DateTime.now().toUtc().toIso8601String(),
+          created: photoForUploading.date,
           userId: user!.userId,
           userName: user!.name,
-          projectPosition: value.position!,
+          projectPosition: photoForUploading.position!,
           distanceFromProjectPosition: distance,
-          projectId: value.project!.projectId,
+          projectId: photoForUploading.project!.projectId,
           thumbnailUrl: thumbUrl,
-          projectName: value.project!.name,
+          projectName: photoForUploading.project!.name,
           organizationId: user!.organizationId,
           height: height,
           width: width,
-          projectPositionId: value.projectPositionId,
-          projectPolygonId: value.projectPolygonId,
-          photoId: value.photoId,
+          projectPositionId: photoForUploading.projectPositionId,
+          projectPolygonId: photoForUploading.projectPolygonId,
+          photoId: photoForUploading.photoId,
           landscape: width > height ? 0 : 1);
 
       await DataAPI.addPhoto(photo);
-      await cacheManager.removeUploadedPhoto(photo: value);
-      photosUploaded.add(value);
+      await cacheManager.removeUploadedPhoto(photo: photoForUploading);
+      photosUploaded.add(photoForUploading);
       await organizationBloc.addPhotoToStream(photo);
       pp('\n$mm photo upload process completed OK');
 
@@ -291,7 +314,7 @@ class Uploader {
       var positions = await cacheManager
           .getProjectPositions(videoForUpload.project!.projectId!);
       for (var projectPosition in positions) {
-        var dist = getDistance(
+        var dist = await getDistance(
             latitude: videoForUpload.position!.coordinates[1],
             longitude: videoForUpload.position!.coordinates[0],
             toLatitude: projectPosition.position!.coordinates[1],
@@ -324,9 +347,9 @@ class Uploader {
     }
   }
 
-  Future<int> _sendVideoToCloud(VideoForUpload value) async {
-    var isUploaded = videoHasBeenUploaded(value);
-    if (isUploaded) {
+  Future<int> _sendVideoToCloud(VideoForUpload videoForUpload) async {
+    var isUploaded = videoHasBeenUploaded(videoForUpload);
+    if (await isUploaded) {
       pp('$mm a duplicate of this video was found on uploaded list, already uploaded; quit!');
       return 9;
     }
@@ -335,15 +358,15 @@ class Uploader {
     late UploadTask uploadTask;
     late TaskSnapshot taskSnapshot;
     try {
-      var file = File(value.filePath!);
+      var file = File(videoForUpload.filePath!);
       if (!file.existsSync()) {
-        await cacheManager.removeUploadedVideo(video: value);
+        await cacheManager.removeUploadedVideo(video: videoForUpload);
         return 9;
       }
       pp('$mm️ uploadVideo file path: \n${file.path}');
       //upload main file
       var fileName =
-          'video@${value.project!.projectId}@${DateTime.now().toUtc().toIso8601String()}.${'mp4'}';
+          'video@${videoForUpload.project!.projectId}@${DateTime.now().toUtc().toIso8601String()}.${'mp4'}';
       var firebaseStorageRef = FirebaseStorage.instance
           .ref()
           .child(videoStorageName)
@@ -356,14 +379,14 @@ class Uploader {
       _printSnapshot(taskSnapshot, 'VIDEO');
       // upload thumbnail here
       final thumbName =
-          'thumbnail@${value.project!.projectId}@${DateTime.now().toUtc().toIso8601String()}.${'jpg'}';
+          'thumbnail@${videoForUpload.project!.projectId}@${DateTime.now().toUtc().toIso8601String()}.${'jpg'}';
       final firebaseStorageRef2 = FirebaseStorage.instance
           .ref()
           .child(videoStorageName)
           .child(thumbName);
-      var thumbnailFile = File(value.thumbnailPath!);
+      var thumbnailFile = File(videoForUpload.thumbnailPath!);
       if (!thumbnailFile.existsSync()) {
-        await cacheManager.removeUploadedVideo(video: value);
+        await cacheManager.removeUploadedVideo(video: videoForUpload);
         return 9;
       }
       final thumbUploadTask = firebaseStorageRef2.putFile(thumbnailFile);
@@ -380,8 +403,8 @@ class Uploader {
     Video? video;
     try {
       var distance = await locationBlocOG.getDistanceFromCurrentPosition(
-          latitude: value.position!.coordinates[1],
-          longitude: value.position!.coordinates[0]);
+          latitude: videoForUpload.position!.coordinates[1],
+          longitude: videoForUpload.position!.coordinates[0]);
 
       pp('$mm adding video ..... 😡😡 distance: '
           '${distance.toStringAsFixed(2)} metres 😡😡');
@@ -389,22 +412,22 @@ class Uploader {
       video = Video(
           url: url,
           caption: 'tbd',
-          created: DateTime.now().toUtc().toIso8601String(),
+          created: videoForUpload.date,
           userId: user!.userId,
           userName: user!.name,
-          projectPosition: value.position,
+          projectPosition: videoForUpload.position,
           distanceFromProjectPosition: distance,
-          projectId: value.project!.projectId,
+          projectId: videoForUpload.project!.projectId,
           thumbnailUrl: thumbUrl,
-          projectName: value.project!.name,
-          projectPositionId: value.projectPositionId,
-          projectPolygonId: value.projectPolygonId,
+          projectName: videoForUpload.project!.name,
+          projectPositionId: videoForUpload.projectPositionId,
+          projectPolygonId: videoForUpload.projectPolygonId,
           organizationId: user!.organizationId,
-          videoId: value.videoId);
+          videoId: videoForUpload.videoId);
 
       await DataAPI.addVideo(video);
-      await cacheManager.removeUploadedVideo(video: value);
-      videosUploaded.add(value);
+      await cacheManager.removeUploadedVideo(video: videoForUpload);
+      videosUploaded.add(videoForUpload);
       await cacheManager.addVideo(video: video);
       await organizationBloc.addVideoToStream(video);
 
@@ -439,9 +462,9 @@ class Uploader {
     }
   }
 
-  Future<int> _sendAudioToCloud(AudioForUpload value) async {
-    var isUploaded = audioHasBeenUploaded(value);
-    if (isUploaded) {
+  Future<int> _sendAudioToCloud(AudioForUpload audioForUplooading) async {
+    var isUploaded = audioHasBeenUploaded(audioForUplooading);
+    if (await isUploaded) {
       pp('$mm a duplicate of this audio was found on uploaded list, already uploaded; quit!');
       return 9;
     }
@@ -449,12 +472,12 @@ class Uploader {
     String url = 'unknown';
     UploadTask? uploadTask;
     var fileName =
-        'audio@${value.project!.organizationId}@${value.project!.projectId}@${DateTime.now().toUtc().toIso8601String()}.mp3';
+        'audio@${audioForUplooading.project!.organizationId}@${audioForUplooading.project!.projectId}@${DateTime.now().toUtc().toIso8601String()}.mp3';
     var firebaseStorageRef =
         FirebaseStorage.instance.ref().child(audioStorageName).child(fileName);
-    var file = File(value.filePath!);
+    var file = File(audioForUplooading.filePath!);
     if (!file.existsSync()) {
-      await cacheManager.removeUploadedAudio(audio: value);
+      await cacheManager.removeUploadedAudio(audio: audioForUplooading);
       return 9;
     }
     uploadTask = firebaseStorageRef.putFile(file);
@@ -465,23 +488,23 @@ class Uploader {
     var dur = await audioPlayer.setUrl(url);
     var audio = Audio(
         url: url,
-        created: DateTime.now().toUtc().toIso8601String(),
+        created: audioForUplooading.date,
         userId: user!.userId,
         userName: user!.name,
         projectPosition: null,
         distanceFromProjectPosition: 0.0,
-        projectId: value.project!.projectId,
-        audioId: value.audioId,
-        organizationId: value.project!.organizationId,
-        projectName: value.project!.name,
+        projectId: audioForUplooading.project!.projectId,
+        audioId: audioForUplooading.audioId,
+        organizationId: audioForUplooading.project!.organizationId,
+        projectName: audioForUplooading.project!.name,
         durationInSeconds: dur!.inSeconds);
 
     try {
       var result = await DataAPI.addAudio(audio);
       await cacheManager.addAudio(audio: audio);
       await organizationBloc.addAudioToStream(result);
-      await cacheManager.removeUploadedAudio(audio: value);
-      audiosUploaded.add(value);
+      await cacheManager.removeUploadedAudio(audio: audioForUplooading);
+      audiosUploaded.add(audioForUplooading);
       pp('\n$mm audio upload process completed OK');
     } catch (e) {
       pp(e);

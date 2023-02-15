@@ -54,6 +54,7 @@ class ProjectAudiosState extends State<ProjectAudios> {
       }
     });
   }
+
   void _getAudios() async {
     setState(() {
       loading = true;
@@ -178,7 +179,7 @@ class ProjectAudiosState extends State<ProjectAudios> {
               alignment: Alignment.topLeft,
               duration: const Duration(milliseconds: 1000),
               child: RatingAdderMobile(
-                project: widget.project,
+                projectId: widget.project.projectId!,
                 audioId: _selectedAudio!.audioId!,
               )));
     });
@@ -214,15 +215,15 @@ class ProjectAudiosState extends State<ProjectAudios> {
                   Expanded(
                       child: bd.Badge(
                     position: bd.BadgePosition.topEnd(top: -8, end: 4),
-                        badgeStyle:  bd.BadgeStyle(
-                          badgeColor: Theme.of(context).primaryColor,
-                          elevation: 8, padding: const EdgeInsets.all(8),
-                        ),
+                    badgeStyle: bd.BadgeStyle(
+                      badgeColor: Theme.of(context).primaryColor,
+                      elevation: 8,
+                      padding: const EdgeInsets.all(8),
+                    ),
                     badgeContent: Text(
                       '${audios.length}',
                       style: myTextStyleSmall(context),
                     ),
-
                     child: Padding(
                       padding: const EdgeInsets.all(12.0),
                       child: GridView.builder(
@@ -282,7 +283,8 @@ class ProjectAudiosState extends State<ProjectAudios> {
                                                 ),
                                                 Text(
                                                   dt,
-                                                  style: myTextStyleTiny(context),
+                                                  style:
+                                                      myTextStyleTiny(context),
                                                 ),
                                                 const SizedBox(
                                                   height: 8,
@@ -324,7 +326,8 @@ class ProjectAudiosState extends State<ProjectAudios> {
                                                           fontWeight:
                                                               FontWeight.normal,
                                                           fontSize: 10,
-                                                          color: Theme.of(context)
+                                                          color: Theme.of(
+                                                                  context)
                                                               .primaryColor),
                                                     ),
                                                   ],
@@ -464,10 +467,15 @@ class ProjectAudiosState extends State<ProjectAudios> {
                                   const SizedBox(
                                     height: 16,
                                   ),
-                                  Row(mainAxisAlignment: MainAxisAlignment.center,
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
                                     children: [
-                                      TextButton(onPressed: _onFavorite, child: Text(E.heartRed)),
-                                      const SizedBox(width: 48,),
+                                      TextButton(
+                                          onPressed: _onFavorite,
+                                          child: Text(E.heartRed)),
+                                      const SizedBox(
+                                        width: 48,
+                                      ),
                                       TextButton(
                                           onPressed: () {
                                             setState(() {
@@ -476,7 +484,10 @@ class ProjectAudiosState extends State<ProjectAudios> {
                                             });
                                             audioPlayer.stop();
                                           },
-                                          child:  Text('Close', style: myTextStyleSmall(context),)),
+                                          child: Text(
+                                            'Close',
+                                            style: myTextStyleSmall(context),
+                                          )),
                                     ],
                                   ),
                                 ],

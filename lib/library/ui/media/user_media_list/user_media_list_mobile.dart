@@ -9,13 +9,13 @@ import '../../../api/prefs_og.dart';
 import '../../../bloc/cloud_storage_bloc.dart';
 import '../../../bloc/organization_bloc.dart';
 import '../../../bloc/user_bloc.dart';
+import '../../../data/photo.dart';
 import '../../../data/project.dart';
 import '../../../data/user.dart';
 import '../../../data/video.dart';
 import '../../../emojis.dart';
 import '../../../functions.dart';
-import '../../../data/photo.dart';
-import '../../camera/play_video.dart';
+import '../../camera/video_player_mobile.dart';
 import '../../project_monitor/project_monitor_mobile.dart';
 import '../full_photo/full_photo_mobile.dart';
 import '../list/media_grid.dart';
@@ -280,7 +280,8 @@ class MediaListMobileState extends State<UserMediaListMobile>
                   ))
               : const SizedBox(),
           _showProjectChooser
-              ? Positioned(child: ProjectChooserOriginal(onSelected: onSelected))
+              ? Positioned(
+                  child: ProjectChooserOriginal(onSelected: onSelected))
               : const SizedBox(),
         ],
       ),
@@ -295,9 +296,7 @@ class MediaListMobileState extends State<UserMediaListMobile>
             type: PageTransitionType.leftToRightWithFade,
             alignment: Alignment.topLeft,
             duration: const Duration(milliseconds: 1000),
-            child: FullPhotoMobile(
-                project: project!,
-                photo: selectedPhoto!)));
+            child: FullPhotoMobile(project: project!, photo: selectedPhoto!)));
   }
 
   Video? selectedVideo;
@@ -309,9 +308,7 @@ class MediaListMobileState extends State<UserMediaListMobile>
             type: PageTransitionType.leftToRightWithFade,
             alignment: Alignment.topLeft,
             duration: const Duration(milliseconds: 1000),
-            child: PlayVideo(
-                project: project!,
-                video: selectedVideo!)));
+            child: VideoPlayerMobilePage(video: selectedVideo!)));
   }
 
   void _navigateToMonitor() {
@@ -338,13 +335,15 @@ class MediaListMobileState extends State<UserMediaListMobile>
 }
 
 class ProjectChooserOriginal extends StatefulWidget {
-  const ProjectChooserOriginal({Key? key, required this.onSelected}) : super(key: key);
+  const ProjectChooserOriginal({Key? key, required this.onSelected})
+      : super(key: key);
   final Function(Project) onSelected;
   @override
   State<ProjectChooserOriginal> createState() => _ProjectChooserOriginalState();
 }
 
-class _ProjectChooserOriginalState extends State<ProjectChooserOriginal> with SingleTickerProviderStateMixin {
+class _ProjectChooserOriginalState extends State<ProjectChooserOriginal>
+    with SingleTickerProviderStateMixin {
   late AnimationController _animationController;
   var _projects = <Project>[];
   User? user;
@@ -359,6 +358,7 @@ class _ProjectChooserOriginalState extends State<ProjectChooserOriginal> with Si
     super.initState();
     _getProjects(false);
   }
+
   @override
   void dispose() {
     _animationController.dispose();
@@ -419,8 +419,10 @@ class _ProjectChooserOriginalState extends State<ProjectChooserOriginal> with Si
                     const SizedBox(
                       height: 20,
                     ),
-                     SizedBox(
-                      height: 20, child: Text('Tap to Select Project', style: myTextStyleMedium(context)),
+                    SizedBox(
+                      height: 20,
+                      child: Text('Tap to Select Project',
+                          style: myTextStyleMedium(context)),
                     ),
                     const SizedBox(
                       height: 24,
@@ -431,7 +433,10 @@ class _ProjectChooserOriginalState extends State<ProjectChooserOriginal> with Si
                             child: AnimatedBuilder(
                               animation: _animationController,
                               builder: (BuildContext context, Widget? child) {
-                                return FadeScaleTransition(animation: _animationController, child: child,);
+                                return FadeScaleTransition(
+                                  animation: _animationController,
+                                  child: child,
+                                );
                               },
                               child: ListView.builder(
                                   itemCount: _projects.length,
@@ -442,7 +447,8 @@ class _ProjectChooserOriginalState extends State<ProjectChooserOriginal> with Si
                                         widget.onSelected(proj);
                                       },
                                       child: Padding(
-                                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4.0),
+                                        padding: const EdgeInsets.symmetric(
+                                            horizontal: 12, vertical: 4.0),
                                         child: Card(
                                             child: Row(
                                           children: [

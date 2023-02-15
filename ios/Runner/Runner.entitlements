@@ -4,13 +4,5 @@
 <dict>
 	<key>aps-environment</key>
 	<string>development</string>
-	<key>com.apple.developer.associated-domains</key>
-	<array>
-		<string>1:79998394043:ios:44cb3ba750040226d6139e
-1:79998394043:ios:44cb3ba750040226d6139e
-1:79998394043:ios:44cb3ba750040226d6139e
-1:79998394043:ios:44cb3ba750040226d6139e
-.firebaseapp.com</string>
-	</array>
 </dict>
 </plist>

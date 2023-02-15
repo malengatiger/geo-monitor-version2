@@ -2,11 +2,15 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:firebase_auth/firebase_auth.dart' as auth;
+import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart' as fb;
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:geo_monitor/library/bloc/location_request_handler.dart';
 import 'package:geo_monitor/library/data/activity_model.dart';
+import 'package:geo_monitor/library/location/loc_bloc.dart';
+// import 'package:geolocator/geolocator.dart';
+import 'package:get_storage/get_storage.dart';
 import 'package:universal_platform/universal_platform.dart';
 
 import '../api/data_api.dart';
@@ -25,18 +29,12 @@ import '../data/settings_model.dart';
 import '../data/user.dart';
 import '../data/video.dart';
 import '../functions.dart';
-import '../generic_functions.dart';
 import '../hive_util.dart';
 import 'organization_bloc.dart';
 import 'theme_bloc.dart';
 
 FCMBloc fcmBloc = FCMBloc();
 const mm = '🔵 🔵 🔵 🔵 🔵 🔵 FCMBloc: ';
-
-Future<void> firebaseMessagingBackgroundHandler(
-    fb.RemoteMessage message) async {
-  p("Handling a background message: ${message.messageId}");
-}
 
 class FCMBloc {
   fb.FirebaseMessaging messaging = fb.FirebaseMessaging.instance;
@@ -163,7 +161,7 @@ class FCMBloc {
       });
 
       FirebaseMessaging.onBackgroundMessage(
-          _firebaseMessagingBackgroundHandler);
+          geoFirebaseMessagingBackgroundHandler);
 
       FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
         pp('$mm onMessageOpenedApp:  🍎 🍎 A new onMessageOpenedApp event was published! ${message.data}');
@@ -247,8 +245,15 @@ class FCMBloc {
     if (data['settings'] != null) {
       pp('$mm Yebo! Settings have arrived! $data');
     }
-    User? user = await prefsOGx.getUser();
 
+    await parseRemoteMessage(data);
+
+    return null;
+  }
+
+  Future<void> parseRemoteMessage(Map<dynamic, dynamic> data) async {
+    await GetStorage.init(cacheName);
+    User? user = await prefsOGx.getUser();
     if (data['kill'] != null) {
       pp("$mm processFCMMessage:  $blue ........................... 🍎🍎🍎🍎🍎🍎kill USER!!  🍎  🍎 ");
       var m = jsonDecode(data['kill']);
@@ -275,10 +280,19 @@ class FCMBloc {
 
       if (user!.userId == req.userId) {
         pp("$mm processFCMMessage  🔵 🔵 🔵 ........................... sending location response");
-        await locationRequestHandler.sendLocationResponse(
-            requesterId: req.requesterId!, requesterName: req.requesterName!);
+        var loc = await locationBlocOG.getLocation();
+        if (loc != null) {
+          await locationRequestHandler.sendLocationResponse(
+              user: user,
+              latitude: loc.latitude!,
+              longitude: loc.longitude!,
+              requesterId: req.requesterId!,
+              requesterName: req.requesterName!);
 
-        pp('$mm act responded to location request');
+          pp('$mm act responded to location request');
+        } else {
+          pp('$mm Location not available');
+        }
       }
     }
     if (data['locationResponse'] != null) {
@@ -384,7 +398,6 @@ class FCMBloc {
         pp('$mm This is an organization-wide setting, hopefully the ui changes to new color ...');
       }
     }
-
     if (data['geofenceEvent'] != null) {
       pp("$mm processFCMMessage  🔵 🔵 🔵 ........................... cache GEOFENCE EVENT  🍎  🍎");
       var m = jsonDecode(data['geofenceEvent']);
@@ -393,8 +406,6 @@ class FCMBloc {
       await cacheManager.addGeofenceEvent(geofenceEvent: msg);
       _geofenceController.sink.add(msg);
     }
-
-    return null;
   }
 
   Future<void> _handleCache(User receivedUser) async {
@@ -416,9 +427,54 @@ class FCMBloc {
   }
 }
 
-Future<void> _firebaseMessagingBackgroundHandler(
+const vv = '🔵🔵🔵🔵🔵🔵 geoFirebaseMessagingBackgroundHandler: ';
+
+///
+/// handling fcm messages that arrive when app is the background
+///
+@pragma('vm:entry-point')
+Future<void> geoFirebaseMessagingBackgroundHandler(
     fb.RemoteMessage message) async {
-  pp('\n\n\n$mm Received FCM messaging while in the background ... ');
-  pp("\n\n$mm onMessage: 🍎 🍎 data: ${message.data} ... 🍎 🍎\n ");
-  fcmBloc.processFCMMessage(message);
+  pp('\n\n\n$vv  Received FCM messaging while in the background ... ');
+  pp("\n\n$vv  onMessage: 🍎 🍎 data: ${message.data} ... 🍎 🍎\n ");
+
+  await GetStorage.init(cacheName);
+  var user = await prefsOGx.getUser();
+  Map data = message.data;
+  if (data['locationRequest'] == null) {
+    //todo - ignoring other message types
+    pp('$vv ignoring other message types while in background');
+    return;
+  }
+  try {
+    await Firebase.initializeApp();
+  } catch (e) {
+    pp(e);
+  }
+
+  var pos = await locationBlocOG.getLocation();
+  pp('$vv location update happened: $pos - handle particular messages '
+      'eg. location request and response');
+
+  pp('$vv calling fcmBloc.parseRemoteMessage in background mode');
+  if (data['locationRequest'] != null) {
+    pp("$vv processFCMMessage  🔵 🔵 🔵 ........................... "
+        "LOCATION REQUEST  🍎  🍎 ");
+    var m = jsonDecode(data['locationRequest']);
+    var req = LocationRequest.fromJson(m);
+
+    if (user!.userId == req.userId) {
+      pp("$vv handling loc request!  🔵 🔵 🔵 ......... I am the target of a location request "
+          "sending location response ... ");
+
+      await locationRequestHandler.sendLocationResponse(
+          user: user,
+          latitude: pos!.latitude!,
+          longitude: pos.longitude!,
+          requesterId: req.requesterId!,
+          requesterName: req.requesterName!);
+
+      pp('$vv user has responded to location request in background! yea!');
+    }
+  }
 }

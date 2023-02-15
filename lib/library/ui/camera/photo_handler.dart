@@ -12,6 +12,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:image/image.dart' as img;
 import 'package:uuid/uuid.dart';
 
+import '../../../device_location/device_location_bloc.dart';
 import '../../../ui/dashboard/dashboard_mobile.dart';
 import '../../api/prefs_og.dart';
 import '../../bloc/cloud_storage_bloc.dart';
@@ -177,7 +178,7 @@ class PhotoHandlerState extends State<PhotoHandler>
     pp('$mm check file upload names: \n💚 ${mFile.path} length: ${await mFile.length()} '
         '\n💚thumb: ${tFile.path} length: ${await tFile.length()}');
 
-    var loc = await locationBlocOG.getLocation();
+    var loc = await locationBloc.getLocation();
     if (loc != null) {
       var position =
           Position(type: 'Point', coordinates: [loc.longitude, loc.latitude]);

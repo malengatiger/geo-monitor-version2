@@ -4,8 +4,11 @@ import 'package:animations/animations.dart';
 import 'package:firebase_auth/firebase_auth.dart' as fb;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:geo_monitor/library/generic_functions.dart';
 import 'package:geo_monitor/library/ui/settings/settings_main.dart';
 import 'package:geo_monitor/library/users/full_user_photo.dart';
+import 'package:geo_monitor/ui/activity/geo_activity_mobile.dart';
 import 'package:geofence_service/geofence_service.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:page_transition/page_transition.dart';
@@ -38,7 +41,6 @@ import '../../library/ui/project_list/project_chooser.dart';
 import '../../library/ui/project_list/project_list_mobile.dart';
 import '../../library/ui/weather/daily_forecast_page.dart';
 import '../../library/users/list/user_list_main.dart';
-import '../chat/chat_page.dart';
 import '../intro/intro_page_viewer_portrait.dart';
 
 class DashboardPortrait extends StatefulWidget {
@@ -540,13 +542,18 @@ class DashboardPortraitState extends State<DashboardPortrait>
   }
 
   void _navigateToMessageSender() {
-    Navigator.push(
-        context,
-        PageTransition(
-            type: PageTransitionType.scale,
-            alignment: Alignment.topLeft,
-            duration: const Duration(seconds: 1),
-            child: const ChatPage()));
+    // Navigator.push(
+    //     context,
+    //     PageTransition(
+    //         type: PageTransitionType.scale,
+    //         alignment: Alignment.topLeft,
+    //         duration: const Duration(seconds: 1),
+    //         child: const ChatPage()));
+    showToast(
+        textStyle: myTextStyleMediumBold(context),
+        toastGravity: ToastGravity.TOP,
+        message: 'Messaging under construction, see you later!',
+        context: context);
   }
 
   void _navigateToUserMediaList() async {
@@ -601,6 +608,26 @@ class DashboardPortraitState extends State<DashboardPortrait>
               alignment: Alignment.center,
               duration: const Duration(seconds: 1),
               child: const SettingsMain()));
+    }
+  }
+
+  void showPhoto(Photo p) async {}
+  void showVideo(Video p) async {}
+  void showAudio(Audio p) async {}
+  void _navigateToActivity() {
+    pp('$mm .................. _navigateToActivity ....');
+    final width = MediaQuery.of(context).size.width;
+    if (mounted) {
+      Navigator.push(
+          context,
+          PageTransition(
+              type: PageTransitionType.rotate,
+              alignment: Alignment.center,
+              duration: const Duration(seconds: 1),
+              child: GeoActivityMobile(
+                  showPhoto: showPhoto,
+                  showVideo: showVideo,
+                  showAudio: showAudio)));
     }
   }
 
@@ -729,9 +756,24 @@ class DashboardPortraitState extends State<DashboardPortrait>
         textStyle: Theme.of(context).textTheme.titleLarge,
         fontWeight: FontWeight.w900,
         color: Theme.of(context).primaryColor);
+    bool showActivityIcon = false;
+    if (user != null) {
+      switch (user!.userType) {
+        case UserType.orgAdministrator:
+          showActivityIcon = true;
+          break;
+        case UserType.orgExecutive:
+          showActivityIcon = true;
+          break;
+        case UserType.fieldMonitor:
+          showActivityIcon = false;
+          break;
+      }
+    }
     return SafeArea(
       child: WillStartForegroundTask(
         onWillStart: () async {
+          pp('$mm WillStartForegroundTask: onWillStart - what do we do now, Boss?');
           return geofenceService.isRunningService;
         },
         androidNotificationOptions: AndroidNotificationOptions(
@@ -759,18 +801,26 @@ class DashboardPortraitState extends State<DashboardPortrait>
                     color: Theme.of(context).primaryColor,
                   ),
                   onPressed: _navigateToIntro),
-              user == null
-                  ? const SizedBox()
-                  : user!.userType == UserType.fieldMonitor
-                      ? const SizedBox()
-                      : IconButton(
-                          icon: Icon(
-                            Icons.settings,
-                            size: 18,
-                            color: Theme.of(context).primaryColor,
-                          ),
-                          onPressed: _navigateToSettings,
-                        ),
+              showActivityIcon
+                  ? IconButton(
+                      icon: Icon(
+                        Icons.access_alarm,
+                        size: 18,
+                        color: Theme.of(context).primaryColor,
+                      ),
+                      onPressed: _navigateToActivity,
+                    )
+                  : const SizedBox(),
+              showActivityIcon
+                  ? IconButton(
+                      icon: Icon(
+                        Icons.settings,
+                        size: 18,
+                        color: Theme.of(context).primaryColor,
+                      ),
+                      onPressed: _navigateToSettings,
+                    )
+                  : const SizedBox(),
               IconButton(
                 icon: Icon(
                   Icons.refresh,

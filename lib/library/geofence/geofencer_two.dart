@@ -4,13 +4,13 @@ import 'package:geo_monitor/library/bloc/organization_bloc.dart';
 import 'package:geo_monitor/library/data/position.dart';
 import 'package:geofence_service/geofence_service.dart';
 import 'package:geofence_service/models/geofence.dart' as geo;
+import 'package:uuid/uuid.dart';
+
 import '../api/data_api.dart';
 import '../api/prefs_og.dart';
 import '../data/geofence_event.dart';
 import '../data/project_position.dart';
 import '../data/user.dart';
-import 'package:uuid/uuid.dart';
-
 import '../functions.dart';
 import '../location/loc_bloc.dart';
 

@@ -1,11 +1,11 @@
 {
-    "name": "geo_monitor2",
-    "short_name": "geo_monitor2",
+    "name": "geo_monitor",
+    "short_name": "geo_monitor",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",
     "theme_color": "#0175C2",
-    "description": "Geo Monitor Version 1.1",
+    "description": "Geo Version 1.0.1",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
     "icons": [

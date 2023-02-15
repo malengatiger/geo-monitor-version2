@@ -68,22 +68,30 @@ class ActivityStreamCardState extends State<ActivityStreamCard> {
                       const SizedBox(
                         height: 8,
                       ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: [
-                          Text(
-                            dt,
-                            style: myTextStyleSmallBoldPrimaryColor(context),
-                          ),
-                        ],
+                      Padding(
+                        padding: const EdgeInsets.only(left: 12.0),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            Text(
+                              dt,
+                              style: myTextStyleSmallBoldPrimaryColor(context),
+                            ),
+                          ],
+                        ),
                       ),
                       const SizedBox(
                         height: 8,
                       ),
-                      CircleAvatar(
-                        radius: 24,
-                        backgroundImage: NetworkImage(user!.thumbnailUrl!),
-                      ),
+                      user!.thumbnailUrl == null
+                          ? const CircleAvatar(
+                              radius: 24,
+                            )
+                          : CircleAvatar(
+                              radius: 24,
+                              backgroundImage:
+                                  NetworkImage(user!.thumbnailUrl!),
+                            ),
                       const SizedBox(
                         height: 8,
                       ),
@@ -137,11 +145,15 @@ class ActivityStreamCardState extends State<ActivityStreamCard> {
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.start,
                             children: [
-                              CircleAvatar(
-                                radius: 16,
-                                backgroundImage:
-                                    NetworkImage(user!.thumbnailUrl!),
-                              ),
+                              user!.thumbnailUrl == null
+                                  ? const CircleAvatar(
+                                      radius: 16,
+                                    )
+                                  : CircleAvatar(
+                                      radius: 16,
+                                      backgroundImage:
+                                          NetworkImage(user!.thumbnailUrl!),
+                                    ),
                               const SizedBox(
                                 width: 8,
                               ),

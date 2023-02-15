@@ -5,23 +5,24 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:video_player/video_player.dart';
 
-import '../../data/project.dart';
 import '../../data/video.dart';
 import '../../emojis.dart';
 import '../../functions.dart';
 import '../ratings/rating_adder_mobile.dart';
 
-class PlayVideo extends StatefulWidget {
-  const PlayVideo({Key? key, required this.video, required this.project}) : super(key: key);
+class VideoPlayerMobilePage extends StatefulWidget {
+  const VideoPlayerMobilePage({
+    Key? key,
+    required this.video,
+  }) : super(key: key);
 
   final Video video;
-  final Project project;
 
   @override
-  PlayVideoState createState() => PlayVideoState();
+  VideoPlayerMobilePageState createState() => VideoPlayerMobilePageState();
 }
 
-class PlayVideoState extends State<PlayVideo>
+class VideoPlayerMobilePageState extends State<VideoPlayerMobilePage>
     with SingleTickerProviderStateMixin {
   late AnimationController _animationController;
   VideoPlayerController? _videoPlayerController;
@@ -46,7 +47,8 @@ class PlayVideoState extends State<PlayVideo>
         _videoPlayerController!.addListener(_checkVideo);
         setState(() {
           if (_videoPlayerController != null) {
-            videoDurationInSeconds = _videoPlayerController!.value.duration.inSeconds;
+            videoDurationInSeconds =
+                _videoPlayerController!.value.duration.inSeconds;
             videoDurationInMinutes = videoDurationInSeconds / 60;
             _videoPlayerController!.value.isPlaying
                 ? _videoPlayerController!.pause()
@@ -90,7 +92,8 @@ class PlayVideoState extends State<PlayVideo>
 
   bool _showFloatingButton = true;
   void _checkVideo() {
-    if(_videoPlayerController!.value.position == const Duration(seconds: 0, minutes: 0, hours: 0)) {
+    if (_videoPlayerController!.value.position ==
+        const Duration(seconds: 0, minutes: 0, hours: 0)) {
       pp('$mm video Started');
       setState(() {
         _showFloatingButton = false;
@@ -112,13 +115,15 @@ class PlayVideoState extends State<PlayVideo>
         _showFloatingButton = true;
       });
     }
-    if(_videoPlayerController!.value.position == _videoPlayerController!.value.duration) {
+    if (_videoPlayerController!.value.position ==
+        _videoPlayerController!.value.duration) {
       pp('$mm video Ended ....');
       setState(() {
         _showFloatingButton = true;
       });
     }
   }
+
   @override
   void dispose() {
     _animationController.dispose();
@@ -128,6 +133,7 @@ class PlayVideoState extends State<PlayVideo>
     }
     super.dispose();
   }
+
   void _onFavorite() async {
     pp('$mm on favorite tapped - do da bizness! navigate to RatingAdder');
 
@@ -139,7 +145,7 @@ class PlayVideoState extends State<PlayVideo>
               alignment: Alignment.topLeft,
               duration: const Duration(milliseconds: 1000),
               child: RatingAdderMobile(
-                project: widget.project,
+                projectId: widget.video.projectId!,
                 videoId: widget.video.videoId!,
               )));
     });
@@ -186,8 +192,11 @@ class PlayVideoState extends State<PlayVideo>
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    TextButton(onPressed: _onFavorite, child: Text(E.heartBlue)),
-                    const SizedBox(width: 28,),
+                    TextButton(
+                        onPressed: _onFavorite, child: Text(E.heartBlue)),
+                    const SizedBox(
+                      width: 28,
+                    ),
                     Text(
                       'Duration',
                       style: GoogleFonts.lato(
@@ -235,7 +244,8 @@ class PlayVideoState extends State<PlayVideo>
                   Center(
                     child: _videoPlayerController!.value.isInitialized
                         ? AspectRatio(
-                            aspectRatio: _videoPlayerController!.value.aspectRatio,
+                            aspectRatio:
+                                _videoPlayerController!.value.aspectRatio,
                             child: GestureDetector(
                                 onTap: () {
                                   pp('$mm Tap happened! Pause the video if playing 🍎 ...');
@@ -316,28 +326,26 @@ class PlayVideoState extends State<PlayVideo>
                       : const SizedBox(),
                 ],
               ),
-
-          floatingActionButton: _showFloatingButton
+        floatingActionButton: _showFloatingButton
             ? FloatingActionButton(
-            onPressed: () {
-              setState(() {
-                if (_videoPlayerController != null) {
-                  _showElapsed = false;
-                  _videoPlayerController!.value.isPlaying
-                      ? _videoPlayerController!.pause()
-                      : _videoPlayerController!.play();
-                }
-              });
-            },
-            child: Icon(
-              _videoPlayerController == null ? Icons.pause : Icons.play_arrow,
-            ),
-          ) : const SizedBox(),
-
-
+                onPressed: () {
+                  setState(() {
+                    if (_videoPlayerController != null) {
+                      _showElapsed = false;
+                      _videoPlayerController!.value.isPlaying
+                          ? _videoPlayerController!.pause()
+                          : _videoPlayerController!.play();
+                    }
+                  });
+                },
+                child: Icon(
+                  _videoPlayerController == null
+                      ? Icons.pause
+                      : Icons.play_arrow,
+                ),
+              )
+            : const SizedBox(),
       ),
     );
   }
-
-
 }

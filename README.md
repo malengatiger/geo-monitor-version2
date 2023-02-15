@@ -1,6 +1,6 @@
-# geo_monitor2
+# geo_monitor
 
-Geo Monitor Version 1.1
+Geo Version 1.0.1
 
 ## Getting Started
 

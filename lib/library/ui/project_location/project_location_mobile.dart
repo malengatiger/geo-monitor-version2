@@ -1,29 +1,24 @@
 import 'package:animations/animations.dart';
 import 'package:badges/badges.dart' as bd;
 import 'package:flutter/material.dart';
-
 import 'package:geocoding/geocoding.dart';
-import 'package:location/location.dart';
-
+// import 'package:geolocator/geolocator.dart' as geo;
+// import 'package:location/location.dart';
 import 'package:page_transition/page_transition.dart';
-
 import 'package:uuid/uuid.dart';
 
 import '../../api/data_api.dart';
-
 import '../../api/prefs_og.dart';
 import '../../bloc/organization_bloc.dart';
 import '../../bloc/project_bloc.dart';
 import '../../data/city.dart';
 import '../../data/place_mark.dart';
 import '../../data/position.dart' as mon;
-
-import '../../data/position.dart';
+import '../../data/project.dart';
 import '../../data/project_polygon.dart';
+import '../../data/project_position.dart';
 import '../../data/user.dart';
 import '../../functions.dart';
-import '../../data/project.dart';
-import '../../data/project_position.dart';
 import '../../location/loc_bloc.dart';
 import '../maps/project_polygon_map_mobile.dart';
 
@@ -232,7 +227,7 @@ class ProjectLocationMobileState extends State<ProjectLocationMobile>
     }
   }
 
-  LocationData? _position;
+  dynamic _position;
 
   Future<void> _navigateToProjectMap() async {
     pp('... _navigateToProjectMap: about to navigate ');

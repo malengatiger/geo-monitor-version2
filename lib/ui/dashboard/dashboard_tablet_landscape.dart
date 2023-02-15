@@ -1,9 +1,11 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:geo_monitor/library/bloc/organization_bloc.dart';
+import 'package:geo_monitor/library/ui/camera/video_player_tablet.dart';
 import 'package:geo_monitor/library/ui/media/list/project_media_main.dart';
 import 'package:geo_monitor/library/ui/settings/settings_main.dart';
-import 'package:geo_monitor/ui/activity/geo_activity.dart';
+import 'package:geo_monitor/ui/activity/geo_activity_tablet.dart';
 import 'package:geo_monitor/ui/dashboard/dashboard_grid.dart';
 import 'package:geo_monitor/ui/intro/intro_main.dart';
 import 'package:page_transition/page_transition.dart';
@@ -25,7 +27,7 @@ import '../../library/ui/project_list/project_chooser.dart';
 import '../../library/ui/project_list/project_list_main.dart';
 import '../../library/users/full_user_photo.dart';
 import '../../library/users/list/user_list_main.dart';
-import '../chat/chat_page.dart';
+import '../audio/audio_player_page.dart';
 
 class DashboardTabletLandscape extends StatefulWidget {
   const DashboardTabletLandscape({Key? key, required this.user})
@@ -96,13 +98,18 @@ class _DashboardTabletLandscapeState extends State<DashboardTabletLandscape> {
   }
 
   void _navigateToMessageSender() {
-    Navigator.push(
-        context,
-        PageTransition(
-            type: PageTransitionType.scale,
-            alignment: Alignment.topLeft,
-            duration: const Duration(seconds: 1),
-            child: const ChatPage()));
+    // Navigator.push(
+    //     context,
+    //     PageTransition(
+    //         type: PageTransitionType.scale,
+    //         alignment: Alignment.topLeft,
+    //         duration: const Duration(seconds: 1),
+    //         child: const ChatPage()));
+    showToast(
+        textStyle: myTextStyleMediumBold(context),
+        toastGravity: ToastGravity.TOP,
+        message: 'Messaging under construction, see you later!',
+        context: context);
   }
 
   void _navigateToIntro() {
@@ -406,7 +413,7 @@ class _DashboardTabletLandscapeState extends State<DashboardTabletLandscape> {
                         },
                       ),
               ),
-              GeoActivity(
+              GeoActivityTablet(
                 width: (size.width / 2) - 100,
                 thinMode: false,
                 showPhoto: (photo) {
@@ -544,19 +551,33 @@ class _DashboardTabletLandscapeState extends State<DashboardTabletLandscape> {
               : const SizedBox(),
           _showVideo
               ? Positioned(
-                  child: Container(
-                  width: 480,
-                  height: 640,
-                  color: Colors.red,
-                ))
+                  left: 300,
+                  right: 300,
+                  top: 12,
+                  child: VideoPlayerTabletPage(
+                    video: video!,
+                    onCloseRequested: () {
+                      setState(() {
+                        _showVideo = false;
+                      });
+                    },
+                  ))
               : const SizedBox(),
           _showAudio
               ? Positioned(
-                  child: Container(
-                  width: 480,
-                  height: 640,
-                  color: Colors.green,
-                ))
+                  left: 100,
+                  right: 100,
+                  top: 12,
+                  child: AudioPlayerPage(
+                    audio: audio!,
+                    onCloseRequested: () {
+                      if (mounted) {
+                        setState(() {
+                          _showAudio = false;
+                        });
+                      }
+                    },
+                  ))
               : const SizedBox(),
         ],
       ),

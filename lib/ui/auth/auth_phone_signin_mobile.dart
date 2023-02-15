@@ -29,10 +29,10 @@ class AuthPhoneSignInMobileState extends State<AuthPhoneSignInMobile>
   late AnimationController _animationController;
   bool _codeHasBeenSent = false;
   FirebaseAuth firebaseAuth = FirebaseAuth.instance;
-  final mm = '🥬🥬🥬🥬🥬🥬 AuthMobile: ';
+  final mm = '🥬🥬🥬🥬🥬🥬 AuthPhoneSignInMobile: ';
   String? phoneVerificationId;
   String? code;
-  final phoneController = TextEditingController(text: "+27659990000");
+  final phoneController = TextEditingController(text: "+19985550000");
   final codeController = TextEditingController(text: '123456');
   final orgNameController = TextEditingController();
   final adminController = TextEditingController();

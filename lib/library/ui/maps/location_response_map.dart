@@ -3,7 +3,9 @@ import 'dart:math';
 
 import 'package:animations/animations.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:geo_monitor/library/data/location_response.dart';
+import 'package:geo_monitor/library/generic_functions.dart';
 import 'package:geo_monitor/library/hive_util.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:map_launcher/map_launcher.dart' as ml;
@@ -109,7 +111,7 @@ class LocationResponseMapState extends State<LocationResponseMap>
     googleMapController = await _mapController.future;
     var lat = widget.locationResponse.position!.coordinates[1];
     var lng = widget.locationResponse.position!.coordinates[0];
-    _animateCamera(latitude: lat, longitude: lng, zoom: 14.0);
+    _animateCamera(latitude: lat, longitude: lng, zoom: 15.0);
   }
 
   void _onMarkerTapped() {
@@ -173,6 +175,23 @@ class LocationResponseMapState extends State<LocationResponseMap>
                           },
                           icon: const Icon(Icons.directions_car),
                           color: Theme.of(context).primaryColor,
+                        ),
+                        const SizedBox(
+                          width: 28,
+                        ),
+                        IconButton(
+                          onPressed: () {
+                            //todo - navigate to chat messaging
+                            showToast(
+                                backgroundColor: Theme.of(context).primaryColor,
+                                toastGravity: ToastGravity.TOP,
+                                message:
+                                    'Messaging Under Construction! \n\nPlease come back soon.\n',
+                                textStyle: myTextStyleMediumBold(context),
+                                context: context);
+                          },
+                          icon: const Icon(Icons.send),
+                          color: Colors.blue,
                         ),
                       ],
                     ),

@@ -13,7 +13,7 @@ import '../../library/data/project.dart';
 import '../../library/data/video.dart';
 import '../../library/functions.dart';
 import '../../library/ui/maps/photo_map_tablet.dart';
-import '../activity/geo_activity.dart';
+import '../activity/geo_activity_tablet.dart';
 
 class ProjectDashboardTabletLandscape extends StatefulWidget {
   const ProjectDashboardTabletLandscape({Key? key, required this.project})
@@ -159,7 +159,7 @@ class ProjectDashboardTabletLandscapeState
                       project: widget.project),
                 ),
               ),
-              GeoActivity(
+              GeoActivityTablet(
                 width: width / 2,
                 thinMode: false,
                 showPhoto: (photo) {

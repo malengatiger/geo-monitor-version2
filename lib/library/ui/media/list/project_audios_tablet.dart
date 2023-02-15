@@ -179,7 +179,7 @@ class ProjectAudiosTabletState extends State<ProjectAudiosTablet> {
               alignment: Alignment.topLeft,
               duration: const Duration(milliseconds: 1000),
               child: RatingAdderMobile(
-                project: widget.project,
+                projectId: widget.project.projectId!,
                 audioId: _selectedAudio!.audioId!,
               )));
     });

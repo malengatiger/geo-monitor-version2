@@ -133,6 +133,7 @@ class UserListTabletPortraitState extends State<UserListTabletPortrait>
                     style: TextStyle(color: Colors.grey),
                   ),
                   onPressed: () {
+                    Navigator.of(context).pop();
                     _navigateToLocationResponseMap();
                   },
                 ),

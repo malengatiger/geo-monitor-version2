@@ -7,8 +7,8 @@ import 'package:uuid/uuid.dart';
 import '../api/data_api.dart';
 import '../data/location_response.dart';
 import '../data/position.dart';
+import '../data/user.dart';
 import '../functions.dart';
-import '../location/loc_bloc.dart';
 
 final LocationRequestHandler locationRequestHandler = LocationRequestHandler();
 
@@ -44,27 +44,27 @@ class LocationRequestHandler {
 
   /// user response to a locationRequest
   Future sendLocationResponse(
-      {required String requesterId, required String requesterName}) async {
+      {required String requesterId,
+      required String requesterName,
+      required double latitude,
+      required double longitude,
+      required User user}) async {
     pp('$mm sendLocationResponse ... getting user');
-    var user = await prefsOGx.getUser();
-    if (user == null) return;
-    pp('$mm ..... sending user location response ....');
-    var loc = await locationBlocOG.getLocation();
-    if (loc != null) {
-      var locResp = LocationResponse(
-          position: Position(
-              coordinates: [loc.longitude, loc.latitude], type: 'Point'),
-          date: DateTime.now().toUtc().toIso8601String(),
-          userId: user.userId,
-          userName: user.name,
-          requesterName: requesterName,
-          requesterId: requesterId,
-          locationResponseId: const Uuid().v4(),
-          organizationId: user.organizationId,
-          organizationName: user.organizationName);
 
-      var result = await DataAPI.addLocationResponse(locResp);
-      pp('$mm  LocationResponse sent to database, result: ${result.toJson()}');
-    }
+    pp('$mm ..... sending user location response ....');
+
+    var locResp = LocationResponse(
+        position: Position(coordinates: [longitude, latitude], type: 'Point'),
+        date: DateTime.now().toUtc().toIso8601String(),
+        userId: user.userId,
+        userName: user.name,
+        requesterName: requesterName,
+        requesterId: requesterId,
+        locationResponseId: const Uuid().v4(),
+        organizationId: user.organizationId,
+        organizationName: user.organizationName);
+
+    var result = await DataAPI.addLocationResponse(locResp);
+    pp('$mm  LocationResponse sent to database, result: ${result.toJson()}');
   }
 }

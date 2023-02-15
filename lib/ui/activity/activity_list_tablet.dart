@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:badges/badges.dart' as bd;
 import 'package:flutter/material.dart';
 import 'package:geo_monitor/library/bloc/fcm_bloc.dart';
 import 'package:geo_monitor/library/bloc/organization_bloc.dart';
@@ -19,10 +18,11 @@ import '../../library/data/user.dart';
 import '../../library/data/video.dart';
 import '../../library/functions.dart';
 import '../../library/generic_functions.dart';
+import 'activity_header.dart';
 import 'activity_stream_card.dart';
 
-class ActivityList extends StatefulWidget {
-  const ActivityList(
+class ActivityListTablet extends StatefulWidget {
+  const ActivityListTablet(
       {Key? key,
       required this.width,
       required this.onPhotoTapped,
@@ -49,30 +49,47 @@ class ActivityList extends StatefulWidget {
   final Function(OrgMessage) onOrgMessage;
 
   @override
-  State<ActivityList> createState() => _ActivityListState();
+  State<ActivityListTablet> createState() => _ActivityListTabletState();
 }
 
-class _ActivityListState extends State<ActivityList> {
+class _ActivityListTabletState extends State<ActivityListTablet>
+    with SingleTickerProviderStateMixin {
   final ScrollController listScrollController = ScrollController();
+  late AnimationController _animationController;
+
   SettingsModel? settings;
   var models = <ActivityModel>[];
 
   late StreamSubscription<ActivityModel> subscription;
   User? user;
   bool busy = true;
-  final mm = '😎😎😎😎😎😎 ActivityList: ';
+  final mm = '😎😎😎😎😎😎 ActivityListTablet: ';
 
   @override
   void initState() {
+    _animationController = AnimationController(
+        duration: const Duration(milliseconds: 3000),
+        reverseDuration: const Duration(milliseconds: 2000),
+        vsync: this);
     super.initState();
+    pp('$mm init state');
     _getData(true);
     _listenToFCM();
   }
 
   void _getData(bool forceRefresh) async {
-    setState(() {
-      busy = true;
-    });
+    pp('$mm ... getting activity data ... forceRefresh: $forceRefresh');
+    if (models.isNotEmpty) {
+      _animationController.reverse().then((value) {
+        setState(() {
+          busy = true;
+        });
+      });
+    } else {
+      setState(() {
+        busy = true;
+      });
+    }
     pp('$mm ... getting activity data ... forceRefresh: $forceRefresh');
     try {
       user = await prefsOGx.getUser();
@@ -99,6 +116,8 @@ class _ActivityListState extends State<ActivityList> {
             forceRefresh: forceRefresh);
       }
       _sortDescending();
+      _animationController.reset();
+      _animationController.forward();
     } catch (e) {
       pp(e);
       if (mounted) {
@@ -195,121 +214,97 @@ class _ActivityListState extends State<ActivityList> {
         ? SizedBox(
             width: widget.width,
             child: SingleChildScrollView(
-              child: Column(
-                children: [
-                  Row(
+              child: Column(children: [
+                Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Padding(
                         padding: const EdgeInsets.only(
                             left: 20.0, top: 12, bottom: 8),
-                        child: bd.Badge(
-                          badgeContent: Text(
-                            '${models.length}',
-                            style: myTextStyleSmall(context),
-                          ),
-                          badgeStyle: const bd.BadgeStyle(
-                              elevation: 8,
-                              badgeColor: Colors.pink,
-                              padding: EdgeInsets.all(12.0)),
-                          child: Padding(
-                            padding: const EdgeInsets.only(top: 16.0),
-                            child: TextButton(
-                              onPressed: () {
-                                _getData(true);
-                              },
-                              child: Text(
-                                'Activity Last ${settings == null ? 12 : settings!.activityStreamHours!} hours',
-                                style: myTextStyleSmallBold(context),
-                              ),
-                            ),
+                        child: Padding(
+                          padding: const EdgeInsets.only(top: 16.0),
+                          child: ActivityHeader(
+                            onRefreshRequested: () {
+                              _getData(true);
+                            },
+                            hours: settings == null
+                                ? 12
+                                : settings!.activityStreamHours!,
+                            number: models.length,
                           ),
                         ),
                       ),
-                    ],
-                  ),
-                  const SizedBox(
-                    height: 4,
-                  ),
-                  ListView.builder(
-                      shrinkWrap: true,
-                      itemCount: models.length,
-                      controller: listScrollController,
-                      itemBuilder: (_, index) {
-                        var act = models.elementAt(index);
-                        return GestureDetector(
-                          onTap: () {
-                            _handleTappedActivity(act);
-                          },
-                          child: ActivityStreamCard(
-                            model: act,
-                            frontPadding: 36,
-                            thinMode: widget.thinMode,
-                            width: widget.thinMode ? 160 : widget.width,
-                          ),
-                        );
-                      }),
-                ],
-              ),
+                    ]),
+                const SizedBox(
+                  height: 4,
+                ),
+                ListView.builder(
+                    shrinkWrap: true,
+                    itemCount: models.length,
+                    controller: listScrollController,
+                    itemBuilder: (_, index) {
+                      var act = models.elementAt(index);
+                      return GestureDetector(
+                        onTap: () {
+                          _handleTappedActivity(act);
+                        },
+                        child: ActivityStreamCard(
+                          model: act,
+                          frontPadding: 36,
+                          thinMode: widget.thinMode,
+                          width: widget.thinMode ? 160 : widget.width,
+                        ),
+                      );
+                    }),
+              ]),
             ),
           )
-        : Padding(
-            padding: const EdgeInsets.all(36.0),
-            child: SizedBox(
-              width: widget.width,
-              child: Column(
-                children: [
-                  Row(
+        : SizedBox(
+            width: widget.width,
+            child: SingleChildScrollView(
+              child: Column(children: [
+                Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Padding(
-                        padding: const EdgeInsets.only(left: 20.0),
-                        child: Text(
-                          'Activity Stream last ${settings == null ? 12 : settings!.activityStreamHours!} hours',
-                          style: myTextStyleMediumBold(context),
+                        padding: const EdgeInsets.only(
+                            left: 12.0, top: 12, bottom: 8),
+                        child: Padding(
+                          padding: const EdgeInsets.only(top: 16.0),
+                          child: ActivityHeader(
+                            onRefreshRequested: () {
+                              _getData(true);
+                            },
+                            hours: settings == null
+                                ? 12
+                                : settings!.activityStreamHours!,
+                            number: models.length,
+                          ),
                         ),
                       ),
-                    ],
-                  ),
-                  const SizedBox(
-                    height: 8,
-                  ),
-                  Expanded(
-                    child: InkWell(
-                      onTap: () {
-                        _getData(true);
-                      },
-                      child: bd.Badge(
-                        position: bd.BadgePosition.topStart(),
-                        badgeContent: Text(
-                          '${models.length}',
-                          style: myTextStyleSmall(context),
+                    ]),
+                const SizedBox(
+                  height: 4,
+                ),
+                ListView.builder(
+                    shrinkWrap: true,
+                    itemCount: models.length,
+                    controller: listScrollController,
+                    itemBuilder: (_, index) {
+                      var act = models.elementAt(index);
+                      return GestureDetector(
+                        onTap: () {
+                          _handleTappedActivity(act);
+                        },
+                        child: ActivityStreamCard(
+                          model: act,
+                          frontPadding: 16,
+                          thinMode: widget.thinMode,
+                          width: widget.width,
                         ),
-                        badgeStyle: const bd.BadgeStyle(
-                            elevation: 8,
-                            badgeColor: Colors.pink,
-                            padding: EdgeInsets.all(16.0)),
-                        child: ListView.builder(
-                            itemCount: models.length,
-                            controller: listScrollController,
-                            itemBuilder: (_, index) {
-                              var act = models.elementAt(index);
-                              return GestureDetector(
-                                  onTap: () {
-                                    _handleTappedActivity(act);
-                                  },
-                                  child: ActivityStreamCard(
-                                    model: act,
-                                    frontPadding: 36,
-                                    thinMode: widget.thinMode,
-                                    width: widget.thinMode ? 160 : widget.width,
-                                  ));
-                            }),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
+                      );
+                    }),
+              ]),
             ),
           );
   }

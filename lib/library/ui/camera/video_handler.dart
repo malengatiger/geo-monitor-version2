@@ -16,6 +16,7 @@ import 'package:page_transition/page_transition.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:uuid/uuid.dart';
 
+import '../../../device_location/device_location_bloc.dart';
 import '../../../ui/dashboard/dashboard_mobile.dart';
 import '../../bloc/project_bloc.dart';
 import '../../bloc/video_for_upload.dart';
@@ -154,7 +155,7 @@ class VideoHandlerState extends State<VideoHandler>
       thumbnailFile = tFile;
     });
 
-    var loc = await locationBlocOG.getLocation();
+    var loc = await locationBloc.getLocation();
     if (loc != null) {
       var position =
           Position(type: 'Point', coordinates: [loc.longitude, loc.latitude]);

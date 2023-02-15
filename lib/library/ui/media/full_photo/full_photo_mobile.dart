@@ -14,7 +14,8 @@ class FullPhotoMobile extends StatefulWidget {
   final Photo photo;
   final Project project;
 
-  const FullPhotoMobile({super.key, required this.photo, required this.project});
+  const FullPhotoMobile(
+      {super.key, required this.photo, required this.project});
 
   @override
   FullPhotoMobileState createState() => FullPhotoMobileState();
@@ -69,7 +70,7 @@ class FullPhotoMobileState extends State<FullPhotoMobile>
               alignment: Alignment.topLeft,
               duration: const Duration(milliseconds: 1000),
               child: RatingAdderMobile(
-                project: widget.project,
+                projectId: widget.project.projectId!,
                 photoId: widget.photo.photoId!,
               )));
     });
@@ -88,14 +89,16 @@ class FullPhotoMobileState extends State<FullPhotoMobile>
         body: Stack(
           children: [
             GestureDetector(
-              onTap: (){
+              onTap: () {
                 Navigator.of(context).pop();
               },
               child: InteractiveViewer(
                 child: CachedNetworkImage(
                   imageUrl: widget.photo.url!,
                   fadeInDuration: const Duration(milliseconds: 500),
-                  fit: BoxFit.cover, width: width, height: height,
+                  fit: BoxFit.cover,
+                  width: width,
+                  height: height,
                   progressIndicatorBuilder: (context, url, downloadProgress) =>
                       Center(
                           child: SizedBox(
@@ -121,9 +124,9 @@ class FullPhotoMobileState extends State<FullPhotoMobile>
                       Text(
                         'Distance from Project',
                         style: GoogleFonts.lato(
-                          textStyle: Theme.of(context).textTheme.bodySmall,
-                          fontWeight: FontWeight.normal, fontSize: 10
-                        ),
+                            textStyle: Theme.of(context).textTheme.bodySmall,
+                            fontWeight: FontWeight.normal,
+                            fontSize: 10),
                       ),
                       const SizedBox(
                         width: 8,
@@ -142,9 +145,9 @@ class FullPhotoMobileState extends State<FullPhotoMobile>
                       Text(
                         'metres',
                         style: GoogleFonts.lato(
-                          textStyle: Theme.of(context).textTheme.bodySmall,
-                          fontWeight: FontWeight.normal, fontSize: 10
-                        ),
+                            textStyle: Theme.of(context).textTheme.bodySmall,
+                            fontWeight: FontWeight.normal,
+                            fontSize: 10),
                       ),
                       const SizedBox(
                         width: 28,
@@ -154,13 +157,16 @@ class FullPhotoMobileState extends State<FullPhotoMobile>
                 ),
               ),
             ),
-
             Positioned(
-                right: 12, top: 2,
+                right: 12,
+                top: 2,
                 child: Card(
                   color: Colors.black12,
-              child: TextButton(onPressed: _onFavorite, child: Text(E.heartOrange),),
-            )),
+                  child: TextButton(
+                    onPressed: _onFavorite,
+                    child: Text(E.heartOrange),
+                  ),
+                )),
           ],
         ),
       ),

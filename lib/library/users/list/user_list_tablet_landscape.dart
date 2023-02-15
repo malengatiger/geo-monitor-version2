@@ -118,6 +118,7 @@ class _UserListTabletLandscapeState extends State<UserListTabletLandscape> {
                     style: TextStyle(color: Colors.grey),
                   ),
                   onPressed: () {
+                    Navigator.of(context).pop();
                     _navigateToLocationResponseMap();
                   },
                 ),
