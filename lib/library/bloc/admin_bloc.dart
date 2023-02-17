@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:geo_monitor/library/hive_util.dart';
+import 'package:geo_monitor/library/cache_manager.dart';
 
 import '../../device_location/device_location_bloc.dart';
 import '../api/data_api.dart';

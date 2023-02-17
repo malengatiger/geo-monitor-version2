@@ -2,8 +2,7 @@ import 'dart:collection';
 
 import 'package:animations/animations.dart';
 import 'package:flutter/material.dart';
-import 'package:geo_monitor/library/hive_util.dart';
-
+import 'package:geo_monitor/library/cache_manager.dart';
 import 'package:lat_lng_to_timezone/lat_lng_to_timezone.dart';
 
 import '../../api/data_api.dart';
@@ -145,30 +144,37 @@ class DailyForecastPageState extends State<DailyForecastPage>
       body: Stack(
         children: [
           busy
-              ?  Center(
+              ? Center(
                   child: Padding(
                     padding: const EdgeInsets.all(28.0),
                     child: Card(
                       elevation: 8,
                       shape: getRoundedBorder(radius: 16),
-                      child: SizedBox(height: 160,
+                      child: SizedBox(
+                        height: 160,
                         child: Column(
-                          children:  [
-                            const SizedBox(height: 48,),
+                          children: [
+                            const SizedBox(
+                              height: 48,
+                            ),
                             const SizedBox(
                               width: 24,
                               height: 24,
                               child: CircularProgressIndicator(
                                   strokeWidth: 4, backgroundColor: Colors.pink),
                             ),
-                            const SizedBox(height: 24,),
-                            Row(mainAxisAlignment: MainAxisAlignment.center,
+                            const SizedBox(
+                              height: 24,
+                            ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
                               children: const [
                                 Text('Loading daily forecasts ... '),
-                                SizedBox(width: 8,),
+                                SizedBox(
+                                  width: 8,
+                                ),
                               ],
                             ),
-
                           ],
                         ),
                       ),
@@ -266,15 +272,22 @@ class _DayForecastCardState extends State<DayForecastCard> {
                   SunriseSunset(
                       sunrise: getFormattedDateHour(widget.forecast.sunrise!),
                       sunset: getFormattedDateHour(widget.forecast.sunset!)),
-                  RainAndShowers(rain: widget.forecast.rainSum!, showers: widget.forecast.showersSum!),
+                  RainAndShowers(
+                      rain: widget.forecast.rainSum!,
+                      showers: widget.forecast.showersSum!),
                   const SizedBox(
                     height: 12,
                   ),
                   Row(
                     children: [
                       const Text('Minimum Temperature: '),
-                      const SizedBox(width: 8,),
-                      Text('${widget.forecast.minTemperature}', style: myNumberStyleLargePrimaryColor(context),),
+                      const SizedBox(
+                        width: 8,
+                      ),
+                      Text(
+                        '${widget.forecast.minTemperature}',
+                        style: myNumberStyleLargePrimaryColor(context),
+                      ),
                       Text(
                         ' \u2103 ',
                         style: myTextStyleMedium(context),
@@ -292,44 +305,60 @@ class _DayForecastCardState extends State<DayForecastCard> {
 }
 
 class RainAndShowers extends StatelessWidget {
-  const RainAndShowers({Key? key, required this.rain, required this.showers}) : super(key: key);
+  const RainAndShowers({Key? key, required this.rain, required this.showers})
+      : super(key: key);
   final double rain, showers;
   @override
   Widget build(BuildContext context) {
-
-    return  Card(
+    return Card(
       elevation: 2,
       child: Padding(
-        padding: const EdgeInsets.only(left:40.0,right: 40.0,top: 12, bottom: 12),
+        padding:
+            const EdgeInsets.only(left: 40.0, right: 40.0, top: 12, bottom: 12),
         child: Column(
           children: [
-            Row(mainAxisAlignment: MainAxisAlignment.center,
-              children:  [
-                const Text('Rain'),
-                const SizedBox(width: 8,),
-                Text('${rain * 100}', style: myNumberStyleLargePrimaryColor(context),),
-                const SizedBox(width: 4,),
-                const Text('%'),
-              ],
-            ),
-            const SizedBox(height: 16,),
             Row(
-              children:  [
-                const Text('Showers'),
-                const SizedBox(width: 8,),
-                Text('$showers', style: myNumberStyleLargePrimaryColor(context),),
-                const SizedBox(width: 4,),
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Text('Rain'),
+                const SizedBox(
+                  width: 8,
+                ),
+                Text(
+                  '${rain * 100}',
+                  style: myNumberStyleLargePrimaryColor(context),
+                ),
+                const SizedBox(
+                  width: 4,
+                ),
                 const Text('%'),
               ],
             ),
-
+            const SizedBox(
+              height: 16,
+            ),
+            Row(
+              children: [
+                const Text('Showers'),
+                const SizedBox(
+                  width: 8,
+                ),
+                Text(
+                  '$showers',
+                  style: myNumberStyleLargePrimaryColor(context),
+                ),
+                const SizedBox(
+                  width: 4,
+                ),
+                const Text('%'),
+              ],
+            ),
           ],
         ),
       ),
     );
   }
 }
-
 
 class SunriseSunset extends StatelessWidget {
   const SunriseSunset({Key? key, required this.sunrise, required this.sunset})
@@ -388,29 +417,29 @@ class OneDayProjectPositionForecastsPage extends StatefulWidget {
 }
 
 class _OneDayProjectPositionForecastsPageState
-    extends State<OneDayProjectPositionForecastsPage> with SingleTickerProviderStateMixin{
-
+    extends State<OneDayProjectPositionForecastsPage>
+    with SingleTickerProviderStateMixin {
   late AnimationController _animationController;
   @override
   void initState() {
     _animationController = AnimationController(
-        value: 0.0,
-        duration: const Duration(milliseconds: 2000),
-        vsync: this);
+        value: 0.0, duration: const Duration(milliseconds: 2000), vsync: this);
     super.initState();
     _startAnimation();
   }
+
   void _startAnimation() {
-    Future.delayed(const Duration(milliseconds: 300), (){
+    Future.delayed(const Duration(milliseconds: 300), () {
       _animationController.forward();
     });
   }
+
   @override
   void dispose() {
     _animationController.dispose();
     super.dispose();
-
   }
+
   @override
   Widget build(BuildContext context) {
     return Stack(
@@ -439,11 +468,15 @@ class _OneDayProjectPositionForecastsPageState
                     scrollDirection: Axis.horizontal,
                     itemBuilder: (_, index) {
                       var fc = widget.forecasts.elementAt(index);
-                      return AnimatedBuilder(animation: _animationController,
-                      builder: (BuildContext context, Widget? child) {
-                        return FadeScaleTransition(animation: _animationController, child: child,);
-                      },
-                      child: DayForecastCard(forecast: fc));
+                      return AnimatedBuilder(
+                          animation: _animationController,
+                          builder: (BuildContext context, Widget? child) {
+                            return FadeScaleTransition(
+                              animation: _animationController,
+                              child: child,
+                            );
+                          },
+                          child: DayForecastCard(forecast: fc));
                     }),
               ),
             ),

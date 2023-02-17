@@ -7,7 +7,7 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:geo_monitor/library/bloc/failed_audio.dart';
 import 'package:geo_monitor/library/bloc/failed_bag.dart';
 import 'package:geo_monitor/library/bloc/organization_bloc.dart';
-import 'package:geo_monitor/library/hive_util.dart';
+import 'package:geo_monitor/library/cache_manager.dart';
 import 'package:http/http.dart' as http;
 import 'package:just_audio/just_audio.dart';
 import 'package:path_provider/path_provider.dart';

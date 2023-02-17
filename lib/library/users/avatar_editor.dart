@@ -6,8 +6,8 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:geo_monitor/library/api/data_api.dart';
 import 'package:geo_monitor/library/api/prefs_og.dart';
+import 'package:geo_monitor/library/cache_manager.dart';
 import 'package:geo_monitor/library/functions.dart';
-import 'package:geo_monitor/library/hive_util.dart';
 import 'package:geo_monitor/ui/dashboard/dashboard_mobile.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:page_transition/page_transition.dart';
@@ -17,7 +17,9 @@ import '../data/user.dart';
 import '../generic_functions.dart';
 
 class AvatarEditor extends StatefulWidget {
-  const AvatarEditor({Key? key, required this.user, required this.goToDashboardWhenDone}) : super(key: key);
+  const AvatarEditor(
+      {Key? key, required this.user, required this.goToDashboardWhenDone})
+      : super(key: key);
   final User user;
   final bool goToDashboardWhenDone;
   @override
@@ -34,7 +36,6 @@ class AvatarEditorState extends State<AvatarEditor>
 
   bool _showOldPhoto = false;
   bool _showNewPhoto = false;
-
 
   @override
   void initState() {
@@ -117,9 +118,7 @@ class AvatarEditorState extends State<AvatarEditor>
         showToast(
             context: context,
             message: 'Photo upload failed, please try again in a minute',
-            backgroundColor: Theme
-                .of(context)
-                .primaryColor,
+            backgroundColor: Theme.of(context).primaryColor,
             textStyle: Styles.whiteSmall,
             toastGravity: ToastGravity.TOP,
             duration: const Duration(seconds: 2));
@@ -143,7 +142,6 @@ class AvatarEditorState extends State<AvatarEditor>
 
       //todo - might be from somewhere other than login
       //_navigateToDashboard();
-
     }
   }
 
@@ -156,11 +154,11 @@ class AvatarEditorState extends State<AvatarEditor>
               type: PageTransitionType.scale,
               alignment: Alignment.topLeft,
               duration: const Duration(seconds: 2),
-              child: DashboardPortrait(user: widget.user,)));
+              child: DashboardPortrait(
+                user: widget.user,
+              )));
     }
-
   }
-
 
   final photoStorageName = 'geoUserPhotos';
   String? url, thumbUrl;
@@ -254,7 +252,9 @@ class AvatarEditorState extends State<AvatarEditor>
     return SafeArea(
         child: Scaffold(
       appBar: AppBar(
-        leading: IconButton(onPressed: _navigateToDashboard, icon: const Icon(Icons.arrow_back_ios)),
+        leading: IconButton(
+            onPressed: _navigateToDashboard,
+            icon: const Icon(Icons.arrow_back_ios)),
         title: Text(
           'User Avatar Builder',
           style: myTextStyleSmall(context),
@@ -267,7 +267,8 @@ class AvatarEditorState extends State<AvatarEditor>
                     Icons.check,
                     size: 32,
                     color: Theme.of(context).primaryColor,
-                  )) : const SizedBox()
+                  ))
+              : const SizedBox()
         ],
       ),
       body: Stack(
@@ -292,28 +293,35 @@ class AvatarEditorState extends State<AvatarEditor>
                     ),
                     Padding(
                       padding: const EdgeInsets.all(28.0),
-                      child: Text('Please set up your profile picture. You can use an existing photo or take a new one with the camera',
-                      style: myTextStyleSmall(context),),
+                      child: Text(
+                        'Please set up your profile picture. You can use an existing photo or take a new one with the camera',
+                        style: myTextStyleSmall(context),
+                      ),
                     ),
                     const SizedBox(
                       height: 20,
                     ),
                     _showNewPhoto
-                        ?  SizedBox(
+                        ? SizedBox(
                             width: 320,
                             height: 360,
                             child: Image.file(
                               imageFile!,
                               fit: BoxFit.cover,
                             ),
-                          ) : const SizedBox(),
+                          )
+                        : const SizedBox(),
                     _showOldPhoto
-                        ?  SizedBox(
-                      width: 320,
-                      height: 360,
-                      child: CachedNetworkImage(imageUrl: widget.user.imageUrl!,
-                      fit: BoxFit.cover, fadeInDuration: const Duration(milliseconds: 500)),
-                    ) : const SizedBox(),
+                        ? SizedBox(
+                            width: 320,
+                            height: 360,
+                            child: CachedNetworkImage(
+                                imageUrl: widget.user.imageUrl!,
+                                fit: BoxFit.cover,
+                                fadeInDuration:
+                                    const Duration(milliseconds: 500)),
+                          )
+                        : const SizedBox(),
                     const SizedBox(
                       height: 24,
                     ),
@@ -377,11 +385,18 @@ class AvatarEditorState extends State<AvatarEditor>
                         backgroundImage: NetworkImage(thumbUrl!),
                       ),
                     ),
-          busy? const Center(
-            child: SizedBox(height: 20, width: 20, child: CircularProgressIndicator(
-              strokeWidth: 4, backgroundColor: Colors.pink,
-            ),),
-          ) : const SizedBox(),
+          busy
+              ? const Center(
+                  child: SizedBox(
+                    height: 20,
+                    width: 20,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 4,
+                      backgroundColor: Colors.pink,
+                    ),
+                  ),
+                )
+              : const SizedBox(),
         ],
       ),
     ));

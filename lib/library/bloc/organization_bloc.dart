@@ -5,6 +5,7 @@ import 'package:geo_monitor/library/data/settings_model.dart';
 import 'package:universal_platform/universal_platform.dart';
 
 import '../api/data_api.dart';
+import '../cache_manager.dart';
 import '../data/audio.dart';
 import '../data/community.dart';
 import '../data/country.dart';
@@ -21,7 +22,6 @@ import '../data/user.dart';
 import '../data/video.dart';
 import '../emojis.dart';
 import '../functions.dart';
-import '../hive_util.dart';
 import 'zip_bloc.dart';
 
 final OrganizationBloc organizationBloc = OrganizationBloc();

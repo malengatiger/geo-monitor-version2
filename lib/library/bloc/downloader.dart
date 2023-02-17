@@ -10,10 +10,10 @@ import 'package:geo_monitor/library/bloc/organization_bloc.dart';
 import 'package:http/http.dart' as http;
 import 'package:stream_channel/isolate_channel.dart';
 
+import '../cache_manager.dart';
 import '../data/data_bag.dart';
 import '../emojis.dart';
 import '../functions.dart';
-import '../hive_util.dart';
 
 final DownloaderService downloaderService = DownloaderService._instance;
 

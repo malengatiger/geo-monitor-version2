@@ -3,13 +3,11 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-
-
+import 'package:image/image.dart' as img;
 import 'package:image_picker/image_picker.dart';
 import 'package:native_device_orientation/native_device_orientation.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:image/image.dart' as img;
 import 'package:uuid/uuid.dart';
 
 import '../../../device_location/device_location_bloc.dart';
@@ -18,6 +16,7 @@ import '../../api/prefs_og.dart';
 import '../../bloc/cloud_storage_bloc.dart';
 import '../../bloc/photo_for_upload.dart';
 import '../../bloc/project_bloc.dart';
+import '../../cache_manager.dart';
 import '../../data/audio.dart';
 import '../../data/position.dart';
 import '../../data/project.dart';
@@ -27,8 +26,6 @@ import '../../data/video.dart';
 import '../../emojis.dart';
 import '../../functions.dart';
 import '../../generic_functions.dart';
-import '../../hive_util.dart';
-import '../../location/loc_bloc.dart';
 import '../media/list/project_media_list_mobile.dart';
 
 class PhotoHandler extends StatefulWidget {
@@ -307,9 +304,11 @@ class PhotoHandlerState extends State<PhotoHandler>
     return SafeArea(
         child: Scaffold(
       appBar: AppBar(
-        leading: IconButton(onPressed: (){
-          Navigator.of(context).pop();
-        }, icon: const Icon(Icons.arrow_back_ios)),
+        leading: IconButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+            icon: const Icon(Icons.arrow_back_ios)),
         title: Text(
           '${widget.project.name}',
           style: myTextStyleSmall(context),

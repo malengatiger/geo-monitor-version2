@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:geo_monitor/library/cache_manager.dart';
 import 'package:geo_monitor/library/data/activity_model.dart';
 import 'package:geo_monitor/library/functions.dart';
-import 'package:geo_monitor/library/hive_util.dart';
 
 import '../../library/data/activity_type_enum.dart';
 import '../../library/data/user.dart';
@@ -243,7 +243,7 @@ class ActivityStreamCardState extends State<ActivityStreamCard> {
         : Card(
             shape: getRoundedBorder(radius: 16),
             child: Padding(
-              padding: const EdgeInsets.all(12.0),
+              padding: const EdgeInsets.all(20.0),
               child: SizedBox(
                 height: 60,
                 child: Column(
@@ -323,13 +323,13 @@ class ActivityStreamCardState extends State<ActivityStreamCard> {
         break;
       case ActivityType.positionAdded:
         icon = Icon(Icons.home, color: Theme.of(context).primaryColor);
-        message = 'Project Position added: ${widget.model.projectName}';
+        message = 'Location added: ${widget.model.projectName}';
         return _getGeneric(icon, message);
         break;
       case ActivityType.polygonAdded:
         icon =
             Icon(Icons.circle_outlined, color: Theme.of(context).primaryColor);
-        message = 'Project Area added: ${widget.model.projectName}';
+        message = 'Area added: ${widget.model.projectName}';
         return _getGeneric(icon, message);
         break;
       case ActivityType.settingsChanged:

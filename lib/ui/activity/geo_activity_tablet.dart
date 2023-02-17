@@ -123,6 +123,7 @@ class GeoActivityTabletState extends State<GeoActivityTablet>
           width: widget.width,
           child: ScreenTypeLayout(
             mobile: ActivityListMobile(
+              project: widget.project,
               onPhotoTapped: (photo) {
                 widget.showPhoto(photo);
               },
@@ -167,6 +168,7 @@ class GeoActivityTabletState extends State<GeoActivityTablet>
                 return ActivityListTablet(
                   width: widget.width,
                   thinMode: widget.thinMode,
+                  project: widget.project,
                   onPhotoTapped: (photo) {
                     widget.showPhoto(photo);
                   },

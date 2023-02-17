@@ -1,5 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:geo_monitor/library/hive_util.dart';
+import 'package:geo_monitor/library/cache_manager.dart';
 
 import '../api/data_api.dart';
 import '../api/prefs_og.dart';

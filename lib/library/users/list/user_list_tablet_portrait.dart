@@ -18,11 +18,11 @@ import '../../../ui/dashboard/user_dashboard.dart';
 import '../../api/prefs_og.dart';
 import '../../bloc/fcm_bloc.dart';
 import '../../bloc/organization_bloc.dart';
+import '../../cache_manager.dart';
 import '../../data/user.dart';
 import '../../emojis.dart';
 import '../../functions.dart';
 import '../../generic_functions.dart';
-import '../../hive_util.dart';
 import '../../ui/message/message_mobile.dart';
 
 class UserListTabletPortrait extends StatefulWidget {

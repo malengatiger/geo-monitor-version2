@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:geo_monitor/library/hive_util.dart';
+import 'package:geo_monitor/library/cache_manager.dart';
 import 'package:geo_monitor/library/users/full_user_photo.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:uuid/uuid.dart';
@@ -9,22 +9,23 @@ import '../../api/data_api.dart';
 import '../../api/prefs_og.dart';
 import '../../bloc/admin_bloc.dart';
 import '../../bloc/organization_bloc.dart';
-import '../../data/user.dart' as ar;
 import '../../data/country.dart';
+import '../../data/user.dart' as ar;
 import '../../data/user.dart';
 import '../../functions.dart';
 import '../../generic_functions.dart';
 import '../avatar_editor.dart';
 import 'country_chooser.dart';
-import 'user_edit_main.dart';
 
 class UserEditTabletPortrait extends StatefulWidget {
   final ar.User? user;
   final double externalPadding, internalPadding;
 
-  const UserEditTabletPortrait({super.key, this.user, required this.externalPadding, required this.internalPadding});
-
-
+  const UserEditTabletPortrait(
+      {super.key,
+      this.user,
+      required this.externalPadding,
+      required this.internalPadding});
 
   @override
   UserEditTabletPortraitState createState() => UserEditTabletPortraitState();

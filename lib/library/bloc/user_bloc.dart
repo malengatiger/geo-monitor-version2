@@ -4,6 +4,7 @@ import 'package:geo_monitor/library/bloc/zip_bloc.dart';
 import 'package:geo_monitor/library/data/data_bag.dart';
 
 import '../api/data_api.dart';
+import '../cache_manager.dart';
 import '../data/activity_model.dart';
 import '../data/audio.dart';
 import '../data/community.dart';
@@ -15,7 +16,6 @@ import '../data/questionnaire.dart';
 import '../data/user.dart';
 import '../data/video.dart';
 import '../functions.dart';
-import '../hive_util.dart';
 
 final UserBloc userBloc = UserBloc();
 

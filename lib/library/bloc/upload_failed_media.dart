@@ -1,12 +1,13 @@
 import 'dart:async';
 import 'dart:io';
 import 'dart:math';
+
 import 'package:geo_monitor/library/data/audio.dart';
 
+import '../cache_manager.dart';
 import '../data/video.dart';
 import '../emojis.dart';
 import '../functions.dart';
-import '../hive_util.dart';
 import 'cloud_storage_bloc.dart';
 
 final UploadFailedMedia uploadFailedMedia = UploadFailedMedia();
@@ -64,7 +65,7 @@ class UploadFailedMedia implements StorageBlocListener {
           }
         }
         if (file.path.contains('video')) {
-          var result =await cloudStorageBloc.uploadVideo(
+          var result = await cloudStorageBloc.uploadVideo(
               listener: this,
               file: file,
               thumbnailFile: thumbnailFile,
@@ -75,10 +76,7 @@ class UploadFailedMedia implements StorageBlocListener {
             await cacheManager.removeFailedBag(bag: bag);
           }
         }
-
-
       }
-
     }
     //audio
     for (var failedAudio in failedAudios) {

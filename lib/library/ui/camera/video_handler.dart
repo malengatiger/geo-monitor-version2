@@ -20,12 +20,11 @@ import '../../../device_location/device_location_bloc.dart';
 import '../../../ui/dashboard/dashboard_mobile.dart';
 import '../../bloc/project_bloc.dart';
 import '../../bloc/video_for_upload.dart';
+import '../../cache_manager.dart';
 import '../../data/position.dart';
 import '../../data/project_polygon.dart';
 import '../../functions.dart';
 import '../../generic_functions.dart';
-import '../../hive_util.dart';
-import '../../location/loc_bloc.dart';
 import '../media/list/project_media_list_mobile.dart';
 
 class VideoHandler extends StatefulWidget {
@@ -56,7 +55,7 @@ class VideoHandlerState extends State<VideoHandler>
     _controller = AnimationController(vsync: this);
     super.initState();
     killSubscription = listenForKill(context: context);
-     _listen();
+    _listen();
     _observeOrientation();
     _getData();
     //_startVideo();
@@ -78,9 +77,7 @@ class VideoHandlerState extends State<VideoHandler>
     videoSubscription = fcmBloc.videoStream.listen((event) {
       videos.add(event);
       if (mounted) {
-        setState(() {
-
-        });
+        setState(() {});
       }
     });
   }
@@ -95,7 +92,8 @@ class VideoHandlerState extends State<VideoHandler>
           projectId: widget.project.projectId!, forceRefresh: false);
       positions = await projectBloc.getProjectPositions(
           projectId: widget.project.projectId!, forceRefresh: false);
-      videos = await projectBloc.getProjectVideos(projectId: widget.project.projectId!, forceRefresh: false);
+      videos = await projectBloc.getProjectVideos(
+          projectId: widget.project.projectId!, forceRefresh: false);
       pp('$mm positions: ${positions.length} polygons: ${polygons.length} found');
     } catch (e) {
       if (mounted) {
@@ -214,9 +212,11 @@ class VideoHandlerState extends State<VideoHandler>
     return SafeArea(
         child: Scaffold(
       appBar: AppBar(
-        leading: IconButton(onPressed: (){
-          Navigator.of(context).pop();
-        }, icon: const Icon(Icons.arrow_back_ios)),
+        leading: IconButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+            icon: const Icon(Icons.arrow_back_ios)),
         title: Text(
           '${widget.project.name}',
           style: myTextStyleSmall(context),
@@ -249,14 +249,21 @@ class VideoHandlerState extends State<VideoHandler>
             ),
           ),
           Positioned(
-              left: 80, right: 20, top: 200,
-              child: Opacity(opacity: 0.1,
-              child: Text('${videos.length}', style: myNumberStyleLargest(context),))),
+              left: 80,
+              right: 20,
+              top: 200,
+              child: Opacity(
+                  opacity: 0.1,
+                  child: Text(
+                    '${videos.length}',
+                    style: myNumberStyleLargest(context),
+                  ))),
           Positioned(
             left: 24,
             right: 24,
             bottom: 20,
-            child: SizedBox( height: 60,
+            child: SizedBox(
+              height: 60,
               child: Card(
                 elevation: 4,
                 color: Colors.black12,
@@ -304,7 +311,6 @@ class VideoHandlerState extends State<VideoHandler>
   void _onCancel() {
     Navigator.of(context).pop();
   }
-
 }
 
 final mxx =

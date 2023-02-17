@@ -20,9 +20,9 @@ import 'firebase_options.dart';
 import 'library/api/prefs_og.dart';
 import 'library/bloc/theme_bloc.dart';
 import 'library/bloc/uploader.dart';
+import 'library/cache_manager.dart';
 import 'library/emojis.dart';
 import 'library/geofence/geofencer_two.dart';
-import 'library/hive_util.dart';
 
 int themeIndex = 0;
 late FirebaseApp firebaseApp;

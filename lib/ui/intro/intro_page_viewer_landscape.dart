@@ -1,18 +1,18 @@
-import 'package:flutter/material.dart';
 import 'dart:async';
 
 import 'package:firebase_auth/firebase_auth.dart' as fb;
+import 'package:flutter/material.dart';
 import 'package:geo_monitor/ui/auth/auth_registration_main.dart';
 import 'package:geo_monitor/ui/auth/auth_signin_main.dart';
 import 'package:geo_monitor/ui/dashboard/dashboard_main.dart';
 import 'package:page_transition/page_transition.dart';
 
 import '../../library/api/prefs_og.dart';
+import '../../library/cache_manager.dart';
+import '../../library/data/user.dart' as ur;
 import '../../library/emojis.dart';
 import '../../library/functions.dart';
 import '../../library/generic_functions.dart';
-import '../../library/hive_util.dart';
-import '../../library/data/user.dart' as ur;
 import '../dashboard/dashboard_mobile.dart';
 import 'intro_page_one_landscape.dart';
 
@@ -93,8 +93,7 @@ class _IntroPageViewerLandscapeState extends State<IntroPageViewerLandscape>
 
     if (result is ur.User) {
       pp('\n\n\n$mm _navigateToSignIn ....... back from AuthSignInMain with a user '
-          '... 🔵🔵🔵🔵 ${result.toJson()} ' );
-
+          '... 🔵🔵🔵🔵 ${result.toJson()} ');
     }
     user = await prefsOGx.getUser();
     pp('\n\n$mm 😡😡 Returned from sign in, checking if login succeeded bu getting user from cache 😡');
@@ -142,89 +141,96 @@ class _IntroPageViewerLandscapeState extends State<IntroPageViewerLandscape>
   Widget build(BuildContext context) {
     return SafeArea(
         child: Scaffold(
-          appBar: AppBar(
-            title: const Text('GeoMonitor'),
-            bottom: PreferredSize(preferredSize: const Size.fromHeight(48), child: authed
-                ? Row(
-              children: [
-                IconButton(
-                    onPressed: () {
-                      Navigator.of(context).pop();
-                    },
-                    icon: const Icon(Icons.close)),
-              ],
-            )
-                : Card(
-              elevation: 4, color: Colors.black38,
-              shape: getRoundedBorder(radius: 16),
-              child: authed? const SizedBox(): Row(mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  TextButton(
-                      onPressed: _navigateToSignIn, child: const Text('Sign In')),
-                  const SizedBox(
-                    width: 120,
-                  ),
-                  TextButton(
-                      onPressed: _navigateToOrgRegistration,
-                      child: const Text('Register Organization')),
-                ],
+      appBar: AppBar(
+        title: const Text('GeoMonitor'),
+        bottom: PreferredSize(
+          preferredSize: const Size.fromHeight(48),
+          child: authed
+              ? Row(
+                  children: [
+                    IconButton(
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                        },
+                        icon: const Icon(Icons.close)),
+                  ],
+                )
+              : Card(
+                  elevation: 4,
+                  color: Colors.black38,
+                  shape: getRoundedBorder(radius: 16),
+                  child: authed
+                      ? const SizedBox()
+                      : Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            TextButton(
+                                onPressed: _navigateToSignIn,
+                                child: const Text('Sign In')),
+                            const SizedBox(
+                              width: 120,
+                            ),
+                            TextButton(
+                                onPressed: _navigateToOrgRegistration,
+                                child: const Text('Register Organization')),
+                          ],
+                        ),
+                ),
+        ),
+      ),
+      body: Stack(
+        children: [
+          ListView(
+            scrollDirection: Axis.horizontal,
+            // itemExtent: ,
+            children: const [
+              IntroPageLandscape(
+                title: 'GeoMonitor',
+                assetPath: 'assets/intro/pic2.jpg',
+                text: lorem,
+                width: 420,
               ),
-            ),),
-          ),
-          body: Stack(
-            children: [
-
-              ListView(
-                scrollDirection: Axis.horizontal,
-                // itemExtent: ,
-                children: const [
-                  IntroPageLandscape(
-                    title: 'GeoMonitor',
-                    assetPath: 'assets/intro/pic2.jpg',
-                    text: lorem,
-                    width: 420,
-                  ),
-                  IntroPageLandscape(
-                    title: 'Organizations',
-                    assetPath: 'assets/intro/pic5.jpg',
-                    text: lorem,
-                    width: 420,
-                  ),
-                  IntroPageLandscape(
-                    title: 'Administrators',
-                    assetPath: 'assets/intro/pic1.jpg',
-                    text: lorem,
-                    width: 420,
-                  ),
-                  IntroPageLandscape(
-                    title: 'Field Monitors',
-                    assetPath: 'assets/intro/pic5.jpg',
-                    text: lorem,
-                    width: 420,
-                  ),
-                  IntroPageLandscape(
-                    title: 'Executives',
-                    assetPath: 'assets/intro/pic3.webp',
-                    text: lorem,
-                    width: 420,
-                  ),
-                  IntroPageLandscape(
-                    title: 'How To',
-                    assetPath: 'assets/intro/pic4.jpg',
-                    text: lorem,
-                    width: 420,
-                  ),
-                  IntroPageLandscape(
-                    title: 'Thank You!',
-                    assetPath: 'assets/intro/thanks.webp',
-                    width: 420,
-                    text:
+              IntroPageLandscape(
+                title: 'Organizations',
+                assetPath: 'assets/intro/pic5.jpg',
+                text: lorem,
+                width: 420,
+              ),
+              IntroPageLandscape(
+                title: 'Administrators',
+                assetPath: 'assets/intro/pic1.jpg',
+                text: lorem,
+                width: 420,
+              ),
+              IntroPageLandscape(
+                title: 'Field Monitors',
+                assetPath: 'assets/intro/pic5.jpg',
+                text: lorem,
+                width: 420,
+              ),
+              IntroPageLandscape(
+                title: 'Executives',
+                assetPath: 'assets/intro/pic3.webp',
+                text: lorem,
+                width: 420,
+              ),
+              IntroPageLandscape(
+                title: 'How To',
+                assetPath: 'assets/intro/pic4.jpg',
+                text: lorem,
+                width: 420,
+              ),
+              IntroPageLandscape(
+                title: 'Thank You!',
+                assetPath: 'assets/intro/thanks.webp',
+                width: 420,
+                text:
                     'Thank you for even getting to this point. Your time and effort is much appreciated and we hope you enjoy your journeys with this app!',
-                  ),
-                ],
-              )
+              ),
             ],
-          ),
-        ));
+          )
+        ],
+      ),
+    ));
   }
 }

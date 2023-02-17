@@ -4,9 +4,9 @@ import 'dart:math';
 import 'package:animations/animations.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:geo_monitor/library/cache_manager.dart';
 import 'package:geo_monitor/library/data/location_response.dart';
 import 'package:geo_monitor/library/generic_functions.dart';
-import 'package:geo_monitor/library/hive_util.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:map_launcher/map_launcher.dart' as ml;
 

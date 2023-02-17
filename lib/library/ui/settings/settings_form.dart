@@ -5,11 +5,11 @@ import 'package:uuid/uuid.dart';
 import '../../api/data_api.dart';
 import '../../api/prefs_og.dart';
 import '../../bloc/theme_bloc.dart';
+import '../../cache_manager.dart';
 import '../../data/project.dart';
 import '../../data/user.dart';
 import '../../functions.dart';
 import '../../generic_functions.dart';
-import '../../hive_util.dart';
 import '../../project_selector.dart';
 
 class SettingsForm extends StatefulWidget {

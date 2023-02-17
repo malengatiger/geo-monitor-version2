@@ -6,6 +6,7 @@ import 'package:geo_monitor/library/data/settings_model.dart';
 import '../../device_location/device_location_bloc.dart';
 import '../api/data_api.dart';
 import '../api/prefs_og.dart';
+import '../cache_manager.dart';
 import '../data/audio.dart';
 import '../data/community.dart';
 import '../data/country.dart';
@@ -20,7 +21,6 @@ import '../data/questionnaire.dart';
 import '../data/user.dart';
 import '../data/video.dart';
 import '../functions.dart';
-import '../hive_util.dart';
 
 final ProjectBloc projectBloc = ProjectBloc();
 

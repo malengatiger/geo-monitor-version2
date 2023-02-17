@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:geo_monitor/library/hive_util.dart';
+import 'package:geo_monitor/library/cache_manager.dart';
 import 'package:geo_monitor/library/users/full_user_photo.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:uuid/uuid.dart';
@@ -9,14 +9,13 @@ import '../../api/data_api.dart';
 import '../../api/prefs_og.dart';
 import '../../bloc/admin_bloc.dart';
 import '../../bloc/organization_bloc.dart';
-import '../../data/user.dart' as ar;
 import '../../data/country.dart';
+import '../../data/user.dart' as ar;
 import '../../data/user.dart';
 import '../../functions.dart';
 import '../../generic_functions.dart';
 import '../avatar_editor.dart';
 import 'country_chooser.dart';
-import 'user_edit_main.dart';
 
 class UserEditMobile extends StatefulWidget {
   final ar.User? user;
@@ -62,6 +61,7 @@ class UserEditMobileState extends State<UserEditMobile>
       await _setCountry();
     }
   }
+
   _setCountry() async {
     if (widget.user != null) {
       if (widget.user!.countryId != null) {
@@ -218,18 +218,19 @@ class UserEditMobileState extends State<UserEditMobile>
       }
     }
   }
+
   void _setGenderRadio() {
     if (widget.user != null) {
       if (widget.user!.gender != null) {
-       gender = widget.user!.gender!;
-       switch(widget.user!.gender) {
-         case 'Male':
-           genderType = 0;
-           break;
-         case 'Female':
-           genderType = 1;
-           break;
-       }
+        gender = widget.user!.gender!;
+        switch (widget.user!.gender) {
+          case 'Male':
+            genderType = 0;
+            break;
+          case 'Female':
+            genderType = 1;
+            break;
+        }
       }
     }
   }
@@ -243,15 +244,14 @@ class UserEditMobileState extends State<UserEditMobile>
             alignment: Alignment.topLeft,
             duration: const Duration(seconds: 2),
             child: AvatarEditor(
-              user: widget.user!, goToDashboardWhenDone: false,
+              user: widget.user!,
+              goToDashboardWhenDone: false,
             )));
     if (user is User) {
       if (widget.user != null) {
         widget.user!.imageUrl = user.imageUrl;
         widget.user!.thumbnailUrl = user.thumbnailUrl;
-        setState(() {
-
-        });
+        setState(() {});
       }
     }
   }
@@ -268,7 +268,6 @@ class UserEditMobileState extends State<UserEditMobile>
               user: widget.user!,
             )));
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -517,16 +516,21 @@ class UserEditMobileState extends State<UserEditMobile>
             ),
             widget.user?.thumbnailUrl == null
                 ? const Positioned(
-                right:2, top: 0,
-                child: CircleAvatar(radius: 24,))
+                    right: 2,
+                    top: 0,
+                    child: CircleAvatar(
+                      radius: 24,
+                    ))
                 : Positioned(
-                    right: 2, top: 0,
+                    right: 2,
+                    top: 0,
                     child: GestureDetector(
                       onTap: _navigateToFullPhoto,
                       child: CircleAvatar(
                         radius: 40,
-                      backgroundImage: NetworkImage(widget.user!.thumbnailUrl!),
-                  ),
+                        backgroundImage:
+                            NetworkImage(widget.user!.thumbnailUrl!),
+                      ),
                     )),
           ],
         ),

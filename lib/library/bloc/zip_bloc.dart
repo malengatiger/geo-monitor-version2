@@ -9,9 +9,9 @@ import 'package:http/http.dart' as http;
 import 'package:path_provider/path_provider.dart';
 
 import '../auth/app_auth.dart';
+import '../cache_manager.dart';
 import '../data/data_bag.dart';
 import '../functions.dart';
-import '../hive_util.dart';
 
 final ZipBloc zipBloc = ZipBloc();
 

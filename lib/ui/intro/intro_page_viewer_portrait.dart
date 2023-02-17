@@ -9,11 +9,11 @@ import 'package:geo_monitor/ui/dashboard/dashboard_main.dart';
 import 'package:page_transition/page_transition.dart';
 
 import '../../library/api/prefs_og.dart';
+import '../../library/cache_manager.dart';
 import '../../library/data/user.dart' as ur;
 import '../../library/emojis.dart';
 import '../../library/functions.dart';
 import '../../library/generic_functions.dart';
-import '../../library/hive_util.dart';
 import '../dashboard/dashboard_mobile.dart';
 import '../intro/intro_page_one.dart';
 

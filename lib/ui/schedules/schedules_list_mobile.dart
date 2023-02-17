@@ -1,17 +1,15 @@
 import 'package:flutter/material.dart';
-
 import 'package:focused_menu/focused_menu.dart';
 import 'package:focused_menu/modals.dart';
 import 'package:google_fonts/google_fonts.dart';
-
 import 'package:page_transition/page_transition.dart';
 
 import '../../library/api/prefs_og.dart';
 import '../../library/bloc/user_bloc.dart';
+import '../../library/cache_manager.dart';
 import '../../library/data/field_monitor_schedule.dart';
 import '../../library/data/user.dart';
 import '../../library/functions.dart';
-import '../../library/hive_util.dart';
 import '../../library/snack.dart';
 import '../../library/ui/maps/project_map_mobile.dart';
 import '../../library/ui/media/user_media_list/user_media_list_mobile.dart';
@@ -43,9 +41,11 @@ class SchedulesListMobileState extends State<SchedulesListMobile>
     _controller.dispose();
     super.dispose();
   }
+
   void _navigateToProjectMapMobile(FieldMonitorSchedule sched) async {
     var pos = await cacheManager.getProjectPositions(sched.projectId!);
-    var pol = await cacheManager.getProjectPolygons(projectId: sched.projectId!);
+    var pol =
+        await cacheManager.getProjectPolygons(projectId: sched.projectId!);
     var proj = await cacheManager.getProjectById(projectId: sched.projectId!);
     if (mounted) {
       Navigator.push(
@@ -55,10 +55,11 @@ class SchedulesListMobileState extends State<SchedulesListMobile>
               alignment: Alignment.topLeft,
               duration: const Duration(seconds: 1),
               child: ProjectMapMobile(
-
-                project: proj!,)));
+                project: proj!,
+              )));
     }
   }
+
   void _navigateToUserMediaListMobile() {
     Navigator.push(
         context,
@@ -66,8 +67,9 @@ class SchedulesListMobileState extends State<SchedulesListMobile>
             type: PageTransitionType.scale,
             alignment: Alignment.topLeft,
             duration: const Duration(seconds: 1),
-            child: UserMediaListMobile(user:_user!)));
+            child: UserMediaListMobile(user: _user!)));
   }
+
   void _getData(bool refresh) async {
     setState(() {
       busy = true;
@@ -240,9 +242,11 @@ class SchedulesListMobileState extends State<SchedulesListMobile>
                                     Flexible(
                                       child: Text(
                                         schedule.projectName!,
-                                          style: GoogleFonts.lato(
-                                              textStyle: Theme.of(context).textTheme.bodySmall,
-                                              fontWeight: FontWeight.normal),
+                                        style: GoogleFonts.lato(
+                                            textStyle: Theme.of(context)
+                                                .textTheme
+                                                .bodySmall,
+                                            fontWeight: FontWeight.normal),
                                       ),
                                     )
                                   ],
@@ -252,14 +256,26 @@ class SchedulesListMobileState extends State<SchedulesListMobile>
                                 ),
                                 Row(
                                   children: [
-                                    const SizedBox(width: 32,),
-                                    Text('Frequency :', style: GoogleFonts.lato(
-                                        textStyle: Theme.of(context).textTheme.bodySmall,
-                                        fontWeight: FontWeight.normal)),
-                                    const SizedBox(width: 12,),
-                                    Text(subTitle, style: GoogleFonts.secularOne(
-                                        textStyle: Theme.of(context).textTheme.bodyMedium,
-                                        fontWeight: FontWeight.w900),),
+                                    const SizedBox(
+                                      width: 32,
+                                    ),
+                                    Text('Frequency :',
+                                        style: GoogleFonts.lato(
+                                            textStyle: Theme.of(context)
+                                                .textTheme
+                                                .bodySmall,
+                                            fontWeight: FontWeight.normal)),
+                                    const SizedBox(
+                                      width: 12,
+                                    ),
+                                    Text(
+                                      subTitle,
+                                      style: GoogleFonts.secularOne(
+                                          textStyle: Theme.of(context)
+                                              .textTheme
+                                              .bodyMedium,
+                                          fontWeight: FontWeight.w900),
+                                    ),
                                   ],
                                 ),
                                 const SizedBox(
