@@ -30,11 +30,13 @@ class ProjectDashboardGrid extends StatefulWidget {
       this.totalHeight,
       this.topPadding,
       required this.project,
-      required this.showProjectName})
+      required this.showProjectName,
+      this.horizontalPadding})
       : super(key: key);
   final Function(int) onTypeTapped;
   final double? totalHeight;
   final double? topPadding;
+  final double? horizontalPadding;
   final Project project;
   final bool showProjectName;
 
@@ -383,7 +385,7 @@ class _ProjectDashboardGridState extends State<ProjectDashboardGrid>
             SizedBox(
               height: widget.totalHeight == null ? 900 : widget.totalHeight!,
               child: Padding(
-                padding: const EdgeInsets.all(60.0),
+                padding: EdgeInsets.all(widget.horizontalPadding ?? 28),
                 child: GridView.count(
                   crossAxisCount: 3,
                   children: [

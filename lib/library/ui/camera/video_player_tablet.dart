@@ -35,6 +35,10 @@ class VideoPlayerTabletPageState extends State<VideoPlayerTabletPage>
   int videoDurationInSeconds = 0;
   double videoDurationInMinutes = 0.0;
   final double _aspectRatio = 16 / 9;
+
+  var videoHeight = 0.0;
+  var videoWidth = 0.0;
+
   @override
   void initState() {
     _animationController = AnimationController(vsync: this);
@@ -45,6 +49,12 @@ class VideoPlayerTabletPageState extends State<VideoPlayerTabletPage>
         // Ensure the first frame is shown after the video is initialized, even before the play button has been pressed.
         pp('.......... doing shit with videoController ... setting state .... '
             '$_videoPlayerController 🍎DURATION: ${_videoPlayerController!.value.duration} seconds!');
+
+        var size = _videoPlayerController?.value.size;
+        videoHeight = size!.height;
+        videoWidth = size.width;
+        pp('.......... size of video ... '
+            'videoHeight: $videoHeight videoWidth: $videoWidth .... ');
 
         _videoPlayerController!.addListener(_checkVideo);
         setState(() {
@@ -92,36 +102,35 @@ class VideoPlayerTabletPageState extends State<VideoPlayerTabletPage>
     });
   }
 
-  bool _showFloatingButton = true;
+  bool _toggleFloatingButton = true;
   void _checkVideo() {
     if (_videoPlayerController!.value.position ==
         const Duration(seconds: 0, minutes: 0, hours: 0)) {
-      pp('$mm video Started');
       setState(() {
-        _showFloatingButton = false;
+        _toggleFloatingButton = false;
       });
     }
 
     if (_videoPlayerController!.value.isPlaying) {
       setState(() {
-        _showFloatingButton = false;
+        _toggleFloatingButton = false;
       });
     }
     if (_videoPlayerController!.value.isBuffering) {
       setState(() {
-        _showFloatingButton = false;
+        _toggleFloatingButton = false;
       });
     }
     if (!_videoPlayerController!.value.isPlaying) {
       setState(() {
-        _showFloatingButton = true;
+        _toggleFloatingButton = true;
       });
     }
     if (_videoPlayerController!.value.position ==
         _videoPlayerController!.value.duration) {
       pp('$mm video Ended ....');
       setState(() {
-        _showFloatingButton = true;
+        _toggleFloatingButton = true;
       });
     }
   }
@@ -169,9 +178,9 @@ class VideoPlayerTabletPageState extends State<VideoPlayerTabletPage>
     final ori = MediaQuery.of(context).orientation;
     final tWidth = MediaQuery.of(context).size.width;
     if (ori.name == 'portrait') {
-      width = tWidth / 3;
+      width = tWidth / 2;
     } else {
-      width = tWidth / 4;
+      width = tWidth / 3;
     }
     final tHeight = MediaQuery.of(context).size.height;
     // pp('$mm video player: width: $width height: $tHeight');
@@ -343,29 +352,29 @@ class VideoPlayerTabletPageState extends State<VideoPlayerTabletPage>
                               ),
                             ))
                         : const SizedBox(),
-                    _showFloatingButton
-                        ? Positioned(
-                            bottom: 12,
-                            right: 12,
-                            child: FloatingActionButton(
-                              backgroundColor: Theme.of(context).primaryColor,
-                              onPressed: () {
-                                setState(() {
-                                  if (_videoPlayerController != null) {
-                                    _showElapsed = false;
-                                    _videoPlayerController!.value.isPlaying
-                                        ? _videoPlayerController!.pause()
-                                        : _videoPlayerController!.play();
-                                  }
-                                });
-                              },
-                              child: Icon(
-                                _videoPlayerController == null
-                                    ? Icons.pause
-                                    : Icons.play_arrow,
-                              ),
-                            ))
-                        : const SizedBox(),
+                    Positioned(
+                        bottom: 12,
+                        right: 12,
+                        child: FloatingActionButton(
+                          backgroundColor: Theme.of(context).primaryColor,
+                          onPressed: () {
+                            setState(() {
+                              if (_videoPlayerController != null) {
+                                _showElapsed = false;
+                                _videoPlayerController!.value.isPlaying
+                                    ? _videoPlayerController!.pause()
+                                    : _videoPlayerController!.play();
+                              }
+                            });
+                          },
+                          child: Icon(
+                            _videoPlayerController == null
+                                ? Icons.pause
+                                : _toggleFloatingButton
+                                    ? Icons.play_arrow
+                                    : Icons.stop,
+                          ),
+                        )),
                   ],
                 ),
               ),

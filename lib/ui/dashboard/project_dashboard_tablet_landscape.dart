@@ -12,8 +12,10 @@ import '../../library/data/photo.dart';
 import '../../library/data/project.dart';
 import '../../library/data/video.dart';
 import '../../library/functions.dart';
+import '../../library/ui/camera/video_player_tablet.dart';
 import '../../library/ui/maps/photo_map_tablet.dart';
 import '../activity/geo_activity_tablet.dart';
+import '../audio/audio_player_page.dart';
 
 class ProjectDashboardTabletLandscape extends StatefulWidget {
   const ProjectDashboardTabletLandscape({Key? key, required this.project})
@@ -161,6 +163,7 @@ class ProjectDashboardTabletLandscapeState
               ),
               GeoActivityTablet(
                 width: width / 2,
+                project: widget.project,
                 thinMode: false,
                 showPhoto: (photo) {
                   _displayPhoto(photo);
@@ -176,11 +179,12 @@ class ProjectDashboardTabletLandscapeState
           ),
           _showPhoto
               ? Positioned(
-                  left: 0,
-                  top: 0,
+                  left: 100,
+                  right: 100,
+                  top: 12,
                   child: SizedBox(
-                    width: 420,
-                    height: 640,
+                    width: 600,
+                    height: 800,
                     // color: Theme.of(context).primaryColor,
                     child: Padding(
                       padding: const EdgeInsets.all(8.0),
@@ -193,84 +197,89 @@ class ProjectDashboardTabletLandscapeState
                         child: Card(
                           shape: getRoundedBorder(radius: 16),
                           elevation: 8,
-                          child: Column(
-                            children: [
-                              const SizedBox(
-                                height: 12,
-                              ),
-                              Padding(
-                                padding:
-                                    const EdgeInsets.symmetric(horizontal: 8.0),
-                                child: Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Text(
-                                      '${photo!.projectName}',
-                                      style: myTextStyleMediumPrimaryColor(
-                                          context),
-                                    ),
-                                    IconButton(
-                                        onPressed: () {
-                                          pp('$mm .... put photo on a map!');
-                                          _navigateToPhotoMap();
-                                        },
-                                        icon: Icon(
-                                          Icons.location_on,
-                                          color: Theme.of(context).primaryColor,
-                                          size: 24,
-                                        )),
-                                  ],
+                          child: SingleChildScrollView(
+                            child: Column(
+                              children: [
+                                const SizedBox(
+                                  height: 12,
                                 ),
-                              ),
-                              const SizedBox(
-                                height: 12,
-                              ),
-                              Text(
-                                '${photo!.userName}',
-                                style: myTextStyleSmallBold(context),
-                              ),
-                              const SizedBox(
-                                height: 4,
-                              ),
-                              Text(
-                                getFormattedDateShortWithTime(
-                                    photo!.created!, context),
-                                style: myTextStyleTiny(context),
-                              ),
-                              const SizedBox(
-                                height: 12,
-                              ),
-                              Expanded(
-                                child: Padding(
+                                Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 48.0),
+                                  child: Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Text(
+                                        '${photo!.projectName}',
+                                        style: myTextStyleLargePrimaryColor(
+                                            context),
+                                      ),
+                                      IconButton(
+                                          onPressed: () {
+                                            pp('$mm .... put photo on a map!');
+                                            _navigateToPhotoMap();
+                                          },
+                                          icon: Icon(
+                                            Icons.location_on,
+                                            color:
+                                                Theme.of(context).primaryColor,
+                                            size: 24,
+                                          )),
+                                    ],
+                                  ),
+                                ),
+                                const SizedBox(
+                                  height: 12,
+                                ),
+                                Text(
+                                  '${photo!.userName}',
+                                  style: myTextStyleSmallBold(context),
+                                ),
+                                const SizedBox(
+                                  height: 4,
+                                ),
+                                Text(
+                                  getFormattedDateShortWithTime(
+                                      photo!.created!, context),
+                                  style: myTextStyleTiny(context),
+                                ),
+                                const SizedBox(
+                                  height: 12,
+                                ),
+                                Padding(
                                   padding: const EdgeInsets.symmetric(
                                       horizontal: 2.0, vertical: 2.0),
                                   child: InteractiveViewer(
                                       child: CachedNetworkImage(
-                                          fit: BoxFit.cover,
+                                          fit: BoxFit.fill,
                                           progressIndicatorBuilder: (context,
                                                   url, downloadProgress) =>
                                               Center(
                                                   child: SizedBox(
-                                                      width: 24,
-                                                      height: 24,
+                                                      width: 20,
+                                                      height: 20,
                                                       child: CircularProgressIndicator(
                                                           backgroundColor:
-                                                              Theme.of(context)
-                                                                  .primaryColor,
-                                                          value: downloadProgress
-                                                              .progress))),
+                                                              Colors.pink,
+                                                          value:
+                                                              downloadProgress
+                                                                  .progress))),
                                           errorWidget: (context, url, error) =>
                                               const Icon(Icons.error),
                                           fadeInDuration: const Duration(
                                               milliseconds: 1500),
                                           fadeInCurve: Curves.easeInOutCirc,
                                           placeholderFadeInDuration:
-                                              const Duration(milliseconds: 1500),
+                                              const Duration(
+                                                  milliseconds: 1500),
                                           imageUrl: photo!.url!)),
                                 ),
-                              ),
-                            ],
+                                const SizedBox(
+                                  height: 24,
+                                ),
+                              ],
+                            ),
                           ),
                         ),
                       ),
@@ -279,19 +288,36 @@ class ProjectDashboardTabletLandscapeState
               : const SizedBox(),
           _showVideo
               ? Positioned(
-                  child: Container(
-                  width: 480,
-                  height: 640,
-                  color: Colors.red,
-                ))
+                  left: 100,
+                  right: 100,
+                  top: 12,
+                  child: VideoPlayerTabletPage(
+                    video: video!,
+                    onCloseRequested: () {
+                      if (mounted) {
+                        setState(() {
+                          _showVideo = false;
+                        });
+                      }
+                    },
+                  ),
+                )
               : const SizedBox(),
           _showAudio
               ? Positioned(
-                  child: Container(
-                  width: 480,
-                  height: 640,
-                  color: Colors.green,
-                ))
+                  left: 100,
+                  right: 100,
+                  top: 160,
+                  child: AudioPlayerCard(
+                    audio: audio!,
+                    onCloseRequested: () {
+                      if (mounted) {
+                        setState(() {
+                          _showAudio = false;
+                        });
+                      }
+                    },
+                  ))
               : const SizedBox(),
         ],
       ),

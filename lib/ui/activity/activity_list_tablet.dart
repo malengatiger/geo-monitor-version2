@@ -111,8 +111,6 @@ class _ActivityListTabletState extends State<ActivityListTablet>
         _getProjectData(forceRefresh, hours);
       } else if (widget.user != null) {
         _getUserData(forceRefresh, hours);
-      } else if (widget.project != null) {
-        _getProjectData(forceRefresh, hours);
       } else {
         _getOrganizationData(forceRefresh, hours);
       }
@@ -260,7 +258,7 @@ class _ActivityListTabletState extends State<ActivityListTablet>
                     children: [
                       Padding(
                         padding: const EdgeInsets.only(
-                            left: 20.0, top: 12, bottom: 8),
+                            left: 4.0, top: 12, bottom: 8),
                         child: Padding(
                           padding: const EdgeInsets.only(top: 16.0),
                           child: ActivityHeader(

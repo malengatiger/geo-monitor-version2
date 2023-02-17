@@ -1,73 +1,42 @@
-import 'dart:async';
-
-import 'package:animations/animations.dart';
-import 'package:firebase_auth/firebase_auth.dart' as fb;
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:geo_monitor/library/data/geofence_event.dart';
-import 'package:geo_monitor/library/data/settings_model.dart';
 import 'package:geo_monitor/library/ui/maps/project_map_mobile.dart';
 import 'package:geo_monitor/library/ui/media/list/project_media_list_mobile.dart';
-import 'package:geo_monitor/ui/dashboard/dashboard_grid.dart';
-import 'package:geofence_service/geofence_service.dart';
-
+import 'package:geo_monitor/ui/activity/geo_activity_tablet.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:universal_platform/universal_platform.dart';
 
-import '../../library/api/prefs_og.dart';
-import '../../library/bloc/connection_check.dart';
 import '../../library/bloc/downloader.dart';
-import '../../library/bloc/fcm_bloc.dart';
-import '../../library/bloc/organization_bloc.dart';
-import '../../library/bloc/project_bloc.dart';
-import '../../library/bloc/theme_bloc.dart';
-import '../../library/bloc/uploader.dart';
 import '../../library/data/audio.dart';
-import '../../library/data/data_bag.dart';
-import '../../library/data/field_monitor_schedule.dart';
 import '../../library/data/photo.dart';
 import '../../library/data/project.dart';
-import '../../library/data/project_polygon.dart';
-import '../../library/data/project_position.dart';
 import '../../library/data/user.dart';
 import '../../library/data/video.dart';
 import '../../library/emojis.dart';
 import '../../library/functions.dart';
-import '../../library/geofence/geofencer_two.dart';
+import '../../library/ui/camera/video_player_tablet.dart';
+import '../../library/ui/maps/photo_map_tablet.dart';
 import '../../library/ui/maps/project_polygon_map_mobile.dart';
-import '../../library/ui/media/user_media_list/user_media_list_mobile.dart';
-import '../../library/ui/message/message_main.dart';
-import '../../library/ui/project_list/project_chooser.dart';
-import '../../library/ui/project_list/project_list_mobile.dart';
-import '../../library/ui/settings/settings_mobile.dart';
-import '../../library/users/list/user_list_main.dart';
-import '../intro/intro_page_viewer_portrait.dart';
-import 'dashboard_mobile.dart';
+import '../audio/audio_player_page.dart';
 import 'project_dashboard_grid.dart';
 
 class ProjectDashboardTabletPortrait extends StatefulWidget {
   const ProjectDashboardTabletPortrait({
     Key? key,
-     required this.project,
+    required this.project,
   }) : super(key: key);
   final Project project;
   @override
-  ProjectDashboardTabletPortraitState createState() => ProjectDashboardTabletPortraitState();
+  ProjectDashboardTabletPortraitState createState() =>
+      ProjectDashboardTabletPortraitState();
 }
 
-class ProjectDashboardTabletPortraitState extends State<ProjectDashboardTabletPortrait>
+class ProjectDashboardTabletPortraitState
+    extends State<ProjectDashboardTabletPortrait>
     with TickerProviderStateMixin {
-
   var busy = false;
-  var _projects = <Project>[];
-  var _users = <User>[];
-  var _photos = <Photo>[];
-  var _videos = <Video>[];
-  var _projectPositions = <ProjectPosition>[];
-  var _projectPolygons = <ProjectPolygon>[];
-  var _schedules = <FieldMonitorSchedule>[];
-  var _audios = <Audio>[];
   User? user;
 
   static const mm = '🎽🎽🎽🎽🎽🎽 ProjectDashboardTabletPortrait: 🎽';
@@ -76,11 +45,8 @@ class ProjectDashboardTabletPortraitState extends State<ProjectDashboardTabletPo
 
   @override
   void initState() {
-    // _setAnimationControllers();
     super.initState();
-
   }
-
 
   final _key = GlobalKey<ScaffoldState>();
 
@@ -91,8 +57,9 @@ class ProjectDashboardTabletPortraitState extends State<ProjectDashboardTabletPo
             type: PageTransitionType.scale,
             alignment: Alignment.topLeft,
             duration: const Duration(seconds: 1),
-            child: ProjectMediaListMobile(project: widget.project,)));
-
+            child: ProjectMediaListMobile(
+              project: widget.project,
+            )));
   }
 
   _navigateToPositionsMap() async {
@@ -102,8 +69,9 @@ class ProjectDashboardTabletPortraitState extends State<ProjectDashboardTabletPo
             type: PageTransitionType.scale,
             alignment: Alignment.topLeft,
             duration: const Duration(seconds: 1),
-            child: ProjectMapMobile(project: widget.project,)));
-
+            child: ProjectMapMobile(
+              project: widget.project,
+            )));
   }
 
   _navigateToPolygonsMap() async {
@@ -113,18 +81,43 @@ class ProjectDashboardTabletPortraitState extends State<ProjectDashboardTabletPo
             type: PageTransitionType.scale,
             alignment: Alignment.topLeft,
             duration: const Duration(seconds: 1),
-            child: ProjectPolygonMapMobile(project: widget.project,)));
+            child: ProjectPolygonMapMobile(
+              project: widget.project,
+            )));
+  }
 
+  Photo? photo;
+  Video? video;
+  Audio? audio;
+
+  void _navigateToPhotoMap() {
+    pp('$mm _navigateToPhotoMap ...');
+
+    if (mounted) {
+      Navigator.push(
+          context,
+          PageTransition(
+              type: PageTransitionType.scale,
+              alignment: Alignment.topLeft,
+              duration: const Duration(milliseconds: 1000),
+              child: PhotoMapTablet(
+                photo: photo!,
+              )));
+    }
   }
 
   @override
   Widget build(BuildContext context) {
+    final width = MediaQuery.of(context).size.width;
+    final height = MediaQuery.of(context).size.height;
+
+    final width1 = width - 300;
+    const width2 = 280.0;
     return SafeArea(
       child: Scaffold(
         key: _key,
         appBar: AppBar(
           actions: [
-
             IconButton(
               icon: Icon(
                 Icons.refresh,
@@ -137,21 +130,42 @@ class ProjectDashboardTabletPortraitState extends State<ProjectDashboardTabletPo
             )
           ],
           bottom: PreferredSize(
-            preferredSize: const Size.fromHeight(160),
+            preferredSize: const Size.fromHeight(180),
             child: Padding(
               padding: const EdgeInsets.all(8.0),
               child: Column(
                 children: [
-                  const SizedBox(height: 20,),
-                  Text('Project Dashboard', style: myTextStyleSmall(context),),
-                   const SizedBox(height: 48,),
-                   Text(
-                          widget.project.name!,
-                          style: GoogleFonts.lato(
+                  const SizedBox(
+                    height: 20,
+                  ),
+                  Text(
+                    'Project Dashboard',
+                    style: myTextStyleLarge(context),
+                  ),
+                  const SizedBox(
+                    height: 48,
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      Text(
+                        widget.project.name!,
+                        style: GoogleFonts.lato(
                             textStyle: Theme.of(context).textTheme.titleLarge,
-                            fontWeight: FontWeight.w900, color: Theme.of(context).primaryColor
-                          ),
-                        ),
+                            fontWeight: FontWeight.w900,
+                            color: Theme.of(context).primaryColor),
+                      ),
+                      // const SizedBox(
+                      //   width: 100,
+                      // ),
+                      IconButton(
+                          onPressed: _navigateToPositionsMap,
+                          icon: const Icon(
+                            Icons.map,
+                            size: 28.0,
+                          ))
+                    ],
+                  ),
                   const SizedBox(
                     height: 28,
                   ),
@@ -160,7 +174,6 @@ class ProjectDashboardTabletPortraitState extends State<ProjectDashboardTabletPo
             ),
           ),
         ),
-
         body: busy
             ? const Center(
                 child: SizedBox(
@@ -168,41 +181,241 @@ class ProjectDashboardTabletPortraitState extends State<ProjectDashboardTabletPo
                   width: 24,
                   child: CircularProgressIndicator(
                     strokeWidth: 6,
-                    backgroundColor: Colors.amber,
+                    backgroundColor: Colors.pink,
                   ),
                 ),
               )
             : Stack(
                 children: [
-                  Padding(
-                    padding: const EdgeInsets.all(12.0),
-                    child: ProjectDashboardGrid(
-                      showProjectName: false,
-                      onTypeTapped: (type){
-                        switch(type) {
-                          case typePhotos:
-                            _navigateToMedia();
-                            break;
-                          case typeVideos:
-                            _navigateToMedia();
-                            break;
-                          case typeAudios:
-                            _navigateToMedia();
-                            break;
-                          case typePositions:
-                            _navigateToPositionsMap();
-                            break;
-                          case typePolygons:
-                            _navigateToPolygonsMap();
-                            break;
-                        }
-                      }, project: widget.project,
-                    ),
+                  Row(
+                    children: [
+                      SizedBox(
+                        width: width1,
+                        child: ProjectDashboardGrid(
+                          showProjectName: false,
+                          topPadding: 48,
+                          onTypeTapped: (type) {
+                            switch (type) {
+                              case typePhotos:
+                                _navigateToMedia();
+                                break;
+                              case typeVideos:
+                                _navigateToMedia();
+                                break;
+                              case typeAudios:
+                                _navigateToMedia();
+                                break;
+                              case typePositions:
+                                _navigateToPositionsMap();
+                                break;
+                              case typePolygons:
+                                _navigateToPolygonsMap();
+                                break;
+                            }
+                          },
+                          project: widget.project,
+                        ),
+                      ),
+                      SizedBox(
+                        width: width2,
+                        child: GeoActivityTablet(
+                          width: width2,
+                          project: widget.project,
+                          thinMode: true,
+                          showPhoto: (photo) {
+                            showPhoto(photo);
+                          },
+                          showVideo: (video) {
+                            showVideo(video);
+                          },
+                          showAudio: (audio) {
+                            showAudio(audio);
+                          },
+                        ),
+                      )
+                    ],
                   ),
+                  _showPhoto
+                      ? Positioned(
+                          left: 100,
+                          right: 100,
+                          top: 12,
+                          child: SizedBox(
+                            width: 600,
+                            height: 800,
+                            // color: Theme.of(context).primaryColor,
+                            child: Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: GestureDetector(
+                                onTap: () {
+                                  setState(() {
+                                    _showPhoto = false;
+                                  });
+                                },
+                                child: Card(
+                                  shape: getRoundedBorder(radius: 16),
+                                  elevation: 8,
+                                  child: SingleChildScrollView(
+                                    child: Column(
+                                      children: [
+                                        const SizedBox(
+                                          height: 12,
+                                        ),
+                                        Padding(
+                                          padding: const EdgeInsets.symmetric(
+                                              horizontal: 48.0),
+                                          child: Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceBetween,
+                                            children: [
+                                              Text(
+                                                '${photo!.projectName}',
+                                                style:
+                                                    myTextStyleLargePrimaryColor(
+                                                        context),
+                                              ),
+                                              IconButton(
+                                                  onPressed: () {
+                                                    pp('$mm .... put photo on a map!');
+                                                    _navigateToPhotoMap();
+                                                  },
+                                                  icon: Icon(
+                                                    Icons.location_on,
+                                                    color: Theme.of(context)
+                                                        .primaryColor,
+                                                    size: 24,
+                                                  )),
+                                            ],
+                                          ),
+                                        ),
+                                        const SizedBox(
+                                          height: 12,
+                                        ),
+                                        Text(
+                                          '${photo!.userName}',
+                                          style: myTextStyleSmallBold(context),
+                                        ),
+                                        const SizedBox(
+                                          height: 4,
+                                        ),
+                                        Text(
+                                          getFormattedDateShortWithTime(
+                                              photo!.created!, context),
+                                          style: myTextStyleTiny(context),
+                                        ),
+                                        const SizedBox(
+                                          height: 12,
+                                        ),
+                                        Padding(
+                                          padding: const EdgeInsets.symmetric(
+                                              horizontal: 2.0, vertical: 2.0),
+                                          child: InteractiveViewer(
+                                              child: CachedNetworkImage(
+                                                  fit: BoxFit.fill,
+                                                  progressIndicatorBuilder: (context,
+                                                          url,
+                                                          downloadProgress) =>
+                                                      Center(
+                                                          child: SizedBox(
+                                                              width: 20,
+                                                              height: 20,
+                                                              child: CircularProgressIndicator(
+                                                                  backgroundColor:
+                                                                      Colors
+                                                                          .pink,
+                                                                  value: downloadProgress
+                                                                      .progress))),
+                                                  errorWidget: (context, url, error) =>
+                                                      const Icon(Icons.error),
+                                                  fadeInDuration: const Duration(
+                                                      milliseconds: 1500),
+                                                  fadeInCurve:
+                                                      Curves.easeInOutCirc,
+                                                  placeholderFadeInDuration:
+                                                      const Duration(milliseconds: 1500),
+                                                  imageUrl: photo!.url!)),
+                                        ),
+                                        const SizedBox(
+                                          height: 24,
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ))
+                      : const SizedBox(),
+                  _showVideo
+                      ? Positioned(
+                          left: 20,
+                          top: -8,
+                          child: SizedBox(
+                            width: 360,
+                            height: height - 360,
+                            child: VideoPlayerTabletPage(
+                              video: video!,
+                              onCloseRequested: () {
+                                if (mounted) {
+                                  setState(() {
+                                    _showVideo = false;
+                                  });
+                                }
+                              },
+                            ),
+                          ),
+                        )
+                      : const SizedBox(),
+                  _showAudio
+                      ? Positioned(
+                          left: 100,
+                          right: 100,
+                          top: 160,
+                          child: AudioPlayerCard(
+                            audio: audio!,
+                            onCloseRequested: () {
+                              if (mounted) {
+                                setState(() {
+                                  _showAudio = false;
+                                });
+                              }
+                            },
+                          ))
+                      : const SizedBox(),
                 ],
               ),
       ),
     );
+  }
+
+  bool _showPhoto = false;
+  bool _showVideo = false;
+  bool _showAudio = false;
+  void showPhoto(Photo photo) {
+    this.photo = photo;
+    setState(() {
+      _showPhoto = true;
+      _showVideo = false;
+      _showAudio = false;
+    });
+  }
+
+  void showVideo(Video video) {
+    this.video = video;
+    setState(() {
+      _showPhoto = false;
+      _showVideo = true;
+      _showAudio = false;
+    });
+  }
+
+  void showAudio(Audio audio) {
+    this.audio = audio;
+    setState(() {
+      _showPhoto = false;
+      _showVideo = false;
+      _showAudio = true;
+    });
   }
 }
 
@@ -243,4 +456,3 @@ void showKillDialog({required String message, required BuildContext context}) {
 }
 
 final mm = '${E.heartRed}${E.heartRed}${E.heartRed}${E.heartRed} Dashboard: ';
-

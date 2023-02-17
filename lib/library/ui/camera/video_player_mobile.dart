@@ -94,7 +94,6 @@ class VideoPlayerMobilePageState extends State<VideoPlayerMobilePage>
   void _checkVideo() {
     if (_videoPlayerController!.value.position ==
         const Duration(seconds: 0, minutes: 0, hours: 0)) {
-      pp('$mm video Started');
       setState(() {
         _showFloatingButton = false;
       });

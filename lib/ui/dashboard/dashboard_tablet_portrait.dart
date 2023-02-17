@@ -524,6 +524,7 @@ class DashboardTabletPortraitState extends State<DashboardTabletPortrait>
   Widget build(BuildContext context) {
     final width = MediaQuery.of(context).size.width;
     final height = MediaQuery.of(context).size.height;
+    //todo - move WillStartForegroundTask to main
     return SafeArea(
         child: WillStartForegroundTask(
       onWillStart: () async {
@@ -546,7 +547,7 @@ class DashboardTabletPortraitState extends State<DashboardTabletPortrait>
       child: Scaffold(
         appBar: AppBar(
           centerTitle: true,
-          title: const Text('Geo Dashboard'),
+          title: const Text('Geo Monitor Dashboard'),
           actions: [
             IconButton(
                 icon: Icon(

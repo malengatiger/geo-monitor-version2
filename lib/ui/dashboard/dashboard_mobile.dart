@@ -18,7 +18,9 @@ import '../../library/api/prefs_og.dart';
 import '../../library/bloc/connection_check.dart';
 import '../../library/bloc/fcm_bloc.dart';
 import '../../library/bloc/organization_bloc.dart';
+import '../../library/bloc/project_bloc.dart';
 import '../../library/bloc/theme_bloc.dart';
+import '../../library/bloc/user_bloc.dart';
 import '../../library/data/audio.dart';
 import '../../library/data/data_bag.dart';
 import '../../library/data/field_monitor_schedule.dart';
@@ -46,8 +48,10 @@ class DashboardPortrait extends StatefulWidget {
   const DashboardPortrait({
     Key? key,
     this.user,
+    this.project,
   }) : super(key: key);
   final User? user;
+  final Project? project;
   @override
   DashboardPortraitState createState() => DashboardPortraitState();
 }
@@ -71,7 +75,7 @@ class DashboardPortraitState extends State<DashboardPortrait>
   var _projectPolygons = <ProjectPolygon>[];
   var _schedules = <FieldMonitorSchedule>[];
   var _audios = <Audio>[];
-  User? user;
+  User? deviceUser;
 
   static const mm = '🎽🎽🎽🎽🎽🎽 DashboardMobile: 🎽';
   bool networkAvailable = false;
@@ -86,7 +90,7 @@ class DashboardPortraitState extends State<DashboardPortrait>
     _listenForFCM();
     _getAuthenticationStatus();
 
-    _refreshData(false);
+    _getData(false);
     _subscribeToConnectivity();
     _subscribeToGeofenceStream();
     ;
@@ -268,7 +272,7 @@ class DashboardPortraitState extends State<DashboardPortrait>
       Timer.periodic(const Duration(minutes: 30), (timer) async {
         pp('$mm ........ set state timer tick: ${timer.tick}');
         try {
-          _refreshData(false);
+          _getData(false);
         } catch (e) {
           //ignore
         }
@@ -331,17 +335,17 @@ class DashboardPortraitState extends State<DashboardPortrait>
 
   String type = 'Unknown Rider';
 
-  void _refreshData(bool forceRefresh) async {
+  void _getData(bool forceRefresh) async {
     pp('$mm ............................................Refreshing data ....');
-    user = await prefsOGx.getUser();
-    if (user != null) {
-      if (user!.userType == UserType.orgAdministrator) {
+    deviceUser = await prefsOGx.getUser();
+    if (deviceUser != null) {
+      if (deviceUser!.userType == UserType.orgAdministrator) {
         type = 'Administrator';
       }
-      if (user!.userType == UserType.orgExecutive) {
+      if (deviceUser!.userType == UserType.orgExecutive) {
         type = 'Executive';
       }
-      if (user!.userType == UserType.fieldMonitor) {
+      if (deviceUser!.userType == UserType.fieldMonitor) {
         type = 'Field Monitor';
       }
     } else {
@@ -358,13 +362,17 @@ class DashboardPortraitState extends State<DashboardPortrait>
 
   Future<void> _doTheWork(bool forceRefresh) async {
     try {
-      if (user == null) {
+      if (deviceUser == null) {
         throw Exception("Tax man is fucked! User is not found");
       }
+      if (widget.project != null) {
+        _getProjectData(widget.project!.projectId!, forceRefresh);
+      } else if (widget.user != null) {
+        _getUserData(widget.user!.userId!, forceRefresh);
+      } else {
+        _getOrganizationData(deviceUser!.organizationId!, forceRefresh);
+      }
 
-      var bag = await organizationBloc.getOrganizationData(
-          organizationId: user!.organizationId!, forceRefresh: forceRefresh);
-      await _extractData(bag);
       setState(() {});
     } catch (e) {
       pp('$mm $e - will show snackbar ..');
@@ -376,27 +384,45 @@ class DashboardPortraitState extends State<DashboardPortrait>
       busy = false;
     });
 
-    _projectAnimationController.reset();
-    _userAnimationController.reset();
-    _photoAnimationController.reset();
-    _videoAnimationController.reset();
-    _positionAnimationController.reset();
-    _polygonAnimationController.reset();
-    _audioAnimationController.reset();
+    // _projectAnimationController.reset();
+    // _userAnimationController.reset();
+    // _photoAnimationController.reset();
+    // _videoAnimationController.reset();
+    // _positionAnimationController.reset();
+    // _polygonAnimationController.reset();
+    // _audioAnimationController.reset();
+    //
+    // _projectAnimationController.forward().then((value) {
+    //   _userAnimationController.forward().then((value) {
+    //     _photoAnimationController.forward().then((value) {
+    //       _videoAnimationController.forward().then((value) {
+    //         _positionAnimationController.forward().then((value) {
+    //           _polygonAnimationController.forward().then((value) {
+    //             _audioAnimationController.forward();
+    //           });
+    //         });
+    //       });
+    //     });
+    //   });
+    // });
+  }
 
-    _projectAnimationController.forward().then((value) {
-      _userAnimationController.forward().then((value) {
-        _photoAnimationController.forward().then((value) {
-          _videoAnimationController.forward().then((value) {
-            _positionAnimationController.forward().then((value) {
-              _polygonAnimationController.forward().then((value) {
-                _audioAnimationController.forward();
-              });
-            });
-          });
-        });
-      });
-    });
+  void _getOrganizationData(String organizationId, bool forceRefresh) async {
+    var bag = await organizationBloc.getOrganizationData(
+        organizationId: organizationId, forceRefresh: forceRefresh);
+    await _extractData(bag);
+  }
+
+  void _getProjectData(String projectId, bool forceRefresh) async {
+    var bag = await projectBloc.getProjectData(
+        projectId: projectId, forceRefresh: forceRefresh);
+    await _extractData(bag);
+  }
+
+  void _getUserData(String userId, bool forceRefresh) async {
+    var bag =
+        await userBloc.getUserData(userId: userId, forceRefresh: forceRefresh);
+    await _extractData(bag);
   }
 
   Future _extractData(DataBag bag) async {
@@ -424,7 +450,7 @@ class DashboardPortraitState extends State<DashboardPortrait>
         if (mounted) {
           pp('$mm: 🍎 🍎 projects arrived: ${project.name} ... 🍎 🍎');
           _projects = await organizationBloc.getOrganizationProjects(
-              organizationId: user!.organizationId!, forceRefresh: false);
+              organizationId: deviceUser!.organizationId!, forceRefresh: false);
           setState(() {});
         }
       });
@@ -462,28 +488,28 @@ class DashboardPortraitState extends State<DashboardPortrait>
         if (mounted) {
           pp('DashboardMobile: 🍎 🍎 showMessageSnackbar: ${message.projectName} ... 🍎 🍎');
           _videos = await organizationBloc.getVideos(
-              organizationId: user!.organizationId!, forceRefresh: false);
+              organizationId: deviceUser!.organizationId!, forceRefresh: false);
           setState(() {});
         }
       });
       audioSubscriptionFCM = fcmBloc.audioStream.listen((Audio message) async {
         pp('$mm: 🍎 🍎 audioSubscriptionFCM audio arrived... 🍎 🍎');
         if (mounted) {
-          _refreshData(false);
+          _getData(false);
         }
       });
       projectPositionSubscriptionFCM =
           fcmBloc.projectPositionStream.listen((ProjectPosition message) async {
         pp('$mm: 🍎 🍎 projectPositionSubscriptionFCM position arrived... 🍎 🍎');
         if (mounted) {
-          _refreshData(false);
+          _getData(false);
         }
       });
       projectPolygonSubscriptionFCM =
           fcmBloc.projectPolygonStream.listen((ProjectPolygon message) async {
         pp('$mm: 🍎 🍎 projectPolygonSubscriptionFCM polygon arrived... 🍎 🍎');
         if (mounted) {
-          _refreshData(false);
+          _getData(false);
         }
       });
     } else {
@@ -561,7 +587,7 @@ class DashboardPortraitState extends State<DashboardPortrait>
               type: PageTransitionType.scale,
               alignment: Alignment.topLeft,
               duration: const Duration(seconds: 1),
-              child: UserMediaListMobile(user: user!)));
+              child: UserMediaListMobile(user: deviceUser!)));
     }
   }
 
@@ -580,8 +606,8 @@ class DashboardPortraitState extends State<DashboardPortrait>
 
   Future<void> _navigateToFullUserPhoto() async {
     pp('$mm .................. _navigateToFullUserPhoto  ....');
-    user = await prefsOGx.getUser();
-    if (user != null) {
+    deviceUser = await prefsOGx.getUser();
+    if (deviceUser != null) {
       if (mounted) {
         Navigator.push(
             context,
@@ -589,7 +615,7 @@ class DashboardPortraitState extends State<DashboardPortrait>
                 type: PageTransitionType.scale,
                 alignment: Alignment.topLeft,
                 duration: const Duration(seconds: 1),
-                child: FullUserPhoto(user: user!)));
+                child: FullUserPhoto(user: deviceUser!)));
         setState(() {});
       }
     }
@@ -622,6 +648,8 @@ class DashboardPortraitState extends State<DashboardPortrait>
               alignment: Alignment.center,
               duration: const Duration(seconds: 1),
               child: GeoActivityMobile(
+                  user: widget.user,
+                  project: widget.project,
                   showPhoto: showPhoto,
                   showVideo: showVideo,
                   showAudio: showAudio)));
@@ -636,7 +664,7 @@ class DashboardPortraitState extends State<DashboardPortrait>
             alignment: Alignment.topLeft,
             duration: const Duration(seconds: 1),
             child: UserListMain(
-              user: user!,
+              user: deviceUser!,
               users: _users,
             )));
   }
@@ -754,8 +782,8 @@ class DashboardPortraitState extends State<DashboardPortrait>
         fontWeight: FontWeight.w900,
         color: Theme.of(context).primaryColor);
     bool showActivityIcon = false;
-    if (user != null) {
-      switch (user!.userType) {
+    if (deviceUser != null) {
+      switch (deviceUser!.userType) {
         case UserType.orgAdministrator:
           showActivityIcon = true;
           break;
@@ -825,7 +853,7 @@ class DashboardPortraitState extends State<DashboardPortrait>
                   color: Theme.of(context).primaryColor,
                 ),
                 onPressed: () {
-                  _refreshData(true);
+                  _getData(true);
                 },
               )
             ],
@@ -835,13 +863,13 @@ class DashboardPortraitState extends State<DashboardPortrait>
                 padding: const EdgeInsets.all(8.0),
                 child: Column(
                   children: [
-                    user == null
+                    deviceUser == null
                         ? const SizedBox()
                         : Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               Text(
-                                user!.organizationName!,
+                                deviceUser!.organizationName!,
                                 style: GoogleFonts.lato(
                                   textStyle:
                                       Theme.of(context).textTheme.bodySmall,
@@ -853,12 +881,12 @@ class DashboardPortraitState extends State<DashboardPortrait>
                     const SizedBox(
                       height: 16,
                     ),
-                    user == null
+                    deviceUser == null
                         ? const SizedBox()
                         : Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              Text(user!.name!,
+                              Text(deviceUser!.name!,
                                   style: GoogleFonts.lato(
                                       textStyle: Theme.of(context)
                                           .textTheme
@@ -868,13 +896,13 @@ class DashboardPortraitState extends State<DashboardPortrait>
                               const SizedBox(
                                 width: 8,
                               ),
-                              user!.thumbnailUrl == null
+                              deviceUser!.thumbnailUrl == null
                                   ? const CircleAvatar()
                                   : GestureDetector(
                                       onTap: _navigateToFullUserPhoto,
                                       child: CircleAvatar(
-                                        backgroundImage:
-                                            NetworkImage(user!.thumbnailUrl!),
+                                        backgroundImage: NetworkImage(
+                                            deviceUser!.thumbnailUrl!),
                                         radius: 28,
                                       ),
                                     ),
@@ -883,7 +911,7 @@ class DashboardPortraitState extends State<DashboardPortrait>
                     const SizedBox(
                       height: 0,
                     ),
-                    user == null
+                    deviceUser == null
                         ? const Text('')
                         : Text(
                             type,
@@ -1210,42 +1238,8 @@ class DashboardPortraitState extends State<DashboardPortrait>
     );
   }
 }
+
 ///////
-
-class DashboardLandscape extends StatefulWidget {
-  const DashboardLandscape({Key? key}) : super(key: key);
-
-  @override
-  State<DashboardLandscape> createState() => _DashboardLandscapeState();
-}
-
-class _DashboardLandscapeState extends State<DashboardLandscape> {
-  @override
-  Widget build(BuildContext context) {
-    return SafeArea(
-        child: Scaffold(
-      appBar: AppBar(
-        title: const Text('Geo Dashboard'),
-      ),
-      body: Stack(
-        children: [
-          Row(
-            children: [
-              const DashboardPortrait(),
-              const SizedBox(
-                width: 24,
-              ),
-              Container(
-                color: Colors.teal,
-              ),
-            ],
-          )
-        ],
-      ),
-    ));
-  }
-}
-
 //////
 void showKillDialog({required String message, required BuildContext context}) {
   showDialog(
