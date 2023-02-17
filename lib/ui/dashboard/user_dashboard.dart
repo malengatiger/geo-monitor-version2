@@ -381,6 +381,7 @@ class UserDashboardState extends State<UserDashboard>
                             mobile: const SizedBox(),
                             tablet: GeoActivityTablet(
                               width: ori == 'portrait' ? 280 : 360,
+                              forceRefresh: true,
                               thinMode: ori == 'portrait' ? true : false,
                               showPhoto: (photo) {
                                 _displayPhoto(photo);

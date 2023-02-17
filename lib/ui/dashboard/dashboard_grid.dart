@@ -338,6 +338,16 @@ class _DashboardGridState extends State<DashboardGrid>
             SizedBox(
               height: widget.topPadding == null ? 48 : widget.topPadding!,
             ),
+            busy
+                ? const SizedBox(
+                    width: 20,
+                    height: 20,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 4,
+                      backgroundColor: Colors.pink,
+                    ),
+                  )
+                : const SizedBox(),
             user == null
                 ? const SizedBox()
                 : SizedBox(

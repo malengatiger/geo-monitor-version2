@@ -133,6 +133,7 @@ class _ActivityListTabletState extends State<ActivityListTablet>
         organizationId: settings!.organizationId!,
         hours: hours,
         forceRefresh: forceRefresh);
+    setState(() {});
   }
 
   void _getProjectData(bool forceRefresh, int hours) async {
@@ -140,11 +141,13 @@ class _ActivityListTabletState extends State<ActivityListTablet>
         projectId: widget.project!.projectId!,
         hours: hours,
         forceRefresh: forceRefresh);
+    setState(() {});
   }
 
   void _getUserData(bool forceRefresh, int hours) async {
     models = await userBloc.getUserActivity(
         userId: widget.user!.userId!, hours: hours, forceRefresh: forceRefresh);
+    setState(() {});
   }
 
   void _listenToFCM() async {

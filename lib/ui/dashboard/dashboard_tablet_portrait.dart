@@ -85,6 +85,7 @@ class DashboardTabletPortraitState extends State<DashboardTabletPortrait>
   }
 
   void _getData(bool forceRefresh) async {
+    pp('\n\n$mm ............... _getData starting ...');
     setState(() {
       busy = true;
     });
@@ -93,6 +94,7 @@ class DashboardTabletPortraitState extends State<DashboardTabletPortrait>
       dataBag = await organizationBloc.getOrganizationData(
           organizationId: user!.organizationId!, forceRefresh: forceRefresh);
       _users = dataBag!.users!;
+      pp('\n\n$mm ............... _getData returned ...');
     } catch (e) {
       pp(e);
       if (mounted) {
@@ -600,56 +602,55 @@ class DashboardTabletPortraitState extends State<DashboardTabletPortrait>
               )
             : Stack(
                 children: [
-                  dataBag == null
-                      ? const SizedBox()
-                      : Row(
-                          children: [
-                            SizedBox(
-                              width: (width / 2) + 100,
-                              child: DashboardGrid(
-                                  dataBag: dataBag!,
-                                  topPadding: 40,
-                                  onTypeTapped: (type) {
-                                    switch (type) {
-                                      case typeProjects:
-                                        _navigateToProjectList();
-                                        break;
-                                      case typeUsers:
-                                        _navigateToUserList();
-                                        break;
-                                      case typePhotos:
-                                        _showProjectDialog(typePhotos);
-                                        break;
-                                      case typeVideos:
-                                        _showProjectDialog(typeVideos);
-                                        break;
-                                      case typeAudios:
-                                        _showProjectDialog(typeAudios);
-                                        break;
-                                      case typePositions:
-                                        _showProjectDialog(typePositions);
-                                        break;
-                                      case typePolygons:
-                                        _showProjectDialog(typePolygons);
-                                        break;
-                                    }
-                                  }),
-                            ),
-                            GeoActivityTablet(
-                              width: 280,
-                              thinMode: true,
-                              showPhoto: (photo) {
-                                _displayPhoto(photo);
-                              },
-                              showVideo: (video) {
-                                _displayVideo(video);
-                              },
-                              showAudio: (audio) {
-                                _displayAudio(audio);
-                              },
-                            ),
-                          ],
-                        ),
+                  Row(
+                    children: [
+                      SizedBox(
+                        width: (width / 2) + 100,
+                        child: DashboardGrid(
+                            dataBag: dataBag!,
+                            topPadding: 40,
+                            onTypeTapped: (type) {
+                              switch (type) {
+                                case typeProjects:
+                                  _navigateToProjectList();
+                                  break;
+                                case typeUsers:
+                                  _navigateToUserList();
+                                  break;
+                                case typePhotos:
+                                  _showProjectDialog(typePhotos);
+                                  break;
+                                case typeVideos:
+                                  _showProjectDialog(typeVideos);
+                                  break;
+                                case typeAudios:
+                                  _showProjectDialog(typeAudios);
+                                  break;
+                                case typePositions:
+                                  _showProjectDialog(typePositions);
+                                  break;
+                                case typePolygons:
+                                  _showProjectDialog(typePolygons);
+                                  break;
+                              }
+                            }),
+                      ),
+                      GeoActivityTablet(
+                        width: 280,
+                        forceRefresh: true,
+                        thinMode: true,
+                        showPhoto: (photo) {
+                          _displayPhoto(photo);
+                        },
+                        showVideo: (video) {
+                          _displayVideo(video);
+                        },
+                        showAudio: (audio) {
+                          _displayAudio(audio);
+                        },
+                      ),
+                    ],
+                  ),
                   _showPhoto
                       ? Positioned(
                           left: 100,

@@ -29,6 +29,7 @@ class GeoActivityTablet extends StatefulWidget {
     required this.showAudio,
     this.user,
     this.project,
+    required this.forceRefresh,
   }) : super(key: key);
   final double width;
   final bool thinMode;
@@ -39,6 +40,7 @@ class GeoActivityTablet extends StatefulWidget {
 
   final User? user;
   final Project? project;
+  final bool forceRefresh;
 
   @override
   GeoActivityTabletState createState() => GeoActivityTabletState();

@@ -163,6 +163,7 @@ class ProjectDashboardTabletLandscapeState
               ),
               GeoActivityTablet(
                 width: width / 2,
+                forceRefresh: true,
                 project: widget.project,
                 thinMode: false,
                 showPhoto: (photo) {

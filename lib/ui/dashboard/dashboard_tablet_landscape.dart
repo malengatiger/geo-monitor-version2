@@ -412,6 +412,7 @@ class _DashboardTabletLandscapeState extends State<DashboardTabletLandscape> {
               ),
               GeoActivityTablet(
                 width: (size.width / 2) - 100,
+                forceRefresh: true,
                 thinMode: false,
                 showPhoto: (photo) {
                   _displayPhoto(photo);

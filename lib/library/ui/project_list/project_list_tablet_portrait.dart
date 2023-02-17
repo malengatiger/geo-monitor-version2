@@ -795,6 +795,7 @@ class ProjectListTabletPortraitState extends State<ProjectListTabletPortrait>
                                   GeoActivityTablet(
                                       width: mWidth,
                                       thinMode: true,
+                                      forceRefresh: true,
                                       showPhoto: showPhoto,
                                       showVideo: showVideo,
                                       showAudio: showAudio),

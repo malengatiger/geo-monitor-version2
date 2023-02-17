@@ -121,11 +121,11 @@ class ProjectDashboardTabletPortraitState
             IconButton(
               icon: Icon(
                 Icons.refresh,
-                size: 18,
+                size: 28,
                 color: Theme.of(context).primaryColor,
               ),
               onPressed: () {
-                //
+                setState(() {});
               },
             )
           ],
@@ -231,6 +231,7 @@ class ProjectDashboardTabletPortraitState
                           showAudio: (audio) {
                             showAudio(audio);
                           },
+                          forceRefresh: true,
                         ),
                       )
                     ],
