@@ -7,6 +7,7 @@ import 'package:geocoding/geocoding.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:uuid/uuid.dart';
 
+import '../../../device_location/device_location_bloc.dart';
 import '../../api/data_api.dart';
 import '../../api/prefs_og.dart';
 import '../../bloc/organization_bloc.dart';
@@ -19,7 +20,6 @@ import '../../data/project_polygon.dart';
 import '../../data/project_position.dart';
 import '../../data/user.dart';
 import '../../functions.dart';
-import '../../location/loc_bloc.dart';
 import '../maps/project_polygon_map_mobile.dart';
 
 class ProjectLocationMobile extends StatefulWidget {
@@ -65,7 +65,7 @@ class ProjectLocationMobileState extends State<ProjectLocationMobile>
     var map = <double, ProjectPosition>{};
     for (var i = 0; i < _projectPositions.length; i++) {
       var projPos = _projectPositions.elementAt(i);
-      var dist = await locationBlocOG.getDistanceFromCurrentPosition(
+      var dist = await locationBloc.getDistanceFromCurrentPosition(
           latitude: projPos.position!.coordinates.elementAt(1),
           longitude: projPos.position!.coordinates.elementAt(0));
 
@@ -82,7 +82,7 @@ class ProjectLocationMobileState extends State<ProjectLocationMobile>
         return true;
       }
     }
-    var loc = await locationBlocOG.getLocation();
+    var loc = await locationBloc.getLocation();
     if (loc != null) {
       var mOK = checkIfLocationIsWithinPolygons(
           polygons: _projectPolygons,
@@ -97,7 +97,7 @@ class ProjectLocationMobileState extends State<ProjectLocationMobile>
 
   Future _getLocation() async {
     try {
-      _position = await locationBlocOG.getLocation();
+      _position = await locationBloc.getLocation();
       if (_position == null) {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(

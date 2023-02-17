@@ -154,28 +154,36 @@ class _ActivityListTabletState extends State<ActivityListTablet>
     pp('$mm ... _listenToFCM activityStream ...');
 
     subscription = fcmBloc.activityStream.listen((ActivityModel model) {
-      pp('$mm activityStream delivered activity data ... ${model.date!}');
-
+      pp('\n\n$mm activityStream delivered activity data ... '
+          'current models: ${models.length}\n\n');
       if (isActivityValid(model)) {
         models.insert(0, model);
+        pp('$mm current models after insertion: ${models.length}\n');
+        _sortDescending();
       }
+
       if (mounted) {
+        pp('$mm mounted; setting state ...');
         setState(() {});
       }
     });
   }
 
   bool isActivityValid(ActivityModel m) {
+    pp('$mm check validity of incoming activity');
     if (widget.project == null && widget.user == null) {
+      pp('$mm  incoming activity is for organization');
       return true;
     }
     if (widget.project != null) {
       if (m.projectId == widget.project!.projectId) {
+        pp('$mm  incoming activity is for project');
         return true;
       }
     }
     if (widget.user != null) {
       if (m.userId == widget.user!.userId) {
+        pp('$mm  incoming activity is for user');
         return true;
       }
     }

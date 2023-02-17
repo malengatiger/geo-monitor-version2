@@ -14,9 +14,9 @@ import 'package:intl/intl.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:video_thumbnail/video_thumbnail.dart' as vt;
 
+import '../device_location/device_location_bloc.dart';
 import 'data/position.dart';
 import 'data/project_position.dart';
-import 'location/loc_bloc.dart';
 
 List<String> logs = [];
 bool busy = false;
@@ -79,7 +79,7 @@ Future<bool> isLocationValid(
     {required ProjectPosition projectPosition,
     required double validDistance}) async {
   pp('😡😡😡😡😡😡 checking if user is within monitoring range of project: ${projectPosition.projectName} 😡😡');
-  var distance = await locationBlocOG.getDistanceFromCurrentPosition(
+  var distance = await locationBloc.getDistanceFromCurrentPosition(
       latitude: projectPosition.position!.coordinates[1],
       longitude: projectPosition.position!.coordinates[0]);
 
@@ -1088,14 +1088,14 @@ bool checkIfLocationIsWithinPolygons(
       positiveCount++;
     }
   }
-  pp('🍎🍎 location found in any of the projects 🍎 '
+  pp('🍎🍎 checkIfLocationIsWithinPolygons: location found in any of the projects 🍎 '
       'polygons; positiveCount: $positiveCount - 🍎 expects to be 1 if things are cool!');
 
   if (positiveCount == 1) {
-    pp('🍎🍎 location found within one of the projects polygons 🥬🥬🥬 ');
+    pp('🍎🍎 checkIfLocationIsWithinPolygons: location found within one of the projects polygons 🥬🥬🥬 ');
     return true;
   }
-  pp('🍎🍎 location NOT found within any of the projects polygons 🔴🔴🔴 ');
+  pp('🍎🍎 checkIfLocationIsWithinPolygons: location NOT found within any of the projects polygons 🔴🔴🔴 ');
 
   return false;
 }

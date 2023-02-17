@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:geo_monitor/library/data/activity_model.dart';
 import 'package:geo_monitor/library/data/settings_model.dart';
 
+import '../../device_location/device_location_bloc.dart';
 import '../api/data_api.dart';
 import '../api/prefs_og.dart';
 import '../data/audio.dart';
@@ -20,7 +21,6 @@ import '../data/user.dart';
 import '../data/video.dart';
 import '../functions.dart';
 import '../hive_util.dart';
-import '../location/loc_bloc.dart';
 
 final ProjectBloc projectBloc = ProjectBloc();
 
@@ -336,7 +336,7 @@ class ProjectBloc {
   Future<List<Project>> getProjectsWithinRadius(
       {double radiusInKM = 100.5, bool checkUserOrg = true}) async {
     var user = await prefsOGx.getUser();
-    var pos = await locationBlocOG.getLocation();
+    var pos = await locationBloc.getLocation();
     try {
       if (pos != null) {
         pp('$mm current location: 💜 latitude: ${pos.latitude} longitude: ${pos.longitude}');

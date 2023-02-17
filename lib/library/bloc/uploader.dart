@@ -7,6 +7,7 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:uuid/uuid.dart';
 
+import '../../device_location/device_location_bloc.dart';
 import '../api/data_api.dart';
 import '../api/prefs_og.dart';
 import '../data/audio.dart';
@@ -15,7 +16,6 @@ import '../data/user.dart' as ur;
 import '../data/video.dart';
 import '../functions.dart';
 import '../hive_util.dart';
-import '../location/loc_bloc.dart';
 import 'audio_for_upload.dart';
 import 'organization_bloc.dart';
 import 'photo_for_upload.dart';
@@ -146,7 +146,7 @@ class Uploader {
   Future _uploadPhotos() async {
     final list = await cacheManager.getPhotosForUpload();
     if (list.isNotEmpty) {
-      pp('$mm photos to be uploaded: ${list.length} .... ');
+      pp('\n\n$mm photos to be uploaded: ${list.length} .... ');
     }
     var cnt = 0;
     for (var photoForUpload in list) {
@@ -168,19 +168,25 @@ class Uploader {
           break;
         }
       }
+
+      if (cnt > 0) {
+        return;
+      }
       var polygons = await cacheManager.getProjectPolygons(
           projectId: photoForUpload.project!.projectId!);
 
-      var isWithin = checkIfLocationIsWithinPolygons(
-          polygons: polygons,
-          latitude: photoForUpload.position!.coordinates[1],
-          longitude: photoForUpload.position!.coordinates[0]);
+      if (polygons.isNotEmpty) {
+        var isWithin = checkIfLocationIsWithinPolygons(
+            polygons: polygons,
+            latitude: photoForUpload.position!.coordinates[1],
+            longitude: photoForUpload.position!.coordinates[0]);
 
-      if (isWithin) {
-        pp('$mm photo was taken within project area boundary .... will be uploaded.');
-        var result = await _sendPhotoToCloud(photoForUpload);
-        if (result == 0) {
-          cnt++;
+        if (isWithin) {
+          pp('$mm photo was taken within project area boundary .... will be uploaded.');
+          var result = await _sendPhotoToCloud(photoForUpload);
+          if (result == 0) {
+            cnt++;
+          }
         }
       }
     }
@@ -194,16 +200,18 @@ class Uploader {
       required double longitude,
       required double toLatitude,
       required double toLongitude}) async {
-    var dist = await locationBlocOG.getDistance(
+    var dist = locationBloc.getDistance(
         latitude: latitude,
         longitude: longitude,
         toLatitude: toLatitude,
         toLongitude: toLongitude);
 
+    pp('$mm distance calculated: $dist metres');
     return dist;
   }
 
   Future<int> _sendPhotoToCloud(PhotoForUpload photoForUploading) async {
+    pp('$mm sending photo to cloud ...');
     var isUploaded = photoHasBeenUploaded(photoForUploading);
     if (await isUploaded) {
       pp('$mm isUploaded duplicate of this photo was found on uploaded list, already uploaded; quit!');
@@ -259,7 +267,7 @@ class Uploader {
     pp('\n$mm adding photo data to the database ...o');
     Photo? photo;
     try {
-      var distance = await locationBlocOG.getDistanceFromCurrentPosition(
+      var distance = await locationBloc.getDistanceFromCurrentPosition(
           latitude: photoForUploading.position!.coordinates[1],
           longitude: photoForUploading.position!.coordinates[0]);
 
@@ -404,7 +412,7 @@ class Uploader {
     pp('\n$mm adding video data to the database ... ');
     Video? video;
     try {
-      var distance = await locationBlocOG.getDistanceFromCurrentPosition(
+      var distance = await locationBloc.getDistanceFromCurrentPosition(
           latitude: videoForUpload.position!.coordinates[1],
           longitude: videoForUpload.position!.coordinates[0]);
 

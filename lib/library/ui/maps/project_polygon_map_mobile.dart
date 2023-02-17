@@ -7,23 +7,22 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:geo_monitor/library/bloc/organization_bloc.dart';
 import 'package:geo_monitor/library/data/project_position.dart';
-
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:uuid/uuid.dart';
 
+import '../../../device_location/device_location_bloc.dart';
 import '../../api/data_api.dart';
 import '../../api/prefs_og.dart';
 import '../../bloc/project_bloc.dart';
 import '../../data/city.dart';
 import '../../data/position.dart';
-import '../../data/project.dart';
 import '../../data/position.dart' as local;
+import '../../data/project.dart';
 import '../../data/project_polygon.dart';
 import '../../data/user.dart';
 import '../../emojis.dart';
 import '../../functions.dart';
 import '../../generic_functions.dart';
-import '../../location/loc_bloc.dart';
 
 class ProjectPolygonMapMobile extends StatefulWidget {
   final Project project;
@@ -67,7 +66,7 @@ class ProjectPolygonMapMobileState extends State<ProjectPolygonMapMobile>
           projectId: widget.project.projectId!, forceRefresh: forceRefresh);
       projectPositions = await projectBloc.getProjectPositions(
           projectId: widget.project.projectId!, forceRefresh: forceRefresh);
-      var loc = await locationBlocOG.getLocation();
+      var loc = await locationBloc.getLocation();
       if (loc != null) {
         _latitude = loc.latitude!;
         _longitude = loc.longitude!;

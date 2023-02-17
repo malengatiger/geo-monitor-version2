@@ -4,11 +4,11 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
+import '../../../device_location/device_location_bloc.dart';
 import '../../api/data_api.dart';
-import '../../data/user.dart';
 import '../../data/position.dart';
+import '../../data/user.dart';
 import '../../functions.dart';
-import '../../location/loc_bloc.dart';
 
 class FieldMonitorMapMobile extends StatefulWidget {
   final User user;
@@ -42,7 +42,7 @@ class FieldMonitorMapMobileState extends State<FieldMonitorMapMobile>
 
   void _getLocation() async {
     pp('💜 💜 💜 💜 💜 💜 FieldMonitorMapMobile: ..... current user, check position: ${widget.user.toJson()}');
-    var pos = await locationBlocOG.getLocation();
+    var pos = await locationBloc.getLocation();
     if (pos != null) {
       setState(() {
         _cameraPosition = CameraPosition(
@@ -113,7 +113,8 @@ class FieldMonitorMapMobileState extends State<FieldMonitorMapMobile>
       pp('💜 💜 💜 💜 💜 💜 Response : ${result.toJson()}');
     } catch (e) {
       pp(e);
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('User Update failed: $e')));
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text('User Update failed: $e')));
     }
 
     setState(() {
@@ -197,6 +198,4 @@ class FieldMonitorMapMobileState extends State<FieldMonitorMapMobile>
       ),
     );
   }
-
-
 }

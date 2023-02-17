@@ -117,20 +117,8 @@ class ProjectDashboardTabletPortraitState
       child: Scaffold(
         key: _key,
         appBar: AppBar(
-          actions: [
-            IconButton(
-              icon: Icon(
-                Icons.refresh,
-                size: 28,
-                color: Theme.of(context).primaryColor,
-              ),
-              onPressed: () {
-                setState(() {});
-              },
-            )
-          ],
           bottom: PreferredSize(
-            preferredSize: const Size.fromHeight(180),
+            preferredSize: const Size.fromHeight(160),
             child: Padding(
               padding: const EdgeInsets.all(8.0),
               child: Column(

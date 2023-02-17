@@ -11,19 +11,18 @@ import 'package:geo_monitor/library/hive_util.dart';
 import 'package:http/http.dart' as http;
 import 'package:just_audio/just_audio.dart';
 import 'package:path_provider/path_provider.dart';
-
 import 'package:uuid/uuid.dart';
 
+import '../../device_location/device_location_bloc.dart';
 import '../api/data_api.dart';
 import '../api/prefs_og.dart';
 import '../data/audio.dart';
+import '../data/photo.dart';
 import '../data/position.dart';
+import '../data/project.dart';
 import '../data/user.dart';
 import '../data/video.dart';
 import '../functions.dart';
-import '../location/loc_bloc.dart';
-import '../data/photo.dart';
-import '../data/project.dart';
 
 final CloudStorageBloc cloudStorageBloc = CloudStorageBloc();
 
@@ -74,103 +73,102 @@ class CloudStorageBloc {
   }) async {
     pp('\n\n\n$mm️ uploadAudio ☕️☕️☕️☕️☕️☕️☕️️file length: ${await file.length()} bytes');
 
-      String url = 'unknown';
-      UploadTask? uploadTask;
+    String url = 'unknown';
+    UploadTask? uploadTask;
+    try {
+      var fileName =
+          'audio@${project.organizationId}@${project.projectId}@${DateTime.now().toUtc().toIso8601String()}.mp3';
+      var firebaseStorageRef = FirebaseStorage.instance
+          .ref()
+          .child(audioStorageName)
+          .child(fileName);
+      uploadTask = firebaseStorageRef.putFile(file);
+      _reportProgress(uploadTask, listener);
+      var taskSnapshot = await uploadTask.whenComplete(() {
+        // pp('$mm This is like a finally block - consider this ...');
+      });
+      url = await taskSnapshot.ref.getDownloadURL();
+      pp('$mm file url is available, meaning that upload is complete: \n$url');
+      _printSnapshot(taskSnapshot);
+    } catch (e) {
+      pp('$mm Upload failed save the details ...');
+      var failed = FailedAudio(
+          filePath: file.path,
+          project: project,
+          audio: null,
+          projectPolygonId: projectPolygonId,
+          projectPositionId: projectPositionId,
+          projectPosition: projectPosition,
+          date: DateTime.now().toIso8601String());
+
+      await cacheManager.addFailedAudio(failedAudio: failed);
+      pp('\n$mm 🔴🔴🔴 failed audio cached in hive after upload or database failure 🔴🔴🔴');
+      listener.onError('Audio upload failed: $e');
+      return uploadError;
+    }
+    var user = await prefsOGx.getUser();
+    var distance = 0.0;
+    Audio? audio;
+
+    if (user != null) {
+      if (projectPosition != null) {
+        distance = await locationBloc.getDistanceFromCurrentPosition(
+            latitude: projectPosition.coordinates[1],
+            longitude: projectPosition.coordinates[0]);
+      } else {
+        distance = 0.0;
+      }
+      pp('$mm adding audio ..... 😡😡 distance: '
+          '${distance.toStringAsFixed(2)} metres 😡😡');
+
+      var dur = await audioPlayer.setUrl(url);
+      audio = Audio(
+          url: url,
+          created: DateTime.now().toUtc().toIso8601String(),
+          userId: user.userId,
+          userName: user.name,
+          projectPosition: projectPosition,
+          distanceFromProjectPosition: distance,
+          projectId: project.projectId,
+          audioId: const Uuid().v4(),
+          organizationId: project.organizationId,
+          projectName: project.name,
+          durationInSeconds: dur!.inSeconds);
+
       try {
-        var fileName =
-            'audio@${project.organizationId}@${project.projectId}@${DateTime.now().toUtc().toIso8601String()}.mp3';
-        var firebaseStorageRef = FirebaseStorage.instance
-            .ref()
-            .child(audioStorageName)
-            .child(fileName);
-        uploadTask = firebaseStorageRef.putFile(file);
-        _reportProgress(uploadTask, listener);
-        var taskSnapshot = await uploadTask.whenComplete(() {
-          // pp('$mm This is like a finally block - consider this ...');
-        });
-        url = await taskSnapshot.ref.getDownloadURL();
-        pp('$mm file url is available, meaning that upload is complete: \n$url');
-        _printSnapshot(taskSnapshot);
+        var result = await DataAPI.addAudio(audio);
+        await organizationBloc.addAudioToStream(result);
+        listener.onFileUploadComplete(url, uploadTask.snapshot.totalBytes,
+            uploadTask.snapshot.bytesTransferred);
       } catch (e) {
-        pp('$mm Upload failed save the details ...');
+        pp(e);
         var failed = FailedAudio(
-            filePath: file.path,
+            filePath: null,
+            audio: audio,
             project: project,
-            audio: null,
+            projectPosition: projectPosition,
             projectPolygonId: projectPolygonId,
             projectPositionId: projectPositionId,
-            projectPosition: projectPosition,
             date: DateTime.now().toIso8601String());
-
         await cacheManager.addFailedAudio(failedAudio: failed);
+        listener.onError('Audio database write failed: $e');
         pp('\n$mm 🔴🔴🔴 failed audio cached in hive after upload or database failure 🔴🔴🔴');
-        listener.onError('Audio upload failed: $e');
         return uploadError;
       }
-      var user = await prefsOGx.getUser();
-      var distance = 0.0;
-      Audio? audio;
-
-      if (user != null) {
-        if (projectPosition != null) {
-          distance = await locationBlocOG.getDistanceFromCurrentPosition(
-              latitude: projectPosition.coordinates[1],
-              longitude: projectPosition.coordinates[0]);
-        } else {
-          distance = 0.0;
-        }
-        pp('$mm adding audio ..... 😡😡 distance: '
-            '${distance.toStringAsFixed(2)} metres 😡😡');
-
-        var dur = await audioPlayer.setUrl(url);
-        audio = Audio(
-            url: url,
-            created: DateTime.now().toUtc().toIso8601String(),
-            userId: user.userId,
-            userName: user.name,
-            projectPosition: projectPosition,
-            distanceFromProjectPosition: distance,
-            projectId: project.projectId,
-            audioId: const Uuid().v4(),
-            organizationId: project.organizationId,
-            projectName: project.name,
-            durationInSeconds: dur!.inSeconds);
-
-        try {
-          var result = await DataAPI.addAudio(audio);
-          await organizationBloc.addAudioToStream(result);
-          listener.onFileUploadComplete(url, uploadTask.snapshot.totalBytes,
-              uploadTask.snapshot.bytesTransferred);
-        } catch (e) {
-          pp(e);
-          var failed = FailedAudio(
-              filePath: null,
-              audio: audio,
-              project: project,
-              projectPosition: projectPosition,
-              projectPolygonId: projectPolygonId,
-              projectPositionId: projectPositionId,
-              date: DateTime.now().toIso8601String());
-          await cacheManager.addFailedAudio(failedAudio: failed);
-          listener.onError('Audio database write failed: $e');
-          pp('\n$mm 🔴🔴🔴 failed audio cached in hive after upload or database failure 🔴🔴🔴');
-          return uploadError;
-        }
-      }
-
+    }
 
     return uploadFinished;
   }
 
-  Future<int> uploadPhoto(
-      {required StorageBlocListener listener,
-      required File file,
-      required File thumbnailFile,
-      required Project project,
-      required Position projectPosition,
-      String? projectPositionId,
-      String? projectPolygonId,}) async {
-
+  Future<int> uploadPhoto({
+    required StorageBlocListener listener,
+    required File file,
+    required File thumbnailFile,
+    required Project project,
+    required Position projectPosition,
+    String? projectPositionId,
+    String? projectPolygonId,
+  }) async {
     pp('\n\n\n$mm️ uploadPhoto ☕️☕️☕️☕️☕️☕️☕️️file length: ${await file.length()} bytes ');
 
     var url = 'unknown';
@@ -180,9 +178,12 @@ class CloudStorageBloc {
     try {
       pp('$mm️ uploadPhoto ☕️☕️☕️☕️☕️☕️☕️file path: \n${file.path}');
       //upload main file
-      var fileName =  'photo@${project.projectId}@${DateTime.now().toUtc().toIso8601String()}.${'jpg'}';
-      var firebaseStorageRef =
-          FirebaseStorage.instance.ref().child(photoStorageName).child(fileName);
+      var fileName =
+          'photo@${project.projectId}@${DateTime.now().toUtc().toIso8601String()}.${'jpg'}';
+      var firebaseStorageRef = FirebaseStorage.instance
+          .ref()
+          .child(photoStorageName)
+          .child(fileName);
       uploadTask = firebaseStorageRef.putFile(file);
       _reportProgress(uploadTask, listener);
       taskSnapshot = await uploadTask.whenComplete(() {});
@@ -190,9 +191,12 @@ class CloudStorageBloc {
       pp('$mm file url is available, meaning that upload is complete: \n$url');
       _printSnapshot(taskSnapshot);
       // upload thumbnail here
-      final thumbName = 'thumbnail@${project.projectId}@${DateTime.now().toUtc().toIso8601String()}.${'jpg'}';
-      final firebaseStorageRef2 =
-          FirebaseStorage.instance.ref().child(photoStorageName).child(thumbName);
+      final thumbName =
+          'thumbnail@${project.projectId}@${DateTime.now().toUtc().toIso8601String()}.${'jpg'}';
+      final firebaseStorageRef2 = FirebaseStorage.instance
+          .ref()
+          .child(photoStorageName)
+          .child(thumbName);
       final thumbUploadTask = firebaseStorageRef2.putFile(thumbnailFile);
       final thumbTaskSnapshot = await thumbUploadTask.whenComplete(() {});
       thumbUrl = await thumbTaskSnapshot.ref.getDownloadURL();
@@ -215,39 +219,39 @@ class CloudStorageBloc {
     pp('\n$mm adding photo data to the database ...o');
     Photo? photo;
     try {
-      var distance = await locationBlocOG.getDistanceFromCurrentPosition(
+      var distance = await locationBloc.getDistanceFromCurrentPosition(
           latitude: projectPosition.coordinates[1],
           longitude: projectPosition.coordinates[0]);
 
       var height = 0, width = 0;
-        decodeImageFromList(file.readAsBytesSync(), (image) {
-          height = image.height;
-          width = image.width;
-        });
-        pp('$mm the famous photo ========> 🌀 height: $height 🌀 width: $width');
+      decodeImageFromList(file.readAsBytesSync(), (image) {
+        height = image.height;
+        width = image.width;
+      });
+      pp('$mm the famous photo ========> 🌀 height: $height 🌀 width: $width');
 
-        pp('$mm adding photo ..... 😡😡 distance: '
-            '${distance.toStringAsFixed(2)} metres 😡😡');
-        photo = Photo(
-            url: url,
-            caption: 'tbd',
-            created: DateTime.now().toUtc().toIso8601String(),
-            userId: _user!.userId,
-            userName: _user!.name,
-            projectPosition: projectPosition,
-            distanceFromProjectPosition: distance,
-            projectId: project.projectId,
-            thumbnailUrl: thumbUrl,
-            projectName: project.name,
-            organizationId: _user!.organizationId,
-            height: height,
-            width: width,
-            projectPositionId: projectPositionId,
-            projectPolygonId: projectPolygonId,
-            photoId: const Uuid().v4(),
-            landscape: width > height ? 0 : 1);
+      pp('$mm adding photo ..... 😡😡 distance: '
+          '${distance.toStringAsFixed(2)} metres 😡😡');
+      photo = Photo(
+          url: url,
+          caption: 'tbd',
+          created: DateTime.now().toUtc().toIso8601String(),
+          userId: _user!.userId,
+          userName: _user!.name,
+          projectPosition: projectPosition,
+          distanceFromProjectPosition: distance,
+          projectId: project.projectId,
+          thumbnailUrl: thumbUrl,
+          projectName: project.name,
+          organizationId: _user!.organizationId,
+          height: height,
+          width: width,
+          projectPositionId: projectPositionId,
+          projectPolygonId: projectPolygonId,
+          photoId: const Uuid().v4(),
+          landscape: width > height ? 0 : 1);
 
-        await DataAPI.addPhoto(photo);
+      await DataAPI.addPhoto(photo);
 
       pp('\n$mm upload process completed, tell the faithful listener!.');
       listener.onFileUploadComplete(
@@ -268,14 +272,15 @@ class CloudStorageBloc {
     }
   }
 
-  Future<int> uploadVideo(
-      {required StorageBlocListener listener,
-        required File file,
-        required File thumbnailFile,
-        required Project project,
-        required Position projectPosition,
-        String? projectPositionId,
-        String? projectPolygonId,}) async {
+  Future<int> uploadVideo({
+    required StorageBlocListener listener,
+    required File file,
+    required File thumbnailFile,
+    required Project project,
+    required Position projectPosition,
+    String? projectPositionId,
+    String? projectPolygonId,
+  }) async {
     pp('\n\n\n$mm️ uploadVideo ☕️☕️☕️☕️☕️☕️☕️️file length: ${await file.length()} bytes');
 
     var url = 'unknown';
@@ -285,9 +290,12 @@ class CloudStorageBloc {
     try {
       pp('$mm️ uploadVideo ☕️☕️☕️☕️☕️☕️☕️file path: \n${file.path}');
       //upload main file
-      var fileName = 'video@${project.projectId}@${DateTime.now().toUtc().toIso8601String()}.${'mp4'}';
-      var firebaseStorageRef =
-      FirebaseStorage.instance.ref().child(videoStorageName).child(fileName);
+      var fileName =
+          'video@${project.projectId}@${DateTime.now().toUtc().toIso8601String()}.${'mp4'}';
+      var firebaseStorageRef = FirebaseStorage.instance
+          .ref()
+          .child(videoStorageName)
+          .child(fileName);
       uploadTask = firebaseStorageRef.putFile(file);
       _reportProgress(uploadTask, listener);
       taskSnapshot = await uploadTask.whenComplete(() {});
@@ -295,9 +303,12 @@ class CloudStorageBloc {
       pp('$mm file url is available, meaning that upload is complete: \n$url');
       _printSnapshot(taskSnapshot);
       // upload thumbnail here
-      final thumbName = 'thumbnail@${project.projectId}@${DateTime.now().toUtc().toIso8601String()}.${'jpg'}';
-      final firebaseStorageRef2 =
-      FirebaseStorage.instance.ref().child(videoStorageName).child(thumbName);
+      final thumbName =
+          'thumbnail@${project.projectId}@${DateTime.now().toUtc().toIso8601String()}.${'jpg'}';
+      final firebaseStorageRef2 = FirebaseStorage.instance
+          .ref()
+          .child(videoStorageName)
+          .child(thumbName);
       final thumbUploadTask = firebaseStorageRef2.putFile(thumbnailFile);
       final thumbTaskSnapshot = await thumbUploadTask.whenComplete(() {});
       thumbUrl = await thumbTaskSnapshot.ref.getDownloadURL();
@@ -319,30 +330,30 @@ class CloudStorageBloc {
     pp('\n$mm adding video data to the database ... ');
     Video? video;
     try {
-      var distance = await locationBlocOG.getDistanceFromCurrentPosition(
+      var distance = await locationBloc.getDistanceFromCurrentPosition(
           latitude: projectPosition.coordinates[1],
           longitude: projectPosition.coordinates[0]);
 
-        pp('$mm adding video ..... 😡😡 distance: '
-            '${distance.toStringAsFixed(2)} metres 😡😡');
-        var u = const Uuid();
-        video = Video(
-            url: url,
-            caption: 'tbd',
-            created: DateTime.now().toUtc().toIso8601String(),
-            userId: _user!.userId,
-            userName: _user!.name,
-            projectPosition: projectPosition,
-            distanceFromProjectPosition: distance,
-            projectId: project.projectId,
-            thumbnailUrl: thumbUrl,
-            projectName: project.name,
-            projectPositionId: projectPositionId,
-            projectPolygonId: projectPolygonId,
-            organizationId: _user!.organizationId,
-            videoId: u.v4());
+      pp('$mm adding video ..... 😡😡 distance: '
+          '${distance.toStringAsFixed(2)} metres 😡😡');
+      var u = const Uuid();
+      video = Video(
+          url: url,
+          caption: 'tbd',
+          created: DateTime.now().toUtc().toIso8601String(),
+          userId: _user!.userId,
+          userName: _user!.name,
+          projectPosition: projectPosition,
+          distanceFromProjectPosition: distance,
+          projectId: project.projectId,
+          thumbnailUrl: thumbUrl,
+          projectName: project.name,
+          projectPositionId: projectPositionId,
+          projectPolygonId: projectPolygonId,
+          organizationId: _user!.organizationId,
+          videoId: u.v4());
 
-        await DataAPI.addVideo(video);
+      await DataAPI.addVideo(video);
 
       pp('$mm video upload process completed, tell the faithful listener!.\n');
       listener.onFileUploadComplete(
@@ -361,7 +372,6 @@ class CloudStorageBloc {
       listener.onError('We have a database problem $e');
       return uploadError;
     }
-
   }
 
   Future<void> _saveFailedMedia(
@@ -371,7 +381,6 @@ class CloudStorageBloc {
       required Position projectPosition,
       Photo? photo,
       Video? video}) async {
-
     var failedBag = FailedBag(
         filePath: file?.path,
         thumbnailPath: thumbnailFile?.path,

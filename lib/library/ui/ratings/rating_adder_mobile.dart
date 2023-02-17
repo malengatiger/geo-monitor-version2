@@ -4,6 +4,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:geo_monitor/library/hive_util.dart';
 import 'package:uuid/uuid.dart';
 
+import '../../../device_location/device_location_bloc.dart';
 import '../../api/data_api.dart';
 import '../../api/prefs_og.dart';
 import '../../data/position.dart';
@@ -11,7 +12,6 @@ import '../../data/project.dart';
 import '../../data/rating.dart';
 import '../../functions.dart';
 import '../../generic_functions.dart';
-import '../../location/loc_bloc.dart';
 
 class RatingAdderMobile extends StatefulWidget {
   const RatingAdderMobile(
@@ -154,7 +154,7 @@ class RatingAdderMobileState extends State<RatingAdderMobile>
     });
     try {
       var user = await prefsOGx.getUser();
-      var loc = await locationBlocOG.getLocation();
+      var loc = await locationBloc.getLocation();
       if (loc != null) {
         var rating = Rating(
             remarks: null,

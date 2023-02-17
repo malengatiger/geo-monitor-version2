@@ -8,11 +8,11 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:geo_monitor/library/bloc/location_request_handler.dart';
 import 'package:geo_monitor/library/data/activity_model.dart';
-import 'package:geo_monitor/library/location/loc_bloc.dart';
 // import 'package:geolocator/geolocator.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:universal_platform/universal_platform.dart';
 
+import '../../device_location/device_location_bloc.dart';
 import '../api/data_api.dart';
 import '../api/prefs_og.dart';
 import '../data/audio.dart';
@@ -280,7 +280,7 @@ class FCMBloc {
 
       if (user!.userId == req.userId) {
         pp("$mm processFCMMessage  🔵 🔵 🔵 ........................... sending location response");
-        var loc = await locationBlocOG.getLocation();
+        var loc = await locationBloc.getLocation();
         if (loc != null) {
           await locationRequestHandler.sendLocationResponse(
               user: user,
@@ -452,7 +452,7 @@ Future<void> geoFirebaseMessagingBackgroundHandler(
     pp(e);
   }
 
-  var pos = await locationBlocOG.getLocation();
+  var pos = await locationBloc.getLocation();
   pp('$vv location update happened: $pos - handle particular messages '
       'eg. location request and response');
 

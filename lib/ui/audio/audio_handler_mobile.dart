@@ -14,6 +14,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:record/record.dart';
 import 'package:uuid/uuid.dart';
 
+import '../../device_location/device_location_bloc.dart';
 import '../../library/bloc/audio_for_upload.dart';
 import '../../library/bloc/cloud_storage_bloc.dart';
 import '../../library/data/position.dart';
@@ -23,7 +24,6 @@ import '../../library/data/user.dart';
 import '../../library/data/video.dart';
 import '../../library/functions.dart';
 import '../../library/generic_functions.dart';
-import '../../library/location/loc_bloc.dart';
 import '../dashboard/dashboard_mobile.dart';
 
 class AudioHandlerMobile extends StatefulWidget {
@@ -239,7 +239,7 @@ class AudioHandlerMobileState extends State<AudioHandlerMobile>
     });
     try {
       Position? position;
-      var loc = await locationBlocOG.getLocation();
+      var loc = await locationBloc.getLocation();
       if (loc != null) {
         position =
             Position(coordinates: [loc.longitude, loc.latitude], type: 'Point');

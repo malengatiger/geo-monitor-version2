@@ -6,13 +6,13 @@ import 'package:geofence_service/geofence_service.dart';
 import 'package:geofence_service/models/geofence.dart' as geo;
 import 'package:uuid/uuid.dart';
 
+import '../../device_location/device_location_bloc.dart';
 import '../api/data_api.dart';
 import '../api/prefs_og.dart';
 import '../data/geofence_event.dart';
 import '../data/project_position.dart';
 import '../data/user.dart';
 import '../functions.dart';
-import '../location/loc_bloc.dart';
 
 final geofenceService = GeofenceService.instance.setup(
     interval: 5000,
@@ -77,7 +77,7 @@ class TheGreatGeofencer {
     if (_user == null) {
       return;
     }
-    await locationBlocOG.requestPermission();
+    await locationBloc.requestPermission();
     pp('$mm buildGeofences .... build geofences for the organization 🌀 ${_user!.organizationName}  🌀 \n\n');
     var list = await organizationBloc.getProjectPositions(
         organizationId: _user!.organizationId!, forceRefresh: false);
@@ -140,7 +140,7 @@ class TheGreatGeofencer {
     pp('$xx _processing new GeofenceEvent; 🔵 ${geofence.data['projectName']} '
         '🔵geofenceStatus: ${geofenceStatus.toString()}');
 
-    var loc = await locationBlocOG.getLocation();
+    var loc = await locationBloc.getLocation();
 
     if (loc != null) {
       var event = GeofenceEvent(
@@ -174,6 +174,9 @@ class TheGreatGeofencer {
           _streamController.sink.add(gfe);
           break;
       }
+    } else {
+      pp('$mm UNABLE TO PROCESS GEOFENCE - location not available');
+      throw Exception('No location available');
     }
   }
 

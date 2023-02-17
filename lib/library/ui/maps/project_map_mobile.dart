@@ -12,6 +12,7 @@ import 'package:geo_monitor/library/bloc/project_bloc.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:uuid/uuid.dart';
 
+import '../../../device_location/device_location_bloc.dart';
 import '../../api/data_api.dart';
 import '../../data/city.dart';
 import '../../data/photo.dart';
@@ -22,7 +23,6 @@ import '../../data/project_position.dart';
 import '../../data/user.dart';
 import '../../emojis.dart';
 import '../../functions.dart';
-import '../../location/loc_bloc.dart';
 
 class ProjectMapMobile extends StatefulWidget {
   final Project project;
@@ -278,7 +278,7 @@ class ProjectMapMobileState extends State<ProjectMapMobile>
     var map = <double, ProjectPosition>{};
     for (var i = 0; i < projectPositions.length; i++) {
       var projPos = projectPositions.elementAt(i);
-      var dist = await locationBlocOG.getDistance(
+      var dist = await locationBloc.getDistance(
           latitude: projPos.position!.coordinates.elementAt(1),
           longitude: projPos.position!.coordinates.elementAt(0),
           toLatitude: latitude,
@@ -448,7 +448,7 @@ class ProjectMapMobileState extends State<ProjectMapMobile>
           children: [
             GestureDetector(
               onTap: () async {
-                var loc = await locationBlocOG.getLocation();
+                var loc = await locationBloc.getLocation();
                 if (loc != null) {
                   _animateCamera(
                       latitude: loc.latitude!,

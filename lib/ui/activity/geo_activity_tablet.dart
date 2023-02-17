@@ -81,6 +81,16 @@ class GeoActivityTabletState extends State<GeoActivityTablet>
       pp('$mm 🍎🍎 _listen to FCM message streams ... 🍎🍎 '
           'geofence stream via geofenceSubscriptionFCM...');
 
+      activitySubscriptionFCM =
+          fcmBloc.activityStream.listen((ActivityModel event) {
+        pp('$mm: 🍎activitySubscriptionFCM: 🍎 ActivityModel: '
+            ' ${event.toJson()} arrived: ${event.date} ');
+        if (mounted) {
+          pp('$mm activitySubscriptionFCM: DOING NOTHING!!!!!!!!!!!!!!');
+          setState(() {});
+        }
+      });
+
       geofenceSubscriptionFCM =
           fcmBloc.geofenceStream.listen((GeofenceEvent event) {
         pp('$mm: 🍎geofenceSubscriptionFCM: 🍎 GeofenceEvent: '

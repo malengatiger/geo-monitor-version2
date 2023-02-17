@@ -145,14 +145,18 @@ class ProjectDashboardTabletLandscapeState
           'Project Dashboard',
           style: myTextStyleLarge(context),
         ),
+        bottom: const PreferredSize(
+          preferredSize: Size.fromHeight(64),
+          child: SizedBox(),
+        ),
       ),
       body: Stack(
         children: [
           Row(
             children: [
               SizedBox(
-                width: width / 2,
-                height: 500,
+                width: (width / 2),
+                // height: 500,
                 child: Center(
                   child: ProjectDashboardGrid(
                       topPadding: 32,
@@ -162,7 +166,7 @@ class ProjectDashboardTabletLandscapeState
                 ),
               ),
               GeoActivityTablet(
-                width: width / 2,
+                width: (width / 2) - 120,
                 forceRefresh: true,
                 project: widget.project,
                 thinMode: false,

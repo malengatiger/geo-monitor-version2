@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:geo_monitor/library/hive_util.dart';
 
+import '../../device_location/device_location_bloc.dart';
 import '../api/data_api.dart';
 import '../api/prefs_og.dart';
 import '../data/community.dart';
@@ -12,7 +13,6 @@ import '../data/questionnaire.dart';
 import '../data/section.dart';
 import '../data/user.dart';
 import '../functions.dart';
-import '../location/loc_bloc.dart';
 
 final AdminBloc adminBloc = AdminBloc();
 
@@ -27,10 +27,12 @@ class AdminBloc {
       StreamController.broadcast();
   final StreamController<Questionnaire> _activeQuestionnaireController =
       StreamController.broadcast();
-  final StreamController<User> _activeUserController = StreamController.broadcast();
+  final StreamController<User> _activeUserController =
+      StreamController.broadcast();
 
   Stream get settlementStream => _settController.stream;
-  Stream<List<Questionnaire>> get questionnaireStream => _questController.stream;
+  Stream<List<Questionnaire>> get questionnaireStream =>
+      _questController.stream;
   Stream<List<Project>> get projectStream => _projController.stream;
   Stream<List<Country>> get countryStream => _cntryController.stream;
   Stream<User> get activeUserStream => _activeUserController.stream;
@@ -38,7 +40,8 @@ class AdminBloc {
   Stream<Questionnaire> get activeQuestionnaireStream =>
       _activeQuestionnaireController.stream;
 
-  final StreamController<List<User>> _userController = StreamController.broadcast();
+  final StreamController<List<User>> _userController =
+      StreamController.broadcast();
   final List<Community> _communities = [];
   final List<Questionnaire> _questionnaires = [];
   final List<Project> _projects = [];
@@ -74,7 +77,7 @@ class AdminBloc {
 
   Future<Position> getCurrentPosition() async {
     try {
-      var mLocation = await locationBlocOG.getLocation();
+      var mLocation = await locationBloc.getLocation();
       return Position.fromJson({
         'coordinates': [mLocation?.longitude, mLocation?.latitude],
         'type': 'Point',
@@ -83,7 +86,6 @@ class AdminBloc {
       throw Exception('Permission denied');
     }
   }
-
 
   Future addToPolygon(
       {required String settlementId,
@@ -167,7 +169,6 @@ class AdminBloc {
     return _countries;
   }
 
-
   Future updateUser(User user) async {
     //todo - sort out user update - check backend api
     var res = await DataAPI.updateUser(user);
@@ -225,5 +226,4 @@ class AdminBloc {
     _activeQuestionnaireController.close();
     _activeUserController.close();
   }
-
 }

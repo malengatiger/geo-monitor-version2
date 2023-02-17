@@ -10,7 +10,6 @@ import '../../library/bloc/connection_check.dart';
 import '../../library/bloc/fcm_bloc.dart';
 import '../../library/bloc/organization_bloc.dart';
 import '../../library/bloc/project_bloc.dart';
-import '../../library/bloc/theme_bloc.dart';
 import '../../library/data/audio.dart';
 import '../../library/data/field_monitor_schedule.dart';
 import '../../library/data/photo.dart';
@@ -21,7 +20,6 @@ import '../../library/data/settings_model.dart';
 import '../../library/data/user.dart';
 import '../../library/data/video.dart';
 import '../../library/functions.dart';
-import 'dashboard_tablet_portrait.dart';
 
 class ProjectDashboardGrid extends StatefulWidget {
   const ProjectDashboardGrid(
@@ -91,14 +89,14 @@ class _ProjectDashboardGridState extends State<ProjectDashboardGrid>
   void initState() {
     //_setAnimationControllers();
     super.initState();
-    _setupData(false);
+    _getData(false);
     _listenForFCM();
     _listenToProjectStreams();
   }
 
-  void _setupData(bool forceRefresh) async {
+  void _getData(bool forceRefresh) async {
     user = await prefsOGx.getUser();
-    pp('$mm ..... getting org data ...');
+    pp('$mm ..... getting project data ...');
     if (mounted) {
       setState(() {
         busy = true;
@@ -265,40 +263,28 @@ class _ProjectDashboardGridState extends State<ProjectDashboardGrid>
     pp('$mm 🍎 🍎 🍎 🍎 FCM should be initialized!!  ... 🍎 🍎');
     if (android || ios) {
       pp('$mm 🍎 🍎 _listen to FCM message streams ... 🍎 🍎');
-      projectSubscriptionFCM =
-          fcmBloc.projectStream.listen((Project project) async {
-        if (mounted) {
-          pp('$mm: 🍎 🍎 projects arrived: ${project.name} ... 🍎 🍎');
-          _projects = await organizationBloc.getOrganizationProjects(
-              organizationId: user!.organizationId!, forceRefresh: false);
-          setState(() {});
-        }
-      });
-      if (mounted) {
-        killSubscriptionFCM = listenForKill(context: context);
-      }
 
-      settingsSubscriptionFCM = fcmBloc.settingsStream.listen((settings) async {
-        pp('$mm: 🍎🍎 settings arrived with themeIndex: ${settings.themeIndex}... 🍎🍎');
-        themeBloc.themeStreamController.sink.add(settings.themeIndex!);
-        if (mounted) {
-          setState(() {});
-        }
-      });
-      userSubscriptionFCM = fcmBloc.userStream.listen((user) async {
-        pp('$mm: 🍎 🍎 user arrived... 🍎 🍎');
-
-        if (mounted) {
-          _users = await organizationBloc.getUsers(
-              organizationId: user.organizationId!, forceRefresh: false);
-          setState(() {});
-        }
-      });
+      // settingsSubscriptionFCM = fcmBloc.settingsStream.listen((settings) async {
+      //   pp('$mm: 🍎🍎 settings arrived with themeIndex: ${settings.themeIndex}... 🍎🍎');
+      //   themeBloc.themeStreamController.sink.add(settings.themeIndex!);
+      //   if (mounted) {
+      //     setState(() {});
+      //   }
+      // });
+      // userSubscriptionFCM = fcmBloc.userStream.listen((user) async {
+      //   pp('$mm: 🍎 🍎 user arrived... 🍎 🍎');
+      //
+      //   if (mounted) {
+      //     _users = await organizationBloc.getUsers(
+      //         organizationId: user.organizationId!, forceRefresh: false);
+      //     setState(() {});
+      //   }
+      // });
       photoSubscriptionFCM = fcmBloc.photoStream.listen((user) async {
         pp('$mm: 🍎 🍎 photoSubscriptionFCM photo arrived... 🍎 🍎');
         if (mounted) {
-          _photos = await organizationBloc.getPhotos(
-              organizationId: user.organizationId!, forceRefresh: false);
+          _photos = await projectBloc.getPhotos(
+              projectId: widget.project.projectId!, forceRefresh: false);
           setState(() {});
         }
       });
@@ -307,32 +293,32 @@ class _ProjectDashboardGridState extends State<ProjectDashboardGrid>
         pp('$mm: 🍎 🍎 videoSubscriptionFCM video arrived... 🍎 🍎');
         if (mounted) {
           pp('DashboardMobile: 🍎 🍎 showMessageSnackbar: ${message.projectName} ... 🍎 🍎');
-          _videos = await organizationBloc.getVideos(
-              organizationId: user!.organizationId!, forceRefresh: false);
+          _videos = await projectBloc.getProjectVideos(
+              projectId: widget.project.projectId!, forceRefresh: false);
           setState(() {});
         }
       });
       audioSubscriptionFCM = fcmBloc.audioStream.listen((Audio message) async {
         pp('$mm: 🍎 🍎 audioSubscriptionFCM audio arrived... 🍎 🍎');
         if (mounted) {
-          _audios = await organizationBloc.getAudios(
-              organizationId: user!.organizationId!, forceRefresh: false);
+          _audios = await projectBloc.getProjectAudios(
+              projectId: widget.project.projectId!, forceRefresh: false);
         }
       });
       projectPositionSubscriptionFCM =
           fcmBloc.projectPositionStream.listen((ProjectPosition message) async {
         pp('$mm: 🍎 🍎 projectPositionSubscriptionFCM position arrived... 🍎 🍎');
         if (mounted) {
-          _projectPositions = await organizationBloc.getProjectPositions(
-              organizationId: user!.organizationId!, forceRefresh: false);
+          _projectPositions = await projectBloc.getProjectPositions(
+              projectId: widget.project.projectId!, forceRefresh: false);
         }
       });
       projectPolygonSubscriptionFCM =
           fcmBloc.projectPolygonStream.listen((ProjectPolygon message) async {
         pp('$mm: 🍎 🍎 projectPolygonSubscriptionFCM polygon arrived... 🍎 🍎');
         if (mounted) {
-          _projectPolygons = await organizationBloc.getProjectPolygons(
-              organizationId: user!.organizationId!, forceRefresh: false);
+          _projectPolygons = await projectBloc.getProjectPolygons(
+              projectId: widget.project.projectId!, forceRefresh: false);
         }
       });
     } else {
@@ -373,6 +359,46 @@ class _ProjectDashboardGridState extends State<ProjectDashboardGrid>
       body: SingleChildScrollView(
         child: Column(
           children: [
+            const SizedBox(
+              height: 8,
+            ),
+            InkWell(
+              onTap: () {
+                _getData(true);
+              },
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  const SizedBox(
+                    width: 28,
+                  ),
+                  Text(
+                    'Refresh the project dashboard data',
+                    style: myTextStyleSmall(context),
+                  ),
+                  const SizedBox(
+                    width: 4,
+                  ),
+                  const Icon(
+                    Icons.refresh,
+                    size: 12,
+                  ),
+                  const SizedBox(
+                    width: 48,
+                  ),
+                  busy
+                      ? const SizedBox(
+                          width: 18,
+                          height: 18,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 4,
+                            backgroundColor: Colors.pink,
+                          ),
+                        )
+                      : const SizedBox(),
+                ],
+              ),
+            ),
             SizedBox(
               height: widget.topPadding == null ? 48 : widget.topPadding!,
             ),

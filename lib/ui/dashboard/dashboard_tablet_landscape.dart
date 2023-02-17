@@ -1,6 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:geo_monitor/library/bloc/fcm_bloc.dart';
 import 'package:geo_monitor/library/bloc/organization_bloc.dart';
 import 'package:geo_monitor/library/ui/camera/video_player_tablet.dart';
 import 'package:geo_monitor/library/ui/media/list/project_media_main.dart';
@@ -39,7 +40,7 @@ class DashboardTabletLandscape extends StatefulWidget {
 }
 
 class _DashboardTabletLandscapeState extends State<DashboardTabletLandscape> {
-  final mm = '🍎🍎🍎🍎DashboardTabletLandscape: ';
+  final mm = '🍎🍎🍎🍎 DashboardTabletLandscape: ';
   var users = <User>[];
   User? user;
   DataBag? dataBag;
@@ -48,7 +49,14 @@ class _DashboardTabletLandscapeState extends State<DashboardTabletLandscape> {
   @override
   void initState() {
     super.initState();
+    _listenToFCM();
     _getData(false);
+  }
+
+  void _listenToFCM() async {
+    fcmBloc.activityStream.listen((event) {
+      pp('$mm activityStream delivered: ${event.toJson()}');
+    });
   }
 
   void _getData(bool forceRefresh) async {
@@ -335,7 +343,7 @@ class _DashboardTabletLandscapeState extends State<DashboardTabletLandscape> {
         child: Scaffold(
       appBar: AppBar(
         centerTitle: true,
-        title: const Text('Geo Dashboard'),
+        title: const Text('Organization Dashboard'),
         actions: [
           IconButton(
               icon: Icon(

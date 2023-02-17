@@ -12,17 +12,17 @@ import 'package:geo_monitor/library/bloc/project_bloc.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:uuid/uuid.dart';
 
+import '../../../device_location/device_location_bloc.dart';
 import '../../api/data_api.dart';
 import '../../data/city.dart';
 import '../../data/photo.dart';
-import '../../data/project.dart';
 import '../../data/position.dart' as local;
+import '../../data/project.dart';
 import '../../data/project_polygon.dart';
 import '../../data/project_position.dart';
 import '../../data/user.dart';
 import '../../emojis.dart';
 import '../../functions.dart';
-import '../../location/loc_bloc.dart';
 
 class ProjectMapTablet extends StatefulWidget {
   final Project project;
@@ -30,10 +30,11 @@ class ProjectMapTablet extends StatefulWidget {
   // final List<ProjectPolygon> projectPolygons;
   final Photo? photo;
 
-  const ProjectMapTablet(
-      {super.key,
-        required this.project,
-        this.photo,});
+  const ProjectMapTablet({
+    super.key,
+    required this.project,
+    this.photo,
+  });
 
   @override
   ProjectMapTabletState createState() => ProjectMapTabletState();
@@ -77,7 +78,8 @@ class ProjectMapTabletState extends State<ProjectMapTablet>
   }
 
   void _listen() async {
-    _positionStreamSubscription = fcmBloc.projectPositionStream.listen((event) async {
+    _positionStreamSubscription =
+        fcmBloc.projectPositionStream.listen((event) async {
       await _refreshData(false);
       if (mounted) {
         _addMarkers();
@@ -94,7 +96,8 @@ class ProjectMapTabletState extends State<ProjectMapTablet>
         setState(() {});
       }
     });
-    _polygonStreamSubscription = fcmBloc.projectPolygonStream.listen((event) async {
+    _polygonStreamSubscription =
+        fcmBloc.projectPolygonStream.listen((event) async {
       await _refreshData(false);
 
       if (mounted) {
@@ -112,27 +115,30 @@ class ProjectMapTabletState extends State<ProjectMapTablet>
       }
     });
   }
-  void _buildCircles() {
 
+  void _buildCircles() {
     pp('$mm drawing circles for project positions: ${projectPositions.length}, project: ${widget.project.toJson()}');
     double? dist = widget.project.monitorMaxDistanceInMetres;
     pp('$mm drawing circles for project positions: ${projectPositions.length}, monitorMaxDistanceInMetres: $dist == null? 100 : $dist');
     for (var pos in projectPositions) {
       circles.add(Circle(
-          center: LatLng(pos.position!.coordinates[1], pos.position!.coordinates[0]),
+          center: LatLng(
+              pos.position!.coordinates[1], pos.position!.coordinates[0]),
           radius: dist ?? 300,
           fillColor: Colors.black26,
           strokeWidth: 4,
           strokeColor: Colors.pink,
-          circleId: CircleId('${pos.projectId!}_${DateTime.now().microsecondsSinceEpoch}')));
+          circleId: CircleId(
+              '${pos.projectId!}_${DateTime.now().microsecondsSinceEpoch}')));
     }
   }
 
   void _setMarkerIcon() async {
     BitmapDescriptor.fromAssetImage(
-      const ImageConfiguration(size: Size(4.0,4.0)), "assets/avatar.png",)
-        .then(
-          (icon) {
+      const ImageConfiguration(size: Size(4.0, 4.0)),
+      "assets/avatar.png",
+    ).then(
+      (icon) {
         setState(() {
           markerIcon = icon;
         });
@@ -153,7 +159,6 @@ class ProjectMapTabletState extends State<ProjectMapTablet>
           projectId: widget.project.projectId!, forceRefresh: forceRefresh);
       projectPositions = await projectBloc.getProjectPositions(
           projectId: widget.project.projectId!, forceRefresh: forceRefresh);
-
     } catch (e) {
       pp(e);
       if (mounted) {
@@ -192,7 +197,7 @@ class ProjectMapTabletState extends State<ProjectMapTablet>
       latLongs.add(latLng);
       cnt++;
       final MarkerId markerId =
-      MarkerId('${projectPosition.projectId}_${random.nextInt(9999988)}');
+          MarkerId('${projectPosition.projectId}_${random.nextInt(9999988)}');
       final Marker marker = Marker(
         markerId: markerId,
         icon: markerIcon,
@@ -203,7 +208,7 @@ class ProjectMapTabletState extends State<ProjectMapTablet>
         infoWindow: InfoWindow(
             title: projectPosition.projectName,
             snippet:
-            'Project Location #$cnt of ${projectPositions.length} Here'),
+                'Project Location #$cnt of ${projectPositions.length} Here'),
         onTap: () {
           _onMarkerTapped(projectPosition);
         },
@@ -273,7 +278,7 @@ class ProjectMapTabletState extends State<ProjectMapTablet>
     var map = <double, ProjectPosition>{};
     for (var i = 0; i < projectPositions.length; i++) {
       var projPos = projectPositions.elementAt(i);
-      var dist = await locationBlocOG.getDistance(
+      var dist = locationBloc.getDistance(
           latitude: projPos.position!.coordinates.elementAt(1),
           longitude: projPos.position!.coordinates.elementAt(0),
           toLatitude: latitude,
@@ -352,9 +357,7 @@ class ProjectMapTabletState extends State<ProjectMapTablet>
       projectPositions.add(resultPosition);
       _addMarkers();
       _buildCircles();
-      setState(() {
-
-      });
+      setState(() {});
     } catch (e) {
       pp(e);
       if (mounted) {
@@ -398,32 +401,39 @@ class ProjectMapTabletState extends State<ProjectMapTablet>
                 Row(
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
-                    const SizedBox(width: 12,),
+                    const SizedBox(
+                      width: 12,
+                    ),
                     Flexible(
                       child: Text(
                         widget.project.name!,
                         style: myTextStyleSmall(context),
                       ),
                     ),
-                    const SizedBox(width: 28,),
-                    ProjectPositionChooser(projectPositions: projectPositions,
-                        projectPolygons: projectPolygons, onSelected: _onSelected),
-
-                    const SizedBox(width: 12,),
+                    const SizedBox(
+                      width: 28,
+                    ),
+                    ProjectPositionChooser(
+                        projectPositions: projectPositions,
+                        projectPolygons: projectPolygons,
+                        onSelected: _onSelected),
+                    const SizedBox(
+                      width: 12,
+                    ),
                     busy
                         ? const SizedBox(
-                      width: 48,
-                    )
+                            width: 48,
+                          )
                         : const SizedBox(),
                     busy
                         ? const SizedBox(
-                      width: 12,
-                      height: 12,
-                      child: CircularProgressIndicator(
-                        strokeWidth: 3,
-                        backgroundColor: Colors.pink,
-                      ),
-                    )
+                            width: 12,
+                            height: 12,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 3,
+                              backgroundColor: Colors.pink,
+                            ),
+                          )
                         : const SizedBox(),
                   ],
                 ),
@@ -438,7 +448,7 @@ class ProjectMapTabletState extends State<ProjectMapTablet>
           children: [
             GestureDetector(
               onTap: () async {
-                var loc = await locationBlocOG.getLocation();
+                var loc = await locationBloc.getLocation();
                 if (loc != null) {
                   _animateCamera(
                       latitude: loc.latitude!,
@@ -447,12 +457,13 @@ class ProjectMapTabletState extends State<ProjectMapTablet>
                 }
               },
               child: bd.Badge(
-                badgeStyle:  bd.BadgeStyle(
+                badgeStyle: bd.BadgeStyle(
                   badgeColor: Theme.of(context).primaryColor,
-                  elevation: 8, padding: const EdgeInsets.all(8),
+                  elevation: 8,
+                  padding: const EdgeInsets.all(8),
                 ),
                 badgeContent:
-                Text('${projectPositions.length + projectPolygons.length}'),
+                    Text('${projectPositions.length + projectPolygons.length}'),
                 position: bd.BadgePosition.topEnd(top: 8, end: 8),
                 child: GoogleMap(
                   mapType: MapType.hybrid,
@@ -482,63 +493,63 @@ class ProjectMapTabletState extends State<ProjectMapTablet>
             ),
             widget.photo != null
                 ? Positioned(
-              left: 12,
-              top: 12,
-              child: AnimatedBuilder(
-                animation: _animationController,
-                builder: (BuildContext context, Widget? child) {
-                  return FadeScaleTransition(
-                    animation: _animationController,
-                    child: child,
-                  );
-                },
-                child: Card(
-                  elevation: 8,
-                  color: Colors.black26,
-                  child: SizedBox(
-                    height: 180,
-                    width: 160,
-                    child: Column(
-                      children: [
-                        const SizedBox(
-                          height: 12,
+                    left: 12,
+                    top: 12,
+                    child: AnimatedBuilder(
+                      animation: _animationController,
+                      builder: (BuildContext context, Widget? child) {
+                        return FadeScaleTransition(
+                          animation: _animationController,
+                          child: child,
+                        );
+                      },
+                      child: Card(
+                        elevation: 8,
+                        color: Colors.black26,
+                        child: SizedBox(
+                          height: 180,
+                          width: 160,
+                          child: Column(
+                            children: [
+                              const SizedBox(
+                                height: 12,
+                              ),
+                              Image.network(
+                                widget.photo!.thumbnailUrl!,
+                                width: 140,
+                                height: 140,
+                                fit: BoxFit.fill,
+                              ),
+                              Text(
+                                getFormattedDateShortestWithTime(
+                                    widget.photo!.created!, context),
+                                style: Styles.whiteTiny,
+                              )
+                            ],
+                          ),
                         ),
-                        Image.network(
-                          widget.photo!.thumbnailUrl!,
-                          width: 140,
-                          height: 140,
-                          fit: BoxFit.fill,
-                        ),
-                        Text(
-                          getFormattedDateShortestWithTime(
-                              widget.photo!.created!, context),
-                          style: Styles.whiteTiny,
-                        )
-                      ],
+                      ),
                     ),
-                  ),
-                ),
-              ),
-            )
+                  )
                 : Container(),
             _showNewPositionUI
                 ? Positioned(
-                right: 8,
-                top: 16,
-                child: AnimatedBuilder(
-                  animation: _animationController,
-                  builder: (BuildContext context, Widget? child) {
-                    return FadeScaleTransition(
+                    right: 8,
+                    top: 16,
+                    child: AnimatedBuilder(
                       animation: _animationController,
-                      child: child,
-                    );
-                  },
-                  child: Card(
-                    elevation: 8,
-                    shape: getRoundedBorder(radius: 16),
-                    color: Colors.black38,
-                    child: Center(
-                        child: SizedBox(
+                      builder: (BuildContext context, Widget? child) {
+                        return FadeScaleTransition(
+                          animation: _animationController,
+                          child: child,
+                        );
+                      },
+                      child: Card(
+                        elevation: 8,
+                        shape: getRoundedBorder(radius: 16),
+                        color: Colors.black38,
+                        child: Center(
+                            child: SizedBox(
                           height: 240,
                           child: Padding(
                             padding: const EdgeInsets.all(16.0),
@@ -616,25 +627,25 @@ class ProjectMapTabletState extends State<ProjectMapTablet>
                                 ),
                                 busy
                                     ? const SizedBox(
-                                  width: 20,
-                                  height: 20,
-                                  child: CircularProgressIndicator(
-                                    strokeWidth: 4,
-                                    backgroundColor: Colors.pink,
-                                  ),
-                                )
+                                        width: 20,
+                                        height: 20,
+                                        child: CircularProgressIndicator(
+                                          strokeWidth: 4,
+                                          backgroundColor: Colors.pink,
+                                        ),
+                                      )
                                     : ElevatedButton(
-                                    onPressed: _submitNewPosition,
-                                    child: Text(
-                                      'Save Project Location',
-                                      style: myTextStyleMedium(context),
-                                    )),
+                                        onPressed: _submitNewPosition,
+                                        child: Text(
+                                          'Save Project Location',
+                                          style: myTextStyleMedium(context),
+                                        )),
                               ],
                             ),
                           ),
                         )),
-                  ),
-                ))
+                      ),
+                    ))
                 : const SizedBox(),
           ],
         ),
@@ -642,7 +653,10 @@ class ProjectMapTabletState extends State<ProjectMapTablet>
     );
   }
 
-  void _animateCamera({required double latitude, required double longitude, required double zoom}) {
+  void _animateCamera(
+      {required double latitude,
+      required double longitude,
+      required double zoom}) {
     final CameraPosition cameraPosition = CameraPosition(
       target: LatLng(latitude, longitude),
       zoom: zoom,
@@ -652,16 +666,17 @@ class ProjectMapTabletState extends State<ProjectMapTablet>
   }
 
   _onSelected(local.Position p1) {
-    _animateCamera(latitude: p1.coordinates[1], longitude: p1.coordinates[0], zoom: 14.6);
+    _animateCamera(
+        latitude: p1.coordinates[1], longitude: p1.coordinates[0], zoom: 14.6);
   }
 }
 
 class ProjectPositionChooser extends StatelessWidget {
   const ProjectPositionChooser(
       {Key? key,
-        required this.projectPositions,
-        required this.projectPolygons,
-        required this.onSelected})
+      required this.projectPositions,
+      required this.projectPolygons,
+      required this.onSelected})
       : super(key: key);
   final List<ProjectPosition> projectPositions;
   final List<ProjectPolygon> projectPolygons;
@@ -688,11 +703,17 @@ class ProjectPositionChooser extends StatelessWidget {
           value: pos,
           child: Row(
             children: [
-              Text('Location No. ', style: myTextStyleSmall(context),),
+              Text(
+                'Location No. ',
+                style: myTextStyleSmall(context),
+              ),
               const SizedBox(
                 width: 8,
               ),
-              Text('$cnt', style: myNumberStyleSmall(context),),
+              Text(
+                '$cnt',
+                style: myNumberStyleSmall(context),
+              ),
             ],
           ),
         ),

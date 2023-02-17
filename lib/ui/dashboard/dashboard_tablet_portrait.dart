@@ -21,6 +21,7 @@ import '../../library/api/prefs_og.dart';
 import '../../library/bloc/connection_check.dart';
 import '../../library/bloc/fcm_bloc.dart';
 import '../../library/bloc/organization_bloc.dart';
+import '../../library/data/activity_model.dart';
 import '../../library/data/audio.dart';
 import '../../library/data/data_bag.dart';
 import '../../library/data/geofence_event.dart';
@@ -46,9 +47,11 @@ import '../intro/intro_page_viewer_portrait.dart';
 class DashboardTabletPortrait extends StatefulWidget {
   const DashboardTabletPortrait({
     Key? key,
-    required this.user,
+    this.user,
+    this.project,
   }) : super(key: key);
-  final User user;
+  final User? user;
+  final Project? project;
   @override
   DashboardTabletPortraitState createState() => DashboardTabletPortraitState();
 }
@@ -77,11 +80,50 @@ class DashboardTabletPortraitState extends State<DashboardTabletPortrait>
     _setAnimationControllers();
     super.initState();
     _setItems();
+    _listenToFCM();
     _getAuthenticationStatus();
     _subscribeToConnectivity();
     _subscribeToGeofenceStream();
     _startTimer();
     _getData(false);
+  }
+
+  late StreamSubscription<ActivityModel> subscription;
+  var models = <ActivityModel>[];
+
+  void _listenToFCM() async {
+    pp('$mm ... _listenToFCM activityStream ...');
+
+    subscription = fcmBloc.activityStream.listen((ActivityModel model) {
+      pp('\n\n$mm activityStream delivered activity data ... ${model.toJson()}\n\n');
+      if (isActivityValid(model)) {
+        models.insert(0, model);
+      }
+      if (mounted) {
+        setState(() {});
+      }
+    });
+  }
+
+  bool isActivityValid(ActivityModel m) {
+    pp('$mm check validity of incoming activity');
+    if (widget.project == null && widget.user == null) {
+      pp('$mm  incoming activity is for organization');
+      return true;
+    }
+    if (widget.project != null) {
+      if (m.projectId == widget.project!.projectId) {
+        pp('$mm  incoming activity is for project');
+        return true;
+      }
+    }
+    if (widget.user != null) {
+      if (m.userId == widget.user!.userId) {
+        pp('$mm  incoming activity is for user');
+        return true;
+      }
+    }
+    return false;
   }
 
   void _getData(bool forceRefresh) async {

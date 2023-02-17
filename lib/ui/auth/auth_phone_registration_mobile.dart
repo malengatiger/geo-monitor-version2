@@ -9,10 +9,10 @@ import 'package:geo_monitor/library/data/organization.dart';
 import 'package:geo_monitor/library/data/organization_registration_bag.dart';
 import 'package:geo_monitor/library/data/settings_model.dart';
 import 'package:geo_monitor/library/hive_util.dart';
-import 'package:geo_monitor/library/location/loc_bloc.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
 import 'package:uuid/uuid.dart';
 
+import '../../device_location/device_location_bloc.dart';
 import '../../library/api/data_api.dart';
 import '../../library/data/user.dart' as ur;
 import '../../library/functions.dart';
@@ -193,7 +193,7 @@ class AuthPhoneRegistrationMobileState
         countryName: country!.name,
         organizationId: const Uuid().v4());
 
-    var loc = await locationBlocOG.getLocation();
+    var loc = await locationBloc.getLocation();
 
     if (loc != null) {
       pp('$mm firebase user credential obtained:  🍎 $userCred');
