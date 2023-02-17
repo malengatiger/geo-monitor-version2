@@ -2,12 +2,12 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 import 'dart:isolate';
+
+import 'package:geo_monitor/library/api/data_api.dart';
 import 'package:geo_monitor/library/api/prefs_og.dart';
 import 'package:geo_monitor/library/auth/app_auth.dart';
 import 'package:geo_monitor/library/bloc/organization_bloc.dart';
 import 'package:http/http.dart' as http;
-
-import 'package:geo_monitor/library/api/data_api.dart';
 import 'package:stream_channel/isolate_channel.dart';
 
 import '../data/data_bag.dart';
@@ -37,37 +37,35 @@ class DownloaderService {
   };
   late DownloadParameters cacheParameters;
 
-  Future start(
-      {required DownloadParameters params}) async {
+  Future start({required DownloadParameters params}) async {
     pp('\n\n$mm .... starting Downloader ISOLATE for downloading organization data\n');
     sendPort = params.sendPort;
     cacheParameters = params;
 
-    var msgStart = DownloaderMessage(message: 'Download started',
-        statusCode: statusBusy, date: DateTime.now().toIso8601String(),
-        elapsedSeconds: 0.0, type: typeMessage, dataBagJson: null);
+    var msgStart = DownloaderMessage(
+        message: 'Download started',
+        statusCode: statusBusy,
+        date: DateTime.now().toIso8601String(),
+        elapsedSeconds: 0.0,
+        type: typeMessage,
+        dataBagJson: null);
 
     sendPort.send(msgStart.toJson());
-    var start = DateTime
-        .now()
-        .millisecondsSinceEpoch;
+    var start = DateTime.now().millisecondsSinceEpoch;
     try {
-
       var bag = await getOrganizationData();
 
-      var end = DateTime
-          .now()
-          .millisecondsSinceEpoch;
+      var end = DateTime.now().millisecondsSinceEpoch;
       var elapsedSeconds = (end - start) / 1000;
-      var msg = DownloaderMessage(message: 'Download complete',
+      var msg = DownloaderMessage(
+          message: 'Download complete',
           statusCode: statusDone,
           date: DateTime.now().toIso8601String(),
           elapsedSeconds: elapsedSeconds,
           type: typeOrgData,
           dataBagJson: bag.toJson());
 
-      pp(
-          '$mm Organization Data downloaded OK; time elapsed: 🔵🔵🔵 $elapsedSeconds seconds');
+      pp('$mm Organization Data downloaded OK; time elapsed: 🔵🔵🔵 $elapsedSeconds seconds');
       pp('$mm Organization Data downloaded OK; sending dataBag over sendPort');
 
       sendPort.send(msg.toJson());
@@ -78,11 +76,10 @@ class DownloaderService {
   }
 
   void _handleError(int start) {
-    var end = DateTime
-        .now()
-        .millisecondsSinceEpoch;
+    var end = DateTime.now().millisecondsSinceEpoch;
     var elapsedSeconds = (end - start) / 1000;
-    var msg = DownloaderMessage(message: 'Download ERROR',
+    var msg = DownloaderMessage(
+        message: 'Download ERROR',
         statusCode: statusError,
         date: DateTime.now().toIso8601String(),
         elapsedSeconds: elapsedSeconds,
@@ -95,7 +92,8 @@ class DownloaderService {
   Future<DataBag> getOrganizationData() async {
     try {
       var url = cacheParameters.url;
-      var mUrl = '$url/getOrganizationData?organizationId=${cacheParameters.organizationId}';
+      var mUrl =
+          '$url/getOrganizationData?organizationId=${cacheParameters.organizationId}';
 
       var result = await _sendHttpGET(mUrl);
       final bag = DataBag.fromJson(result);
@@ -150,7 +148,6 @@ class DownloaderService {
       throw 'Request has timed out in 90 seconds';
     }
   }
-
 }
 
 class DownloaderMessage {
@@ -205,20 +202,22 @@ class DownloadParameters {
 }
 
 final DownloaderStarter downloaderStarter = DownloaderStarter();
+
 /// starts the DownloaderService isolate to download org data
 ///
 
 class DownloaderStarter {
-   late SendPort sendPort;
-   final ReceivePort receivePort = ReceivePort();
-   late Isolate isolate;
-   IsolateChannel? channel;
-   static const mm = '🥬🥬🥬🥬🥬🥬 DownloaderStarter: ';
-   DataBag? dataBag;
-   final StreamController<DataBag> _streamController = StreamController.broadcast();
-   Stream<DataBag> get dataBagStream => _streamController.stream;
+  late SendPort sendPort;
+  final ReceivePort receivePort = ReceivePort();
+  late Isolate isolate;
+  IsolateChannel? channel;
+  static const mm = '🥬🥬🥬🥬🥬🥬 DownloaderStarter: ';
+  DataBag? dataBag;
+  final StreamController<DataBag> _streamController =
+      StreamController.broadcast();
+  Stream<DataBag> get dataBagStream => _streamController.stream;
 
-   void start() async {
+  void start() async {
     pp('\n$mm ... starting DownloaderStarter ....');
     var user = await prefsOGx.getUser();
     if (user == null) {
@@ -228,12 +227,17 @@ class DownloaderStarter {
     var token = await AppAuth.getAuthToken();
     sendPort = receivePort.sendPort;
 
-    var params = DownloadParameters(sendPort: sendPort,
-        url: url!, organizationId: user!.organizationId!, limit: 2000, token: token!);
+    var params = DownloadParameters(
+        sendPort: sendPort,
+        url: url!,
+        organizationId: user.organizationId!,
+        limit: 2000,
+        token: token!);
     await _createIsolate(params);
     pp('$mm isolate has been created ...');
   }
-   void _handleDataBag(DataBag bag) async {
+
+  void _handleDataBag(DataBag bag) async {
     pp('\n$mm Data returned from server, adding to Hive cache ...');
 
     await cacheManager.addProjects(projects: bag.projects!);
@@ -254,9 +258,9 @@ class DownloaderStarter {
     _putContentsOfBagIntoStreams(bag);
 
     pp('\n\n$mm DownloaderStarter has refreshed the org data in cache and streams ...\n\n');
-
   }
-   void _putContentsOfBagIntoStreams(DataBag bag) {
+
+  void _putContentsOfBagIntoStreams(DataBag bag) {
     pp('$mm _putContentsOfBagIntoStreams: .................................... '
         '🔵 send org data to streams ...');
     try {
@@ -287,7 +291,8 @@ class DownloaderStarter {
       try {
         if (bag.fieldMonitorSchedules != null) {
           bag.fieldMonitorSchedules!.sort((a, b) => b.date!.compareTo(a.date!));
-          organizationBloc.fieldMonitorScheduleController.sink.add(bag.fieldMonitorSchedules!);
+          organizationBloc.fieldMonitorScheduleController.sink
+              .add(bag.fieldMonitorSchedules!);
         }
       } catch (e) {
         pp('$mm _putContentsOfBagIntoStreams fieldMonitorSchedules ERROR - $e');
@@ -312,7 +317,8 @@ class DownloaderStarter {
         if (bag.projectPositions != null) {
           // bag.projectPositions!
           //     .sort((a, b) => b.created!.compareTo(a.created!));
-          organizationBloc.projPositionsController.sink.add(bag.projectPositions!);
+          organizationBloc.projPositionsController.sink
+              .add(bag.projectPositions!);
         }
       } catch (e) {
         pp('$mm _putContentsOfBagIntoStreams projectPositions ERROR - $e');
@@ -320,7 +326,8 @@ class DownloaderStarter {
       try {
         if (bag.projectPolygons != null) {
           bag.projectPolygons!.sort((a, b) => b.created!.compareTo(a.created!));
-          organizationBloc.projPolygonsController.sink.add(bag.projectPolygons!);
+          organizationBloc.projPolygonsController.sink
+              .add(bag.projectPolygons!);
         }
       } catch (e) {
         pp('$mm _putContentsOfBagIntoStreams projectPolygons ERROR - $e');
@@ -333,13 +340,12 @@ class DownloaderStarter {
     }
   }
 
-   Future _createIsolate(DownloadParameters cacheParameters) async {
+  Future _createIsolate(DownloadParameters cacheParameters) async {
     try {
       var errorReceivePort = ReceivePort();
       if (channel == null) {
         channel = IsolateChannel(receivePort, cacheParameters.sendPort);
-        pp(
-            '$mm about to listen to isolate channel ... suspect error occurs here');
+        pp('$mm about to listen to isolate channel ... suspect error occurs here');
         channel!.stream.listen((data) async {
           if (data != null) {
             pp('$mm '
@@ -375,7 +381,8 @@ class DownloaderStarter {
         pp('$mm Isolate channel is not null ...');
       }
 
-      isolate = await Isolate.spawn<DownloadParameters>(heavyTask, cacheParameters,
+      isolate = await Isolate.spawn<DownloadParameters>(
+          heavyTask, cacheParameters,
           paused: true,
           onError: errorReceivePort.sendPort,
           onExit: receivePort.sendPort);
@@ -399,7 +406,8 @@ Future<void> heavyTask(DownloadParameters params) async {
   downloaderService.start(params: params);
 }
 
-const typeUsers = 7, typeError = 17,
+const typeUsers = 7,
+    typeError = 17,
     typeOrgData = 0,
     typeMessage = 10,
     typeProjects = 1,

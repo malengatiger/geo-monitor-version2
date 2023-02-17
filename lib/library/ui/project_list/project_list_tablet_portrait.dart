@@ -3,38 +3,34 @@ import 'dart:async';
 import 'package:animations/animations.dart';
 import 'package:badges/badges.dart' as bd;
 import 'package:flutter/material.dart';
-import 'package:focused_menu/focused_menu.dart';
 import 'package:focused_menu/modals.dart';
 import 'package:geo_monitor/library/ui/media/list/project_media_main.dart';
 import 'package:geo_monitor/library/ui/project_list/project_list_card.dart';
 import 'package:geo_monitor/library/ui/project_list/project_list_mobile.dart';
+import 'package:geo_monitor/ui/audio/audio_handler_mobile.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:map_launcher/map_launcher.dart';
-
 import 'package:page_transition/page_transition.dart';
-import '../../../ui/audio/audio_mobile.dart';
+
 import '../../../ui/dashboard/dashboard_mobile.dart';
 import '../../../ui/dashboard/project_dashboard_main.dart';
-import '../../../ui/dashboard/project_dashboard_mobile.dart';
 import '../../api/prefs_og.dart';
 import '../../bloc/admin_bloc.dart';
 import '../../bloc/fcm_bloc.dart';
 import '../../bloc/organization_bloc.dart';
 import '../../bloc/project_bloc.dart';
 import '../../data/position.dart';
+import '../../data/project.dart';
 import '../../data/project_polygon.dart';
 import '../../data/project_position.dart';
+import '../../data/user.dart' as mon;
 import '../../data/user.dart';
 import '../../functions.dart';
 import '../../snack.dart';
-import '../../data/user.dart' as mon;
-import '../../data/project.dart';
 import '../maps/org_map_mobile.dart';
 import '../maps/project_map_mobile.dart';
 import '../maps/project_polygon_map_mobile.dart';
-import '../media/list/project_media_list_mobile.dart';
 import '../project_edit/project_edit_main.dart';
-import '../project_edit/project_edit_mobile.dart';
 import '../project_location/project_location_main.dart';
 import '../project_monitor/project_monitor_mobile.dart';
 import '../schedule/project_schedules_mobile.dart';
@@ -279,7 +275,7 @@ class ProjectListTabletPortraitState extends State<ProjectListTabletPortrait>
             type: PageTransitionType.scale,
             alignment: Alignment.topLeft,
             duration: const Duration(milliseconds: 1500),
-            child: AudioHandler(project: p)));
+            child: AudioHandlerMobile(project: p)));
   }
 
   Future<void> _navigateToOrgMap() async {

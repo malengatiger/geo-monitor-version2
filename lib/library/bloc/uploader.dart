@@ -106,8 +106,10 @@ class Uploader {
         ' date: ${DateTime.now().toIso8601String()}\n');
   }
 
+  late Timer timer;
   Future<void> startTimer(Duration duration) async {
     pp('$mm Uploader timer starting .... duration in seconds: ${duration.inSeconds}');
+    //todo - use SettingsModel to govern timer ticks ....
     bool iAmBusy = false;
     photosUploaded.clear();
     videosUploaded.clear();
@@ -115,7 +117,7 @@ class Uploader {
 
     user = await prefsOGx.getUser();
     if (user == null) return;
-    Timer.periodic(duration, (timer) async {
+    timer = Timer.periodic(duration, (timer) async {
       pp('$mm ......... Timer tick: 🍎🍎🍎🍎🍎🍎🍎 ${timer.tick} 🍎 at: '
           '${DateTime.now().toIso8601String()}');
 
@@ -129,7 +131,7 @@ class Uploader {
         pp('$mm audios uploaded so far: ${audiosUploaded.length}');
       }
       if (!iAmBusy) {
-        pp('$mm upload process not busy,  🎽 🎽 🎽 will start uploads ...iAmBusy: $iAmBusy');
+        // pp('$mm upload process not busy,  🎽 🎽 🎽 will start uploads ...iAmBusy: $iAmBusy');
         iAmBusy = true;
         await _uploadPhotos();
         await _uploadAudios();

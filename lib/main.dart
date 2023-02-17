@@ -1,28 +1,28 @@
+import 'package:animated_splash_screen/animated_splash_screen.dart';
+import 'package:firebase_auth/firebase_auth.dart' as fb;
+import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:geo_monitor/device_location/device_location_bloc.dart';
+import 'package:geo_monitor/library/auth/app_auth.dart';
 import 'package:geo_monitor/library/functions.dart';
 import 'package:geo_monitor/splash/splash_page.dart';
 import 'package:geo_monitor/ui/dashboard/dashboard_main.dart';
 import 'package:geo_monitor/ui/intro/intro_main.dart';
-import 'package:location/location.dart';
-import 'package:animated_splash_screen/animated_splash_screen.dart';
-import 'package:firebase_auth/firebase_auth.dart' as fb;
-import 'package:firebase_core/firebase_core.dart';
-import 'package:flutter/services.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:geo_monitor/library/auth/app_auth.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:hive_flutter/adapters.dart';
+import 'package:location/location.dart';
 import 'package:page_transition/page_transition.dart';
 
 import 'firebase_options.dart';
 import 'library/api/prefs_og.dart';
 import 'library/bloc/theme_bloc.dart';
+import 'library/bloc/uploader.dart';
 import 'library/emojis.dart';
 import 'library/geofence/geofencer_two.dart';
 import 'library/hive_util.dart';
-
 
 int themeIndex = 0;
 late FirebaseApp firebaseApp;
@@ -30,7 +30,7 @@ fb.User? fbAuthedUser;
 final mx =
     '${E.heartGreen}${E.heartGreen}${E.heartGreen}${E.heartGreen} main: ';
 final GlobalKey<ScaffoldMessengerState> rootScaffoldMessengerKey =
-GlobalKey<ScaffoldMessengerState>();
+    GlobalKey<ScaffoldMessengerState>();
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -40,6 +40,7 @@ void main() async {
       ' Firebase App has been initialized: ${firebaseApp.name}, checking for authed current user');
   fbAuthedUser = fb.FirebaseAuth.instance.currentUser;
   await GetStorage.init(cacheName);
+
   /// check user auth status
   if (fbAuthedUser == null) {
     pp('$mx main: fbAuthedUser is NULL ${E.redDot}${E.redDot}${E.redDot} no user signed in.');
@@ -143,18 +144,18 @@ Future<void> _initializeGeoMonitor() async {
   FirebaseMessaging.instance.requestPermission();
   await AppAuth.listenToFirebaseAuthentication();
 
-  //_buildGeofences();
+  uploader.startTimer(const Duration(seconds: 20));
 
   if (settings != null) {
     pp('\n\n$mx ${E.heartGreen}${E.heartGreen}}${E.heartGreen} _initializeGeoMonitor: App Settings are 🍎${settings.toJson()}🍎\n\n');
   }
 }
+
 void _buildGeofences() async {
   pp('\n$mx _buildGeofences starting ........................');
   theGreatGeofencer.buildGeofences();
   pp('$mx _buildGeofences should be done and dusted ....');
 }
-
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key, required this.title});
@@ -179,7 +180,6 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.title),
@@ -188,19 +188,28 @@ class _MyHomePageState extends State<MyHomePage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-             Text(
-              'Location', style: myTextStyleLargePrimaryColor(context),
+            Text(
+              'Location',
+              style: myTextStyleLargePrimaryColor(context),
             ),
-            const SizedBox(height: 24,),
-            data == null? const SizedBox(): Text(
-              '${data!.latitude}',
-              style: Theme.of(context).textTheme.headlineLarge,
+            const SizedBox(
+              height: 24,
             ),
-            const SizedBox(height: 12,),
-            data == null? const SizedBox(): Text(
-              '${data!.longitude}',
-              style: Theme.of(context).textTheme.headlineLarge,
+            data == null
+                ? const SizedBox()
+                : Text(
+                    '${data!.latitude}',
+                    style: Theme.of(context).textTheme.headlineLarge,
+                  ),
+            const SizedBox(
+              height: 12,
             ),
+            data == null
+                ? const SizedBox()
+                : Text(
+                    '${data!.longitude}',
+                    style: Theme.of(context).textTheme.headlineLarge,
+                  ),
           ],
         ),
       ),

@@ -19,7 +19,6 @@ import '../../library/bloc/connection_check.dart';
 import '../../library/bloc/fcm_bloc.dart';
 import '../../library/bloc/organization_bloc.dart';
 import '../../library/bloc/theme_bloc.dart';
-import '../../library/bloc/uploader.dart';
 import '../../library/data/audio.dart';
 import '../../library/data/data_bag.dart';
 import '../../library/data/field_monitor_schedule.dart';
@@ -92,8 +91,6 @@ class DashboardPortraitState extends State<DashboardPortrait>
     _subscribeToGeofenceStream();
     ;
     _startTimer();
-
-    uploader.startTimer(const Duration(seconds: 15));
   }
 
   void _setAnimationControllers() {

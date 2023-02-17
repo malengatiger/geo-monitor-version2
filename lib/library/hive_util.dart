@@ -43,7 +43,7 @@ import 'functions.dart';
 import 'generic_functions.dart';
 
 const stillWorking = 201, doneCaching = 200;
-const String hiveName = 'GeoHive3';
+const String hiveName = 'GeoHive4';
 CacheManager cacheManager = CacheManager._instance;
 
 class CacheManager {
@@ -89,6 +89,7 @@ class CacheManager {
   LazyBox<HourlyForecast>? _hourlyForecastBox;
 
   LazyBox<ActivityModel>? _activityBox;
+  LazyBox<ActivityModel>? _activityHistoryBox;
 
   bool _isInitialized = false;
 
@@ -367,10 +368,19 @@ class CacheManager {
         key =
             '${DateTime.parse(activity.date!).millisecondsSinceEpoch}_${activity.projectId}_${activity.userId}';
       }
+      //store in active list and historical box
       await _activityBox?.put(key, activity);
+      await _activityHistoryBox?.put(key, activity);
     }
 
-    pp('$mm ${activities.length} ActivityModels added to local cache}');
+    pp('$mm ${_activityBox?.length} ActivityModels added to local cache and history}');
+    pp('$mm ${_activityHistoryBox?.length} ActivityModels in history box');
+  }
+
+  Future deleteActivityModels() async {
+    var length = _activityBox?.length;
+    _activityBox?.clear();
+    pp('$mm $length ActivityModels deleted from local cache: ');
   }
 
   Future<List<ActivityModel>> getActivitiesWithinHours(int hours) async {

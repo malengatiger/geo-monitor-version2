@@ -8,8 +8,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:geo_monitor/library/api/prefs_og.dart';
 import 'package:geo_monitor/library/data/audio.dart';
 import 'package:geo_monitor/library/hive_util.dart';
-import 'package:geo_monitor/library/ui/settings/settings_mobile.dart';
-import 'package:google_fonts/google_fonts.dart';
+import 'package:geo_monitor/ui/audio/recording_controls.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:record/record.dart';
@@ -27,16 +26,17 @@ import '../../library/generic_functions.dart';
 import '../../library/location/loc_bloc.dart';
 import '../dashboard/dashboard_mobile.dart';
 
-class AudioHandler extends StatefulWidget {
-  const AudioHandler({Key? key, required this.project}) : super(key: key);
+class AudioHandlerMobile extends StatefulWidget {
+  const AudioHandlerMobile({Key? key, required this.project}) : super(key: key);
 
   final Project project;
   @override
-  AudioHandlerState createState() => AudioHandlerState();
+  AudioHandlerMobileState createState() => AudioHandlerMobileState();
 }
 
-class AudioHandlerState extends State<AudioHandler>
-    with SingleTickerProviderStateMixin implements StorageBlocListener{
+class AudioHandlerMobileState extends State<AudioHandlerMobile>
+    with SingleTickerProviderStateMixin
+    implements StorageBlocListener {
   late AnimationController _animationController;
 
   final mm = '🔆🔆🔆🔆 AudioMobile: ';
@@ -46,7 +46,6 @@ class AudioHandlerState extends State<AudioHandler>
   StreamSubscription<Amplitude>? _amplitudeSub;
   final wv.RecorderController _recorderController = wv.RecorderController(); //
   late StreamSubscription<String> killSubscription;
-
 
   AudioPlayer player = AudioPlayer();
   List<StreamSubscription> streams = []; // Initialise
@@ -92,19 +91,17 @@ class AudioHandlerState extends State<AudioHandler>
       }
     });
   }
+
   void _getSettings() async {
     settingsModel = await prefsOGx.getSettings();
     var m = settingsModel?.maxAudioLengthInMinutes;
     limitInSeconds = m! * 60;
-    setState(() {
-
-    });
+    setState(() {});
   }
+
   void _getUser() async {
     user = await prefsOGx.getUser();
-    setState(() {
-
-    });
+    setState(() {});
   }
 
   @override
@@ -125,9 +122,7 @@ class AudioHandlerState extends State<AudioHandler>
     _timer = Timer.periodic(const Duration(seconds: 1), (Timer t) {
       seconds = t.tick;
       if (mounted) {
-        setState(() {
-
-        });
+        setState(() {});
       }
     });
   }
@@ -246,7 +241,8 @@ class AudioHandlerState extends State<AudioHandler>
       Position? position;
       var loc = await locationBlocOG.getLocation();
       if (loc != null) {
-        position = Position(coordinates: [loc.longitude, loc.latitude], type: 'Point');
+        position =
+            Position(coordinates: [loc.longitude, loc.latitude], type: 'Point');
       }
       var audioForUpload = AudioForUpload(
           filePath: _recordedFile!.path,
@@ -257,11 +253,11 @@ class AudioHandlerState extends State<AudioHandler>
 
       await cacheManager.addAudioForUpload(audio: audioForUpload);
       _recordedFile = null;
-
     } catch (e) {
       pp(e);
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('$e')));
+        ScaffoldMessenger.of(context)
+            .showSnackBar(SnackBar(content: Text('$e')));
       }
     }
 
@@ -275,9 +271,10 @@ class AudioHandlerState extends State<AudioHandler>
     pp('$mm 🍏file Upload progress: bytesTransferred: ${(bytesTransferred / 1024).toStringAsFixed(1)} KB '
         'of totalByteCount: ${(totalByteCount / 1024).toStringAsFixed(1)} KB');
     setState(() {
-      mTotalByteCount = '${(totalByteCount / 1024/1024).toStringAsFixed(2)} MB';
+      mTotalByteCount =
+          '${(totalByteCount / 1024 / 1024).toStringAsFixed(2)} MB';
       mBytesTransferred =
-      '${(bytesTransferred / 1024/1024).toStringAsFixed(2)} MB';
+          '${(bytesTransferred / 1024 / 1024).toStringAsFixed(2)} MB';
     });
   }
 
@@ -295,7 +292,8 @@ class AudioHandlerState extends State<AudioHandler>
           backgroundColor: Theme.of(context).primaryColor,
           duration: const Duration(seconds: 5),
           padding: 8.0,
-          message: 'File upload completed!', context: context);
+          message: 'File upload completed!',
+          context: context);
     }
   }
 
@@ -362,10 +360,12 @@ class AudioHandlerState extends State<AudioHandler>
                         const SizedBox(
                           height: 24,
                         ),
-                        user == null? const SizedBox():Text(
-                          '${user!.name}',
-                          style: myTextStyleSmall(context),
-                        ),
+                        user == null
+                            ? const SizedBox()
+                            : Text(
+                                '${user!.name}',
+                                style: myTextStyleSmall(context),
+                              ),
                         const SizedBox(
                           height: 48,
                         ),
@@ -378,7 +378,6 @@ class AudioHandlerState extends State<AudioHandler>
                         const SizedBox(
                           height: 16,
                         ),
-
                         isStopped
                             ? const SizedBox()
                             : Padding(
@@ -393,8 +392,10 @@ class AudioHandlerState extends State<AudioHandler>
                                       recorderController: _recorderController,
                                       enableGesture: true,
                                       waveStyle: wv.WaveStyle(
-                                        waveColor: Theme.of(context).primaryColor,
-                                        durationStyle: myTextStyleSmall(context),
+                                        waveColor:
+                                            Theme.of(context).primaryColor,
+                                        durationStyle:
+                                            myTextStyleSmall(context),
                                         showDurationLabel: true,
                                         waveThickness: 6.0,
                                         spacing: 8.0,
@@ -406,40 +407,66 @@ class AudioHandlerState extends State<AudioHandler>
                                   ),
                                 ),
                               ),
-                        _recordedFile == null? const SizedBox(): SizedBox(height: 200,
-                          child: Padding(
-                            padding: const EdgeInsets.all(20.0),
-                            child: Card(
-                              elevation: 4,
-                              child: Column(
-                                children: [
-                                  const SizedBox(height: 20,),
-
-                                  isUploading? SizedBox(height: 20, width: 20,
-                                  child: CircularProgressIndicator(
-                                    strokeWidth: 4, backgroundColor: Theme.of(context).primaryColorDark,
-                                  ),): ElevatedButton(
-                                    onPressed: _uploadFile,
-                                    child: const Text('Upload File'),
+                        _recordedFile == null
+                            ? const SizedBox()
+                            : SizedBox(
+                                height: 200,
+                                child: Padding(
+                                  padding: const EdgeInsets.all(20.0),
+                                  child: Card(
+                                    elevation: 4,
+                                    child: Column(
+                                      children: [
+                                        const SizedBox(
+                                          height: 20,
+                                        ),
+                                        isUploading
+                                            ? SizedBox(
+                                                height: 20,
+                                                width: 20,
+                                                child:
+                                                    CircularProgressIndicator(
+                                                  strokeWidth: 4,
+                                                  backgroundColor:
+                                                      Theme.of(context)
+                                                          .primaryColorDark,
+                                                ),
+                                              )
+                                            : ElevatedButton(
+                                                onPressed: _uploadFile,
+                                                child:
+                                                    const Text('Upload File'),
+                                              ),
+                                        const SizedBox(
+                                          height: 16,
+                                        ),
+                                        Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          children: [
+                                            Text(
+                                              'File upload size',
+                                              style: myTextStyleSmall(context),
+                                            ),
+                                            const SizedBox(
+                                              width: 8,
+                                            ),
+                                            Text((fileSize / 1024 / 1024)
+                                                .toStringAsFixed(2)),
+                                            const SizedBox(
+                                              width: 8,
+                                            ),
+                                            const Text('MB'),
+                                          ],
+                                        ),
+                                        const SizedBox(
+                                          height: 16,
+                                        ),
+                                      ],
+                                    ),
                                   ),
-                                  const SizedBox(height: 16,),
-                                  Row(mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      Text('File upload size', style: myTextStyleSmall(context),),
-                                      const SizedBox(width: 8,),
-                                      Text((fileSize/1024/1024).toStringAsFixed(2)),
-                                      const SizedBox(width: 8,),
-                                      const Text('MB'),
-
-                                    ],
-                                  ),
-                                  const SizedBox(height: 16,),
-
-                                ],
+                                ),
                               ),
-                            ),
-                          ),
-                        ),
                       ],
                     ),
                   ),
@@ -463,36 +490,52 @@ class AudioHandlerState extends State<AudioHandler>
                 ),
               ),
             ),
-            isAudioPlaying? Positioned(
-                bottom: 120, left: 40, right: 40,
-                child: Card(
-                  shape: getRoundedBorder(radius: 16),
-                  elevation: 8,
-              child: Padding(
-                padding: const EdgeInsets.all(12.0),
-                child: Row(mainAxisAlignment: MainAxisAlignment.center,
-                  children: const [
-                    Text('Saved audio is playing')
-                  ],
-                ),
-              ),
-            )) : const SizedBox(),
-            mTotalByteCount == null? const SizedBox(): Positioned(
-                bottom: 100, left: 40, right: 40,
-                child: Card(
-                  elevation: 8,
-                  shape: getRoundedBorder(radius: 12),
-              child: Padding(
-                padding: const EdgeInsets.all(12.0),
-                child: Row(mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text('Uploaded ', style: myTextStyleSmall(context),),
-                    const SizedBox(width: 8,),
-                    Text('$mBytesTransferred', style: myTextStyleSmall(context),),
-                  ],
-                ),
-              ),
-            )),
+            isAudioPlaying
+                ? Positioned(
+                    bottom: 120,
+                    left: 40,
+                    right: 40,
+                    child: Card(
+                      shape: getRoundedBorder(radius: 16),
+                      elevation: 8,
+                      child: Padding(
+                        padding: const EdgeInsets.all(12.0),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: const [Text('Saved audio is playing')],
+                        ),
+                      ),
+                    ))
+                : const SizedBox(),
+            mTotalByteCount == null
+                ? const SizedBox()
+                : Positioned(
+                    bottom: 100,
+                    left: 40,
+                    right: 40,
+                    child: Card(
+                      elevation: 8,
+                      shape: getRoundedBorder(radius: 12),
+                      child: Padding(
+                        padding: const EdgeInsets.all(12.0),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(
+                              'Uploaded ',
+                              style: myTextStyleSmall(context),
+                            ),
+                            const SizedBox(
+                              width: 8,
+                            ),
+                            Text(
+                              '$mBytesTransferred',
+                              style: myTextStyleSmall(context),
+                            ),
+                          ],
+                        ),
+                      ),
+                    )),
           ],
         ),
       ),
@@ -500,161 +543,8 @@ class AudioHandlerState extends State<AudioHandler>
   }
 
   @override
-  onVideoReady(Video video) {
-  }
+  onVideoReady(Video video) {}
 
   @override
-  onAudioReady(Audio audio) {
-
-  }
-}
-
-
-class RecordingControls extends StatelessWidget {
-  const RecordingControls(
-      {Key? key,
-      required this.onPlay,
-      required this.onPause,
-      required this.onStop,
-      required this.onRecord,
-      required this.isRecording,
-      required this.isPaused,
-      required this.isStopped})
-      : super(key: key);
-  final Function onPlay;
-  final Function onPause;
-  final Function onStop;
-  final Function onRecord;
-  final bool isRecording;
-  final bool isPaused;
-  final bool isStopped;
-  @override
-  Widget build(BuildContext context) {
-    var showRecord = true;
-    var showPlay = false;
-    var showStop = false;
-    var showPause = false;
-    //pp('🍎 isRecording: $isRecording 🍎isPaused: $isPaused 🍎isStopped: $isStopped');
-    if (!isRecording && !isPaused && !isStopped) {
-      pp('🍎 all flags are false; should show the recording icon only');
-      showRecord = true;
-      showStop = false;
-      showPlay = false;
-      showPause = false;
-    } else {
-      if (isRecording) {
-        showStop = true;
-        showPause = true;
-        showRecord = false;
-      } else if (isStopped) {
-        showStop = true;
-        showRecord = true;
-        showPlay = true;
-      } else if (isPaused) {
-        showStop = true;
-        showRecord = true;
-        showPlay = false;
-      }
-    }
-
-    return Card(
-      elevation: 4,
-      shape: getRoundedBorder(radius: 16),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 8.0),
-        child: Row(
-          children: [
-            const SizedBox(
-              width: 4,
-            ),
-            showRecord
-                ? IconButton(onPressed: _onRecord, icon:  Icon(Icons.mic, color: Theme.of(context).primaryColor))
-                : const SizedBox(),
-            const SizedBox(
-              width: 28,
-            ),
-            showPlay
-                ? IconButton(
-                    onPressed: _onPlayTapped,
-                    icon:  Icon(Icons.play_arrow, color: Theme.of(context).primaryColor))
-                : const SizedBox(),
-            const SizedBox(
-              width: 28,
-            ),
-            showPause
-                ? IconButton(
-                    onPressed: _onPlayPaused, icon:  Icon(Icons.pause, color: Theme.of(context).primaryColor))
-                : const SizedBox(),
-            const SizedBox(
-              width: 28,
-            ),
-            showStop
-                ? IconButton(
-                    onPressed: _onPlayStopped, icon:  Icon(Icons.stop, color: Theme.of(context).primaryColor,))
-                : const SizedBox(),
-          ],
-        ),
-      ),
-    );
-  }
-
-  void _onPlayTapped() {
-    onPlay();
-  }
-
-  void _onPlayStopped() {
-    onStop();
-  }
-
-  void _onPlayPaused() {
-    onPause();
-  }
-
-  void _onRecord() {
-    onRecord();
-  }
-}
-
-class TimerCard extends StatelessWidget {
-  const TimerCard({Key? key, required this.seconds}) : super(key: key);
-  final int seconds;
-  @override
-  Widget build(BuildContext context) {
-    int h, m, s;
-    h = seconds ~/ 3600;
-    m = ((seconds - h * 3600)) ~/ 60;
-    s = seconds - (h * 3600) - (m * 60);
-    String hourLeft = h.toString().length < 2 ? "0$h" : h.toString();
-    String minuteLeft = m.toString().length < 2 ? "0$m" : m.toString();
-    String secondsLeft = s.toString().length < 2 ? "0$s" : s.toString();
-
-    String result = "$hourLeft:$minuteLeft:$secondsLeft";
-
-    return Card(
-      elevation: 8,
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Row(
-          children: [
-            Text(
-              'Elapsed Time:',
-              style: myTextStyleSmall(context),
-            ),
-            const SizedBox(
-              width: 8,
-            ),
-            Text(
-              '$result ',
-              style: GoogleFonts.lato(
-                  textStyle: Theme.of(context).textTheme.bodyLarge,
-                  fontWeight: FontWeight.w900,
-                  fontSize: 24,
-                  color: Theme.of(context).primaryColor),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
+  onAudioReady(Audio audio) {}
 }

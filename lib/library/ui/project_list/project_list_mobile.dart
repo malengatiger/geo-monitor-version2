@@ -5,11 +5,11 @@ import 'package:badges/badges.dart' as bd;
 import 'package:flutter/material.dart';
 import 'package:focused_menu/modals.dart';
 import 'package:geo_monitor/library/ui/project_list/project_list_card.dart';
+import 'package:geo_monitor/ui/audio/audio_handler_mobile.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:map_launcher/map_launcher.dart';
 import 'package:page_transition/page_transition.dart';
 
-import '../../../ui/audio/audio_mobile.dart';
 import '../../../ui/dashboard/dashboard_mobile.dart';
 import '../../../ui/dashboard/project_dashboard_mobile.dart';
 import '../../api/prefs_og.dart';
@@ -21,8 +21,8 @@ import '../../data/position.dart';
 import '../../data/project.dart';
 import '../../data/project_polygon.dart';
 import '../../data/project_position.dart';
-import '../../data/user.dart' as mon;
 import '../../data/user.dart';
+import '../../data/user.dart' as mon;
 import '../../functions.dart';
 import '../../snack.dart';
 import '../maps/org_map_mobile.dart';
@@ -270,7 +270,7 @@ class ProjectListMobileState extends State<ProjectListMobile>
             type: PageTransitionType.scale,
             alignment: Alignment.topLeft,
             duration: const Duration(milliseconds: 1500),
-            child: AudioHandler(project: p)));
+            child: AudioHandlerMobile(project: p)));
   }
 
   Future<void> _navigateToOrgMap() async {

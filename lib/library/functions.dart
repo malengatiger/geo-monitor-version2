@@ -183,6 +183,13 @@ TextStyle myNumberStyleMedium(BuildContext context) {
   );
 }
 
+TextStyle myNumberStyleMediumPrimaryColor(BuildContext context) {
+  return GoogleFonts.secularOne(
+      textStyle: Theme.of(context).textTheme.bodyMedium,
+      fontWeight: FontWeight.w900,
+      color: Theme.of(context).primaryColor);
+}
+
 TextStyle myNumberStyleLarge(BuildContext context) {
   return GoogleFonts.secularOne(
     textStyle: Theme.of(context).textTheme.bodyLarge,

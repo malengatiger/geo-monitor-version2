@@ -21,7 +21,6 @@ import '../../library/api/prefs_og.dart';
 import '../../library/bloc/connection_check.dart';
 import '../../library/bloc/fcm_bloc.dart';
 import '../../library/bloc/organization_bloc.dart';
-import '../../library/bloc/uploader.dart';
 import '../../library/data/audio.dart';
 import '../../library/data/data_bag.dart';
 import '../../library/data/geofence_event.dart';
@@ -83,7 +82,6 @@ class DashboardTabletPortraitState extends State<DashboardTabletPortrait>
     _subscribeToGeofenceStream();
     _startTimer();
     _getData(false);
-    uploader.startTimer(const Duration(seconds: 15));
   }
 
   void _getData(bool forceRefresh) async {
@@ -783,8 +781,8 @@ class DashboardTabletPortraitState extends State<DashboardTabletPortrait>
                       ? Positioned(
                           left: 100,
                           right: 100,
-                          top: 12,
-                          child: AudioPlayerPage(
+                          top: 160,
+                          child: AudioPlayerCard(
                             audio: audio!,
                             onCloseRequested: () {
                               if (mounted) {
@@ -817,14 +815,16 @@ class Headline extends StatelessWidget {
           const SizedBox(
             height: 12,
           ),
-          Text(
-            '${user.organizationName}',
-            style: GoogleFonts.lato(
-                textStyle: Theme.of(context).textTheme.bodyLarge,
-                fontWeight: FontWeight.w900,
-                color: Theme.of(context).primaryColor,
-                fontSize: 24),
-          ),
+          user.organizationName == null
+              ? const SizedBox()
+              : Text(
+                  '${user.organizationName}',
+                  style: GoogleFonts.lato(
+                      textStyle: Theme.of(context).textTheme.bodyLarge,
+                      fontWeight: FontWeight.w900,
+                      color: Theme.of(context).primaryColor,
+                      fontSize: 24),
+                ),
           const SizedBox(
             height: 12,
           ),
@@ -832,10 +832,14 @@ class Headline extends StatelessWidget {
             padding: EdgeInsets.only(left: paddingLeft),
             child: Row(
               children: [
-                CircleAvatar(
-                  backgroundImage: NetworkImage(user.thumbnailUrl!),
-                  radius: 28,
-                ),
+                user.thumbnailUrl == null
+                    ? const CircleAvatar(
+                        radius: 28,
+                      )
+                    : CircleAvatar(
+                        backgroundImage: NetworkImage(user.thumbnailUrl!),
+                        radius: 28,
+                      ),
                 const SizedBox(
                   width: 28,
                 ),

@@ -1,19 +1,18 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:geo_monitor/ui/audio/audio_handler_mobile.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:map_launcher/map_launcher.dart';
-
 import 'package:page_transition/page_transition.dart';
 
-import '../../../ui/audio/audio_mobile.dart';
 import '../../../ui/dashboard/dashboard_mobile.dart';
 import '../../bloc/project_bloc.dart';
 import '../../data/position.dart';
-import '../../data/project_polygon.dart';
-import '../../functions.dart';
 import '../../data/project.dart';
+import '../../data/project_polygon.dart';
 import '../../data/project_position.dart';
+import '../../functions.dart';
 import '../camera/photo_handler.dart';
 import '../camera/video_handler.dart';
 import '../project_location/project_location_mobile.dart';
@@ -80,16 +79,17 @@ class ProjectMonitorMobileState extends State<ProjectMonitorMobile>
       child: Scaffold(
         key: _key,
         appBar: AppBar(
-          leading:  IconButton(onPressed: (){
-            Navigator.of(context).pop();
-          }, icon: const Icon(Icons.arrow_back_ios)),
+          leading: IconButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              icon: const Icon(Icons.arrow_back_ios)),
           title: Text('Starter',
               style: GoogleFonts.lato(
                 textStyle: Theme.of(context).textTheme.bodySmall,
                 fontWeight: FontWeight.normal,
               )),
           actions: [
-
             IconButton(
               icon: Icon(Icons.refresh_rounded,
                   size: 18, color: Theme.of(context).primaryColor),
@@ -150,101 +150,105 @@ class ProjectMonitorMobileState extends State<ProjectMonitorMobile>
               padding: EdgeInsets.all(16.0),
               child: SizedBox(),
             ),
-             Positioned(
-                 child: SizedBox(
-                width: 400, height: 400,
-                child: Padding(
-                  padding: const EdgeInsets.all(20.0),
-                  child: Card(
-                    elevation: 2,
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(16.0)),
+            Positioned(
+                child: SizedBox(
+                    width: 400,
+                    height: 400,
                     child: Padding(
-                      padding: const EdgeInsets.all(12.0),
-                      child: SingleChildScrollView(
+                      padding: const EdgeInsets.all(20.0),
+                      child: Card(
+                        elevation: 2,
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(16.0)),
                         child: Padding(
-                          padding: const EdgeInsets.all(20.0),
-                          child: Column(
-                            children: [
-                              const SizedBox(
-                                height: 8,
-                              ),
-                              SizedBox(
-                                height: 280,
-                                child: Column(
-                                  children: [
-                                    TextButton(
-                                      onPressed: () async {
-                                        _startPhotoMonitoring();
-                                      },
-                                      child: Padding(
-                                        padding: const EdgeInsets.all(12.0),
-                                        child: Text(
-                                          'Start Photo Monitor',
-                                          style: myTextStyleMediumPrimaryColor(
-                                              context),
+                          padding: const EdgeInsets.all(12.0),
+                          child: SingleChildScrollView(
+                            child: Padding(
+                              padding: const EdgeInsets.all(20.0),
+                              child: Column(
+                                children: [
+                                  const SizedBox(
+                                    height: 8,
+                                  ),
+                                  SizedBox(
+                                    height: 280,
+                                    child: Column(
+                                      children: [
+                                        TextButton(
+                                          onPressed: () async {
+                                            _startPhotoMonitoring();
+                                          },
+                                          child: Padding(
+                                            padding: const EdgeInsets.all(12.0),
+                                            child: Text(
+                                              'Start Photo Monitor',
+                                              style:
+                                                  myTextStyleMediumPrimaryColor(
+                                                      context),
+                                            ),
+                                          ),
                                         ),
-                                      ),
-                                    ),
-                                    const SizedBox(
-                                      height: 12,
-                                    ),
-                                    TextButton(
-                                      onPressed: () async {
-                                        _startVideoMonitoring();
-                                      },
-                                      child: Padding(
-                                        padding: const EdgeInsets.all(12.0),
-                                        child: Text(
-                                          'Start Video Monitor',
-                                          style: myTextStyleMediumPrimaryColor(
-                                              context),
+                                        const SizedBox(
+                                          height: 12,
                                         ),
-                                      ),
-                                    ),
-                                    const SizedBox(
-                                      height: 12,
-                                    ),
-                                    TextButton(
-                                      onPressed: () async {
-                                        _startAudioMonitoring();
-                                      },
-                                      child: Padding(
-                                        padding: const EdgeInsets.all(12.0),
-                                        child: Text(
-                                          'Start Audio Report',
-                                          style: myTextStyleMediumPrimaryColor(
-                                              context),
+                                        TextButton(
+                                          onPressed: () async {
+                                            _startVideoMonitoring();
+                                          },
+                                          child: Padding(
+                                            padding: const EdgeInsets.all(12.0),
+                                            child: Text(
+                                              'Start Video Monitor',
+                                              style:
+                                                  myTextStyleMediumPrimaryColor(
+                                                      context),
+                                            ),
+                                          ),
                                         ),
-                                      ),
+                                        const SizedBox(
+                                          height: 12,
+                                        ),
+                                        TextButton(
+                                          onPressed: () async {
+                                            _startAudioMonitoring();
+                                          },
+                                          child: Padding(
+                                            padding: const EdgeInsets.all(12.0),
+                                            child: Text(
+                                              'Start Audio Report',
+                                              style:
+                                                  myTextStyleMediumPrimaryColor(
+                                                      context),
+                                            ),
+                                          ),
+                                        ),
+                                        const SizedBox(
+                                          height: 12,
+                                        ),
+                                        TextButton(
+                                            onPressed: () {
+                                              Navigator.of(context).pop();
+                                            },
+                                            child: Text(
+                                              'Cancel',
+                                              style: myTextStyleSmall(context),
+                                            )),
+                                      ],
                                     ),
-                                    const SizedBox(
-                                      height: 12,
-                                    ),
-                                    TextButton(
-                                        onPressed: () {
-                                          Navigator.of(context).pop();
-                                        },
-                                        child: Text(
-                                          'Cancel',
-                                          style: myTextStyleSmall(context),
-                                        )),
-                                  ],
-                                ),
+                                  ),
+                                  const SizedBox(
+                                    height: 4,
+                                  ),
+                                  const SizedBox(
+                                    height: 4,
+                                  ),
+                                ],
                               ),
-                              const SizedBox(
-                                height: 4,
-                              ),
-                              const SizedBox(
-                                height: 4,
-                              ),
-                            ],
+                            ),
                           ),
                         ),
                       ),
-                    ),
-                  ),
-                ))),
+                    ))),
             _showPositionChooser
                 ? Positioned(
                     left: 4,
@@ -390,7 +394,7 @@ class ProjectMonitorMobileState extends State<ProjectMonitorMobile>
             type: PageTransitionType.scale,
             alignment: Alignment.topLeft,
             duration: const Duration(seconds: 1),
-            child: AudioHandler(
+            child: AudioHandlerMobile(
               project: widget.project,
             )));
   }
@@ -424,7 +428,6 @@ class ProjectMonitorMobileState extends State<ProjectMonitorMobile>
             alignment: Alignment.topLeft,
             duration: const Duration(seconds: 1),
             child: ProjectLocationMobile(widget.project)));
-
   }
 
   _onPositionSelected(Position p1) {

@@ -30,7 +30,7 @@ class VideoPlayerTabletPageState extends State<VideoPlayerTabletPage>
   VideoPlayerController? _videoPlayerController;
   late ChewieController _chewieController;
   VoidCallback? videoPlayerListener;
-  static const mm = '🔵🔵🔵🔵 PlayVideoState 🍎 : ';
+  static const mm = '🔵🔵🔵🔵 VideoPlayerTabletPage 🍎 : ';
 
   int videoDurationInSeconds = 0;
   double videoDurationInMinutes = 0.0;
@@ -39,7 +39,7 @@ class VideoPlayerTabletPageState extends State<VideoPlayerTabletPage>
   void initState() {
     _animationController = AnimationController(vsync: this);
     super.initState();
-    pp('PlayVideo initState: ${widget.video.toJson()}  🔵🔵');
+    pp('$mm initState: ${widget.video.toJson()}  🔵🔵');
     _videoPlayerController = VideoPlayerController.network(widget.video.url!)
       ..initialize().then((_) {
         // Ensure the first frame is shown after the video is initialized, even before the play button has been pressed.
@@ -348,6 +348,7 @@ class VideoPlayerTabletPageState extends State<VideoPlayerTabletPage>
                             bottom: 12,
                             right: 12,
                             child: FloatingActionButton(
+                              backgroundColor: Theme.of(context).primaryColor,
                               onPressed: () {
                                 setState(() {
                                   if (_videoPlayerController != null) {

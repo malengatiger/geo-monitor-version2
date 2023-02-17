@@ -12,7 +12,6 @@ import 'package:page_transition/page_transition.dart';
 
 import '../../library/api/prefs_og.dart';
 import '../../library/bloc/downloader.dart';
-import '../../library/bloc/uploader.dart';
 import '../../library/data/audio.dart';
 import '../../library/data/data_bag.dart';
 import '../../library/data/photo.dart';
@@ -50,8 +49,6 @@ class _DashboardTabletLandscapeState extends State<DashboardTabletLandscape> {
   void initState() {
     super.initState();
     _getData(false);
-
-    uploader.startTimer(const Duration(seconds: 15));
   }
 
   void _getData(bool forceRefresh) async {
@@ -568,7 +565,7 @@ class _DashboardTabletLandscapeState extends State<DashboardTabletLandscape> {
                   left: 100,
                   right: 100,
                   top: 12,
-                  child: AudioPlayerPage(
+                  child: AudioPlayerCard(
                     audio: audio!,
                     onCloseRequested: () {
                       if (mounted) {
