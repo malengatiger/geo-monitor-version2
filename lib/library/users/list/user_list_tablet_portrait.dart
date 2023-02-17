@@ -11,10 +11,10 @@ import 'package:geo_monitor/library/ui/schedule/scheduler_mobile.dart';
 import 'package:geo_monitor/library/users/edit/user_edit_main.dart';
 import 'package:geo_monitor/library/users/kill_user_page.dart';
 import 'package:geo_monitor/library/users/list/user_list_card.dart';
-import 'package:geo_monitor/library/users/report/user_rpt_mobile.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import '../../../ui/dashboard/user_dashboard.dart';
 import '../../api/prefs_og.dart';
 import '../../bloc/fcm_bloc.dart';
 import '../../bloc/organization_bloc.dart';
@@ -314,7 +314,7 @@ class UserListTabletPortraitState extends State<UserListTabletPortrait>
             type: PageTransitionType.scale,
             alignment: Alignment.topLeft,
             duration: const Duration(seconds: 1),
-            child: UserReportMobile(user)));
+            child: UserDashboard(user: user)));
   }
 
   void _sendLocationRequest(User otherUser) async {

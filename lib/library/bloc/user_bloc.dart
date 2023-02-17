@@ -1,16 +1,21 @@
 import 'dart:async';
 
+import 'package:geo_monitor/library/bloc/zip_bloc.dart';
+import 'package:geo_monitor/library/data/data_bag.dart';
+
 import '../api/data_api.dart';
-import '../data/questionnaire.dart';
-import '../data/video.dart';
-import '../functions.dart';
-import '../hive_util.dart';
+import '../data/activity_model.dart';
+import '../data/audio.dart';
 import '../data/community.dart';
 import '../data/field_monitor_schedule.dart';
 import '../data/photo.dart';
 import '../data/project.dart';
 import '../data/project_position.dart';
+import '../data/questionnaire.dart';
 import '../data/user.dart';
+import '../data/video.dart';
+import '../functions.dart';
+import '../hive_util.dart';
 
 final UserBloc userBloc = UserBloc();
 
@@ -36,11 +41,20 @@ class UserBloc {
       StreamController.broadcast();
   final StreamController<List<Video>> _videoController =
       StreamController.broadcast();
+  final StreamController<List<Audio>> _audioController =
+      StreamController.broadcast();
 
   final StreamController<List<ProjectPosition>> _projPositionsController =
       StreamController.broadcast();
   final StreamController<List<FieldMonitorSchedule>>
       _fieldMonitorScheduleController = StreamController.broadcast();
+
+  final StreamController<List<ActivityModel>> activityController =
+      StreamController.broadcast();
+
+  Stream<List<ActivityModel>> get activityStream => activityController.stream;
+
+  Stream get audioStream => _audioController.stream;
 
   Stream get reportStream => _reportController.stream;
 
@@ -56,6 +70,26 @@ class UserBloc {
   Stream<List<Video>> get videoStream => _videoController.stream;
 
   static const mm = '💜💜💜 UserBloc 💜: ';
+
+  Future<List<ActivityModel>> getUserActivity(
+      {required String userId,
+      required int hours,
+      required bool forceRefresh}) async {
+    try {
+      var activities =
+          await cacheManager.getUserActivitiesWithinHours(userId, hours);
+
+      if (activities.isEmpty || forceRefresh) {
+        activities = await DataAPI.getUserActivity(userId, hours);
+      }
+      activityController.sink.add(activities);
+      pp('$mm 💜💜💜💜 getUserActivity found: 💜 ${activities.length} activities ; organizationId: $userId 💜');
+      return activities;
+    } catch (e) {
+      pp('$mm $e');
+      rethrow;
+    }
+  }
 
   Future<List<Photo>> getPhotos(
       {required String userId, required bool forceRefresh}) async {
@@ -83,6 +117,19 @@ class UserBloc {
     return videos;
   }
 
+  Future<List<Audio>> getAudios(
+      {required String userId, required bool forceRefresh}) async {
+    // var android = UniversalPlatform.isAndroid;
+    var audios = await cacheManager.getUserAudios(userId);
+
+    if (audios.isEmpty || forceRefresh) {
+      audios = await DataAPI.getUserProjectAudios(userId);
+    }
+    _audioController.sink.add(audios);
+    pp('$mm getAudios found: 💜 ${audios.length} audios ');
+    return audios;
+  }
+
   Future<List<FieldMonitorSchedule>> getFieldMonitorSchedules(
       {required String userId, required bool forceRefresh}) async {
     // var android = UniversalPlatform.isAndroid;
@@ -96,19 +143,18 @@ class UserBloc {
     return schedules;
   }
 
-  // Future refreshUserData(
-  //     {required String userId, required bool forceRefresh}) async {
-  //   pp('$mm refreshUserData ... forceRefresh: $forceRefresh');
-  //
-  //   //todo - for monitor, only their projects must show
-  //   var bag = await hiveUtil.getLatestDataBag();
-  //   if (forceRefresh || bag == null) {
-  //     bag = await DataAPI.getUserData(userId);
-  //   }
-  //   _processBag(bag);
-  //   return bag;
-  // }
+  Future<DataBag> getUserData(
+      {required String userId, required bool forceRefresh}) async {
+    pp('$mm refreshUserData ... forceRefresh: $forceRefresh');
 
+    //todo - for monitor, only their projects must show
+    DataBag? bag = await cacheManager.getUserData(userId: userId);
+    if (forceRefresh || bag.isEmpty()) {
+      bag = await zipBloc.getUserDataZippedFile(userId);
+    }
+
+    return bag!;
+  }
 
   close() {
     _communityController.close();

@@ -23,11 +23,16 @@ class GeoActivityMobile extends StatefulWidget {
     required this.showPhoto,
     required this.showVideo,
     required this.showAudio,
+    this.user,
+    this.project,
   }) : super(key: key);
 
   final Function(Photo) showPhoto;
   final Function(Video) showVideo;
   final Function(Audio) showAudio;
+
+  final User? user;
+  final Project? project;
 
   @override
   GeoActivityMobileState createState() => GeoActivityMobileState();
@@ -102,6 +107,8 @@ class GeoActivityMobileState extends State<GeoActivityMobile>
           ),
         ),
         body: ActivityListMobile(
+          user: widget.user,
+          project: widget.project,
           onPhotoTapped: (photo) {
             widget.showPhoto(photo);
           },

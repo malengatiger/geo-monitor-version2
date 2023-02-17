@@ -1,12 +1,12 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
+
+import 'package:archive/archive_io.dart';
 import 'package:geo_monitor/library/api/data_api.dart';
 import 'package:geo_monitor/library/emojis.dart';
 import 'package:http/http.dart' as http;
 import 'package:path_provider/path_provider.dart';
-import 'package:archive/archive_io.dart';
-
 
 import '../auth/app_auth.dart';
 import '../data/data_bag.dart';
@@ -14,30 +14,47 @@ import '../functions.dart';
 import '../hive_util.dart';
 
 final ZipBloc zipBloc = ZipBloc();
-class ZipBloc {
 
+class ZipBloc {
   static const xz = '🌎🌎🌎🌎🌎🌎ZipBloc: ';
   static final client = http.Client();
   static int start = 0;
 
-  Future<DataBag?> getProjectDataZippedFile(String projectId) async {
+  Future<DataBag?> getUserDataZippedFile(String userId) async {
+    pp('\n\n$xz getUserDataZippedFile  🔆🔆🔆 userId : 💙  $userId  💙');
+    start = DateTime.now().millisecondsSinceEpoch;
+    var url = await DataAPI.getUrl();
+    var mUrl = '${url!}getUserData?userId=$userId';
 
+    var bag = await _getDataBag(mUrl);
+    await _cacheTheData(bag);
+    return bag;
+  }
+
+  Future<DataBag?> getProjectDataZippedFile(String projectId) async {
     pp('\n\n$xz getProjectDataZippedFile  🔆🔆🔆 projectId : 💙  $projectId  💙');
     start = DateTime.now().millisecondsSinceEpoch;
     var url = await DataAPI.getUrl();
     var mUrl = '${url!}getProjectDataZippedFile?projectId=$projectId';
 
-    return _getDataBag(mUrl);
+    var bag = await _getDataBag(mUrl);
+    await _cacheTheData(bag);
+    return bag;
   }
 
   Future<DataBag?> getOrganizationDataZippedFile(String organizationId) async {
     pp('\n\n$xz getOrganizationDataZippedFile  🔆🔆🔆 orgId : 💙  $organizationId  💙');
     start = DateTime.now().millisecondsSinceEpoch;
     var url = await DataAPI.getUrl();
-    var mUrl = '${url!}getOrganizationDataZippedFile?organizationId=$organizationId';
+    var mUrl =
+        '${url!}getOrganizationDataZippedFile?organizationId=$organizationId';
 
-     var bag = await _getDataBag(mUrl);
-     //todo cache bag contents here
+    var bag = await _getDataBag(mUrl);
+    await _cacheTheData(bag);
+    return bag;
+  }
+
+  Future<void> _cacheTheData(DataBag? bag) async {
     pp('\n$xz Data returned from server, adding to Hive cache ...');
     await cacheManager.addProjects(projects: bag!.projects!);
     await cacheManager.addProjectPolygons(polygons: bag.projectPolygons!);
@@ -51,14 +68,13 @@ class ZipBloc {
     await cacheManager.addFieldMonitorSchedules(
         schedules: bag.fieldMonitorSchedules!);
     pp('\n$xz Org Data saved in Hive cache ...');
-    return bag;
   }
 
   Future<DataBag?> _getDataBag(String mUrl) async {
-
     http.Response response = await _sendRequestToBackend(mUrl);
     var dir = await getApplicationDocumentsDirectory();
-    File zipFile = File('${dir.path}/zip${DateTime.now().millisecondsSinceEpoch}.zip');
+    File zipFile =
+        File('${dir.path}/zip${DateTime.now().millisecondsSinceEpoch}.zip');
     zipFile.writeAsBytesSync(response.bodyBytes);
 
     //create zip archive
@@ -84,7 +100,7 @@ class ZipBloc {
           _printDataBag(dataBag);
 
           var end = DateTime.now().millisecondsSinceEpoch;
-          var ms = (end - start)/1000;
+          var ms = (end - start) / 1000;
           pp('$xz getOrganizationDataZippedFile 🍎🍎🍎🍎 work is done!, elapsed seconds: $ms\n\n');
         }
       }
@@ -110,10 +126,12 @@ class ZipBloc {
     headers['Authorization'] = 'Bearer $token';
 
     try {
-      http.Response resp = await client.get(
-        Uri.parse(mUrl),
-        headers: headers,
-      ).timeout( const Duration(seconds: 120));
+      http.Response resp = await client
+          .get(
+            Uri.parse(mUrl),
+            headers: headers,
+          )
+          .timeout(const Duration(seconds: 120));
       pp('$xz http GET call RESPONSE: .... : 💙 statusCode: 👌👌👌 ${resp.statusCode} 👌👌👌 💙 for $mUrl');
       // pp(resp);
       var end = DateTime.now();
@@ -141,7 +159,6 @@ class ZipBloc {
       pp("$xz GET Request has timed out in 120 seconds 👎");
       throw 'Request has timed out in 120 seconds';
     }
-
   }
 
   void _printDataBag(DataBag bag) {
@@ -165,5 +182,4 @@ class ZipBloc {
     pp('$xz schedules: $schedules');
     pp('$xz data from backend listed above: 🔵🔵🔵 ${bag.date}');
   }
-
 }

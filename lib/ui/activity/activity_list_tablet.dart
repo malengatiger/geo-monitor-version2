@@ -5,6 +5,8 @@ import 'package:geo_monitor/library/bloc/fcm_bloc.dart';
 import 'package:geo_monitor/library/bloc/organization_bloc.dart';
 
 import '../../library/api/prefs_og.dart';
+import '../../library/bloc/project_bloc.dart';
+import '../../library/bloc/user_bloc.dart';
 import '../../library/data/activity_model.dart';
 import '../../library/data/audio.dart';
 import '../../library/data/geofence_event.dart';
@@ -34,7 +36,9 @@ class ActivityListTablet extends StatefulWidget {
       required this.onPolygonTapped,
       required this.onGeofenceEventTapped,
       required this.onOrgMessage,
-      required this.thinMode})
+      required this.thinMode,
+      this.user,
+      this.project})
       : super(key: key);
   final double width;
   final bool thinMode;
@@ -47,6 +51,9 @@ class ActivityListTablet extends StatefulWidget {
   final Function(ProjectPolygon) onPolygonTapped;
   final Function(GeofenceEvent) onGeofenceEventTapped;
   final Function(OrgMessage) onOrgMessage;
+
+  final User? user;
+  final Project? project;
 
   @override
   State<ActivityListTablet> createState() => _ActivityListTabletState();
@@ -61,7 +68,7 @@ class _ActivityListTabletState extends State<ActivityListTablet>
   var models = <ActivityModel>[];
 
   late StreamSubscription<ActivityModel> subscription;
-  User? user;
+  User? me;
   bool busy = true;
   final mm = '😎😎😎😎😎😎 ActivityListTablet: ';
 
@@ -92,28 +99,22 @@ class _ActivityListTabletState extends State<ActivityListTablet>
     }
     pp('$mm ... getting activity data ... forceRefresh: $forceRefresh');
     try {
-      user = await prefsOGx.getUser();
+      me = await prefsOGx.getUser();
       settings = await prefsOGx.getSettings();
-      pp('$mm ... getOrganizationActivity (n hours) ...');
+
+      var hours = 12;
       if (settings != null) {
-        models = await organizationBloc.getOrganizationActivity(
-            organizationId: settings!.organizationId!,
-            hours: settings!.activityStreamHours!,
-            forceRefresh: forceRefresh);
-        if (count == 0 && !forceRefresh) {
-          setState(() {});
-          models = await organizationBloc.getOrganizationActivity(
-              organizationId: settings!.organizationId!,
-              hours: settings!.activityStreamHours!,
-              forceRefresh: true);
-          count++;
-        }
+        hours = settings!.activityStreamHours!;
+      }
+      pp('$mm ... get Activity (n hours) ... : $hours');
+      if (widget.project != null) {
+        _getProjectData(forceRefresh, hours);
+      } else if (widget.user != null) {
+        _getUserData(forceRefresh, hours);
+      } else if (widget.project != null) {
+        _getProjectData(forceRefresh, hours);
       } else {
-        var user = await prefsOGx.getUser();
-        models = await organizationBloc.getOrganizationActivity(
-            organizationId: user!.organizationId!,
-            hours: 8,
-            forceRefresh: forceRefresh);
+        _getOrganizationData(forceRefresh, hours);
       }
       _sortDescending();
       _animationController.reset();
@@ -129,16 +130,55 @@ class _ActivityListTabletState extends State<ActivityListTablet>
     });
   }
 
+  void _getOrganizationData(bool forceRefresh, int hours) async {
+    models = await organizationBloc.getOrganizationActivity(
+        organizationId: settings!.organizationId!,
+        hours: hours,
+        forceRefresh: forceRefresh);
+  }
+
+  void _getProjectData(bool forceRefresh, int hours) async {
+    models = await projectBloc.getProjectActivity(
+        projectId: widget.project!.projectId!,
+        hours: hours,
+        forceRefresh: forceRefresh);
+  }
+
+  void _getUserData(bool forceRefresh, int hours) async {
+    models = await userBloc.getUserActivity(
+        userId: widget.user!.userId!, hours: hours, forceRefresh: forceRefresh);
+  }
+
   void _listenToFCM() async {
     pp('$mm ... _listenToFCM activityStream ...');
 
     subscription = fcmBloc.activityStream.listen((ActivityModel model) {
       pp('$mm activityStream delivered activity data ... ${model.date!}');
-      models.insert(0, model);
+
+      if (isActivityValid(model)) {
+        models.insert(0, model);
+      }
       if (mounted) {
         setState(() {});
       }
     });
+  }
+
+  bool isActivityValid(ActivityModel m) {
+    if (widget.project == null && widget.user == null) {
+      return true;
+    }
+    if (widget.project != null) {
+      if (m.projectId == widget.project!.projectId) {
+        return true;
+      }
+    }
+    if (widget.user != null) {
+      if (m.userId == widget.user!.userId) {
+        return true;
+      }
+    }
+    return false;
   }
 
   bool sortedByDateAscending = false;

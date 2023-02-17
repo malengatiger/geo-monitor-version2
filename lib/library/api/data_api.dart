@@ -14,6 +14,8 @@ import 'package:http/http.dart' as http;
 
 import '../auth/app_auth.dart';
 import '../bloc/organization_bloc.dart';
+import '../bloc/project_bloc.dart';
+import '../bloc/user_bloc.dart';
 import '../data/audio.dart';
 import '../data/city.dart';
 import '../data/community.dart';
@@ -261,7 +263,59 @@ class DataAPI {
         organizationBloc.activityController.sink.add(mList);
       }
 
-      pp('🌿 🌿 🌿 getOrganizationActivity returned: 🌿 ${mList.length}');
+      pp('$mm 🌿 🌿 🌿 getOrganizationActivity returned: 🌿 ${mList.length}');
+      return mList;
+    } catch (e) {
+      pp(e);
+      rethrow;
+    }
+  }
+
+  static Future<List<ActivityModel>> getProjectActivity(
+      String projectId, int hours) async {
+    String? mURL = await getUrl();
+    List<ActivityModel> mList = [];
+    try {
+      List result = await _sendHttpGET(
+          '${mURL!}getProjectActivity?projectId=$projectId&hours=$hours');
+
+      for (var element in result) {
+        mList.add(ActivityModel.fromJson(element));
+      }
+
+      if (mList.isNotEmpty) {
+        mList.sort((a, b) => b.date!.compareTo(a.date!));
+        await cacheManager.addActivityModels(activities: mList);
+        projectBloc.activityController.sink.add(mList);
+      }
+
+      pp('$mm 🌿 🌿 🌿 getProjectActivity returned: 🌿 ${mList.length}');
+      return mList;
+    } catch (e) {
+      pp(e);
+      rethrow;
+    }
+  }
+
+  static Future<List<ActivityModel>> getUserActivity(
+      String userId, int hours) async {
+    String? mURL = await getUrl();
+    List<ActivityModel> mList = [];
+    try {
+      List result = await _sendHttpGET(
+          '${mURL!}getUserActivity?userId=$userId&hours=$hours');
+
+      for (var element in result) {
+        mList.add(ActivityModel.fromJson(element));
+      }
+
+      if (mList.isNotEmpty) {
+        mList.sort((a, b) => b.date!.compareTo(a.date!));
+        await cacheManager.addActivityModels(activities: mList);
+        userBloc.activityController.sink.add(mList);
+      }
+
+      pp('$mm 🌿 🌿 🌿 getProjectActivity returned: 🌿 ${mList.length}');
       return mList;
     } catch (e) {
       pp(e);
@@ -759,6 +813,24 @@ class DataAPI {
         list.add(Video.fromJson(m));
       });
       await cacheManager.addVideos(videos: list);
+      return list;
+    } catch (e) {
+      pp(e);
+      rethrow;
+    }
+  }
+
+  static Future<List<Audio>> getUserProjectAudios(String userId) async {
+    String? mURL = await getUrl();
+
+    try {
+      var result =
+          await _sendHttpGET('${mURL!}getUserProjectAudios?userId=$userId');
+      List<Audio> list = [];
+      result.forEach((m) {
+        list.add(Audio.fromJson(m));
+      });
+      await cacheManager.addAudios(audios: list);
       return list;
     } catch (e) {
       pp(e);

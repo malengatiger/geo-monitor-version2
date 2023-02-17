@@ -27,6 +27,8 @@ class GeoActivityTablet extends StatefulWidget {
     required this.showPhoto,
     required this.showVideo,
     required this.showAudio,
+    this.user,
+    this.project,
   }) : super(key: key);
   final double width;
   final bool thinMode;
@@ -34,6 +36,9 @@ class GeoActivityTablet extends StatefulWidget {
   final Function(Photo) showPhoto;
   final Function(Video) showVideo;
   final Function(Audio) showAudio;
+
+  final User? user;
+  final Project? project;
 
   @override
   GeoActivityTabletState createState() => GeoActivityTabletState();
@@ -125,6 +130,8 @@ class GeoActivityTabletState extends State<GeoActivityTablet>
             tablet: OrientationLayoutBuilder(
               portrait: (context) {
                 return ActivityListTablet(
+                  user: widget.user,
+                  project: widget.project,
                   width: widget.width,
                   onPhotoTapped: (photo) {
                     widget.showPhoto(photo);

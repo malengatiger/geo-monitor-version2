@@ -403,6 +403,52 @@ class CacheManager {
     return list;
   }
 
+  Future<List<ActivityModel>> getUserActivitiesWithinHours(
+      String userId, int hours) async {
+    var cutoffDate = DateTime.now().subtract(Duration(hours: hours));
+    List<ActivityModel> list = [];
+    var keys = _activityBox?.keys;
+    if (keys != null) {
+      for (var key in keys) {
+        var act = await _activityBox?.get(key);
+        if (act != null) {
+          var actDate = DateTime.parse(act.date!);
+          if (actDate.millisecondsSinceEpoch >=
+              cutoffDate.millisecondsSinceEpoch) {
+            if (act.userId == userId) {
+              list.add(act);
+            }
+          }
+        }
+      }
+    }
+    pp('$mm ${list.length} user activities list found in cache 🔵');
+    return list;
+  }
+
+  Future<List<ActivityModel>> getProjectActivitiesWithinHours(
+      String projectId, int hours) async {
+    var cutoffDate = DateTime.now().subtract(Duration(hours: hours));
+    List<ActivityModel> list = [];
+    var keys = _activityBox?.keys;
+    if (keys != null) {
+      for (var key in keys) {
+        var act = await _activityBox?.get(key);
+        if (act != null) {
+          var actDate = DateTime.parse(act.date!);
+          if (actDate.millisecondsSinceEpoch >=
+              cutoffDate.millisecondsSinceEpoch) {
+            if (act.projectId == projectId) {
+              list.add(act);
+            }
+          }
+        }
+      }
+    }
+    pp('$mm ${list.length} user activities list found in cache 🔵');
+    return list;
+  }
+
   Future<List<ActivityModel>> getActivities() async {
     List<ActivityModel> list = [];
     var keys = _activityBox?.keys;
@@ -910,6 +956,42 @@ class CacheManager {
         settings: settings);
 
     pp('$mm getOrganizationData: 🍎projects: ${projects.length} '
+        '🍎users: ${users.length} 🍎photos: ${photos.length}'
+        ' 🍎videos: ${videos.length} 🍎schedules: ${schedules.length} '
+        '🍎positions: ${positions.length} '
+        '🍎polygons: ${polygons.length} 🍎audios: ${audios.length}');
+
+    return bag;
+  }
+
+  Future<DataBag> getUserData({required String userId}) async {
+    pp('$mm$mm getUserData starting ...');
+    final projects = await getOrganizationProjects();
+    final users = await getUsers();
+    final photos = await getUserPhotos(userId);
+    final videos = await getUserVideos(userId);
+    final audios = await getUserAudios(userId);
+    final settings = await getOrganizationSettings();
+
+    final schedules = await getOrganizationMonitorSchedules(userId);
+    final positions =
+        await getOrganizationProjectPositions(organizationId: userId);
+    final polygons =
+        await getOrganizationProjectPolygons(organizationId: userId);
+
+    final bag = DataBag(
+        photos: photos,
+        videos: videos,
+        fieldMonitorSchedules: schedules,
+        projectPositions: positions,
+        projects: projects,
+        audios: audios,
+        projectPolygons: polygons,
+        date: DateTime.now().toUtc().toIso8601String(),
+        users: users,
+        settings: settings);
+
+    pp('$mm getUserData: 🍎projects: ${projects.length} '
         '🍎users: ${users.length} 🍎photos: ${photos.length}'
         ' 🍎videos: ${videos.length} 🍎schedules: ${schedules.length} '
         '🍎positions: ${positions.length} '
@@ -1547,6 +1629,21 @@ class CacheManager {
         if (key.contains(userId)) {
           var video = await _videoBox?.get(key);
           mList.add(video!);
+        }
+      }
+    }
+    pp('$mm User videos found: ${mList.length}');
+    return mList;
+  }
+
+  Future<List<Audio>> getUserAudios(String userId) async {
+    var keys = _audioBox?.keys;
+    List<Audio> mList = [];
+    if (keys != null) {
+      for (var key in keys) {
+        if (key.contains(userId)) {
+          var audio = await _audioBox?.get(key);
+          mList.add(audio!);
         }
       }
     }

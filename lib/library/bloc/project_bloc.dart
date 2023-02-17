@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:geo_monitor/library/data/activity_model.dart';
 import 'package:geo_monitor/library/data/settings_model.dart';
 
 import '../api/data_api.dart';
@@ -17,7 +18,6 @@ import '../data/project_position.dart';
 import '../data/questionnaire.dart';
 import '../data/user.dart';
 import '../data/video.dart';
-import '../emojis.dart';
 import '../functions.dart';
 import '../hive_util.dart';
 import '../location/loc_bloc.dart';
@@ -45,14 +45,14 @@ class ProjectBloc {
   final StreamController<List<Video>> _videoController =
       StreamController.broadcast();
   final StreamController<List<Audio>> _audioController =
-  StreamController.broadcast();
+      StreamController.broadcast();
 
   final StreamController<List<Photo>> _projectPhotoController =
       StreamController.broadcast();
   final StreamController<List<Video>> _projectVideoController =
       StreamController.broadcast();
   final StreamController<List<Audio>> _projectAudioController =
-  StreamController.broadcast();
+      StreamController.broadcast();
 
   final StreamController<List<ProjectPosition>> _projPositionsController =
       StreamController.broadcast();
@@ -67,11 +67,14 @@ class ProjectBloc {
 
   final StreamController<Questionnaire> _activeQuestionnaireController =
       StreamController.broadcast();
+  final StreamController<List<ActivityModel>> activityController =
+      StreamController.broadcast();
+
+  Stream<List<ActivityModel>> get activityStream => activityController.stream;
 
   Stream<List<Audio>> get audioStream => _projectAudioController.stream;
 
   Stream<List<MonitorReport>> get reportStream => _reportController.stream;
-
 
   Stream<List<Community>> get communityStream => _communityController.stream;
 
@@ -99,6 +102,26 @@ class ProjectBloc {
 
   Stream<List<Video>> get videoStream => _videoController.stream;
 
+  Future<List<ActivityModel>> getProjectActivity(
+      {required String projectId,
+      required int hours,
+      required bool forceRefresh}) async {
+    try {
+      var activities =
+          await cacheManager.getProjectActivitiesWithinHours(projectId, hours);
+
+      if (activities.isEmpty || forceRefresh) {
+        activities = await DataAPI.getProjectActivity(projectId, hours);
+      }
+      activityController.sink.add(activities);
+      pp('$mm 💜💜💜💜 getProjectActivity found: 💜 ${activities.length} activities ; organizationId: $projectId 💜');
+      return activities;
+    } catch (e) {
+      pp('$mm $e');
+      rethrow;
+    }
+  }
+
   //
   Future<List<ProjectPosition>> getProjectPositions(
       {required String projectId, required bool forceRefresh}) async {
@@ -117,7 +140,8 @@ class ProjectBloc {
 
   Future<List<ProjectPolygon>> getProjectPolygons(
       {required String projectId, required bool forceRefresh}) async {
-    var projectPolygons = await cacheManager.getProjectPolygons(projectId: projectId);
+    var projectPolygons =
+        await cacheManager.getProjectPolygons(projectId: projectId);
     pp('$mm getProjectPolygons found ${projectPolygons.length} positions in local cache ');
 
     if (projectPolygons.isEmpty || forceRefresh) {
@@ -132,13 +156,12 @@ class ProjectBloc {
 
   Future<List<Photo>> getPhotos(
       {required String projectId, required bool forceRefresh}) async {
-
     List<Photo> photos = await cacheManager.getProjectPhotos(projectId);
     if (photos.isEmpty || forceRefresh) {
       photos = await DataAPI.findPhotosByProject(projectId);
       await cacheManager.addPhotos(photos: photos);
     }
-    photos.sort((a,b) => b.created!.compareTo(a.created!));
+    photos.sort((a, b) => b.created!.compareTo(a.created!));
 
     _projectPhotoController.sink.add(photos);
     pp('$mm getPhotos found: 💜 ${photos.length} photos ');
@@ -186,7 +209,7 @@ class ProjectBloc {
     if (videos.isEmpty || forceRefresh) {
       videos = await DataAPI.findVideosById(projectId);
     }
-    videos.sort((a,b) => b.created!.compareTo(a.created!));
+    videos.sort((a, b) => b.created!.compareTo(a.created!));
     _projectVideoController.sink.add(videos);
     pp('$mm getProjectVideos found: 💜 ${videos.length} videos ');
 
@@ -200,7 +223,7 @@ class ProjectBloc {
     if (audios.isEmpty || forceRefresh) {
       audios = await DataAPI.findAudiosById(projectId);
     }
-    audios.sort((a,b) => b.created!.compareTo(a.created!));
+    audios.sort((a, b) => b.created!.compareTo(a.created!));
 
     _projectAudioController.sink.add(audios);
     pp('$mm getProjectAudios found: 💜 ${audios.length} audios ');
@@ -213,12 +236,24 @@ class ProjectBloc {
     List<Video> videos = await cacheManager.getProjectVideos(projectId);
     List<Audio> audios = await cacheManager.getProjectAudios(projectId);
     List<Photo> photos = await cacheManager.getProjectPhotos(projectId);
-    List<ProjectPosition> positions = await cacheManager.getProjectPositions(projectId);
-    List<ProjectPolygon> polygons = await cacheManager.getProjectPolygons(projectId: projectId);
-    List<SettingsModel> settings = await cacheManager.getProjectSettings(projectId);
+    List<ProjectPosition> positions =
+        await cacheManager.getProjectPositions(projectId);
+    List<ProjectPolygon> polygons =
+        await cacheManager.getProjectPolygons(projectId: projectId);
+    List<SettingsModel> settings =
+        await cacheManager.getProjectSettings(projectId);
 
-    var dataBag = DataBag(photos: photos, videos: videos, fieldMonitorSchedules: [], projectPositions: positions, projects: [],
-        audios: audios, date: DateTime.now().toUtc().toIso8601String(), users: [], projectPolygons: polygons, settings: settings);
+    var dataBag = DataBag(
+        photos: photos,
+        videos: videos,
+        fieldMonitorSchedules: [],
+        projectPositions: positions,
+        projects: [],
+        audios: audios,
+        date: DateTime.now().toUtc().toIso8601String(),
+        users: [],
+        projectPolygons: polygons,
+        settings: settings);
 
     if (videos.isEmpty || photos.isEmpty || audios.isEmpty || forceRefresh) {
       dataBag = await DataAPI.getProjectData(projectId);
@@ -264,7 +299,8 @@ class ProjectBloc {
         audios: audios,
         date: DateTime.now().toUtc().toIso8601String(),
         users: [],
-        projectPolygons: polygons, settings: []);
+        projectPolygons: polygons,
+        settings: []);
     pp('$mm project data bag loaded: ... photos: ${photos.length}, videos: ${videos.length} and audios: ${audios.length} ...');
     return bag;
   }
@@ -302,10 +338,8 @@ class ProjectBloc {
     var user = await prefsOGx.getUser();
     var pos = await locationBlocOG.getLocation();
     try {
-
       if (pos != null) {
-        pp('$mm current location: 💜 latitude: ${pos.latitude} longitude: ${pos
-            .longitude}');
+        pp('$mm current location: 💜 latitude: ${pos.latitude} longitude: ${pos.longitude}');
       } else {
         return [];
       }
