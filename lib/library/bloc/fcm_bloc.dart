@@ -457,6 +457,7 @@ Future<void> geoFirebaseMessagingBackgroundHandler(
       'eg. location request and response');
 
   pp('$vv calling fcmBloc.parseRemoteMessage in background mode');
+
   if (data['locationRequest'] != null) {
     pp("$vv processFCMMessage  🔵 🔵 🔵 ........................... "
         "LOCATION REQUEST  🍎  🍎 ");

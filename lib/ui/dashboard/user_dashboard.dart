@@ -41,25 +41,22 @@ class UserDashboard extends StatefulWidget {
 
 class UserDashboardState extends State<UserDashboard>
     with TickerProviderStateMixin {
-  late AnimationController _projectAnimationController;
-  late AnimationController _userAnimationController;
-  late AnimationController _photoAnimationController;
-  late AnimationController _videoAnimationController;
-  late AnimationController _positionAnimationController;
-  late AnimationController _polygonAnimationController;
-  late AnimationController _audioAnimationController;
+  late AnimationController _gridViewAnimationController;
 
   var busy = false;
   User? user;
 
   static const mm = '🎽🎽🎽🎽🎽🎽 UserDashboard: 🎽';
   bool networkAvailable = false;
-  final dur = 300;
+  final dur = 3000;
   DataBag? dataBag;
 
   @override
   void initState() {
-    _setAnimationControllers();
+    _gridViewAnimationController = AnimationController(
+        duration: Duration(milliseconds: dur),
+        reverseDuration: Duration(milliseconds: dur),
+        vsync: this);
     super.initState();
     _setItems();
     _getAuthenticationStatus();
@@ -87,37 +84,6 @@ class UserDashboardState extends State<UserDashboard>
     setState(() {
       busy = false;
     });
-  }
-
-  void _setAnimationControllers() {
-    _projectAnimationController = AnimationController(
-        duration: Duration(milliseconds: dur),
-        reverseDuration: Duration(milliseconds: dur),
-        vsync: this);
-    _audioAnimationController = AnimationController(
-        duration: Duration(milliseconds: dur),
-        reverseDuration: Duration(milliseconds: dur),
-        vsync: this);
-    _userAnimationController = AnimationController(
-        duration: Duration(milliseconds: dur),
-        reverseDuration: Duration(milliseconds: dur),
-        vsync: this);
-    _photoAnimationController = AnimationController(
-        duration: Duration(milliseconds: dur),
-        reverseDuration: Duration(milliseconds: dur),
-        vsync: this);
-    _videoAnimationController = AnimationController(
-        duration: Duration(milliseconds: dur),
-        reverseDuration: Duration(milliseconds: dur),
-        vsync: this);
-    _polygonAnimationController = AnimationController(
-        duration: Duration(milliseconds: dur),
-        reverseDuration: Duration(milliseconds: dur),
-        vsync: this);
-    _positionAnimationController = AnimationController(
-        duration: Duration(milliseconds: dur),
-        reverseDuration: Duration(milliseconds: dur),
-        vsync: this);
   }
 
   final fb.FirebaseAuth firebaseAuth = fb.FirebaseAuth.instance;
@@ -212,15 +178,8 @@ class UserDashboardState extends State<UserDashboard>
 
   @override
   void dispose() {
-    _projectAnimationController.dispose();
-    _audioAnimationController.dispose();
-    _photoAnimationController.dispose();
-    _videoAnimationController.dispose();
-    _userAnimationController.dispose();
-    _polygonAnimationController.dispose();
-    _positionAnimationController.dispose();
+    _gridViewAnimationController.dispose();
     connectionSubscription.cancel();
-
     geofenceSubscription.cancel();
     super.dispose();
   }
@@ -309,11 +268,10 @@ class UserDashboardState extends State<UserDashboard>
   Widget build(BuildContext context) {
     final width = MediaQuery.of(context).size.width;
     final ori = MediaQuery.of(context).orientation.name;
-    return SafeArea(
-        child: Scaffold(
+    return Scaffold(
       appBar: AppBar(
         centerTitle: true,
-        title: const Text('Geo User Dashboard'),
+        title: const Text('Member Dashboard'),
         actions: [
           IconButton(
               icon: Icon(
@@ -382,6 +340,7 @@ class UserDashboardState extends State<UserDashboard>
                             tablet: GeoActivityTablet(
                               width: ori == 'portrait' ? 280 : 360,
                               forceRefresh: true,
+                              user: widget.user,
                               thinMode: ori == 'portrait' ? true : false,
                               showPhoto: (photo) {
                                 _displayPhoto(photo);
@@ -542,6 +501,6 @@ class UserDashboardState extends State<UserDashboard>
                     : const SizedBox(),
               ],
             ),
-    ));
+    );
   }
 }

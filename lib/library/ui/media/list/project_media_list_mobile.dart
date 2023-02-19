@@ -6,7 +6,7 @@ import 'package:geo_monitor/library/ui/camera/chewie_video_player.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:page_transition/page_transition.dart';
 
-import '../../../../ui/dashboard/dashboard_mobile.dart';
+import '../../../../ui/dashboard/dashboard_portrait.dart';
 import '../../../api/prefs_og.dart';
 import '../../../bloc/cloud_storage_bloc.dart';
 import '../../../bloc/project_bloc.dart';

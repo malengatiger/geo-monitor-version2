@@ -6,12 +6,12 @@ import 'package:flutter/material.dart';
 import 'package:focused_menu/modals.dart';
 import 'package:geo_monitor/library/ui/project_list/project_list_card.dart';
 import 'package:geo_monitor/ui/audio/audio_handler_mobile.dart';
+import 'package:geo_monitor/ui/dashboard/project_dashboard_mobile.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:map_launcher/map_launcher.dart';
 import 'package:page_transition/page_transition.dart';
 
-import '../../../ui/dashboard/dashboard_mobile.dart';
-import '../../../ui/dashboard/project_dashboard_mobile.dart';
+import '../../../ui/dashboard/dashboard_portrait.dart';
 import '../../api/prefs_og.dart';
 import '../../bloc/admin_bloc.dart';
 import '../../bloc/fcm_bloc.dart';

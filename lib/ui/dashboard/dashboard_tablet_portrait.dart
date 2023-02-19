@@ -12,7 +12,6 @@ import 'package:geo_monitor/library/users/full_user_photo.dart';
 import 'package:geo_monitor/ui/activity/geo_activity_tablet.dart';
 import 'package:geo_monitor/ui/audio/audio_player_page.dart';
 import 'package:geo_monitor/ui/dashboard/dashboard_grid.dart';
-import 'package:geofence_service/geofence_service.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:universal_platform/universal_platform.dart';
@@ -21,12 +20,19 @@ import '../../library/api/prefs_og.dart';
 import '../../library/bloc/connection_check.dart';
 import '../../library/bloc/fcm_bloc.dart';
 import '../../library/bloc/organization_bloc.dart';
+import '../../library/bloc/project_bloc.dart';
+import '../../library/bloc/theme_bloc.dart';
+import '../../library/bloc/user_bloc.dart';
 import '../../library/data/activity_model.dart';
 import '../../library/data/audio.dart';
 import '../../library/data/data_bag.dart';
+import '../../library/data/field_monitor_schedule.dart';
 import '../../library/data/geofence_event.dart';
 import '../../library/data/photo.dart';
 import '../../library/data/project.dart';
+import '../../library/data/project_polygon.dart';
+import '../../library/data/project_position.dart';
+import '../../library/data/settings_model.dart';
 import '../../library/data/user.dart';
 import '../../library/data/video.dart';
 import '../../library/emojis.dart';
@@ -39,6 +45,7 @@ import '../../library/ui/media/list/project_media_list_mobile.dart';
 import '../../library/ui/media/user_media_list/user_media_list_mobile.dart';
 import '../../library/ui/project_list/project_chooser.dart';
 import '../../library/ui/project_list/project_list_mobile.dart';
+import '../../library/ui/ratings/rating_adder.dart';
 import '../../library/ui/settings/settings_main.dart';
 import '../../library/ui/weather/daily_forecast_page.dart';
 import '../../library/users/list/user_list_main.dart';
@@ -58,16 +65,28 @@ class DashboardTabletPortrait extends StatefulWidget {
 
 class DashboardTabletPortraitState extends State<DashboardTabletPortrait>
     with TickerProviderStateMixin {
-  late AnimationController _projectAnimationController;
-  late AnimationController _userAnimationController;
-  late AnimationController _photoAnimationController;
-  late AnimationController _videoAnimationController;
-  late AnimationController _positionAnimationController;
-  late AnimationController _polygonAnimationController;
-  late AnimationController _audioAnimationController;
+  late AnimationController _gridViewAnimationController;
+  late StreamSubscription<List<Project>> projectSubscription;
+  late StreamSubscription<List<User>> userSubscription;
+  late StreamSubscription<List<Photo>> photoSubscription;
+  late StreamSubscription<List<Video>> videoSubscription;
+  late StreamSubscription<List<Audio>> audioSubscription;
+  late StreamSubscription<List<ProjectPosition>> projectPositionSubscription;
+  late StreamSubscription<List<ProjectPolygon>> projectPolygonSubscription;
+  late StreamSubscription<List<FieldMonitorSchedule>> schedulesSubscription;
+
+  late StreamSubscription<Photo> photoSubscriptionFCM;
+  late StreamSubscription<Video> videoSubscriptionFCM;
+  late StreamSubscription<Audio> audioSubscriptionFCM;
+  late StreamSubscription<ProjectPosition> projectPositionSubscriptionFCM;
+  late StreamSubscription<ProjectPolygon> projectPolygonSubscriptionFCM;
+  late StreamSubscription<Project> projectSubscriptionFCM;
+  late StreamSubscription<User> userSubscriptionFCM;
+  late StreamSubscription<SettingsModel> settingsSubscriptionFCM;
+
+  late StreamSubscription<String> killSubscriptionFCM;
 
   var busy = false;
-  var _users = <User>[];
   User? user;
 
   static const mm = '🎽🎽🎽🎽🎽🎽 DashboardTabletPortrait: 🎽';
@@ -77,10 +96,13 @@ class DashboardTabletPortraitState extends State<DashboardTabletPortrait>
 
   @override
   void initState() {
-    _setAnimationControllers();
+    _gridViewAnimationController = AnimationController(
+        duration: const Duration(milliseconds: 3000),
+        reverseDuration: const Duration(milliseconds: 3000),
+        vsync: this);
     super.initState();
     _setItems();
-    _listenToFCM();
+    _listenForFCM();
     _getAuthenticationStatus();
     _subscribeToConnectivity();
     _subscribeToGeofenceStream();
@@ -90,19 +112,85 @@ class DashboardTabletPortraitState extends State<DashboardTabletPortrait>
 
   late StreamSubscription<ActivityModel> subscription;
   var models = <ActivityModel>[];
+  User? deviceUser;
 
-  void _listenToFCM() async {
-    pp('$mm ... _listenToFCM activityStream ...');
+  void _listenForFCM() async {
+    var android = UniversalPlatform.isAndroid;
+    var ios = UniversalPlatform.isIOS;
+    if (android || ios) {
+      pp('$mm 🍎 🍎 _listen to FCM message streams ... 🍎 🍎');
+      pp('$mm ... _listenToFCM activityStream ...');
 
-    subscription = fcmBloc.activityStream.listen((ActivityModel model) {
-      pp('\n\n$mm activityStream delivered activity data ... ${model.toJson()}\n\n');
-      if (isActivityValid(model)) {
-        models.insert(0, model);
-      }
-      if (mounted) {
-        setState(() {});
-      }
-    });
+      subscription = fcmBloc.activityStream.listen((ActivityModel model) {
+        pp('\n\n$mm activityStream delivered activity data ... ${model.toJson()}\n\n');
+        if (isActivityValid(model)) {
+          models.insert(0, model);
+        }
+        if (mounted) {
+          setState(() {});
+        }
+      });
+      projectSubscriptionFCM =
+          fcmBloc.projectStream.listen((Project project) async {
+        _getData(false);
+        if (mounted) {
+          pp('$mm: 🍎 🍎 project arrived: ${project.name} ... 🍎 🍎');
+          setState(() {});
+        }
+      });
+
+      killSubscriptionFCM = listenForKill(context: context);
+
+      settingsSubscriptionFCM = fcmBloc.settingsStream.listen((settings) async {
+        pp('$mm: 🍎🍎 settings arrived with themeIndex: ${settings.themeIndex}... 🍎🍎');
+        themeBloc.themeStreamController.sink.add(settings.themeIndex!);
+        if (mounted) {
+          setState(() {});
+        }
+      });
+      userSubscriptionFCM = fcmBloc.userStream.listen((user) async {
+        pp('$mm: 🍎 🍎 user arrived... 🍎 🍎');
+        _getData(false);
+        if (mounted) {
+          setState(() {});
+        }
+      });
+      photoSubscriptionFCM = fcmBloc.photoStream.listen((user) async {
+        pp('$mm: 🍎 🍎 photoSubscriptionFCM photo arrived... 🍎 🍎');
+        _getData(false);
+        if (mounted) {
+          setState(() {});
+        }
+      });
+
+      videoSubscriptionFCM = fcmBloc.videoStream.listen((Video message) async {
+        pp('$mm: 🍎 🍎 videoSubscriptionFCM video arrived... 🍎 🍎');
+        _getData(false);
+        if (mounted) {
+          pp('DashboardMobile: 🍎 🍎 showMessageSnackbar: ${message.projectName} ... 🍎 🍎');
+          setState(() {});
+        }
+      });
+      audioSubscriptionFCM = fcmBloc.audioStream.listen((Audio message) async {
+        pp('$mm: 🍎 🍎 audioSubscriptionFCM audio arrived... 🍎 🍎');
+        _getData(false);
+        if (mounted) {}
+      });
+      projectPositionSubscriptionFCM =
+          fcmBloc.projectPositionStream.listen((ProjectPosition message) async {
+        pp('$mm: 🍎 🍎 projectPositionSubscriptionFCM position arrived... 🍎 🍎');
+        _getData(false);
+        if (mounted) {}
+      });
+      projectPolygonSubscriptionFCM =
+          fcmBloc.projectPolygonStream.listen((ProjectPolygon message) async {
+        pp('$mm: 🍎 🍎 projectPolygonSubscriptionFCM polygon arrived... 🍎 🍎');
+        _getData(false);
+        if (mounted) {}
+      });
+    } else {
+      pp('App is running on the Web 👿👿👿firebase messaging is OFF 👿👿👿');
+    }
   }
 
   bool isActivityValid(ActivityModel m) {
@@ -127,57 +215,94 @@ class DashboardTabletPortraitState extends State<DashboardTabletPortrait>
   }
 
   void _getData(bool forceRefresh) async {
-    pp('\n\n$mm ............... _getData starting ...');
-    setState(() {
-      busy = true;
-    });
-    try {
-      user = await prefsOGx.getUser();
-      dataBag = await organizationBloc.getOrganizationData(
-          organizationId: user!.organizationId!, forceRefresh: forceRefresh);
-      _users = dataBag!.users!;
-      pp('\n\n$mm ............... _getData returned ...');
-    } catch (e) {
-      pp(e);
-      if (mounted) {
-        showToast(message: '$e', context: context);
+    pp('$mm ............................................Refreshing data ....');
+    deviceUser = await prefsOGx.getUser();
+    if (deviceUser != null) {
+      if (deviceUser!.userType == UserType.orgAdministrator) {
+        type = 'Administrator';
       }
+      if (deviceUser!.userType == UserType.orgExecutive) {
+        type = 'Executive';
+      }
+      if (deviceUser!.userType == UserType.fieldMonitor) {
+        type = 'Field Monitor';
+      }
+    } else {
+      throw Exception('No user cached on device');
+    }
+
+    _gridViewAnimationController.reverse().then((value) async {
+      if (mounted) {
+        setState(() {
+          busy = true;
+        });
+        await _doTheWork(forceRefresh);
+        _gridViewAnimationController.forward();
+      }
+    });
+  }
+
+  Future<void> _doTheWork(bool forceRefresh) async {
+    try {
+      if (deviceUser == null) {
+        throw Exception("Tax man is fucked! User is not found");
+      }
+      if (widget.project != null) {
+        _getProjectData(widget.project!.projectId!, forceRefresh);
+      } else if (widget.user != null) {
+        _getUserData(widget.user!.userId!, forceRefresh);
+      } else {
+        _getOrganizationData(deviceUser!.organizationId!, forceRefresh);
+      }
+      setState(() {});
+      _gridViewAnimationController.forward();
+    } catch (e) {
+      pp('$mm $e - will show snackbar ..');
+      showConnectionProblemSnackBar(
+          context: context,
+          message: 'Data refresh failed. Possible network problem - $e');
     }
 
     setState(() {
       busy = false;
     });
+
+    // _projectAnimationController.reset();
+    // _userAnimationController.reset();
+    // _photoAnimationController.reset();
+    // _videoAnimationController.reset();
+    // _positionAnimationController.reset();
+    // _polygonAnimationController.reset();
+    // _audioAnimationController.reset();
+    //
+    // _projectAnimationController.forward().then((value) {
+    //   _userAnimationController.forward().then((value) {
+    //     _photoAnimationController.forward().then((value) {
+    //       _videoAnimationController.forward().then((value) {
+    //         _positionAnimationController.forward().then((value) {
+    //           _polygonAnimationController.forward().then((value) {
+    //             _audioAnimationController.forward();
+    //           });
+    //         });
+    //       });
+    //     });
+    //   });
+    // });
   }
 
-  void _setAnimationControllers() {
-    _projectAnimationController = AnimationController(
-        duration: Duration(milliseconds: dur),
-        reverseDuration: Duration(milliseconds: dur),
-        vsync: this);
-    _audioAnimationController = AnimationController(
-        duration: Duration(milliseconds: dur),
-        reverseDuration: Duration(milliseconds: dur),
-        vsync: this);
-    _userAnimationController = AnimationController(
-        duration: Duration(milliseconds: dur),
-        reverseDuration: Duration(milliseconds: dur),
-        vsync: this);
-    _photoAnimationController = AnimationController(
-        duration: Duration(milliseconds: dur),
-        reverseDuration: Duration(milliseconds: dur),
-        vsync: this);
-    _videoAnimationController = AnimationController(
-        duration: Duration(milliseconds: dur),
-        reverseDuration: Duration(milliseconds: dur),
-        vsync: this);
-    _polygonAnimationController = AnimationController(
-        duration: Duration(milliseconds: dur),
-        reverseDuration: Duration(milliseconds: dur),
-        vsync: this);
-    _positionAnimationController = AnimationController(
-        duration: Duration(milliseconds: dur),
-        reverseDuration: Duration(milliseconds: dur),
-        vsync: this);
+  void _getOrganizationData(String organizationId, bool forceRefresh) async {
+    dataBag = await organizationBloc.getOrganizationData(
+        organizationId: organizationId, forceRefresh: forceRefresh);
+  }
+
+  void _getProjectData(String projectId, bool forceRefresh) async {
+    dataBag = await projectBloc.getProjectData(
+        projectId: projectId, forceRefresh: forceRefresh);
+  }
+
+  void _getUserData(String userId, bool forceRefresh) async {
+    dataBag =
+        await userBloc.getUserData(userId: userId, forceRefresh: forceRefresh);
   }
 
   final fb.FirebaseAuth firebaseAuth = fb.FirebaseAuth.instance;
@@ -272,15 +397,8 @@ class DashboardTabletPortraitState extends State<DashboardTabletPortrait>
 
   @override
   void dispose() {
-    _projectAnimationController.dispose();
-    _audioAnimationController.dispose();
-    _photoAnimationController.dispose();
-    _videoAnimationController.dispose();
-    _userAnimationController.dispose();
-    _polygonAnimationController.dispose();
-    _positionAnimationController.dispose();
+    _gridViewAnimationController.dispose();
     connectionSubscription.cancel();
-
     geofenceSubscription.cancel();
     super.dispose();
   }
@@ -438,7 +556,7 @@ class DashboardTabletPortraitState extends State<DashboardTabletPortrait>
             duration: const Duration(seconds: 1),
             child: UserListMain(
               user: user!,
-              users: _users,
+              users: dataBag!.users!,
             )));
   }
 
@@ -562,288 +680,319 @@ class DashboardTabletPortraitState extends State<DashboardTabletPortrait>
     }
   }
 
+  onMapRequested(Photo p1) {
+    pp('$mm onMapRequested ... ');
+    photo = p1;
+    _navigateToPhotoMap();
+  }
+
+  onPhotoRatingRequested(Photo p1) {
+    pp('$mm onRatingRequested ...');
+    showDialog(
+        context: context,
+        barrierDismissible: true,
+        builder: (_) => Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Center(
+                child: Container(
+                    color: Colors.black12,
+                    child: RatingAdder(
+                      width: 400,
+                      photo: photo,
+                      onDone: () {
+                        Navigator.of(context).pop();
+                      },
+                    )),
+              ),
+            ));
+  }
+
   Project? selectedProject;
 
   @override
   Widget build(BuildContext context) {
     final width = MediaQuery.of(context).size.width;
-    final height = MediaQuery.of(context).size.height;
-    //todo - move WillStartForegroundTask to main
+
     return SafeArea(
-        child: WillStartForegroundTask(
-      onWillStart: () async {
-        pp('$mm WillStartForegroundTask: onWillStart - what do we do now, Boss?');
-        return geofenceService.isRunningService;
-      },
-      androidNotificationOptions: AndroidNotificationOptions(
-        channelId: 'geofence_service_notification_channel',
-        channelName: 'Geofence Service Notification',
-        channelDescription:
-            'This notification appears when the geofence service is running in the background.',
-        channelImportance: NotificationChannelImportance.LOW,
-        priority: NotificationPriority.LOW,
-        isSticky: false,
-      ),
-      iosNotificationOptions: const IOSNotificationOptions(),
-      notificationTitle: 'GeoMonitor Service is running',
-      notificationText: 'Tap to return to the app',
-      foregroundTaskOptions: const ForegroundTaskOptions(),
-      child: Scaffold(
-        appBar: AppBar(
-          centerTitle: true,
-          title: const Text('Geo Monitor Dashboard'),
-          actions: [
-            IconButton(
-                icon: Icon(
-                  Icons.info_outline,
-                  size: 28,
-                  color: Theme.of(context).primaryColor,
-                ),
-                onPressed: _navigateToIntro),
-            user == null
-                ? const SizedBox()
-                : user!.userType == UserType.fieldMonitor
-                    ? const SizedBox()
-                    : IconButton(
-                        icon: Icon(
-                          Icons.settings,
-                          size: 28,
-                          color: Theme.of(context).primaryColor,
-                        ),
-                        onPressed: _navigateToSettings,
-                      ),
-            IconButton(
+        child: Scaffold(
+      appBar: AppBar(
+        centerTitle: true,
+        title: const Text('Organization Dashboard'),
+        actions: [
+          IconButton(
               icon: Icon(
-                Icons.refresh,
+                Icons.info_outline,
                 size: 28,
                 color: Theme.of(context).primaryColor,
               ),
-              onPressed: () {
-                _getData(true);
-              },
-            )
-          ],
-        ),
-        body: busy
-            ? Center(
-                child: Card(
-                  elevation: 16,
-                  shape: getRoundedBorder(radius: 12),
-                  child: const Padding(
-                    padding: EdgeInsets.all(20.0),
-                    child: SizedBox(
-                      height: 24,
-                      width: 24,
-                      child: CircularProgressIndicator(
-                        strokeWidth: 6,
-                        backgroundColor: Colors.amber,
+              onPressed: _navigateToIntro),
+          user == null
+              ? const SizedBox()
+              : user!.userType == UserType.fieldMonitor
+                  ? const SizedBox()
+                  : IconButton(
+                      icon: Icon(
+                        Icons.settings,
+                        size: 28,
+                        color: Theme.of(context).primaryColor,
                       ),
+                      onPressed: _navigateToSettings,
+                    ),
+          IconButton(
+            icon: Icon(
+              Icons.refresh,
+              size: 28,
+              color: Theme.of(context).primaryColor,
+            ),
+            onPressed: () {
+              _getData(true);
+            },
+          )
+        ],
+      ),
+      body: busy
+          ? Center(
+              child: Card(
+                elevation: 16,
+                shape: getRoundedBorder(radius: 12),
+                child: const Padding(
+                  padding: EdgeInsets.all(20.0),
+                  child: SizedBox(
+                    height: 24,
+                    width: 24,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 6,
+                      backgroundColor: Colors.amber,
                     ),
                   ),
                 ),
-              )
-            : Stack(
-                children: [
-                  Row(
-                    children: [
-                      SizedBox(
-                        width: (width / 2) + 100,
-                        child: DashboardGrid(
-                            dataBag: dataBag!,
-                            topPadding: 40,
-                            onTypeTapped: (type) {
-                              switch (type) {
-                                case typeProjects:
-                                  _navigateToProjectList();
-                                  break;
-                                case typeUsers:
-                                  _navigateToUserList();
-                                  break;
-                                case typePhotos:
-                                  _showProjectDialog(typePhotos);
-                                  break;
-                                case typeVideos:
-                                  _showProjectDialog(typeVideos);
-                                  break;
-                                case typeAudios:
-                                  _showProjectDialog(typeAudios);
-                                  break;
-                                case typePositions:
-                                  _showProjectDialog(typePositions);
-                                  break;
-                                case typePolygons:
-                                  _showProjectDialog(typePolygons);
-                                  break;
-                              }
-                            }),
-                      ),
-                      GeoActivityTablet(
-                        width: 280,
-                        forceRefresh: true,
-                        thinMode: true,
-                        showPhoto: (photo) {
-                          _displayPhoto(photo);
-                        },
-                        showVideo: (video) {
-                          _displayVideo(video);
-                        },
-                        showAudio: (audio) {
-                          _displayAudio(audio);
-                        },
-                      ),
-                    ],
-                  ),
-                  _showPhoto
-                      ? Positioned(
-                          left: 100,
-                          right: 100,
-                          top: 12,
-                          child: SizedBox(
-                            width: 600,
-                            height: 800,
-                            // color: Theme.of(context).primaryColor,
-                            child: Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: GestureDetector(
-                                onTap: () {
-                                  setState(() {
-                                    _showPhoto = false;
-                                  });
-                                },
-                                child: Card(
-                                  shape: getRoundedBorder(radius: 16),
-                                  elevation: 8,
-                                  child: SingleChildScrollView(
-                                    child: Column(
-                                      children: [
-                                        const SizedBox(
-                                          height: 12,
-                                        ),
-                                        Padding(
-                                          padding: const EdgeInsets.symmetric(
-                                              horizontal: 48.0),
-                                          child: Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.spaceBetween,
-                                            children: [
-                                              Text(
-                                                '${photo!.projectName}',
-                                                style:
-                                                    myTextStyleLargePrimaryColor(
-                                                        context),
-                                              ),
-                                              IconButton(
-                                                  onPressed: () {
-                                                    pp('$mm .... put photo on a map!');
-                                                    _navigateToPhotoMap();
-                                                  },
-                                                  icon: Icon(
-                                                    Icons.location_on,
-                                                    color: Theme.of(context)
-                                                        .primaryColor,
-                                                    size: 24,
-                                                  )),
-                                            ],
-                                          ),
-                                        ),
-                                        const SizedBox(
-                                          height: 12,
-                                        ),
-                                        Text(
-                                          '${photo!.userName}',
-                                          style: myTextStyleSmallBold(context),
-                                        ),
-                                        const SizedBox(
-                                          height: 4,
-                                        ),
-                                        Text(
-                                          getFormattedDateShortWithTime(
-                                              photo!.created!, context),
-                                          style: myTextStyleTiny(context),
-                                        ),
-                                        const SizedBox(
-                                          height: 12,
-                                        ),
-                                        Padding(
-                                          padding: const EdgeInsets.symmetric(
-                                              horizontal: 2.0, vertical: 2.0),
-                                          child: InteractiveViewer(
-                                              child: CachedNetworkImage(
-                                                  fit: BoxFit.fill,
-                                                  progressIndicatorBuilder: (context,
-                                                          url,
-                                                          downloadProgress) =>
-                                                      Center(
-                                                          child: SizedBox(
-                                                              width: 20,
-                                                              height: 20,
-                                                              child: CircularProgressIndicator(
-                                                                  backgroundColor:
-                                                                      Colors
-                                                                          .pink,
-                                                                  value: downloadProgress
-                                                                      .progress))),
-                                                  errorWidget: (context, url, error) =>
-                                                      const Icon(Icons.error),
-                                                  fadeInDuration: const Duration(
-                                                      milliseconds: 1500),
-                                                  fadeInCurve:
-                                                      Curves.easeInOutCirc,
-                                                  placeholderFadeInDuration:
-                                                      const Duration(milliseconds: 1500),
-                                                  imageUrl: photo!.url!)),
-                                        ),
-                                        const SizedBox(
-                                          height: 24,
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ))
-                      : const SizedBox(),
-                  _showVideo
-                      ? Positioned(
-                          left: 100,
-                          right: 100,
-                          top: 12,
-                          child: VideoPlayerTabletPage(
-                            video: video!,
-                            onCloseRequested: () {
-                              if (mounted) {
-                                setState(() {
-                                  _showVideo = false;
-                                });
-                              }
-                            },
-                          ),
-                        )
-                      : const SizedBox(),
-                  _showAudio
-                      ? Positioned(
-                          left: 100,
-                          right: 100,
-                          top: 160,
-                          child: AudioPlayerCard(
-                            audio: audio!,
-                            onCloseRequested: () {
-                              if (mounted) {
-                                setState(() {
-                                  _showAudio = false;
-                                });
-                              }
-                            },
-                          ))
-                      : const SizedBox(),
-                ],
               ),
-      ),
+            )
+          : Stack(
+              children: [
+                Row(
+                  children: [
+                    SizedBox(
+                      width: (width / 2) + 100,
+                      child: DashboardGrid(
+                        dataBag: dataBag!,
+                        crossAxisCount: 3,
+                        topPadding: 40,
+                        onTypeTapped: (type) {
+                          switch (type) {
+                            case typeProjects:
+                              _navigateToProjectList();
+                              break;
+                            case typeUsers:
+                              _navigateToUserList();
+                              break;
+                            case typePhotos:
+                              _navigateToProjectList();
+                              break;
+                            case typeVideos:
+                              _navigateToProjectList();
+                              break;
+                            case typeAudios:
+                              _navigateToProjectList();
+                              break;
+                            case typePositions:
+                              _navigateToProjectList();
+                              break;
+                            case typePolygons:
+                              _navigateToProjectList();
+                              break;
+                            case typeSchedules:
+                              _navigateToProjectList();
+                              break;
+                          }
+                        },
+                        gridPadding: 36,
+                      ),
+                    ),
+                    GeoActivityTablet(
+                      width: 280,
+                      forceRefresh: true,
+                      thinMode: true,
+                      showPhoto: (photo) {
+                        _displayPhoto(photo);
+                      },
+                      showVideo: (video) {
+                        _displayVideo(video);
+                      },
+                      showAudio: (audio) {
+                        _displayAudio(audio);
+                      },
+                    ),
+                  ],
+                ),
+                _showPhoto
+                    ? Positioned(
+                        left: 100,
+                        right: 100,
+                        top: 12,
+                        child: SizedBox(
+                          width: 600,
+                          height: 800,
+                          // color: Theme.of(context).primaryColor,
+                          child: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: GestureDetector(
+                              onTap: () {
+                                setState(() {
+                                  _showPhoto = false;
+                                });
+                              },
+                              child: PhotoCard(
+                                  photo: photo!,
+                                  onMapRequested: onMapRequested,
+                                  onRatingRequested: onPhotoRatingRequested),
+                            ),
+                          ),
+                        ))
+                    : const SizedBox(),
+                _showVideo
+                    ? Positioned(
+                        left: 100,
+                        right: 100,
+                        top: 12,
+                        child: VideoPlayerTabletPage(
+                          video: video!,
+                          onCloseRequested: () {
+                            if (mounted) {
+                              setState(() {
+                                _showVideo = false;
+                              });
+                            }
+                          },
+                        ),
+                      )
+                    : const SizedBox(),
+                _showAudio
+                    ? Positioned(
+                        left: 100,
+                        right: 100,
+                        top: 160,
+                        child: AudioPlayerCard(
+                          audio: audio!,
+                          onCloseRequested: () {
+                            if (mounted) {
+                              setState(() {
+                                _showAudio = false;
+                              });
+                            }
+                          },
+                        ))
+                    : const SizedBox(),
+              ],
+            ),
     ));
   }
 }
 ///////
+
+class PhotoCard extends StatelessWidget {
+  const PhotoCard(
+      {Key? key,
+      required this.photo,
+      required this.onMapRequested,
+      required this.onRatingRequested})
+      : super(key: key);
+
+  final Photo photo;
+  final Function(Photo) onMapRequested;
+  final Function(Photo) onRatingRequested;
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      shape: getRoundedBorder(radius: 16),
+      elevation: 8,
+      child: SingleChildScrollView(
+        child: Column(
+          children: [
+            const SizedBox(
+              height: 12,
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 48.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    '${photo.projectName}',
+                    style: myTextStyleLargePrimaryColor(context),
+                  ),
+                  IconButton(
+                      onPressed: () {
+                        pp('$mm .... put photo on a map!');
+                        onMapRequested(photo);
+                      },
+                      icon: Icon(
+                        Icons.location_on,
+                        color: Theme.of(context).primaryColor,
+                        size: 24,
+                      )),
+                  TextButton(
+                    onPressed: () {
+                      pp('$mm .... rate photo!');
+                      onRatingRequested(photo);
+                    },
+                    child: Text(
+                      E.heartRed,
+                      style: const TextStyle(fontSize: 20),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(
+              height: 12,
+            ),
+            Text(
+              '${photo.userName}',
+              style: myTextStyleSmallBold(context),
+            ),
+            const SizedBox(
+              height: 4,
+            ),
+            Text(
+              getFormattedDateShortWithTime(photo.created!, context),
+              style: myTextStyleTiny(context),
+            ),
+            const SizedBox(
+              height: 12,
+            ),
+            Padding(
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 2.0, vertical: 2.0),
+              child: InteractiveViewer(
+                  child: CachedNetworkImage(
+                      fit: BoxFit.fill,
+                      progressIndicatorBuilder:
+                          (context, url, downloadProgress) => Center(
+                              child: SizedBox(
+                                  width: 20,
+                                  height: 20,
+                                  child: CircularProgressIndicator(
+                                      backgroundColor: Colors.pink,
+                                      value: downloadProgress.progress))),
+                      errorWidget: (context, url, error) =>
+                          const Icon(Icons.error),
+                      fadeInDuration: const Duration(milliseconds: 1500),
+                      fadeInCurve: Curves.easeInOutCirc,
+                      placeholderFadeInDuration:
+                          const Duration(milliseconds: 1500),
+                      imageUrl: photo.url!)),
+            ),
+            const SizedBox(
+              height: 24,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
 
 class Headline extends StatelessWidget {
   const Headline({Key? key, required this.user, required this.paddingLeft})
@@ -853,7 +1002,7 @@ class Headline extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: 160,
+      height: 120,
       child: Column(
         children: [
           const SizedBox(
@@ -867,10 +1016,10 @@ class Headline extends StatelessWidget {
                       textStyle: Theme.of(context).textTheme.bodyLarge,
                       fontWeight: FontWeight.w900,
                       color: Theme.of(context).primaryColor,
-                      fontSize: 24),
+                      fontSize: 20),
                 ),
           const SizedBox(
-            height: 12,
+            height: 24,
           ),
           Padding(
             padding: EdgeInsets.only(left: paddingLeft),
@@ -878,18 +1027,18 @@ class Headline extends StatelessWidget {
               children: [
                 user.thumbnailUrl == null
                     ? const CircleAvatar(
-                        radius: 28,
+                        radius: 24,
                       )
                     : CircleAvatar(
                         backgroundImage: NetworkImage(user.thumbnailUrl!),
-                        radius: 28,
+                        radius: 24,
                       ),
                 const SizedBox(
                   width: 28,
                 ),
                 Text(
                   '${user.name}',
-                  style: myTextStyleLarge(context),
+                  style: myTextStyleMediumBold(context),
                 ),
               ],
             ),

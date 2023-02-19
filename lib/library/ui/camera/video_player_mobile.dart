@@ -2,13 +2,12 @@ import 'package:chewie/chewie.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:page_transition/page_transition.dart';
 import 'package:video_player/video_player.dart';
 
 import '../../data/video.dart';
 import '../../emojis.dart';
 import '../../functions.dart';
-import '../ratings/rating_adder_mobile.dart';
+import '../ratings/rating_adder.dart';
 
 class VideoPlayerMobilePage extends StatefulWidget {
   const VideoPlayerMobilePage({
@@ -28,7 +27,7 @@ class VideoPlayerMobilePageState extends State<VideoPlayerMobilePage>
   VideoPlayerController? _videoPlayerController;
   late ChewieController _chewieController;
   VoidCallback? videoPlayerListener;
-  static const mm = '🔵🔵🔵🔵 PlayVideoState 🍎 : ';
+  static const mm = '🔵🔵🔵🔵 VideoPlayerMobilePage 🍎 : ';
 
   int videoDurationInSeconds = 0;
   double videoDurationInMinutes = 0.0;
@@ -37,12 +36,15 @@ class VideoPlayerMobilePageState extends State<VideoPlayerMobilePage>
   void initState() {
     _animationController = AnimationController(vsync: this);
     super.initState();
-    pp('PlayVideo initState: ${widget.video.toJson()}  🔵🔵');
+    pp('$mm initState: ${widget.video.toJson()}  🔵🔵');
     _videoPlayerController = VideoPlayerController.network(widget.video.url!)
       ..initialize().then((_) {
         // Ensure the first frame is shown after the video is initialized, even before the play button has been pressed.
-        pp('.......... doing shit with videoController ... setting state .... '
-            '$_videoPlayerController 🍎DURATION: ${_videoPlayerController!.value.duration} seconds!');
+        pp('$mm .......... doing shit with videoController ... '
+            ' 🍎DURATION: ${_videoPlayerController!.value.duration} seconds!');
+        pp('$mm .......... doing shit with videoController ...  '
+            ' 🍎HEIGHT: ${_videoPlayerController!.value.size.height} '
+            ' 🍎WIDTH: ${_videoPlayerController!.value.size.width}!');
 
         _videoPlayerController!.addListener(_checkVideo);
         setState(() {
@@ -136,18 +138,23 @@ class VideoPlayerMobilePageState extends State<VideoPlayerMobilePage>
   void _onFavorite() async {
     pp('$mm on favorite tapped - do da bizness! navigate to RatingAdder');
 
-    Future.delayed(const Duration(milliseconds: 10), () {
-      Navigator.push(
-          context,
-          PageTransition(
-              type: PageTransitionType.leftToRightWithFade,
-              alignment: Alignment.topLeft,
-              duration: const Duration(milliseconds: 1000),
-              child: RatingAdderMobile(
-                projectId: widget.video.projectId!,
-                videoId: widget.video.videoId!,
-              )));
-    });
+    showDialog(
+        context: context,
+        barrierDismissible: true,
+        builder: (_) => Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Center(
+                child: Container(
+                    color: Colors.black12,
+                    child: RatingAdder(
+                      width: 400,
+                      video: widget.video,
+                      onDone: () {
+                        Navigator.of(context).pop();
+                      },
+                    )),
+              ),
+            ));
   }
 
   bool _showElapsed = false;

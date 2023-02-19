@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:geo_monitor/library/ui/schedule/scheduler_mobile.dart';
 import 'package:geo_monitor/library/users/kill_user_page.dart';
 import 'package:geo_monitor/library/users/list/user_list_card.dart';
-import 'package:geo_monitor/library/users/report/user_rpt_mobile.dart';
+import 'package:geo_monitor/ui/dashboard/user_dashboard.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -97,14 +97,14 @@ class UserListMobileState extends State<UserListMobile>
     super.dispose();
   }
 
-  void navigateToUserReport(User user) {
+  void navigateToUserDashboard(User user) {
     Navigator.push(
         context,
         PageTransition(
             type: PageTransitionType.scale,
             alignment: Alignment.topLeft,
             duration: const Duration(seconds: 1),
-            child: UserReportMobile(user)));
+            child: UserDashboard(user: user)));
   }
 
   void navigateToMessaging(User user) {
@@ -270,44 +270,47 @@ class UserListMobileState extends State<UserListMobile>
                   ),
                 ),
               )
-            : Column(
-                children: [
-                  const SizedBox(
-                    height: 24,
-                  ),
-                  Expanded(
-                    child: UserListCard(
-                      amInLandscape: true,
-                      users: users,
-                      avatarRadius: 20,
-                      deviceUser: user!,
-                      navigateToLocationRequest: (mUser) {
-                        _sendLocationRequest(mUser);
-                      },
-                      navigateToPhone: (mUser) {
-                        navigateToPhone(mUser);
-                      },
-                      navigateToMessaging: (user) {
-                        navigateToMessaging(user);
-                      },
-                      navigateToUserReport: (user) {
-                        navigateToUserReport(user);
-                      },
-                      navigateToUserEdit: (user) {
-                        navigateToUserEdit(user);
-                      },
-                      navigateToScheduler: (user) {
-                        navigateToScheduler(user);
-                      },
-                      navigateToKillPage: (user) {
-                        navigateToKillPage(user);
-                      },
-                      badgeTapped: () {
-                        _sort();
-                      },
+            : Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  children: [
+                    const SizedBox(
+                      height: 24,
                     ),
-                  ),
-                ],
+                    Expanded(
+                      child: UserListCard(
+                        amInLandscape: true,
+                        users: users,
+                        avatarRadius: 20,
+                        deviceUser: user!,
+                        navigateToLocationRequest: (mUser) {
+                          _sendLocationRequest(mUser);
+                        },
+                        navigateToPhone: (mUser) {
+                          navigateToPhone(mUser);
+                        },
+                        navigateToMessaging: (user) {
+                          navigateToMessaging(user);
+                        },
+                        navigateToUserReport: (user) {
+                          navigateToUserDashboard(user);
+                        },
+                        navigateToUserEdit: (user) {
+                          navigateToUserEdit(user);
+                        },
+                        navigateToScheduler: (user) {
+                          navigateToScheduler(user);
+                        },
+                        navigateToKillPage: (user) {
+                          navigateToKillPage(user);
+                        },
+                        badgeTapped: () {
+                          _sort();
+                        },
+                      ),
+                    ),
+                  ],
+                ),
               ),
       ),
     );

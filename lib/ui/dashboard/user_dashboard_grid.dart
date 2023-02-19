@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:geo_monitor/library/bloc/downloader.dart';
+import 'package:geo_monitor/ui/dashboard/dashboard_grid.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:universal_platform/universal_platform.dart';
 
@@ -12,6 +12,7 @@ import '../../library/bloc/project_bloc.dart';
 import '../../library/bloc/theme_bloc.dart';
 import '../../library/bloc/user_bloc.dart';
 import '../../library/data/audio.dart';
+import '../../library/data/data_bag.dart';
 import '../../library/data/field_monitor_schedule.dart';
 import '../../library/data/photo.dart';
 import '../../library/data/project.dart';
@@ -42,14 +43,6 @@ class UserDashboardGrid extends StatefulWidget {
 
 class _UserDashboardGridState extends State<UserDashboardGrid>
     with TickerProviderStateMixin {
-  // late AnimationController _projectAnimationController;
-  // late AnimationController _userAnimationController;
-  // late AnimationController _photoAnimationController;
-  // late AnimationController _videoAnimationController;
-  // late AnimationController _positionAnimationController;
-  // late AnimationController _polygonAnimationController;
-  // late AnimationController _audioAnimationController;
-
   late StreamSubscription<List<Project>> projectSubscription;
   late StreamSubscription<List<User>> userSubscription;
   late StreamSubscription<List<Photo>> photoSubscription;
@@ -79,6 +72,7 @@ class _UserDashboardGridState extends State<UserDashboardGrid>
   var _audios = <Audio>[];
   final dur = 2000;
   final mm = '🔵🔵🔵🔵 UserDashboardGrid:  🍎 ';
+  DataBag? dataBag;
 
   late StreamSubscription<String> killSubscriptionFCM;
 
@@ -100,16 +94,18 @@ class _UserDashboardGridState extends State<UserDashboardGrid>
       });
     }
     try {
-      var dataBag = await userBloc.getUserData(
+      dataBag = await userBloc.getUserData(
           userId: widget.user.userId!, forceRefresh: forceRefresh);
-      _projects = dataBag.projects!;
-      _users = dataBag.users!;
-      _photos = dataBag.photos!;
-      _videos = dataBag.videos!;
-      _audios = dataBag.audios!;
-      _projectPolygons = dataBag.projectPolygons!;
-      _projectPositions = dataBag.projectPositions!;
-      _schedules = dataBag.fieldMonitorSchedules!;
+      if (dataBag != null) {
+        _projects = dataBag!.projects!;
+        _users = dataBag!.users!;
+        _photos = dataBag!.photos!;
+        _videos = dataBag!.videos!;
+        _audios = dataBag!.audios!;
+        _projectPolygons = dataBag!.projectPolygons!;
+        _projectPositions = dataBag!.projectPositions!;
+        _schedules = dataBag!.fieldMonitorSchedules!;
+      }
 
       if (mounted) {
         setState(() {});
@@ -363,8 +359,6 @@ class _UserDashboardGridState extends State<UserDashboardGrid>
 
   @override
   Widget build(BuildContext context) {
-    //tablet or phone?
-
     return Scaffold(
       body: SingleChildScrollView(
         child: Column(
@@ -392,169 +386,13 @@ class _UserDashboardGridState extends State<UserDashboardGrid>
                 ),
               ],
             ),
-            SizedBox(
-              height: widget.totalHeight == null ? 900 : widget.totalHeight!,
-              child: Padding(
-                padding: const EdgeInsets.all(60.0),
-                child: GridView.count(
-                  crossAxisCount: 3,
-                  children: [
-                    GestureDetector(
-                      onTap: () {
-                        pp('$mm widget on tapped: typePhotos $typePhotos ...');
-                        widget.onTypeTapped(typePhotos);
-                      },
-                      child: UserDashboardElement(
-                        title: 'Photos',
-                        number: _photos.length,
-                        height: 300,
-                        topPadding: widget.topPadding,
-                        textStyle: GoogleFonts.secularOne(
-                            textStyle: Theme.of(context).textTheme.titleLarge,
-                            fontWeight: FontWeight.w900,
-                            color: Theme.of(context).primaryColor),
-                        onTapped: () {
-                          widget.onTypeTapped(typePhotos);
-                        },
-                      ),
-                    ),
-                    GestureDetector(
-                      onTap: () {
-                        pp('$mm widget on tapped: typeVideos $typeVideos ...');
-
-                        widget.onTypeTapped(typeVideos);
-                      },
-                      child: UserDashboardElement(
-                        title: 'Videos',
-                        topPadding: widget.topPadding,
-                        number: _videos.length,
-                        textStyle: GoogleFonts.secularOne(
-                            textStyle: Theme.of(context).textTheme.titleLarge,
-                            fontWeight: FontWeight.w900,
-                            color: Theme.of(context).primaryColor),
-                        onTapped: () {
-                          widget.onTypeTapped(typeVideos);
-                        },
-                      ),
-                    ),
-                    GestureDetector(
-                      onTap: () {
-                        pp('$mm widget on tapped: typeAudios $typeAudios ...');
-
-                        widget.onTypeTapped(typeAudios);
-                      },
-                      child: UserDashboardElement(
-                        title: 'Audio Clips',
-                        topPadding: widget.topPadding,
-                        number: _audios.length,
-                        textStyle: GoogleFonts.secularOne(
-                            textStyle: Theme.of(context).textTheme.titleLarge,
-                            fontWeight: FontWeight.w900,
-                            color: Theme.of(context).primaryColor),
-                        onTapped: () {
-                          widget.onTypeTapped(typeAudios);
-                        },
-                      ),
-                    ),
-                    GestureDetector(
-                      onTap: () {
-                        pp('$mm widget on tapped: typePositions $typePositions ...');
-
-                        widget.onTypeTapped(typePositions);
-                      },
-                      child: UserDashboardElement(
-                        title: 'Locations',
-                        topPadding: widget.topPadding,
-                        number: _projectPositions.length,
-                        textStyle: GoogleFonts.secularOne(
-                            textStyle: Theme.of(context).textTheme.titleLarge,
-                            fontWeight: FontWeight.w900,
-                            color: Colors.grey),
-                        onTapped: () {
-                          widget.onTypeTapped(typePositions);
-                        },
-                      ),
-                    ),
-                    GestureDetector(
-                      onTap: () {
-                        pp('$mm widget on tapped: typePolygons $typePolygons ...');
-
-                        widget.onTypeTapped(typePolygons);
-                      },
-                      child: UserDashboardElement(
-                        title: 'Areas',
-                        topPadding: widget.topPadding,
-                        number: _projectPolygons.length,
-                        textStyle: GoogleFonts.secularOne(
-                            textStyle: Theme.of(context).textTheme.titleLarge,
-                            fontWeight: FontWeight.w900,
-                            color: Colors.grey),
-                        onTapped: () {
-                          widget.onTypeTapped(typePolygons);
-                        },
-                      ),
-                    ),
-                    GestureDetector(
-                      onTap: () {
-                        pp('$mm widget on tapped: typeSchedules $typeSchedules ...');
-
-                        widget.onTypeTapped(typeSchedules);
-                      },
-                      child: UserDashboardElement(
-                        title: 'Schedules',
-                        topPadding: widget.topPadding,
-                        number: _schedules.length,
-                        textStyle: GoogleFonts.secularOne(
-                            textStyle: Theme.of(context).textTheme.titleLarge,
-                            fontWeight: FontWeight.w900,
-                            color: Colors.grey),
-                        onTapped: () {
-                          widget.onTypeTapped(typeSchedules);
-                        },
-                      ),
-                    ),
-                    GestureDetector(
-                      onTap: () {
-                        pp('$mm widget on tapped: typeUsers $typeUsers ...');
-
-                        widget.onTypeTapped(typeUsers);
-                      },
-                      child: UserDashboardElement(
-                        title: 'Users',
-                        topPadding: widget.topPadding,
-                        number: _users.length,
-                        textStyle: GoogleFonts.secularOne(
-                            textStyle: Theme.of(context).textTheme.titleLarge,
-                            fontWeight: FontWeight.w900,
-                            color: Colors.grey),
-                        onTapped: () {
-                          widget.onTypeTapped(typeUsers);
-                        },
-                      ),
-                    ),
-                    GestureDetector(
-                      onTap: () {
-                        pp('$mm widget on tapped: typeSchedules $typeSchedules ...');
-
-                        widget.onTypeTapped(typeSchedules);
-                      },
-                      child: UserDashboardElement(
-                        title: 'Schedules',
-                        topPadding: widget.topPadding,
-                        number: _schedules.length,
-                        textStyle: GoogleFonts.secularOne(
-                            textStyle: Theme.of(context).textTheme.titleLarge,
-                            fontWeight: FontWeight.w900,
-                            color: Colors.grey),
-                        onTapped: () {
-                          widget.onTypeTapped(typeSchedules);
-                        },
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
+            dataBag == null
+                ? const SizedBox()
+                : DashboardGrid(
+                    onTypeTapped: (type) {},
+                    dataBag: dataBag!,
+                    gridPadding: 8,
+                    crossAxisCount: 2)
           ],
         ),
       ),

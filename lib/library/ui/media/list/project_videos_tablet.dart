@@ -1,16 +1,12 @@
 import 'dart:async';
 
-import 'package:badges/badges.dart' as bd;
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:geo_monitor/library/bloc/fcm_bloc.dart';
-import 'package:google_fonts/google_fonts.dart';
+import 'package:geo_monitor/library/ui/media/video_grid.dart';
 
 import '../../../bloc/project_bloc.dart';
 import '../../../data/project.dart';
 import '../../../data/video.dart';
-import '../../../functions.dart';
-
 
 class ProjectVideosTablet extends StatefulWidget {
   final Project project;
@@ -46,6 +42,7 @@ class ProjectVideosTabletState extends State<ProjectVideosTablet> {
       }
     });
   }
+
   void _getVideos() async {
     setState(() {
       loading = true;
@@ -77,62 +74,10 @@ class ProjectVideosTabletState extends State<ProjectVideosTablet> {
                   child: Text('No videos in project'),
                 )),
           )
-        : Column(
-            children: [
-              SizedBox(
-                height: 48,
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 16.0),
-                  child: Text(
-                    widget.project.name!,
-                    style: myTextStyleMediumBold(context),
-                  ),
-                ),
-              ),
-              Expanded(
-                  child: bd.Badge(
-                badgeStyle: bd.BadgeStyle(
-                  badgeColor: Theme.of(context).primaryColor,
-                  elevation: 8,
-                  padding: const EdgeInsets.all(8),
-                ),
-                position: bd.BadgePosition.topEnd(top: 4, end: 4),
-                // padding: const EdgeInsets.all(12.0),
-                badgeContent: Text(
-                  '${videos.length}',
-                  style: myTextStyleMedium(context),
-                ),
-                // badgeColor: Colors.black,
-                // elevation: 16,
-                child: GridView.builder(
-                    gridDelegate:
-                        const SliverGridDelegateWithFixedCrossAxisCount(
-                            crossAxisSpacing: 1,
-                            crossAxisCount: 5,
-                            mainAxisSpacing: 1),
-                    itemCount: videos.length,
-                    itemBuilder: (context, index) {
-                      var video = videos.elementAt(index);
-                      // var dt = getFormattedDateShortestWithTime(
-                      //     video.created!, context);
-                      return Stack(
-                        children: [
-                          SizedBox(
-                            width: 300,
-                            child: GestureDetector(
-                              onTap: () {
-                                widget.onVideoTapped(video,index);
-                              },
-                              child: CachedNetworkImage(
-                                  imageUrl: video.thumbnailUrl!,
-                                  fit: BoxFit.cover),
-                            ),
-                          ),
-                        ],
-                      );
-                    }),
-              )),
-            ],
-          );
+        : VideoGrid(
+            videos: videos,
+            onVideoTapped: (video, index) {},
+            itemWidth: 300,
+            crossAxisCount: 5);
   }
 }

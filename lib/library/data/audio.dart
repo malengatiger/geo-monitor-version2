@@ -1,5 +1,7 @@
 import 'package:hive/hive.dart';
+
 import '../data/position.dart';
+
 part 'audio.g.dart';
 
 @HiveType(typeId: 23)
@@ -33,25 +35,31 @@ class Audio extends HiveObject {
   @HiveField(13)
   int? durationInSeconds = 0;
 
+  @HiveField(14)
+  String? userUrl;
+
   Audio(
       {required this.url,
-        this.caption,
-        this.projectPositionId,
-        this.projectPolygonId,
-        required this.created,
-        required this.userId,
-        required this.userName,
-        required this.projectPosition,
-        required this.distanceFromProjectPosition,
-        required this.projectId,
-        required this.audioId,
-        required this.durationInSeconds,
-        required this.organizationId,
-        required this.projectName}); // Audio({required this.url, this.userId, required this.created});
+      this.caption,
+      this.projectPositionId,
+      this.projectPolygonId,
+      required this.created,
+      required this.userId,
+      required this.userName,
+      required this.projectPosition,
+      required this.distanceFromProjectPosition,
+      required this.projectId,
+      required this.audioId,
+      required this.durationInSeconds,
+      required this.organizationId,
+      required this.userUrl,
+      required this.projectName}); // Audio({required this.url, this.userId, required this.created});
 
   Audio.fromJson(Map data) {
     // pp(data);
     url = data['url'];
+    userUrl = data['userUrl'];
+
     projectPositionId = data['projectPositionId'];
     projectPolygonId = data['projectPolygonId'];
     caption = data['caption'];
@@ -80,6 +88,7 @@ class Audio extends HiveObject {
   Map<String, dynamic> toJson() {
     Map<String, dynamic> map = {
       'url': url,
+      'userUrl': userUrl,
       'projectPositionId': projectPositionId,
       'projectPolygonId': projectPolygonId,
       'caption': caption,
@@ -92,7 +101,8 @@ class Audio extends HiveObject {
       'distanceFromProjectPosition': distanceFromProjectPosition,
       'projectId': projectId,
       'projectName': projectName,
-      'projectPosition': projectPosition == null ? null : projectPosition!.toJson()
+      'projectPosition':
+          projectPosition == null ? null : projectPosition!.toJson()
     };
     return map;
   }

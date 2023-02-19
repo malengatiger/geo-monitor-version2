@@ -4,10 +4,9 @@ import 'package:badges/badges.dart' as bd;
 import 'package:flutter/material.dart';
 import 'package:geo_monitor/library/bloc/fcm_bloc.dart';
 import 'package:geo_monitor/library/emojis.dart';
-import 'package:geo_monitor/library/ui/ratings/rating_adder_mobile.dart';
+import 'package:geo_monitor/library/ui/ratings/rating_adder.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:just_audio/just_audio.dart';
-import 'package:page_transition/page_transition.dart';
 
 import '../../../bloc/project_bloc.dart';
 import '../../../data/audio.dart';
@@ -171,18 +170,23 @@ class ProjectAudiosTabletState extends State<ProjectAudiosTablet> {
   void _onFavorite() async {
     pp('$mm on favorite tapped - do da bizness! navigate to RatingAdder');
 
-    Future.delayed(const Duration(milliseconds: 10), () {
-      Navigator.push(
-          context,
-          PageTransition(
-              type: PageTransitionType.leftToRightWithFade,
-              alignment: Alignment.topLeft,
-              duration: const Duration(milliseconds: 1000),
-              child: RatingAdderMobile(
-                projectId: widget.project.projectId!,
-                audioId: _selectedAudio!.audioId!,
-              )));
-    });
+    showDialog(
+        context: context,
+        barrierDismissible: true,
+        builder: (_) => Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Center(
+                child: Container(
+                    color: Colors.black12,
+                    child: RatingAdder(
+                      width: 400,
+                      audio: _selectedAudio!,
+                      onDone: () {
+                        Navigator.of(context).pop();
+                      },
+                    )),
+              ),
+            ));
   }
 
   @override
@@ -205,11 +209,11 @@ class ProjectAudiosTabletState extends State<ProjectAudiosTablet> {
                 children: [
                   Expanded(
                       child: bd.Badge(
-                    position: bd.BadgePosition.topEnd(top: -8, end: 4),
-                    badgeStyle: bd.BadgeStyle(
-                      badgeColor: Theme.of(context).primaryColor,
+                    position: bd.BadgePosition.topEnd(top: 4, end: 12),
+                    badgeStyle: const bd.BadgeStyle(
+                      badgeColor: Colors.pink,
                       elevation: 8,
-                      padding: const EdgeInsets.all(8),
+                      padding: EdgeInsets.all(8),
                     ),
                     badgeContent: Text(
                       '${audios.length}',
@@ -221,7 +225,7 @@ class ProjectAudiosTabletState extends State<ProjectAudiosTablet> {
                           gridDelegate:
                               const SliverGridDelegateWithFixedCrossAxisCount(
                                   crossAxisSpacing: 1,
-                                  crossAxisCount: 6,
+                                  crossAxisCount: 5,
                                   mainAxisSpacing: 1),
                           itemCount: audios.length,
                           itemBuilder: (context, index) {
@@ -253,24 +257,35 @@ class ProjectAudiosTabletState extends State<ProjectAudiosTablet> {
                                           padding: const EdgeInsets.all(6.0),
                                           child: SizedBox(
                                             height: 300,
-                                            width: 300,
+                                            width: 320,
                                             child: Column(
                                               children: [
                                                 const SizedBox(
-                                                  height: 12,
+                                                  height: 16,
                                                 ),
+                                                audio.userUrl == null
+                                                    ? const SizedBox(
+                                                        height: 24,
+                                                        width: 24,
+                                                        child: CircleAvatar(
+                                                          child: Icon(
+                                                            Icons.mic,
+                                                            size: 20,
+                                                          ),
+                                                        ),
+                                                      )
+                                                    : SizedBox(
+                                                        height: 32,
+                                                        width: 32,
+                                                        child: CircleAvatar(
+                                                          radius: 32,
+                                                          backgroundImage:
+                                                              NetworkImage(audio
+                                                                  .userUrl!),
+                                                        ),
+                                                      ),
                                                 const SizedBox(
-                                                  height: 28,
-                                                  width: 28,
-                                                  child: CircleAvatar(
-                                                    child: Icon(
-                                                      Icons.mic,
-                                                      size: 24,
-                                                    ),
-                                                  ),
-                                                ),
-                                                const SizedBox(
-                                                  height: 8,
+                                                  height: 16,
                                                 ),
                                                 Text(
                                                   dt,
@@ -278,7 +293,7 @@ class ProjectAudiosTabletState extends State<ProjectAudiosTablet> {
                                                       myTextStyleTiny(context),
                                                 ),
                                                 const SizedBox(
-                                                  height: 8,
+                                                  height: 16,
                                                 ),
                                                 Row(
                                                   mainAxisAlignment:
@@ -287,8 +302,9 @@ class ProjectAudiosTabletState extends State<ProjectAudiosTablet> {
                                                     Flexible(
                                                         child: Text(
                                                       '${audio.userName}',
-                                                      style: myTextStyleTiny(
-                                                          context),
+                                                      style:
+                                                          myTextStyleTinyBold(
+                                                              context),
                                                     )),
                                                   ],
                                                 ),
@@ -315,7 +331,7 @@ class ProjectAudiosTabletState extends State<ProjectAudiosTablet> {
                                                                   .textTheme
                                                                   .bodySmall,
                                                           fontWeight:
-                                                              FontWeight.normal,
+                                                              FontWeight.bold,
                                                           fontSize: 10,
                                                           color: Theme.of(
                                                                   context)

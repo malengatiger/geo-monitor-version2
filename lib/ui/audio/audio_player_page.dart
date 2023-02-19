@@ -10,6 +10,8 @@ import 'package:siri_wave/siri_wave.dart';
 
 import '../../library/data/audio.dart';
 import '../../library/data/user.dart';
+import '../../library/emojis.dart';
+import '../../library/ui/ratings/rating_adder.dart';
 
 class AudioPlayerCard extends StatefulWidget {
   const AudioPlayerCard(
@@ -33,12 +35,7 @@ class AudioPlayerCardState extends State<AudioPlayerCard>
   late AnimationController _animationController;
   final mm = '🎽🎽🎽🎽🎽🎽🎽🎽 AudioPlayerPage: ';
   AudioPlayer audioPlayer = AudioPlayer();
-  //  final controller = SiriWaveController(
-//    amplitude: 0.5,
-//    color: Colors.red,
-//    frequency: 4,
-//    speed: 0.15,
-//  );
+
   final controller = SiriWaveController();
   Duration? duration;
   bool isPlaying = false;
@@ -187,6 +184,28 @@ class AudioPlayerCardState extends State<AudioPlayerCard>
     });
   }
 
+  void _onFavorite() async {
+    pp('$mm on favorite tapped - do da bizness! navigate to RatingAdder');
+
+    showDialog(
+        context: context,
+        barrierDismissible: true,
+        builder: (_) => Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Center(
+                child: Container(
+                    color: Colors.black12,
+                    child: RatingAdder(
+                      width: 400,
+                      audio: widget.audio,
+                      onDone: () {
+                        Navigator.of(context).pop();
+                      },
+                    )),
+              ),
+            ));
+  }
+
   @override
   void dispose() {
     _animationController.dispose();
@@ -209,13 +228,13 @@ class AudioPlayerCardState extends State<AudioPlayerCard>
     }
 
     return SizedBox(
-      width: widget.width ?? width - 200,
+      width: widget.width ?? width,
       height: widget.height ?? height - delta,
       child: Card(
         shape: getRoundedBorder(radius: 16),
         elevation: 8,
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 48.0, vertical: 20),
+          padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 10),
           child: SizedBox(
             height: height - delta,
             child: Column(
@@ -244,6 +263,16 @@ class AudioPlayerCardState extends State<AudioPlayerCard>
                 Row(
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
+                    TextButton(
+                      onPressed: _onFavorite,
+                      child: Text(
+                        E.heartRed,
+                        style: const TextStyle(fontSize: 20),
+                      ),
+                    ),
+                    const SizedBox(
+                      width: 24,
+                    ),
                     IconButton(
                         onPressed: () {
                           widget.onCloseRequested();
@@ -259,27 +288,27 @@ class AudioPlayerCardState extends State<AudioPlayerCard>
                   style: myTextStyleLarge(context),
                 ),
                 const SizedBox(
-                  height: 60,
+                  height: 32,
                 ),
-                Row(
+                Column(
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: [
                     SizedBox(
-                      width: 100,
+                      width: 80,
                       child: Text(
                         'Created by:',
                         style: myTextStyleSmall(context),
                       ),
                     ),
                     const SizedBox(
-                      width: 12,
+                      height: 12,
                     ),
                     Text(
                       '${widget.audio.userName}',
                       style: myTextStyleLargePrimaryColor(context),
                     ),
                     const SizedBox(
-                      width: 28,
+                      height: 28,
                     ),
                     user == null
                         ? const SizedBox()
@@ -290,17 +319,14 @@ class AudioPlayerCardState extends State<AudioPlayerCard>
                   ],
                 ),
                 const SizedBox(
-                  height: 16,
+                  height: 24,
                 ),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: [
-                    SizedBox(
-                      width: 100,
-                      child: Text(
-                        'Created at:',
-                        style: myTextStyleSmall(context),
-                      ),
+                    Text(
+                      'Created at:',
+                      style: myTextStyleSmall(context),
                     ),
                     const SizedBox(
                       width: 12,
@@ -325,19 +351,12 @@ class AudioPlayerCardState extends State<AudioPlayerCard>
                     ? const SizedBox()
                     : Row(
                         children: [
-                          SizedBox(
-                            width: 100,
-                            child: Text(
-                              'Duration:',
-                              style: myTextStyleSmall(context),
-                            ),
+                          Text(
+                            'Duration:',
+                            style: myTextStyleSmall(context),
                           ),
                           const SizedBox(
                             width: 12,
-                          ),
-                          Text(
-                            'Elapsed Time:',
-                            style: myTextStyleSmall(context),
                           ),
                           const SizedBox(
                             width: 8,
@@ -372,14 +391,14 @@ class AudioPlayerCardState extends State<AudioPlayerCard>
                         ],
                       ),
                 const SizedBox(
-                  height: 40,
+                  height: 8,
                 ),
                 _showWave
                     ? Card(
                         color: Theme.of(context).dialogBackgroundColor,
                         shape: getRoundedBorder(radius: 16),
                         child: SizedBox(
-                          height: 80,
+                          height: 60,
                           child: SiriWave(
                               options: SiriWaveOptions(
                                   backgroundColor:
@@ -388,7 +407,7 @@ class AudioPlayerCardState extends State<AudioPlayerCard>
                         ))
                     : const SizedBox(),
                 const SizedBox(
-                  height: 16,
+                  height: 8,
                 ),
                 _showControls
                     ? isPlaying
@@ -396,7 +415,7 @@ class AudioPlayerCardState extends State<AudioPlayerCard>
                         : const SizedBox()
                     : const SizedBox(),
                 const SizedBox(
-                  height: 24,
+                  height: 16,
                 ),
                 _showControls
                     ? PlayerControls(

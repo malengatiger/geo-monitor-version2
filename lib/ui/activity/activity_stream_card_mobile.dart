@@ -6,24 +6,26 @@ import 'package:geo_monitor/library/functions.dart';
 import '../../library/data/activity_type_enum.dart';
 import '../../library/data/user.dart';
 
-class ActivityStreamCard extends StatefulWidget {
-  const ActivityStreamCard(
+class ActivityStreamCardMobile extends StatefulWidget {
+  const ActivityStreamCardMobile(
       {Key? key,
       required this.model,
       required this.frontPadding,
       required this.thinMode,
       required this.width})
       : super(key: key);
+
   final ActivityModel model;
   final double frontPadding;
   final bool thinMode;
   final double width;
 
   @override
-  ActivityStreamCardState createState() => ActivityStreamCardState();
+  ActivityStreamCardMobileState createState() =>
+      ActivityStreamCardMobileState();
 }
 
-class ActivityStreamCardState extends State<ActivityStreamCard> {
+class ActivityStreamCardMobileState extends State<ActivityStreamCardMobile> {
   User? user;
   @override
   void initState() {
@@ -186,102 +188,125 @@ class ActivityStreamCardState extends State<ActivityStreamCard> {
               );
   }
 
-  Widget _getGeneric(Icon icon, String msg) {
-    final localDate =
-        DateTime.parse(widget.model.date!).toLocal().toIso8601String();
+  Widget _getGeneric({required Icon icon, required String? msg}) {
+    int? duration;
+    if (widget.model.audio != null) {
+      if (widget.model.audio!.durationInSeconds != null) {
+        duration = widget.model.audio!.durationInSeconds!;
+      }
+    }
+    if (widget.model.video != null) {
+      if (widget.model.video!.durationInSeconds != null) {
+        duration = widget.model.video!.durationInSeconds!;
+      }
+    }
+    var mDuration = '';
+    if (duration != null) {
+      mDuration = getHourMinuteSecond(Duration(seconds: duration));
+    }
+    var height = 80;
+    if (msg == null) {
+      if (mDuration.isEmpty) {
+        height = 80;
+      } else {
+        height = 120;
+      }
+    } else {
+      height = 120;
+    }
 
-    final dt = getFormattedDateHourMinuteSecond(
-        date: DateTime.parse(localDate), context: context);
-
-    return widget.thinMode
-        ? Card(
-            shape: getRoundedBorder(radius: 16),
-            child: Padding(
-              padding: const EdgeInsets.all(12.0),
-              child: SizedBox(
-                height: 80,
-                child: Column(
-                  children: [
-                    const SizedBox(
-                      height: 12,
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
-                        Text(
-                          dt,
-                          style: myTextStyleSmallBoldPrimaryColor(context),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(
-                      height: 12,
-                    ),
-                    Row(
+    return Card(
+      shape: getRoundedBorder(radius: 16),
+      child: Padding(
+        padding: const EdgeInsets.all(12.0),
+        child: SizedBox(
+          height: height.toDouble(),
+          child: Column(
+            children: [
+              const SizedBox(
+                height: 12,
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  icon,
+                  const SizedBox(
+                    width: 8,
+                  ),
+                  Text(
+                    getFormattedDateShortWithTime(widget.model.date!, context),
+                    style: myTextStyleSmall(context),
+                  ),
+                ],
+              ),
+              SizedBox(
+                height: mDuration.isEmpty ? 0 : 12,
+              ),
+              mDuration.isNotEmpty
+                  ? Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        icon,
+                        Text(
+                          'Duration:',
+                          style: myTextStyleTiny(context),
+                        ),
                         const SizedBox(
                           width: 12,
+                        ),
+                        Text(
+                          mDuration,
+                          style: myNumberStyleMediumPrimaryColor(context),
+                        )
+                      ],
+                    )
+                  : const SizedBox(),
+              SizedBox(
+                height: mDuration.isEmpty ? 8 : 12,
+              ),
+              msg == null
+                  ? const SizedBox()
+                  : Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const SizedBox(
+                          width: 28,
                         ),
                         Flexible(
                           child: Text(
                             msg,
-                            style: myTextStyleTiny(context),
+                            style: myTextStyleSmall(context),
                           ),
                         ),
                       ],
                     ),
-                    const SizedBox(
-                      height: 12,
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          )
-        : Card(
-            shape: getRoundedBorder(radius: 16),
-            child: Padding(
-              padding: const EdgeInsets.all(20.0),
-              child: SizedBox(
-                height: 60,
-                child: Column(
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.start,
+              user == null
+                  ? const SizedBox()
+                  : Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        icon,
-                        const SizedBox(
-                          width: 8,
-                        ),
                         Text(
-                          msg,
+                          '${user!.name}',
                           style: myTextStyleSmall(context),
                         ),
+                        const SizedBox(
+                          width: 12,
+                        ),
+                        user!.thumbnailUrl == null
+                            ? const CircleAvatar(
+                                radius: 14,
+                              )
+                            : CircleAvatar(
+                                backgroundImage:
+                                    NetworkImage(user!.thumbnailUrl!),
+                                radius: 18,
+                              )
                       ],
-                    ),
-                    const SizedBox(
-                      height: 16,
-                    ),
-                    Padding(
-                      padding:
-                          EdgeInsets.symmetric(horizontal: widget.frontPadding),
-                      child: Row(
-                        children: [
-                          Text(
-                            getFormattedDateShortWithTime(
-                                widget.model.date!, context),
-                            style: myTextStyleTiny(context),
-                          )
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          );
+                    )
+            ],
+          ),
+        ),
+      ),
+    );
   }
 
   @override
@@ -292,85 +317,82 @@ class ActivityStreamCardState extends State<ActivityStreamCard> {
     switch (widget.model.activityType!) {
       case ActivityType.projectAdded:
         icon = Icon(Icons.access_time, color: Theme.of(context).primaryColor);
-        message = 'Project added: ${widget.model.projectName}';
-        return _getGeneric(icon, message);
-        break;
+        message = 'Project Added: \n${widget.model.projectName}';
+        return _getGeneric(icon: icon, msg: message);
+
       case ActivityType.photoAdded:
         icon = Icon(Icons.camera_alt, color: Theme.of(context).primaryColor);
-        message = '${widget.model.projectName}';
-        return _getGeneric(icon, message);
-        break;
+        return _getGeneric(icon: icon, msg: null);
+
       case ActivityType.videoAdded:
         icon = Icon(Icons.video_camera_front,
             color: Theme.of(context).primaryColorLight);
-        message = '${widget.model.projectName}';
-        return _getGeneric(icon, message);
-        break;
+        return _getGeneric(icon: icon, msg: null);
+
       case ActivityType.audioAdded:
         icon = Icon(Icons.mic, color: Theme.of(context).primaryColor);
-        message = '${widget.model.projectName}';
-        return _getGeneric(icon, message);
-        break;
+        return _getGeneric(icon: icon, msg: null);
+
       case ActivityType.messageAdded:
         icon = Icon(Icons.message, color: Theme.of(context).primaryColor);
-        message = 'Message added';
-        return _getGeneric(icon, message);
-        break;
+        message = 'Message:';
+        return _getGeneric(icon: icon, msg: message);
+
       case ActivityType.userAddedOrModified:
         icon = Icon(Icons.person, color: Theme.of(context).primaryColor);
         message = 'Added, modified or signed in';
         return _getUserAdded(icon, message);
-        break;
+
       case ActivityType.positionAdded:
         icon = Icon(Icons.home, color: Theme.of(context).primaryColor);
-        message = 'Location added: ${widget.model.projectName}';
-        return _getGeneric(icon, message);
-        break;
+        message = 'Location added:\n${widget.model.projectName}';
+        return _getGeneric(icon: icon, msg: message);
+
       case ActivityType.polygonAdded:
         icon =
             Icon(Icons.circle_outlined, color: Theme.of(context).primaryColor);
-        message = 'Area added: ${widget.model.projectName}';
-        return _getGeneric(icon, message);
-        break;
+        message = 'Area added: \n${widget.model.projectName}';
+        return _getGeneric(icon: icon, msg: message);
+
       case ActivityType.settingsChanged:
         icon = Icon(Icons.settings, color: Theme.of(context).primaryColor);
         message = 'Settings changed or added';
-        return _getGeneric(icon, message);
-        break;
+        return _getGeneric(icon: icon, msg: message);
+
       case ActivityType.geofenceEventAdded:
         icon = Icon(Icons.person_2, color: Theme.of(context).primaryColor);
-        message = 'At: ${widget.model.geofenceEvent!.projectName!}';
+        message =
+            'Possible Member Arrival: \n${widget.model.geofenceEvent!.projectName!}';
         return _getUserAdded(icon, message);
-        break;
+
       case ActivityType.conditionAdded:
         icon = Icon(Icons.access_alarm, color: Theme.of(context).primaryColor);
-        message = 'Project Condition added';
-        return _getGeneric(icon, message);
-        break;
+        message = 'Condition added: ${widget.model.projectName}';
+        return _getGeneric(icon: icon, msg: message);
+
       case ActivityType.locationRequest:
         icon = Icon(Icons.location_on, color: Theme.of(context).primaryColor);
         message =
             'Location requested from ${widget.model.locationRequest!.userName}';
-        return _getGeneric(icon, message);
-        break;
+        return _getGeneric(icon: icon, msg: message);
+
       case ActivityType.locationResponse:
         icon =
             Icon(Icons.location_history, color: Theme.of(context).primaryColor);
         message =
             'Location request responded to by ${widget.model.locationResponse!.userName}';
-        return _getGeneric(icon, message);
-        break;
+        return _getGeneric(icon: icon, msg: message);
+
       case ActivityType.kill:
         icon = Icon(Icons.cancel, color: Theme.of(context).primaryColor);
         message = 'User KILL request made, cancel ${widget.model.userName}';
-        return _getGeneric(icon, message);
-        break;
+        return _getGeneric(icon: icon, msg: message);
+
       default:
         return const SizedBox(
           width: 300,
           child: Text('We got a problem, Senor!'),
         );
-        break;
     }
   }
 }

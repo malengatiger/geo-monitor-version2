@@ -2,13 +2,12 @@ import 'package:chewie/chewie.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:page_transition/page_transition.dart';
 import 'package:video_player/video_player.dart';
 
 import '../../data/video.dart';
 import '../../emojis.dart';
 import '../../functions.dart';
-import '../ratings/rating_adder_mobile.dart';
+import '../ratings/rating_adder.dart';
 
 class VideoPlayerTabletPage extends StatefulWidget {
   const VideoPlayerTabletPage({
@@ -147,19 +146,23 @@ class VideoPlayerTabletPageState extends State<VideoPlayerTabletPage>
 
   void _onFavorite() async {
     pp('$mm on favorite tapped - do da bizness! navigate to RatingAdder');
-
-    Future.delayed(const Duration(milliseconds: 10), () {
-      Navigator.push(
-          context,
-          PageTransition(
-              type: PageTransitionType.leftToRightWithFade,
-              alignment: Alignment.topLeft,
-              duration: const Duration(milliseconds: 1000),
-              child: RatingAdderMobile(
-                projectId: widget.video.projectId!,
-                videoId: widget.video.videoId!,
-              )));
-    });
+    showDialog(
+        context: context,
+        barrierDismissible: true,
+        builder: (_) => Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Center(
+                child: Container(
+                    color: Colors.black12,
+                    child: RatingAdder(
+                      width: 500,
+                      video: widget.video,
+                      onDone: () {
+                        Navigator.of(context).pop();
+                      },
+                    )),
+              ),
+            ));
   }
 
   bool _showElapsed = false;

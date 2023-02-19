@@ -1,9 +1,8 @@
-import 'dart:io';
-
-import 'package:flutter/material.dart';
 import 'package:chewie/chewie.dart';
+import 'package:flutter/material.dart';
 import 'package:geo_monitor/library/generic_functions.dart';
 import 'package:video_player/video_player.dart';
+
 import '../../bloc/project_bloc.dart';
 import '../../data/project.dart';
 import '../../data/video.dart';
@@ -26,7 +25,7 @@ class ChewieVideoPlayerState extends State<ChewieVideoPlayer>
   ChewieController? chewieController;
 
   //
-  final mm = '🤟🏾🤟🏾🤟🏾🤟🏾🤟🏾🤟🏾🤟🏾 ChewieVideoPlayer: ';
+  final mm = '🤟🏾🤟🏾🤟🏾🤟🏾🤟🏾🤟🏾🤟🏾 ChewieVideoPlayer: 🤟🏾';
   Chewie? playerWidget;
   var videos = <Video>[];
   bool busy = false;
@@ -116,6 +115,10 @@ class ChewieVideoPlayerState extends State<ChewieVideoPlayer>
 
     await videoPlayerController!.initialize();
     duration = videoPlayerController!.value.duration;
+    pp('$mm video duration: 🍎 ${duration?.inSeconds} seconds 🍎 ..............');
+
+    var size = videoPlayerController!.value.size;
+    pp('$mm video size: 🍎 $size  🍎 ..............');
 
     _createChewieController();
     setState(() {});
@@ -368,18 +371,23 @@ class ChewieVideoPlayerState extends State<ChewieVideoPlayer>
                       : const SizedBox(),
                 ),
               )),
-          !_showDetails? Positioned(
-            bottom: 24, right: 8,
-            child: SizedBox(width: 48, height: 48,
-              child: IconButton(
-                  onPressed: () {
-                    setState(() {
-                      _showDetails = true;
-                    });
-                  },
-                  icon: const Icon(Icons.open_in_new)),
-            ),
-          ) : const SizedBox(),
+          !_showDetails
+              ? Positioned(
+                  bottom: 24,
+                  right: 8,
+                  child: SizedBox(
+                    width: 48,
+                    height: 48,
+                    child: IconButton(
+                        onPressed: () {
+                          setState(() {
+                            _showDetails = true;
+                          });
+                        },
+                        icon: const Icon(Icons.open_in_new)),
+                  ),
+                )
+              : const SizedBox(),
         ],
       ),
     ));

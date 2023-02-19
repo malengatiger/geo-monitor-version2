@@ -1,5 +1,7 @@
 import 'package:hive/hive.dart';
+
 import '../data/position.dart';
+
 part 'video.g.dart';
 
 @HiveType(typeId: 10)
@@ -32,22 +34,35 @@ class Video extends HiveObject {
   String? projectName;
   @HiveField(13)
   String? projectPolygonId;
+  @HiveField(14)
+  int? durationInSeconds;
+
+  @HiveField(15)
+  double? width;
+  @HiveField(16)
+  double? height;
+  @HiveField(17)
+  String? userUrl;
 
   Video(
       {required this.url,
-        this.caption,
-        this.projectPositionId,
-        this.projectPolygonId,
-        required this.created,
-        required this.userId,
-        required this.userName,
-        required this.projectPosition,
-        required this.distanceFromProjectPosition,
-        required this.projectId,
-        required this.thumbnailUrl,
-        required this.videoId,
-        required this.organizationId,
-        required this.projectName}); // Video({required this.url, this.userId, required this.created});
+      this.caption,
+      this.projectPositionId,
+      this.projectPolygonId,
+      required this.created,
+      required this.userId,
+      required this.userName,
+      required this.projectPosition,
+      required this.distanceFromProjectPosition,
+      required this.projectId,
+      required this.thumbnailUrl,
+      required this.videoId,
+      required this.durationInSeconds,
+      required this.organizationId,
+      required this.height,
+      required this.width,
+      required this.userUrl,
+      required this.projectName}); // Video({required this.url, this.userId, required this.created});
 
   Video.fromJson(Map data) {
     url = data['url'];
@@ -56,10 +71,14 @@ class Video extends HiveObject {
     caption = data['caption'];
     created = data['created'];
     userId = data['userId'];
+    userUrl = data['userUrl'];
     organizationId = data['organizationId'];
+    durationInSeconds = data['durationInSeconds'];
     thumbnailUrl = data['thumbnailUrl'];
     videoId = data['videoId'];
     userName = data['userName'];
+    height = data['height'];
+    width = data['width'];
     distanceFromProjectPosition = data['distanceFromProjectPosition'];
     projectId = data['projectId'];
     projectName = data['projectName'];
@@ -74,15 +93,20 @@ class Video extends HiveObject {
       'projectPolygonId': projectPolygonId,
       'caption': caption,
       'created': created,
+      'userUrl': userUrl,
       'userId': userId,
       'videoId': videoId,
       'organizationId': organizationId,
+      'durationInSeconds': durationInSeconds,
       'userName': userName,
       'thumbnailUrl': thumbnailUrl,
       'distanceFromProjectPosition': distanceFromProjectPosition,
       'projectId': projectId,
       'projectName': projectName,
-      'projectPosition': projectPosition == null ? null : projectPosition!.toJson()
+      'width': width,
+      'height': height,
+      'projectPosition':
+          projectPosition == null ? null : projectPosition!.toJson()
     };
     return map;
   }

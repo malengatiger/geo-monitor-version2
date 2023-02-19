@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:focused_menu/focused_menu.dart';
 import 'package:focused_menu/modals.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 import '../../data/project.dart';
 import '../../data/user.dart';
@@ -18,7 +17,8 @@ class ProjectListCard extends StatelessWidget {
       required this.navigateToProjectMap,
       required this.navigateToProjectPolygonMap,
       required this.navigateToProjectDashboard,
-      required this.user, required this.horizontalPadding})
+      required this.user,
+      required this.horizontalPadding})
       : super(key: key);
 
   final List<Project> projects;
@@ -151,6 +151,7 @@ class ProjectListCard extends StatelessWidget {
 
       return menuItems;
     }
+
     return SizedBox(
       width: width,
       child: ListView.builder(

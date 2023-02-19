@@ -2,13 +2,12 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:page_transition/page_transition.dart';
 
 import '../../../data/photo.dart';
 import '../../../data/project.dart';
 import '../../../emojis.dart';
 import '../../../functions.dart';
-import '../../ratings/rating_adder_mobile.dart';
+import '../../ratings/rating_adder.dart';
 
 class FullPhotoMobile extends StatefulWidget {
   final Photo photo;
@@ -62,27 +61,32 @@ class FullPhotoMobileState extends State<FullPhotoMobile>
   void _onFavorite() async {
     pp(' 😡😡😡 on favorite tapped - do da bizness! navigate to RatingAdder');
 
-    Future.delayed(const Duration(milliseconds: 10), () {
-      Navigator.push(
-          context,
-          PageTransition(
-              type: PageTransitionType.leftToRightWithFade,
-              alignment: Alignment.topLeft,
-              duration: const Duration(milliseconds: 1000),
-              child: RatingAdderMobile(
-                projectId: widget.project.projectId!,
-                photoId: widget.photo.photoId!,
-              )));
-    });
+    showDialog(
+        context: context,
+        barrierDismissible: true,
+        builder: (_) => Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Center(
+                child: Container(
+                    color: Colors.black12,
+                    child: RatingAdder(
+                      width: 400,
+                      photo: widget.photo,
+                      onDone: () {
+                        Navigator.of(context).pop();
+                      },
+                    )),
+              ),
+            ));
   }
 
   @override
   Widget build(BuildContext context) {
-    var height = 800.0;
-    var width = 600.0;
+    var height = MediaQuery.of(context).size.height;
+    var width = MediaQuery.of(context).size.width;
     if (widget.photo.landscape == 0) {
-      width = 800.0;
-      height = 600.0;
+      width = MediaQuery.of(context).size.height;
+      height = MediaQuery.of(context).size.width;
     }
     return SafeArea(
       child: Scaffold(
@@ -96,7 +100,7 @@ class FullPhotoMobileState extends State<FullPhotoMobile>
                 child: CachedNetworkImage(
                   imageUrl: widget.photo.url!,
                   fadeInDuration: const Duration(milliseconds: 500),
-                  fit: BoxFit.cover,
+                  fit: BoxFit.fill,
                   width: width,
                   height: height,
                   progressIndicatorBuilder: (context, url, downloadProgress) =>

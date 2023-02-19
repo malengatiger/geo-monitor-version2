@@ -6,7 +6,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:map_launcher/map_launcher.dart';
 import 'package:page_transition/page_transition.dart';
 
-import '../../../ui/dashboard/dashboard_mobile.dart';
+import '../../../ui/dashboard/dashboard_portrait.dart';
 import '../../bloc/project_bloc.dart';
 import '../../data/position.dart';
 import '../../data/project.dart';

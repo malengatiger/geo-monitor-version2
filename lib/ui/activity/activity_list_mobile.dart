@@ -1,11 +1,10 @@
 import 'dart:async';
 
-import 'package:animations/animations.dart';
-import 'package:badges/badges.dart' as bd;
 import 'package:flutter/material.dart';
 import 'package:geo_monitor/library/bloc/fcm_bloc.dart';
 import 'package:geo_monitor/library/bloc/organization_bloc.dart';
 import 'package:geo_monitor/ui/activity/activity_header.dart';
+import 'package:geo_monitor/ui/activity/activity_stream_card_mobile.dart';
 
 import '../../library/api/prefs_og.dart';
 import '../../library/bloc/project_bloc.dart';
@@ -23,7 +22,6 @@ import '../../library/data/user.dart';
 import '../../library/data/video.dart';
 import '../../library/functions.dart';
 import '../../library/generic_functions.dart';
-import 'activity_stream_card.dart';
 
 class ActivityListMobile extends StatefulWidget {
   const ActivityListMobile({
@@ -77,7 +75,6 @@ class _ActivityListMobileState extends State<ActivityListMobile>
         reverseDuration: const Duration(milliseconds: 1000),
         vsync: this);
     super.initState();
-
     _getData(true);
     _listenToFCM();
   }
@@ -104,13 +101,11 @@ class _ActivityListMobileState extends State<ActivityListMobile>
       }
       pp('$mm ... get Activity (n hours) ... : $hours');
       if (widget.project != null) {
-        _getProjectData(forceRefresh, hours);
+        await _getProjectData(forceRefresh, hours);
       } else if (widget.user != null) {
-        _getUserData(forceRefresh, hours);
-      } else if (widget.project != null) {
-        _getProjectData(forceRefresh, hours);
+        await _getUserData(forceRefresh, hours);
       } else {
-        _getOrganizationData(forceRefresh, hours);
+        await _getOrganizationData(forceRefresh, hours);
       }
       _sortDescending();
       _animationController.reset();
@@ -126,21 +121,21 @@ class _ActivityListMobileState extends State<ActivityListMobile>
     });
   }
 
-  void _getOrganizationData(bool forceRefresh, int hours) async {
+  Future _getOrganizationData(bool forceRefresh, int hours) async {
     models = await organizationBloc.getOrganizationActivity(
         organizationId: settings!.organizationId!,
         hours: hours,
         forceRefresh: forceRefresh);
   }
 
-  void _getProjectData(bool forceRefresh, int hours) async {
+  Future _getProjectData(bool forceRefresh, int hours) async {
     models = await projectBloc.getProjectActivity(
         projectId: widget.project!.projectId!,
         hours: hours,
         forceRefresh: forceRefresh);
   }
 
-  void _getUserData(bool forceRefresh, int hours) async {
+  Future _getUserData(bool forceRefresh, int hours) async {
     models = await userBloc.getUserActivity(
         userId: widget.user!.userId!, hours: hours, forceRefresh: forceRefresh);
   }
@@ -236,82 +231,85 @@ class _ActivityListMobileState extends State<ActivityListMobile>
     }
     if (models.isEmpty) {
       return Center(
-        child: Card(
-          child: Padding(
-            padding: const EdgeInsets.all(20.0),
-            child: Text(
-              'No activities happening yet',
-              style: myTextStyleSmall(context),
+        child: InkWell(
+          onTap: () {
+            _getData(true);
+          },
+          child: Card(
+            child: Padding(
+              padding: const EdgeInsets.all(20.0),
+              child: Text(
+                'No activities happening yet',
+                style: myTextStyleMediumPrimaryColor(context),
+              ),
             ),
           ),
         ),
       );
     }
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: Column(
+    return SafeArea(
+        child: Scaffold(
+      appBar: AppBar(
+        title: const Text('Project Activity'),
+        bottom: PreferredSize(
+            preferredSize: const Size.fromHeight(40),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  '${widget.project?.name!}',
+                  style: myTextStyleLargePrimaryColor(context),
+                ),
+                const SizedBox(
+                  height: 24,
+                )
+              ],
+            )),
+      ),
+      body: Column(
         children: [
           InkWell(
             onTap: () {
               _getData(true);
             },
-            child: ActivityHeader(
-              onRefreshRequested: () {
-                _getData(true);
-              },
-              hours: settings == null ? 12 : settings!.activityStreamHours!,
-              number: models.length,
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: ActivityHeader(
+                onRefreshRequested: () {
+                  _getData(true);
+                },
+                hours: settings == null ? 12 : settings!.activityStreamHours!,
+                number: models.length,
+              ),
             ),
           ),
           const SizedBox(
             height: 20,
           ),
           Expanded(
-            child: InkWell(
-              onTap: () {
-                _getData(true);
-              },
-              child: bd.Badge(
-                position: bd.BadgePosition.topEnd(end: 12),
-                badgeContent: Text(
-                  '${models.length}',
-                  style: myTextStyleSmall(context),
-                ),
-                badgeStyle: const bd.BadgeStyle(
-                    elevation: 8,
-                    badgeColor: Colors.pink,
-                    padding: EdgeInsets.all(16.0)),
-                child: ListView.builder(
-                    itemCount: models.length,
-                    controller: listScrollController,
-                    itemBuilder: (_, index) {
-                      var act = models.elementAt(index);
-                      return GestureDetector(
-                          onTap: () {
-                            _handleTappedActivity(act);
-                          },
-                          child: AnimatedBuilder(
-                            animation: _animationController,
-                            builder: (BuildContext context, Widget? child) {
-                              return FadeScaleTransition(
-                                animation: _animationController,
-                                child: child,
-                              );
-                            },
-                            child: ActivityStreamCard(
-                              model: act,
-                              frontPadding: 36,
-                              thinMode: false,
-                              width: width,
-                            ),
-                          ));
-                    }),
-              ),
+            child: Padding(
+              padding: const EdgeInsets.all(12.0),
+              child: ListView.builder(
+                  itemCount: models.length,
+                  controller: listScrollController,
+                  itemBuilder: (_, index) {
+                    var act = models.elementAt(index);
+                    return GestureDetector(
+                        onTap: () {
+                          _handleTappedActivity(act);
+                        },
+                        child: ActivityStreamCardMobile(
+                          model: act,
+                          frontPadding: 36,
+                          thinMode: false,
+                          width: width,
+                        ));
+                  }),
             ),
           ),
         ],
       ),
-    );
+    ));
   }
 
   Future<void> _handleTappedActivity(ActivityModel act) async {

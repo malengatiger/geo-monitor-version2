@@ -15,9 +15,10 @@ import 'package:native_device_orientation/native_device_orientation.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:uuid/uuid.dart';
+import 'package:video_player/video_player.dart';
 
 import '../../../device_location/device_location_bloc.dart';
-import '../../../ui/dashboard/dashboard_mobile.dart';
+import '../../../ui/dashboard/dashboard_portrait.dart';
 import '../../bloc/project_bloc.dart';
 import '../../bloc/video_for_upload.dart';
 import '../../cache_manager.dart';
@@ -107,24 +108,31 @@ class VideoHandlerState extends State<VideoHandler>
     });
   }
 
+  int start = 0;
+  VideoPlayerController? _videoPlayerController;
   void _startVideo() async {
     pp('$mm video making started ....');
     setState(() {
       videoIsReady = false;
     });
+    var minutes = 0;
     var settings = await prefsOGx.getSettings();
     if (settings != null) {
-      var minutes = settings.maxVideoLengthInMinutes;
-      final XFile? file = await _picker.pickVideo(
-          source: ImageSource.camera,
-          maxDuration: Duration(minutes: minutes!),
-          preferredCameraDevice: CameraDevice.rear);
-
-      if (file != null) {
-        await _processFile(file);
-        setState(() {});
-      }
+      minutes = settings.maxVideoLengthInMinutes!;
     }
+
+    final XFile? file = await _picker
+        .pickVideo(
+            source: ImageSource.camera,
+            maxDuration: Duration(minutes: minutes),
+            preferredCameraDevice: CameraDevice.rear)
+        .whenComplete(() {});
+
+    if (file != null) {
+      await _processFile(file);
+      setState(() {});
+    }
+
     // file.saveTo(path);
   }
 
@@ -133,7 +141,8 @@ class VideoHandlerState extends State<VideoHandler>
     final Directory directory = await getApplicationDocumentsDirectory();
     const x = '/video';
     final File mFile =
-        File('${directory.path}$x${DateTime.now().millisecondsSinceEpoch}.jpg');
+        File('${directory.path}$x${DateTime.now().millisecondsSinceEpoch}.mp4');
+
     const z = '/video_thumbnail';
     final File tFile =
         File('${directory.path}$z${DateTime.now().millisecondsSinceEpoch}.jpg');
@@ -145,6 +154,7 @@ class VideoHandlerState extends State<VideoHandler>
 
     var thumbnailFile0 = await getVideoThumbnail(mImageFile);
     await thumbnailFile0.copy(tFile.path);
+
     pp('$mm _processFile 🔵🔵🔵 video file to upload: ${mFile.path}'
         ' size: ${await mFile.length()} bytes 🔵');
 
@@ -153,24 +163,13 @@ class VideoHandlerState extends State<VideoHandler>
       thumbnailFile = tFile;
     });
 
-    var loc = await locationBloc.getLocation();
-    if (loc != null) {
-      var position =
-          Position(type: 'Point', coordinates: [loc.longitude, loc.latitude]);
-      var videoForUpload = VideoForUpload(
-          filePath: mFile.path,
-          thumbnailPath: tFile.path,
-          project: widget.project,
-          videoId: const Uuid().v4(),
-          position: position,
-          date: DateTime.now().toUtc().toIso8601String());
-
-      await cacheManager.addVideoForUpload(video: videoForUpload);
-    }
-
     var size = await finalFile!.length();
     var m = (size / 1024 / 1024).toStringAsFixed(2);
     pp('$mm Video made is $m MB in size');
+    await _danceWithTheVideo(
+      videoFile: mFile,
+      thumbnailFile: tFile,
+    );
     if (mounted) {
       showToast(
           context: context,
@@ -180,6 +179,31 @@ class VideoHandlerState extends State<VideoHandler>
           toastGravity: ToastGravity.TOP,
           duration: const Duration(seconds: 2));
     }
+  }
+
+  Future<void> _danceWithTheVideo({
+    required File videoFile,
+    required File thumbnailFile,
+  }) async {
+    pp('$mm.......... _danceWithTheVideo ... Take Me To Church!!');
+    var loc = await locationBloc.getLocation();
+    Position? position;
+    if (loc != null) {
+      position =
+          Position(type: 'Point', coordinates: [loc.longitude, loc.latitude]);
+    }
+    var videoForUpload = VideoForUpload(
+        filePath: videoFile.path,
+        thumbnailPath: thumbnailFile.path,
+        project: widget.project,
+        videoId: const Uuid().v4(),
+        durationInSeconds: 0,
+        position: position,
+        width: 0.0,
+        height: 0.0,
+        date: DateTime.now().toUtc().toIso8601String());
+
+    await cacheManager.addVideoForUpload(video: videoForUpload);
   }
 
   void _startNextVideo() {

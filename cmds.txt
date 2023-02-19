@@ -6,7 +6,9 @@ curl -sL https://firebase.tools | bash
 
 flutter pub cache clean
 
-#  flutter packages pub run build_runner build --delete-conflicting-outputs
+flutter packages pub run build_runner build --delete-conflicting-outputs
+
+flutter build apk -v --no-tree-shake-icons
 
 $ brew update
 $ brew install --HEAD libimobiledevice

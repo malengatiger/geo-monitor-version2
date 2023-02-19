@@ -6,6 +6,7 @@ import 'dart:ui';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:uuid/uuid.dart';
+import 'package:video_player/video_player.dart';
 
 import '../../device_location/device_location_bloc.dart';
 import '../api/data_api.dart';
@@ -44,6 +45,12 @@ class Uploader {
   final photosUploaded = <PhotoForUpload>[];
   final videosUploaded = <VideoForUpload>[];
   final audiosUploaded = <AudioForUpload>[];
+
+  VideoPlayerController? _videoPlayerController;
+  var videoHeight = 0.0;
+  var videoWidth = 0.0;
+  var videoDurationInSeconds = 0;
+  var videoDurationInMinutes = 0.0;
 
   Future<bool> photoHasBeenUploaded(PhotoForUpload photo) async {
     var deleteList = <PhotoForUpload>[];
@@ -237,6 +244,7 @@ class Uploader {
       pp('$mm️ uploadPhoto ☕️☕️☕️☕️☕️☕️☕️file path: \n${file.path}');
 
       uploadTask = firebaseStorageRef.putFile(file);
+      _reportProgress(uploadTask);
       taskSnapshot = await uploadTask.whenComplete(() {});
       url = await taskSnapshot.ref.getDownloadURL();
       pp('$mm file url is available, meaning that upload is complete: \n$url');
@@ -283,6 +291,7 @@ class Uploader {
           '${distance.toStringAsFixed(2)} metres 😡😡');
       photo = Photo(
           url: url,
+          userUrl: user!.imageUrl,
           caption: 'tbd',
           created: photoForUploading.date,
           userId: user!.userId,
@@ -329,6 +338,7 @@ class Uploader {
             longitude: videoForUpload.position!.coordinates[0],
             toLatitude: projectPosition.position!.coordinates[1],
             toLongitude: projectPosition.position!.coordinates[0]);
+
         if (dist <= videoForUpload.project!.monitorMaxDistanceInMetres!) {
           pp('$mm video was taken within project boundary .... will be uploaded.');
           var result = await _sendVideoToCloud(videoForUpload);
@@ -357,6 +367,37 @@ class Uploader {
     }
   }
 
+  Future _getVideoMetadata(
+      {required VideoForUpload videoForUpload, required String url}) async {
+    pp('\n\n$mm _processVideo:  ... ️💛️💛 getting duration .... ');
+
+    try {
+      _videoPlayerController = VideoPlayerController.network(url);
+      if (_videoPlayerController != null) {
+        pp('\n\n$mm _processVideo:  ... ️💛️💛 videoPlayerController!.initialize .... ');
+        await _videoPlayerController!.initialize();
+        pp('$mm _processVideo: doing shit with videoController ... getting duration .... '
+            ' 🍎DURATION: ${_videoPlayerController!.value.duration} seconds!');
+
+        var size = _videoPlayerController?.value.size;
+        videoHeight = size!.height;
+        videoWidth = size.width;
+        pp('$mm  size of video ... ️💛️💛 '
+            'videoHeight: $videoHeight videoWidth: $videoWidth .... ');
+        if (_videoPlayerController != null) {
+          videoDurationInSeconds =
+              _videoPlayerController!.value.duration.inSeconds;
+
+          videoForUpload.durationInSeconds = videoDurationInSeconds;
+          videoForUpload.height = videoHeight;
+          videoForUpload.width = videoWidth;
+        }
+      }
+    } catch (e) {
+      pp('\n\n$mm _processVideo:  ... we down with the video controller, Boss? could not get metadata : $e \n');
+    }
+  }
+
   Future<int> _sendVideoToCloud(VideoForUpload videoForUpload) async {
     var isUploaded = videoHasBeenUploaded(videoForUpload);
     if (await isUploaded) {
@@ -367,13 +408,13 @@ class Uploader {
     var thumbUrl = 'unknown';
     late UploadTask uploadTask;
     late TaskSnapshot taskSnapshot;
+    var file = File(videoForUpload.filePath!);
     try {
-      var file = File(videoForUpload.filePath!);
       if (!file.existsSync()) {
         await cacheManager.removeUploadedVideo(video: videoForUpload);
         return 9;
       }
-      pp('$mm️ uploadVideo file path: \n${file.path}');
+      pp('$mm️ uploadVideo: file path: ${file.path}');
       //upload main file
       var fileName =
           'video@${videoForUpload.project!.projectId}@${DateTime.now().toUtc().toIso8601String()}.${'mp4'}';
@@ -382,7 +423,7 @@ class Uploader {
           .child(videoStorageName)
           .child(fileName);
       uploadTask = firebaseStorageRef.putFile(file);
-
+      _reportProgress(uploadTask);
       taskSnapshot = await uploadTask.whenComplete(() {});
       url = await taskSnapshot.ref.getDownloadURL();
       pp('$mm file url is available, meaning that upload is complete: \n$url');
@@ -404,6 +445,7 @@ class Uploader {
       thumbUrl = await thumbTaskSnapshot.ref.getDownloadURL();
       pp('$mm thumbnail file url is available, meaning that upload is complete: \n$thumbUrl');
       _printSnapshot(thumbTaskSnapshot, 'VIDEO THUMBNAIL');
+      await _getVideoMetadata(videoForUpload: videoForUpload, url: url);
     } catch (e) {
       pp(e);
       return 9;
@@ -419,10 +461,15 @@ class Uploader {
       pp('$mm adding video ..... 😡😡 distance: '
           '${distance.toStringAsFixed(2)} metres 😡😡');
       var u = const Uuid();
+
       video = Video(
           url: url,
+          userUrl: user!.imageUrl,
           caption: 'tbd',
           created: videoForUpload.date,
+          durationInSeconds: videoForUpload.durationInSeconds,
+          width: videoForUpload.width,
+          height: videoForUpload.height,
           userId: user!.userId,
           userName: user!.name,
           projectPosition: videoForUpload.position,
@@ -472,8 +519,8 @@ class Uploader {
     }
   }
 
-  Future<int> _sendAudioToCloud(AudioForUpload audioForUplooading) async {
-    var isUploaded = audioHasBeenUploaded(audioForUplooading);
+  Future<int> _sendAudioToCloud(AudioForUpload audioForUploading) async {
+    var isUploaded = audioHasBeenUploaded(audioForUploading);
     if (await isUploaded) {
       pp('$mm a duplicate of this audio was found on uploaded list, already uploaded; quit!');
       return 9;
@@ -482,15 +529,16 @@ class Uploader {
     String url = 'unknown';
     UploadTask? uploadTask;
     var fileName =
-        'audio@${audioForUplooading.project!.organizationId}@${audioForUplooading.project!.projectId}@${DateTime.now().toUtc().toIso8601String()}.mp3';
+        'audio@${audioForUploading.project!.organizationId}@${audioForUploading.project!.projectId}@${DateTime.now().toUtc().toIso8601String()}.mp3';
     var firebaseStorageRef =
         FirebaseStorage.instance.ref().child(audioStorageName).child(fileName);
-    var file = File(audioForUplooading.filePath!);
+    var file = File(audioForUploading.filePath!);
     if (!file.existsSync()) {
-      await cacheManager.removeUploadedAudio(audio: audioForUplooading);
+      await cacheManager.removeUploadedAudio(audio: audioForUploading);
       return 9;
     }
     uploadTask = firebaseStorageRef.putFile(file);
+    _reportProgress(uploadTask);
     var taskSnapshot = await uploadTask.whenComplete(() {});
     url = await taskSnapshot.ref.getDownloadURL();
     pp('$mm file url is available, meaning that upload is complete: \n$url');
@@ -498,28 +546,39 @@ class Uploader {
     var dur = await audioPlayer.setUrl(url);
     var audio = Audio(
         url: url,
-        created: audioForUplooading.date,
+        userUrl: user!.imageUrl,
+        created: audioForUploading.date,
         userId: user!.userId,
         userName: user!.name,
         projectPosition: null,
         distanceFromProjectPosition: 0.0,
-        projectId: audioForUplooading.project!.projectId,
-        audioId: audioForUplooading.audioId,
-        organizationId: audioForUplooading.project!.organizationId,
-        projectName: audioForUplooading.project!.name,
+        projectId: audioForUploading.project!.projectId,
+        audioId: audioForUploading.audioId,
+        organizationId: audioForUploading.project!.organizationId,
+        projectName: audioForUploading.project!.name,
         durationInSeconds: dur!.inSeconds);
 
     try {
       var result = await DataAPI.addAudio(audio);
       await cacheManager.addAudio(audio: audio);
       await organizationBloc.addAudioToStream(result);
-      await cacheManager.removeUploadedAudio(audio: audioForUplooading);
-      audiosUploaded.add(audioForUplooading);
+      await cacheManager.removeUploadedAudio(audio: audioForUploading);
+      audiosUploaded.add(audioForUploading);
       pp('\n$mm audio upload process completed OK');
     } catch (e) {
       pp(e);
       return 9;
     }
     return 0;
+  }
+
+  void _reportProgress(UploadTask uploadTask) {
+    uploadTask.snapshotEvents.listen((event) {
+      var totalByteCount = event.totalBytes;
+      var bytesTransferred = event.bytesTransferred;
+      var bt = '${(bytesTransferred / 1024).toStringAsFixed(2)} KB';
+      var tot = '${(totalByteCount / 1024).toStringAsFixed(2)} KB';
+      pp('️$mm  💚💚💚 progress ******* 🧩 $bt KB of $tot KB 🧩 transferred 💚');
+    });
   }
 }

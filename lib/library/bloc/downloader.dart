@@ -406,17 +406,17 @@ Future<void> heavyTask(DownloadParameters params) async {
   downloaderService.start(params: params);
 }
 
-const typeUsers = 7,
-    typeError = 17,
-    typeOrgData = 0,
-    typeMessage = 10,
-    typeProjects = 1,
-    typePhotos = 2,
-    typeVideos = 3,
-    typeAudios = 4,
-    typeSettings = 5,
-    typePositions = 11,
-    typePolygons = 12,
-    typeSchedules = 6;
+const typeUsers = 1,
+    typeError = 2,
+    typeOrgData = 3,
+    typeMessage = 4,
+    typeProjects = 5,
+    typePhotos = 6,
+    typeVideos = 7,
+    typeAudios = 8,
+    typeSettings = 9,
+    typePositions = 10,
+    typePolygons = 11,
+    typeSchedules = 12;
 
 const statusBusy = 200, statusDone = 201, statusError = 500;

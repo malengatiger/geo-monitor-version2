@@ -112,7 +112,7 @@ class _ActivityListTabletState extends State<ActivityListTablet>
       } else if (widget.user != null) {
         _getUserData(forceRefresh, hours);
       } else {
-        _getOrganizationData(forceRefresh, hours);
+        _getOrganizationActivity(forceRefresh, hours);
       }
       _sortDescending();
       _animationController.reset();
@@ -128,11 +128,12 @@ class _ActivityListTabletState extends State<ActivityListTablet>
     });
   }
 
-  void _getOrganizationData(bool forceRefresh, int hours) async {
+  void _getOrganizationActivity(bool forceRefresh, int hours) async {
     models = await organizationBloc.getOrganizationActivity(
         organizationId: settings!.organizationId!,
         hours: hours,
         forceRefresh: forceRefresh);
+    _sortDescending();
     setState(() {});
   }
 
@@ -141,12 +142,14 @@ class _ActivityListTabletState extends State<ActivityListTablet>
         projectId: widget.project!.projectId!,
         hours: hours,
         forceRefresh: forceRefresh);
+    _sortDescending();
     setState(() {});
   }
 
   void _getUserData(bool forceRefresh, int hours) async {
     models = await userBloc.getUserActivity(
         userId: widget.user!.userId!, hours: hours, forceRefresh: forceRefresh);
+    _sortDescending();
     setState(() {});
   }
 
@@ -156,6 +159,14 @@ class _ActivityListTabletState extends State<ActivityListTablet>
     subscription = fcmBloc.activityStream.listen((ActivityModel model) {
       pp('\n\n$mm activityStream delivered activity data ... '
           'current models: ${models.length}\n\n');
+
+      if (model.geofenceEvent != null) {
+        models.insert(0, model);
+        pp('$mm current models after insertion: ${models.length}\n');
+        _sortDescending();
+        return;
+      }
+
       if (isActivityValid(model)) {
         models.insert(0, model);
         pp('$mm current models after insertion: ${models.length}\n');
@@ -301,7 +312,7 @@ class _ActivityListTabletState extends State<ActivityListTablet>
                           model: act,
                           frontPadding: 36,
                           thinMode: widget.thinMode,
-                          width: widget.thinMode ? 160 : widget.width,
+                          width: widget.thinMode ? 300 : widget.width,
                         ),
                       );
                     }),

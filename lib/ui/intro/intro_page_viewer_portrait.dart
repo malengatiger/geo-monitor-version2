@@ -14,7 +14,7 @@ import '../../library/data/user.dart' as ur;
 import '../../library/emojis.dart';
 import '../../library/functions.dart';
 import '../../library/generic_functions.dart';
-import '../dashboard/dashboard_mobile.dart';
+import '../dashboard/dashboard_portrait.dart';
 import '../intro/intro_page_one.dart';
 
 class IntroPageViewerPortrait extends StatefulWidget {

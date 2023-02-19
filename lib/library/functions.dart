@@ -127,6 +127,22 @@ TextStyle myTextStyleTiny(BuildContext context) {
   );
 }
 
+TextStyle myTextStyleTinyBold(BuildContext context) {
+  return GoogleFonts.lato(
+    textStyle: Theme.of(context).textTheme.bodySmall,
+    fontWeight: FontWeight.bold,
+    fontSize: 10,
+  );
+}
+
+TextStyle myTextStyleTinyBoldPrimaryColor(BuildContext context) {
+  return GoogleFonts.lato(
+      textStyle: Theme.of(context).textTheme.bodySmall,
+      fontWeight: FontWeight.bold,
+      fontSize: 10,
+      color: Theme.of(context).primaryColor);
+}
+
 TextStyle myTextStyleSmallBlack(BuildContext context) {
   return GoogleFonts.lato(
       textStyle: Theme.of(context).textTheme.bodySmall,

@@ -68,9 +68,10 @@ class UserListCard extends StatelessWidget {
       // pp('$mm Field monitor cannot edit any other users');
     } else {
       list.add(FocusedMenuItem(
-          title: Text('View Report', style: myTextStyleSmallBlack(context)),
+          title:
+              Text('Member Dashboard', style: myTextStyleSmallBlack(context)),
           trailingIcon: Icon(
-            Icons.report,
+            Icons.dashboard,
             color: Theme.of(context).primaryColor,
           ),
           onPressed: () {
@@ -78,7 +79,7 @@ class UserListCard extends StatelessWidget {
           }));
       list.add(FocusedMenuItem(
           title: Text(
-            'Edit User',
+            'Edit Member',
             style: myTextStyleSmallBlack(context),
           ),
           trailingIcon: Icon(

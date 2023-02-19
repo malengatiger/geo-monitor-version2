@@ -1,4 +1,5 @@
 import 'package:hive/hive.dart';
+
 import '../data/position.dart';
 
 part 'photo.g.dart';
@@ -41,6 +42,8 @@ class Photo extends HiveObject {
   @HiveField(16)
   String? projectPolygonId;
 
+  @HiveField(17)
+  String? userUrl;
 
   Photo(
       {required this.url,
@@ -57,8 +60,9 @@ class Photo extends HiveObject {
       required this.projectName,
       required this.height,
       this.projectPositionId,
-        this.projectPolygonId,
+      this.projectPolygonId,
       required this.width,
+      required this.userUrl,
       required this.landscape});
 
   Photo.fromJson(Map data) {
@@ -66,7 +70,7 @@ class Photo extends HiveObject {
     // prettyPrint(data, "Photo from json");
     projectPositionId = data['projectPositionId'];
     projectPolygonId = data['projectPolygonId'];
-
+    userUrl = data['userUrl'];
     url = data['url'];
     thumbnailUrl = data['thumbnailUrl'];
     caption = data['caption'];
@@ -91,6 +95,7 @@ class Photo extends HiveObject {
   Map<String, dynamic> toJson() {
     Map<String, dynamic> map = {
       'url': url,
+      'userUrl': userUrl,
       'landscape': landscape,
       'projectPositionId': projectPositionId,
       'projectPolygonId': projectPolygonId,

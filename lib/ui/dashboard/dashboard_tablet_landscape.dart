@@ -1,8 +1,10 @@
-import 'package:cached_network_image/cached_network_image.dart';
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:geo_monitor/library/bloc/fcm_bloc.dart';
 import 'package:geo_monitor/library/bloc/organization_bloc.dart';
+import 'package:geo_monitor/library/data/activity_model.dart';
 import 'package:geo_monitor/library/ui/camera/video_player_tablet.dart';
 import 'package:geo_monitor/library/ui/media/list/project_media_main.dart';
 import 'package:geo_monitor/library/ui/settings/settings_main.dart';
@@ -10,13 +12,19 @@ import 'package:geo_monitor/ui/activity/geo_activity_tablet.dart';
 import 'package:geo_monitor/ui/dashboard/dashboard_grid.dart';
 import 'package:geo_monitor/ui/intro/intro_main.dart';
 import 'package:page_transition/page_transition.dart';
+import 'package:universal_platform/universal_platform.dart';
 
 import '../../library/api/prefs_og.dart';
 import '../../library/bloc/downloader.dart';
+import '../../library/bloc/theme_bloc.dart';
 import '../../library/data/audio.dart';
 import '../../library/data/data_bag.dart';
+import '../../library/data/field_monitor_schedule.dart';
 import '../../library/data/photo.dart';
 import '../../library/data/project.dart';
+import '../../library/data/project_polygon.dart';
+import '../../library/data/project_position.dart';
+import '../../library/data/settings_model.dart';
 import '../../library/data/user.dart';
 import '../../library/data/video.dart';
 import '../../library/functions.dart';
@@ -28,6 +36,7 @@ import '../../library/ui/project_list/project_list_main.dart';
 import '../../library/users/full_user_photo.dart';
 import '../../library/users/list/user_list_main.dart';
 import '../audio/audio_player_page.dart';
+import 'dashboard_tablet_portrait.dart';
 
 class DashboardTabletLandscape extends StatefulWidget {
   const DashboardTabletLandscape({Key? key, required this.user})
@@ -41,6 +50,26 @@ class DashboardTabletLandscape extends StatefulWidget {
 
 class _DashboardTabletLandscapeState extends State<DashboardTabletLandscape> {
   final mm = '🍎🍎🍎🍎 DashboardTabletLandscape: ';
+  late StreamSubscription<List<Project>> projectSubscription;
+  late StreamSubscription<List<User>> userSubscription;
+  late StreamSubscription<List<Photo>> photoSubscription;
+  late StreamSubscription<List<Video>> videoSubscription;
+  late StreamSubscription<List<Audio>> audioSubscription;
+  late StreamSubscription<List<ProjectPosition>> projectPositionSubscription;
+  late StreamSubscription<List<ProjectPolygon>> projectPolygonSubscription;
+  late StreamSubscription<List<FieldMonitorSchedule>> schedulesSubscription;
+
+  late StreamSubscription<Photo> photoSubscriptionFCM;
+  late StreamSubscription<Video> videoSubscriptionFCM;
+  late StreamSubscription<Audio> audioSubscriptionFCM;
+  late StreamSubscription<ProjectPosition> projectPositionSubscriptionFCM;
+  late StreamSubscription<ProjectPolygon> projectPolygonSubscriptionFCM;
+  late StreamSubscription<Project> projectSubscriptionFCM;
+  late StreamSubscription<User> userSubscriptionFCM;
+  late StreamSubscription<SettingsModel> settingsSubscriptionFCM;
+  late StreamSubscription<ActivityModel> activitySubscriptionFCM;
+
+  late StreamSubscription<String> killSubscriptionFCM;
   var users = <User>[];
   User? user;
   DataBag? dataBag;
@@ -49,14 +78,86 @@ class _DashboardTabletLandscapeState extends State<DashboardTabletLandscape> {
   @override
   void initState() {
     super.initState();
-    _listenToFCM();
+    _listenForFCM();
     _getData(false);
   }
 
-  void _listenToFCM() async {
-    fcmBloc.activityStream.listen((event) {
-      pp('$mm activityStream delivered: ${event.toJson()}');
-    });
+  void _listenForFCM() async {
+    var android = UniversalPlatform.isAndroid;
+    var ios = UniversalPlatform.isIOS;
+    if (android || ios) {
+      pp('$mm 🍎 🍎 _listen to FCM message streams ... 🍎 🍎');
+      pp('$mm ... _listenToFCM activityStream ...');
+
+      activitySubscriptionFCM =
+          fcmBloc.activityStream.listen((ActivityModel model) {
+        pp('\n\n$mm activityStream delivered activity data ... ${model.toJson()}\n\n');
+        _getData(false);
+        if (mounted) {
+          setState(() {});
+        }
+      });
+      projectSubscriptionFCM =
+          fcmBloc.projectStream.listen((Project project) async {
+        _getData(false);
+        if (mounted) {
+          pp('$mm: 🍎 🍎 project arrived: ${project.name} ... 🍎 🍎');
+          setState(() {});
+        }
+      });
+
+      killSubscriptionFCM = listenForKill(context: context);
+
+      settingsSubscriptionFCM = fcmBloc.settingsStream.listen((settings) async {
+        pp('$mm: 🍎🍎 settings arrived with themeIndex: ${settings.themeIndex}... 🍎🍎');
+        themeBloc.themeStreamController.sink.add(settings.themeIndex!);
+        if (mounted) {
+          setState(() {});
+        }
+      });
+      userSubscriptionFCM = fcmBloc.userStream.listen((user) async {
+        pp('$mm: 🍎 🍎 user arrived... 🍎 🍎');
+        _getData(false);
+        if (mounted) {
+          setState(() {});
+        }
+      });
+      photoSubscriptionFCM = fcmBloc.photoStream.listen((user) async {
+        pp('$mm: 🍎 🍎 photoSubscriptionFCM photo arrived... 🍎 🍎');
+        _getData(false);
+        if (mounted) {
+          setState(() {});
+        }
+      });
+
+      videoSubscriptionFCM = fcmBloc.videoStream.listen((Video message) async {
+        pp('$mm: 🍎 🍎 videoSubscriptionFCM video arrived... 🍎 🍎');
+        _getData(false);
+        if (mounted) {
+          pp('DashboardMobile: 🍎 🍎 showMessageSnackbar: ${message.projectName} ... 🍎 🍎');
+          setState(() {});
+        }
+      });
+      audioSubscriptionFCM = fcmBloc.audioStream.listen((Audio message) async {
+        pp('$mm: 🍎 🍎 audioSubscriptionFCM audio arrived... 🍎 🍎');
+        _getData(false);
+        if (mounted) {}
+      });
+      projectPositionSubscriptionFCM =
+          fcmBloc.projectPositionStream.listen((ProjectPosition message) async {
+        pp('$mm: 🍎 🍎 projectPositionSubscriptionFCM position arrived... 🍎 🍎');
+        _getData(false);
+        if (mounted) {}
+      });
+      projectPolygonSubscriptionFCM =
+          fcmBloc.projectPolygonStream.listen((ProjectPolygon message) async {
+        pp('$mm: 🍎 🍎 projectPolygonSubscriptionFCM polygon arrived... 🍎 🍎');
+        _getData(false);
+        if (mounted) {}
+      });
+    } else {
+      pp('App is running on the Web 👿👿👿firebase messaging is OFF 👿👿👿');
+    }
   }
 
   void _getData(bool forceRefresh) async {
@@ -281,6 +382,14 @@ class _DashboardTabletLandscapeState extends State<DashboardTabletLandscape> {
     }
   }
 
+  onMapRequested(Photo p1) {
+    pp('$mm onMapRequested ... ');
+  }
+
+  onRatingRequested(Photo p1) {
+    pp('$mm onRatingRequested ...');
+  }
+
   Project? selectedProject;
   bool _showPhoto = false;
   bool _showVideo = false;
@@ -382,12 +491,15 @@ class _DashboardTabletLandscapeState extends State<DashboardTabletLandscape> {
           Row(
             children: [
               SizedBox(
-                width: (size.width / 2) + 60,
+                width: (size.width / 2) + 100,
                 child: dataBag == null
                     ? const SizedBox()
                     : DashboardGrid(
                         dataBag: dataBag!,
-                        topPadding: 24,
+                        crossAxisCount: 3,
+                        topPadding: 12,
+                        elementPadding: 48,
+                        leftPadding: 12,
                         onTypeTapped: (type) {
                           switch (type) {
                             case typeProjects:
@@ -397,31 +509,32 @@ class _DashboardTabletLandscapeState extends State<DashboardTabletLandscape> {
                               _navigateToUserList();
                               break;
                             case typePhotos:
-                              _showProjectDialog(typePhotos);
+                              _navigateToProjectList();
                               break;
                             case typeVideos:
-                              _showProjectDialog(typeVideos);
+                              _navigateToProjectList();
                               break;
                             case typeAudios:
-                              _showProjectDialog(typeAudios);
+                              _navigateToProjectList();
                               break;
                             case typePositions:
-                              _showProjectDialog(typePositions);
+                              _navigateToProjectList();
                               break;
                             case typePolygons:
-                              _showProjectDialog(typePolygons);
+                              _navigateToProjectList();
                               break;
                             case typeSchedules:
-                              _showProjectDialog(typeSchedules);
+                              _navigateToProjectList();
                               break;
                           }
                         },
+                        gridPadding: 80,
                       ),
               ),
               GeoActivityTablet(
-                width: (size.width / 2) - 100,
+                width: (size.width / 2) - 200,
                 forceRefresh: true,
-                thinMode: false,
+                thinMode: true,
                 showPhoto: (photo) {
                   _displayPhoto(photo);
                 },
@@ -468,89 +581,10 @@ class _DashboardTabletLandscapeState extends State<DashboardTabletLandscape> {
                             _showPhoto = false;
                           });
                         },
-                        child: Card(
-                          shape: getRoundedBorder(radius: 16),
-                          elevation: 8,
-                          child: Column(
-                            children: [
-                              const SizedBox(
-                                height: 12,
-                              ),
-                              Padding(
-                                padding:
-                                    const EdgeInsets.symmetric(horizontal: 8.0),
-                                child: Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Text(
-                                      '${photo!.projectName}',
-                                      style: myTextStyleMediumPrimaryColor(
-                                          context),
-                                    ),
-                                    IconButton(
-                                        onPressed: () {
-                                          pp('$mm .... put photo on a map!');
-                                          _navigateToPhotoMap();
-                                        },
-                                        icon: Icon(
-                                          Icons.location_on,
-                                          color: Theme.of(context).primaryColor,
-                                          size: 24,
-                                        )),
-                                  ],
-                                ),
-                              ),
-                              const SizedBox(
-                                height: 12,
-                              ),
-                              Text(
-                                '${photo!.userName}',
-                                style: myTextStyleSmallBold(context),
-                              ),
-                              const SizedBox(
-                                height: 4,
-                              ),
-                              Text(
-                                getFormattedDateShortWithTime(
-                                    photo!.created!, context),
-                                style: myTextStyleTiny(context),
-                              ),
-                              const SizedBox(
-                                height: 12,
-                              ),
-                              Expanded(
-                                child: Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 2.0, vertical: 2.0),
-                                  child: InteractiveViewer(
-                                      child: CachedNetworkImage(
-                                          fit: BoxFit.cover,
-                                          progressIndicatorBuilder: (context,
-                                                  url, downloadProgress) =>
-                                              Center(
-                                                  child: SizedBox(
-                                                      width: 24,
-                                                      height: 24,
-                                                      child: CircularProgressIndicator(
-                                                          backgroundColor:
-                                                              Theme.of(context)
-                                                                  .primaryColor,
-                                                          value: downloadProgress
-                                                              .progress))),
-                                          errorWidget: (context, url, error) =>
-                                              const Icon(Icons.error),
-                                          fadeInDuration: const Duration(
-                                              milliseconds: 1500),
-                                          fadeInCurve: Curves.easeInOutCirc,
-                                          placeholderFadeInDuration:
-                                              const Duration(milliseconds: 1500),
-                                          imageUrl: photo!.url!)),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
+                        child: PhotoCard(
+                            photo: photo!,
+                            onMapRequested: onMapRequested,
+                            onRatingRequested: onRatingRequested),
                       ),
                     ),
                   ))

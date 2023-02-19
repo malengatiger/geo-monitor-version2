@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:animations/animations.dart';
 import 'package:firebase_auth/firebase_auth.dart' as fb;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -8,8 +7,7 @@ import 'package:geo_monitor/library/data/geofence_event.dart';
 import 'package:geo_monitor/library/data/settings_model.dart';
 import 'package:geo_monitor/library/ui/maps/project_map_mobile.dart';
 import 'package:geo_monitor/library/ui/media/list/project_media_list_mobile.dart';
-import 'package:geofence_service/geofence_service.dart';
-
+import 'package:geo_monitor/ui/activity/activity_list_mobile.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:universal_platform/universal_platform.dart';
@@ -20,7 +18,6 @@ import '../../library/bloc/fcm_bloc.dart';
 import '../../library/bloc/organization_bloc.dart';
 import '../../library/bloc/project_bloc.dart';
 import '../../library/bloc/theme_bloc.dart';
-import '../../library/bloc/uploader.dart';
 import '../../library/data/audio.dart';
 import '../../library/data/data_bag.dart';
 import '../../library/data/field_monitor_schedule.dart';
@@ -32,20 +29,18 @@ import '../../library/data/user.dart';
 import '../../library/data/video.dart';
 import '../../library/emojis.dart';
 import '../../library/functions.dart';
-import '../../library/geofence/geofencer_two.dart';
 import '../../library/ui/media/user_media_list/user_media_list_mobile.dart';
 import '../../library/ui/message/message_main.dart';
-import '../../library/ui/project_list/project_chooser.dart';
 import '../../library/ui/project_list/project_list_mobile.dart';
 import '../../library/ui/settings/settings_mobile.dart';
-import '../../library/users/list/user_list_main.dart';
 import '../intro/intro_page_viewer_portrait.dart';
-import 'dashboard_mobile.dart';
+import 'dashboard_portrait.dart';
 
 class ProjectDashboardMobile extends StatefulWidget {
   const ProjectDashboardMobile({
     Key? key,
-    this.user, required this.project,
+    this.user,
+    required this.project,
   }) : super(key: key);
   final Project project;
   final User? user;
@@ -55,13 +50,7 @@ class ProjectDashboardMobile extends StatefulWidget {
 
 class ProjectDashboardMobileState extends State<ProjectDashboardMobile>
     with TickerProviderStateMixin {
-  late AnimationController _projectAnimationController;
-  late AnimationController _userAnimationController;
-  late AnimationController _photoAnimationController;
-  late AnimationController _videoAnimationController;
-  late AnimationController _positionAnimationController;
-  late AnimationController _polygonAnimationController;
-  late AnimationController _audioAnimationController;
+  late AnimationController _gridViewAnimationController;
 
   var busy = false;
   var _projects = <Project>[];
@@ -81,66 +70,21 @@ class ProjectDashboardMobileState extends State<ProjectDashboardMobile>
 
   @override
   void initState() {
-    _setAnimationControllers();
+    // _setAnimationControllers();
     super.initState();
     _setItems();
     _listenToStreams();
     _listenForFCM();
-    _getAuthenticationStatus();
 
     if (widget.user != null) {
       _refreshData(true);
     } else {
       _refreshData(false);
     }
-    _subscribeToConnectivity();
-    _subscribeToGeofenceStream();
-    _startTimer();
-  }
-
-  void _setAnimationControllers() {
-    _projectAnimationController = AnimationController(
-        duration: Duration(milliseconds: dur),
-        reverseDuration: Duration(milliseconds: dur),
-        vsync: this);
-    _audioAnimationController = AnimationController(
-        duration: Duration(milliseconds: dur),
-        reverseDuration: Duration(milliseconds: dur),
-        vsync: this);
-    _userAnimationController = AnimationController(
-        duration: Duration(milliseconds: dur),
-        reverseDuration: Duration(milliseconds: dur),
-        vsync: this);
-    _photoAnimationController = AnimationController(
-        duration: Duration(milliseconds: dur),
-        reverseDuration: Duration(milliseconds: dur),
-        vsync: this);
-    _videoAnimationController = AnimationController(
-        duration: Duration(milliseconds: dur),
-        reverseDuration: Duration(milliseconds: dur),
-        vsync: this);
-    _polygonAnimationController = AnimationController(
-        duration: Duration(milliseconds: dur),
-        reverseDuration: Duration(milliseconds: dur),
-        vsync: this);
-    _positionAnimationController = AnimationController(
-        duration: Duration(milliseconds: dur),
-        reverseDuration: Duration(milliseconds: dur),
-        vsync: this);
   }
 
   final fb.FirebaseAuth firebaseAuth = fb.FirebaseAuth.instance;
   bool authed = false;
-
-  void _getAuthenticationStatus() async {
-    var cUser = firebaseAuth.currentUser;
-    if (cUser == null) {
-      Future.delayed(const Duration(milliseconds: 100), () {
-        _navigateToIntro();
-      });
-      //
-    }
-  }
 
   void _listenToStreams() async {
     var user = await prefsOGx.getUser();
@@ -158,37 +102,7 @@ class ProjectDashboardMobileState extends State<ProjectDashboardMobile>
     }
   }
 
-  late StreamSubscription<bool> connectionSubscription;
-  Future<void> _subscribeToConnectivity() async {
-    connectionSubscription =
-        connectionCheck.connectivityStream.listen((bool connected) {
-      if (connected) {
-        pp('$mm We have a connection! - $connected');
-      } else {
-        pp('$mm We DO NOT have a connection! - show snackbar ...  🍎 mounted? $mounted');
-        if (mounted) {
-          //showConnectionProblemSnackBar(context: context);
-        }
-      }
-    });
-    var isConnected = await connectionCheck.internetAvailable();
-    pp('$mm Are we connected? answer: $isConnected');
-  }
-
   late StreamSubscription<GeofenceEvent> geofenceSubscription;
-
-  void _subscribeToGeofenceStream() async {
-    geofenceSubscription =
-        theGreatGeofencer.geofenceEventStream.listen((event) {
-      pp('\n$mm geofenceEvent delivered by geofenceStream: ${event.projectName} ...');
-      // if (mounted) {
-      //   showToast(
-      //       message:
-      //           'Geofence triggered for ${event.projectName}',
-      //       context: context);
-      // }
-    });
-  }
 
   // late StreamSubscription<>
   late StreamSubscription<List<Project>> projectSubscription;
@@ -217,7 +131,7 @@ class ProjectDashboardMobileState extends State<ProjectDashboardMobile>
       pp('$mm attempting to set state after projects delivered by stream: ${_projects.length} ... mounted: $mounted');
       if (mounted) {
         setState(() {});
-        _projectAnimationController.forward();
+        _gridViewAnimationController.forward();
       }
     });
     userSubscription = organizationBloc.usersStream.listen((event) {
@@ -225,7 +139,6 @@ class ProjectDashboardMobileState extends State<ProjectDashboardMobile>
       pp('$mm attempting to set state after users delivered by stream: ${_users.length} ... mounted: $mounted');
       if (mounted) {
         setState(() {});
-        _userAnimationController.forward();
       }
     });
     photoSubscription = organizationBloc.photoStream.listen((event) {
@@ -234,7 +147,6 @@ class ProjectDashboardMobileState extends State<ProjectDashboardMobile>
       if (mounted) {
         setState(() {});
       }
-      _photoAnimationController.forward();
     });
 
     videoSubscription = organizationBloc.videoStream.listen((event) {
@@ -242,7 +154,6 @@ class ProjectDashboardMobileState extends State<ProjectDashboardMobile>
       pp('$mm attempting to set state after videos delivered by stream: ${_videos.length} ... mounted: $mounted');
       if (mounted) {
         setState(() {});
-        _videoAnimationController.forward();
       }
     });
     audioSubscription = organizationBloc.audioStream.listen((event) {
@@ -250,7 +161,6 @@ class ProjectDashboardMobileState extends State<ProjectDashboardMobile>
       pp('$mm attempting to set state after audios delivered by stream: ${_audios.length} ... mounted: $mounted');
       if (mounted) {
         setState(() {});
-        _audioAnimationController.forward();
       }
     });
     projectPositionSubscription =
@@ -259,7 +169,7 @@ class ProjectDashboardMobileState extends State<ProjectDashboardMobile>
       pp('$mm attempting to set state after projectPositions delivered by stream: ${_projectPositions.length} ... mounted: $mounted');
       if (mounted) {
         setState(() {});
-        _projectAnimationController.forward();
+        _gridViewAnimationController.forward();
       }
     });
     projectPolygonSubscription =
@@ -268,7 +178,7 @@ class ProjectDashboardMobileState extends State<ProjectDashboardMobile>
       pp('$mm attempting to set state after projectPolygons delivered by stream: ${_projectPolygons.length} ... mounted: $mounted');
       if (mounted) {
         setState(() {});
-        _projectAnimationController.forward();
+        _gridViewAnimationController.forward();
       }
     });
 
@@ -280,7 +190,7 @@ class ProjectDashboardMobileState extends State<ProjectDashboardMobile>
       if (mounted) {
         setState(() {});
         // _controller.reset();
-        _projectAnimationController.forward();
+        _gridViewAnimationController.forward();
       }
     });
   }
@@ -291,7 +201,7 @@ class ProjectDashboardMobileState extends State<ProjectDashboardMobile>
       pp('$mm attempting to set state after projects delivered by stream: ${_projects.length} ... mounted: $mounted');
       if (mounted) {
         setState(() {});
-        _projectAnimationController.forward();
+        _gridViewAnimationController.forward();
       }
     });
     userSubscription = organizationBloc.usersStream.listen((event) {
@@ -299,7 +209,6 @@ class ProjectDashboardMobileState extends State<ProjectDashboardMobile>
       pp('$mm attempting to set state after users delivered by stream: ${_users.length} ... mounted: $mounted');
       if (mounted) {
         setState(() {});
-        _userAnimationController.forward();
       }
     });
     photoSubscription = organizationBloc.photoStream.listen((event) {
@@ -307,7 +216,6 @@ class ProjectDashboardMobileState extends State<ProjectDashboardMobile>
       _photos = event;
       if (mounted) {
         setState(() {});
-        _photoAnimationController.forward();
       }
     });
 
@@ -317,7 +225,6 @@ class ProjectDashboardMobileState extends State<ProjectDashboardMobile>
 
       if (mounted) {
         setState(() {});
-        _videoAnimationController.forward();
       }
     });
     audioSubscription = organizationBloc.audioStream.listen((event) {
@@ -325,7 +232,6 @@ class ProjectDashboardMobileState extends State<ProjectDashboardMobile>
       pp('$mm attempting to set state after audios delivered by stream: ${_audios.length} ... mounted: $mounted');
       if (mounted) {
         setState(() {});
-        _audioAnimationController.forward();
       }
     });
     projectPositionSubscription =
@@ -347,29 +253,10 @@ class ProjectDashboardMobileState extends State<ProjectDashboardMobile>
     });
   }
 
-  void _startTimer() async {
-    Future.delayed(const Duration(seconds: 5), () {
-      Timer.periodic(const Duration(minutes: 30), (timer) async {
-        pp('$mm ........ set state timer tick: ${timer.tick}');
-        try {
-          _refreshData(false);
-        } catch (e) {
-          //ignore
-        }
-      });
-    });
-  }
-
   @override
   void dispose() {
-    _projectAnimationController.dispose();
-    _audioAnimationController.dispose();
-    _photoAnimationController.dispose();
-    _videoAnimationController.dispose();
-    _userAnimationController.dispose();
-    _polygonAnimationController.dispose();
-    _positionAnimationController.dispose();
-    connectionSubscription.cancel();
+    _gridViewAnimationController.dispose();
+
     projectPolygonSubscription.cancel();
     projectPositionSubscription.cancel();
     projectSubscription.cancel();
@@ -394,13 +281,13 @@ class ProjectDashboardMobileState extends State<ProjectDashboardMobile>
     // items
     //     .add(BottomNavigationBarItem(icon: Icon(Icons.people), label: 'Users'));
 
-    items.add( const BottomNavigationBarItem(
+    items.add(const BottomNavigationBarItem(
         icon: Icon(
           Icons.person,
           color: Colors.pink,
         ),
         label: 'My Work'));
-    items.add( const BottomNavigationBarItem(
+    items.add(const BottomNavigationBarItem(
         icon: Icon(
           Icons.send,
           color: Colors.blue,
@@ -449,28 +336,6 @@ class ProjectDashboardMobileState extends State<ProjectDashboardMobile>
     }
     setState(() {
       busy = false;
-    });
-
-    _projectAnimationController.reset();
-    _userAnimationController.reset();
-    _photoAnimationController.reset();
-    _videoAnimationController.reset();
-    _positionAnimationController.reset();
-    _polygonAnimationController.reset();
-    _audioAnimationController.reset();
-
-    _projectAnimationController.forward().then((value) {
-      _userAnimationController.forward().then((value) {
-        _photoAnimationController.forward().then((value) {
-          _videoAnimationController.forward().then((value) {
-            _positionAnimationController.forward().then((value) {
-              _polygonAnimationController.forward().then((value) {
-                _audioAnimationController.forward();
-              });
-            });
-          });
-        });
-      });
     });
   }
 
@@ -640,6 +505,7 @@ class ProjectDashboardMobileState extends State<ProjectDashboardMobile>
               child: const SettingsMobile()));
     }
   }
+
   void _navigateToProjectMedia(Project project) {
     Navigator.push(
         context,
@@ -649,6 +515,28 @@ class ProjectDashboardMobileState extends State<ProjectDashboardMobile>
             duration: const Duration(seconds: 1),
             child: ProjectMediaListMobile(project: project)));
   }
+
+  void _navigateToActivity() {
+    Navigator.push(
+        context,
+        PageTransition(
+            type: PageTransitionType.fade,
+            alignment: Alignment.topLeft,
+            duration: const Duration(seconds: 1),
+            child: ActivityListMobile(
+              project: widget.project,
+              onPhotoTapped: (photo) {},
+              onVideoTapped: (video) {},
+              onAudioTapped: (audio) {},
+              onUserTapped: (user) {},
+              onProjectTapped: (project) {},
+              onProjectPositionTapped: (projectPosition) {},
+              onPolygonTapped: (projectPolygon) {},
+              onGeofenceEventTapped: (geofenceEvent) {},
+              onOrgMessage: (orgMessage) {},
+            )));
+  }
+
   void _navigateToProjectMap(Project project) {
     Navigator.push(
         context,
@@ -675,320 +563,251 @@ class ProjectDashboardMobileState extends State<ProjectDashboardMobile>
   Widget build(BuildContext context) {
     var style = GoogleFonts.secularOne(
         textStyle: Theme.of(context).textTheme.titleLarge,
-        fontWeight: FontWeight.w900, color: Theme.of(context).primaryColor);
+        fontWeight: FontWeight.w900,
+        color: Theme.of(context).primaryColor);
     return SafeArea(
-      child: WillStartForegroundTask(
-        onWillStart: () async {
-          return geofenceService.isRunningService;
-        },
-        androidNotificationOptions: AndroidNotificationOptions(
-          channelId: 'geofence_service_notification_channel',
-          channelName: 'Geofence Service Notification',
-          channelDescription:
-              'This notification appears when the geofence service is running in the background.',
-          channelImportance: NotificationChannelImportance.LOW,
-          priority: NotificationPriority.LOW,
-          isSticky: false,
-        ),
-        iosNotificationOptions: const IOSNotificationOptions(),
-        notificationTitle: 'GeoMonitor Service is running',
-        notificationText: 'Tap to return to the app',
-        foregroundTaskOptions: const ForegroundTaskOptions(),
-        child: Scaffold(
-          key: _key,
-          appBar: AppBar(
-            actions: [
-              IconButton(
-                  icon: Icon(
-                    Icons.info_outline,
-                    size: 18,
-                    color: Theme.of(context).primaryColor,
+      child: Scaffold(
+        key: _key,
+        appBar: AppBar(
+          title: Text(
+            'Project Dashboard',
+            style: myTextStyleSmall(context),
+          ),
+          actions: [
+            IconButton(
+              icon: Icon(
+                Icons.access_alarm,
+                size: 18,
+                color: Theme.of(context).primaryColor,
+              ),
+              onPressed: () {
+                _navigateToActivity();
+              },
+            ),
+            IconButton(
+              icon: Icon(
+                Icons.refresh,
+                size: 18,
+                color: Theme.of(context).primaryColor,
+              ),
+              onPressed: () {
+                _refreshData(true);
+              },
+            ),
+          ],
+          bottom: PreferredSize(
+            preferredSize: const Size.fromHeight(72),
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Column(
+                children: [
+                  const SizedBox(
+                    height: 12,
                   ),
-                  onPressed: _navigateToIntro),
-              user == null
-                  ? const SizedBox()
-                  : user!.userType == UserType.fieldMonitor
-                      ? const SizedBox()
-                      : IconButton(
-                          icon: Icon(
-                            Icons.settings,
-                            size: 18,
-                            color: Theme.of(context).primaryColor,
-                          ),
-                          onPressed: _navigateToSettings,
-                        ),
-              IconButton(
-                icon: Icon(
-                  Icons.refresh,
-                  size: 18,
-                  color: Theme.of(context).primaryColor,
-                ),
-                onPressed: () {
-                  _refreshData(true);
-                },
-              )
-            ],
-            bottom: PreferredSize(
-              preferredSize: const Size.fromHeight(100),
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Column(
-                  children: [
-                    const SizedBox(height: 20,),
-                    Text('Project Dashboard', style: myTextStyleSmall(context),),
-                     const SizedBox(height: 12,),
-                     Text(
-                            widget.project.name!,
-                            style: GoogleFonts.lato(
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const SizedBox(
+                        width: 20,
+                      ),
+                      Flexible(
+                        child: Text(
+                          widget.project.name!,
+                          style: GoogleFonts.lato(
                               textStyle: Theme.of(context).textTheme.titleLarge,
-                              fontWeight: FontWeight.w900, color: Theme.of(context).primaryColor
-                            ),
-                          ),
-                    const SizedBox(
-                      height: 28,
-                    ),
-                  ],
-                ),
+                              fontWeight: FontWeight.w900,
+                              color: Theme.of(context).primaryColor),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(
+                    height: 12,
+                  ),
+                ],
               ),
             ),
           ),
-          // backgroundColor: Colors.brown[100],
-          bottomNavigationBar: BottomNavigationBar(
-            items: items,
-            onTap: _handleBottomNav,
-            elevation: 8,
-          ),
-          body: busy
-              ? const Center(
-                  child: SizedBox(
-                    height: 24,
-                    width: 24,
-                    child: CircularProgressIndicator(
-                      strokeWidth: 6,
-                      backgroundColor: Colors.amber,
+        ),
+        // backgroundColor: Colors.brown[100],
+        bottomNavigationBar: BottomNavigationBar(
+          items: items,
+          onTap: _handleBottomNav,
+          elevation: 8,
+        ),
+        body: busy
+            ? const Center(
+                child: SizedBox(
+                  height: 24,
+                  width: 24,
+                  child: CircularProgressIndicator(
+                    strokeWidth: 6,
+                    backgroundColor: Colors.amber,
+                  ),
+                ),
+              )
+            : Stack(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.all(12.0),
+                    child: GridView.count(
+                      crossAxisCount: 2,
+                      children: [
+                        GestureDetector(
+                          onTap: () {
+                            _navigateToProjectMedia(widget.project);
+                          },
+                          child: Card(
+                            elevation: 8,
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(16.0)),
+                            child: Column(
+                              children: [
+                                const SizedBox(
+                                  height: 32,
+                                ),
+                                Text('${_photos.length}', style: style),
+                                const SizedBox(
+                                  height: 8,
+                                ),
+                                Text(
+                                  'Photos',
+                                  style: Styles.greyLabelSmall,
+                                )
+                              ],
+                            ),
+                          ),
+                        ),
+                        GestureDetector(
+                          onTap: () {
+                            _navigateToProjectMedia(widget.project);
+                          },
+                          child: Card(
+                            elevation: 8,
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(16.0)),
+                            child: Column(
+                              children: [
+                                const SizedBox(
+                                  height: 32,
+                                ),
+                                Text('${_videos.length}', style: style),
+                                const SizedBox(
+                                  height: 8,
+                                ),
+                                Text(
+                                  'Videos',
+                                  style: Styles.greyLabelSmall,
+                                )
+                              ],
+                            ),
+                          ),
+                        ),
+                        GestureDetector(
+                          onTap: () {
+                            _navigateToProjectMedia(widget.project);
+                          },
+                          child: Card(
+                            elevation: 8,
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(16.0)),
+                            child: Column(
+                              children: [
+                                const SizedBox(
+                                  height: 32,
+                                ),
+                                Text('${_audios.length}', style: style),
+                                const SizedBox(
+                                  height: 8,
+                                ),
+                                Text(
+                                  'Audio Clips',
+                                  style: Styles.greyLabelSmall,
+                                )
+                              ],
+                            ),
+                          ),
+                        ),
+                        GestureDetector(
+                          onTap: () {
+                            _navigateToProjectMap(widget.project);
+                          },
+                          child: Card(
+                            elevation: 8,
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(16.0)),
+                            child: Column(
+                              children: [
+                                const SizedBox(
+                                  height: 32,
+                                ),
+                                Text('${_projectPolygons.length}',
+                                    style: style),
+                                const SizedBox(
+                                  height: 8,
+                                ),
+                                Text(
+                                  'Areas',
+                                  style: Styles.greyLabelSmall,
+                                )
+                              ],
+                            ),
+                          ),
+                        ),
+                        GestureDetector(
+                          onTap: () {
+                            _navigateToProjectMap(widget.project);
+                          },
+                          child: Card(
+                            elevation: 8,
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(16.0)),
+                            child: Column(
+                              children: [
+                                const SizedBox(
+                                  height: 32,
+                                ),
+                                Text('${_projectPositions.length}',
+                                    style: style),
+                                const SizedBox(
+                                  height: 8,
+                                ),
+                                Text(
+                                  'Locations',
+                                  style: Styles.greyLabelSmall,
+                                )
+                              ],
+                            ),
+                          ),
+                        ),
+                        GestureDetector(
+                          onTap: () {},
+                          child: Card(
+                            elevation: 8,
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(16.0)),
+                            child: Column(
+                              children: [
+                                const SizedBox(
+                                  height: 32,
+                                ),
+                                Text('${_schedules.length}', style: style),
+                                const SizedBox(
+                                  height: 8,
+                                ),
+                                Text(
+                                  'Schedules',
+                                  style: Styles.greyLabelSmall,
+                                )
+                              ],
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                   ),
-                )
-              : Stack(
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.all(12.0),
-                      child: GridView.count(
-                        crossAxisCount: 2,
-                        children: [
-
-                          AnimatedBuilder(
-                            animation: _photoAnimationController,
-                            builder: (BuildContext context, Widget? child) {
-                              return FadeScaleTransition(
-                                animation: _photoAnimationController,
-                                child: child,
-                              );
-                            },
-                            child: GestureDetector(
-                              onTap: () {
-                                _navigateToProjectMedia(widget.project);
-                              },
-                              child: Card(
-                                elevation: 8,
-                                shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(16.0)),
-                                child: Column(
-                                  children: [
-                                    const SizedBox(
-                                      height: 32,
-                                    ),
-                                    Text('${_photos.length}', style: style),
-                                    const SizedBox(
-                                      height: 8,
-                                    ),
-                                    Text(
-                                      'Photos',
-                                      style: Styles.greyLabelSmall,
-                                    )
-                                  ],
-                                ),
-                              ),
-                            ),
-                          ),
-                          AnimatedBuilder(
-                            animation: _videoAnimationController,
-                            builder: (BuildContext context, Widget? child) {
-                              return FadeScaleTransition(
-                                animation: _videoAnimationController,
-                                child: child,
-                              );
-                            },
-                            child: GestureDetector(
-                              onTap: () {
-                                _navigateToProjectMedia(widget.project);
-                              },
-                              child: Card(
-                                elevation: 8,
-                                shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(16.0)),
-                                child: Column(
-                                  children: [
-                                    const SizedBox(
-                                      height: 32,
-                                    ),
-                                    Text('${_videos.length}', style: style),
-                                    const SizedBox(
-                                      height: 8,
-                                    ),
-                                    Text(
-                                      'Videos',
-                                      style: Styles.greyLabelSmall,
-                                    )
-                                  ],
-                                ),
-                              ),
-                            ),
-                          ),
-                          AnimatedBuilder(
-                            animation: _audioAnimationController,
-                            builder: (BuildContext context, Widget? child) {
-                              return FadeScaleTransition(
-                                animation: _audioAnimationController,
-                                child: child,
-                              );
-                            },
-                            child: GestureDetector(
-                              onTap: () {
-                                _navigateToProjectMedia(widget.project);
-                              },
-                              child: Card(
-                                elevation: 8,
-                                shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(16.0)),
-                                child: Column(
-                                  children: [
-                                    const SizedBox(
-                                      height: 32,
-                                    ),
-                                    Text('${_audios.length}', style: style),
-                                    const SizedBox(
-                                      height: 8,
-                                    ),
-                                    Text(
-                                      'Audio Clips',
-                                      style: Styles.greyLabelSmall,
-                                    )
-                                  ],
-                                ),
-                              ),
-                            ),
-                          ),
-                          AnimatedBuilder(
-                            animation: _polygonAnimationController,
-                            builder: (BuildContext context, Widget? child) {
-                              return FadeScaleTransition(
-                                animation: _polygonAnimationController,
-                                child: child,
-                              );
-                            },
-                            child: GestureDetector(
-                              onTap: () {
-                                _navigateToProjectMap(widget.project);
-                              },
-                              child: Card(
-                                elevation: 8,
-                                shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(16.0)),
-                                child: Column(
-                                  children: [
-                                    const SizedBox(
-                                      height: 32,
-                                    ),
-                                    Text('${_projectPolygons.length}',
-                                        style: style),
-                                    const SizedBox(
-                                      height: 8,
-                                    ),
-                                    Text(
-                                      'Areas',
-                                      style: Styles.greyLabelSmall,
-                                    )
-                                  ],
-                                ),
-                              ),
-                            ),
-                          ),
-                          AnimatedBuilder(
-                            animation: _positionAnimationController,
-                            builder: (BuildContext context, Widget? child) {
-                              return FadeScaleTransition(
-                                animation: _positionAnimationController,
-                                child: child,
-                              );
-                            },
-                            child: GestureDetector(
-                              onTap: () {
-                                _navigateToProjectMap(widget.project);
-                              },
-                              child: Card(
-                                elevation: 8,
-                                shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(16.0)),
-                                child: Column(
-                                  children: [
-                                    const SizedBox(
-                                      height: 32,
-                                    ),
-                                    Text('${_projectPositions.length}',
-                                        style: style),
-                                    const SizedBox(
-                                      height: 8,
-                                    ),
-                                    Text(
-                                      'Locations',
-                                      style: Styles.greyLabelSmall,
-                                    )
-                                  ],
-                                ),
-                              ),
-                            ),
-                          ),
-                          AnimatedBuilder(
-                            animation: _polygonAnimationController,
-                            builder: (BuildContext context, Widget? child) {
-                              return FadeScaleTransition(
-                                animation: _polygonAnimationController,
-                                child: child,
-                              );
-                            },
-                            child: GestureDetector(
-                              onTap: () {
-
-                              },
-                              child: Card(
-                                elevation: 8,
-                                shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(16.0)),
-                                child: Column(
-                                  children: [
-                                    const SizedBox(
-                                      height: 32,
-                                    ),
-                                    Text('${_schedules.length}', style: style),
-                                    const SizedBox(
-                                      height: 8,
-                                    ),
-                                    Text(
-                                      'Schedules',
-                                      style: Styles.greyLabelSmall,
-                                    )
-                                  ],
-                                ),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-        ),
+                ],
+              ),
       ),
     );
   }
@@ -1031,4 +850,3 @@ void showKillDialog({required String message, required BuildContext context}) {
 }
 
 final mm = '${E.heartRed}${E.heartRed}${E.heartRed}${E.heartRed} Dashboard: ';
-

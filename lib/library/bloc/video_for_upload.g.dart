@@ -24,6 +24,9 @@ class VideoForUploadAdapter extends TypeAdapter<VideoForUpload> {
       projectPolygonId: fields[4] as String?,
       project: fields[2] as Project?,
       position: fields[5] as Position?,
+      durationInSeconds: fields[8] as int?,
+      height: fields[9] as double?,
+      width: fields[10] as double?,
       date: fields[6] as String?,
     );
   }
@@ -31,7 +34,7 @@ class VideoForUploadAdapter extends TypeAdapter<VideoForUpload> {
   @override
   void write(BinaryWriter writer, VideoForUpload obj) {
     writer
-      ..writeByte(8)
+      ..writeByte(11)
       ..writeByte(0)
       ..write(obj.filePath)
       ..writeByte(1)
@@ -47,7 +50,13 @@ class VideoForUploadAdapter extends TypeAdapter<VideoForUpload> {
       ..writeByte(6)
       ..write(obj.date)
       ..writeByte(7)
-      ..write(obj.videoId);
+      ..write(obj.videoId)
+      ..writeByte(8)
+      ..write(obj.durationInSeconds)
+      ..writeByte(9)
+      ..write(obj.height)
+      ..writeByte(10)
+      ..write(obj.width);
   }
 
   @override

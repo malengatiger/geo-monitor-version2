@@ -124,6 +124,7 @@ class CloudStorageBloc {
       var dur = await audioPlayer.setUrl(url);
       audio = Audio(
           url: url,
+          userUrl: user.imageUrl,
           created: DateTime.now().toUtc().toIso8601String(),
           userId: user.userId,
           userName: user.name,
@@ -232,6 +233,7 @@ class CloudStorageBloc {
 
       pp('$mm adding photo ..... 😡😡 distance: '
           '${distance.toStringAsFixed(2)} metres 😡😡');
+      var user = await prefsOGx.getUser();
       photo = Photo(
           url: url,
           caption: 'tbd',
@@ -249,7 +251,8 @@ class CloudStorageBloc {
           projectPositionId: projectPositionId,
           projectPolygonId: projectPolygonId,
           photoId: const Uuid().v4(),
-          landscape: width > height ? 0 : 1);
+          landscape: width > height ? 0 : 1,
+          userUrl: user!.imageUrl);
 
       await DataAPI.addPhoto(photo);
 
@@ -340,6 +343,8 @@ class CloudStorageBloc {
       video = Video(
           url: url,
           caption: 'tbd',
+          width: 0.0,
+          height: 0.0,
           created: DateTime.now().toUtc().toIso8601String(),
           userId: _user!.userId,
           userName: _user!.name,
@@ -351,7 +356,9 @@ class CloudStorageBloc {
           projectPositionId: projectPositionId,
           projectPolygonId: projectPolygonId,
           organizationId: _user!.organizationId,
-          videoId: u.v4());
+          videoId: u.v4(),
+          durationInSeconds: null,
+          userUrl: _user!.imageUrl);
 
       await DataAPI.addVideo(video);
 
