@@ -708,7 +708,20 @@ class CacheManager {
   }
 
   Future<Project?> getProjectById({required String projectId}) async {
-    return null;
+    Project? project;
+    var keys = _projectBox?.keys;
+    if (keys != null) {
+      for (var key in keys) {
+        if (key.contains(projectId)) {
+          project = await _projectBox?.get(key);
+          break;
+        }
+      }
+    }
+    if (project != null) {
+      pp('$mm project found: ${project!.name}');
+    }
+    return project;
   }
 
   Future<List<FieldMonitorSchedule>> getFieldMonitorSchedules(
@@ -727,8 +740,7 @@ class CacheManager {
     return schedules;
   }
 
-  Future<List<FieldMonitorSchedule>> getOrganizationMonitorSchedules(
-      String organizationId) async {
+  Future<List<FieldMonitorSchedule>> getOrganizationMonitorSchedules() async {
     List<FieldMonitorSchedule> list = [];
 
     var keys = _scheduleBox?.keys;
@@ -937,11 +949,9 @@ class CacheManager {
     final audios = await getOrganizationAudios();
     final settings = await getOrganizationSettings();
 
-    final schedules = await getOrganizationMonitorSchedules(organizationId);
-    final positions =
-        await getOrganizationProjectPositions(organizationId: organizationId);
-    final polygons =
-        await getOrganizationProjectPolygons(organizationId: organizationId);
+    final schedules = await getOrganizationMonitorSchedules();
+    final positions = await getOrganizationProjectPositions();
+    final polygons = await getOrganizationProjectPolygons();
 
     final bag = DataBag(
         photos: photos,
@@ -973,11 +983,9 @@ class CacheManager {
     final audios = await getUserAudios(userId);
     final settings = await getOrganizationSettings();
 
-    final schedules = await getOrganizationMonitorSchedules(userId);
-    final positions =
-        await getOrganizationProjectPositions(organizationId: userId);
-    final polygons =
-        await getOrganizationProjectPolygons(organizationId: userId);
+    final schedules = await getOrganizationMonitorSchedules();
+    final positions = await getOrganizationProjectPositions();
+    final polygons = await getOrganizationProjectPolygons();
 
     final bag = DataBag(
         photos: photos,
@@ -1551,8 +1559,7 @@ class CacheManager {
     return org;
   }
 
-  Future<List<ProjectPosition>> getOrganizationProjectPositions(
-      {required String organizationId}) async {
+  Future<List<ProjectPosition>> getOrganizationProjectPositions() async {
     var mList = <ProjectPosition>[];
     var keys = _positionBox?.keys;
     if (keys != null) {
@@ -1575,8 +1582,7 @@ class CacheManager {
     // pp('$mm ProjectPolygon added to local cache:  🔵 🔵 ${projectPolygon.projectName} ');
   }
 
-  Future<List<ProjectPolygon>> getOrganizationProjectPolygons(
-      {required String organizationId}) async {
+  Future<List<ProjectPolygon>> getOrganizationProjectPolygons() async {
     var mList = <ProjectPolygon>[];
     var keys = _projectPolygonBox?.keys;
     if (keys != null) {

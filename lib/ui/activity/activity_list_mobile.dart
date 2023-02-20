@@ -250,15 +250,46 @@ class _ActivityListMobileState extends State<ActivityListMobile>
     return SafeArea(
         child: Scaffold(
       appBar: AppBar(
-        title: const Text('Project Activity'),
+        title: widget.user == null
+            ? const Text('Project Activity')
+            : const Text('Member Activity'),
         bottom: PreferredSize(
-            preferredSize: const Size.fromHeight(40),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
+            preferredSize: const Size.fromHeight(100),
+            child: Column(
               children: [
-                Text(
-                  '${widget.project?.name!}',
-                  style: myTextStyleLargePrimaryColor(context),
+                const SizedBox(
+                  height: 24,
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    widget.user == null
+                        ? Text(
+                            '${widget.project?.name!}',
+                            style: myTextStyleLargePrimaryColor(context),
+                          )
+                        : Row(
+                            children: [
+                              widget.user!.thumbnailUrl == null
+                                  ? const SizedBox()
+                                  : CircleAvatar(
+                                      backgroundImage: NetworkImage(
+                                          widget.user!.thumbnailUrl!),
+                                      radius: 32,
+                                    ),
+                              const SizedBox(
+                                width: 24,
+                              ),
+                              Text(
+                                '${widget.user?.name!}',
+                                style: myTextStyleLargePrimaryColor(context),
+                              ),
+                            ],
+                          ),
+                    const SizedBox(
+                      height: 24,
+                    )
+                  ],
                 ),
                 const SizedBox(
                   height: 24,

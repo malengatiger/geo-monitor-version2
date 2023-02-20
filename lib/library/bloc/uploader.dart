@@ -126,7 +126,7 @@ class Uploader {
     if (user == null) return;
     timer = Timer.periodic(duration, (timer) async {
       pp('$mm ......... Timer tick: 🍎🍎🍎🍎🍎🍎🍎 ${timer.tick} 🍎 at: '
-          '${DateTime.now().toIso8601String()}');
+          '${DateTime.now().toIso8601String()} 🔵🔵🔵');
 
       if (photosUploaded.isNotEmpty) {
         pp('$mm photos uploaded so far: ${photosUploaded.length}');

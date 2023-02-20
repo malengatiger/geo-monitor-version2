@@ -82,28 +82,16 @@ class TheGreatGeofencer {
     var list = await organizationBloc.getProjectPositions(
         organizationId: _user!.organizationId!, forceRefresh: false);
 
-    // var loc = await locationBlocOG.getLocation();
     try {
-      // if (loc != null) {
-      //   list = await _findProjectPositionsByLocation(
-      //       organizationId: _user!.organizationId!,
-      //       latitude: loc.latitude!,
-      //       longitude: loc.longitude!,
-      //       radiusInKM: radiusInKM ?? defaultRadiusInKM);
-      // }
       for (var pos in list) {
         await addGeofence(projectPosition: pos);
       }
 
       geofenceService.addGeofenceList(_geofenceList);
-
       geofenceService.addGeofenceStatusChangeListener(
           (geofence, geofenceRadius, geofenceStatus, location) async {
         pp('$xx Geofence Listener 💠 FIRED!! '
-            '🔵 🔵 🔵 geofenceStatus: ${geofenceStatus.name}  at ${geofence.data['projectName']}');
-        // pp('$mm geofence: ${geofence.toJson()}');
-        pp('$mm geofenceRadius: ${geofenceRadius.toJson()}');
-        pp('$mm geofenceStatus: ${geofenceStatus.toString()}');
+            '🔵🔵🔵 geofenceStatus: ${geofenceStatus.name}  at ${geofence.data['projectName']}');
 
         await _processGeofenceEvent(
             geofence: geofence,
@@ -115,13 +103,15 @@ class TheGreatGeofencer {
       try {
         pp('\n\n$mm  🔶🔶🔶🔶🔶🔶 Starting GeofenceService ...... 🔶🔶🔶🔶🔶🔶 ');
         await geofenceService.start().onError((error, stackTrace) => {
-              pp('\n\n\n$reds GeofenceService failed to start, onError: 🔴 $error 🔴 \n\n\n')
+              pp('\n\n\n$mm $reds GeofenceService failed to start, onError: 🔴 $error 🔴 \n\n\n')
+              //todo - navigate user to system settings - explain why activity permission required
+              //todo - see ErrorCodes.ACTIVITY_RECOGNITION_PERMISSION_PERMANENTLY_DENIED
             });
 
-        pp('$mm  ✅ ✅ ✅ GeofenceService 🍐🍐🍐 STARTED 🍐🍐🍐: '
-            '✅  🔆 🔆 🔆 🔆 🔆 🔆  ...... waiting for geofence status change.... 🔵 🔵 🔵 🔵 🔵 ');
+        pp('$mm ✅✅✅✅✅✅ geofences 🍐🍐🍐 STARTED OK 🍐🍐🍐 '
+            '🔆🔆🔆 will wait for geofence status change 🔵🔵🔵🔵🔵 ');
       } catch (e) {
-        pp(' GeofenceService failed to start: 🔴 $e 🔴 }');
+        pp('\n\n$mm GeofenceService failed to start: 🔴 $e 🔴 }');
       }
     } catch (e) {
       pp('$reds ERROR: probably to do with API call: 🔴 $e 🔴');
@@ -159,7 +149,7 @@ class TheGreatGeofencer {
       switch (status) {
         case 'GeofenceStatus.ENTER':
           event.status = 'ENTER';
-          pp('$mm IGNORING geofence ENTER event for ${event.projectName}');
+          pp('$xx IGNORING geofence ENTER event for ${event.projectName}');
           break;
         case 'GeofenceStatus.DWELL':
           event.status = 'DWELL';
@@ -170,12 +160,12 @@ class TheGreatGeofencer {
         case 'GeofenceStatus.EXIT':
           event.status = 'EXIT';
           var gfe = await DataAPI.addGeofenceEvent(event);
-          pp('$mm $xx geofence event added to database for ${event.projectName}');
+          pp('$xx geofence event added to database for ${event.projectName}');
           _streamController.sink.add(gfe);
           break;
       }
     } else {
-      pp('$mm UNABLE TO PROCESS GEOFENCE - location not available');
+      pp('$mm $reds UNABLE TO PROCESS GEOFENCE - location not available');
       throw Exception('No location available');
     }
   }

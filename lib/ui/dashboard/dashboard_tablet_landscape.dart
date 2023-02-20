@@ -531,7 +531,7 @@ class _DashboardTabletLandscapeState extends State<DashboardTabletLandscape> {
                         gridPadding: 80,
                       ),
               ),
-              GeoActivityTablet(
+              GeoActivity(
                 width: (size.width / 2) - 200,
                 forceRefresh: true,
                 thinMode: true,

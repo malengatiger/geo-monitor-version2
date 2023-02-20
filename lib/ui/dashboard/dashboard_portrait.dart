@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:animations/animations.dart';
 import 'package:firebase_auth/firebase_auth.dart' as fb;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -25,7 +24,6 @@ import '../../library/bloc/theme_bloc.dart';
 import '../../library/bloc/user_bloc.dart';
 import '../../library/data/audio.dart';
 import '../../library/data/data_bag.dart';
-import '../../library/data/field_monitor_schedule.dart';
 import '../../library/data/geofence_event.dart';
 import '../../library/data/photo.dart';
 import '../../library/data/project.dart';
@@ -60,45 +58,48 @@ class DashboardPortrait extends StatefulWidget {
 
 class DashboardPortraitState extends State<DashboardPortrait>
     with SingleTickerProviderStateMixin {
+  static const mm = '🎽🎽🎽🎽🎽🎽 DashboardPortrait: 🎽';
+
   late AnimationController _gridViewAnimationController;
+  late StreamSubscription<Photo> photoSubscriptionFCM;
+  late StreamSubscription<Video> videoSubscriptionFCM;
+  late StreamSubscription<Audio> audioSubscriptionFCM;
+  late StreamSubscription<ProjectPosition> projectPositionSubscriptionFCM;
+  late StreamSubscription<ProjectPolygon> projectPolygonSubscriptionFCM;
+  late StreamSubscription<Project> projectSubscriptionFCM;
+  late StreamSubscription<User> userSubscriptionFCM;
+  late StreamSubscription<SettingsModel> settingsSubscriptionFCM;
+  late StreamSubscription<String> killSubscriptionFCM;
+  late StreamSubscription<bool> connectionSubscription;
+  late StreamSubscription<GeofenceEvent> geofenceSubscription;
 
   var busy = false;
-  var _projects = <Project>[];
-  var _users = <User>[];
-  var _photos = <Photo>[];
-  var _videos = <Video>[];
-  var _projectPositions = <ProjectPosition>[];
-  var _projectPolygons = <ProjectPolygon>[];
-  var _schedules = <FieldMonitorSchedule>[];
-  var _audios = <Audio>[];
   User? deviceUser;
-
-  static const mm = '🎽🎽🎽🎽🎽🎽 DashboardPortrait: 🎽';
+  final fb.FirebaseAuth firebaseAuth = fb.FirebaseAuth.instance;
+  bool authed = false;
   bool networkAvailable = false;
-  final dur = 300;
+  final dur = 3000;
+  String type = 'Unknown Rider';
+  DataBag? dataBag;
+  final _key = GlobalKey<ScaffoldState>();
+  int instruction = stayOnList;
 
   @override
   void initState() {
-    // _setAnimationControllers();
     _gridViewAnimationController = AnimationController(
-        duration: const Duration(milliseconds: 3000),
-        reverseDuration: const Duration(milliseconds: 3000),
+        duration: Duration(milliseconds: dur),
+        reverseDuration: Duration(milliseconds: dur),
         vsync: this);
     super.initState();
     _setItems();
-    _listenToOrgStreams();
     _listenForFCM();
     _getAuthenticationStatus();
-
     _getData(false);
     _subscribeToConnectivity();
     _subscribeToGeofenceStream();
     ;
     _startTimer();
   }
-
-  final fb.FirebaseAuth firebaseAuth = fb.FirebaseAuth.instance;
-  bool authed = false;
 
   void _getAuthenticationStatus() async {
     var cUser = firebaseAuth.currentUser;
@@ -110,7 +111,6 @@ class DashboardPortraitState extends State<DashboardPortrait>
     }
   }
 
-  late StreamSubscription<bool> connectionSubscription;
   Future<void> _subscribeToConnectivity() async {
     connectionSubscription =
         connectionCheck.connectivityStream.listen((bool connected) {
@@ -127,8 +127,6 @@ class DashboardPortraitState extends State<DashboardPortrait>
     pp('$mm Are we connected? answer: $isConnected');
   }
 
-  late StreamSubscription<GeofenceEvent> geofenceSubscription;
-
   void _subscribeToGeofenceStream() async {
     geofenceSubscription =
         theGreatGeofencer.geofenceEventStream.listen((event) {
@@ -137,96 +135,6 @@ class DashboardPortraitState extends State<DashboardPortrait>
         showToast(
             message: 'Geofence triggered for ${event.user!.name}',
             context: context);
-      }
-    });
-  }
-
-  // late StreamSubscription<>
-  late StreamSubscription<List<Project>> projectSubscription;
-  late StreamSubscription<List<User>> userSubscription;
-  late StreamSubscription<List<Photo>> photoSubscription;
-  late StreamSubscription<List<Video>> videoSubscription;
-  late StreamSubscription<List<Audio>> audioSubscription;
-  late StreamSubscription<List<ProjectPosition>> projectPositionSubscription;
-  late StreamSubscription<List<ProjectPolygon>> projectPolygonSubscription;
-  late StreamSubscription<List<FieldMonitorSchedule>> schedulesSubscription;
-
-  late StreamSubscription<Photo> photoSubscriptionFCM;
-  late StreamSubscription<Video> videoSubscriptionFCM;
-  late StreamSubscription<Audio> audioSubscriptionFCM;
-  late StreamSubscription<ProjectPosition> projectPositionSubscriptionFCM;
-  late StreamSubscription<ProjectPolygon> projectPolygonSubscriptionFCM;
-  late StreamSubscription<Project> projectSubscriptionFCM;
-  late StreamSubscription<User> userSubscriptionFCM;
-  late StreamSubscription<SettingsModel> settingsSubscriptionFCM;
-
-  late StreamSubscription<String> killSubscriptionFCM;
-
-  void _listenToOrgStreams() async {
-    projectSubscription = organizationBloc.projectStream.listen((event) {
-      _projects = event;
-      pp('$mm attempting to set state after projects delivered by stream: ${_projects.length} ... mounted: $mounted');
-      if (mounted) {
-        setState(() {});
-        _gridViewAnimationController.forward();
-      }
-    });
-    userSubscription = organizationBloc.usersStream.listen((event) {
-      _users = event;
-      pp('$mm attempting to set state after users delivered by stream: ${_users.length} ... mounted: $mounted');
-      if (mounted) {
-        setState(() {});
-      }
-    });
-    photoSubscription = organizationBloc.photoStream.listen((event) {
-      _photos = event;
-      pp('$mm attempting to set state after photos delivered by stream: ${_photos.length} ... mounted: $mounted');
-      if (mounted) {
-        setState(() {});
-      }
-    });
-
-    videoSubscription = organizationBloc.videoStream.listen((event) {
-      _videos = event;
-      pp('$mm attempting to set state after videos delivered by stream: ${_videos.length} ... mounted: $mounted');
-      if (mounted) {
-        setState(() {});
-      }
-    });
-    audioSubscription = organizationBloc.audioStream.listen((event) {
-      _audios = event;
-      pp('$mm attempting to set state after audios delivered by stream: ${_audios.length} ... mounted: $mounted');
-      if (mounted) {
-        setState(() {});
-      }
-    });
-    projectPositionSubscription =
-        organizationBloc.projectPositionsStream.listen((event) {
-      _projectPositions = event;
-      pp('$mm attempting to set state after projectPositions delivered by stream: ${_projectPositions.length} ... mounted: $mounted');
-      if (mounted) {
-        setState(() {});
-        _gridViewAnimationController.forward();
-      }
-    });
-    projectPolygonSubscription =
-        organizationBloc.projectPolygonsStream.listen((event) {
-      _projectPolygons = event;
-      pp('$mm attempting to set state after projectPolygons delivered by stream: ${_projectPolygons.length} ... mounted: $mounted');
-      if (mounted) {
-        setState(() {});
-        _gridViewAnimationController.forward();
-      }
-    });
-
-    schedulesSubscription =
-        organizationBloc.fieldMonitorScheduleStream.listen((event) {
-      _schedules = event;
-      pp('$mm attempting to set state after schedules delivered by stream: ${_schedules.length} ... mounted: $mounted');
-
-      if (mounted) {
-        setState(() {});
-        _gridViewAnimationController.forward();
       }
     });
   }
@@ -249,13 +157,6 @@ class DashboardPortraitState extends State<DashboardPortrait>
     _gridViewAnimationController.dispose();
 
     connectionSubscription.cancel();
-    projectPolygonSubscription.cancel();
-    projectPositionSubscription.cancel();
-    projectSubscription.cancel();
-    photoSubscription.cancel();
-    videoSubscription.cancel();
-    userSubscription.cancel();
-    audioSubscription.cancel();
     projectPolygonSubscriptionFCM.cancel();
     projectPositionSubscriptionFCM.cancel();
     projectSubscriptionFCM.cancel();
@@ -292,11 +193,8 @@ class DashboardPortraitState extends State<DashboardPortrait>
         label: 'Weather'));
   }
 
-  String type = 'Unknown Rider';
-  DataBag? dataBag;
-
-  void _getData(bool forceRefresh) async {
-    pp('$mm ............................................Refreshing data ....');
+  Future _getData(bool forceRefresh) async {
+    pp('\n\n$mm ............................................ Refreshing dashboard data ....\n');
     deviceUser = await prefsOGx.getUser();
     if (deviceUser != null) {
       if (deviceUser!.userType == UserType.orgAdministrator) {
@@ -312,15 +210,11 @@ class DashboardPortraitState extends State<DashboardPortrait>
       throw Exception('No user cached on device');
     }
 
-    _gridViewAnimationController.reverse().then((value) async {
-      if (mounted) {
-        setState(() {
-          busy = true;
-        });
-        await _doTheWork(forceRefresh);
-        _gridViewAnimationController.forward();
-      }
+    setState(() {
+      busy = true;
     });
+    await _doTheWork(forceRefresh);
+    _gridViewAnimationController.forward();
   }
 
   Future<void> _doTheWork(bool forceRefresh) async {
@@ -329,11 +223,11 @@ class DashboardPortraitState extends State<DashboardPortrait>
         throw Exception("Tax man is fucked! User is not found");
       }
       if (widget.project != null) {
-        _getProjectData(widget.project!.projectId!, forceRefresh);
+        await _getProjectData(widget.project!.projectId!, forceRefresh);
       } else if (widget.user != null) {
-        _getUserData(widget.user!.userId!, forceRefresh);
+        await _getUserData(widget.user!.userId!, forceRefresh);
       } else {
-        _getOrganizationData(deviceUser!.organizationId!, forceRefresh);
+        await _getOrganizationData(deviceUser!.organizationId!, forceRefresh);
       }
       setState(() {});
       _gridViewAnimationController.forward();
@@ -347,41 +241,19 @@ class DashboardPortraitState extends State<DashboardPortrait>
     setState(() {
       busy = false;
     });
-
-    // _projectAnimationController.reset();
-    // _userAnimationController.reset();
-    // _photoAnimationController.reset();
-    // _videoAnimationController.reset();
-    // _positionAnimationController.reset();
-    // _polygonAnimationController.reset();
-    // _audioAnimationController.reset();
-    //
-    // _projectAnimationController.forward().then((value) {
-    //   _userAnimationController.forward().then((value) {
-    //     _photoAnimationController.forward().then((value) {
-    //       _videoAnimationController.forward().then((value) {
-    //         _positionAnimationController.forward().then((value) {
-    //           _polygonAnimationController.forward().then((value) {
-    //             _audioAnimationController.forward();
-    //           });
-    //         });
-    //       });
-    //     });
-    //   });
-    // });
   }
 
-  void _getOrganizationData(String organizationId, bool forceRefresh) async {
+  Future _getOrganizationData(String organizationId, bool forceRefresh) async {
     dataBag = await organizationBloc.getOrganizationData(
         organizationId: organizationId, forceRefresh: forceRefresh);
   }
 
-  void _getProjectData(String projectId, bool forceRefresh) async {
+  Future _getProjectData(String projectId, bool forceRefresh) async {
     dataBag = await projectBloc.getProjectData(
         projectId: projectId, forceRefresh: forceRefresh);
   }
 
-  void _getUserData(String userId, bool forceRefresh) async {
+  Future _getUserData(String userId, bool forceRefresh) async {
     dataBag =
         await userBloc.getUserData(userId: userId, forceRefresh: forceRefresh);
   }
@@ -393,7 +265,7 @@ class DashboardPortraitState extends State<DashboardPortrait>
       pp('$mm 🍎 🍎 _listen to FCM message streams ... 🍎 🍎');
       projectSubscriptionFCM =
           fcmBloc.projectStream.listen((Project project) async {
-        _getData(false);
+        await _getData(false);
         if (mounted) {
           pp('$mm: 🍎 🍎 project arrived: ${project.name} ... 🍎 🍎');
           setState(() {});
@@ -411,14 +283,14 @@ class DashboardPortraitState extends State<DashboardPortrait>
       });
       userSubscriptionFCM = fcmBloc.userStream.listen((user) async {
         pp('$mm: 🍎 🍎 user arrived... 🍎 🍎');
-        _getData(false);
+        await _getData(false);
         if (mounted) {
           setState(() {});
         }
       });
       photoSubscriptionFCM = fcmBloc.photoStream.listen((user) async {
         pp('$mm: 🍎 🍎 photoSubscriptionFCM photo arrived... 🍎 🍎');
-        _getData(false);
+        await _getData(false);
         if (mounted) {
           setState(() {});
         }
@@ -426,7 +298,7 @@ class DashboardPortraitState extends State<DashboardPortrait>
 
       videoSubscriptionFCM = fcmBloc.videoStream.listen((Video message) async {
         pp('$mm: 🍎 🍎 videoSubscriptionFCM video arrived... 🍎 🍎');
-        _getData(false);
+        await _getData(false);
         if (mounted) {
           pp('DashboardMobile: 🍎 🍎 showMessageSnackbar: ${message.projectName} ... 🍎 🍎');
           setState(() {});
@@ -434,27 +306,25 @@ class DashboardPortraitState extends State<DashboardPortrait>
       });
       audioSubscriptionFCM = fcmBloc.audioStream.listen((Audio message) async {
         pp('$mm: 🍎 🍎 audioSubscriptionFCM audio arrived... 🍎 🍎');
-        _getData(false);
+        await _getData(false);
         if (mounted) {}
       });
       projectPositionSubscriptionFCM =
           fcmBloc.projectPositionStream.listen((ProjectPosition message) async {
         pp('$mm: 🍎 🍎 projectPositionSubscriptionFCM position arrived... 🍎 🍎');
-        _getData(false);
+        await _getData(false);
         if (mounted) {}
       });
       projectPolygonSubscriptionFCM =
           fcmBloc.projectPolygonStream.listen((ProjectPolygon message) async {
         pp('$mm: 🍎 🍎 projectPolygonSubscriptionFCM polygon arrived... 🍎 🍎');
-        _getData(false);
+        await _getData(false);
         if (mounted) {}
       });
     } else {
       pp('App is running on the Web 👿👿👿firebase messaging is OFF 👿👿👿');
     }
   }
-
-  final _key = GlobalKey<ScaffoldState>();
 
   void _handleBottomNav(int value) {
     switch (value) {
@@ -474,7 +344,6 @@ class DashboardPortraitState extends State<DashboardPortrait>
     }
   }
 
-  int instruction = stayOnList;
   void _navigateToProjectList() {
     if (selectedProject != null) {
       Navigator.push(
@@ -591,15 +460,16 @@ class DashboardPortraitState extends State<DashboardPortrait>
   }
 
   void _navigateToUserList() {
+    if (dataBag == null) return;
     Navigator.push(
         context,
         PageTransition(
-            type: PageTransitionType.scale,
+            type: PageTransitionType.fade,
             alignment: Alignment.topLeft,
             duration: const Duration(seconds: 1),
             child: UserListMain(
               user: deviceUser!,
-              users: _users,
+              users: dataBag!.users!,
             )));
   }
 
@@ -708,13 +578,6 @@ class DashboardPortraitState extends State<DashboardPortrait>
 
   @override
   Widget build(BuildContext context) {
-    var style = GoogleFonts.secularOne(
-        textStyle: Theme.of(context).textTheme.titleLarge,
-        fontWeight: FontWeight.w900);
-    var stylePrimary = GoogleFonts.secularOne(
-        textStyle: Theme.of(context).textTheme.titleLarge,
-        fontWeight: FontWeight.w900,
-        color: Theme.of(context).primaryColor);
     bool showActivityIcon = false;
     if (deviceUser != null) {
       switch (deviceUser!.userType) {
@@ -861,50 +724,41 @@ class DashboardPortraitState extends State<DashboardPortrait>
                 ),
               )
             : Stack(children: [
-                AnimatedBuilder(
-                  animation: _gridViewAnimationController,
-                  builder: (BuildContext context, Widget? child) {
-                    return FadeScaleTransition(
-                      animation: _gridViewAnimationController,
-                      child: child,
-                    );
-                  },
-                  child: dataBag == null
-                      ? const SizedBox()
-                      : DashboardGrid(
-                          gridPadding: 16,
-                          topPadding: 12,
-                          elementPadding: 48,
-                          leftPadding: 12,
-                          crossAxisCount: 2,
-                          dataBag: dataBag!,
-                          onTypeTapped: (type) {
-                            switch (type) {
-                              case typeProjects:
-                                _navigateToProjectList();
-                                break;
-                              case typeUsers:
-                                _navigateToUserList();
-                                break;
-                              case typePhotos:
-                                _navigateToProjectList();
-                                break;
-                              case typeVideos:
-                                _navigateToProjectList();
-                                break;
-                              case typeAudios:
-                                _navigateToProjectList();
-                                break;
-                              case typePositions:
-                                _navigateToProjectList();
-                                break;
-                              case typePolygons:
-                                _navigateToProjectList();
-                                break;
-                            }
-                          },
-                        ),
-                ),
+                dataBag == null
+                    ? const SizedBox()
+                    : DashboardGrid(
+                        gridPadding: 16,
+                        topPadding: 12,
+                        elementPadding: 48,
+                        leftPadding: 12,
+                        crossAxisCount: 2,
+                        dataBag: dataBag!,
+                        onTypeTapped: (type) {
+                          switch (type) {
+                            case typeProjects:
+                              _navigateToProjectList();
+                              break;
+                            case typeUsers:
+                              _navigateToUserList();
+                              break;
+                            case typePhotos:
+                              _navigateToProjectList();
+                              break;
+                            case typeVideos:
+                              _navigateToProjectList();
+                              break;
+                            case typeAudios:
+                              _navigateToProjectList();
+                              break;
+                            case typePositions:
+                              _navigateToProjectList();
+                              break;
+                            case typePolygons:
+                              _navigateToProjectList();
+                              break;
+                          }
+                        },
+                      ),
               ]),
       ),
     );

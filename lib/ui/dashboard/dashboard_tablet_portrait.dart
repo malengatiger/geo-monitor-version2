@@ -809,7 +809,7 @@ class DashboardTabletPortraitState extends State<DashboardTabletPortrait>
                         gridPadding: 36,
                       ),
                     ),
-                    GeoActivityTablet(
+                    GeoActivity(
                       width: 280,
                       forceRefresh: true,
                       thinMode: true,

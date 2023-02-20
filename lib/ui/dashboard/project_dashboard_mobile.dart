@@ -70,7 +70,11 @@ class ProjectDashboardMobileState extends State<ProjectDashboardMobile>
 
   @override
   void initState() {
-    // _setAnimationControllers();
+    _gridViewAnimationController = AnimationController(
+        duration: const Duration(milliseconds: 3000),
+        reverseDuration: const Duration(milliseconds: 3000),
+        vsync: this);
+
     super.initState();
     _setItems();
     _listenToStreams();
@@ -384,8 +388,8 @@ class ProjectDashboardMobileState extends State<ProjectDashboardMobile>
       photoSubscriptionFCM = fcmBloc.photoStream.listen((user) async {
         pp('$mm: 🍎 🍎 photoSubscriptionFCM photo arrived... 🍎 🍎');
         if (mounted) {
-          _photos = await organizationBloc.getPhotos(
-              organizationId: user.organizationId!, forceRefresh: false);
+          _photos = await projectBloc.getPhotos(
+              projectId: user.projectId!, forceRefresh: false);
           setState(() {});
         }
       });
@@ -394,15 +398,15 @@ class ProjectDashboardMobileState extends State<ProjectDashboardMobile>
         pp('$mm: 🍎 🍎 videoSubscriptionFCM video arrived... 🍎 🍎');
         if (mounted) {
           pp('ProjectDashboardMobile: 🍎 🍎 showMessageSnackbar: ${message.projectName} ... 🍎 🍎');
-          _videos = await organizationBloc.getVideos(
-              organizationId: user!.organizationId!, forceRefresh: false);
+          _videos = await projectBloc.getProjectVideos(
+              projectId: message.projectId!, forceRefresh: false);
         }
       });
       audioSubscriptionFCM = fcmBloc.audioStream.listen((Audio message) async {
         pp('$mm: 🍎 🍎 audioSubscriptionFCM audio arrived... 🍎 🍎');
         if (mounted) {
-          _audios = await organizationBloc.getAudios(
-              organizationId: user!.organizationId!, forceRefresh: false);
+          _audios = await projectBloc.getProjectAudios(
+              projectId: message.projectId!, forceRefresh: false);
         }
       });
     } else {
@@ -571,7 +575,7 @@ class ProjectDashboardMobileState extends State<ProjectDashboardMobile>
         appBar: AppBar(
           title: Text(
             'Project Dashboard',
-            style: myTextStyleSmall(context),
+            style: myTextStyleMedium(context),
           ),
           actions: [
             IconButton(

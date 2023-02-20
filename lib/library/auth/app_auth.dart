@@ -29,22 +29,16 @@ class AppAuth {
     firebaseAuth.authStateChanges().listen((user) {
       pp('$locks firebaseAuth.authStateChanges: 🍎 $user');
     });
-    // firebaseAuth.idTokenChanges().listen((event) async {
-    //   pp('$locks token changes from Firebase. will update the user ...');
-    //   var token = await event?.getIdToken();
-    //   await _checkUser(token);
-    // }).onError((err, stackTrace){
-    //
-    // });
+
     firebaseAuth.userChanges().listen((event) async {
-      pp('$locks user changes from Firebase. will need to update the user, maybe ...');
+      pp('\n\n$locks user changes from Firebase. will need to update the user, maybe ...');
       var token = await event?.getIdToken();
       await _checkUser(token);
     });
   }
 
   static Future<void> _checkUser(String? token) async {
-    pp('$locks _checkUser token changes ...');
+    pp('$locks _checkUser token changes ... ${DateTime.now().toIso8601String()}');
     if (token != null) {
       var user = await prefsOGx.getUser();
       if (user != null) {
@@ -52,17 +46,15 @@ class AppAuth {
           pp('\n\n$locks token has changed; different from cached token.  🥬🥬🥬 will update the user ...');
 
           user.fcmRegistration = token;
-
           var pswd = user.password;
           user.password = null;
           try {
             await DataAPI.updateUser(user);
             user.password = pswd;
-
             await prefsOGx.saveUser(user);
             await cacheManager.addUser(user: user);
-
-            pp('$locks token has changed; 🥬🥬🥬 have updated the user ...');
+            pp('$locks token has changed; 🥬🥬🥬🥬🥬🥬🥬🥬🥬'
+                ' have updated the user on the cloud ...');
           } catch (e) {
             pp('$locks ... a bit of an issue here, Sir! - $e '
                 '- 🔵🔵🔵 do we need to worry about this??');

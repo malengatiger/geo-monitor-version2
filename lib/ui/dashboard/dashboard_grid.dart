@@ -28,148 +28,146 @@ class DashboardGrid extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: SingleChildScrollView(
-        child: SizedBox(
-          height: totalHeight == null ? 900 : totalHeight!,
-          child: Padding(
-            padding: EdgeInsets.all(gridPadding),
-            child: GridView.count(
-              crossAxisCount: crossAxisCount,
-              children: [
-                GestureDetector(
-                  onTap: () {
-                    pp('$mm widget on tapped: typeProjects $typeProjects ...');
+    return SingleChildScrollView(
+      child: SizedBox(
+        height: totalHeight == null ? 900 : totalHeight!,
+        child: Padding(
+          padding: EdgeInsets.all(gridPadding),
+          child: GridView.count(
+            crossAxisCount: crossAxisCount,
+            children: [
+              GestureDetector(
+                onTap: () {
+                  pp('$mm widget on tapped: typeProjects $typeProjects ...');
+                  onTypeTapped(typeProjects);
+                },
+                child: DashboardElement(
+                  title: 'Projects',
+                  topPadding: elementPadding,
+                  number: dataBag.projects!.length,
+                  onTapped: () {
                     onTypeTapped(typeProjects);
                   },
-                  child: DashboardElement(
-                    title: 'Projects',
-                    topPadding: elementPadding,
-                    number: dataBag.projects!.length,
-                    onTapped: () {
-                      onTypeTapped(typeProjects);
-                    },
-                  ),
                 ),
-                GestureDetector(
-                  onTap: () {
-                    pp('$mm widget on tapped: typeUsers $typeUsers ...');
+              ),
+              GestureDetector(
+                onTap: () {
+                  pp('$mm widget on tapped: typeUsers $typeUsers ...');
 
+                  onTypeTapped(typeUsers);
+                },
+                child: DashboardElement(
+                  title: 'Members',
+                  number: dataBag.users!.length,
+                  topPadding: elementPadding,
+                  onTapped: () {
                     onTypeTapped(typeUsers);
                   },
-                  child: DashboardElement(
-                    title: 'Members',
-                    number: dataBag.users!.length,
-                    topPadding: elementPadding,
-                    onTapped: () {
-                      onTypeTapped(typeUsers);
-                    },
-                  ),
                 ),
-                GestureDetector(
-                  onTap: () {
-                    pp('$mm widget on tapped: typePhotos $typePhotos ...');
+              ),
+              GestureDetector(
+                onTap: () {
+                  pp('$mm widget on tapped: typePhotos $typePhotos ...');
 
+                  onTypeTapped(typePhotos);
+                },
+                child: DashboardElement(
+                  title: 'Photos',
+                  number: dataBag.photos!.length,
+                  topPadding: elementPadding,
+                  textStyle: GoogleFonts.secularOne(
+                      textStyle: Theme.of(context).textTheme.titleLarge,
+                      fontWeight: FontWeight.w900,
+                      color: Theme.of(context).primaryColor),
+                  onTapped: () {
                     onTypeTapped(typePhotos);
                   },
-                  child: DashboardElement(
-                    title: 'Photos',
-                    number: dataBag.photos!.length,
-                    topPadding: elementPadding,
-                    textStyle: GoogleFonts.secularOne(
-                        textStyle: Theme.of(context).textTheme.titleLarge,
-                        fontWeight: FontWeight.w900,
-                        color: Theme.of(context).primaryColor),
-                    onTapped: () {
-                      onTypeTapped(typePhotos);
-                    },
-                  ),
                 ),
-                GestureDetector(
-                  onTap: () {
-                    pp('$mm widget on tapped: typeVideos $typeVideos ...');
+              ),
+              GestureDetector(
+                onTap: () {
+                  pp('$mm widget on tapped: typeVideos $typeVideos ...');
 
+                  onTypeTapped(typeVideos);
+                },
+                child: DashboardElement(
+                  title: 'Videos',
+                  topPadding: elementPadding,
+                  number: dataBag.videos!.length,
+                  onTapped: () {
                     onTypeTapped(typeVideos);
                   },
-                  child: DashboardElement(
-                    title: 'Videos',
-                    topPadding: elementPadding,
-                    number: dataBag.videos!.length,
-                    onTapped: () {
-                      onTypeTapped(typeVideos);
-                    },
-                  ),
                 ),
-                GestureDetector(
-                  onTap: () {
-                    pp('$mm widget on tapped: typeAudios $typeAudios ...');
+              ),
+              GestureDetector(
+                onTap: () {
+                  pp('$mm widget on tapped: typeAudios $typeAudios ...');
 
+                  onTypeTapped(typeAudios);
+                },
+                child: DashboardElement(
+                  title: 'Audio Clips',
+                  topPadding: elementPadding,
+                  number: dataBag.audios!.length,
+                  textStyle: GoogleFonts.secularOne(
+                      textStyle: Theme.of(context).textTheme.titleLarge,
+                      fontWeight: FontWeight.w900,
+                      color: Theme.of(context).primaryColor),
+                  onTapped: () {
                     onTypeTapped(typeAudios);
                   },
-                  child: DashboardElement(
-                    title: 'Audio Clips',
-                    topPadding: elementPadding,
-                    number: dataBag.audios!.length,
-                    textStyle: GoogleFonts.secularOne(
-                        textStyle: Theme.of(context).textTheme.titleLarge,
-                        fontWeight: FontWeight.w900,
-                        color: Theme.of(context).primaryColor),
-                    onTapped: () {
-                      onTypeTapped(typeAudios);
-                    },
-                  ),
                 ),
-                GestureDetector(
-                  onTap: () {
-                    pp('$mm widget on tapped: typePositions $typePositions ...');
+              ),
+              GestureDetector(
+                onTap: () {
+                  pp('$mm widget on tapped: typePositions $typePositions ...');
 
+                  onTypeTapped(typePositions);
+                },
+                child: DashboardElement(
+                  title: 'Locations',
+                  topPadding: elementPadding,
+                  number: dataBag.projectPositions!.length,
+                  onTapped: () {
                     onTypeTapped(typePositions);
                   },
-                  child: DashboardElement(
-                    title: 'Locations',
-                    topPadding: elementPadding,
-                    number: dataBag.projectPositions!.length,
-                    onTapped: () {
-                      onTypeTapped(typePositions);
-                    },
-                  ),
                 ),
-                GestureDetector(
-                  onTap: () {
-                    pp('$mm widget on tapped: typePolygons $typePolygons ...');
+              ),
+              GestureDetector(
+                onTap: () {
+                  pp('$mm widget on tapped: typePolygons $typePolygons ...');
 
+                  onTypeTapped(typePolygons);
+                },
+                child: DashboardElement(
+                  title: 'Areas',
+                  topPadding: elementPadding,
+                  number: dataBag.projectPolygons!.length,
+                  textStyle: GoogleFonts.secularOne(
+                      textStyle: Theme.of(context).textTheme.titleLarge,
+                      fontWeight: FontWeight.w900,
+                      color: Theme.of(context).primaryColor),
+                  onTapped: () {
                     onTypeTapped(typePolygons);
                   },
-                  child: DashboardElement(
-                    title: 'Areas',
-                    topPadding: elementPadding,
-                    number: dataBag.projectPolygons!.length,
-                    textStyle: GoogleFonts.secularOne(
-                        textStyle: Theme.of(context).textTheme.titleLarge,
-                        fontWeight: FontWeight.w900,
-                        color: Theme.of(context).primaryColor),
-                    onTapped: () {
-                      onTypeTapped(typePolygons);
-                    },
-                  ),
                 ),
-                GestureDetector(
-                  onTap: () {
-                    pp('$mm widget on tapped: typeSchedules $typeSchedules ...');
+              ),
+              GestureDetector(
+                onTap: () {
+                  pp('$mm widget on tapped: typeSchedules $typeSchedules ...');
 
+                  onTypeTapped(typeSchedules);
+                },
+                child: DashboardElement(
+                  title: 'Schedules',
+                  topPadding: elementPadding,
+                  number: dataBag.fieldMonitorSchedules!.length,
+                  onTapped: () {
                     onTypeTapped(typeSchedules);
                   },
-                  child: DashboardElement(
-                    title: 'Schedules',
-                    topPadding: elementPadding,
-                    number: dataBag.fieldMonitorSchedules!.length,
-                    onTapped: () {
-                      onTypeTapped(typeSchedules);
-                    },
-                  ),
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
         ),
       ),

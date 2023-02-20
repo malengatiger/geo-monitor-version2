@@ -244,8 +244,11 @@ class ActivityStreamCardMobileState extends State<ActivityStreamCardMobile> {
               ),
               mDuration.isNotEmpty
                   ? Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.start,
                       children: [
+                        const SizedBox(
+                          width: 36,
+                        ),
                         Text(
                           'Duration:',
                           style: myTextStyleTiny(context),

@@ -133,16 +133,14 @@ class OrganizationBloc {
   Future<void> addProjectPositionToStream(
       ProjectPosition projectPosition) async {
     pp('$mm addProjectPositionToStream ...');
-    var p = await cacheManager.getOrganizationProjectPositions(
-        organizationId: projectPosition.organizationId!);
+    var p = await cacheManager.getOrganizationProjectPositions();
     pp('$mm added new projectPosition -- sending ${p.length} projectPositions to projectPositionsStream ');
     projectPositionsController.sink.add(p);
   }
 
   Future<void> addProjectPolygonToStream(ProjectPolygon projectPolygon) async {
     pp('$mm addProjectPolygonToStream ...');
-    var p = await cacheManager.getOrganizationProjectPolygons(
-        organizationId: projectPolygon.organizationId!);
+    var p = await cacheManager.getOrganizationProjectPolygons();
     pp('$mm added new projectPolygon -- sending ${p.length} projectPolygons to projectPolygonsStream ');
     projPolygonsController.sink.add(p);
   }
@@ -268,8 +266,7 @@ class OrganizationBloc {
 
   Future<List<ProjectPosition>> getProjectPositions(
       {required String organizationId, required bool forceRefresh}) async {
-    var projectPositions = await cacheManager.getOrganizationProjectPositions(
-        organizationId: organizationId);
+    var projectPositions = await cacheManager.getOrganizationProjectPositions();
     pp('$mm getOrganizationProjectPositions found ${projectPositions.length} positions in local cache ');
 
     if (projectPositions.isEmpty || forceRefresh) {
@@ -285,8 +282,7 @@ class OrganizationBloc {
 
   Future<List<ProjectPolygon>> getProjectPolygons(
       {required String organizationId, required bool forceRefresh}) async {
-    var projectPolygons = await cacheManager.getOrganizationProjectPolygons(
-        organizationId: organizationId);
+    var projectPolygons = await cacheManager.getOrganizationProjectPolygons();
     pp('$mm getProjectPolygons found ${projectPolygons.length} polygons in local cache ');
 
     if (projectPolygons.isEmpty || forceRefresh) {
@@ -301,8 +297,7 @@ class OrganizationBloc {
 
   Future<List<FieldMonitorSchedule>> getFieldMonitorSchedules(
       {required String organizationId, required bool forceRefresh}) async {
-    var schedules =
-        await cacheManager.getOrganizationMonitorSchedules(organizationId);
+    var schedules = await cacheManager.getOrganizationMonitorSchedules();
 
     if (schedules.isEmpty || forceRefresh) {
       schedules = await DataAPI.getOrgFieldMonitorSchedules(organizationId);

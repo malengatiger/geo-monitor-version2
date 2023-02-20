@@ -419,7 +419,7 @@ class ProjectDashboardTabletPortraitState
                       ),
                       SizedBox(
                         width: width2,
-                        child: GeoActivityTablet(
+                        child: GeoActivity(
                           width: width2,
                           project: widget.project,
                           thinMode: true,

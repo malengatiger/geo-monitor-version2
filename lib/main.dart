@@ -61,7 +61,7 @@ void main() async {
   ]);
 
   runApp(const GeoApp());
-  _initializeGeoMonitor();
+  await _initializeGeoMonitor();
   _buildGeofences();
 }
 
@@ -135,8 +135,10 @@ Future<void> _initializeGeoMonitor() async {
   //pp('THEME: user up top is: ${user!.name}');
   await dotenv.load(fileName: ".env");
   pp('$mx $heartBlue DotEnv has been loaded');
+
   await Hive.initFlutter(hiveName);
   await cacheManager.initialize(forceInitialization: false);
+
   pp('$mx ${E.heartGreen}${E.heartGreen}}${E.heartGreen} '
       '_initializeGeoMonitor: Hive initialized and boxCollection set up');
 
@@ -144,7 +146,7 @@ Future<void> _initializeGeoMonitor() async {
   FirebaseMessaging.instance.requestPermission();
   await AppAuth.listenToFirebaseAuthentication();
 
-  uploader.startTimer(const Duration(seconds: 20));
+  uploader.startTimer(const Duration(seconds: 15));
 
   if (settings != null) {
     pp('\n\n$mx ${E.heartGreen}${E.heartGreen}}${E.heartGreen} _initializeGeoMonitor: App Settings are 🍎${settings.toJson()}🍎\n\n');
@@ -154,7 +156,6 @@ Future<void> _initializeGeoMonitor() async {
 void _buildGeofences() async {
   pp('\n$mx _buildGeofences starting ........................');
   theGreatGeofencer.buildGeofences();
-  pp('$mx _buildGeofences should be done and dusted ....');
 }
 
 class MyHomePage extends StatefulWidget {

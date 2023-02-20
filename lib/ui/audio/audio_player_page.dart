@@ -206,6 +206,11 @@ class AudioPlayerCardState extends State<AudioPlayerCard>
             ));
   }
 
+  String getDeviceType() {
+    final data = MediaQueryData.fromWindow(WidgetsBinding.instance.window);
+    return data.size.shortestSide < 600 ? 'phone' : 'tablet';
+  }
+
   @override
   void dispose() {
     _animationController.dispose();
@@ -220,15 +225,23 @@ class AudioPlayerCardState extends State<AudioPlayerCard>
     final dt = getFormattedDateHourMinuteSecond(
         date: DateTime.parse(localDate), context: context);
     final height = MediaQuery.of(context).size.height;
-    final width = MediaQuery.of(context).size.width;
+    var width = MediaQuery.of(context).size.width;
     var ori = MediaQuery.of(context).orientation;
     var delta = 400;
     if (ori.name == 'landscape') {
       delta = 200;
     }
+    var deviceType = getDeviceType();
+    if (widget.width != null) {
+      width = widget.width!;
+    } else if (deviceType == 'phone') {
+      //no op
+    } else {
+      width = (width / 3);
+    }
 
     return SizedBox(
-      width: widget.width ?? width,
+      width: width,
       height: widget.height ?? height - delta,
       child: Card(
         shape: getRoundedBorder(radius: 16),

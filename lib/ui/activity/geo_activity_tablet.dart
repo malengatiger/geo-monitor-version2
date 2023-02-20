@@ -19,8 +19,8 @@ import '../../library/functions.dart';
 import '../../library/generic_functions.dart';
 import 'activity_list_tablet.dart';
 
-class GeoActivityTablet extends StatefulWidget {
-  const GeoActivityTablet({
+class GeoActivity extends StatefulWidget {
+  const GeoActivity({
     Key? key,
     required this.width,
     required this.thinMode,
@@ -43,10 +43,10 @@ class GeoActivityTablet extends StatefulWidget {
   final bool forceRefresh;
 
   @override
-  GeoActivityTabletState createState() => GeoActivityTabletState();
+  GeoActivityState createState() => GeoActivityState();
 }
 
-class GeoActivityTabletState extends State<GeoActivityTablet>
+class GeoActivityState extends State<GeoActivity>
     with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late StreamSubscription<Photo> photoSubscriptionFCM;
@@ -124,6 +124,7 @@ class GeoActivityTabletState extends State<GeoActivityTablet>
           child: ScreenTypeLayout(
             mobile: ActivityListMobile(
               project: widget.project,
+              user: widget.user,
               onPhotoTapped: (photo) {
                 widget.showPhoto(photo);
               },

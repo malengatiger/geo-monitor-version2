@@ -335,7 +335,7 @@ class ProjectDashboardTabletLandscapeState
                       project: widget.project),
                 ),
               ),
-              GeoActivityTablet(
+              GeoActivity(
                 width: (width / 2) - 120,
                 forceRefresh: true,
                 project: widget.project,
