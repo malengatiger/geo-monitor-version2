@@ -198,31 +198,33 @@ class _ActivityListMobileState extends State<ActivityListMobile>
   Widget build(BuildContext context) {
     final width = MediaQuery.of(context).size.width;
     if (busy) {
-      return Center(
-        child: Card(
-          shape: getRoundedBorder(radius: 16),
-          child: Padding(
-            padding: const EdgeInsets.all(20.0),
-            child: SizedBox(
-              height: 100,
-              child: Column(
-                children: [
-                  const SizedBox(
-                    width: 20,
-                    height: 20,
-                    child: CircularProgressIndicator(
-                      strokeWidth: 4,
-                      backgroundColor: Colors.pink,
+      return Scaffold(
+        body: Center(
+          child: Card(
+            shape: getRoundedBorder(radius: 16),
+            child: Padding(
+              padding: const EdgeInsets.all(20.0),
+              child: SizedBox(
+                height: 100,
+                child: Column(
+                  children: [
+                    const SizedBox(
+                      width: 20,
+                      height: 20,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 4,
+                        backgroundColor: Colors.pink,
+                      ),
                     ),
-                  ),
-                  const SizedBox(
-                    height: 20,
-                  ),
-                  Text(
-                    'Loading activities ...',
-                    style: myTextStyleSmall(context),
-                  ),
-                ],
+                    const SizedBox(
+                      height: 20,
+                    ),
+                    Text(
+                      'Loading activities ...',
+                      style: myTextStyleSmall(context),
+                    ),
+                  ],
+                ),
               ),
             ),
           ),
@@ -253,6 +255,16 @@ class _ActivityListMobileState extends State<ActivityListMobile>
         title: widget.user == null
             ? const Text('Project Activity')
             : const Text('Member Activity'),
+        actions: [
+          IconButton(
+              onPressed: () {
+                _getData(true);
+              },
+              icon: Icon(
+                Icons.refresh,
+                color: Theme.of(context).primaryColor,
+              )),
+        ],
         bottom: PreferredSize(
             preferredSize: const Size.fromHeight(100),
             child: Column(

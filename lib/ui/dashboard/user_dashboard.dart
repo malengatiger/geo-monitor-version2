@@ -143,7 +143,9 @@ class UserDashboardState extends State<UserDashboard>
     list.sort((a, b) => a.name!.compareTo(b.name!));
     pp('$mm filtered projects for user: ${list.length}');
     dataBag!.projects = list;
-    setState(() {});
+    if (mounted) {
+      setState(() {});
+    }
   }
 
   void _listenForFCM() async {

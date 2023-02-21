@@ -323,7 +323,7 @@ class ProjectListMobileState extends State<ProjectListMobile>
   }
 
   void _navigateToProjectDashboard(Project p) async {
-    pp('.................. _navigateToProjectPolygonMap: ');
+    pp('.................. _navigateToProjectDashboard: ');
 
     if (mounted) {
       Navigator.push(

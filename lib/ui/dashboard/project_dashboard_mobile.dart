@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:firebase_auth/firebase_auth.dart' as fb;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:geo_monitor/library/data/geofence_event.dart';
@@ -15,7 +14,6 @@ import 'package:universal_platform/universal_platform.dart';
 import '../../library/api/prefs_og.dart';
 import '../../library/bloc/connection_check.dart';
 import '../../library/bloc/fcm_bloc.dart';
-import '../../library/bloc/organization_bloc.dart';
 import '../../library/bloc/project_bloc.dart';
 import '../../library/bloc/theme_bloc.dart';
 import '../../library/data/audio.dart';
@@ -29,12 +27,6 @@ import '../../library/data/user.dart';
 import '../../library/data/video.dart';
 import '../../library/emojis.dart';
 import '../../library/functions.dart';
-import '../../library/ui/media/user_media_list/user_media_list_mobile.dart';
-import '../../library/ui/message/message_main.dart';
-import '../../library/ui/project_list/project_list_mobile.dart';
-import '../../library/ui/settings/settings_mobile.dart';
-import '../intro/intro_page_viewer_portrait.dart';
-import 'dashboard_portrait.dart';
 
 class ProjectDashboardMobile extends StatefulWidget {
   const ProjectDashboardMobile({
@@ -52,72 +44,7 @@ class ProjectDashboardMobileState extends State<ProjectDashboardMobile>
     with TickerProviderStateMixin {
   late AnimationController _gridViewAnimationController;
 
-  var busy = false;
-  var _projects = <Project>[];
-  var _users = <User>[];
-  var _photos = <Photo>[];
-  var _videos = <Video>[];
-  var _projectPositions = <ProjectPosition>[];
-  var _projectPolygons = <ProjectPolygon>[];
-  var _schedules = <FieldMonitorSchedule>[];
-  var _audios = <Audio>[];
-  final _settings = <SettingsModel>[];
-  User? user;
-
-  static const mm = '🎽🎽🎽🎽🎽🎽 ProjectDashboardMobile: 🎽';
-  bool networkAvailable = false;
-  final dur = 600;
-
-  @override
-  void initState() {
-    _gridViewAnimationController = AnimationController(
-        duration: const Duration(milliseconds: 3000),
-        reverseDuration: const Duration(milliseconds: 3000),
-        vsync: this);
-
-    super.initState();
-    _setItems();
-    _listenToStreams();
-    _listenForFCM();
-
-    if (widget.user != null) {
-      _refreshData(true);
-    } else {
-      _refreshData(false);
-    }
-  }
-
-  final fb.FirebaseAuth firebaseAuth = fb.FirebaseAuth.instance;
-  bool authed = false;
-
-  void _listenToStreams() async {
-    var user = await prefsOGx.getUser();
-    if (user == null) return;
-    switch (user.userType) {
-      case UserType.orgExecutive:
-        _listenToOrgStreams();
-        break;
-      case UserType.orgAdministrator:
-        _listenToOrgStreams();
-        break;
-      case UserType.fieldMonitor:
-        _listenToMonitorStreams();
-        break;
-    }
-  }
-
   late StreamSubscription<GeofenceEvent> geofenceSubscription;
-
-  // late StreamSubscription<>
-  late StreamSubscription<List<Project>> projectSubscription;
-  late StreamSubscription<List<User>> userSubscription;
-  late StreamSubscription<List<Photo>> photoSubscription;
-  late StreamSubscription<List<Video>> videoSubscription;
-  late StreamSubscription<List<Audio>> audioSubscription;
-  late StreamSubscription<List<ProjectPosition>> projectPositionSubscription;
-  late StreamSubscription<List<ProjectPolygon>> projectPolygonSubscription;
-  late StreamSubscription<List<FieldMonitorSchedule>> schedulesSubscription;
-
   late StreamSubscription<Photo> photoSubscriptionFCM;
   late StreamSubscription<Video> videoSubscriptionFCM;
   late StreamSubscription<Audio> audioSubscriptionFCM;
@@ -129,145 +56,40 @@ class ProjectDashboardMobileState extends State<ProjectDashboardMobile>
 
   late StreamSubscription<String> killSubscriptionFCM;
 
-  void _listenToOrgStreams() async {
-    projectSubscription = organizationBloc.projectStream.listen((event) {
-      _projects = event;
-      pp('$mm attempting to set state after projects delivered by stream: ${_projects.length} ... mounted: $mounted');
-      if (mounted) {
-        setState(() {});
-        _gridViewAnimationController.forward();
-      }
-    });
-    userSubscription = organizationBloc.usersStream.listen((event) {
-      _users = event;
-      pp('$mm attempting to set state after users delivered by stream: ${_users.length} ... mounted: $mounted');
-      if (mounted) {
-        setState(() {});
-      }
-    });
-    photoSubscription = organizationBloc.photoStream.listen((event) {
-      _photos = event;
-      pp('$mm attempting to set state after photos delivered by stream: ${_photos.length} ... mounted: $mounted');
-      if (mounted) {
-        setState(() {});
-      }
-    });
+  var busy = false;
 
-    videoSubscription = organizationBloc.videoStream.listen((event) {
-      _videos = event;
-      pp('$mm attempting to set state after videos delivered by stream: ${_videos.length} ... mounted: $mounted');
-      if (mounted) {
-        setState(() {});
-      }
-    });
-    audioSubscription = organizationBloc.audioStream.listen((event) {
-      _audios = event;
-      pp('$mm attempting to set state after audios delivered by stream: ${_audios.length} ... mounted: $mounted');
-      if (mounted) {
-        setState(() {});
-      }
-    });
-    projectPositionSubscription =
-        organizationBloc.projectPositionsStream.listen((event) {
-      _projectPositions = event;
-      pp('$mm attempting to set state after projectPositions delivered by stream: ${_projectPositions.length} ... mounted: $mounted');
-      if (mounted) {
-        setState(() {});
-        _gridViewAnimationController.forward();
-      }
-    });
-    projectPolygonSubscription =
-        organizationBloc.projectPolygonsStream.listen((event) {
-      _projectPolygons = event;
-      pp('$mm attempting to set state after projectPolygons delivered by stream: ${_projectPolygons.length} ... mounted: $mounted');
-      if (mounted) {
-        setState(() {});
-        _gridViewAnimationController.forward();
-      }
-    });
+  var _photos = <Photo>[];
+  var _videos = <Video>[];
+  var _projectPositions = <ProjectPosition>[];
+  var _projectPolygons = <ProjectPolygon>[];
+  var _schedules = <FieldMonitorSchedule>[];
+  var _audios = <Audio>[];
+  User? user;
 
-    schedulesSubscription =
-        organizationBloc.fieldMonitorScheduleStream.listen((event) {
-      _schedules = event;
-      pp('$mm attempting to set state after schedules delivered by stream: ${_schedules.length} ... mounted: $mounted');
+  static const mm = '🔆🔆🔆🔆🔆🔆🔆🔆 ProjectDashboardMobile: 🔆🔆';
+  bool networkAvailable = false;
+  final dur = 600;
 
-      if (mounted) {
-        setState(() {});
-        // _controller.reset();
-        _gridViewAnimationController.forward();
-      }
-    });
-  }
+  @override
+  void initState() {
+    _gridViewAnimationController = AnimationController(
+        duration: const Duration(milliseconds: 3000),
+        reverseDuration: const Duration(milliseconds: 3000),
+        vsync: this);
 
-  void _listenToMonitorStreams() async {
-    projectSubscription = organizationBloc.projectStream.listen((event) {
-      _projects = event;
-      pp('$mm attempting to set state after projects delivered by stream: ${_projects.length} ... mounted: $mounted');
-      if (mounted) {
-        setState(() {});
-        _gridViewAnimationController.forward();
-      }
-    });
-    userSubscription = organizationBloc.usersStream.listen((event) {
-      _users = event;
-      pp('$mm attempting to set state after users delivered by stream: ${_users.length} ... mounted: $mounted');
-      if (mounted) {
-        setState(() {});
-      }
-    });
-    photoSubscription = organizationBloc.photoStream.listen((event) {
-      pp('$mm attempting to set state after photos delivered by stream: ${_photos.length} ... mounted: $mounted');
-      _photos = event;
-      if (mounted) {
-        setState(() {});
-      }
-    });
+    super.initState();
+    _listenForFCM();
 
-    videoSubscription = organizationBloc.videoStream.listen((event) {
-      _videos = event;
-      pp('$mm attempting to set state after videos delivered by stream: ${_videos.length} ... mounted: $mounted');
-
-      if (mounted) {
-        setState(() {});
-      }
-    });
-    audioSubscription = organizationBloc.audioStream.listen((event) {
-      _audios = event;
-      pp('$mm attempting to set state after audios delivered by stream: ${_audios.length} ... mounted: $mounted');
-      if (mounted) {
-        setState(() {});
-      }
-    });
-    projectPositionSubscription =
-        organizationBloc.projectPositionsStream.listen((event) {
-      _projectPositions = event;
-      pp('$mm attempting to set state after project positions delivered by stream: ${_projectPositions.length} ... mounted: $mounted');
-
-      if (mounted) {
-        setState(() {});
-      }
-    });
-    schedulesSubscription =
-        organizationBloc.fieldMonitorScheduleStream.listen((event) {
-      _schedules = event;
-      pp('$mm attempting to set state after fieldMonitorSchedules delivered by stream: ${_schedules.length} ... mounted: $mounted');
-      if (mounted) {
-        setState(() {});
-      }
-    });
+    if (widget.user != null) {
+      _getData(true);
+    } else {
+      _getData(false);
+    }
   }
 
   @override
   void dispose() {
     _gridViewAnimationController.dispose();
-
-    projectPolygonSubscription.cancel();
-    projectPositionSubscription.cancel();
-    projectSubscription.cancel();
-    photoSubscription.cancel();
-    videoSubscription.cancel();
-    userSubscription.cancel();
-    audioSubscription.cancel();
     projectPolygonSubscriptionFCM.cancel();
     projectPositionSubscriptionFCM.cancel();
     projectSubscriptionFCM.cancel();
@@ -279,29 +101,9 @@ class ProjectDashboardMobileState extends State<ProjectDashboardMobile>
     super.dispose();
   }
 
-  var items = <BottomNavigationBarItem>[];
-
-  void _setItems() {
-    // items
-    //     .add(BottomNavigationBarItem(icon: Icon(Icons.people), label: 'Users'));
-
-    items.add(const BottomNavigationBarItem(
-        icon: Icon(
-          Icons.person,
-          color: Colors.pink,
-        ),
-        label: 'My Work'));
-    items.add(const BottomNavigationBarItem(
-        icon: Icon(
-          Icons.send,
-          color: Colors.blue,
-        ),
-        label: 'Send Message'));
-  }
-
   String type = 'Unknown Rider';
 
-  void _refreshData(bool forceRefresh) async {
+  Future _getData(bool forceRefresh) async {
     pp('$mm ............................................Refreshing data ....');
     user = await prefsOGx.getUser();
     if (user != null) {
@@ -345,10 +147,8 @@ class ProjectDashboardMobileState extends State<ProjectDashboardMobile>
 
   Future _extractData(DataBag bag) async {
     pp('$mm ............ Extracting org data from bag');
-    _projects = bag.projects!;
     _projectPositions = bag.projectPositions!;
     _projectPolygons = bag.projectPolygons!;
-    _users = bag.users!;
     _photos = bag.photos!;
     _videos = bag.videos!;
     _schedules = bag.fieldMonitorSchedules!;
@@ -366,16 +166,10 @@ class ProjectDashboardMobileState extends State<ProjectDashboardMobile>
       pp('$mm 🍎 🍎 _listen to FCM message streams ... 🍎 🍎');
       projectSubscriptionFCM =
           fcmBloc.projectStream.listen((Project project) async {
-        if (mounted) {
-          pp('$mm: 🍎 🍎 projects arrived: ${project.name} ... 🍎 🍎');
-          _projects = await organizationBloc.getOrganizationProjects(
-              organizationId: user!.organizationId!, forceRefresh: false);
-          setState(() {});
-        }
+        pp('$mm: 🍎 🍎 projects arrived: ${project.name} ... 🍎 🍎');
+
+        await _getData(false);
       });
-      if (mounted) {
-        killSubscriptionFCM = listenForKill(context: context);
-      }
 
       settingsSubscriptionFCM = fcmBloc.settingsStream.listen((settings) async {
         pp('$mm: 🍎🍎 settings arrived with themeIndex: ${settings.themeIndex}... 🍎🍎');
@@ -387,126 +181,19 @@ class ProjectDashboardMobileState extends State<ProjectDashboardMobile>
 
       photoSubscriptionFCM = fcmBloc.photoStream.listen((user) async {
         pp('$mm: 🍎 🍎 photoSubscriptionFCM photo arrived... 🍎 🍎');
-        if (mounted) {
-          _photos = await projectBloc.getPhotos(
-              projectId: user.projectId!, forceRefresh: false);
-          setState(() {});
-        }
+        await _getData(false);
       });
 
       videoSubscriptionFCM = fcmBloc.videoStream.listen((Video message) async {
         pp('$mm: 🍎 🍎 videoSubscriptionFCM video arrived... 🍎 🍎');
-        if (mounted) {
-          pp('ProjectDashboardMobile: 🍎 🍎 showMessageSnackbar: ${message.projectName} ... 🍎 🍎');
-          _videos = await projectBloc.getProjectVideos(
-              projectId: message.projectId!, forceRefresh: false);
-        }
+        await _getData(false);
       });
       audioSubscriptionFCM = fcmBloc.audioStream.listen((Audio message) async {
         pp('$mm: 🍎 🍎 audioSubscriptionFCM audio arrived... 🍎 🍎');
-        if (mounted) {
-          _audios = await projectBloc.getProjectAudios(
-              projectId: message.projectId!, forceRefresh: false);
-        }
+        await _getData(false);
       });
     } else {
       pp('App is running on the Web 👿👿👿firebase messaging is OFF 👿👿👿');
-    }
-  }
-
-  final _key = GlobalKey<ScaffoldState>();
-
-  void _handleBottomNav(int value) {
-    switch (value) {
-      case 0:
-        pp(' 🔆🔆🔆 Navigate to ProjectList');
-        _navigateToProjectList();
-        break;
-
-      case 1:
-        pp(' 🔆🔆🔆 Navigate to UserMediaList');
-        _navigateToUserMediaList();
-        break;
-
-      case 2:
-        pp(' 🔆🔆🔆 Navigate to MessageSender');
-        _navigateToMessageSender();
-        break;
-    }
-  }
-
-  int instruction = stayOnList;
-  void _navigateToProjectList() {
-    if (selectedProject != null) {
-      Navigator.push(
-          context,
-          PageTransition(
-              type: PageTransitionType.scale,
-              alignment: Alignment.topLeft,
-              duration: const Duration(seconds: 1),
-              child: ProjectListMobile(
-                instruction: instruction,
-                project: selectedProject,
-              )));
-      selectedProject = null;
-    } else {
-      Navigator.push(
-          context,
-          PageTransition(
-              type: PageTransitionType.scale,
-              alignment: Alignment.topLeft,
-              duration: const Duration(seconds: 1),
-              child: ProjectListMobile(
-                instruction: instruction,
-              )));
-    }
-  }
-
-  void _navigateToMessageSender() {
-    Navigator.push(
-        context,
-        PageTransition(
-            type: PageTransitionType.scale,
-            alignment: Alignment.topLeft,
-            duration: const Duration(seconds: 1),
-            child: MessageMain(user: user)));
-  }
-
-  void _navigateToUserMediaList() async {
-    if (mounted) {
-      Navigator.push(
-          context,
-          PageTransition(
-              type: PageTransitionType.scale,
-              alignment: Alignment.topLeft,
-              duration: const Duration(seconds: 1),
-              child: UserMediaListMobile(user: user!)));
-    }
-  }
-
-  void _navigateToIntro() {
-    pp('$mm .................. _navigateToIntro to Intro ....');
-    if (mounted) {
-      Navigator.push(
-          context,
-          PageTransition(
-              type: PageTransitionType.scale,
-              alignment: Alignment.topLeft,
-              duration: const Duration(seconds: 1),
-              child: const IntroPageViewerPortrait()));
-    }
-  }
-
-  void _navigateToSettings() {
-    pp('$mm .................. _navigateToIntro to Settings ....');
-    if (mounted) {
-      Navigator.push(
-          context,
-          PageTransition(
-              type: PageTransitionType.leftToRight,
-              alignment: Alignment.center,
-              duration: const Duration(seconds: 1),
-              child: const SettingsMobile()));
     }
   }
 
@@ -571,7 +258,6 @@ class ProjectDashboardMobileState extends State<ProjectDashboardMobile>
         color: Theme.of(context).primaryColor);
     return SafeArea(
       child: Scaffold(
-        key: _key,
         appBar: AppBar(
           title: Text(
             'Project Dashboard',
@@ -595,7 +281,7 @@ class ProjectDashboardMobileState extends State<ProjectDashboardMobile>
                 color: Theme.of(context).primaryColor,
               ),
               onPressed: () {
-                _refreshData(true);
+                _getData(true);
               },
             ),
           ],
@@ -634,11 +320,6 @@ class ProjectDashboardMobileState extends State<ProjectDashboardMobile>
           ),
         ),
         // backgroundColor: Colors.brown[100],
-        bottomNavigationBar: BottomNavigationBar(
-          items: items,
-          onTap: _handleBottomNav,
-          elevation: 8,
-        ),
         body: busy
             ? const Center(
                 child: SizedBox(
@@ -668,7 +349,7 @@ class ProjectDashboardMobileState extends State<ProjectDashboardMobile>
                             child: Column(
                               children: [
                                 const SizedBox(
-                                  height: 32,
+                                  height: 60,
                                 ),
                                 Text('${_photos.length}', style: style),
                                 const SizedBox(
@@ -693,7 +374,7 @@ class ProjectDashboardMobileState extends State<ProjectDashboardMobile>
                             child: Column(
                               children: [
                                 const SizedBox(
-                                  height: 32,
+                                  height: 60,
                                 ),
                                 Text('${_videos.length}', style: style),
                                 const SizedBox(
@@ -718,7 +399,7 @@ class ProjectDashboardMobileState extends State<ProjectDashboardMobile>
                             child: Column(
                               children: [
                                 const SizedBox(
-                                  height: 32,
+                                  height: 60,
                                 ),
                                 Text('${_audios.length}', style: style),
                                 const SizedBox(
@@ -743,7 +424,7 @@ class ProjectDashboardMobileState extends State<ProjectDashboardMobile>
                             child: Column(
                               children: [
                                 const SizedBox(
-                                  height: 32,
+                                  height: 60,
                                 ),
                                 Text('${_projectPolygons.length}',
                                     style: style),
@@ -769,7 +450,7 @@ class ProjectDashboardMobileState extends State<ProjectDashboardMobile>
                             child: Column(
                               children: [
                                 const SizedBox(
-                                  height: 32,
+                                  height: 60,
                                 ),
                                 Text('${_projectPositions.length}',
                                     style: style),
@@ -785,7 +466,9 @@ class ProjectDashboardMobileState extends State<ProjectDashboardMobile>
                           ),
                         ),
                         GestureDetector(
-                          onTap: () {},
+                          onTap: () {
+                            //todo - navigate to schedules
+                          },
                           child: Card(
                             elevation: 8,
                             shape: RoundedRectangleBorder(
@@ -793,7 +476,7 @@ class ProjectDashboardMobileState extends State<ProjectDashboardMobile>
                             child: Column(
                               children: [
                                 const SizedBox(
-                                  height: 32,
+                                  height: 60,
                                 ),
                                 Text('${_schedules.length}', style: style),
                                 const SizedBox(

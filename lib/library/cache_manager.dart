@@ -1056,9 +1056,6 @@ class CacheManager {
       }
     }
     pp('$mm Project photos found: ${mList.length}');
-    if (mList.isNotEmpty) {
-      pp('$mm LAST PHOTO: ${mList.last.toJson()}');
-    }
     return mList;
   }
 
