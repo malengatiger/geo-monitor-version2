@@ -133,7 +133,7 @@ class DashboardPortraitState extends State<DashboardPortrait>
       pp('\n$mm geofenceEvent delivered by geofenceStream: ${event.projectName} ...');
       if (mounted) {
         showToast(
-            message: 'Geofence triggered for ${event.user!.name}',
+            message: '${event.user!.name} at ${event.projectName}',
             context: context);
       }
     });

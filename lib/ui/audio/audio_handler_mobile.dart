@@ -327,6 +327,12 @@ class AudioHandlerMobileState extends State<AudioHandlerMobile>
   }
 
   @override
+  onVideoReady(Video video) {}
+
+  @override
+  onAudioReady(Audio audio) {}
+
+  @override
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
@@ -351,23 +357,38 @@ class AudioHandlerMobileState extends State<AudioHandlerMobile>
                           style: myTextStyleMedium(context),
                         ),
                         const SizedBox(
-                          height: 28,
+                          height: 16,
                         ),
                         Text(
                           '${widget.project.name}',
                           style: myTextStyleLarge(context),
                         ),
                         const SizedBox(
-                          height: 24,
+                          height: 36,
                         ),
                         user == null
                             ? const SizedBox()
-                            : Text(
-                                '${user!.name}',
-                                style: myTextStyleSmall(context),
+                            : Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  user!.thumbnailUrl == null
+                                      ? const SizedBox()
+                                      : CircleAvatar(
+                                          backgroundImage:
+                                              NetworkImage(user!.thumbnailUrl!),
+                                          radius: 24,
+                                        ),
+                                  const SizedBox(
+                                    width: 16,
+                                  ),
+                                  Text(
+                                    '${user!.name}',
+                                    style: myTextStyleSmall(context),
+                                  ),
+                                ],
                               ),
                         const SizedBox(
-                          height: 48,
+                          height: 28,
                         ),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.center,
@@ -376,7 +397,7 @@ class AudioHandlerMobileState extends State<AudioHandlerMobile>
                           ],
                         ),
                         const SizedBox(
-                          height: 16,
+                          height: 8,
                         ),
                         isStopped
                             ? const SizedBox()
@@ -541,10 +562,4 @@ class AudioHandlerMobileState extends State<AudioHandlerMobile>
       ),
     );
   }
-
-  @override
-  onVideoReady(Video video) {}
-
-  @override
-  onAudioReady(Audio audio) {}
 }

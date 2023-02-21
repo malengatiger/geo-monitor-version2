@@ -6,6 +6,7 @@ import 'package:geo_monitor/library/ui/camera/chewie_video_player.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:page_transition/page_transition.dart';
 
+import '../../../../ui/audio/audio_handler_mobile.dart';
 import '../../../../ui/dashboard/dashboard_portrait.dart';
 import '../../../api/prefs_og.dart';
 import '../../../bloc/cloud_storage_bloc.dart';
@@ -17,7 +18,8 @@ import '../../../data/user.dart';
 import '../../../data/video.dart';
 import '../../../emojis.dart';
 import '../../../functions.dart';
-import '../../project_monitor/project_monitor_mobile.dart';
+import '../../camera/photo_handler.dart';
+import '../../camera/video_handler.dart';
 import '../full_photo/full_photo_mobile.dart';
 import 'media_grid.dart';
 import 'photo_details.dart';
@@ -181,21 +183,48 @@ class ProjectMediaListMobileState extends State<ProjectMediaListMobile>
     Future.delayed(const Duration(milliseconds: 100), () {});
   }
 
-  void _navigateToMonitor() {
-    pp('... about to navigate after waiting 100 ms - should select project if null');
+  void _startPhotoMonitoring() async {
+    pp('🍏 🍏 Start Photo Monitoring this project after checking that the device is within '
+        ' 🍎 ${widget.project.monitorMaxDistanceInMetres} metres 🍎 of a project point within ${widget.project.name}');
+    Navigator.push(
+        context,
+        PageTransition(
+            type: PageTransitionType.fade,
+            alignment: Alignment.topLeft,
+            duration: const Duration(seconds: 1),
+            child: PhotoHandler(
+              project: widget.project,
+              projectPosition: null,
+            )));
+  }
 
-    Future.delayed(const Duration(milliseconds: 100), () {
-      Navigator.of(context).pop();
-      Navigator.push(
-          context,
-          PageTransition(
-              type: PageTransitionType.leftToRightWithFade,
-              alignment: Alignment.topLeft,
-              duration: const Duration(milliseconds: 1500),
-              child: ProjectMonitorMobile(
-                project: widget.project,
-              )));
-    });
+  void _startVideoMonitoring() async {
+    pp('🍏 🍏 Start Video Monitoring this project after checking that the device is within '
+        ' 🍎 ${widget.project.monitorMaxDistanceInMetres} metres 🍎 of a project point within ${widget.project.name}');
+    Navigator.push(
+        context,
+        PageTransition(
+            type: PageTransitionType.fade,
+            alignment: Alignment.topLeft,
+            duration: const Duration(seconds: 1),
+            child: VideoHandler(
+              project: widget.project,
+              projectPosition: null,
+            )));
+  }
+
+  void _startAudioMonitoring() async {
+    pp('🍏 🍏 Start Audio Monitoring this project after checking that the device is within '
+        ' 🍎 ${widget.project.monitorMaxDistanceInMetres} metres 🍎 of a project point within ${widget.project.name}');
+    Navigator.push(
+        context,
+        PageTransition(
+            type: PageTransitionType.fade,
+            alignment: Alignment.topLeft,
+            duration: const Duration(seconds: 1),
+            child: AudioHandlerMobile(
+              project: widget.project,
+            )));
   }
 
   @override
@@ -219,10 +248,30 @@ class ProjectMediaListMobileState extends State<ProjectMediaListMobile>
           IconButton(
               onPressed: () {
                 pp('...... navigate to take photos');
-                _navigateToMonitor();
+                _startPhotoMonitoring();
               },
               icon: Icon(
                 Icons.camera_alt,
+                size: 18,
+                color: Theme.of(context).primaryColor,
+              )),
+          IconButton(
+              onPressed: () {
+                pp('...... navigate to make video');
+                _startVideoMonitoring();
+              },
+              icon: Icon(
+                Icons.video_camera_front,
+                size: 18,
+                color: Theme.of(context).primaryColor,
+              )),
+          IconButton(
+              onPressed: () {
+                pp('...... navigate to make audio');
+                _startAudioMonitoring();
+              },
+              icon: Icon(
+                Icons.mic,
                 size: 18,
                 color: Theme.of(context).primaryColor,
               )),
