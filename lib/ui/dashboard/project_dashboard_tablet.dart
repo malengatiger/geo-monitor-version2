@@ -40,12 +40,10 @@ class ProjectDashboardTablet extends StatefulWidget {
   final Project project;
 
   @override
-  ProjectDashboardTabletState createState() =>
-      ProjectDashboardTabletState();
+  ProjectDashboardTabletState createState() => ProjectDashboardTabletState();
 }
 
-class ProjectDashboardTabletState
-    extends State<ProjectDashboardTablet>
+class ProjectDashboardTabletState extends State<ProjectDashboardTablet>
     with SingleTickerProviderStateMixin {
   late AnimationController _gridViewAnimationController;
   late StreamSubscription<List<Project>> projectSubscription;
@@ -368,7 +366,7 @@ class ProjectDashboardTabletState
                   ),
                 ),
                 GeoActivity(
-                  width: (width / 2) - 120,
+                  width: (width / 2) - 80,
                   forceRefresh: true,
                   project: widget.project,
                   thinMode: false,

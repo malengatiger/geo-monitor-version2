@@ -7,6 +7,7 @@ import 'package:focused_menu/modals.dart';
 import 'package:geo_monitor/library/data/audio.dart';
 import 'package:geo_monitor/library/data/photo.dart';
 import 'package:geo_monitor/library/data/video.dart';
+import 'package:geo_monitor/library/ui/maps/project_map_tablet.dart';
 import 'package:geo_monitor/library/ui/media/list/project_media_main.dart';
 import 'package:geo_monitor/library/ui/project_list/project_list_card.dart';
 import 'package:geo_monitor/library/ui/project_list/project_list_mobile.dart';
@@ -15,6 +16,7 @@ import 'package:geo_monitor/ui/audio/audio_handler_mobile.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:map_launcher/map_launcher.dart';
 import 'package:page_transition/page_transition.dart';
+import 'package:responsive_builder/responsive_builder.dart';
 
 import '../../../ui/dashboard/project_dashboard_main.dart';
 import '../../api/prefs_og.dart';
@@ -31,24 +33,21 @@ import '../../data/user.dart';
 import '../../functions.dart';
 import '../../snack.dart';
 import '../maps/org_map_mobile.dart';
-import '../maps/project_map_mobile.dart';
 import '../maps/project_polygon_map_mobile.dart';
 import '../project_edit/project_edit_main.dart';
 import '../project_location/project_location_main.dart';
 import '../project_monitor/project_monitor_mobile.dart';
 import '../schedule/project_schedules_mobile.dart';
 
-class ProjectListTabletPortrait extends StatefulWidget {
-  const ProjectListTabletPortrait(
-      {super.key, this.project, required this.instruction});
+class ProjectListTablet extends StatefulWidget {
+  const ProjectListTablet({super.key, this.project, required this.instruction});
   final Project? project;
   final int instruction;
   @override
-  ProjectListTabletPortraitState createState() =>
-      ProjectListTabletPortraitState();
+  ProjectListTabletState createState() => ProjectListTabletState();
 }
 
-class ProjectListTabletPortraitState extends State<ProjectListTabletPortrait>
+class ProjectListTabletState extends State<ProjectListTablet>
     with SingleTickerProviderStateMixin {
   late AnimationController _animationController;
   var projects = <Project>[];
@@ -307,7 +306,7 @@ class ProjectListTabletPortraitState extends State<ProjectListTabletPortrait>
               type: PageTransitionType.scale,
               alignment: Alignment.topLeft,
               duration: const Duration(milliseconds: 1000),
-              child: ProjectMapMobile(
+              child: ProjectMapTablet(
                 project: p,
               )));
     }
@@ -600,13 +599,15 @@ class ProjectListTabletPortraitState extends State<ProjectListTabletPortrait>
 
   @override
   Widget build(BuildContext context) {
-    final width = MediaQuery.of(context).size.width;
-    final aWidth = width - 360;
-    const mWidth = 300.0;
     return SafeArea(
         child: Scaffold(
             key: _key,
             appBar: AppBar(
+              centerTitle: true,
+              title: Text(
+                'Organization Projects',
+                style: myTextStyleLarge(context),
+              ),
               actions: _getActions(),
               bottom: PreferredSize(
                 preferredSize:
@@ -615,16 +616,9 @@ class ProjectListTabletPortraitState extends State<ProjectListTabletPortrait>
                   children: [
                     Text(
                         user == null ? 'Unknown User' : user!.organizationName!,
-                        style: myTextStyleLargePrimaryColor(context)),
+                        style: myTextStyleLargerPrimaryColor(context)),
                     const SizedBox(
                       height: 16,
-                    ),
-                    Text(
-                      'Organization Projects',
-                      style: myTextStyleSmall(context),
-                    ),
-                    const SizedBox(
-                      height: 8,
                     ),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.end,
@@ -725,79 +719,172 @@ class ProjectListTabletPortraitState extends State<ProjectListTabletPortrait>
                           )
                         : Stack(
                             children: [
-                              Row(
-                                children: [
-                                  GestureDetector(
-                                    onTap: _sort,
-                                    child: bd.Badge(
-                                      badgeStyle: bd.BadgeStyle(
-                                        badgeColor:
-                                            Theme.of(context).primaryColor,
-                                        elevation: 8,
-                                        padding: const EdgeInsets.all(16),
-                                      ),
-                                      position: bd.BadgePosition.topEnd(
-                                          top: -16, end: 8),
-                                      badgeContent: Padding(
-                                        padding: const EdgeInsets.all(4.0),
-                                        child: Text('${projects.length}',
-                                            style: myNumberStyleSmall(context)),
-                                      ),
-                                      child: AnimatedBuilder(
-                                        animation: _animationController,
-                                        builder: (BuildContext context,
-                                            Widget? child) {
-                                          return FadeScaleTransition(
-                                            animation: _animationController,
-                                            child: child,
-                                          );
-                                        },
-                                        child: user == null
-                                            ? const SizedBox()
-                                            : SizedBox(
-                                                width: aWidth,
-                                                child: ProjectListCard(
-                                                  projects: projects,
-                                                  width: width,
-                                                  horizontalPadding: 12,
-                                                  navigateToDetail: (p) {
-                                                    _navigateToDetail(p);
-                                                  },
-                                                  navigateToProjectLocation:
-                                                      (p) {
-                                                    _navigateToProjectMap(p);
-                                                  },
-                                                  navigateToProjectMedia: (p) {
-                                                    _navigateToProjectMedia(p);
-                                                  },
-                                                  navigateToProjectMap: (p) {
-                                                    _navigateToProjectMap(p);
-                                                  },
-                                                  navigateToProjectPolygonMap:
-                                                      (p) {
-                                                    _navigateToProjectPolygonMap(
-                                                        p);
-                                                  },
-                                                  navigateToProjectDashboard:
-                                                      (p) {
-                                                    _navigateToProjectDashboard(
-                                                        p);
-                                                  },
-                                                  user: user!,
+                              OrientationLayoutBuilder(landscape: (context) {
+                                final width = MediaQuery.of(context).size.width;
+                                final firstWidth = width / 2;
+                                return Row(
+                                  children: [
+                                    GestureDetector(
+                                      onTap: _sort,
+                                      child: bd.Badge(
+                                        badgeStyle: bd.BadgeStyle(
+                                          badgeColor:
+                                              Theme.of(context).primaryColor,
+                                          elevation: 8,
+                                          padding: const EdgeInsets.all(16),
+                                        ),
+                                        position: bd.BadgePosition.topEnd(
+                                            top: -16, end: 8),
+                                        badgeContent: Padding(
+                                          padding: const EdgeInsets.all(4.0),
+                                          child: Text('${projects.length}',
+                                              style:
+                                                  myNumberStyleSmall(context)),
+                                        ),
+                                        child: AnimatedBuilder(
+                                          animation: _animationController,
+                                          builder: (BuildContext context,
+                                              Widget? child) {
+                                            return FadeScaleTransition(
+                                              animation: _animationController,
+                                              child: child,
+                                            );
+                                          },
+                                          child: user == null
+                                              ? const SizedBox()
+                                              : SizedBox(
+                                                  width: firstWidth,
+                                                  child: ProjectListCard(
+                                                    projects: projects,
+                                                    width: firstWidth,
+                                                    horizontalPadding: 12,
+                                                    navigateToDetail: (p) {
+                                                      _navigateToDetail(p);
+                                                    },
+                                                    navigateToProjectLocation:
+                                                        (p) {
+                                                      _navigateToProjectMap(p);
+                                                    },
+                                                    navigateToProjectMedia:
+                                                        (p) {
+                                                      _navigateToProjectMedia(
+                                                          p);
+                                                    },
+                                                    navigateToProjectMap: (p) {
+                                                      _navigateToProjectMap(p);
+                                                    },
+                                                    navigateToProjectPolygonMap:
+                                                        (p) {
+                                                      _navigateToProjectPolygonMap(
+                                                          p);
+                                                    },
+                                                    navigateToProjectDashboard:
+                                                        (p) {
+                                                      _navigateToProjectDashboard(
+                                                          p);
+                                                    },
+                                                    user: user!,
+                                                  ),
                                                 ),
-                                              ),
+                                        ),
                                       ),
                                     ),
-                                  ),
-                                  GeoActivity(
-                                      width: mWidth,
-                                      thinMode: true,
-                                      forceRefresh: true,
-                                      showPhoto: showPhoto,
-                                      showVideo: showVideo,
-                                      showAudio: showAudio),
-                                ],
-                              ),
+                                    const SizedBox(
+                                      width: 20,
+                                    ),
+                                    GeoActivity(
+                                        width: firstWidth - 60,
+                                        thinMode: false,
+                                        forceRefresh: true,
+                                        showPhoto: showPhoto,
+                                        showVideo: showVideo,
+                                        showAudio: showAudio),
+                                  ],
+                                );
+                              }, portrait: (context) {
+                                final width = MediaQuery.of(context).size.width;
+                                final firstWidth = (width / 2);
+                                final secondWidth = (width / 2) - 100;
+                                return Row(
+                                  children: [
+                                    GestureDetector(
+                                      onTap: _sort,
+                                      child: bd.Badge(
+                                        badgeStyle: bd.BadgeStyle(
+                                          badgeColor:
+                                              Theme.of(context).primaryColor,
+                                          elevation: 8,
+                                          padding: const EdgeInsets.all(16),
+                                        ),
+                                        position: bd.BadgePosition.topEnd(
+                                            top: -16, end: 8),
+                                        badgeContent: Padding(
+                                          padding: const EdgeInsets.all(4.0),
+                                          child: Text('${projects.length}',
+                                              style:
+                                                  myNumberStyleSmall(context)),
+                                        ),
+                                        child: AnimatedBuilder(
+                                          animation: _animationController,
+                                          builder: (BuildContext context,
+                                              Widget? child) {
+                                            return FadeScaleTransition(
+                                              animation: _animationController,
+                                              child: child,
+                                            );
+                                          },
+                                          child: user == null
+                                              ? const SizedBox()
+                                              : SizedBox(
+                                                  width: firstWidth,
+                                                  child: ProjectListCard(
+                                                    projects: projects,
+                                                    width: firstWidth,
+                                                    horizontalPadding: 12,
+                                                    navigateToDetail: (p) {
+                                                      _navigateToDetail(p);
+                                                    },
+                                                    navigateToProjectLocation:
+                                                        (p) {
+                                                      _navigateToProjectMap(p);
+                                                    },
+                                                    navigateToProjectMedia:
+                                                        (p) {
+                                                      _navigateToProjectMedia(
+                                                          p);
+                                                    },
+                                                    navigateToProjectMap: (p) {
+                                                      _navigateToProjectMap(p);
+                                                    },
+                                                    navigateToProjectPolygonMap:
+                                                        (p) {
+                                                      _navigateToProjectPolygonMap(
+                                                          p);
+                                                    },
+                                                    navigateToProjectDashboard:
+                                                        (p) {
+                                                      _navigateToProjectDashboard(
+                                                          p);
+                                                    },
+                                                    user: user!,
+                                                  ),
+                                                ),
+                                        ),
+                                      ),
+                                    ),
+                                    const SizedBox(
+                                      width: 24,
+                                    ),
+                                    GeoActivity(
+                                        width: secondWidth,
+                                        thinMode: true,
+                                        forceRefresh: true,
+                                        showPhoto: showPhoto,
+                                        showVideo: showVideo,
+                                        showAudio: showAudio),
+                                  ],
+                                );
+                              }),
                               _showPositionChooser
                                   ? Positioned(
                                       child: AnimatedBuilder(

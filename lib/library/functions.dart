@@ -28,24 +28,20 @@ Color getRandomColor() {
   _colors.add(Colors.indigo);
   _colors.add(Colors.pink);
   _colors.add(Colors.deepPurple);
-  _colors.add(Colors.amber[800]!);
   _colors.add(Colors.blue);
   _colors.add(Colors.teal);
-  _colors.add(Colors.grey[600]!);
   _colors.add(Colors.pink);
   _colors.add(Colors.indigo);
   _colors.add(Colors.teal);
   _colors.add(Colors.red);
-  _colors.add(Colors.amber[800]!);
   _colors.add(Colors.pink);
   _colors.add(Colors.orange);
   _colors.add(Colors.indigo);
   _colors.add(Colors.teal);
   _colors.add(Colors.pink);
-  _colors.add(Colors.grey[600]!);
-  _colors.add(Colors.amber[800]!);
   _colors.add(Colors.deepPurple);
   _colors.add(Colors.indigo);
+  _colors.add(Colors.pink);
   _colors.add(Colors.deepOrange);
 
   _rand = Random(DateTime.now().millisecondsSinceEpoch * _rand.nextInt(10000));
@@ -181,6 +177,13 @@ TextStyle myTextStyleLarge(BuildContext context) {
 TextStyle myTextStyleLargePrimaryColor(BuildContext context) {
   return GoogleFonts.lato(
       textStyle: Theme.of(context).textTheme.bodyLarge,
+      fontWeight: FontWeight.w900,
+      color: Theme.of(context).primaryColor);
+}
+
+TextStyle myTextStyleLargerPrimaryColor(BuildContext context) {
+  return GoogleFonts.lato(
+      textStyle: Theme.of(context).textTheme.titleLarge,
       fontWeight: FontWeight.w900,
       color: Theme.of(context).primaryColor);
 }

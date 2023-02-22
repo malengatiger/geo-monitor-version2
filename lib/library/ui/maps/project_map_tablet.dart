@@ -381,7 +381,7 @@ class ProjectMapTabletState extends State<ProjectMapTablet>
         appBar: AppBar(
           title: Text(
             'Project Locations & Areas',
-            style: myTextStyleSmall(context),
+            style: myTextStyleLarge(context),
           ),
           actions: [
             IconButton(
@@ -407,7 +407,7 @@ class ProjectMapTabletState extends State<ProjectMapTablet>
                     Flexible(
                       child: Text(
                         widget.project.name!,
-                        style: myTextStyleSmall(context),
+                        style: myTextStyleLargePrimaryColor(context),
                       ),
                     ),
                     const SizedBox(
