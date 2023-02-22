@@ -7,7 +7,6 @@ import 'package:just_audio/just_audio.dart';
 import 'package:page_transition/page_transition.dart';
 
 import '../../../../ui/audio/audio_handler_mobile.dart';
-import '../../../../ui/dashboard/dashboard_portrait.dart';
 import '../../../api/prefs_og.dart';
 import '../../../bloc/cloud_storage_bloc.dart';
 import '../../../bloc/project_bloc.dart';
@@ -21,7 +20,6 @@ import '../../../functions.dart';
 import '../../camera/photo_handler.dart';
 import '../../camera/video_handler.dart';
 import '../full_photo/full_photo_mobile.dart';
-import 'media_grid.dart';
 import 'photo_details.dart';
 import 'project_audios_mobile.dart';
 import 'project_photos_mobile.dart';
@@ -37,8 +35,7 @@ class ProjectMediaListMobile extends StatefulWidget {
 }
 
 class ProjectMediaListMobileState extends State<ProjectMediaListMobile>
-    with TickerProviderStateMixin
-    implements MediaGridListener {
+    with TickerProviderStateMixin {
   late AnimationController _animationController;
   StreamSubscription<List<Photo>>? photoStreamSubscription;
   StreamSubscription<List<Video>>? videoStreamSubscription;

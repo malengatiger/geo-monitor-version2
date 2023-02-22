@@ -9,7 +9,6 @@ import 'package:geo_monitor/library/ui/media/list/project_videos_tablet.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:page_transition/page_transition.dart';
 
-import '../../../../ui/dashboard/dashboard_portrait.dart';
 import '../../../api/prefs_og.dart';
 import '../../../bloc/cloud_storage_bloc.dart';
 import '../../../bloc/project_bloc.dart';
@@ -22,7 +21,6 @@ import '../../../emojis.dart';
 import '../../../functions.dart';
 import '../../project_monitor/project_monitor_mobile.dart';
 import '../full_photo/full_photo_mobile.dart';
-import 'media_grid.dart';
 import 'photo_details.dart';
 
 class ProjectMediaListTablet extends StatefulWidget {
@@ -35,8 +33,7 @@ class ProjectMediaListTablet extends StatefulWidget {
 }
 
 class ProjectMediaListTabletState extends State<ProjectMediaListTablet>
-    with TickerProviderStateMixin
-    implements MediaGridListener {
+    with TickerProviderStateMixin {
   late AnimationController _animationController;
   StreamSubscription<List<Photo>>? photoStreamSubscription;
   StreamSubscription<List<Video>>? videoStreamSubscription;
@@ -49,6 +46,12 @@ class ProjectMediaListTabletState extends State<ProjectMediaListTablet>
   var _photos = <Photo>[];
   User? user;
   static const mm = '🔆🔆🔆 MediaListMobile 💜💜 ';
+  bool _showPhotoDetail = false;
+  Photo? selectedPhoto;
+  Audio? selectedAudio;
+  Video? selectedVideo;
+  int videoIndex = 0;
+  AudioPlayer audioPlayer = AudioPlayer();
 
   @override
   void initState() {
@@ -61,7 +64,7 @@ class ProjectMediaListTabletState extends State<ProjectMediaListTablet>
     super.initState();
 
     _listen();
-    _refresh(false);
+    _getData(false);
   }
 
   Future<void> _listen() async {
@@ -107,7 +110,7 @@ class ProjectMediaListTabletState extends State<ProjectMediaListTablet>
     });
   }
 
-  Future<void> _refresh(bool forceRefresh) async {
+  Future<void> _getData(bool forceRefresh) async {
     pp('$mm _MediaListMobileState: .......... _refresh ...forceRefresh: $forceRefresh');
     setState(() {
       busy = true;
@@ -133,9 +136,6 @@ class ProjectMediaListTabletState extends State<ProjectMediaListTablet>
     });
   }
 
-  bool _showPhotoDetail = false;
-  Photo? selectedPhoto;
-
   @override
   void dispose() {
     _animationController.dispose();
@@ -143,9 +143,6 @@ class ProjectMediaListTabletState extends State<ProjectMediaListTablet>
     super.dispose();
   }
 
-  Audio? selectedAudio;
-  Video? selectedVideo;
-  int videoIndex = 0;
   void _navigateToPlayVideo() {
     pp('... play audio from internets');
     Navigator.push(
@@ -160,7 +157,6 @@ class ProjectMediaListTabletState extends State<ProjectMediaListTablet>
             )));
   }
 
-  AudioPlayer audioPlayer = AudioPlayer();
   void _navigateToPlayAudio() {
     pp('... play audio from internet ....');
     audioPlayer.setUrl(selectedAudio!.url!);
@@ -229,7 +225,27 @@ class ProjectMediaListTabletState extends State<ProjectMediaListTablet>
               )),
           IconButton(
               onPressed: () {
-                _refresh(true);
+                pp('...... navigate to take video');
+                _navigateToMonitor();
+              },
+              icon: Icon(
+                Icons.video_camera_front,
+                size: 18,
+                color: Theme.of(context).primaryColor,
+              )),
+          IconButton(
+              onPressed: () {
+                pp('...... navigate to take audio');
+                _navigateToMonitor();
+              },
+              icon: Icon(
+                Icons.mic,
+                size: 18,
+                color: Theme.of(context).primaryColor,
+              )),
+          IconButton(
+              onPressed: () {
+                _getData(true);
               },
               icon: Icon(
                 Icons.refresh,

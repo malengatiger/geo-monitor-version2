@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:geo_monitor/library/bloc/fcm_bloc.dart';
 import 'package:geo_monitor/library/ui/media/photo_grid.dart';
+import 'package:responsive_builder/responsive_builder.dart';
 
 import '../../../bloc/project_bloc.dart';
 import '../../../data/photo.dart';
@@ -38,7 +39,7 @@ class ProjectPhotosTabletState extends State<ProjectPhotosTablet>
         value: 0.0, duration: const Duration(milliseconds: 2000), vsync: this);
     super.initState();
     _subscribeToStreams();
-    _getPhotos();
+    _getData(false);
   }
 
   @override
@@ -51,18 +52,18 @@ class ProjectPhotosTabletState extends State<ProjectPhotosTablet>
   void _subscribeToStreams() async {
     photoStreamSubscriptionFCM = fcmBloc.photoStream.listen((event) async {
       if (mounted) {
-        _getPhotos();
+        _getData(false);
       }
     });
   }
 
-  Future _getPhotos() async {
+  Future _getData(bool forceRefresh) async {
     setState(() {
       loading = true;
     });
     try {
       photos = await projectBloc.getPhotos(
-          projectId: widget.project.projectId!, forceRefresh: widget.refresh);
+          projectId: widget.project.projectId!, forceRefresh: forceRefresh);
       photos.sort((a, b) => b.created!.compareTo(a.created!));
     } catch (e) {
       pp(e);
@@ -86,12 +87,22 @@ class ProjectPhotosTabletState extends State<ProjectPhotosTablet>
                   child: Text('No photos in project yet ...'),
                 )),
           )
-        : PhotoGrid(
-            photos: photos,
-            crossAxisCount: 5,
-            onPhotoTapped: (photo) {
-              widget.onPhotoTapped(photo);
-            },
-            badgeColor: Colors.indigo);
+        : OrientationLayoutBuilder(landscape: (context) {
+            return PhotoGrid(
+                photos: photos,
+                crossAxisCount: 6,
+                onPhotoTapped: (photo) {
+                  widget.onPhotoTapped(photo);
+                },
+                badgeColor: Colors.indigo);
+          }, portrait: (context) {
+            return PhotoGrid(
+                photos: photos,
+                crossAxisCount: 4,
+                onPhotoTapped: (photo) {
+                  widget.onPhotoTapped(photo);
+                },
+                badgeColor: Colors.teal);
+          });
   }
 }

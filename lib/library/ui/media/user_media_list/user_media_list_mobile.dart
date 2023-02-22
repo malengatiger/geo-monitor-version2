@@ -20,7 +20,6 @@ import '../../../functions.dart';
 import '../../camera/video_player_mobile.dart';
 import '../../project_monitor/project_monitor_mobile.dart';
 import '../full_photo/full_photo_mobile.dart';
-import '../list/media_grid.dart';
 import '../list/photo_details.dart';
 import '../list/user_photos.dart';
 import '../list/user_videos.dart';
@@ -35,8 +34,7 @@ class UserMediaListMobile extends StatefulWidget {
 }
 
 class UserMediaListMobileState extends State<UserMediaListMobile>
-    with TickerProviderStateMixin
-    implements MediaGridListener {
+    with TickerProviderStateMixin {
   late AnimationController _animationController;
 
   StreamSubscription<List<Photo>>? photoStreamSubscription;
@@ -48,8 +46,8 @@ class UserMediaListMobileState extends State<UserMediaListMobile>
   String? latest, earliest;
   late TabController _tabController;
 
-  var _photos = <Photo>[];
-  var _videos = <Video>[];
+  final _photos = <Photo>[];
+  final _videos = <Video>[];
   bool _showProjectChooser = false;
   User? deviceUser;
   static const mm = '🔆🔆🔆 UserMediaListMobile 💜💜 ';
