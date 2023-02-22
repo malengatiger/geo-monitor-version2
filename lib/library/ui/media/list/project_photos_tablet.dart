@@ -90,7 +90,7 @@ class ProjectPhotosTabletState extends State<ProjectPhotosTablet>
         : OrientationLayoutBuilder(landscape: (context) {
             return PhotoGrid(
                 photos: photos,
-                crossAxisCount: 6,
+                crossAxisCount: 8,
                 onPhotoTapped: (photo) {
                   widget.onPhotoTapped(photo);
                 },
@@ -98,7 +98,7 @@ class ProjectPhotosTabletState extends State<ProjectPhotosTablet>
           }, portrait: (context) {
             return PhotoGrid(
                 photos: photos,
-                crossAxisCount: 4,
+                crossAxisCount: 6,
                 onPhotoTapped: (photo) {
                   widget.onPhotoTapped(photo);
                 },

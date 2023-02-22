@@ -280,7 +280,7 @@ class AudioPlayerCardState extends State<AudioPlayerCard>
                       onPressed: _onFavorite,
                       child: Text(
                         E.heartRed,
-                        style: const TextStyle(fontSize: 20),
+                        style: const TextStyle(fontSize: 18),
                       ),
                     ),
                     const SizedBox(
@@ -298,12 +298,12 @@ class AudioPlayerCardState extends State<AudioPlayerCard>
                 ),
                 Text(
                   '${widget.audio.projectName}',
-                  style: myTextStyleLarge(context),
+                  style: myTextStyleMediumPrimaryColor(context),
                 ),
                 const SizedBox(
-                  height: 16,
+                  height: 32,
                 ),
-                Column(
+                Row(
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: [
                     SizedBox(
@@ -314,14 +314,14 @@ class AudioPlayerCardState extends State<AudioPlayerCard>
                       ),
                     ),
                     const SizedBox(
-                      height: 12,
+                      width: 12,
                     ),
                     Text(
                       '${widget.audio.userName}',
                       style: myTextStyleLargePrimaryColor(context),
                     ),
                     const SizedBox(
-                      height: 12,
+                      width: 24,
                     ),
                     user == null
                         ? const SizedBox()

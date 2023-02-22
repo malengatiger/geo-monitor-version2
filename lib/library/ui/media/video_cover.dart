@@ -21,6 +21,7 @@ class VideoCover extends StatelessWidget {
                 left: 4,
                 top: 4,
                 child: CircleAvatar(
+                  radius: 16,
                   backgroundImage: NetworkImage(video.userUrl!),
                 )),
       ],

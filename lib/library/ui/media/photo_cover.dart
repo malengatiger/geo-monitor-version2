@@ -24,6 +24,7 @@ class PhotoCover extends StatelessWidget {
                 left: 2,
                 top: 4,
                 child: CircleAvatar(
+                  radius: 16,
                   backgroundImage: NetworkImage(photo.userUrl!),
                 )),
       ],
