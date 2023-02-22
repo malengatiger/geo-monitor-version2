@@ -5,7 +5,7 @@ import 'package:geo_monitor/library/bloc/downloader.dart';
 import 'package:geo_monitor/library/data/activity_model.dart';
 import 'package:geo_monitor/library/ui/maps/project_map_mobile.dart';
 import 'package:geo_monitor/library/ui/maps/project_polygon_map_mobile.dart';
-import 'package:geo_monitor/library/ui/media/list/project_media_list_mobile.dart';
+import 'package:geo_monitor/library/ui/media/list/project_media_list_tablet.dart';
 import 'package:geo_monitor/ui/dashboard/photo_card.dart';
 import 'package:geo_monitor/ui/dashboard/project_dashboard_grid.dart';
 import 'package:page_transition/page_transition.dart';
@@ -221,7 +221,7 @@ class ProjectDashboardTabletState extends State<ProjectDashboardTablet>
             type: PageTransitionType.scale,
             alignment: Alignment.topLeft,
             duration: const Duration(seconds: 1),
-            child: ProjectMediaListMobile(
+            child: ProjectMediaListTablet(
               project: widget.project,
             )));
   }
@@ -329,6 +329,7 @@ class ProjectDashboardTabletState extends State<ProjectDashboardTablet>
                   // height: 500,
                   child: Center(
                     child: ProjectDashboardGrid(
+                        crossAxisCount: 3,
                         topPadding: 32,
                         showProjectName: true,
                         onTypeTapped: onTypeTapped,
@@ -356,10 +357,11 @@ class ProjectDashboardTabletState extends State<ProjectDashboardTablet>
             return Row(
               children: [
                 SizedBox(
-                  width: (width / 2),
+                  width: (width / 2) + 80,
                   child: Center(
                     child: ProjectDashboardGrid(
-                        topPadding: 32,
+                        crossAxisCount: 2,
+                        topPadding: 80,
                         showProjectName: true,
                         onTypeTapped: onTypeTapped,
                         project: widget.project),

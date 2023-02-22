@@ -366,16 +366,19 @@ class ProjectMediaListTabletState extends State<ProjectMediaListTablet>
                         _navigateToPlayVideo();
                       },
                     ),
-                    ProjectAudiosTablet(
-                      project: widget.project,
-                      refresh: false,
-                      onAudioTapped: (Audio audio) {
-                        pp('🍎🍎🍎Audio has been tapped: ${audio.created!}');
-                        setState(() {
-                          selectedAudio = audio;
-                        });
-                        _navigateToPlayAudio();
-                      },
+                    Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: ProjectAudiosTablet(
+                        project: widget.project,
+                        refresh: false,
+                        onAudioTapped: (Audio audio) {
+                          pp('🍎🍎🍎Audio has been tapped: ${audio.created!}');
+                          setState(() {
+                            selectedAudio = audio;
+                          });
+                          _navigateToPlayAudio();
+                        },
+                      ),
                     ),
                   ],
                 ),

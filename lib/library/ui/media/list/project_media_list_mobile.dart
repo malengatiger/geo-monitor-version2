@@ -43,7 +43,6 @@ class ProjectMediaListMobileState extends State<ProjectMediaListMobile>
 
   String? latest, earliest;
   late TabController _tabController;
-  late StreamSubscription<String> killSubscription;
 
   var _photos = <Photo>[];
   User? user;
@@ -138,7 +137,6 @@ class ProjectMediaListMobileState extends State<ProjectMediaListMobile>
   @override
   void dispose() {
     _animationController.dispose();
-    killSubscription.cancel();
     super.dispose();
   }
 

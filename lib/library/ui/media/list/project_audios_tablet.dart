@@ -206,31 +206,27 @@ class ProjectAudiosTabletState extends State<ProjectAudiosTablet> {
           )
         : Stack(
             children: [
-              Column(
-                children: [
-                  OrientationLayoutBuilder(landscape: (context) {
-                    return AudioGrid(
-                        audios: audios,
-                        onAudioTapped: (audio, index) {
-                          setState(() {
-                            _showAudioPlayer = true;
-                          });
-                        },
-                        itemWidth: 300,
-                        crossAxisCount: 5);
-                  }, portrait: (context) {
-                    return AudioGrid(
-                        audios: audios,
-                        onAudioTapped: (audio, index) {
-                          setState(() {
-                            _showAudioPlayer = true;
-                          });
-                        },
-                        itemWidth: 300,
-                        crossAxisCount: 4);
-                  }),
-                ],
-              ),
+              OrientationLayoutBuilder(landscape: (context) {
+                return AudioGrid(
+                    audios: audios,
+                    onAudioTapped: (audio, index) {
+                      setState(() {
+                        _showAudioPlayer = true;
+                      });
+                    },
+                    itemWidth: 300,
+                    crossAxisCount: 5);
+              }, portrait: (context) {
+                return AudioGrid(
+                    audios: audios,
+                    onAudioTapped: (audio, index) {
+                      setState(() {
+                        _showAudioPlayer = true;
+                      });
+                    },
+                    itemWidth: 300,
+                    crossAxisCount: 4);
+              }),
               _showAudioPlayer
                   ? Positioned(
                       top: 200,

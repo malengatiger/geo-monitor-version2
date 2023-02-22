@@ -153,6 +153,13 @@ TextStyle myTextStyleMedium(BuildContext context) {
   );
 }
 
+TextStyle myTextStyleMediumGrey(BuildContext context) {
+  return GoogleFonts.lato(
+      textStyle: Theme.of(context).textTheme.bodyMedium,
+      fontWeight: FontWeight.normal,
+      color: Colors.grey.shade600);
+}
+
 TextStyle myTextStyleMediumPrimaryColor(BuildContext context) {
   return GoogleFonts.lato(
       textStyle: Theme.of(context).textTheme.bodyMedium,

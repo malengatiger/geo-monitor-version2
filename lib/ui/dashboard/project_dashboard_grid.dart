@@ -29,7 +29,8 @@ class ProjectDashboardGrid extends StatefulWidget {
       this.topPadding,
       required this.project,
       required this.showProjectName,
-      this.horizontalPadding})
+      this.horizontalPadding,
+      required this.crossAxisCount})
       : super(key: key);
   final Function(int) onTypeTapped;
   final double? totalHeight;
@@ -37,6 +38,7 @@ class ProjectDashboardGrid extends StatefulWidget {
   final double? horizontalPadding;
   final Project project;
   final bool showProjectName;
+  final int crossAxisCount;
 
   @override
   State<ProjectDashboardGrid> createState() => _ProjectDashboardGridState();
@@ -413,7 +415,7 @@ class _ProjectDashboardGridState extends State<ProjectDashboardGrid>
               child: Padding(
                 padding: EdgeInsets.all(widget.horizontalPadding ?? 28),
                 child: GridView.count(
-                  crossAxisCount: 3,
+                  crossAxisCount: widget.crossAxisCount,
                   children: [
                     GestureDetector(
                       onTap: () {
@@ -573,7 +575,7 @@ class DashboardElement extends StatelessWidget {
                 ),
                 Text(
                   title,
-                  style: Styles.greyLabelSmall,
+                  style: myTextStyleMediumGrey(context),
                 )
               ],
             ),
