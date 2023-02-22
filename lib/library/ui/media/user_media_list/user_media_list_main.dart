@@ -37,9 +37,9 @@ class UserMediaListMainState extends State<UserMediaListMain>
     });
     user = widget.user;
     user ??= await prefsOGx.getUser();
-
     pp('MediaListMain: 💜 💜 💜 getting media for ${user!.name}');
     await userBloc.getPhotos(userId: user!.userId!, forceRefresh: true);
+    await userBloc.getVideos(userId: user!.userId!, forceRefresh: true);
     await userBloc.getVideos(userId: user!.userId!, forceRefresh: true);
     setState(() {
       isBusy = false;

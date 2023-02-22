@@ -294,14 +294,14 @@ class AudioPlayerCardState extends State<AudioPlayerCard>
                   ],
                 ),
                 const SizedBox(
-                  height: 24,
+                  height: 12,
                 ),
                 Text(
                   '${widget.audio.projectName}',
                   style: myTextStyleLarge(context),
                 ),
                 const SizedBox(
-                  height: 32,
+                  height: 16,
                 ),
                 Column(
                   mainAxisAlignment: MainAxisAlignment.start,
@@ -321,7 +321,7 @@ class AudioPlayerCardState extends State<AudioPlayerCard>
                       style: myTextStyleLargePrimaryColor(context),
                     ),
                     const SizedBox(
-                      height: 28,
+                      height: 12,
                     ),
                     user == null
                         ? const SizedBox()

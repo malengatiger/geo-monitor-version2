@@ -59,7 +59,6 @@ class ProjectMediaListTabletState extends State<ProjectMediaListTablet>
         vsync: this);
     _tabController = TabController(length: 3, vsync: this);
     super.initState();
-    killSubscription = listenForKill(context: context);
 
     _listen();
     _refresh(false);

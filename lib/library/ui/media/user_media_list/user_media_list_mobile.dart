@@ -2,13 +2,15 @@ import 'dart:async';
 
 import 'package:animations/animations.dart';
 import 'package:flutter/material.dart';
+import 'package:geo_monitor/library/bloc/fcm_bloc.dart';
+import 'package:geo_monitor/library/ui/media/list/user_audios.dart';
+import 'package:geo_monitor/ui/audio/audio_player_page.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:page_transition/page_transition.dart';
 
 import '../../../api/prefs_og.dart';
-import '../../../bloc/cloud_storage_bloc.dart';
 import '../../../bloc/organization_bloc.dart';
-import '../../../bloc/user_bloc.dart';
+import '../../../data/audio.dart';
 import '../../../data/photo.dart';
 import '../../../data/project.dart';
 import '../../../data/user.dart';
@@ -29,16 +31,19 @@ class UserMediaListMobile extends StatefulWidget {
   const UserMediaListMobile({super.key, required this.user});
 
   @override
-  MediaListMobileState createState() => MediaListMobileState();
+  UserMediaListMobileState createState() => UserMediaListMobileState();
 }
 
-class MediaListMobileState extends State<UserMediaListMobile>
+class UserMediaListMobileState extends State<UserMediaListMobile>
     with TickerProviderStateMixin
     implements MediaGridListener {
   late AnimationController _animationController;
+
   StreamSubscription<List<Photo>>? photoStreamSubscription;
   StreamSubscription<List<Video>>? videoStreamSubscription;
   StreamSubscription<Photo>? newPhotoStreamSubscription;
+  StreamSubscription<Video>? newVideoStreamSubscription;
+  StreamSubscription<Audio>? newAudioStreamSubscription;
 
   String? latest, earliest;
   late TabController _tabController;
@@ -46,7 +51,7 @@ class MediaListMobileState extends State<UserMediaListMobile>
   var _photos = <Photo>[];
   var _videos = <Video>[];
   bool _showProjectChooser = false;
-  User? user;
+  User? deviceUser;
   static const mm = '🔆🔆🔆 UserMediaListMobile 💜💜 ';
 
   @override
@@ -56,73 +61,62 @@ class MediaListMobileState extends State<UserMediaListMobile>
         duration: const Duration(milliseconds: 2000),
         reverseDuration: const Duration(milliseconds: 1000),
         vsync: this);
-    _tabController = TabController(length: 2, vsync: this);
+    _tabController = TabController(length: 3, vsync: this);
     super.initState();
     _listen();
   }
 
   Future<void> _listen() async {
-    user ??= await prefsOGx.getUser();
-
-    _listenToProjectStreams();
-    _listenToPhotoStream();
+    deviceUser ??= await prefsOGx.getUser();
+    _listenToFCMStreams();
     //
     if (mounted) {
-      _refresh(false);
+      setState(() {});
     }
   }
 
-  void _listenToProjectStreams() async {
-    pp('$mm .................... Listening to streams from userBloc ....');
-
-    photoStreamSubscription = userBloc.photoStream.listen((value) {
-      pp('$mm Photos received from stream projectPhotoStream: 💙 ${value.length}');
-      _photos = value;
-      _photos.sort((a, b) => b.created!.compareTo(a.created!));
-      if (mounted) {
-        setState(() {});
-      }
-    });
-
-    videoStreamSubscription = userBloc.videoStream.listen((value) {
-      pp('$mm:Videos received from projectVideoStream: 🏈 ${value.length}');
-      _videos = value;
-      _videos.sort((a, b) => b.created!.compareTo(a.created!));
-      if (mounted) {
-        setState(() {});
-      }
-    });
-  }
-
-  void _listenToPhotoStream() async {
-    newPhotoStreamSubscription = cloudStorageBloc.photoStream.listen((mPhoto) {
+  void _listenToFCMStreams() async {
+    newPhotoStreamSubscription = fcmBloc.photoStream.listen((mPhoto) {
       pp('${E.blueDot}${E.blueDot} '
           'New photo arrived from newPhotoStreamSubscription: ${mPhoto.toJson()} ${E.blueDot}');
-      _photos.add(mPhoto);
-      if (mounted) {
-        setState(() {});
+      if (mPhoto.userId == widget.user.userId) {
+        if (mounted) {
+          setState(() {
+            _refreshData = false;
+          });
+        }
       }
     });
-  }
-
-  Future<void> _refresh(bool forceRefresh) async {
-    pp('$mm _MediaListMobileState: .......... _refresh ...forceRefresh: $forceRefresh');
-    setState(() {
-      busy = true;
+    newVideoStreamSubscription = fcmBloc.videoStream.listen((mVideo) {
+      pp('$mm ${E.blueDot}${E.blueDot} '
+          'New video arrived from newVideoStreamSubscription: ${mVideo.toJson()} ${E.blueDot}');
+      if (mVideo.userId == widget.user.userId) {
+        if (mounted) {
+          setState(() {
+            _refreshData = false;
+          });
+        }
+      }
     });
-
-    //todo - refactor userBloc.refreshUserData ....
-    // await userBloc.refreshUserData(
-    //     userId: widget.user.userId!, forceRefresh: forceRefresh);
-
-    setState(() {
-      busy = false;
+    newAudioStreamSubscription = fcmBloc.audioStream.listen((mAudio) {
+      pp('$mm ${E.blueDot}${E.blueDot} '
+          'New audio arrived from newAudioStreamSubscription: ${mAudio.toJson()} ${E.blueDot}');
+      if (mAudio.userId == widget.user.userId) {
+        if (mounted) {
+          setState(() {
+            _refreshData = false;
+          });
+        }
+      }
     });
   }
 
   bool _showPhotoDetail = false;
+  bool _refreshData = false;
   Photo? selectedPhoto;
+  Audio? selectedAudio;
   Project? project;
+
   @override
   void dispose() {
     _animationController.dispose();
@@ -142,33 +136,67 @@ class MediaListMobileState extends State<UserMediaListMobile>
   @override
   Widget build(BuildContext context) {
     _photos.sort((a, b) => b.created!.compareTo(a.created!));
+    var showCaptureIcons = false;
+    // if (deviceUser != null) {
+    //   if (widget.user.userId == deviceUser!.userId) {
+    //     showCaptureIcons = true;
+    //   }
+    // }
     return SafeArea(
         child: Scaffold(
       appBar: AppBar(
         title: Text(
-          'Photos & Videos',
-          style: GoogleFonts.lato(
-            textStyle: Theme.of(context).textTheme.bodyMedium,
-            fontWeight: FontWeight.w900,
-          ),
+          '${widget.user.name}',
+          style: myTextStyleMedium(context),
         ),
         actions: [
+          showCaptureIcons
+              ? IconButton(
+                  onPressed: () {
+                    pp('...... capture photo');
+                    setState(() {
+                      _refreshData = true;
+                    });
+                  },
+                  icon: Icon(
+                    Icons.camera_alt,
+                    size: 20,
+                    color: Theme.of(context).primaryColor,
+                  ))
+              : const SizedBox(),
+          showCaptureIcons
+              ? IconButton(
+                  onPressed: () {
+                    pp('...... capture video');
+                    setState(() {
+                      _refreshData = true;
+                    });
+                  },
+                  icon: Icon(
+                    Icons.video_camera_front,
+                    size: 20,
+                    color: Theme.of(context).primaryColor,
+                  ))
+              : const SizedBox(),
+          showCaptureIcons
+              ? IconButton(
+                  onPressed: () {
+                    pp('...... capture audio');
+                    setState(() {
+                      _refreshData = true;
+                    });
+                  },
+                  icon: Icon(
+                    Icons.mic,
+                    size: 20,
+                    color: Theme.of(context).primaryColor,
+                  ))
+              : const SizedBox(),
           IconButton(
               onPressed: () {
-                pp('...... navigate to take photos');
                 setState(() {
-                  _showProjectChooser = true;
+                  _refreshData = true;
                 });
-              },
-              icon: Icon(
-                Icons.camera_alt,
-                size: 20,
-                color: Theme.of(context).primaryColor,
-              )),
-          IconButton(
-              onPressed: () {
-                pp('...... refresh photos');
-                _refresh(true);
               },
               icon: Icon(Icons.refresh,
                   size: 20, color: Theme.of(context).primaryColor)),
@@ -206,6 +234,21 @@ class MediaListMobileState extends State<UserMediaListMobile>
                     ),
                   ),
                 )),
+            Card(
+                elevation: 8,
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(24.0)),
+                child: Padding(
+                  padding: const EdgeInsets.only(
+                      left: 12.0, right: 12.0, top: 8, bottom: 8),
+                  child: Text(
+                    'Audio',
+                    style: GoogleFonts.lato(
+                      textStyle: Theme.of(context).textTheme.bodySmall,
+                      fontWeight: FontWeight.normal,
+                    ),
+                  ),
+                )),
           ],
         ),
       ),
@@ -216,7 +259,7 @@ class MediaListMobileState extends State<UserMediaListMobile>
             children: [
               UserPhotos(
                 user: widget.user,
-                refresh: true,
+                refresh: _refreshData,
                 onPhotoTapped: (Photo photo) {
                   pp('🔷🔷🔷Photo has been tapped: ${photo.created!}');
                   selectedPhoto = photo;
@@ -228,13 +271,24 @@ class MediaListMobileState extends State<UserMediaListMobile>
               ),
               UserVideos(
                 user: widget.user,
-                refresh: true,
+                refresh: _refreshData,
                 onVideoTapped: (Video video) {
                   pp('🍎🍎🍎Video has been tapped: ${video.created!}');
                   setState(() {
                     selectedVideo = video;
                   });
                   _navigateToPlayVideo();
+                },
+              ),
+              UserAudios(
+                user: widget.user,
+                refresh: _refreshData,
+                onAudioTapped: (audio) {
+                  pp('🍎🍎🍎Audio has been tapped: ${audio.created!}');
+                  setState(() {
+                    selectedAudio = audio;
+                  });
+                  _navigateToPlayAudio();
                 },
               ),
             ],
@@ -309,6 +363,22 @@ class MediaListMobileState extends State<UserMediaListMobile>
             alignment: Alignment.topLeft,
             duration: const Duration(milliseconds: 1000),
             child: VideoPlayerMobilePage(video: selectedVideo!)));
+  }
+
+  void _navigateToPlayAudio() {
+    pp('... about to navigate after waiting 100 ms');
+    Navigator.push(
+        context,
+        PageTransition(
+            type: PageTransitionType.leftToRightWithFade,
+            alignment: Alignment.topLeft,
+            duration: const Duration(milliseconds: 1000),
+            child: AudioPlayerCard(
+              audio: selectedAudio!,
+              onCloseRequested: () {
+                pp('$mm onCloseRequested ....');
+              },
+            )));
   }
 
   void _navigateToMonitor() {

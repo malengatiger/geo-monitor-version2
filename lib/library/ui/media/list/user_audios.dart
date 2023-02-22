@@ -2,77 +2,42 @@ import 'dart:async';
 
 import 'package:badges/badges.dart' as bd;
 import 'package:flutter/material.dart';
-import 'package:geo_monitor/library/bloc/fcm_bloc.dart';
-import 'package:geo_monitor/library/ui/ratings/rating_adder.dart';
-import 'package:geo_monitor/ui/audio/audio_player_page.dart';
 import 'package:just_audio/just_audio.dart';
 
-import '../../../bloc/project_bloc.dart';
+import '../../../../ui/audio/audio_player_page.dart';
+import '../../../bloc/user_bloc.dart';
 import '../../../data/audio.dart';
-import '../../../data/project.dart';
+import '../../../data/user.dart';
 import '../../../functions.dart';
 import 'audio_card.dart';
 
-class ProjectAudios extends StatefulWidget {
-  final Project project;
+class UserAudios extends StatefulWidget {
+  final User user;
   final bool refresh;
   final Function(Audio) onAudioTapped;
 
-  const ProjectAudios(
+  const UserAudios(
       {super.key,
-      required this.project,
+      required this.user,
       required this.refresh,
       required this.onAudioTapped});
 
   @override
-  State<ProjectAudios> createState() => ProjectAudiosState();
+  State<UserAudios> createState() => UserAudiosState();
 }
 
-class ProjectAudiosState extends State<ProjectAudios> {
+class UserAudiosState extends State<UserAudios> {
   var audios = <Audio>[];
+  late StreamSubscription<PlaybackEvent> playbackSub;
+
   bool loading = false;
-  late StreamSubscription<Audio> audioStreamSubscriptionFCM;
-  @override
-  void initState() {
-    super.initState();
-    _subscribeToStreams();
-    _getAudios();
-  }
-
-  @override
-  void dispose() {
-    audioPlayer.stop();
-    audioStreamSubscriptionFCM.cancel();
-    super.dispose();
-  }
-
-  void _subscribeToStreams() async {
-    audioStreamSubscriptionFCM = fcmBloc.audioStream.listen((event) {
-      if (mounted) {
-        _getAudios();
-      }
-    });
-  }
-
-  void _getAudios() async {
-    setState(() {
-      loading = true;
-    });
-    audios = await projectBloc.getProjectAudios(
-        projectId: widget.project.projectId!, forceRefresh: widget.refresh);
-    audios.sort((a, b) => b.created!.compareTo(a.created!));
-    setState(() {
-      loading = false;
-    });
-  }
-
   bool _showAudioPlayer = false;
   Audio? _selectedAudio;
   final mm = '🍎🍎🍎🍎';
   AudioPlayer audioPlayer = AudioPlayer();
   Duration? duration;
   String? stringDuration;
-  bool _loading = false;
+  bool busy = false;
   Duration _currentPosition = const Duration(seconds: 0);
 
   Future<void> _playAudio() async {
@@ -89,11 +54,19 @@ class ProjectAudiosState extends State<ProjectAudios> {
       pp(e);
     }
 
-    setState(() {});
-    audioPlayer.play();
+    if (mounted) {
+      setState(() {});
+      audioPlayer.play();
+    }
   }
 
-  late StreamSubscription<PlaybackEvent> playbackSub;
+  @override
+  void initState() {
+    super.initState();
+    _subscribeToStreams();
+    _getVideos();
+  }
+
   void _listenToAudioPlayer() {
     audioPlayer.playerStateStream.listen((state) {
       if (state.playing) {
@@ -106,7 +79,7 @@ class ProjectAudiosState extends State<ProjectAudios> {
             // pp('$mm ProcessingState.loading ...');
             if (mounted) {
               setState(() {
-                _loading = true;
+                busy = true;
               });
             }
             break;
@@ -114,7 +87,7 @@ class ProjectAudiosState extends State<ProjectAudios> {
             // pp('$mm ProcessingState.buffering ...');
             if (mounted) {
               setState(() {
-                _loading = false;
+                busy = false;
               });
             }
             break;
@@ -122,7 +95,7 @@ class ProjectAudiosState extends State<ProjectAudios> {
             // pp('$mm ProcessingState.ready ...');
             if (mounted) {
               setState(() {
-                _loading = false;
+                busy = false;
               });
             }
             break;
@@ -167,25 +140,17 @@ class ProjectAudiosState extends State<ProjectAudios> {
 
   bool isPaused = false;
   bool isStopped = false;
-  void _onFavorite() async {
-    pp('$mm on favorite tapped - do da bizness! navigate to RatingAdder');
-    showDialog(
-        context: context,
-        barrierDismissible: true,
-        builder: (_) => Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Center(
-                child: Container(
-                    color: Colors.black12,
-                    child: RatingAdder(
-                      width: 400,
-                      audio: _selectedAudio!,
-                      onDone: () {
-                        Navigator.of(context).pop();
-                      },
-                    )),
-              ),
-            ));
+  void _subscribeToStreams() async {}
+  void _getVideos() async {
+    setState(() {
+      loading = true;
+    });
+    audios = await userBloc.getAudios(
+        userId: widget.user.userId!, forceRefresh: widget.refresh);
+    audios.sort((a, b) => b.created!.compareTo(a.created!));
+    setState(() {
+      loading = false;
+    });
   }
 
   @override
@@ -205,15 +170,9 @@ class ProjectAudiosState extends State<ProjectAudios> {
             children: [
               Column(
                 children: [
-                  SizedBox(
-                    height: 48,
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 16.0),
-                      child: Text(
-                        widget.project.name!,
-                        style: myTextStyleMediumBold(context),
-                      ),
-                    ),
+                  Container(
+                    color: Colors.pink,
+                    height: 2,
                   ),
                   Expanded(
                       child: bd.Badge(
@@ -279,66 +238,5 @@ class ProjectAudiosState extends State<ProjectAudios> {
     setState(() {
       _showAudioPlayer = false;
     });
-  }
-}
-
-class PlaybackControls extends StatelessWidget {
-  const PlaybackControls({
-    Key? key,
-    required this.onPlay,
-    required this.onPause,
-    required this.onStop,
-  }) : super(key: key);
-  final Function onPlay;
-  final Function onPause;
-  final Function onStop;
-
-  @override
-  Widget build(BuildContext context) {
-    return Card(
-      elevation: 4,
-      shape: getRoundedBorder(radius: 16),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 8.0),
-        child: Row(
-          children: [
-            const SizedBox(
-              width: 8,
-            ),
-            IconButton(
-                onPressed: _onPlayTapped,
-                icon: Icon(Icons.play_arrow,
-                    color: Theme.of(context).primaryColor)),
-            const SizedBox(
-              width: 16,
-            ),
-            IconButton(
-                onPressed: _onPlayPaused,
-                icon: Icon(Icons.pause, color: Theme.of(context).primaryColor)),
-            const SizedBox(
-              width: 16,
-            ),
-            IconButton(
-                onPressed: _onPlayStopped,
-                icon: Icon(
-                  Icons.stop,
-                  color: Theme.of(context).primaryColor,
-                ))
-          ],
-        ),
-      ),
-    );
-  }
-
-  void _onPlayTapped() {
-    onPlay();
-  }
-
-  void _onPlayStopped() {
-    onStop();
-  }
-
-  void _onPlayPaused() {
-    onPause();
   }
 }

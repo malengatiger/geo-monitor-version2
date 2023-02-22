@@ -6,7 +6,6 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:map_launcher/map_launcher.dart';
 import 'package:page_transition/page_transition.dart';
 
-import '../../../ui/dashboard/dashboard_portrait.dart';
 import '../../bloc/project_bloc.dart';
 import '../../data/position.dart';
 import '../../data/project.dart';
@@ -40,7 +39,6 @@ class ProjectMonitorMobileState extends State<ProjectMonitorMobile>
   void initState() {
     _controller = AnimationController(vsync: this);
     super.initState();
-    killSubscription = listenForKill(context: context);
     _getProjectData(false);
   }
 
@@ -292,68 +290,6 @@ class ProjectMonitorMobileState extends State<ProjectMonitorMobile>
   // bool isWithinDistance = false;
   ProjectPosition? nearestProjectPosition;
   static const mm = '🍏 🍏 🍏 ProjectMonitorMobile: 🍏 : ';
-  //
-  // Future<bool> _checkProjectDistance() async {
-  //   pp('\n\n$mm _checkProjectDistance or residence in a polygon ... ');
-  //   setState(() {
-  //     isBusy = true;
-  //   });
-  //   nearestProjectPosition = await _findNearestProjectPosition();
-  //   if (nearestProjectPosition != null) {
-  //     var distance = await locationBlocOG.getDistanceFromCurrentPosition(
-  //         latitude: nearestProjectPosition!.position!.coordinates[1],
-  //         longitude: nearestProjectPosition!.position!.coordinates[0]);
-  //
-  //     pp("$mm App is ${distance.toStringAsFixed(1)} metres from the project point; widget.project.monitorMaxDistanceInMetres: "
-  //         "${widget.project.monitorMaxDistanceInMetres}");
-  //
-  //     isWithinDistance = await isLocationValid(
-  //         projectPosition: nearestProjectPosition!,
-  //         validDistance: widget.project.monitorMaxDistanceInMetres!);
-  //     if (isWithinDistance) {
-  //       pp('🌸 🌸 🌸 The user is within the allowable '
-  //           'project.monitorMaxDistanceInMetres of '
-  //           '${widget.project.monitorMaxDistanceInMetres} metres: $distance metres');
-  //     } else {
-  //       pp('🌺 The user is NOT within the allowable '
-  //           'project.monitorMaxDistanceInMetres of '
-  //           '${widget.project.monitorMaxDistanceInMetres} metres: $distance metres, '
-  //           '... will check if user in any of the polygons');
-  //       isWithinDistance = await _checkUserWithinPolygon();
-  //     }
-  //   } else {
-  //     // nearestProjectPosition is NULL
-  //     isWithinDistance = await _checkUserWithinPolygon();
-  //   }
-  //   if (mounted) {
-  //     setState(() {
-  //       isBusy = false;
-  //     });
-  //   }
-  //   return isWithinDistance;
-  // }
-  //
-  // Future<bool> _checkUserWithinPolygon() async {
-  //   pp('$mm project has ${polygons.length} polygons - '
-  //       ' if > zero check if user within polygon ...');
-  //   try {
-  //     var loc = await locationBlocOG.getLocation();
-  //     var isOK = checkIfLocationIsWithinPolygons(
-  //         latitude: loc!.latitude!,
-  //         longitude: loc.longitude!,
-  //         polygons: polygons);
-  //     isWithinDistance = isOK;
-  //     if (isOK) {
-  //       pp('$mm _checkProjectDistance ... 🚾🚾🚾 WE ARE INSIDE ONE OF THIS PROJECT POLYGONS!');
-  //     } else {
-  //       pp('$mm _checkProjectDistance ... 🔴🔴🔴 WE ARE NOT INSIDE ANY OF THIS PROJECT POLYGONS!');
-  //     }
-  //     return isWithinDistance;
-  //   } catch (e) {
-  //     pp(e);
-  //   }
-  //   return false;
-  // }
 
   void _startPhotoMonitoring() async {
     pp('🍏 🍏 Start Photo Monitoring this project after checking that the device is within '

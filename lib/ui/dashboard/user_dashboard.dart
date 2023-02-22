@@ -10,7 +10,7 @@ import 'package:geo_monitor/library/ui/maps/photo_map_tablet.dart';
 import 'package:geo_monitor/library/users/full_user_photo.dart';
 import 'package:geo_monitor/ui/activity/geo_activity_tablet.dart';
 import 'package:geo_monitor/ui/audio/audio_player_page.dart';
-import 'package:geo_monitor/ui/dashboard/dashboard_tablet_portrait.dart';
+import 'package:geo_monitor/ui/dashboard/photo_card.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:responsive_builder/responsive_builder.dart';
 import 'package:universal_platform/universal_platform.dart';

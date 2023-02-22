@@ -16,7 +16,6 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:map_launcher/map_launcher.dart';
 import 'package:page_transition/page_transition.dart';
 
-import '../../../ui/dashboard/dashboard_portrait.dart';
 import '../../../ui/dashboard/project_dashboard_main.dart';
 import '../../api/prefs_og.dart';
 import '../../bloc/admin_bloc.dart';
@@ -68,8 +67,6 @@ class ProjectListTabletPortraitState extends State<ProjectListTabletPortrait>
         reverseDuration: const Duration(milliseconds: 2000),
         vsync: this);
     super.initState();
-    killSubscription = listenForKill(context: context);
-
     _getData();
     _listen();
   }

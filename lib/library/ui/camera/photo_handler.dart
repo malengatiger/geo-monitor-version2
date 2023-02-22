@@ -11,7 +11,6 @@ import 'package:path_provider/path_provider.dart';
 import 'package:uuid/uuid.dart';
 
 import '../../../device_location/device_location_bloc.dart';
-import '../../../ui/dashboard/dashboard_portrait.dart';
 import '../../api/prefs_og.dart';
 import '../../bloc/cloud_storage_bloc.dart';
 import '../../bloc/photo_for_upload.dart';
@@ -56,8 +55,6 @@ class PhotoHandlerState extends State<PhotoHandler>
   void initState() {
     _controller = AnimationController(vsync: this);
     super.initState();
-    killSubscription = listenForKill(context: context);
-
     _observeOrientation();
     _getData();
     _startPhoto();

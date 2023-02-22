@@ -30,7 +30,7 @@ class DashboardGrid extends StatelessWidget {
   Widget build(BuildContext context) {
     return SingleChildScrollView(
       child: SizedBox(
-        height: totalHeight == null ? 900 : totalHeight!,
+        height: totalHeight == null ? 1000 : totalHeight!,
         child: Padding(
           padding: EdgeInsets.all(gridPadding),
           child: GridView.count(
@@ -194,6 +194,7 @@ class DashboardElement extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+
     var style = GoogleFonts.secularOne(
         textStyle: Theme.of(context).textTheme.titleLarge,
         fontWeight: FontWeight.w900);
@@ -205,7 +206,7 @@ class DashboardElement extends StatelessWidget {
       child: Card(
         shape: getRoundedBorder(radius: 16),
         child: SizedBox(
-          height: height == null ? 240 : height!,
+          height: height == null ? 260 : height!,
           child: Center(
             child: Column(
               children: [

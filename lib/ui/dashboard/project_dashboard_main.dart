@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:geo_monitor/ui/dashboard/project_dashboard_mobile.dart';
-import 'package:geo_monitor/ui/dashboard/project_dashboard_tablet_landscape.dart';
-import 'package:geo_monitor/ui/dashboard/project_dashboard_tablet_portrait.dart';
+import 'package:geo_monitor/ui/dashboard/project_dashboard_tablet.dart';
 import 'package:responsive_builder/responsive_builder.dart';
 
 import '../../library/data/project.dart';
@@ -17,18 +16,9 @@ class ProjectDashboardMain extends StatelessWidget {
       mobile: ProjectDashboardMobile(
         project: project,
       ),
-      tablet: OrientationLayoutBuilder(
-        portrait: (context) {
-          return ProjectDashboardTabletPortrait(
-            project: project,
-          );
-        },
-        landscape: (context) {
-          return ProjectDashboardTabletLandscape(
-            project: project,
-          );
-        },
-      ),
+      tablet: ProjectDashboardTablet(
+        project: project,
+      )
     );
   }
 }

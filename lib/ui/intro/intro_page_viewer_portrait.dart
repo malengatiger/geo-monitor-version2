@@ -33,7 +33,6 @@ class IntroPageViewerPortraitState extends State<IntroPageViewerPortrait>
   bool authed = false;
   fb.FirebaseAuth firebaseAuth = fb.FirebaseAuth.instance;
   ur.User? user;
-  late StreamSubscription<String> killSubscription;
 
   final mm =
       '${E.pear}${E.pear}${E.pear}${E.pear} IntroPageViewerPortrait: ${E.pear} ';
@@ -43,7 +42,6 @@ class IntroPageViewerPortraitState extends State<IntroPageViewerPortrait>
     _animationController = AnimationController(vsync: this);
     super.initState();
     _getAuthenticationStatus();
-    killSubscription = listenForKill(context: context);
   }
 
   void _getAuthenticationStatus() async {
@@ -157,7 +155,6 @@ class IntroPageViewerPortraitState extends State<IntroPageViewerPortrait>
   void dispose() {
     _animationController.dispose();
     _pageController.dispose();
-    killSubscription.cancel();
     super.dispose();
   }
 

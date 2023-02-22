@@ -11,7 +11,6 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:map_launcher/map_launcher.dart';
 import 'package:page_transition/page_transition.dart';
 
-import '../../../ui/dashboard/dashboard_portrait.dart';
 import '../../api/prefs_og.dart';
 import '../../bloc/admin_bloc.dart';
 import '../../bloc/fcm_bloc.dart';
@@ -67,7 +66,6 @@ class ProjectListMobileState extends State<ProjectListMobile>
         reverseDuration: const Duration(milliseconds: 2000),
         vsync: this);
     super.initState();
-    killSubscription = listenForKill(context: context);
 
     _getUser();
     _listen();

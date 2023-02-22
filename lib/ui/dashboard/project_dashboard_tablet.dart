@@ -6,9 +6,10 @@ import 'package:geo_monitor/library/data/activity_model.dart';
 import 'package:geo_monitor/library/ui/maps/project_map_mobile.dart';
 import 'package:geo_monitor/library/ui/maps/project_polygon_map_mobile.dart';
 import 'package:geo_monitor/library/ui/media/list/project_media_list_mobile.dart';
-import 'package:geo_monitor/ui/dashboard/dashboard_tablet_portrait.dart';
+import 'package:geo_monitor/ui/dashboard/photo_card.dart';
 import 'package:geo_monitor/ui/dashboard/project_dashboard_grid.dart';
 import 'package:page_transition/page_transition.dart';
+import 'package:responsive_builder/responsive_builder.dart';
 import 'package:universal_platform/universal_platform.dart';
 
 import '../../library/api/prefs_og.dart';
@@ -32,19 +33,19 @@ import '../../library/ui/maps/photo_map_tablet.dart';
 import '../activity/geo_activity_tablet.dart';
 import '../audio/audio_player_page.dart';
 
-class ProjectDashboardTabletLandscape extends StatefulWidget {
-  const ProjectDashboardTabletLandscape({Key? key, required this.project})
+class ProjectDashboardTablet extends StatefulWidget {
+  const ProjectDashboardTablet({Key? key, required this.project})
       : super(key: key);
 
   final Project project;
 
   @override
-  ProjectDashboardTabletLandscapeState createState() =>
-      ProjectDashboardTabletLandscapeState();
+  ProjectDashboardTabletState createState() =>
+      ProjectDashboardTabletState();
 }
 
-class ProjectDashboardTabletLandscapeState
-    extends State<ProjectDashboardTabletLandscape>
+class ProjectDashboardTabletState
+    extends State<ProjectDashboardTablet>
     with SingleTickerProviderStateMixin {
   late AnimationController _gridViewAnimationController;
   late StreamSubscription<List<Project>> projectSubscription;
@@ -322,36 +323,68 @@ class ProjectDashboardTabletLandscapeState
       ),
       body: Stack(
         children: [
-          Row(
-            children: [
-              SizedBox(
-                width: (width / 2),
-                // height: 500,
-                child: Center(
-                  child: ProjectDashboardGrid(
-                      topPadding: 32,
-                      showProjectName: true,
-                      onTypeTapped: onTypeTapped,
-                      project: widget.project),
+          OrientationLayoutBuilder(landscape: (context) {
+            return Row(
+              children: [
+                SizedBox(
+                  width: (width / 2),
+                  // height: 500,
+                  child: Center(
+                    child: ProjectDashboardGrid(
+                        topPadding: 32,
+                        showProjectName: true,
+                        onTypeTapped: onTypeTapped,
+                        project: widget.project),
+                  ),
                 ),
-              ),
-              GeoActivity(
-                width: (width / 2) - 120,
-                forceRefresh: true,
-                project: widget.project,
-                thinMode: false,
-                showPhoto: (photo) {
-                  _displayPhoto(photo);
-                },
-                showVideo: (video) {
-                  _displayVideo(video);
-                },
-                showAudio: (audio) {
-                  _displayAudio(audio);
-                },
-              ),
-            ],
-          ),
+                GeoActivity(
+                  width: (width / 2) - 120,
+                  forceRefresh: true,
+                  project: widget.project,
+                  thinMode: false,
+                  showPhoto: (photo) {
+                    _displayPhoto(photo);
+                  },
+                  showVideo: (video) {
+                    _displayVideo(video);
+                  },
+                  showAudio: (audio) {
+                    _displayAudio(audio);
+                  },
+                ),
+              ],
+            );
+          }, portrait: (context) {
+            return Row(
+              children: [
+                SizedBox(
+                  width: (width / 2),
+                  child: Center(
+                    child: ProjectDashboardGrid(
+                        topPadding: 32,
+                        showProjectName: true,
+                        onTypeTapped: onTypeTapped,
+                        project: widget.project),
+                  ),
+                ),
+                GeoActivity(
+                  width: (width / 2) - 120,
+                  forceRefresh: true,
+                  project: widget.project,
+                  thinMode: false,
+                  showPhoto: (photo) {
+                    _displayPhoto(photo);
+                  },
+                  showVideo: (video) {
+                    _displayVideo(video);
+                  },
+                  showAudio: (audio) {
+                    _displayAudio(audio);
+                  },
+                ),
+              ],
+            );
+          }),
           _showPhoto
               ? Positioned(
                   left: 100,

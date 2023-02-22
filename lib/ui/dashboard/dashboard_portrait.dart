@@ -272,8 +272,6 @@ class DashboardPortraitState extends State<DashboardPortrait>
         }
       });
 
-      killSubscriptionFCM = listenForKill(context: context);
-
       settingsSubscriptionFCM = fcmBloc.settingsStream.listen((settings) async {
         pp('$mm: 🍎🍎 settings arrived with themeIndex: ${settings.themeIndex}... 🍎🍎');
         themeBloc.themeStreamController.sink.add(settings.themeIndex!);
@@ -440,6 +438,7 @@ class DashboardPortraitState extends State<DashboardPortrait>
   void showPhoto(Photo p) async {}
   void showVideo(Video p) async {}
   void showAudio(Audio p) async {}
+
   void _navigateToActivity() {
     pp('$mm .................. _navigateToActivity ....');
     final width = MediaQuery.of(context).size.width;
@@ -637,7 +636,7 @@ class DashboardPortraitState extends State<DashboardPortrait>
             )
           ],
           bottom: PreferredSize(
-            preferredSize: const Size.fromHeight(120),
+            preferredSize: const Size.fromHeight(132),
             child: Padding(
               padding: const EdgeInsets.all(8.0),
               child: Column(
@@ -649,11 +648,7 @@ class DashboardPortraitState extends State<DashboardPortrait>
                           children: [
                             Text(
                               deviceUser!.organizationName!,
-                              style: GoogleFonts.lato(
-                                textStyle:
-                                    Theme.of(context).textTheme.bodySmall,
-                                fontWeight: FontWeight.w900,
-                              ),
+                              style: myTextStyleLarge(context),
                             ),
                           ],
                         ),
@@ -726,38 +721,40 @@ class DashboardPortraitState extends State<DashboardPortrait>
             : Stack(children: [
                 dataBag == null
                     ? const SizedBox()
-                    : DashboardGrid(
-                        gridPadding: 16,
-                        topPadding: 12,
-                        elementPadding: 48,
-                        leftPadding: 12,
-                        crossAxisCount: 2,
-                        dataBag: dataBag!,
-                        onTypeTapped: (type) {
-                          switch (type) {
-                            case typeProjects:
-                              _navigateToProjectList();
-                              break;
-                            case typeUsers:
-                              _navigateToUserList();
-                              break;
-                            case typePhotos:
-                              _navigateToProjectList();
-                              break;
-                            case typeVideos:
-                              _navigateToProjectList();
-                              break;
-                            case typeAudios:
-                              _navigateToProjectList();
-                              break;
-                            case typePositions:
-                              _navigateToProjectList();
-                              break;
-                            case typePolygons:
-                              _navigateToProjectList();
-                              break;
-                          }
-                        },
+                    : SingleChildScrollView(
+                        child: DashboardGrid(
+                          gridPadding: 16,
+                          topPadding: 12,
+                          elementPadding: 48,
+                          leftPadding: 12,
+                          crossAxisCount: 2,
+                          dataBag: dataBag!,
+                          onTypeTapped: (type) {
+                            switch (type) {
+                              case typeProjects:
+                                _navigateToProjectList();
+                                break;
+                              case typeUsers:
+                                _navigateToUserList();
+                                break;
+                              case typePhotos:
+                                _navigateToProjectList();
+                                break;
+                              case typeVideos:
+                                _navigateToProjectList();
+                                break;
+                              case typeAudios:
+                                _navigateToProjectList();
+                                break;
+                              case typePositions:
+                                _navigateToProjectList();
+                                break;
+                              case typePolygons:
+                                _navigateToProjectList();
+                                break;
+                            }
+                          },
+                        ),
                       ),
               ]),
       ),
@@ -765,54 +762,6 @@ class DashboardPortraitState extends State<DashboardPortrait>
   }
 }
 
-void showKillDialog({required String message, required BuildContext context}) {
-  showDialog(
-    context: context,
-    barrierDismissible: false,
-    builder: (ctx) => AlertDialog(
-      title: Text(
-        "Critical App Message",
-        style: myTextStyleLarge(ctx),
-      ),
-      content: Text(
-        message,
-        style: myTextStyleMedium(ctx),
-      ),
-      shape: getRoundedBorder(radius: 16),
-      actions: <Widget>[
-        TextButton(
-          onPressed: () {
-            pp('$mm Navigator popping for the last time, Sucker! 🔵🔵🔵');
-            var android = UniversalPlatform.isAndroid;
-            var ios = UniversalPlatform.isIOS;
-            if (android) {
-              SystemNavigator.pop();
-            }
-            if (ios) {
-              Navigator.of(ctx).pop();
-              Navigator.of(ctx).pop();
-            }
-          },
-          child: const Text("Exit the App"),
-        ),
-      ],
-    ),
-  );
-}
 
 final mm = '${E.heartRed}${E.heartRed}${E.heartRed}${E.heartRed} Dashboard: ';
 
-StreamSubscription<String> listenForKill({required BuildContext context}) {
-  pp('\n$mm Kill message; listen for KILL message ...... 🍎🍎🍎🍎 ......');
-
-  var sub = fcmBloc.killStream.listen((event) {
-    pp('$mm Kill message arrived: 🍎🍎🍎🍎 $event 🍎🍎🍎🍎');
-    try {
-      showKillDialog(message: event, context: context);
-    } catch (e) {
-      pp(e);
-    }
-  });
-
-  return sub;
-}

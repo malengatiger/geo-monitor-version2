@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:animated_splash_screen/animated_splash_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart' as fb;
 import 'package:firebase_core/firebase_core.dart';
@@ -15,9 +17,11 @@ import 'package:get_storage/get_storage.dart';
 import 'package:hive_flutter/adapters.dart';
 import 'package:location/location.dart';
 import 'package:page_transition/page_transition.dart';
+import 'package:universal_platform/universal_platform.dart';
 
 import 'firebase_options.dart';
 import 'library/api/prefs_og.dart';
+import 'library/bloc/fcm_bloc.dart';
 import 'library/bloc/theme_bloc.dart';
 import 'library/bloc/uploader.dart';
 import 'library/cache_manager.dart';
@@ -55,6 +59,7 @@ void main() async {
       fbAuthedUser = null;
     }
   }
+
   await SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
     DeviceOrientation.portraitDown,
@@ -109,6 +114,7 @@ class GeoApp extends StatelessWidget {
     );
   }
 }
+late StreamSubscription killSubscriptionFCM;
 
 Future<void> _initializeGeoMonitor() async {
   pp('$mx _initializeGeoMonitor: ... GET CACHED SETTINGS; set themeIndex .............. ');
@@ -222,3 +228,54 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 }
+
+void showKillDialog({required String message, required BuildContext context}) {
+  showDialog(
+    context: context,
+    barrierDismissible: false,
+    builder: (ctx) => AlertDialog(
+      title: Text(
+        "Critical App Message",
+        style: myTextStyleLarge(ctx),
+      ),
+      content: Text(
+        message,
+        style: myTextStyleMedium(ctx),
+      ),
+      shape: getRoundedBorder(radius: 16),
+      actions: <Widget>[
+        TextButton(
+          onPressed: () {
+            pp('$mm Navigator popping for the last time, Sucker! 🔵🔵🔵');
+            var android = UniversalPlatform.isAndroid;
+            var ios = UniversalPlatform.isIOS;
+            if (android) {
+              SystemNavigator.pop();
+            }
+            if (ios) {
+              Navigator.of(ctx).pop();
+              Navigator.of(ctx).pop();
+            }
+          },
+          child: const Text("Exit the App"),
+        ),
+      ],
+    ),
+  );
+}
+
+StreamSubscription<String> listenForKill({required BuildContext context}) {
+  pp('\n$mx Kill message; listen for KILL message ...... 🍎🍎🍎🍎 ......');
+
+  var sub = fcmBloc.killStream.listen((event) {
+    pp('$mm Kill message arrived: 🍎🍎🍎🍎 $event 🍎🍎🍎🍎');
+    try {
+      showKillDialog(message: event, context: context);
+    } catch (e) {
+      pp(e);
+    }
+  });
+
+  return sub;
+}
+

@@ -1,7 +1,8 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:geo_monitor/library/api/prefs_og.dart';
 import 'package:geo_monitor/library/functions.dart';
-import 'package:geo_monitor/ui/dashboard/dashboard_tablet_portrait.dart';
 import 'package:geofence_service/geofence_service.dart';
 import 'package:responsive_builder/responsive_builder.dart';
 
@@ -9,7 +10,7 @@ import '../../library/bloc/fcm_bloc.dart';
 import '../../library/data/user.dart';
 import '../../library/geofence/geofencer_two.dart';
 import 'dashboard_portrait.dart';
-import 'dashboard_tablet_landscape.dart';
+import 'dashboard_tablet.dart';
 
 class DashboardMain extends StatefulWidget {
   const DashboardMain({
@@ -35,9 +36,9 @@ class DashboardMainState extends State<DashboardMain>
   void _getUser() async {
     user = await prefsOGx.getUser();
     setState(() {});
-
     fcmBloc.initialize();
     pp('DashboardMain: 🍎🍎🍎🍎 FCM should have started initialization!!  ... 🍎🍎');
+
   }
 
   @override
@@ -72,12 +73,12 @@ class DashboardMainState extends State<DashboardMain>
               mobile: const DashboardPortrait(),
               tablet: OrientationLayoutBuilder(
                 portrait: (context) {
-                  return DashboardTabletPortrait(
+                  return DashboardTablet(
                     user: user!,
                   );
                 },
                 landscape: (context) {
-                  return DashboardTabletLandscape(
+                  return DashboardTablet(
                     user: user!,
                   );
                 },

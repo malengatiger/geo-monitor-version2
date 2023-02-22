@@ -6,14 +6,15 @@ import '../../../data/user.dart';
 import '../../../data/video.dart';
 
 class UserVideos extends StatefulWidget {
-
-
   final User user;
   final bool refresh;
   final Function(Video) onVideoTapped;
 
-  const UserVideos({super.key, required this.user, required this.refresh, required this.onVideoTapped});
-
+  const UserVideos(
+      {super.key,
+      required this.user,
+      required this.refresh,
+      required this.onVideoTapped});
 
   @override
   State<UserVideos> createState() => UserVideoState();
@@ -36,7 +37,7 @@ class UserVideoState extends State<UserVideos> {
     });
     videos = await userBloc.getVideos(
         userId: widget.user.userId!, forceRefresh: widget.refresh);
-    videos.sort((a,b) => b.created!.compareTo(a.created!));
+    videos.sort((a, b) => b.created!.compareTo(a.created!));
     setState(() {
       loading = false;
     });
@@ -48,12 +49,12 @@ class UserVideoState extends State<UserVideos> {
       children: [
         Container(
           color: Colors.blue,
-          height: 2,
+          height: 1,
         ),
         Expanded(
             child: GridView.builder(
                 gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisSpacing: 1, crossAxisCount: 2, mainAxisSpacing: 1),
+                    crossAxisSpacing: 1, crossAxisCount: 3, mainAxisSpacing: 1),
                 itemCount: videos.length,
                 itemBuilder: (context, index) {
                   var video = videos.elementAt(index);

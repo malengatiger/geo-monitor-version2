@@ -71,7 +71,6 @@ class AudioHandlerMobileState extends State<AudioHandlerMobile>
   void initState() {
     _animationController = AnimationController(vsync: this);
     super.initState();
-    killSubscription = listenForKill(context: context);
     _getSettings();
     _getUser();
     player.playerStateStream.listen((event) {

@@ -18,7 +18,6 @@ import 'package:uuid/uuid.dart';
 import 'package:video_player/video_player.dart';
 
 import '../../../device_location/device_location_bloc.dart';
-import '../../../ui/dashboard/dashboard_portrait.dart';
 import '../../bloc/project_bloc.dart';
 import '../../bloc/video_for_upload.dart';
 import '../../cache_manager.dart';
@@ -55,7 +54,6 @@ class VideoHandlerState extends State<VideoHandler>
   void initState() {
     _controller = AnimationController(vsync: this);
     super.initState();
-    killSubscription = listenForKill(context: context);
     _listen();
     _observeOrientation();
     _getData();
