@@ -20,6 +20,7 @@ import '../../data/project_polygon.dart';
 import '../../data/project_position.dart';
 import '../../data/user.dart';
 import '../../functions.dart';
+import '../maps/project_map_mobile.dart';
 import '../maps/project_polygon_map_mobile.dart';
 
 class ProjectLocationMobile extends StatefulWidget {
@@ -229,7 +230,7 @@ class ProjectLocationMobileState extends State<ProjectLocationMobile>
 
   dynamic _position;
 
-  Future<void> _navigateToProjectMap() async {
+  Future<void> _navigateToProjectPolygonMap() async {
     pp('... _navigateToProjectMap: about to navigate ');
 
     if (mounted) {
@@ -245,6 +246,22 @@ class ProjectLocationMobileState extends State<ProjectLocationMobile>
     }
   }
 
+  Future<void> _navigateToProjectPositionMap() async {
+    pp('... _navigateToProjectMap: about to navigate ');
+
+    if (mounted) {
+      Navigator.push(
+          context,
+          PageTransition(
+              type: PageTransitionType.leftToRightWithFade,
+              alignment: Alignment.topLeft,
+              duration: const Duration(milliseconds: 1000),
+              child: ProjectMapMobile(
+                project: widget.project,
+              )));
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -254,13 +271,13 @@ class ProjectLocationMobileState extends State<ProjectLocationMobile>
           leading: const SizedBox(),
           title: Text(
             'Project Locations',
-            style: myTextStyleSmall(context),
+            style: myTextStyleLarge(context),
           ),
           actions: [
             IconButton(
                 onPressed: () async {
                   pp('$mx ........ navigate to map when ready! ');
-                  _navigateToProjectMap();
+                  _navigateToProjectPolygonMap();
                 },
                 icon: Icon(Icons.map,
                     size: 20, color: Theme.of(context).primaryColor)),
@@ -282,14 +299,14 @@ class ProjectLocationMobileState extends State<ProjectLocationMobile>
             )
           ],
           bottom: PreferredSize(
-            preferredSize: const Size.fromHeight(240),
+            preferredSize: const Size.fromHeight(260),
             child: Padding(
-              padding: const EdgeInsets.all(8.0),
+              padding: const EdgeInsets.all(20.0),
               child: Column(
                 children: [
                   Text(
                     '${widget.project.name}',
-                    style: myTextStyleLarge(context),
+                    style: myTextStyleLargerPrimaryColor(context),
                   ),
                   const SizedBox(
                     height: 24,
@@ -308,12 +325,12 @@ class ProjectLocationMobileState extends State<ProjectLocationMobile>
                     style: myTextStyleMedium(context),
                   ),
                   const SizedBox(
-                    height: 4,
+                    height: 16,
                   ),
                   Row(
                     children: [
                       Text(
-                        'Current Locations:',
+                        'Project Locations:',
                         style: myTextStyleSmall(context),
                       ),
                       const SizedBox(
@@ -359,7 +376,7 @@ class ProjectLocationMobileState extends State<ProjectLocationMobile>
                 child: Column(
                   children: [
                     const SizedBox(
-                      height: 24,
+                      height: 48,
                     ),
                     Padding(
                       padding: const EdgeInsets.all(8.0),
@@ -370,7 +387,7 @@ class ProjectLocationMobileState extends State<ProjectLocationMobile>
                             style: myTextStyleLarge(context),
                           ),
                           const SizedBox(
-                            height: 24,
+                            height: 48,
                           ),
                           Padding(
                             padding:
@@ -428,7 +445,7 @@ class ProjectLocationMobileState extends State<ProjectLocationMobile>
                       ),
                     ),
                     const SizedBox(
-                      height: 12,
+                      height: 36,
                     ),
                     busy
                         ? const SizedBox(
@@ -439,25 +456,66 @@ class ProjectLocationMobileState extends State<ProjectLocationMobile>
                               backgroundColor: Colors.black,
                             ),
                           )
-                        : ElevatedButton(
-                            onPressed: _submit,
-                            style: ButtonStyle(
-                              shape: MaterialStateProperty.all<
-                                  RoundedRectangleBorder>(
-                                RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(16.0),
-                                  // side: const BorderSide(color: Colors.pink)
+                        : SizedBox(
+                            height: 120,
+                            child: Column(
+                              children: [
+                                ElevatedButton(
+                                  onPressed: _submit,
+                                  style: ButtonStyle(
+                                    shape: MaterialStateProperty.all<
+                                        RoundedRectangleBorder>(
+                                      RoundedRectangleBorder(
+                                        borderRadius:
+                                            BorderRadius.circular(16.0),
+                                        // side: const BorderSide(color: Colors.pink)
+                                      ),
+                                    ),
+                                    elevation:
+                                        MaterialStateProperty.all<double>(8.0),
+                                  ),
+                                  child: Padding(
+                                    padding: const EdgeInsets.only(
+                                        left: 20,
+                                        right: 20,
+                                        top: 12,
+                                        bottom: 12),
+                                    child: Text(
+                                      'Add Project Location',
+                                      style: Styles.whiteSmall,
+                                    ),
+                                  ),
                                 ),
-                              ),
-                              elevation: MaterialStateProperty.all<double>(8.0),
-                            ),
-                            child: Padding(
-                              padding: const EdgeInsets.only(
-                                  left: 20, right: 20, top: 12, bottom: 12),
-                              child: Text(
-                                'Add Project Location',
-                                style: Styles.whiteSmall,
-                              ),
+                                const SizedBox(
+                                  height: 16,
+                                ),
+                                ElevatedButton(
+                                  onPressed: _navigateToProjectPositionMap,
+                                  style: ButtonStyle(
+                                    shape: MaterialStateProperty.all<
+                                        RoundedRectangleBorder>(
+                                      RoundedRectangleBorder(
+                                        borderRadius:
+                                            BorderRadius.circular(16.0),
+                                        // side: const BorderSide(color: Colors.pink)
+                                      ),
+                                    ),
+                                    elevation:
+                                        MaterialStateProperty.all<double>(8.0),
+                                  ),
+                                  child: Padding(
+                                    padding: const EdgeInsets.only(
+                                        left: 20,
+                                        right: 20,
+                                        top: 12,
+                                        bottom: 12),
+                                    child: Text(
+                                      'Add Location Elsewhere',
+                                      style: myTextStyleMedium(context),
+                                    ),
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
                     const SizedBox(

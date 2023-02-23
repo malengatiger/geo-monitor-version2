@@ -1,7 +1,7 @@
 import 'package:hive/hive.dart';
 
-import 'city.dart';
 import '../data/position.dart';
+import 'city.dart';
 import 'place_mark.dart';
 
 part 'project_position.g.dart';
@@ -33,6 +33,8 @@ class ProjectPosition extends HiveObject {
   String? userId;
   @HiveField(11)
   String? userName;
+  @HiveField(12)
+  String? possibleAddress;
 
   ProjectPosition(
       {required this.projectName,
@@ -44,6 +46,7 @@ class ProjectPosition extends HiveObject {
       required this.nearestCities,
       required this.organizationId,
       this.name,
+      this.possibleAddress,
       required this.userId,
       required this.userName,
       required this.projectId});
@@ -54,6 +57,7 @@ class ProjectPosition extends HiveObject {
     name = data['name'];
     userId = data['userId'];
     userName = data['userName'];
+    possibleAddress = data['possibleAddress'];
     projectPositionId = data['projectPositionId'];
     caption = data['caption'];
     projectId = data['projectId'];
@@ -91,6 +95,7 @@ class ProjectPosition extends HiveObject {
       'projectPositionId': projectPositionId,
       'caption': caption,
       'created': created,
+      'possibleAddress': possibleAddress,
       'position': position == null ? null : position!.toJson(),
       'placemark': placemark == null ? null : placemark!.toJson(),
       'nearestCities': list,

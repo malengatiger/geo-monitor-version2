@@ -95,25 +95,12 @@ class ProjectListCard extends StatelessWidget {
               navigateToProjectMedia(project);
             }),
       );
-      menuItems.add(
-        FocusedMenuItem(
-            // backgroundColor: Theme.of(context).primaryColor,
-            title: Text('Create Audio', style: myTextStyleSmallBlack(context)),
-            trailingIcon: Icon(
-              Icons.mic,
-              color: Theme.of(context).primaryColor,
-            ),
-            onPressed: () {
-              pp('...... going to ProjectAudio ...');
-              navigateToProjectMedia(project);
-            }),
-      );
 
       if (user.userType == UserType.orgAdministrator ||
           user.userType == UserType.orgExecutive) {
         menuItems.add(FocusedMenuItem(
             // backgroundColor: Theme.of(context).primaryColor,
-            title: Text('Add Project Location',
+            title: Text('Add Project Location Here',
                 style: myTextStyleSmallBlack(context)),
             trailingIcon: Icon(
               Icons.location_pin,

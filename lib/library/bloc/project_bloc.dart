@@ -142,11 +142,11 @@ class ProjectBloc {
       {required String projectId, required bool forceRefresh}) async {
     var projectPolygons =
         await cacheManager.getProjectPolygons(projectId: projectId);
-    pp('$mm getProjectPolygons found ${projectPolygons.length} positions in local cache ');
+    pp('$mm getProjectPolygons found ${projectPolygons.length} polygons in local cache ');
 
     if (projectPolygons.isEmpty || forceRefresh) {
       projectPolygons = await DataAPI.findProjectPolygonsById(projectId);
-      pp('$mm getProjectPolygons found ${projectPolygons.length} positions from remote database ');
+      pp('$mm getProjectPolygons found ${projectPolygons.length} polygons from remote database ');
       await cacheManager.addProjectPolygons(polygons: projectPolygons);
     }
     _polygonController.sink.add(projectPolygons);

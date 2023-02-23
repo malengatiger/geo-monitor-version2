@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 
 import '../../library/api/prefs_og.dart';
 import '../../library/bloc/admin_bloc.dart';
-import '../../library/data/user.dart';
 import '../../library/data/project.dart';
+import '../../library/data/user.dart';
 import '../../library/functions.dart';
 import '../../library/snack.dart';
 
@@ -16,8 +16,7 @@ class ProjectEditor extends StatefulWidget {
   ProjectEditorState createState() => ProjectEditorState();
 }
 
-class ProjectEditorState extends State<ProjectEditor>
-     {
+class ProjectEditorState extends State<ProjectEditor> {
   User? user;
   Project? mProject;
   TextEditingController nameController = TextEditingController();
@@ -34,7 +33,6 @@ class ProjectEditorState extends State<ProjectEditor>
     user = await prefsOGx.getUser();
     mProject = widget.project;
     if (mProject == null) {
-
     } else {
       nameController.text = mProject!.name!;
       descController.text = mProject!.description!;
@@ -91,7 +89,7 @@ class ProjectEditorState extends State<ProjectEditor>
                       child: Column(
                         children: <Widget>[
                           const SizedBox(
-                            height: 20,
+                            height: 48,
                           ),
                           Text(
                             'Project Details',
@@ -125,15 +123,16 @@ class ProjectEditorState extends State<ProjectEditor>
                             height: 60,
                           ),
                           ElevatedButton(
-
                             onPressed: _submit,
-
+                            style: const ButtonStyle(
+                              elevation: MaterialStatePropertyAll(8.0),
+                            ),
                             child: Padding(
                               padding: const EdgeInsets.only(
                                   left: 24.0, right: 24.0, top: 20, bottom: 20),
                               child: Text(
                                 'Submit Project',
-                                style: Styles.whiteSmall,
+                                style: myTextStyleMedium(context),
                               ),
                             ),
                           ),
@@ -149,8 +148,7 @@ class ProjectEditorState extends State<ProjectEditor>
             ),
       bottomNavigationBar: BottomNavigationBar(
         items: const <BottomNavigationBarItem>[
-          BottomNavigationBarItem(
-              icon: Icon(Icons.camera), label: 'Camera'),
+          BottomNavigationBarItem(icon: Icon(Icons.camera), label: 'Camera'),
           BottomNavigationBarItem(
               icon: Icon(Icons.local_library), label: 'Rating'),
           BottomNavigationBarItem(
@@ -201,11 +199,8 @@ class ProjectEditorState extends State<ProjectEditor>
 
   _showError(String message) {
     AppSnackbar.showErrorSnackbar(
-        scaffoldKey: _key,
-        message: message,
-        actionLabel: 'Error');
+        scaffoldKey: _key, message: message, actionLabel: 'Error');
   }
-
 
   void _onNavTapped(int value) {
     if (mProject!.projectId == null || mProject!.projectId!.isEmpty) {

@@ -86,7 +86,7 @@ class ProjectVideosTabletState extends State<ProjectVideosTablet> {
                   });
                 },
                 itemWidth: 300,
-                crossAxisCount: 6);
+                crossAxisCount: 8);
           }, portrait: (context) {
             return VideoGrid(
                 videos: videos,

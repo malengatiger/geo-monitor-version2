@@ -86,12 +86,25 @@ class ProjectPhotosMobileState extends State<ProjectPhotosMobile>
                   child: Text('No photos in project'),
                 )),
           )
-        : PhotoGrid(
-            photos: photos,
-            crossAxisCount: 2,
-            onPhotoTapped: (photo) {
-              widget.onPhotoTapped(photo);
-            },
-            badgeColor: Colors.pink);
+        : Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Text(
+                  '${widget.project.name}',
+                  style: myTextStyleMediumBold(context),
+                ),
+              ),
+              Expanded(
+                child: PhotoGrid(
+                    photos: photos,
+                    crossAxisCount: 2,
+                    onPhotoTapped: (photo) {
+                      widget.onPhotoTapped(photo);
+                    },
+                    badgeColor: Colors.pink),
+              ),
+            ],
+          );
   }
 }

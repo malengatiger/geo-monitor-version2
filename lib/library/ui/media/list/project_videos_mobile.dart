@@ -7,6 +7,7 @@ import 'package:geo_monitor/library/ui/media/video_grid.dart';
 import '../../../bloc/project_bloc.dart';
 import '../../../data/project.dart';
 import '../../../data/video.dart';
+import '../../../functions.dart';
 
 class ProjectVideosMobile extends StatefulWidget {
   final Project project;
@@ -74,12 +75,25 @@ class ProjectVideosMobileState extends State<ProjectVideosMobile> {
                   child: Text('No videos in project'),
                 )),
           )
-        : VideoGrid(
-            videos: videos,
-            crossAxisCount: 2,
-            onVideoTapped: (video, index) {
-              widget.onVideoTapped(video, index);
-            },
-            itemWidth: 300);
+        : Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Text(
+                  '${widget.project.name}',
+                  style: myTextStyleMediumBold(context),
+                ),
+              ),
+              Expanded(
+                child: VideoGrid(
+                    videos: videos,
+                    crossAxisCount: 2,
+                    onVideoTapped: (video, index) {
+                      widget.onVideoTapped(video, index);
+                    },
+                    itemWidth: 300),
+              ),
+            ],
+          );
   }
 }

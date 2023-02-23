@@ -277,7 +277,7 @@ class ProjectPolygonMapMobileState extends State<ProjectPolygonMapMobile>
           //   ),
           // ),
           bottom: PreferredSize(
-            preferredSize: const Size.fromHeight(80),
+            preferredSize: const Size.fromHeight(120),
             child: Column(
               children: [
                 Row(
@@ -285,7 +285,7 @@ class ProjectPolygonMapMobileState extends State<ProjectPolygonMapMobile>
                   children: [
                     Text(
                       'Project Monitoring Areas',
-                      style: myTextStyleSmall(context),
+                      style: myTextStyleLarge(context),
                     ),
                     const SizedBox(
                       width: 28,
@@ -311,7 +311,7 @@ class ProjectPolygonMapMobileState extends State<ProjectPolygonMapMobile>
                     Flexible(
                         child: Text(
                       '${widget.project.name}',
-                      style: myTextStyleMedium(context),
+                      style: myTextStyleMediumPrimaryColor(context),
                     )),
                     const SizedBox(
                       width: 16,
@@ -347,7 +347,7 @@ class ProjectPolygonMapMobileState extends State<ProjectPolygonMapMobile>
                     },
                     icon: Icon(
                       Icons.check,
-                      size: 28,
+                      size: 32,
                       color: Theme.of(context).primaryColor,
                     ))
                 : const SizedBox(),

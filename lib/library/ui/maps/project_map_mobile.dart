@@ -42,7 +42,7 @@ class ProjectMapMobile extends StatefulWidget {
 
 class ProjectMapMobileState extends State<ProjectMapMobile>
     with SingleTickerProviderStateMixin {
-  final mm = '🔷🔷🔷ProjectMapMobile: ';
+  final mm = '🔷🔷🔷🔷🔷🔷ProjectMapMobile: 🍎';
   late AnimationController _animationController;
   final Completer<GoogleMapController> _mapController = Completer();
 
@@ -80,7 +80,7 @@ class ProjectMapMobileState extends State<ProjectMapMobile>
   void _listen() async {
     _positionStreamSubscription =
         fcmBloc.projectPositionStream.listen((event) async {
-      await _refreshData(false);
+      await _getData(false);
       if (mounted) {
         _addMarkers();
         _buildCircles();
@@ -98,7 +98,7 @@ class ProjectMapMobileState extends State<ProjectMapMobile>
     });
     _polygonStreamSubscription =
         fcmBloc.projectPolygonStream.listen((event) async {
-      await _refreshData(false);
+      await _getData(false);
 
       if (mounted) {
         _addMarkers();
@@ -150,14 +150,15 @@ class ProjectMapMobileState extends State<ProjectMapMobile>
     user = await prefsOGx.getUser();
   }
 
-  Future _refreshData(bool forceRefresh) async {
+  Future _getData(bool forceRefresh) async {
+    pp('\n\n$mm _getData ......... forceRefresh: $forceRefresh');
     setState(() {
       busy = true;
     });
     try {
-      projectPolygons = await projectBloc.getProjectPolygons(
-          projectId: widget.project.projectId!, forceRefresh: forceRefresh);
       projectPositions = await projectBloc.getProjectPositions(
+          projectId: widget.project.projectId!, forceRefresh: forceRefresh);
+      projectPolygons = await projectBloc.getProjectPolygons(
           projectId: widget.project.projectId!, forceRefresh: forceRefresh);
     } catch (e) {
       pp(e);
@@ -278,7 +279,7 @@ class ProjectMapMobileState extends State<ProjectMapMobile>
     var map = <double, ProjectPosition>{};
     for (var i = 0; i < projectPositions.length; i++) {
       var projPos = projectPositions.elementAt(i);
-      var dist = await locationBloc.getDistance(
+      var dist = locationBloc.getDistance(
           latitude: projPos.position!.coordinates.elementAt(1),
           longitude: projPos.position!.coordinates.elementAt(0),
           toLatitude: latitude,
@@ -386,7 +387,7 @@ class ProjectMapMobileState extends State<ProjectMapMobile>
           actions: [
             IconButton(
                 onPressed: () {
-                  _refreshData(true);
+                  _getData(true);
                 },
                 icon: Icon(
                   Icons.refresh_rounded,
@@ -407,7 +408,7 @@ class ProjectMapMobileState extends State<ProjectMapMobile>
                     Flexible(
                       child: Text(
                         widget.project.name!,
-                        style: myTextStyleSmall(context),
+                        style: myTextStyleLargePrimaryColor(context),
                       ),
                     ),
                     const SizedBox(
@@ -473,7 +474,7 @@ class ProjectMapMobileState extends State<ProjectMapMobile>
                     pp('\n\\$mm 🍎🍎🍎........... GoogleMap onMapCreated ... ready to rumble!\n\n');
                     _mapController.complete(controller);
                     googleMapController = controller;
-                    await _refreshData(false);
+                    await _getData(false);
                     _addMarkers();
                     _buildProjectPolygons();
                     _buildCircles();

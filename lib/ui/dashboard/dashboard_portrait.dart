@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:firebase_auth/firebase_auth.dart' as fb;
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:geo_monitor/library/generic_functions.dart';
 import 'package:geo_monitor/library/ui/project_list/project_list_main.dart';
@@ -83,6 +82,7 @@ class DashboardPortraitState extends State<DashboardPortrait>
   DataBag? dataBag;
   final _key = GlobalKey<ScaffoldState>();
   int instruction = stayOnList;
+  var items = <BottomNavigationBarItem>[];
 
   @override
   void initState() {
@@ -91,10 +91,10 @@ class DashboardPortraitState extends State<DashboardPortrait>
         reverseDuration: Duration(milliseconds: dur),
         vsync: this);
     super.initState();
+    _getData(false);
     _setItems();
     _listenForFCM();
     _getAuthenticationStatus();
-    _getData(false);
     _subscribeToConnectivity();
     _subscribeToGeofenceStream();
     ;
@@ -167,8 +167,6 @@ class DashboardPortraitState extends State<DashboardPortrait>
     geofenceSubscription.cancel();
     super.dispose();
   }
-
-  var items = <BottomNavigationBarItem>[];
 
   void _setItems() {
     items.add(const BottomNavigationBarItem(
@@ -577,17 +575,17 @@ class DashboardPortraitState extends State<DashboardPortrait>
 
   @override
   Widget build(BuildContext context) {
-    bool showActivityIcon = false;
+    bool showAdminIcons = false;
     if (deviceUser != null) {
       switch (deviceUser!.userType) {
         case UserType.orgAdministrator:
-          showActivityIcon = true;
+          showAdminIcons = true;
           break;
         case UserType.orgExecutive:
-          showActivityIcon = true;
+          showAdminIcons = true;
           break;
         case UserType.fieldMonitor:
-          showActivityIcon = false;
+          showAdminIcons = false;
           break;
       }
     }
@@ -604,7 +602,7 @@ class DashboardPortraitState extends State<DashboardPortrait>
                   color: Theme.of(context).primaryColor,
                 ),
                 onPressed: _navigateToIntro),
-            showActivityIcon
+            showAdminIcons
                 ? IconButton(
                     icon: Icon(
                       Icons.access_alarm,
@@ -614,7 +612,7 @@ class DashboardPortraitState extends State<DashboardPortrait>
                     onPressed: _navigateToActivity,
                   )
                 : const SizedBox(),
-            showActivityIcon
+            showAdminIcons
                 ? IconButton(
                     icon: Icon(
                       Icons.settings,
@@ -762,6 +760,4 @@ class DashboardPortraitState extends State<DashboardPortrait>
   }
 }
 
-
 final mm = '${E.heartRed}${E.heartRed}${E.heartRed}${E.heartRed} Dashboard: ';
-

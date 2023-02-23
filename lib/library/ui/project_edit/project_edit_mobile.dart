@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-
 import 'package:page_transition/page_transition.dart';
 import 'package:uuid/uuid.dart';
+
 import '../../api/prefs_og.dart';
 import '../../bloc/admin_bloc.dart';
 import '../../bloc/organization_bloc.dart';
@@ -10,6 +10,7 @@ import '../../data/project.dart';
 import '../../data/user.dart';
 import '../../functions.dart';
 import '../project_location/project_location_main.dart';
+
 class ProjectEditMobile extends StatefulWidget {
   final Project? project;
   const ProjectEditMobile(this.project, {super.key});
@@ -23,7 +24,7 @@ class ProjectEditMobileState extends State<ProjectEditMobile>
   late AnimationController _controller;
   var nameController = TextEditingController();
   var descController = TextEditingController();
-  var maxController = TextEditingController(text: '50.0');
+  var maxController = TextEditingController(text: '200');
   var isBusy = false;
 
   User? admin;
@@ -81,7 +82,8 @@ class ProjectEditMobileState extends State<ProjectEditMobile>
               communities: [],
               monitorReports: [],
               nearestCities: [],
-              projectPositions: [], ratings: [],
+              projectPositions: [],
+              ratings: [],
               projectId: uuid.v4());
           var m = await adminBloc.addProject(mProject);
           pp('🎽 🎽 🎽 _submit: new project added .........  ${m.toJson()}');
@@ -103,14 +105,13 @@ class ProjectEditMobileState extends State<ProjectEditMobile>
         setState(() {
           isBusy = false;
         });
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Failed: $e')));
-
+        ScaffoldMessenger.of(context)
+            .showSnackBar(SnackBar(content: Text('Failed: $e')));
       }
     }
   }
 
   void _navigateToProjectLocation(Project mProject) async {
-
     pp(' 😡 _navigateToProjectLocation  😡 😡 😡 ${mProject.name}');
     await Navigator.push(
         context,
@@ -134,7 +135,7 @@ class ProjectEditMobileState extends State<ProjectEditMobile>
         appBar: AppBar(
           title: Text(
             'Project Editor',
-            style: Styles.whiteSmall,
+            style: myTextStyleLarge(context),
           ),
           actions: [
             widget.project == null
@@ -149,19 +150,19 @@ class ProjectEditMobileState extends State<ProjectEditMobile>
                   )
           ],
           bottom: PreferredSize(
-            preferredSize: const Size.fromHeight(100),
+            preferredSize: const Size.fromHeight(120),
             child: Column(
               children: [
                 Text(
                   widget.project == null ? 'New Project' : 'Edit Project',
-                  style: Styles.blackBoldMedium,
+                  style: myTextStyleMedium(context),
                 ),
                 const SizedBox(
-                  height: 8,
+                  height: 24,
                 ),
                 Text(
                   admin == null ? '' : admin!.organizationName!,
-                  style: myTextStyleLarge(context),
+                  style: myTextStyleLargerPrimaryColor(context),
                 ),
                 const SizedBox(
                   height: 20,
@@ -185,7 +186,7 @@ class ProjectEditMobileState extends State<ProjectEditMobile>
                   child: Column(
                     children: [
                       const SizedBox(
-                        height: 0,
+                        height: 24,
                       ),
                       TextFormField(
                         controller: nameController,
@@ -208,19 +209,18 @@ class ProjectEditMobileState extends State<ProjectEditMobile>
                         },
                       ),
                       const SizedBox(
-                        height: 8,
+                        height: 16,
                       ),
                       TextFormField(
                         controller: descController,
                         keyboardType: TextInputType.multiline,
-                          style: GoogleFonts.lato(
-                              textStyle: Theme.of(context).textTheme.bodySmall,
-                              fontWeight: FontWeight.normal),
+                        style: GoogleFonts.lato(
+                            textStyle: Theme.of(context).textTheme.bodySmall,
+                            fontWeight: FontWeight.normal),
                         minLines: 2, //Normal textInputField will be displayed
                         maxLines:
                             6, // when user presses enter it will adapt to it
                         decoration: InputDecoration(
-
                             icon: Icon(
                               Icons.info_outline,
                               color: Theme.of(context).primaryColor,
@@ -235,7 +235,7 @@ class ProjectEditMobileState extends State<ProjectEditMobile>
                         },
                       ),
                       const SizedBox(
-                        height: 8,
+                        height: 16,
                       ),
                       TextFormField(
                         controller: maxController,
@@ -256,7 +256,7 @@ class ProjectEditMobileState extends State<ProjectEditMobile>
                         },
                       ),
                       const SizedBox(
-                        height: 48,
+                        height: 60,
                       ),
                       isBusy
                           ? const SizedBox(
@@ -274,11 +274,10 @@ class ProjectEditMobileState extends State<ProjectEditMobile>
                                     : SizedBox(
                                         width: 220,
                                         child: ElevatedButton(
-
                                           child: Padding(
                                             padding: const EdgeInsets.all(12.0),
                                             child: Text(
-                                              'Add Location',
+                                              'Add Project Location',
                                               style: Styles.whiteSmall,
                                             ),
                                           ),
@@ -295,7 +294,7 @@ class ProjectEditMobileState extends State<ProjectEditMobile>
                                       ),
                                 SizedBox(
                                   width: 220,
-                                  child: TextButton(
+                                  child: ElevatedButton(
                                     onPressed: _submit,
                                     child: Padding(
                                       padding: const EdgeInsets.all(12.0),

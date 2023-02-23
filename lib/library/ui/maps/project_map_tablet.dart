@@ -63,6 +63,9 @@ class ProjectMapTabletState extends State<ProjectMapTablet>
   var projectPositions = <ProjectPosition>[];
   late StreamSubscription<ProjectPosition> _positionStreamSubscription;
   late StreamSubscription<ProjectPolygon> _polygonStreamSubscription;
+  GoogleMapController? googleMapController;
+  double _latitude = 0.0, _longitude = 0.0;
+  String? address;
 
   @override
   void initState() {
@@ -178,9 +181,6 @@ class ProjectMapTabletState extends State<ProjectMapTablet>
     _positionStreamSubscription.cancel();
     super.dispose();
   }
-
-  GoogleMapController? googleMapController;
-  double _latitude = 0.0, _longitude = 0.0;
 
   Future<void> _addMarkers() async {
     pp('$mm _addMarkers: ....... 🍎 ${projectPositions.length}');
@@ -303,6 +303,7 @@ class ProjectMapTabletState extends State<ProjectMapTablet>
   }
 
   bool isWithin = false;
+  final _nameController = TextEditingController();
 
   Future<void> _submitNewPosition() async {
     setState(() {
@@ -623,7 +624,25 @@ class ProjectMapTabletState extends State<ProjectMapTablet>
                                   ),
                                 ),
                                 const SizedBox(
-                                  height: 24,
+                                  height: 12,
+                                ),
+                                TextFormField(
+                                  controller: _nameController,
+                                  keyboardType: TextInputType.name,
+                                  decoration: const InputDecoration(
+                                    label: Text('Name of Location'),
+                                    hintText:
+                                        'Optional, enter name of location',
+                                  ),
+                                ),
+                                const SizedBox(
+                                  height: 12,
+                                ),
+                                address == null
+                                    ? const SizedBox()
+                                    : Text('$address'),
+                                const SizedBox(
+                                  height: 12,
                                 ),
                                 busy
                                     ? const SizedBox(

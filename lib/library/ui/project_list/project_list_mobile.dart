@@ -603,13 +603,13 @@ class ProjectListMobileState extends State<ProjectListMobile>
                   children: [
                     Text(
                         user == null ? 'Unknown User' : user!.organizationName!,
-                        style: myTextStyleMediumBold(context)),
+                        style: myTextStyleLargerPrimaryColor(context)),
                     const SizedBox(
                       height: 16,
                     ),
                     Text(
                       'Organization Projects',
-                      style: myTextStyleSmall(context),
+                      style: myTextStyleMedium(context),
                     ),
                     const SizedBox(
                       height: 8,

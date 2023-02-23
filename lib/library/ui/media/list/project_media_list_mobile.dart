@@ -222,22 +222,16 @@ class ProjectMediaListMobileState extends State<ProjectMediaListMobile>
   }
 
   @override
-  onMediaSelected(mediaBag) {
-    // TODO: implement onMediaSelected
-    throw UnimplementedError();
-  }
-
-  @override
   Widget build(BuildContext context) {
     _photos.sort((a, b) => b.created!.compareTo(a.created!));
     return SafeArea(
         child: Scaffold(
       appBar: AppBar(
-        leading: IconButton(
-            onPressed: () {
-              Navigator.of(context).pop();
-            },
-            icon: const Icon(Icons.arrow_back_ios)),
+        // leading: IconButton(
+        //     onPressed: () {
+        //       Navigator.of(context).pop();
+        //     },
+        //     icon: const Icon(Icons.arrow_back_ios)),
         actions: [
           IconButton(
               onPressed: () {

@@ -1329,7 +1329,8 @@ class CacheManager {
     var key =
         '${projectPosition.organizationId}_${projectPosition.projectId}_${projectPosition.projectPositionId}';
     await _positionBox?.put(key, projectPosition);
-    // pp('$mm ProjectPosition added to local cache:  🔵 🔵 ${projectPosition.projectName} ');
+
+    pp('$mm ProjectPosition added to local cache:  🔵 🔵 🔵 🔵 ${projectPosition.projectName} 🔆key: $key');
   }
 
   Future addUser({required User user}) async {
@@ -1597,6 +1598,8 @@ class CacheManager {
 
   Future<List<ProjectPosition>> getProjectPositions(String projectId) async {
     var keys = _positionBox?.keys;
+    pp('$mm getProjectPositions keys: ${keys?.length} projectId: $projectId');
+
     var mList = <ProjectPosition>[];
     if (keys != null) {
       for (var key in keys) {
@@ -1606,7 +1609,7 @@ class CacheManager {
         }
       }
     }
-    pp('$mm ProjectPositions found: ${mList.length} ');
+    pp('$mm getProjectPositions found: ${mList.length} ');
     return mList;
   }
 
