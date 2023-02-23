@@ -3,9 +3,12 @@ import 'dart:async';
 import 'package:animations/animations.dart';
 import 'package:flutter/material.dart';
 import 'package:geo_monitor/library/ui/camera/chewie_video_player.dart';
+import 'package:geo_monitor/library/ui/camera/photo_handler.dart';
+import 'package:geo_monitor/library/ui/camera/video_handler.dart';
 import 'package:geo_monitor/library/ui/media/list/project_audios_tablet.dart';
 import 'package:geo_monitor/library/ui/media/list/project_photos_tablet.dart';
 import 'package:geo_monitor/library/ui/media/list/project_videos_tablet.dart';
+import 'package:geo_monitor/ui/audio/audio_handler_mobile.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:page_transition/page_transition.dart';
 
@@ -193,11 +196,12 @@ class ProjectMediaListTabletState extends State<ProjectMediaListTablet>
     });
   }
 
-  @override
-  onMediaSelected(mediaBag) {
-    // TODO: implement onMediaSelected
-    throw UnimplementedError();
-  }
+  bool _showAudioHandler = false;
+  bool _showVideoHandler = false;
+  bool _showPhotoHandler = false;
+  Audio? audio;
+  Video? video;
+  Photo? photo;
 
   @override
   Widget build(BuildContext context) {
@@ -216,7 +220,11 @@ class ProjectMediaListTabletState extends State<ProjectMediaListTablet>
           IconButton(
               onPressed: () {
                 pp('...... navigate to take photos');
-                _navigateToMonitor();
+                setState(() {
+                  _showPhotoHandler = true;
+                  _showVideoHandler = false;
+                  _showAudioHandler = false;
+                });
               },
               icon: Icon(
                 Icons.camera_alt,
@@ -226,7 +234,11 @@ class ProjectMediaListTabletState extends State<ProjectMediaListTablet>
           IconButton(
               onPressed: () {
                 pp('...... navigate to take video');
-                _navigateToMonitor();
+                setState(() {
+                  _showPhotoHandler = false;
+                  _showVideoHandler = true;
+                  _showAudioHandler = false;
+                });
               },
               icon: Icon(
                 Icons.video_camera_front,
@@ -236,7 +248,11 @@ class ProjectMediaListTabletState extends State<ProjectMediaListTablet>
           IconButton(
               onPressed: () {
                 pp('...... navigate to take audio');
-                _navigateToMonitor();
+                setState(() {
+                  _showPhotoHandler = false;
+                  _showVideoHandler = false;
+                  _showAudioHandler = true;
+                });
               },
               icon: Icon(
                 Icons.mic,
@@ -252,15 +268,6 @@ class ProjectMediaListTabletState extends State<ProjectMediaListTablet>
                 size: 18,
                 color: Theme.of(context).primaryColor,
               )),
-          // IconButton(
-          //     onPressed: () {
-          //       Navigator.of(context).pop();
-          //     },
-          //     icon: Icon(
-          //       Icons.close,
-          //       size: 18,
-          //       color: Theme.of(context).primaryColor,
-          //     )),
         ],
         bottom: TabBar(
           controller: _tabController,
@@ -420,8 +427,53 @@ class ProjectMediaListTabletState extends State<ProjectMediaListTablet>
                     ),
                   ))
               : const SizedBox(),
+          _showPhotoHandler
+              ? Positioned(
+                  left: 0,
+                  top: 0,
+                  child: SizedBox(
+                    width: 420,
+                    height: 640,
+                    // color: Theme.of(context).primaryColor,
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: GestureDetector(
+                        onTap: () {
+                          setState(() {
+                            _showPhotoHandler = false;
+                          });
+                        },
+                        child: PhotoHandler(project: widget.project),
+                      ),
+                    ),
+                  ))
+              : const SizedBox(),
+          _showVideoHandler
+              ? Positioned(
+                  left: 300,
+                  right: 300,
+                  top: 12,
+                  child: VideoHandler(
+                    project: widget.project,
+                  ),
+                )
+              : const SizedBox(),
+          _showAudioHandler
+              ? Positioned(
+                  left: 100,
+                  right: 100,
+                  top: 12,
+                  child: AudioHandlerMobile(
+                    project: widget.project,
+                  ),
+                )
+              : const SizedBox(),
         ],
       ),
     ));
   }
+
+  onPhotoMapRequested(Photo p1) {}
+
+  onPhotoRatingRequested(Photo p1) {}
 }

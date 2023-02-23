@@ -40,13 +40,12 @@ import '../../library/users/list/user_list_main.dart';
 import '../audio/audio_player_page.dart';
 
 class DashboardTablet extends StatefulWidget {
-  const DashboardTablet({Key? key, required this.user})
-      : super(key: key);
+  const DashboardTablet({Key? key, required this.user}) : super(key: key);
 
   final User user;
+
   @override
-  State<DashboardTablet> createState() =>
-      _DashboardTabletState();
+  State<DashboardTablet> createState() => _DashboardTabletState();
 }
 
 class _DashboardTabletState extends State<DashboardTablet> {
@@ -106,7 +105,6 @@ class _DashboardTabletState extends State<DashboardTablet> {
           setState(() {});
         }
       });
-
 
       settingsSubscriptionFCM = fcmBloc.settingsStream.listen((settings) async {
         pp('$mm: 🍎🍎 settings arrived with themeIndex: ${settings.themeIndex}... 🍎🍎');
@@ -485,6 +483,41 @@ class _DashboardTabletState extends State<DashboardTablet> {
             },
           )
         ],
+        bottom: PreferredSize(
+          preferredSize: const Size.fromHeight(80),
+          child: Column(
+            children: [
+              user == null
+                  ? const SizedBox()
+                  : Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const SizedBox(
+                          height: 20,
+                        ),
+                        Text(
+                          '${user!.name}',
+                          style: myTextStyleSmall(context),
+                        ),
+                        const SizedBox(
+                          width: 24,
+                        ),
+                        user!.imageUrl == null
+                            ? const CircleAvatar(
+                                radius: 8,
+                              )
+                            : CircleAvatar(
+                                radius: 22,
+                                backgroundImage: NetworkImage(user!.imageUrl!),
+                              )
+                      ],
+                    ),
+              const SizedBox(
+                height: 8,
+              )
+            ],
+          ),
+        ),
       ),
       body: Stack(
         children: [
@@ -493,14 +526,75 @@ class _DashboardTabletState extends State<DashboardTablet> {
               return Row(
                 children: [
                   SizedBox(
-                    width: (size.width / 2) + 80,
+                    width: (size.width / 2) + 100,
                     child: dataBag == null
                         ? const SizedBox()
                         : DashboardGrid(
                             dataBag: dataBag!,
                             crossAxisCount: 2,
+                            topPadding: 48,
+                            elementPadding: 56,
+                            leftPadding: 12,
+                            onTypeTapped: (type) {
+                              switch (type) {
+                                case typeProjects:
+                                  _navigateToProjectList();
+                                  break;
+                                case typeUsers:
+                                  _navigateToUserList();
+                                  break;
+                                case typePhotos:
+                                  _navigateToProjectList();
+                                  break;
+                                case typeVideos:
+                                  _navigateToProjectList();
+                                  break;
+                                case typeAudios:
+                                  _navigateToProjectList();
+                                  break;
+                                case typePositions:
+                                  _navigateToProjectList();
+                                  break;
+                                case typePolygons:
+                                  _navigateToProjectList();
+                                  break;
+                                case typeSchedules:
+                                  _navigateToProjectList();
+                                  break;
+                              }
+                            },
+                            gridPadding: 64,
+                          ),
+                  ),
+                  GeoActivity(
+                    width: (size.width / 2) - 100,
+                    forceRefresh: true,
+                    thinMode: true,
+                    showPhoto: (photo) {
+                      _displayPhoto(photo);
+                    },
+                    showVideo: (video) {
+                      _displayVideo(video);
+                    },
+                    showAudio: (audio) {
+                      _displayAudio(audio);
+                    },
+                  ),
+                ],
+              );
+            },
+            landscape: (context) {
+              return Row(
+                children: [
+                  SizedBox(
+                    width: (size.width / 2) + 60,
+                    child: dataBag == null
+                        ? const SizedBox()
+                        : DashboardGrid(
+                            dataBag: dataBag!,
+                            crossAxisCount: 3,
                             topPadding: 12,
-                            elementPadding: 32,
+                            elementPadding: 48,
                             leftPadding: 12,
                             onTypeTapped: (type) {
                               switch (type) {
@@ -534,68 +628,7 @@ class _DashboardTabletState extends State<DashboardTablet> {
                           ),
                   ),
                   GeoActivity(
-                    width: (size.width / 2) - 100,
-                    forceRefresh: true,
-                    thinMode: true,
-                    showPhoto: (photo) {
-                      _displayPhoto(photo);
-                    },
-                    showVideo: (video) {
-                      _displayVideo(video);
-                    },
-                    showAudio: (audio) {
-                      _displayAudio(audio);
-                    },
-                  ),
-                ],
-              );
-            },
-            landscape: (context){
-              return Row(
-                children: [
-                  SizedBox(
-                    width: (size.width / 2) + 100,
-                    child: dataBag == null
-                        ? const SizedBox()
-                        : DashboardGrid(
-                      dataBag: dataBag!,
-                      crossAxisCount: 3,
-                      topPadding: 12,
-                      elementPadding: 48,
-                      leftPadding: 12,
-                      onTypeTapped: (type) {
-                        switch (type) {
-                          case typeProjects:
-                            _navigateToProjectList();
-                            break;
-                          case typeUsers:
-                            _navigateToUserList();
-                            break;
-                          case typePhotos:
-                            _navigateToProjectList();
-                            break;
-                          case typeVideos:
-                            _navigateToProjectList();
-                            break;
-                          case typeAudios:
-                            _navigateToProjectList();
-                            break;
-                          case typePositions:
-                            _navigateToProjectList();
-                            break;
-                          case typePolygons:
-                            _navigateToProjectList();
-                            break;
-                          case typeSchedules:
-                            _navigateToProjectList();
-                            break;
-                        }
-                      },
-                      gridPadding: 80,
-                    ),
-                  ),
-                  GeoActivity(
-                    width: (size.width / 2) - 200,
+                    width: (size.width / 2) - 140,
                     forceRefresh: true,
                     thinMode: false,
                     showPhoto: (photo) {

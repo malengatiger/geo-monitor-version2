@@ -25,6 +25,7 @@ class ActivityStreamCard extends StatefulWidget {
 
 class ActivityStreamCardState extends State<ActivityStreamCard> {
   User? user;
+
   @override
   void initState() {
     super.initState();
@@ -245,7 +246,7 @@ class ActivityStreamCardState extends State<ActivityStreamCard> {
             child: Padding(
               padding: const EdgeInsets.all(20.0),
               child: SizedBox(
-                height: 60,
+                height: 64,
                 child: Column(
                   children: [
                     Row(
@@ -255,9 +256,11 @@ class ActivityStreamCardState extends State<ActivityStreamCard> {
                         const SizedBox(
                           width: 8,
                         ),
-                        Text(
-                          msg,
-                          style: myTextStyleSmall(context),
+                        Flexible(
+                          child: Text(
+                            msg,
+                            style: myTextStyleSmall(context),
+                          ),
                         ),
                       ],
                     ),
