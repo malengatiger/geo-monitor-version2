@@ -11,6 +11,7 @@ import 'package:geo_monitor/library/ui/media/list/project_videos_tablet.dart';
 import 'package:geo_monitor/ui/audio/audio_handler_mobile.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:page_transition/page_transition.dart';
+import 'package:responsive_builder/responsive_builder.dart';
 
 import '../../../api/prefs_og.dart';
 import '../../../bloc/cloud_storage_bloc.dart';
@@ -81,7 +82,8 @@ class ProjectMediaListTabletState extends State<ProjectMediaListTablet>
     pp('$mm .................... Listening to streams from userBloc ....');
 
     photoStreamSubscription = projectBloc.photoStream.listen((value) {
-      pp('$mm Photos received from stream projectPhotoStream: 💙 ${value.length}');
+      pp('$mm Photos received from stream projectPhotoStream: 💙 ${value
+          .length}');
       _photos = value;
       if (mounted) {
         _animationController.forward();
@@ -105,7 +107,8 @@ class ProjectMediaListTabletState extends State<ProjectMediaListTablet>
   void _listenToPhotoStream() async {
     newPhotoStreamSubscription = cloudStorageBloc.photoStream.listen((mPhoto) {
       pp('${E.blueDot}${E.blueDot} '
-          'New photo arrived from newPhotoStreamSubscription: ${mPhoto.toJson()} ${E.blueDot}');
+          'New photo arrived from newPhotoStreamSubscription: ${mPhoto
+          .toJson()} ${E.blueDot}');
       _photos.add(mPhoto);
       if (mounted) {
         setState(() {});
@@ -114,7 +117,8 @@ class ProjectMediaListTabletState extends State<ProjectMediaListTablet>
   }
 
   Future<void> _getData(bool forceRefresh) async {
-    pp('$mm _MediaListMobileState: .......... _refresh ...forceRefresh: $forceRefresh');
+    pp(
+        '$mm _MediaListMobileState: .......... _refresh ...forceRefresh: $forceRefresh');
     setState(() {
       busy = true;
     });
@@ -122,7 +126,8 @@ class ProjectMediaListTabletState extends State<ProjectMediaListTablet>
     try {
       var bag = await projectBloc.refreshProjectData(
           projectId: widget.project.projectId!, forceRefresh: forceRefresh);
-      pp('$mm bag has arrived safely! Yeah!! photos: ${bag.photos!.length} videos: ${bag.videos!.length}');
+      pp('$mm bag has arrived safely! Yeah!! photos: ${bag.photos!
+          .length} videos: ${bag.videos!.length}');
       _photos = bag.photos!;
       setState(() {});
       _animationController.forward();
@@ -180,7 +185,8 @@ class ProjectMediaListTabletState extends State<ProjectMediaListTablet>
   }
 
   void _navigateToMonitor() {
-    pp('... about to navigate after waiting 100 ms - should select project if null');
+    pp(
+        '... about to navigate after waiting 100 ms - should select project if null');
 
     Future.delayed(const Duration(milliseconds: 100), () {
       Navigator.of(context).pop();
@@ -203,194 +209,204 @@ class ProjectMediaListTabletState extends State<ProjectMediaListTablet>
   Video? video;
   Photo? photo;
 
+
   @override
   Widget build(BuildContext context) {
     _photos.sort((a, b) => b.created!.compareTo(a.created!));
+
     return SafeArea(
         child: Scaffold(
-      appBar: AppBar(
-        centerTitle: true,
-        title: Text('${widget.project.name}'),
-        leading: IconButton(
-            onPressed: () {
-              Navigator.of(context).pop();
-            },
-            icon: const Icon(Icons.arrow_back_ios)),
-        actions: [
-          IconButton(
-              onPressed: () {
-                pp('...... navigate to take photos');
-                setState(() {
-                  _showPhotoHandler = true;
-                  _showVideoHandler = false;
-                  _showAudioHandler = false;
-                });
-              },
-              icon: Icon(
-                Icons.camera_alt,
-                size: 18,
-                color: Theme.of(context).primaryColor,
-              )),
-          IconButton(
-              onPressed: () {
-                pp('...... navigate to take video');
-                setState(() {
-                  _showPhotoHandler = false;
-                  _showVideoHandler = true;
-                  _showAudioHandler = false;
-                });
-              },
-              icon: Icon(
-                Icons.video_camera_front,
-                size: 18,
-                color: Theme.of(context).primaryColor,
-              )),
-          IconButton(
-              onPressed: () {
-                pp('...... navigate to take audio');
-                setState(() {
-                  _showPhotoHandler = false;
-                  _showVideoHandler = false;
-                  _showAudioHandler = true;
-                });
-              },
-              icon: Icon(
-                Icons.mic,
-                size: 18,
-                color: Theme.of(context).primaryColor,
-              )),
-          IconButton(
-              onPressed: () {
-                _getData(true);
-              },
-              icon: Icon(
-                Icons.refresh,
-                size: 18,
-                color: Theme.of(context).primaryColor,
-              )),
-        ],
-        bottom: TabBar(
-          controller: _tabController,
-          tabs: [
-            Card(
-                elevation: 8,
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8.0)),
-                child: Padding(
-                  padding: const EdgeInsets.only(
-                      left: 4.0, right: 4.0, top: 4, bottom: 4),
-                  child: Text(
-                    'Photos',
-                    style: myTextStyleSmall(context),
-                  ),
-                )),
-            Card(
-                elevation: 8,
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8.0)),
-                child: Padding(
-                  padding: const EdgeInsets.only(
-                      left: 4.0, right: 4.0, top: 4, bottom: 4),
-                  child: Text(
-                    'Videos',
-                    style: myTextStyleSmall(context),
-                  ),
-                )),
-            Card(
-                elevation: 8,
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8.0)),
-                child: Padding(
-                  padding: const EdgeInsets.only(
-                      left: 4.0, right: 4.0, top: 4, bottom: 4),
-                  child: Text(
-                    'Audio',
-                    style: myTextStyleSmall(context),
-                  ),
-                )),
-          ],
-        ),
-      ),
-      body: Stack(
-        children: [
-          busy
-              ? Center(
-                  child: Card(
-                    shape: getRoundedBorder(radius: 16),
+          appBar: AppBar(
+            centerTitle: true,
+            title: Text('${widget.project.name}'),
+            leading: IconButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                icon: const Icon(Icons.arrow_back_ios)),
+            actions: [
+              IconButton(
+                  onPressed: () {
+                    pp('...... navigate to take photos');
+                    setState(() {
+                      _showPhotoHandler = true;
+                      _showVideoHandler = false;
+                      _showAudioHandler = false;
+                    });
+                  },
+                  icon: Icon(
+                    Icons.camera_alt,
+                    size: 18,
+                    color: Theme
+                        .of(context)
+                        .primaryColor,
+                  )),
+              IconButton(
+                  onPressed: () {
+                    pp('...... navigate to take video');
+                    setState(() {
+                      _showPhotoHandler = false;
+                      _showVideoHandler = true;
+                      _showAudioHandler = false;
+                    });
+                  },
+                  icon: Icon(
+                    Icons.video_camera_front,
+                    size: 18,
+                    color: Theme
+                        .of(context)
+                        .primaryColor,
+                  )),
+              IconButton(
+                  onPressed: () {
+                    pp('...... navigate to take audio');
+                    setState(() {
+                      _showPhotoHandler = false;
+                      _showVideoHandler = false;
+                      _showAudioHandler = true;
+                    });
+                  },
+                  icon: Icon(
+                    Icons.mic,
+                    size: 18,
+                    color: Theme
+                        .of(context)
+                        .primaryColor,
+                  )),
+              IconButton(
+                  onPressed: () {
+                    _getData(true);
+                  },
+                  icon: Icon(
+                    Icons.refresh,
+                    size: 18,
+                    color: Theme
+                        .of(context)
+                        .primaryColor,
+                  )),
+            ],
+            bottom: TabBar(
+              controller: _tabController,
+              tabs: [
+                Card(
                     elevation: 8,
-                    child: SizedBox(
-                      height: 200,
-                      width: 200,
-                      child: Padding(
-                        padding: const EdgeInsets.all(12.0),
-                        child: Column(
-                          children: const [
-                            SizedBox(
-                              height: 40,
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8.0)),
+                    child: Padding(
+                      padding: const EdgeInsets.only(
+                          left: 4.0, right: 4.0, top: 4, bottom: 4),
+                      child: Text(
+                        'Photos',
+                        style: myTextStyleSmall(context),
+                      ),
+                    )),
+                Card(
+                    elevation: 8,
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8.0)),
+                    child: Padding(
+                      padding: const EdgeInsets.only(
+                          left: 4.0, right: 4.0, top: 4, bottom: 4),
+                      child: Text(
+                        'Videos',
+                        style: myTextStyleSmall(context),
+                      ),
+                    )),
+                Card(
+                    elevation: 8,
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8.0)),
+                    child: Padding(
+                      padding: const EdgeInsets.only(
+                          left: 4.0, right: 4.0, top: 4, bottom: 4),
+                      child: Text(
+                        'Audio',
+                        style: myTextStyleSmall(context),
+                      ),
+                    )),
+              ],
+            ),
+          ),
+          body: Stack(
+            children: [
+              busy
+                  ? Center(
+                child: Card(
+                  shape: getRoundedBorder(radius: 16),
+                  elevation: 8,
+                  child: SizedBox(
+                    height: 200,
+                    width: 200,
+                    child: Padding(
+                      padding: const EdgeInsets.all(12.0),
+                      child: Column(
+                        children: const [
+                          SizedBox(
+                            height: 40,
+                          ),
+                          Text('Loading ...'),
+                          SizedBox(
+                            height: 48,
+                          ),
+                          SizedBox(
+                            height: 24,
+                            width: 24,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 4,
+                              backgroundColor: Colors.pink,
                             ),
-                            Text('Loading ...'),
-                            SizedBox(
-                              height: 48,
-                            ),
-                            SizedBox(
-                              height: 24,
-                              width: 24,
-                              child: CircularProgressIndicator(
-                                strokeWidth: 4,
-                                backgroundColor: Colors.pink,
-                              ),
-                            ),
-                          ],
-                        ),
+                          ),
+                        ],
                       ),
                     ),
                   ),
-                )
-              : TabBarView(
-                  controller: _tabController,
-                  children: [
-                    ProjectPhotosTablet(
-                      project: widget.project,
-                      refresh: false,
-                      onPhotoTapped: (Photo photo) {
-                        pp('🔷🔷🔷Photo has been tapped: ${photo.created!}');
-                        selectedPhoto = photo;
-                        setState(() {
-                          _showPhotoDetail = true;
-                        });
-                        _animationController.forward();
-                      },
-                    ),
-                    ProjectVideosTablet(
-                      project: widget.project,
-                      refresh: false,
-                      onVideoTapped: (Video video, int index) {
-                        pp('🍎🍎🍎Video has been tapped: ${video.created!}');
-                        setState(() {
-                          selectedVideo = video;
-                          videoIndex = index;
-                        });
-                        _navigateToPlayVideo();
-                      },
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.all(16.0),
-                      child: ProjectAudiosTablet(
-                        project: widget.project,
-                        refresh: false,
-                        onAudioTapped: (Audio audio) {
-                          pp('🍎🍎🍎Audio has been tapped: ${audio.created!}');
-                          setState(() {
-                            selectedAudio = audio;
-                          });
-                          _navigateToPlayAudio();
-                        },
-                      ),
-                    ),
-                  ],
                 ),
-          _showPhotoDetail
-              ? Positioned(
+              )
+                  : TabBarView(
+                controller: _tabController,
+                children: [
+                  ProjectPhotosTablet(
+                    project: widget.project,
+                    refresh: false,
+                    onPhotoTapped: (Photo photo) {
+                      pp('🔷🔷🔷Photo has been tapped: ${photo.created!}');
+                      selectedPhoto = photo;
+                      setState(() {
+                        _showPhotoDetail = true;
+                      });
+                      _animationController.forward();
+                    },
+                  ),
+                  ProjectVideosTablet(
+                    project: widget.project,
+                    refresh: false,
+                    onVideoTapped: (Video video, int index) {
+                      pp('🍎🍎🍎Video has been tapped: ${video.created!}');
+                      setState(() {
+                        selectedVideo = video;
+                        videoIndex = index;
+                      });
+                      _navigateToPlayVideo();
+                    },
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: ProjectAudiosTablet(
+                      project: widget.project,
+                      refresh: false,
+                      onAudioTapped: (Audio audio) {
+                        pp('🍎🍎🍎Audio has been tapped: ${audio.created!}');
+                        setState(() {
+                          selectedAudio = audio;
+                        });
+                        _navigateToPlayAudio();
+                      },
+                    ),
+                  ),
+                ],
+              ),
+              _showPhotoDetail
+                  ? Positioned(
                   left: 28,
                   top: 48,
                   child: SizedBox(
@@ -426,51 +442,81 @@ class ProjectMediaListTabletState extends State<ProjectMediaListTablet>
                       ),
                     ),
                   ))
-              : const SizedBox(),
-          _showPhotoHandler
-              ? Positioned(
-                  left: 2,
-                  top: 2,
-                  child: SizedBox(
-                    width: 420,
-                    height: 640,
-                    // color: Theme.of(context).primaryColor,
-                    child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: GestureDetector(
-                        onTap: () {
-                          setState(() {
-                            _showPhotoHandler = false;
-                          });
-                        },
-                        child: PhotoHandler(project: widget.project),
-                      ),
-                    ),
-                  ))
-              : const SizedBox(),
-          _showVideoHandler
-              ? Positioned(
-                  left: 300,
-                  right: 300,
-                  top: 12,
-                  child: VideoHandler(
-                    project: widget.project,
-                  ),
-                )
-              : const SizedBox(),
-          _showAudioHandler
-              ? Positioned(
-                  left: 100,
-                  right: 100,
-                  top: 12,
-                  child: AudioHandlerMobile(
-                    project: widget.project,
-                  ),
-                )
-              : const SizedBox(),
-        ],
-      ),
-    ));
+                  : const SizedBox(),
+              _showPhotoHandler
+                  ? OrientationLayoutBuilder(
+                  landscape: (ctx){
+                    return Positioned(
+                        left: 320, right: 320,
+                        top: -8,
+                        child: SizedBox(
+                          width: 420,
+                          height: 640,
+                          // color: Theme.of(context).primaryColor,
+                          child: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: GestureDetector(
+                              onTap: () {
+                                setState(() {
+                                  _showPhotoHandler = false;
+                                });
+                              },
+                              child: PhotoHandler(project: widget.project),
+                            ),
+                          ),
+                        ));
+                  },
+                  portrait: (ctx){
+                    return Positioned(
+                        left: 200, right: 200,
+                        top: 0,
+                        child: SizedBox(
+                          width: 420,
+                          height: 640,
+                          // color: Theme.of(context).primaryColor,
+                          child: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: GestureDetector(
+                              onTap: () {
+                                setState(() {
+                                  _showPhotoHandler = false;
+                                });
+                              },
+                              child: Card(
+                                  shape: getRoundedBorder(radius: 16),
+                                  elevation: 8,
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(16.0),
+                                    child: PhotoHandler(project: widget.project),
+                                  )),
+                            ),
+                          ),
+                        ));
+                  })
+                  : const SizedBox(),
+              _showVideoHandler
+                  ? Positioned(
+                left: 300,
+                right: 300,
+                top: 12,
+                child: VideoHandler(
+                  project: widget.project,
+                ),
+              )
+                  : const SizedBox(),
+              _showAudioHandler
+                  ? Positioned(
+                left: 100,
+                right: 100,
+                top: 12,
+                child: AudioHandlerMobile(
+                  project: widget.project,
+                ),
+              )
+                  : const SizedBox(),
+            ],
+          ),
+        ));
   }
 
   onPhotoMapRequested(Photo p1) {}

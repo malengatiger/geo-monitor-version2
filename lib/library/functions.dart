@@ -22,6 +22,7 @@ List<String> logs = [];
 bool busy = false;
 List<Color> _colors = [];
 Random _rand = Random(DateTime.now().millisecondsSinceEpoch);
+
 Color getRandomColor() {
   _colors.clear();
   _colors.add(Colors.deepOrange);
@@ -309,6 +310,7 @@ class Styles {
     fontSize: reallyLarge,
     color: Colors.yellow,
   );
+
   /////
   static TextStyle blackBoldSmall = const TextStyle(
     fontWeight: FontWeight.bold,
@@ -407,6 +409,7 @@ class Styles {
     fontSize: reallyLarge,
     color: Colors.pink,
   );
+
   /////////
   static TextStyle purpleBoldSmall = const TextStyle(
     fontWeight: FontWeight.bold,
@@ -453,6 +456,7 @@ class Styles {
     fontSize: reallyLarge,
     color: Colors.purple,
   );
+
   ///////
   static TextStyle blueBoldSmall = const TextStyle(
     fontWeight: FontWeight.bold,
@@ -499,6 +503,7 @@ class Styles {
     fontSize: reallyLarge,
     color: Colors.blue,
   );
+
   ////
   static TextStyle brownBoldSmall = const TextStyle(
     fontWeight: FontWeight.bold,
@@ -535,6 +540,7 @@ class Styles {
     fontSize: reallyLarge,
     color: Colors.brown,
   );
+
   ///////
   static TextStyle whiteBoldSmall = const TextStyle(
     fontWeight: FontWeight.bold,
@@ -581,6 +587,7 @@ class Styles {
     fontSize: reallyLarge,
     color: Colors.white,
   );
+
   /////
   static TextStyle tealBoldSmall = const TextStyle(
     fontWeight: FontWeight.bold,
@@ -702,6 +709,11 @@ Future<File> getVideoThumbnail(File file) async {
     var m = await getImageFileFromAssets('assets/intro/small.jpg');
     return m;
   }
+}
+
+String getDeviceType() {
+  final data = MediaQueryData.fromWindow(WidgetsBinding.instance.window);
+  return data.size.shortestSide < 600 ? 'phone' : 'tablet';
 }
 
 pp(dynamic msg) {

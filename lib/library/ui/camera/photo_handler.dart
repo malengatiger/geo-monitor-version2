@@ -8,6 +8,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:native_device_orientation/native_device_orientation.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:responsive_builder/responsive_builder.dart';
 import 'package:uuid/uuid.dart';
 
 import '../../../device_location/device_location_bloc.dart';
@@ -298,48 +299,101 @@ class PhotoHandlerState extends State<PhotoHandler>
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
+    return ScreenTypeLayout(
+      mobile: SafeArea(
         child: Scaffold(
-      appBar: AppBar(
-        leading: IconButton(
-            onPressed: () {
-              Navigator.of(context).pop();
-            },
-            icon: const Icon(Icons.arrow_back_ios)),
-        title: Text(
-          '${widget.project.name}',
-          style: myTextStyleSmall(context),
+          appBar: AppBar(
+            leading: IconButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                icon: const Icon(Icons.arrow_back_ios)),
+            title: Text(
+              '${widget.project.name}',
+              style: myTextStyleSmall(context),
+            ),
+            actions: [
+              IconButton(
+                  onPressed: _navigateToList,
+                  icon: Icon(
+                    Icons.list,
+                    color: Theme.of(context).primaryColor,
+                  )),
+            ],
+          ),
+          body: Stack(
+            children: [
+              finalFile == null
+                  ? Container(
+                      width: double.infinity,
+                      height: double.infinity,
+                      decoration: const BoxDecoration(
+                        image: DecorationImage(
+                            image: AssetImage('assets/intro/pic2.jpg'),
+                            opacity: 0.1,
+                            fit: BoxFit.cover),
+                      ),
+                    )
+                  : Container(
+                      width: double.infinity,
+                      height: double.infinity,
+                      decoration: BoxDecoration(
+                        image: DecorationImage(
+                            image: FileImage(finalFile!), fit: BoxFit.cover),
+                      ),
+                    ),
+              Positioned(
+                left: 12,
+                right: 12,
+                bottom: 20,
+                child: SizedBox(
+                  width: 240,
+                  height: 80,
+                  child: Card(
+                    elevation: 4,
+                    color: Colors.black38,
+                    shape: getRoundedBorder(radius: 16),
+                    child: Column(
+                      children: [
+                        const SizedBox(
+                          height: 8,
+                        ),
+                        TextButton(
+                            onPressed: _startNextPhoto,
+                            child: const Padding(
+                              padding: EdgeInsets.all(12.0),
+                              child: Text('Take Picture'),
+                            )),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
-        actions: [
-          IconButton(
-              onPressed: _navigateToList,
-              icon: Icon(
-                Icons.list,
-                color: Theme.of(context).primaryColor,
-              )),
-        ],
       ),
-      body: Stack(
+      tablet: Stack(
         children: [
           finalFile == null
               ? Container(
-                  width: double.infinity,
-                  height: double.infinity,
-                  decoration: const BoxDecoration(
-                    image: DecorationImage(
-                        image: AssetImage('assets/intro/pic2.jpg'),
-                        opacity: 0.1,
-                        fit: BoxFit.cover),
-                  ),
-                )
+            width: double.infinity,
+            height: double.infinity,
+            decoration: const BoxDecoration(
+              image: DecorationImage(
+                  image: AssetImage('assets/intro/pic2.jpg'),
+                  opacity: 0.1,
+                  fit: BoxFit.cover),
+            ),
+          )
               : Container(
-                  width: double.infinity,
-                  height: double.infinity,
-                  decoration: BoxDecoration(
-                    image: DecorationImage(
-                        image: FileImage(finalFile!), fit: BoxFit.cover),
-                  ),
-                ),
+            width: double.infinity,
+            height: double.infinity,
+            decoration: BoxDecoration(
+              image: DecorationImage(
+                  image: FileImage(finalFile!), fit: BoxFit.cover),
+            ),
+          ),
           Positioned(
             left: 12,
             right: 12,
@@ -369,7 +423,7 @@ class PhotoHandlerState extends State<PhotoHandler>
           ),
         ],
       ),
-    ));
+    );
   }
 
   @override
