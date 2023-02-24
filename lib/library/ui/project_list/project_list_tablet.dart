@@ -7,6 +7,7 @@ import 'package:focused_menu/modals.dart';
 import 'package:geo_monitor/library/data/audio.dart';
 import 'package:geo_monitor/library/data/photo.dart';
 import 'package:geo_monitor/library/data/video.dart';
+import 'package:geo_monitor/library/ui/maps/project_map_mobile.dart';
 import 'package:geo_monitor/library/ui/maps/project_map_tablet.dart';
 import 'package:geo_monitor/library/ui/media/list/project_media_main.dart';
 import 'package:geo_monitor/library/ui/project_list/project_list_card.dart';
@@ -35,7 +36,6 @@ import '../../snack.dart';
 import '../maps/org_map_mobile.dart';
 import '../maps/project_polygon_map_mobile.dart';
 import '../project_edit/project_edit_main.dart';
-import '../project_location/project_location_main.dart';
 import '../project_monitor/project_monitor_mobile.dart';
 import '../schedule/project_schedules_mobile.dart';
 
@@ -232,7 +232,7 @@ class ProjectListTabletState extends State<ProjectListTablet>
             type: PageTransitionType.scale,
             alignment: Alignment.topLeft,
             duration: const Duration(milliseconds: 1500),
-            child: ProjectLocationMain(p)));
+            child: ProjectMapMobile(project: p)));
   }
 
   void _navigateToMonitorStart(Project p) {
@@ -295,10 +295,6 @@ class ProjectListTabletState extends State<ProjectListTablet>
   void _navigateToProjectMap(Project p) async {
     pp('.................. _navigateToProjectMap: ');
 
-    var positions = await projectBloc.getProjectPositions(
-        projectId: p.projectId!, forceRefresh: false);
-    var polygons = await projectBloc.getProjectPolygons(
-        projectId: p.projectId!, forceRefresh: false);
     if (mounted) {
       Navigator.push(
           context,

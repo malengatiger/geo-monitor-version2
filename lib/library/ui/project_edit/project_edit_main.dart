@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:geo_monitor/library/ui/project_edit/project_edit_tablet_landscape.dart';
-import 'package:geo_monitor/library/ui/project_edit/project_edit_tablet_portrait.dart';
+import 'package:geo_monitor/library/ui/project_edit/project_editor_tablet.dart';
 import 'package:responsive_builder/responsive_builder.dart';
 
 import '../../data/project.dart';
@@ -17,10 +16,10 @@ class ProjectEditMain extends StatelessWidget {
       mobile: ProjectEditMobile(project),
       tablet: OrientationLayoutBuilder(
         portrait: (context) {
-          return ProjectEditTabletPortrait(project: project);
+          return ProjectEditorTablet(project: project);
         },
         landscape: (context) {
-          return ProjectEditTabletLandscape(project: project);
+          return ProjectEditorTablet(project: project);
         },
       ),
     );

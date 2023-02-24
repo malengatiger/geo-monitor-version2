@@ -14,7 +14,7 @@ import '../../data/project_position.dart';
 import '../../functions.dart';
 import '../camera/photo_handler.dart';
 import '../camera/video_handler.dart';
-import '../project_location/project_location_mobile.dart';
+import '../project_location/project_location_handler.dart';
 
 class ProjectMonitorMobile extends StatefulWidget {
   final Project project;
@@ -363,7 +363,7 @@ class ProjectMonitorMobileState extends State<ProjectMonitorMobile>
             type: PageTransitionType.scale,
             alignment: Alignment.topLeft,
             duration: const Duration(seconds: 1),
-            child: ProjectLocationMobile(widget.project)));
+            child: ProjectLocationHandler(widget.project)));
   }
 
   _onPositionSelected(Position p1) {

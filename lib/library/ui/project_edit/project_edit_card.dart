@@ -13,14 +13,12 @@ class ProjectEditCard extends StatefulWidget {
       {Key? key,
       required this.project,
       this.width,
-      required this.onCancel,
       required this.navigateToLocation})
       : super(key: key);
 
   final Project? project;
   final double? width;
   final Function(Project) navigateToLocation;
-  final Function() onCancel;
 
   @override
   ProjectEditCardState createState() => ProjectEditCardState();
@@ -133,19 +131,6 @@ class ProjectEditCardState extends State<ProjectEditCard>
                     const SizedBox(
                       height: 8,
                     ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: [
-                        IconButton(
-                            onPressed: () {
-                              widget.onCancel();
-                            },
-                            icon: Icon(
-                              Icons.close,
-                              color: Theme.of(context).primaryColor,
-                            )),
-                      ],
-                    ),
                     const SizedBox(
                       height: 16,
                     ),
@@ -251,7 +236,7 @@ class ProjectEditCardState extends State<ProjectEditCard>
                                           ),
                                           project == null
                                               ? const SizedBox()
-                                              : TextButton(
+                                              : ElevatedButton(
                                                   child: Text(
                                                     'Add Project Location',
                                                     style: myTextStyleMedium(
@@ -270,7 +255,7 @@ class ProjectEditCardState extends State<ProjectEditCard>
                               ),
                               SizedBox(
                                 width: 220,
-                                child: ElevatedButton(
+                                child: project == null? ElevatedButton(
                                   onPressed: _submit,
                                   child: Padding(
                                     padding: const EdgeInsets.all(12.0),
@@ -279,7 +264,7 @@ class ProjectEditCardState extends State<ProjectEditCard>
                                       style: myTextStyleMedium(context),
                                     ),
                                   ),
-                                ),
+                                ) : const SizedBox(),
                               ),
                             ],
                           ),

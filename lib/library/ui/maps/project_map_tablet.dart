@@ -53,10 +53,7 @@ class ProjectMapTabletState extends State<ProjectMapTablet>
   bool _showNewPositionUI = false;
   bool busy = false;
   User? user;
-  static const CameraPosition _kGooglePlex = CameraPosition(
-    target: LatLng(-25.85656, 27.7857),
-    zoom: 14.4746,
-  );
+  CameraPosition? _kGooglePlex;
   final Set<Polygon> _polygons = HashSet<Polygon>();
   final Set<Circle> circles = HashSet<Circle>();
   var projectPolygons = <ProjectPolygon>[];
@@ -64,7 +61,7 @@ class ProjectMapTabletState extends State<ProjectMapTablet>
   late StreamSubscription<ProjectPosition> _positionStreamSubscription;
   late StreamSubscription<ProjectPolygon> _polygonStreamSubscription;
   GoogleMapController? googleMapController;
-  double _latitude = 0.0, _longitude = 0.0;
+  double _longPressLat = 0.0, _longPressLng = 0.0;
   String? address;
 
   @override
@@ -149,8 +146,17 @@ class ProjectMapTabletState extends State<ProjectMapTablet>
     );
   }
 
+  double? currentLat, currentLng;
+
   void _getUser() async {
     user = await prefsOGx.getUser();
+    var loc = await locationBloc.getLocation();
+    currentLat = loc?.latitude;
+    currentLng = loc?.longitude;
+    _kGooglePlex =
+        CameraPosition(target: LatLng(currentLat!, currentLng!), zoom: 12.6);
+
+    setState(() {});
   }
 
   Future _refreshData(bool forceRefresh) async {
@@ -257,14 +263,17 @@ class ProjectMapTabletState extends State<ProjectMapTablet>
   }
 
   void _onLongPress(LatLng argument) {
-    pp('$mm Map detected a long press! at $argument');
+    pp('\n$mm Map detected a long press! at $argument');
     if (user!.userType == UserType.fieldMonitor) {
       pp('$mm Field Monitor not allowed to create new project position; 🔶 quitting!');
       return;
     }
+    _longPressLat = argument.latitude;
+    _longPressLng = argument.longitude;
+
+    pp('\n$mm ... before setting state; _longPressLat: $_longPressLat _longPressLng: $_longPressLng');
+
     setState(() {
-      _latitude = argument.latitude;
-      _longitude = argument.longitude;
       _showNewPositionUI = true;
     });
     _animationController.forward();
@@ -311,7 +320,7 @@ class ProjectMapTabletState extends State<ProjectMapTablet>
     });
     try {
       var isWithinRange = await _isLocationWithinProjectMonitorDistance(
-          latitude: _latitude, longitude: _longitude);
+          latitude: _longPressLat, longitude: _longPressLng);
       if (isWithinRange) {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(SnackBar(
@@ -334,9 +343,9 @@ class ProjectMapTabletState extends State<ProjectMapTablet>
         });
         return;
       }
-      pp('Go and find nearest cities to this location : lat: $_latitude lng: $_longitude ...');
+      pp('Go and find nearest cities to this location : lat: $_longPressLat lng: $_longPressLng ...');
       List<City> cities = await DataAPI.findCitiesByLocation(
-          latitude: _latitude, longitude: _longitude, radiusInKM: 5.0);
+          latitude: _longPressLat, longitude: _longPressLng, radiusInKM: 5.0);
 
       pp('$mm Cities around this project position: ${cities.length}');
 
@@ -348,7 +357,7 @@ class ProjectMapTabletState extends State<ProjectMapTablet>
           projectPositionId: const Uuid().v4(),
           created: DateTime.now().toUtc().toIso8601String(),
           position: local.Position(
-              coordinates: [_longitude, _latitude], type: 'Point'),
+              coordinates: [_longPressLng, _longPressLat], type: 'Point'),
           nearestCities: cities,
           organizationId: widget.project.organizationId,
           projectId: widget.project.projectId);
@@ -381,7 +390,7 @@ class ProjectMapTabletState extends State<ProjectMapTablet>
         key: _key,
         appBar: AppBar(
           title: Text(
-            'Project Locations & Areas',
+            'Project Locations & Areasxx',
             style: myTextStyleLarge(context),
           ),
           actions: [
@@ -466,30 +475,44 @@ class ProjectMapTabletState extends State<ProjectMapTablet>
                 badgeContent:
                     Text('${projectPositions.length + projectPolygons.length}'),
                 position: bd.BadgePosition.topEnd(top: 8, end: 8),
-                child: GoogleMap(
-                  mapType: MapType.hybrid,
-                  mapToolbarEnabled: true,
-                  initialCameraPosition: _kGooglePlex,
-                  onMapCreated: (GoogleMapController controller) async {
-                    pp('\n\\$mm 🍎🍎🍎........... GoogleMap onMapCreated ... ready to rumble!\n\n');
-                    _mapController.complete(controller);
-                    googleMapController = controller;
-                    await _refreshData(false);
-                    _addMarkers();
-                    _buildProjectPolygons();
-                    _buildCircles();
-                    _animateCamera(latitude: 0.0, longitude: 0.0, zoom: 2.0);
-                    setState(() {});
-                  },
-                  // myLocationEnabled: true,
-                  markers: Set<Marker>.of(markers.values),
-                  compassEnabled: true,
-                  buildingsEnabled: true,
-                  zoomControlsEnabled: true,
-                  onLongPress: _onLongPress,
-                  polygons: _polygons,
-                  circles: circles,
-                ),
+                child: _kGooglePlex == null
+                    ? const Center(
+                        child: SizedBox(
+                          width: 20,
+                          height: 20,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 4,
+                            backgroundColor: Colors.pink,
+                          ),
+                        ),
+                      )
+                    : GoogleMap(
+                        mapType: MapType.hybrid,
+                        mapToolbarEnabled: true,
+                        initialCameraPosition: _kGooglePlex!,
+                        onMapCreated: (GoogleMapController controller) async {
+                          pp('\n\\$mm 🍎🍎🍎........... GoogleMap onMapCreated ... ready to rumble!\n\n');
+                          _mapController.complete(controller);
+                          googleMapController = controller;
+                          await _refreshData(false);
+                          _addMarkers();
+                          _buildProjectPolygons();
+                          _buildCircles();
+                          _animateCamera(
+                              latitude: currentLat!,
+                              longitude: currentLng!,
+                              zoom: 12.6);
+                          setState(() {});
+                        },
+                        // myLocationEnabled: true,
+                        markers: Set<Marker>.of(markers.values),
+                        compassEnabled: true,
+                        buildingsEnabled: true,
+                        zoomControlsEnabled: true,
+                        onLongPress: _onLongPress,
+                        polygons: _polygons,
+                        circles: circles,
+                      ),
               ),
             ),
             widget.photo != null
@@ -595,7 +618,7 @@ class ProjectMapTabletState extends State<ProjectMapTablet>
                                       const SizedBox(
                                         width: 8,
                                       ),
-                                      Text(_latitude.toStringAsFixed(5),
+                                      Text(_longPressLat.toStringAsFixed(5),
                                           style: myNumberStyleSmall(context)),
                                     ],
                                   ),
@@ -617,7 +640,7 @@ class ProjectMapTabletState extends State<ProjectMapTablet>
                                         width: 8,
                                       ),
                                       Text(
-                                        _longitude.toStringAsFixed(5),
+                                        _longPressLng.toStringAsFixed(5),
                                         style: myNumberStyleSmall(context),
                                       ),
                                     ],
@@ -626,18 +649,18 @@ class ProjectMapTabletState extends State<ProjectMapTablet>
                                 const SizedBox(
                                   height: 12,
                                 ),
-                                TextFormField(
-                                  controller: _nameController,
-                                  keyboardType: TextInputType.name,
-                                  decoration: const InputDecoration(
-                                    label: Text('Name of Location'),
-                                    hintText:
-                                        'Optional, enter name of location',
-                                  ),
-                                ),
-                                const SizedBox(
-                                  height: 12,
-                                ),
+                                // TextFormField(
+                                //   controller: _nameController,
+                                //   keyboardType: TextInputType.name,
+                                //   decoration: const InputDecoration(
+                                //     label: Text('Name of Location'),
+                                //     hintText:
+                                //         'Optional, enter name of location',
+                                //   ),
+                                // ),
+                                // const SizedBox(
+                                //   height: 12,
+                                // ),
                                 address == null
                                     ? const SizedBox()
                                     : Text('$address'),

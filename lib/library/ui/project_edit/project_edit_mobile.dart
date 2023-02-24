@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:geo_monitor/library/ui/maps/project_map_mobile.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:uuid/uuid.dart';
@@ -9,7 +10,6 @@ import '../../bloc/organization_bloc.dart';
 import '../../data/project.dart';
 import '../../data/user.dart';
 import '../../functions.dart';
-import '../project_location/project_location_main.dart';
 
 class ProjectEditMobile extends StatefulWidget {
   final Project? project;
@@ -119,7 +119,7 @@ class ProjectEditMobileState extends State<ProjectEditMobile>
             type: PageTransitionType.scale,
             alignment: Alignment.bottomRight,
             duration: const Duration(seconds: 1),
-            child: ProjectLocationMain(mProject)));
+            child: ProjectMapMobile(project: mProject)));
     if (mounted) {
       Navigator.pop(context);
     }

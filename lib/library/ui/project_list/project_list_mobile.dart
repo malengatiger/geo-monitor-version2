@@ -4,6 +4,7 @@ import 'package:animations/animations.dart';
 import 'package:badges/badges.dart' as bd;
 import 'package:flutter/material.dart';
 import 'package:focused_menu/modals.dart';
+import 'package:geo_monitor/library/ui/maps/project_map_mobile.dart';
 import 'package:geo_monitor/library/ui/project_list/project_list_card.dart';
 import 'package:geo_monitor/ui/audio/audio_handler_mobile.dart';
 import 'package:geo_monitor/ui/dashboard/project_dashboard_mobile.dart';
@@ -29,7 +30,6 @@ import '../maps/project_map_main.dart';
 import '../maps/project_polygon_map_mobile.dart';
 import '../media/list/project_media_main.dart';
 import '../project_edit/project_edit_main.dart';
-import '../project_location/project_location_main.dart';
 import '../project_monitor/project_monitor_main.dart';
 import '../project_monitor/project_monitor_mobile.dart';
 import '../schedule/project_schedules_mobile.dart';
@@ -225,7 +225,7 @@ class ProjectListMobileState extends State<ProjectListMobile>
             type: PageTransitionType.scale,
             alignment: Alignment.topLeft,
             duration: const Duration(milliseconds: 1500),
-            child: ProjectLocationMain(p)));
+            child: ProjectMapMobile(project: p,)));
   }
 
   void _navigateToMonitorStart(Project p) {

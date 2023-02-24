@@ -1157,3 +1157,47 @@ bool _isWithinPolygon(
 
   return contains;
 }
+
+const chatGPT2 = 'Geo is a powerful tool to monitor the construction and maintenance of '
+    'infrastructure and facilities, especially in areas where youth unemployment is high '
+    'and corruption is a problem. With Geo, they can track progress and quality in real-time, '
+    'ensure that projects are being completed on time and within budget, and '
+    'identify and address potential issues before they become major problems. '
+    'By leveraging Geo\'s multimedia monitoring capabilities, the agency can also '
+    'improve transparency and accountability, which can help combat corruption and '
+    'build trust with the community. Ultimately, Geo can help the agency maximize the impact '
+    'of its investments in infrastructure and other facilities, '
+    'while also creating opportunities for unemployed youth to participate in monitoring '
+    'and contributing to the development of their communities.';
+
+const chatGPTYouth = 'Given the prevalence of smartphones and digital media use among young people, '
+    'Geo could be a valuable tool for engaging and employing youth in community development projects. '
+    'Field worker positions could be specifically targeted towards youth who are comfortable '
+    'using smartphones and digital media, and who may have been previously unemployed'
+    'Furthermore, involvement with Geo could provide youth with valuable job skills '
+    'and work experience, which could increase their employability in the future. '
+    'In addition, by engaging with youth and involving them in community development projects, '
+    'Geo could help to foster a sense of pride and ownership in their communities, '
+    'which could lead to increased engagement and participation in the future.';
+
+const chatGPTGov = 'Government agencies and officials can benefit from Geo in several ways. '
+    'First, Geo can help in the efficient and effective management of infrastructure projects '
+    'by providing real-time multimedia monitoring and reporting, which can help identify and '
+    'address any issues that may arise during the project. Second, Geo can help to combat corruption '
+    'by providing an objective and verifiable record of project progress and expenses, '
+    'which can help to prevent or detect fraudulent activities. '
+    'Third, Geo can provide valuable insights into the needs and priorities of communities, '
+    'which can help government agencies to better target their resources and efforts to where '
+    'they are needed most. Finally, by engaging and '
+    'empowering young people in the process of monitoring and reporting on infrastructure projects, Geo can help to build a sense of ownership and responsibility among youth, while also providing them with valuable skills and experience that can help to improve their employment prospects.';
+
+const chatGPTCommunity = 'Community groups can get involved with Geo by using the platform to '
+    'monitor and manage their community-based projects, such as community clean-up campaigns, '
+    'volunteer initiatives, or fundraising events. The platform can also be used to track the '
+    'progress of these projects and ensure that resources are being allocated effectively. '
+    'Additionally, community groups can use Geo to report incidents or issues in their community, '
+    'such as crime or environmental hazards, and track the response of relevant authorities. '
+    'This can help to improve community safety and promote greater collaboration between community members '
+    'and local government agencies. Finally, community groups can also use Geo to coordinate volunteer '
+    'efforts during emergencies, '
+    'such as natural disasters, and ensure that resources are being distributed to those in need.';

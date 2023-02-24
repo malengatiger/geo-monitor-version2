@@ -53,16 +53,16 @@ class ProjectMapMobileState extends State<ProjectMapMobile>
   bool _showNewPositionUI = false;
   bool busy = false;
   User? user;
-  static const CameraPosition _kGooglePlex = CameraPosition(
-    target: LatLng(-25.85656, 27.7857),
-    zoom: 14.4746,
-  );
+  CameraPosition? _kGooglePlex;
+
   final Set<Polygon> _polygons = HashSet<Polygon>();
   final Set<Circle> circles = HashSet<Circle>();
   var projectPolygons = <ProjectPolygon>[];
   var projectPositions = <ProjectPosition>[];
   late StreamSubscription<ProjectPosition> _positionStreamSubscription;
   late StreamSubscription<ProjectPolygon> _polygonStreamSubscription;
+  double _latitude = 0.0, _longitude = 0.0;
+  double? currentLat, currentLng;
 
   @override
   void initState() {
@@ -148,6 +148,13 @@ class ProjectMapMobileState extends State<ProjectMapMobile>
 
   void _getUser() async {
     user = await prefsOGx.getUser();
+    var loc = await locationBloc.getLocation();
+    currentLat = loc?.latitude;
+    currentLng = loc?.longitude;
+    _kGooglePlex =
+        CameraPosition(target: LatLng(currentLat!, currentLng!), zoom: 12.6);
+
+    setState(() {});
   }
 
   Future _getData(bool forceRefresh) async {
@@ -181,7 +188,6 @@ class ProjectMapMobileState extends State<ProjectMapMobile>
   }
 
   GoogleMapController? googleMapController;
-  double _latitude = 0.0, _longitude = 0.0;
 
   Future<void> _addMarkers() async {
     pp('$mm _addMarkers: ....... 🍎 ${projectPositions.length}');
@@ -380,9 +386,10 @@ class ProjectMapMobileState extends State<ProjectMapMobile>
       child: Scaffold(
         key: _key,
         appBar: AppBar(
+          centerTitle: true,
           title: Text(
             'Project Locations & Areas',
-            style: myTextStyleSmall(context),
+            style: myTextStyleLarge(context),
           ),
           actions: [
             IconButton(
@@ -466,30 +473,43 @@ class ProjectMapMobileState extends State<ProjectMapMobile>
                 badgeContent:
                     Text('${projectPositions.length + projectPolygons.length}'),
                 position: bd.BadgePosition.topEnd(top: 8, end: 8),
-                child: GoogleMap(
-                  mapType: MapType.hybrid,
-                  mapToolbarEnabled: true,
-                  initialCameraPosition: _kGooglePlex,
-                  onMapCreated: (GoogleMapController controller) async {
-                    pp('\n\\$mm 🍎🍎🍎........... GoogleMap onMapCreated ... ready to rumble!\n\n');
-                    _mapController.complete(controller);
-                    googleMapController = controller;
-                    await _getData(false);
-                    _addMarkers();
-                    _buildProjectPolygons();
-                    _buildCircles();
-                    _animateCamera(latitude: 0.0, longitude: 0.0, zoom: 2.0);
-                    setState(() {});
-                  },
-                  // myLocationEnabled: true,
-                  markers: Set<Marker>.of(markers.values),
-                  compassEnabled: true,
-                  buildingsEnabled: true,
-                  zoomControlsEnabled: true,
-                  onLongPress: _onLongPress,
-                  polygons: _polygons,
-                  circles: circles,
-                ),
+                child: _kGooglePlex == null
+                    ? const Center(
+                        child: SizedBox(
+                          width: 20,
+                          height: 20,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 4,
+                            backgroundColor: Colors.pink,
+                          ),
+                        ),
+                      )
+                    : GoogleMap(
+                        mapType: MapType.hybrid,
+                        mapToolbarEnabled: true,
+                        initialCameraPosition: _kGooglePlex!,
+                        onMapCreated: (GoogleMapController controller) async {
+                          pp('\n\\$mm 🍎🍎🍎........... GoogleMap onMapCreated ... ready to rumble!\n\n');
+                          _mapController.complete(controller);
+                          googleMapController = controller;
+                          await _getData(false);
+                          _addMarkers();
+                          _buildProjectPolygons();
+                          _buildCircles();
+                          _animateCamera(
+                              latitude: currentLat!,
+                              longitude: currentLng!, zoom: 12.6);
+                          setState(() {});
+                        },
+                        // myLocationEnabled: true,
+                        markers: Set<Marker>.of(markers.values),
+                        compassEnabled: true,
+                        buildingsEnabled: true,
+                        zoomControlsEnabled: true,
+                        onLongPress: _onLongPress,
+                        polygons: _polygons,
+                        circles: circles,
+                      ),
               ),
             ),
             widget.photo != null
