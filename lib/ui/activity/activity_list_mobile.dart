@@ -53,10 +53,10 @@ class ActivityListMobile extends StatefulWidget {
   final Project? project;
 
   @override
-  State<ActivityListMobile> createState() => _ActivityListMobileState();
+  State<ActivityListMobile> createState() => ActivityListMobileState();
 }
 
-class _ActivityListMobileState extends State<ActivityListMobile>
+class ActivityListMobileState extends State<ActivityListMobile>
     with SingleTickerProviderStateMixin {
   final ScrollController listScrollController = ScrollController();
   SettingsModel? settings;
@@ -232,23 +232,37 @@ class _ActivityListMobileState extends State<ActivityListMobile>
       );
     }
     if (models.isEmpty) {
-      return Center(
-        child: InkWell(
-          onTap: () {
-            _getData(true);
-          },
-          child: Card(
-            child: Padding(
-              padding: const EdgeInsets.all(20.0),
-              child: Text(
-                'No activities happening yet',
-                style: myTextStyleMediumPrimaryColor(context),
+      return Scaffold(
+        appBar: AppBar(
+          centerTitle: true,
+          title: const Text('Activity Stream'),
+        ),
+        body: Center(
+          child: InkWell(
+            onTap: () {
+              _getData(true);
+            },
+            child: GestureDetector(
+              onTap: (){
+                _getData(true);
+              },
+              child: Card(
+                shape: getRoundedBorder(radius: 16),
+                elevation: 4,
+                child: Padding(
+                  padding: const EdgeInsets.all(20.0),
+                  child: Text(
+                    'No activities happening yet\n\nTap to Refresh',
+                    style: myTextStyleMediumPrimaryColor(context),
+                  ),
+                ),
               ),
             ),
           ),
         ),
       );
     }
+
     return SafeArea(
         child: Scaffold(
       appBar: AppBar(

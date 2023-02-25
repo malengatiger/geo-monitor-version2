@@ -3,13 +3,17 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:geo_monitor/library/api/prefs_og.dart';
 import 'package:geo_monitor/library/bloc/organization_bloc.dart';
-import 'package:geo_monitor/library/ui/settings/settings_form.dart';
+import 'package:geo_monitor/library/data/photo.dart';
+import 'package:geo_monitor/library/data/video.dart';
 import 'package:geo_monitor/library/users/list/user_list_card.dart';
+import 'package:geo_monitor/ui/activity/geo_activity_tablet.dart';
 import 'package:page_transition/page_transition.dart';
+import 'package:responsive_builder/responsive_builder.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../bloc/fcm_bloc.dart';
 import '../../bloc/location_request_handler.dart';
+import '../../data/audio.dart';
 import '../../data/location_response.dart';
 import '../../data/user.dart';
 import '../../functions.dart';
@@ -22,19 +26,20 @@ import '../edit/user_edit_main.dart';
 import '../kill_user_page.dart';
 import '../report/user_rpt_mobile.dart';
 
-class UserListTabletLandscape extends StatefulWidget {
-  const UserListTabletLandscape({
+class UserListTablet extends StatefulWidget {
+  const UserListTablet({
     Key? key,
   }) : super(key: key);
 
   @override
-  State<UserListTabletLandscape> createState() =>
-      _UserListTabletLandscapeState();
+  State<UserListTablet> createState() =>
+      _UserListTabletState();
 }
 
-class _UserListTabletLandscapeState extends State<UserListTabletLandscape> {
+class _UserListTabletState extends State<UserListTablet> {
   var users = <User>[];
   User? user;
+
   @override
   void initState() {
     super.initState();
@@ -308,47 +313,113 @@ class _UserListTabletLandscapeState extends State<UserListTabletLandscape> {
               ))
         ],
       ),
-      body: Row(
-        children: [
-          user == null
-              ? const SizedBox()
-              : SizedBox(
-                  width: mWidth / 2,
-                  child: UserListCard(
-                    amInLandscape: true,
-                    avatarRadius: 32,
-                    users: users,
-                    deviceUser: user!,
-                    navigateToLocationRequest: (mUser) {
-                      _sendLocationRequest(mUser);
-                    },
-                    navigateToPhone: (mUser) {
-                      navigateToPhone(mUser);
-                    },
-                    navigateToMessaging: (user) {
-                      navigateToMessaging(user);
-                    },
-                    navigateToUserReport: (user) {
-                      navigateToUserReport(user);
-                    },
-                    navigateToUserEdit: (user) {
-                      navigateToUserEdit(user);
-                    },
-                    navigateToScheduler: (user) {
-                      navigateToScheduler(user);
-                    },
-                    navigateToKillPage: (user) {
-                      navigateToKillPage(user);
-                    },
-                    badgeTapped: () {
-                      _sort();
-                    },
-                  )),
-          GeoPlaceHolder(
-            width: mWidth / 2,
+      body: OrientationLayoutBuilder(
+          landscape: (ctx){
+            return Padding(
+              padding: const EdgeInsets.only(left: 48.0, right: 24.0, top: 24.0, bottom: 24),
+              child: Row(
+                children: [
+                  user == null
+                      ? const SizedBox()
+                      : SizedBox(
+                      width: (mWidth / 2) - 80,
+                      child: UserListCard(
+                        amInLandscape: true,
+                        avatarRadius: 20,
+                        users: users,
+                        deviceUser: user!,
+                        navigateToLocationRequest: (mUser) {
+                          _sendLocationRequest(mUser);
+                        },
+                        navigateToPhone: (mUser) {
+                          navigateToPhone(mUser);
+                        },
+                        navigateToMessaging: (user) {
+                          navigateToMessaging(user);
+                        },
+                        navigateToUserReport: (user) {
+                          navigateToUserReport(user);
+                        },
+                        navigateToUserEdit: (user) {
+                          navigateToUserEdit(user);
+                        },
+                        navigateToScheduler: (user) {
+                          navigateToScheduler(user);
+                        },
+                        navigateToKillPage: (user) {
+                          navigateToKillPage(user);
+                        },
+                        badgeTapped: () {
+                          _sort();
+                        },
+                      )),
+                  GeoActivity(
+                      width: mWidth / 2,
+                      thinMode: false,
+                      showPhoto: showPhoto,
+                      showVideo: showVideo,
+                      showAudio: showAudio,
+                      forceRefresh: false),
+                ],
+              ),
+            );
+          },
+          portrait: (ctx) {
+        return Padding(
+          padding: const EdgeInsets.only(left: 16, right: 16.0, top: 48, bottom: 48),
+          child: Row(
+            children: [
+              user == null
+                  ? const SizedBox()
+                  : SizedBox(
+                      width: mWidth / 2,
+                      child: UserListCard(
+                        amInLandscape: true,
+                        avatarRadius: 20,
+                        users: users,
+                        deviceUser: user!,
+                        navigateToLocationRequest: (mUser) {
+                          _sendLocationRequest(mUser);
+                        },
+                        navigateToPhone: (mUser) {
+                          navigateToPhone(mUser);
+                        },
+                        navigateToMessaging: (user) {
+                          navigateToMessaging(user);
+                        },
+                        navigateToUserReport: (user) {
+                          navigateToUserReport(user);
+                        },
+                        navigateToUserEdit: (user) {
+                          navigateToUserEdit(user);
+                        },
+                        navigateToScheduler: (user) {
+                          navigateToScheduler(user);
+                        },
+                        navigateToKillPage: (user) {
+                          navigateToKillPage(user);
+                        },
+                        badgeTapped: () {
+                          _sort();
+                        },
+                      )),
+              const SizedBox(width: 32,),
+              GeoActivity(
+                  width: (mWidth / 2) - 80,
+                  thinMode: false,
+                  showPhoto: showPhoto,
+                  showVideo: showVideo,
+                  showAudio: showAudio,
+                  forceRefresh: false),
+            ],
           ),
-        ],
-      ),
+        );
+      }),
     );
   }
+
+  showPhoto(Photo p1) {}
+
+  showVideo(Video p1) {}
+  showAudio(Audio p1) {}
 }

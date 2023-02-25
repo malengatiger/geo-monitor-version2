@@ -2,8 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:geo_monitor/library/ui/settings/settings_mobile.dart';
 import 'package:responsive_builder/responsive_builder.dart';
 
-import 'settings_tablet_landscape.dart';
-import 'settings_tablet_portrait.dart';
+import 'settings_tablet.dart';
 
 
 
@@ -17,10 +16,10 @@ class SettingsMain extends StatelessWidget {
       ),
       tablet: OrientationLayoutBuilder(
         portrait: (context) {
-          return const SettingsTabletPortrait();
+          return const SettingsTablet();
         },
         landscape: (context){
-          return const SettingsTabletLandscape();
+          return const SettingsTablet();
         },
       ),
     );;

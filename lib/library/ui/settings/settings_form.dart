@@ -30,7 +30,7 @@ class _SettingsFormState extends State<SettingsForm> {
   var distController = TextEditingController(text: '200');
   var videoController = TextEditingController(text: '5');
   var audioController = TextEditingController(text: '60');
-  var activityController = TextEditingController(text: '12');
+  var activityController = TextEditingController(text: '24');
 
   int photoSize = 0;
   int currentThemeIndex = 0;
@@ -202,8 +202,41 @@ class _SettingsFormState extends State<SettingsForm> {
               child: Column(
                 children: [
                   Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
+                      GestureDetector(
+                        onTap: () {
+                          currentThemeIndex++;
+                          if (currentThemeIndex >= themeBloc.getThemeCount()) {
+                            currentThemeIndex = 0;
+                          }
+                          themeBloc.changeToTheme(currentThemeIndex);
+                          if (settingsModel != null) {
+                            settingsModel!.themeIndex = currentThemeIndex;
+                          }
+                          setState(() {});
+                        },
+                        child: Card(
+                          elevation: 8,
+                          shape: getRoundedBorder(radius: 8),
+                          child: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: SizedBox(
+                              height: 32,
+                              width: 240,
+                              child: Container(
+                                color: Theme.of(context).primaryColor,
+                                child: Center(
+                                  child: Text(
+                                    'Tap Me for Colour Scheme',
+                                    style: myTextStyleSmall(context),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
                       busyWritingToDB
                           ? const SizedBox(
                               width: 16,
@@ -350,14 +383,14 @@ class _SettingsFormState extends State<SettingsForm> {
                     ),
                   ),
                   const SizedBox(
-                    height: 12,
+                    height: 24,
                   ),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
                       Text(
                         'Select size of photos',
-                        style: myTextStyleMedium(context),
+                        style: myTextStyleSmall(context),
                       ),
                     ],
                   ),
@@ -388,7 +421,7 @@ class _SettingsFormState extends State<SettingsForm> {
                     ],
                   ),
                   const SizedBox(
-                    height: 8,
+                    height: 24,
                   ),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.start,
@@ -411,42 +444,7 @@ class _SettingsFormState extends State<SettingsForm> {
                   const SizedBox(
                     height: 24,
                   ),
-                  GestureDetector(
-                    onTap: () {
-                      currentThemeIndex++;
-                      if (currentThemeIndex >= themeBloc.getThemeCount()) {
-                        currentThemeIndex = 0;
-                      }
-                      themeBloc.changeToTheme(currentThemeIndex);
-                      if (settingsModel != null) {
-                        settingsModel!.themeIndex = currentThemeIndex;
-                      }
-                      setState(() {});
-                    },
-                    child: Card(
-                      elevation: 8,
-                      shape: getRoundedBorder(radius: 8),
-                      child: Padding(
-                        padding: const EdgeInsets.all(16.0),
-                        child: SizedBox(
-                          height: 40,
-                          width: 300,
-                          child: Container(
-                            color: Theme.of(context).primaryColor,
-                            child: Center(
-                              child: Text(
-                                'Tap Me for Colour Scheme',
-                                style: myTextStyleSmall(context),
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(
-                    height: 12,
-                  ),
+
                   busyWritingToDB
                       ? const SizedBox(
                           height: 20,

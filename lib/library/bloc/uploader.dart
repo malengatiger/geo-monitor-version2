@@ -194,6 +194,9 @@ class Uploader {
           if (result == 0) {
             cnt++;
           }
+        } else {
+          pp('\n\n$mm  photo was taken outside project boundary, will be removed');
+          await cacheManager.removeUploadedPhoto(photo: photoForUpload);
         }
       }
     }
@@ -360,6 +363,9 @@ class Uploader {
         if (result == 0) {
           cnt++;
         }
+      } else {
+        pp('\n\n$mm  video was taken outside project boundary, will be removed');
+        await cacheManager.removeUploadedVideo(video: videoForUpload);
       }
       if (cnt > 0) {
         pp('\n\n$mm .................. 🍎🍎 videos uploaded: $cnt \n');

@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:geo_monitor/library/users/list/user_list_tablet_portrait.dart';
 import 'package:responsive_builder/responsive_builder.dart';
+
 import '../../data/user.dart';
 import 'user_list_mobile.dart';
-import 'user_list_tablet_landscape.dart';
+import 'user_list_tablet.dart';
 
 class UserListMain extends StatelessWidget {
   const UserListMain({Key? key, required this.user, required this.users}) : super(key: key);
@@ -15,10 +15,10 @@ class UserListMain extends StatelessWidget {
       mobile: const UserListMobile(),
       tablet: OrientationLayoutBuilder(
         portrait: (context) {
-          return const UserListTabletPortrait(amInLandscape: false,);
+          return const UserListTablet();
         },
         landscape: (context) {
-          return  const UserListTabletLandscape();
+          return  const UserListTablet();
         },
       ),
     );

@@ -644,9 +644,11 @@ class DashboardPortraitState extends State<DashboardPortrait>
                       : Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Text(
-                              deviceUser!.organizationName!,
-                              style: myTextStyleLarge(context),
+                            Flexible(
+                              child: Text(
+                                deviceUser!.organizationName!,
+                                style: myTextStyleLarge(context),
+                              ),
                             ),
                           ],
                         ),
