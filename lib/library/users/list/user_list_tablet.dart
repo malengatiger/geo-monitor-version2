@@ -301,6 +301,7 @@ class _UserListTabletState extends State<UserListTablet> {
     var mWidth = MediaQuery.of(context).size.width;
     return Scaffold(
       appBar: AppBar(
+        centerTitle: true,
         title: Text(
           'Organization Members',
           style: myTextStyleLarge(context),
