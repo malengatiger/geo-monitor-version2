@@ -5,6 +5,7 @@ import 'package:geo_monitor/library/api/prefs_og.dart';
 import 'package:geo_monitor/library/bloc/organization_bloc.dart';
 import 'package:geo_monitor/library/data/photo.dart';
 import 'package:geo_monitor/library/data/video.dart';
+import 'package:geo_monitor/library/users/edit/user_edit_tablet.dart';
 import 'package:geo_monitor/library/users/list/user_list_card.dart';
 import 'package:geo_monitor/ui/activity/geo_activity_tablet.dart';
 import 'package:page_transition/page_transition.dart';
@@ -22,7 +23,6 @@ import '../../ui/maps/location_response_map.dart';
 import '../../ui/maps_field_monitor/field_monitor_map_mobile.dart';
 import '../../ui/message/message_mobile.dart';
 import '../../ui/schedule/scheduler_mobile.dart';
-import '../edit/user_edit_main.dart';
 import '../kill_user_page.dart';
 import '../report/user_rpt_mobile.dart';
 
@@ -219,10 +219,13 @@ class _UserListTabletState extends State<UserListTablet> {
   }
 
   bool sortedByName = false;
+
   void navigateToUserEdit(User? user) async {
-    if (user!.userType == UserType.fieldMonitor) {
-      if (user.userId != user.userId!) {
-        return;
+    if (user != null) {
+      if (user!.userType == UserType.fieldMonitor) {
+        if (user.userId != user.userId!) {
+          return;
+        }
       }
     }
     Navigator.push(
@@ -231,7 +234,7 @@ class _UserListTabletState extends State<UserListTablet> {
             type: PageTransitionType.scale,
             alignment: Alignment.topLeft,
             duration: const Duration(seconds: 1),
-            child: UserEditMain(user)));
+            child: UserEditTablet(user: user)));
   }
 
   Future<void> navigateToKillPage(User user) async {
@@ -303,6 +306,14 @@ class _UserListTabletState extends State<UserListTablet> {
           style: myTextStyleLarge(context),
         ),
         actions: [
+          IconButton(
+              onPressed: () {
+                navigateToUserEdit(null);
+              },
+              icon: Icon(
+                Icons.add,
+                color: Theme.of(context).primaryColor,
+              )),
           IconButton(
               onPressed: () {
                 _getData(true);

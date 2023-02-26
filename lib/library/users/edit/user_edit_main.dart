@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:geo_monitor/library/users/edit/user_edit_tablet_landscape.dart';
-import 'package:geo_monitor/library/users/edit/user_edit_tablet_portrait.dart';
-
+import 'package:geo_monitor/library/users/edit/user_edit_tablet.dart';
 import 'package:responsive_builder/responsive_builder.dart';
 
 import '../../data/user.dart';
@@ -19,10 +17,10 @@ class UserEditMain extends StatelessWidget {
 
       tablet: OrientationLayoutBuilder(
         portrait: (context) {
-          return UserEditTabletPortrait(user: user, externalPadding: 72, internalPadding: 48,);
+          return UserEditTablet(user: user);
         },
         landscape: (context) {
-          return  UserEditTabletLandscape(user: user,);
+          return  UserEditTablet(user: user,);
         },
       ),
     );
