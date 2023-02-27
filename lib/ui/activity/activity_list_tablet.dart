@@ -108,10 +108,13 @@ class _ActivityListTabletState extends State<ActivityListTablet>
       }
       pp('$mm ... get Activity (n hours) ... : $hours');
       if (widget.project != null) {
+        pp('$mm ... widget.project != null, should get project data');
         _getProjectData(forceRefresh, hours);
       } else if (widget.user != null) {
+        pp('$mm ... widget.user != null, should get user data');
         _getUserData(forceRefresh, hours);
       } else {
+        pp('$mm ... widget.project and widget.user == null, should get organization data');
         _getOrganizationActivity(forceRefresh, hours);
       }
       _sortDescending();

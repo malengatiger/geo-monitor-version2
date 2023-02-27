@@ -30,7 +30,7 @@ import '../../library/data/video.dart';
 import '../../library/functions.dart';
 import '../../library/ui/camera/video_player_tablet.dart';
 import '../../library/ui/maps/photo_map_tablet.dart';
-import '../activity/geo_activity_tablet.dart';
+import '../activity/geo_activity.dart';
 import '../audio/audio_player_page.dart';
 
 class ProjectDashboardTablet extends StatefulWidget {

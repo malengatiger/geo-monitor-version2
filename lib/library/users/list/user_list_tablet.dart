@@ -7,7 +7,8 @@ import 'package:geo_monitor/library/data/photo.dart';
 import 'package:geo_monitor/library/data/video.dart';
 import 'package:geo_monitor/library/users/edit/user_edit_tablet.dart';
 import 'package:geo_monitor/library/users/list/user_list_card.dart';
-import 'package:geo_monitor/ui/activity/geo_activity_tablet.dart';
+import 'package:geo_monitor/ui/activity/geo_activity.dart';
+import 'package:geo_monitor/ui/dashboard/user_dashboard.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:responsive_builder/responsive_builder.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -24,7 +25,6 @@ import '../../ui/maps_field_monitor/field_monitor_map_mobile.dart';
 import '../../ui/message/message_mobile.dart';
 import '../../ui/schedule/scheduler_mobile.dart';
 import '../kill_user_page.dart';
-import '../report/user_rpt_mobile.dart';
 
 class UserListTablet extends StatefulWidget {
   const UserListTablet({
@@ -171,7 +171,7 @@ class _UserListTabletState extends State<UserListTablet> {
             type: PageTransitionType.scale,
             alignment: Alignment.topLeft,
             duration: const Duration(seconds: 1),
-            child: UserReportMobile(user)));
+            child: UserDashboard(user: user)));
   }
 
   void navigateToMessaging(User user) {
@@ -349,7 +349,7 @@ class _UserListTabletState extends State<UserListTablet> {
                         navigateToMessaging: (user) {
                           navigateToMessaging(user);
                         },
-                        navigateToUserReport: (user) {
+                        navigateToUserDashboard: (user) {
                           navigateToUserReport(user);
                         },
                         navigateToUserEdit: (user) {
@@ -399,7 +399,7 @@ class _UserListTabletState extends State<UserListTablet> {
                         navigateToMessaging: (user) {
                           navigateToMessaging(user);
                         },
-                        navigateToUserReport: (user) {
+                        navigateToUserDashboard: (user) {
                           navigateToUserReport(user);
                         },
                         navigateToUserEdit: (user) {

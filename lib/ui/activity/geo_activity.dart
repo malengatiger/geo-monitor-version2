@@ -168,6 +168,7 @@ class GeoActivityState extends State<GeoActivity>
               landscape: (context) {
                 return ActivityListTablet(
                   width: widget.width,
+                  user: widget.user,
                   thinMode: widget.thinMode,
                   project: widget.project,
                   onPhotoTapped: (photo) {

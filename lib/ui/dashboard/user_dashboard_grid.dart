@@ -18,7 +18,7 @@ class UserDashboardGrid extends StatelessWidget {
       this.elementPadding,
       this.leftPadding,
       required this.gridPadding,
-      required this.crossAxisCount});
+      required this.crossAxisCount, required this.width});
 
   final Function(int) onTypeTapped;
   final double? totalHeight;
@@ -28,6 +28,7 @@ class UserDashboardGrid extends StatelessWidget {
   final double? topPadding, elementPadding;
   final double? leftPadding;
   final double gridPadding;
+  final double width;
   final int crossAxisCount;
 
   final mm = '🔵🔵🔵🔵 UserDashboardGrid:  🍎 ';
@@ -59,97 +60,99 @@ class UserDashboardGrid extends StatelessWidget {
             ),
           ],
         ),
-        SingleChildScrollView(
-          child: SizedBox(
-            height: totalHeight == null ? 900 : totalHeight!,
-            child: Padding(
-              padding: EdgeInsets.all(gridPadding),
-              child: GridView.count(
-                crossAxisCount: crossAxisCount,
-                children: [
-                  GestureDetector(
-                    onTap: () {
-                      pp('$mm widget on tapped: typeProjects $typeProjects ...');
-                      onTypeTapped(typeProjects);
-                    },
-                    child: DashboardElement(
-                      title: 'Projects',
-                      topPadding: elementPadding,
-                      number: dataBag.projects!.length,
-                      onTapped: () {
+        Expanded(
+          child: SingleChildScrollView(
+            child: SizedBox(height: totalHeight == null ? 900 : totalHeight!,
+              width: width,
+              child: Padding(
+                padding: EdgeInsets.all(gridPadding),
+                child: GridView.count(
+                  crossAxisCount: crossAxisCount,
+                  children: [
+                    GestureDetector(
+                      onTap: () {
+                        pp('$mm widget on tapped: typeProjects $typeProjects ...');
                         onTypeTapped(typeProjects);
                       },
+                      child: DashboardElement(
+                        title: 'Projects',
+                        topPadding: elementPadding,
+                        number: dataBag.projects!.length,
+                        onTapped: () {
+                          onTypeTapped(typeProjects);
+                        },
+                      ),
                     ),
-                  ),
-                  GestureDetector(
-                    onTap: () {
-                      pp('$mm widget on tapped: typePhotos $typePhotos ...');
+                    GestureDetector(
+                      onTap: () {
+                        pp('$mm widget on tapped: typePhotos $typePhotos ...');
 
-                      onTypeTapped(typePhotos);
-                    },
-                    child: DashboardElement(
-                      title: 'Photos',
-                      number: dataBag.photos!.length,
-                      topPadding: elementPadding,
-                      textStyle: GoogleFonts.secularOne(
-                          textStyle: Theme.of(context).textTheme.titleLarge,
-                          fontWeight: FontWeight.w900,
-                          color: Theme.of(context).primaryColor),
-                      onTapped: () {
                         onTypeTapped(typePhotos);
                       },
+                      child: DashboardElement(
+                        title: 'Photos',
+                        number: dataBag.photos!.length,
+                        topPadding: elementPadding,
+                        textStyle: GoogleFonts.secularOne(
+                            textStyle: Theme.of(context).textTheme.titleLarge,
+                            fontWeight: FontWeight.w900,
+                            color: Theme.of(context).primaryColor),
+                        onTapped: () {
+                          onTypeTapped(typePhotos);
+                        },
+                      ),
                     ),
-                  ),
-                  GestureDetector(
-                    onTap: () {
-                      pp('$mm widget on tapped: typeVideos $typeVideos ...');
+                    GestureDetector(
+                      onTap: () {
+                        pp('$mm widget on tapped: typeVideos $typeVideos ...');
 
-                      onTypeTapped(typeVideos);
-                    },
-                    child: DashboardElement(
-                      title: 'Videos',
-                      topPadding: elementPadding,
-                      number: dataBag.videos!.length,
-                      onTapped: () {
                         onTypeTapped(typeVideos);
                       },
+                      child: DashboardElement(
+                        title: 'Videos',
+                        topPadding: elementPadding,
+                        number: dataBag.videos!.length,
+                        onTapped: () {
+                          onTypeTapped(typeVideos);
+                        },
+                      ),
                     ),
-                  ),
-                  GestureDetector(
-                    onTap: () {
-                      pp('$mm widget on tapped: typeAudios $typeAudios ...');
+                    GestureDetector(
+                      onTap: () {
+                        pp('$mm widget on tapped: typeAudios $typeAudios ...');
 
-                      onTypeTapped(typeAudios);
-                    },
-                    child: DashboardElement(
-                      title: 'Audio Clips',
-                      topPadding: elementPadding,
-                      number: dataBag.audios!.length,
-                      textStyle: GoogleFonts.secularOne(
-                          textStyle: Theme.of(context).textTheme.titleLarge,
-                          fontWeight: FontWeight.w900,
-                          color: Theme.of(context).primaryColor),
-                      onTapped: () {
                         onTypeTapped(typeAudios);
                       },
+                      child: DashboardElement(
+                        title: 'Audio Clips',
+                        topPadding: elementPadding,
+                        number: dataBag.audios!.length,
+                        textStyle: GoogleFonts.secularOne(
+                            textStyle: Theme.of(context).textTheme.titleLarge,
+                            fontWeight: FontWeight.w900,
+                            color: Theme.of(context).primaryColor),
+                        onTapped: () {
+                          onTypeTapped(typeAudios);
+                        },
+                      ),
                     ),
-                  ),
-                  GestureDetector(
-                    onTap: () {
-                      pp('$mm widget on tapped: typeSchedules $typeSchedules ...');
+                    GestureDetector(
+                      onTap: () {
+                        pp('$mm widget on tapped: typeSchedules $typeSchedules ...');
 
-                      onTypeTapped(typeSchedules);
-                    },
-                    child: DashboardElement(
-                      title: 'Schedules',
-                      topPadding: elementPadding,
-                      number: dataBag.fieldMonitorSchedules!.length,
-                      onTapped: () {
                         onTypeTapped(typeSchedules);
                       },
+                      child: DashboardElement(
+                        title: 'Schedules',
+                        topPadding: elementPadding,
+                        number: dataBag.fieldMonitorSchedules!.length,
+                        onTapped: () {
+                          onTypeTapped(typeSchedules);
+                        },
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
           ),

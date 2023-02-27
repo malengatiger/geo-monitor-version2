@@ -4,7 +4,7 @@ import 'package:geo_monitor/library/ui/project_location/project_location_handler
 import 'package:page_transition/page_transition.dart';
 import 'package:responsive_builder/responsive_builder.dart';
 
-import '../../../ui/activity/geo_activity_tablet.dart';
+import '../../../ui/activity/geo_activity.dart';
 import '../../api/prefs_og.dart';
 import '../../data/project.dart';
 import '../../data/user.dart';

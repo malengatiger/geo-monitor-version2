@@ -12,7 +12,7 @@ import 'package:geo_monitor/library/ui/maps/project_map_tablet.dart';
 import 'package:geo_monitor/library/ui/media/list/project_media_main.dart';
 import 'package:geo_monitor/library/ui/project_list/project_list_card.dart';
 import 'package:geo_monitor/library/ui/project_list/project_list_mobile.dart';
-import 'package:geo_monitor/ui/activity/geo_activity_tablet.dart';
+import 'package:geo_monitor/ui/activity/geo_activity.dart';
 import 'package:geo_monitor/ui/audio/audio_handler_mobile.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:map_launcher/map_launcher.dart';

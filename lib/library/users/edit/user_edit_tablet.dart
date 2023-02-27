@@ -6,7 +6,7 @@ import 'package:geo_monitor/library/data/photo.dart';
 import 'package:geo_monitor/library/data/video.dart';
 import 'package:geo_monitor/library/users/edit/user_form.dart';
 import 'package:geo_monitor/library/users/full_user_photo.dart';
-import 'package:geo_monitor/ui/activity/geo_activity_tablet.dart';
+import 'package:geo_monitor/ui/activity/geo_activity.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:responsive_builder/responsive_builder.dart';
 import 'package:uuid/uuid.dart';

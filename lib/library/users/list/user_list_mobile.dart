@@ -292,7 +292,7 @@ class UserListMobileState extends State<UserListMobile>
                         navigateToMessaging: (user) {
                           navigateToMessaging(user);
                         },
-                        navigateToUserReport: (user) {
+                        navigateToUserDashboard: (user) {
                           navigateToUserDashboard(user);
                         },
                         navigateToUserEdit: (user) {

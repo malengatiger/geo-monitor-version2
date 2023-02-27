@@ -8,7 +8,7 @@ import 'package:geo_monitor/library/data/activity_model.dart';
 import 'package:geo_monitor/library/ui/camera/video_player_tablet.dart';
 import 'package:geo_monitor/library/ui/maps/photo_map_tablet.dart';
 import 'package:geo_monitor/library/users/full_user_photo.dart';
-import 'package:geo_monitor/ui/activity/geo_activity_tablet.dart';
+import 'package:geo_monitor/ui/activity/geo_activity.dart';
 import 'package:geo_monitor/ui/audio/audio_player_page.dart';
 import 'package:geo_monitor/ui/dashboard/photo_card.dart';
 import 'package:page_transition/page_transition.dart';
@@ -433,63 +433,106 @@ class UserDashboardState extends State<UserDashboard>
               children: [
                 dataBag == null
                     ? const SizedBox()
-                    : Row(
+                    :  ScreenTypeLayout(
+                  mobile: UserDashboardGrid(user: widget.user,
+                    dataBag: dataBag!,
+                    width: width,
+                    topPadding: 40,
+                    gridPadding: 12,
+                    crossAxisCount: 2,
+                    onTypeTapped: (type) {
+                      switch (type) {
+                        case typePhotos:
+                          _showUserPhotos();
+                          break;
+                        case typeVideos:
+                          _showUserVideos();
+                          break;
+                        case typeAudios:
+                          _showUserAudios();
+                          break;
+                      }
+                    },),
+                  tablet: OrientationLayoutBuilder(
+                    portrait: (context) {
+                      return Row(
                         children: [
-                          SizedBox(
-                            width: deviceType == 'phone'
-                                ? width
-                                : (width / 2) + 100,
-                            child: Padding(
-                              padding: const EdgeInsets.all(12.0),
-                              child: SingleChildScrollView(
-                                child: UserDashboardGrid(
-                                    user: widget.user,
-                                    dataBag: dataBag!,
-                                    topPadding: 40,
-                                    onTypeTapped: (type) {
-                                      switch (type) {
-                                        case typePhotos:
-                                          _showUserPhotos();
-                                          break;
-                                        case typeVideos:
-                                          _showUserVideos();
-                                          break;
-                                        case typeAudios:
-                                          _showUserAudios();
-                                          break;
-                                      }
-                                    },
-                                    gridPadding: 16,
-                                    crossAxisCount: 2,
-                                    leftPadding: 16),
-                              ),
-                            ),
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                            child: UserDashboardGrid(
+                                user: widget.user,
+                                dataBag: dataBag!,
+                                width: (width /2),
+                                topPadding: 40,
+                                onTypeTapped: (type) {
+                                  switch (type) {
+                                    case typePhotos:
+                                      _showUserPhotos();
+                                      break;
+                                    case typeVideos:
+                                      _showUserVideos();
+                                      break;
+                                    case typeAudios:
+                                      _showUserAudios();
+                                      break;
+                                  }
+                                },
+                                gridPadding: 16,
+                                crossAxisCount: 2,
+                                leftPadding: 16),
                           ),
-                          ScreenTypeLayout(
-                            mobile: const SizedBox(),
-                            tablet: OrientationLayoutBuilder(
-                              portrait: (context) {
-                                return GeoActivity(
-                                    width: (width / 2) - 200,
-                                    thinMode: true,
-                                    showPhoto: _displayPhoto,
-                                    showVideo: _displayVideo,
-                                    showAudio: _displayAudio,
-                                    forceRefresh: true);
-                              },
-                              landscape: (context) {
-                                return GeoActivity(
-                                    width: (width / 2),
-                                    thinMode: false,
-                                    showPhoto: _displayPhoto,
-                                    showVideo: _displayVideo,
-                                    showAudio: _displayAudio,
-                                    forceRefresh: true);
-                              },
-                            ),
-                          ),
+                          const SizedBox(width: 16,),
+                          GeoActivity(
+                              user: widget.user,
+                              width: (width / 2) - 60,
+                              thinMode: true,
+                              showPhoto: _displayPhoto,
+                              showVideo: _displayVideo,
+                              showAudio: _displayAudio,
+                              forceRefresh: true),
                         ],
-                      ),
+                      );
+                    },
+                    landscape: (context) {
+                      return Row(
+                        children: [
+                          UserDashboardGrid(
+                              user: widget.user,
+                              dataBag: dataBag!,
+                              width: (width /2),
+                              topPadding: 28,
+                              elementPadding: 48,
+                              onTypeTapped: (type) {
+                                switch (type) {
+                                  case typePhotos:
+                                    _showUserPhotos();
+                                    break;
+                                  case typeVideos:
+                                    _showUserVideos();
+                                    break;
+                                  case typeAudios:
+                                    _showUserAudios();
+                                    break;
+                                }
+                              },
+                              gridPadding: 32,
+                              crossAxisCount: 3,
+                              leftPadding: 16),
+                          // Container(width: (width/2), color: Colors.deepPurple,),
+                          const SizedBox(width: 48,),
+                          GeoActivity(
+                              width: (width / 2) - 120,
+                              thinMode: false,
+                              user: widget.user,
+                              showPhoto: _displayPhoto,
+                              showVideo: _displayVideo,
+                              showAudio: _displayAudio,
+                              forceRefresh: true),
+                        ],
+                      );
+                    },
+                  ),
+                ),
                 _showPhoto
                     ? Positioned(
                         left: 100,

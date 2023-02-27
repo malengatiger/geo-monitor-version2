@@ -3,7 +3,7 @@ import 'package:geo_monitor/library/data/audio.dart';
 import 'package:geo_monitor/library/data/photo.dart';
 import 'package:geo_monitor/library/data/video.dart';
 import 'package:geo_monitor/library/ui/settings/settings_form.dart';
-import 'package:geo_monitor/ui/activity/geo_activity_tablet.dart';
+import 'package:geo_monitor/ui/activity/geo_activity.dart';
 import 'package:responsive_builder/responsive_builder.dart';
 
 class SettingsTablet extends StatefulWidget {

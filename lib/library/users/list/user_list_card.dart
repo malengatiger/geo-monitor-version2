@@ -13,7 +13,7 @@ class UserListCard extends StatelessWidget {
       required this.deviceUser,
       required this.navigateToPhone,
       required this.navigateToMessaging,
-      required this.navigateToUserReport,
+      required this.navigateToUserDashboard,
       required this.navigateToUserEdit,
       required this.navigateToScheduler,
       required this.navigateToKillPage,
@@ -30,7 +30,7 @@ class UserListCard extends StatelessWidget {
 
   final Function(User) navigateToPhone;
   final Function(User) navigateToMessaging;
-  final Function(User) navigateToUserReport;
+  final Function(User) navigateToUserDashboard;
 
   final Function(User) navigateToUserEdit;
   final Function(User) navigateToScheduler;
@@ -75,7 +75,7 @@ class UserListCard extends StatelessWidget {
             color: Theme.of(context).primaryColor,
           ),
           onPressed: () {
-            navigateToUserReport(someUser);
+            navigateToUserDashboard(someUser);
           }));
       list.add(FocusedMenuItem(
           title: Text(

@@ -8,7 +8,7 @@ import 'package:geo_monitor/library/data/activity_model.dart';
 import 'package:geo_monitor/library/ui/camera/video_player_tablet.dart';
 import 'package:geo_monitor/library/ui/media/list/project_media_main.dart';
 import 'package:geo_monitor/library/ui/settings/settings_main.dart';
-import 'package:geo_monitor/ui/activity/geo_activity_tablet.dart';
+import 'package:geo_monitor/ui/activity/geo_activity.dart';
 import 'package:geo_monitor/ui/dashboard/dashboard_grid.dart';
 import 'package:geo_monitor/ui/dashboard/photo_card.dart';
 import 'package:geo_monitor/ui/intro/intro_main.dart';

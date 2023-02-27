@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:geo_monitor/ui/activity/geo_activity_tablet.dart';
+import 'package:geo_monitor/ui/activity/geo_activity.dart';
 import 'package:geocoding/geocoding.dart';
 // import 'package:geolocator/geolocator.dart' as geo;
 // import 'package:location/location.dart';
