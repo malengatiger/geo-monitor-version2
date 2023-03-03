@@ -111,7 +111,6 @@ class AudioHandlerMobileState extends State<AudioHandlerMobile>
     _audioRecorder.dispose();
     _recorderController.dispose();
     _animationController.dispose();
-    killSubscription.cancel();
     super.dispose();
   }
 

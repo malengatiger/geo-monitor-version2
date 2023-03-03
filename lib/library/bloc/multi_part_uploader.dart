@@ -168,19 +168,17 @@ class MultiPartUploader {
     }
     return null;
   }
-
 }
 
 ///TOP LEVEL functions running inside an isolate
 Future<String?> _uploadPhotoFile(
     {required String objectName,
-      required String url,
-      required String token,
-      required int height,
-      required int width,
-      required String mJson,
-      required double distance}) async {
-
+    required String url,
+    required String token,
+    required int height,
+    required int width,
+    required String mJson,
+    required double distance}) async {
   pp('$xx 🍐🍐🍐🍐🍐🍐 _uploadPhotoFile: objectName: $objectName url: $url');
 
   var map = json.decode(mJson);
@@ -189,8 +187,8 @@ Future<String?> _uploadPhotoFile(
   var tPath = photoForUpload.thumbnailPath;
   //create multipart request for POST or PATCH method
   String? responseUrl = await _sendRequest(token, url, objectName, mPath!);
-  String? thumbUrl =
-  await _sendRequest(token, url, 'thumb_$objectName', tPath!);
+  String? thumbUrl = await _sendRequest(
+      token, url, 'thumb_${DateTime.now().toUtc().toIso8601String()}', tPath!);
   pp('🍐🍐🍐🍐🍐🍐 attempt to add photo to DB ...');
   if (responseUrl == null) {
     pp('$xx problems with uploading file');
@@ -225,13 +223,12 @@ Future<String?> _uploadPhotoFile(
 
 Future<String?> _uploadAudioFile(
     {required String objectName,
-      required String url,
-      required String token,
-      required int height,
-      required int width,
-      required String mJson,
-      required double distance}) async {
-
+    required String url,
+    required String token,
+    required int height,
+    required int width,
+    required String mJson,
+    required double distance}) async {
   pp('$xx 🍐🍐🍐🍐🍐🍐 _uploadVideoFile: objectName: $objectName url: $url');
 
   var map = json.decode(mJson);
@@ -246,7 +243,6 @@ Future<String?> _uploadAudioFile(
     return null;
   }
 
-
   var audio = Audio(
       url: responseUrl,
       userUrl: audioForUpload.userThumbnailUrl,
@@ -259,7 +255,6 @@ Future<String?> _uploadAudioFile(
       projectId: audioForUpload.project!.projectId,
       projectName: audioForUpload.project!.name,
       organizationId: audioForUpload.organizationId,
-
       durationInSeconds: audioForUpload.durationInSeconds,
       audioId: audioForUpload.audioId);
 
@@ -271,13 +266,12 @@ Future<String?> _uploadAudioFile(
 
 Future<String?> _uploadVideoFile(
     {required String objectName,
-      required String url,
-      required String token,
-      required int height,
-      required int width,
-      required String mJson,
-      required double distance}) async {
-
+    required String url,
+    required String token,
+    required int height,
+    required int width,
+    required String mJson,
+    required double distance}) async {
   pp('$xx 🍐🍐🍐🍐🍐🍐 _uploadVideoFile: objectName: $objectName url: $url');
 
   var map = json.decode(mJson);
@@ -287,14 +281,15 @@ Future<String?> _uploadVideoFile(
   //create multipart request for POST or PATCH method
   String? responseUrl = await _sendRequest(token, url, objectName, mPath!);
   String? thumbUrl =
-  await _sendRequest(token, url, 'thumb_$objectName', tPath!);
+      await _sendRequest(token, url, 'thumb_$objectName', tPath!);
 
   pp('🍐🍐🍐🍐🍐🍐 attempt to add video to DB ...');
   if (responseUrl == null) {
-     pp('$xx problems with uploading file');
-     return null;
+    pp('$xx problems with uploading file');
+    return null;
   }
-  await _getVideoMetadata(videoForUpload: videoForUpload, videoUrl: responseUrl);
+  await _getVideoMetadata(
+      videoForUpload: videoForUpload, videoUrl: responseUrl);
 
   var video = Video(
       url: responseUrl,
@@ -368,8 +363,7 @@ Future<Photo> _addPhoto(Photo photo, String url, String token) async {
     pp(' addPhoto has added photo to DB and to Hive cache\n');
     return photo;
   } catch (e) {
-    pp(
-        '\n\n\n$xx 🔴🔴🔴  addPhoto failed. Something fucked up here! ... 🔴🔴🔴\n\n');
+    pp('\n\n\n$xx 🔴🔴🔴  addPhoto failed. Something fucked up here! ... 🔴🔴🔴\n\n');
     pp(e);
     rethrow;
   }
@@ -384,8 +378,7 @@ Future<Video> _addVideo(Video video, String url, String token) async {
     pp('$xx addVideo has added video to DB and to Hive cache\n');
     return video;
   } catch (e) {
-    pp(
-        '\n\n\n$xx 🔴🔴🔴  addVideo failed. Something fucked up here! ... 🔴🔴🔴\n\n');
+    pp('\n\n\n$xx 🔴🔴🔴  addVideo failed. Something fucked up here! ... 🔴🔴🔴\n\n');
     pp(e);
     rethrow;
   }
@@ -400,12 +393,12 @@ Future<Audio> _addAudio(Audio audio, String url, String token) async {
     pp('$xx addAudio has added audio to DB and to Hive cache\n');
     return audio;
   } catch (e) {
-    pp(
-        '\n\n\n$xx 🔴🔴🔴  addAudio failed. Something fucked up here! ... 🔴🔴🔴\n\n');
+    pp('\n\n\n$xx 🔴🔴🔴  addAudio failed. Something fucked up here! ... 🔴🔴🔴\n\n');
     pp(e);
     rethrow;
   }
 }
+
 Future _callPost(String mUrl, Map? bag, String token) async {
   pp('$xx http POST call: 🔆 🔆 🔆  calling : 💙  $mUrl  💙 ');
   Map<String, String> headers = {
@@ -421,10 +414,10 @@ Future _callPost(String mUrl, Map? bag, String token) async {
   try {
     var resp = await client
         .post(
-      Uri.parse(mUrl),
-      body: mBag,
-      headers: headers,
-    )
+          Uri.parse(mUrl),
+          body: mBag,
+          headers: headers,
+        )
         .timeout(const Duration(seconds: 120));
     if (resp.statusCode == 200) {
       pp('$xx http POST call RESPONSE: 💙💙 statusCode: 👌👌👌 ${resp.statusCode} 👌👌👌 💙 for $mUrl');
@@ -461,8 +454,6 @@ Future _callPost(String mUrl, Map? bag, String token) async {
 }
 
 const xx = '😡😡😡 Isolate :  😡😡😡';
-
-
 
 Future<String?> _sendRequest(
     String token, String url, String objectName, String path) async {
