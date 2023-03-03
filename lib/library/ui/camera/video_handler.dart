@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:geo_monitor/library/api/prefs_og.dart';
 import 'package:geo_monitor/library/bloc/fcm_bloc.dart';
+import 'package:geo_monitor/library/bloc/multi_part_uploader.dart';
 import 'package:geo_monitor/library/data/project.dart';
 import 'package:geo_monitor/library/data/project_position.dart';
 import 'package:geo_monitor/library/data/video.dart';
@@ -209,6 +210,7 @@ class VideoHandlerState extends State<VideoHandler>
         date: DateTime.now().toUtc().toIso8601String());
 
     await cacheManager.addVideoForUpload(video: videoForUpload);
+    multiPartUploader.startVideoUpload(videoForUpload);
   }
 
   void _startNextVideo() {

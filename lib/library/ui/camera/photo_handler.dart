@@ -192,6 +192,7 @@ class PhotoHandlerState extends State<PhotoHandler>
           photoId: const Uuid().v4(),
           date: DateTime.now().toUtc().toIso8601String(),
           userId: user!.userId!);
+
       await cacheManager.addPhotoForUpload(photo: photoForUpload);
       multiPartUploader.startPhotoUpload(photoForUpload);
     }

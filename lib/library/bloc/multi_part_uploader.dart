@@ -10,7 +10,6 @@ import 'package:geo_monitor/library/api/prefs_og.dart';
 import 'package:geo_monitor/library/bloc/photo_for_upload.dart';
 import 'package:geo_monitor/library/bloc/video_for_upload.dart';
 import 'package:http/http.dart' as http;
-import 'package:just_audio/just_audio.dart';
 import 'package:video_player/video_player.dart';
 
 import '../../device_location/device_location_bloc.dart';
@@ -30,8 +29,7 @@ Random rand = Random(DateTime.now().millisecondsSinceEpoch);
 const photoStorageName = 'geoPhotos3';
 const videoStorageName = 'geoVideos3';
 const audioStorageName = 'geoAudios3';
-late http.Client client = http.Client();
-late PhotoForUpload photoForUpload;
+http.Client client = http.Client();
 User? user;
 
 class MultiPartUploader {
@@ -56,8 +54,8 @@ class MultiPartUploader {
         width = image.width;
       });
       var distance = await locationBloc.getDistanceFromCurrentPosition(
-          latitude: photoForUpload.position!.coordinates[1],
-          longitude: photoForUpload.position!.coordinates[0]);
+          latitude: photoForUploading.position!.coordinates[1],
+          longitude: photoForUploading.position!.coordinates[0]);
 
       if (user == null) {
         pp('🔴🔴🔴🔴🔴🔴🔴🔴 user is null. WTF? 🔴🔴');
@@ -66,7 +64,7 @@ class MultiPartUploader {
         pp('$xx 🍐🍐🍐🍐🍐🍐The user is OK');
       }
 
-      var mJson = json.encode(photoForUpload.toJson());
+      var mJson = json.encode(photoForUploading.toJson());
 
       resultUrl = await Isolate.run(() async => await _uploadPhotoFile(
           objectName: 'photo_${DateTime.now().millisecondsSinceEpoch}.jpg',
@@ -78,9 +76,9 @@ class MultiPartUploader {
           distance: distance));
 
       return resultUrl;
-    } on StateError catch (e, s) {
+    } on StateError catch (e) {
       pp(e.message); // In a bad state!
-    } on FormatException catch (e, s) {
+    } on FormatException catch (e) {
       pp(e.message);
     }
     return null;
@@ -93,14 +91,13 @@ class MultiPartUploader {
       String? url = await DataAPI.getUrl();
       var token = await AppAuth.getAuthToken();
       if (token != null) {
-        pp('$mm 😡😡😡 Firebase Auth Token: 💙️ Token is GOOD! 💙 ');
+        pp('$mm 😡😡😡 Firebase Auth Token: 💙️ Token is GOOD! 💙 url: $url');
       }
 
       var height = 0, width = 0;
-
       var distance = await locationBloc.getDistanceFromCurrentPosition(
-          latitude: photoForUpload.position!.coordinates[1],
-          longitude: photoForUpload.position!.coordinates[0]);
+          latitude: videoForUploading.position!.coordinates[1],
+          longitude: videoForUploading.position!.coordinates[0]);
 
       if (user == null) {
         pp('🔴🔴🔴🔴🔴🔴🔴🔴 user is null. WTF? 🔴🔴');
@@ -121,9 +118,9 @@ class MultiPartUploader {
           distance: distance));
 
       return resultUrl;
-    } on StateError catch (e, s) {
+    } on StateError catch (e) {
       pp(e.message); // In a bad state!
-    } on FormatException catch (e, s) {
+    } on FormatException catch (e) {
       pp(e.message);
     }
     return null;
@@ -142,8 +139,8 @@ class MultiPartUploader {
       var height = 0, width = 0;
 
       var distance = await locationBloc.getDistanceFromCurrentPosition(
-          latitude: photoForUpload.position!.coordinates[1],
-          longitude: photoForUpload.position!.coordinates[0]);
+          latitude: audioForUploading.position!.coordinates[1],
+          longitude: audioForUploading.position!.coordinates[0]);
 
       if (user == null) {
         pp('🔴🔴🔴🔴🔴🔴🔴🔴 user is null. WTF? 🔴🔴');
@@ -155,7 +152,7 @@ class MultiPartUploader {
       var mJson = json.encode(audioForUploading.toJson());
 
       resultUrl = await Isolate.run(() async => await _uploadAudioFile(
-          objectName: 'audio${DateTime.now().millisecondsSinceEpoch}.mp3',
+          objectName: 'audio${DateTime.now().millisecondsSinceEpoch}.mp4',
           url: url!,
           token: token!,
           height: height,
@@ -164,9 +161,9 @@ class MultiPartUploader {
           distance: distance));
 
       return resultUrl;
-    } on StateError catch (e, s) {
+    } on StateError catch (e) {
       pp(e.message); // In a bad state!
-    } on FormatException catch (e, s) {
+    } on FormatException catch (e) {
       pp(e.message);
     }
     return null;
@@ -175,7 +172,7 @@ class MultiPartUploader {
 }
 
 ///TOP LEVEL functions running inside an isolate
-Future<String> _uploadPhotoFile(
+Future<String?> _uploadPhotoFile(
     {required String objectName,
       required String url,
       required String token,
@@ -187,14 +184,18 @@ Future<String> _uploadPhotoFile(
   pp('$xx 🍐🍐🍐🍐🍐🍐 _uploadPhotoFile: objectName: $objectName url: $url');
 
   var map = json.decode(mJson);
-  photoForUpload = PhotoForUpload.fromJson(map);
+  var photoForUpload = PhotoForUpload.fromJson(map);
   var mPath = photoForUpload.filePath;
   var tPath = photoForUpload.thumbnailPath;
   //create multipart request for POST or PATCH method
-  String responseUrl = await _sendRequest(token, url, objectName, mPath!);
-  String thumbUrl =
+  String? responseUrl = await _sendRequest(token, url, objectName, mPath!);
+  String? thumbUrl =
   await _sendRequest(token, url, 'thumb_$objectName', tPath!);
   pp('🍐🍐🍐🍐🍐🍐 attempt to add photo to DB ...');
+  if (responseUrl == null) {
+    pp('$xx problems with uploading file');
+    return null;
+  }
 
   var photo = Photo(
       url: responseUrl,
@@ -222,7 +223,7 @@ Future<String> _uploadPhotoFile(
   return responseUrl;
 }
 
-Future<String> _uploadAudioFile(
+Future<String?> _uploadAudioFile(
     {required String objectName,
       required String url,
       required String token,
@@ -237,16 +238,14 @@ Future<String> _uploadAudioFile(
   var audioForUpload = AudioForUpload.fromJson(map);
   var mPath = audioForUpload.filePath;
   //create multipart request for POST or PATCH method
-  String responseUrl = await _sendRequest(token, url, objectName, mPath!);
+  String? responseUrl = await _sendRequest(token, url, objectName, mPath!);
 
   pp('🍐🍐🍐🍐🍐🍐 attempt to add audio to DB ...');
-  Duration? dur;
-  try {
-    AudioPlayer audioPlayer = AudioPlayer();
-    dur = await audioPlayer.setUrl(url);
-  } catch (e) {
-    pp('$xx cannot get audio duration');
+  if (responseUrl == null) {
+    pp('$xx problems with uploading file');
+    return null;
   }
+
 
   var audio = Audio(
       url: responseUrl,
@@ -261,7 +260,7 @@ Future<String> _uploadAudioFile(
       projectName: audioForUpload.project!.name,
       organizationId: audioForUpload.organizationId,
 
-      durationInSeconds: dur == null? 0: dur.inSeconds,
+      durationInSeconds: audioForUpload.durationInSeconds,
       audioId: audioForUpload.audioId);
 
   await _addAudio(audio, url, token);
@@ -270,7 +269,7 @@ Future<String> _uploadAudioFile(
   return responseUrl;
 }
 
-Future<String> _uploadVideoFile(
+Future<String?> _uploadVideoFile(
     {required String objectName,
       required String url,
       required String token,
@@ -286,10 +285,15 @@ Future<String> _uploadVideoFile(
   var mPath = videoForUpload.filePath;
   var tPath = videoForUpload.thumbnailPath;
   //create multipart request for POST or PATCH method
-  String responseUrl = await _sendRequest(token, url, objectName, mPath!);
-  String thumbUrl =
+  String? responseUrl = await _sendRequest(token, url, objectName, mPath!);
+  String? thumbUrl =
   await _sendRequest(token, url, 'thumb_$objectName', tPath!);
+
   pp('🍐🍐🍐🍐🍐🍐 attempt to add video to DB ...');
+  if (responseUrl == null) {
+     pp('$xx problems with uploading file');
+     return null;
+  }
   await _getVideoMetadata(videoForUpload: videoForUpload, videoUrl: responseUrl);
 
   var video = Video(
@@ -460,7 +464,7 @@ const xx = '😡😡😡 Isolate :  😡😡😡';
 
 
 
-Future<String> _sendRequest(
+Future<String?> _sendRequest(
     String token, String url, String objectName, String path) async {
   Map<String, String> headers = {
     'Content-type': 'application/json',
@@ -479,8 +483,15 @@ Future<String> _sendRequest(
   request.headers.addAll(headers);
 
   var response = await request.send();
-  var responseData = await response.stream.toBytes();
-  var responseString = String.fromCharCodes(responseData);
+  String? responseString;
+  if (response.statusCode == 200) {
+    var responseData = await response.stream.toBytes();
+    responseString = String.fromCharCodes(responseData);
+  } else {
+    pp('\n\n$xx We have a problem, Boss! statusCode: ${response.statusCode} '
+        '- ${response.reasonPhrase}');
+    //throw Exception('Unable to upload file');
+  }
 
   return responseString;
 }

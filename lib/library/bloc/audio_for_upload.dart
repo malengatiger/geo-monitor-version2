@@ -27,22 +27,26 @@ class AudioForUpload extends HiveObject {
   String? organizationId;
   @HiveField(11)
   String? userThumbnailUrl;
+  @HiveField(12)
+  int? durationInSeconds;
 
   AudioForUpload(
       {required this.filePath,
       required this.project,
       required this.position,
       required this.audioId,
-        required this.userId,
-        required this.userName,
-        required this.userThumbnailUrl,
-        required this.organizationId,
+      required this.userId,
+      required this.userName,
+      required this.userThumbnailUrl,
+      required this.organizationId,
+      required this.durationInSeconds,
       required this.date});
 
   AudioForUpload.fromJson(Map data) {
     audioId = data['audioId'];
     filePath = data['filePath'];
     date = data['date'];
+    durationInSeconds = data['durationInSeconds'];
 
     userId = data['userId'];
     userName = data['userName'];
@@ -66,6 +70,7 @@ class AudioForUpload extends HiveObject {
       'organizationId': organizationId,
       'userName': userName,
       'userId': userId,
+      'durationInSeconds': durationInSeconds,
       'userThumbnailUrl': userThumbnailUrl,
       'position': position == null ? null : position!.toJson(),
     };
