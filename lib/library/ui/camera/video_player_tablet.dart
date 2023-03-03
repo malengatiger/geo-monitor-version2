@@ -156,6 +156,7 @@ class VideoPlayerTabletPageState extends State<VideoPlayerTabletPage>
                     color: Colors.black12,
                     child: RatingAdder(
                       width: 500,
+                      elevation: 8.0,
                       video: widget.video,
                       onDone: () {
                         Navigator.of(context).pop();

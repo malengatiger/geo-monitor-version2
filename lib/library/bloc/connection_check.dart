@@ -24,9 +24,9 @@ class ConnectionCheck {
     connectivitySubscription = Connectivity()
         .onConnectivityChanged
         .listen((ConnectivityResult result) {
-      pp('$mm onConnectivityChanged: 🔆 result: $result');
+      // pp('$mm onConnectivityChanged: 🔆 result: $result');
       var con = _areWeConnected(result);
-      pp('$mm onConnectivityChanged: 🔆 sending result to connectivityStream ...');
+      // pp('$mm onConnectivityChanged: 🔆 sending result to connectivityStream ...');
       _streamController.sink.add(con);
     });
 

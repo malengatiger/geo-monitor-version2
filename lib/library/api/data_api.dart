@@ -9,6 +9,7 @@ import 'package:geo_monitor/library/data/activity_model.dart';
 import 'package:geo_monitor/library/data/location_request.dart';
 import 'package:geo_monitor/library/data/organization_registration_bag.dart';
 import 'package:geo_monitor/library/data/project_polygon.dart';
+import 'package:geo_monitor/library/data/project_summary.dart';
 import 'package:geo_monitor/library/emojis.dart';
 import 'package:http/http.dart' as http;
 
@@ -264,6 +265,45 @@ class DataAPI {
       }
 
       pp('$mm 🌿 🌿 🌿 getOrganizationActivity returned: 🌿 ${mList.length}');
+      return mList;
+    } catch (e) {
+      pp(e);
+      rethrow;
+    }
+  }
+
+  static Future<List<ProjectSummary>> getOrganizationDailySummary(
+      String organizationId, String startDate, String endDate) async {
+    String? mURL = await getUrl();
+    List<ProjectSummary> mList = [];
+    try {
+      List result = await _sendHttpGET(
+          '${mURL!}createDailyOrganizationSummaries?organizationId=$organizationId&startDate=$startDate&endDate=$endDate');
+
+      for (var element in result) {
+        mList.add(ProjectSummary.fromJson(element));
+      }
+
+      pp('$mm 🌿 🌿 🌿 getOrganization Summaries returned: 🌿 ${mList.length}');
+      return mList;
+    } catch (e) {
+      pp(e);
+      rethrow;
+    }
+  }
+  static Future<List<ProjectSummary>> getProjectDailySummary(
+      String projectId, String startDate, String endDate) async {
+    String? mURL = await getUrl();
+    List<ProjectSummary> mList = [];
+    try {
+      List result = await _sendHttpGET(
+          '${mURL!}createDailyProjectSummaries?projectId=$projectId&startDate=$startDate&endDate=$endDate');
+
+      for (var element in result) {
+        mList.add(ProjectSummary.fromJson(element));
+      }
+
+      pp('$mm 🌿 🌿 🌿 Daily Project Summaries returned: 🌿 ${mList.length}');
       return mList;
     } catch (e) {
       pp(e);
@@ -1757,7 +1797,7 @@ class DataAPI {
     }
   }
 
-  static const timeOutInSeconds = 60;
+  static const timeOutInSeconds = 120;
   static final client = http.Client();
 
   static const xz = '🌎🌎🌎🌎🌎🌎 DataAPI: ';

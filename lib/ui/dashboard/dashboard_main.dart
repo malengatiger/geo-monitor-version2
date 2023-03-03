@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:geo_monitor/library/api/prefs_og.dart';
 import 'package:geo_monitor/library/functions.dart';
@@ -25,6 +23,7 @@ class DashboardMainState extends State<DashboardMain>
   late AnimationController _controller;
   var busy = false;
   User? user;
+  static const mm = '🌎🌎🌎🌎🌎🌎DashboardMain: 🔵🔵🔵';
 
   @override
   void initState() {
@@ -53,7 +52,7 @@ class DashboardMainState extends State<DashboardMain>
         ? const SizedBox()
         : WillStartForegroundTask(
             onWillStart: () async {
-              pp('\n\n\n 🌎🌎🌎🌎🌎🌎WillStartForegroundTask: onWillStart - what do we do now, Boss? 🌎🌎🌎🌎🌎🌎\n\n');
+              pp('\n\n\n$mm WillStartForegroundTask: onWillStart - what do we do now, Boss? 🌎🌎🌎🌎🌎🌎\n\n');
               return geofenceService.isRunningService;
             },
             androidNotificationOptions: AndroidNotificationOptions(
@@ -65,6 +64,7 @@ class DashboardMainState extends State<DashboardMain>
               priority: NotificationPriority.LOW,
               isSticky: false,
             ),
+
             iosNotificationOptions: const IOSNotificationOptions(),
             notificationTitle: 'Geo Service is running',
             notificationText: 'Tap to return to the app',

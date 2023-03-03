@@ -31,6 +31,15 @@ class VideoForUpload extends HiveObject {
   @HiveField(10)
   double? width;
 
+  @HiveField(11)
+  String? userId;
+  @HiveField(12)
+  String? userName;
+  @HiveField(13)
+  String? organizationId;
+  @HiveField(14)
+  String? userThumbnailUrl;
+
   VideoForUpload(
       {required this.filePath,
       required this.videoId,
@@ -42,6 +51,10 @@ class VideoForUpload extends HiveObject {
       required this.durationInSeconds,
       required this.height,
       required this.width,
+        required this.userId,
+        required this.userName,
+        required this.userThumbnailUrl,
+        required this.organizationId,
       required this.date});
 
   VideoForUpload.fromJson(Map data) {
@@ -52,6 +65,11 @@ class VideoForUpload extends HiveObject {
     date = data['date'];
     height = data['height'];
     width = data['width'];
+
+    userId = data['userId'];
+    userName = data['userName'];
+    organizationId = data['organizationId'];
+    userThumbnailUrl = data['userThumbnailUrl'];
 
     projectPolygonId = data['projectPolygonId'];
     projectPositionId = data['projectPositionId'];
@@ -76,6 +94,10 @@ class VideoForUpload extends HiveObject {
       'projectPositionId': projectPositionId,
       'projectPolygonId': projectPolygonId,
       'date': date,
+      'organizationId': organizationId,
+      'userName': userName,
+      'userId': userId,
+      'userThumbnailUrl': userThumbnailUrl,
       'position': position == null ? null : position!.toJson(),
     };
     return map;

@@ -14,6 +14,7 @@ import 'package:uuid/uuid.dart';
 
 import '../../device_location/device_location_bloc.dart';
 import '../../library/api/data_api.dart';
+import '../../library/bloc/theme_bloc.dart';
 import '../../library/data/user.dart' as ur;
 import '../../library/functions.dart';
 import '../../library/generic_functions.dart';
@@ -242,6 +243,7 @@ class AuthPhoneRegistrationMobileState
 
       pp('\n$mm Organization OG Administrator registered OK: adding org settings default ...');
       await prefsOGx.saveSettings(mSettings);
+      await themeBloc.changeToTheme(mSettings.themeIndex!);
       if (res == 0) {
         await prefsOGx.saveUser(user!);
         await cacheManager.addUser(user: user!);

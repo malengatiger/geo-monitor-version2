@@ -73,20 +73,23 @@ class TheGreatGeofencer {
   }
 
   Future buildGeofences({double? radiusInKM}) async {
+    pp('$xx buildGeofences .... build geofences for the organization started ... 🌀 \n\n');
+
     _user ??= await prefsOGx.getUser();
     if (_user == null) {
       return;
     }
+    pp('$xx buildGeofences .... build geofences for the organization 🌀 ${_user!.organizationName}  🌀 \n\n');
+
     await locationBloc.requestPermission();
-    pp('$mm buildGeofences .... build geofences for the organization 🌀 ${_user!.organizationName}  🌀 \n\n');
     var list = await organizationBloc.getProjectPositions(
         organizationId: _user!.organizationId!, forceRefresh: false);
 
-    try {
+    // try {
       for (var pos in list) {
         await addGeofence(projectPosition: pos);
       }
-
+      pp('$xx ${_geofenceList.length} geofences added to list');
       geofenceService.addGeofenceList(_geofenceList);
       geofenceService.addGeofenceStatusChangeListener(
           (geofence, geofenceRadius, geofenceStatus, location) async {
@@ -101,22 +104,22 @@ class TheGreatGeofencer {
       });
 
       try {
-        pp('\n\n$mm  🔶🔶🔶🔶🔶🔶 Starting GeofenceService ...... 🔶🔶🔶🔶🔶🔶 ');
+        pp('\n\n$xx  🔶🔶🔶🔶🔶🔶 Starting GeofenceService ...... 🔶🔶🔶🔶🔶🔶 ');
         await geofenceService.start().onError((error, stackTrace) => {
               pp('\n\n\n$mm $reds GeofenceService failed to start, onError: 🔴 $error 🔴 \n\n\n')
               //todo - navigate user to system settings - explain why activity permission required
               //todo - see ErrorCodes.ACTIVITY_RECOGNITION_PERMISSION_PERMANENTLY_DENIED
             });
 
-        pp('$mm ✅✅✅✅✅✅ geofences 🍐🍐🍐 STARTED OK 🍐🍐🍐 '
+        pp('$xx ✅✅✅✅✅✅ geofences 🍐🍐🍐 STARTED OK 🍐🍐🍐 '
             '🔆🔆🔆 will wait for geofence status change 🔵🔵🔵🔵🔵 ');
       } catch (e) {
-        pp('\n\n$mm GeofenceService failed to start: 🔴 $e 🔴 }');
+        pp('\n\n$xx GeofenceService failed to start: 🔴 $e 🔴 }');
       }
-    } catch (e) {
-      pp('$reds ERROR: probably to do with API call: 🔴 $e 🔴');
-      pp(e);
-    }
+    // } catch (e) {
+    //   pp('$reds ERROR: probably to do with API call: 🔴 $e 🔴');
+    //   pp(e);
+    // }
   }
 
   final reds = '🔴 🔴 🔴 🔴 🔴 🔴 TheGreatGeofencer: ';
@@ -172,19 +175,24 @@ class TheGreatGeofencer {
 
   Future addGeofence({required ProjectPosition projectPosition}) async {
     projectPosition.nearestCities = [];
-    var fence = Geofence(
-      id: projectPosition.projectPositionId!,
-      data: projectPosition.toJson(),
-      latitude: projectPosition.position!.coordinates[1],
-      longitude: projectPosition.position!.coordinates[0],
-      radius: [
-        GeofenceRadius(id: 'radius_150m', length: 150),
-        // GeofenceRadius(id: 'radius_100m', length: 100),
-      ],
-    );
+    if (projectPosition.position != null) {
+      var fence = Geofence(
+        id: '${projectPosition.projectId!}_${DateTime.now().microsecondsSinceEpoch}',
+        data: projectPosition.toJson(),
+        latitude: projectPosition.position!.coordinates[1],
+        longitude: projectPosition.position!.coordinates[0],
+        radius: [
+          GeofenceRadius(id: 'radius_150m', length: 150),
+          // GeofenceRadius(id: 'radius_100m', length: 100),
+        ],
+      );
 
-    _geofenceList.add(fence);
-    pp('$mm added Geofence .... 👽👽👽👽👽👽👽 _geofenceList now has ${_geofenceList.length} fences 🍎 ');
+      _geofenceList.add(fence);
+      pp('$mm added Geofence .... 👽👽👽👽👽👽👽 _geofenceList now has ${_geofenceList
+          .length} fences 🍎 ');
+    } else {
+      pp('🔴🔴🔴🔴🔴🔴 project position is null, WTF??? ${projectPosition.projectName}');
+    }
   }
 
   var defaultRadiusInKM = 100.0;

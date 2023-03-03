@@ -24,13 +24,14 @@ class RatingAdder extends StatefulWidget {
     this.video,
     this.photo,
     required this.width,
-    required this.onDone,
+    required this.onDone, required this.elevation,
   }) : super(key: key);
 
   final Audio? audio;
   final Video? video;
   final Photo? photo;
   final double width;
+  final double elevation;
 
   final Function() onDone;
 
@@ -192,7 +193,7 @@ class RatingAdderState extends State<RatingAdder>
               title: title,
               onRatingSelected: _sendRating,
               userName: userName,
-              userThumbnailUrl: user == null ? null : user!.thumbnailUrl!,
+              userThumbnailUrl: user == null ? null : user!.thumbnailUrl!, elevation: 8.0,
             ),
             tablet: RatingCard(
               width: widget.width,
@@ -203,7 +204,7 @@ class RatingAdderState extends State<RatingAdder>
               title: title,
               onRatingSelected: _sendRating,
               userName: userName,
-              userThumbnailUrl: user == null ? null : user!.thumbnailUrl!,
+              userThumbnailUrl: user == null ? null : user!.thumbnailUrl!, elevation: 8.0,
             ),
           );
   }
@@ -220,11 +221,11 @@ class RatingCard extends StatelessWidget {
       required this.projectName,
       required this.date,
       required this.userName,
-      this.userThumbnailUrl})
+      this.userThumbnailUrl, required this.elevation})
       : super(key: key);
 
   final Function(double) onRatingSelected;
-  final double width, height, padding;
+  final double width, height, padding, elevation;
   final String title, projectName, date, userName;
   final String? userThumbnailUrl;
 
@@ -234,7 +235,7 @@ class RatingCard extends StatelessWidget {
       width: width,
       height: height,
       child: Card(
-        elevation: 4,
+        elevation: elevation,
         shape: getRoundedBorder(radius: 16),
         child: Padding(
           padding: const EdgeInsets.all(12.0),
@@ -293,7 +294,7 @@ class RatingCard extends StatelessWidget {
                 maxRating: 5,
                 direction: Axis.horizontal,
                 allowHalfRating: true,
-                itemSize: 40,
+                itemSize: 32,
                 glow: true,
                 glowColor: Colors.teal,
                 glowRadius: 8,

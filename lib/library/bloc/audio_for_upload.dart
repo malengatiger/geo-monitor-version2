@@ -2,6 +2,7 @@ import 'package:hive/hive.dart';
 
 import '../data/position.dart';
 import '../data/project.dart';
+
 part 'audio_for_upload.g.dart';
 
 @HiveType(typeId: 35)
@@ -18,18 +19,35 @@ class AudioForUpload extends HiveObject {
   String? date;
   @HiveField(7)
   String? audioId;
+  @HiveField(8)
+  String? userId;
+  @HiveField(9)
+  String? userName;
+  @HiveField(10)
+  String? organizationId;
+  @HiveField(11)
+  String? userThumbnailUrl;
 
   AudioForUpload(
       {required this.filePath,
       required this.project,
       required this.position,
       required this.audioId,
+        required this.userId,
+        required this.userName,
+        required this.userThumbnailUrl,
+        required this.organizationId,
       required this.date});
 
   AudioForUpload.fromJson(Map data) {
     audioId = data['audioId'];
     filePath = data['filePath'];
     date = data['date'];
+
+    userId = data['userId'];
+    userName = data['userName'];
+    organizationId = data['organizationId'];
+    userThumbnailUrl = data['userThumbnailUrl'];
 
     if (data['project'] != null) {
       project = Project.fromJson(data['project']);
@@ -45,6 +63,10 @@ class AudioForUpload extends HiveObject {
       'filePath': filePath,
       'project': project == null ? null : project!.toJson(),
       'date': date,
+      'organizationId': organizationId,
+      'userName': userName,
+      'userId': userId,
+      'userThumbnailUrl': userThumbnailUrl,
       'position': position == null ? null : position!.toJson(),
     };
     return map;

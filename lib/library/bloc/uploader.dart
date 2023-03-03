@@ -140,9 +140,9 @@ class Uploader {
       if (!iAmBusy) {
         // pp('$mm upload process not busy,  🎽 🎽 🎽 will start uploads ...iAmBusy: $iAmBusy');
         iAmBusy = true;
-        await _uploadPhotos();
-        await _uploadAudios();
-        await _uploadVideos();
+        await uploadPhotos();
+        await uploadAudios();
+        await uploadVideos();
         iAmBusy = false;
       } else {
         pp('$mm upload process iAmBusy, will wait for next timer tick');
@@ -150,7 +150,7 @@ class Uploader {
     });
   }
 
-  Future _uploadPhotos() async {
+  Future uploadPhotos() async {
     final list = await cacheManager.getPhotosForUpload();
     if (list.isNotEmpty) {
       pp('\n\n$mm photos to be uploaded: ${list.length} .... ');
@@ -173,6 +173,9 @@ class Uploader {
             cnt++;
           }
           break;
+        } else {
+          pp('$mm photo was taken outside the project boundary .... will be removed.');
+          await cacheManager.removeUploadedPhoto(photo: photoForUpload);
         }
       }
 
@@ -221,7 +224,7 @@ class Uploader {
   }
 
   Future<int> _sendPhotoToCloud(PhotoForUpload photoForUploading) async {
-    pp('$mm sending photo to cloud ...');
+    pp('$mm sending photo to cloud ...${photoForUploading.date}');
     var isUploaded = photoHasBeenUploaded(photoForUploading);
     if (await isUploaded) {
       pp('$mm isUploaded duplicate of this photo was found on uploaded list, already uploaded; quit!');
@@ -232,7 +235,7 @@ class Uploader {
     late UploadTask uploadTask;
     late TaskSnapshot taskSnapshot;
     try {
-      //upload main file
+      pp('$mm sending photo: setting up ...');
       var fileName =
           'photo@${photoForUploading.project!.projectId}@${DateTime.now().toUtc().toIso8601String()}.${'jpg'}';
       var firebaseStorageRef = FirebaseStorage.instance
@@ -244,6 +247,7 @@ class Uploader {
         await cacheManager.removeUploadedPhoto(photo: photoForUploading);
         return 9;
       }
+
       pp('$mm️ uploadPhoto ☕️☕️☕️☕️☕️☕️☕️file path: \n${file.path}');
 
       uploadTask = firebaseStorageRef.putFile(file);
@@ -325,7 +329,7 @@ class Uploader {
     }
   }
 
-  Future _uploadVideos() async {
+  Future uploadVideos() async {
     final list = await cacheManager.getVideosForUpload();
     if (list.isNotEmpty) {
       pp('$mm videos to be uploaded: ${list.length} .... ');
@@ -349,6 +353,9 @@ class Uploader {
             cnt++;
           }
           break;
+        } else {
+          pp('$mm video was taken outside the project boundary .... will be removed.');
+          await cacheManager.removeUploadedVideo(video: videoForUpload);
         }
       }
       var polygons = await cacheManager.getProjectPolygons(
@@ -503,7 +510,7 @@ class Uploader {
     }
   }
 
-  Future _uploadAudios() async {
+  Future uploadAudios() async {
     final list = await cacheManager.getAudioForUpload();
     var cnt = 0;
     if (list.isNotEmpty) {

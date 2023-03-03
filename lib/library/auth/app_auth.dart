@@ -49,12 +49,12 @@ class AppAuth {
           var pswd = user.password;
           user.password = null;
           try {
-            await DataAPI.updateUser(user);
+            //await DataAPI.updateUser(user);
             user.password = pswd;
             await prefsOGx.saveUser(user);
             await cacheManager.addUser(user: user);
             pp('$locks token has changed; 🥬🥬🥬🥬🥬🥬🥬🥬🥬'
-                ' have updated the user on the cloud ...');
+                ' have updated the user on the cache ...');
           } catch (e) {
             pp('$locks ... a bit of an issue here, Sir! - $e '
                 '- 🔵🔵🔵 do we need to worry about this??');

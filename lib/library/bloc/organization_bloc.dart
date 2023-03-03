@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:geo_monitor/library/data/activity_model.dart';
+import 'package:geo_monitor/library/data/project_summary.dart';
 import 'package:geo_monitor/library/data/settings_model.dart';
 import 'package:universal_platform/universal_platform.dart';
 
@@ -426,6 +427,46 @@ class OrganizationBloc {
       activityController.sink.add(activities);
       pp('$mm 💜💜💜💜 getOrganizationActivity found: 💜 ${activities.length} activities ; organizationId: $organizationId 💜');
       return activities;
+    } catch (e) {
+      pp('$mm $e');
+      rethrow;
+    }
+  }
+
+  Future<List<ProjectSummary>> getOrganizationDailySummaries(
+      {required String organizationId,
+      required String startDate,
+      required String endDate,
+      required bool forceRefresh}) async {
+    try {
+      var summaries =
+          await cacheManager.getOrganizationSummaries(startDate, endDate);
+
+      if (summaries.isEmpty || forceRefresh) {
+        summaries = await DataAPI.getOrganizationDailySummary(
+            organizationId, startDate, endDate);
+      }
+      return summaries;
+    } catch (e) {
+      pp('$mm $e');
+      rethrow;
+    }
+  }
+
+  Future<List<ProjectSummary>> getProjectDailySummaries(
+      {required String projectId,
+      required String startDate,
+      required String endDate,
+      required bool forceRefresh}) async {
+    try {
+      var summaries =
+          await cacheManager.getProjectSummaries(projectId, startDate, endDate);
+
+      if (summaries.isEmpty || forceRefresh) {
+        summaries =
+            await DataAPI.getProjectDailySummary(projectId, startDate, endDate);
+      }
+      return summaries;
     } catch (e) {
       pp('$mm $e');
       rethrow;

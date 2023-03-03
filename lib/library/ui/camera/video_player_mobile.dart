@@ -148,6 +148,7 @@ class VideoPlayerMobilePageState extends State<VideoPlayerMobilePage>
                     color: Colors.black12,
                     child: RatingAdder(
                       width: 400,
+                      elevation: 8.0,
                       video: widget.video,
                       onDone: () {
                         Navigator.of(context).pop();

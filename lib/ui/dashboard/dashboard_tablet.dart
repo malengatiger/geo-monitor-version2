@@ -7,8 +7,10 @@ import 'package:geo_monitor/library/bloc/organization_bloc.dart';
 import 'package:geo_monitor/library/data/activity_model.dart';
 import 'package:geo_monitor/library/ui/camera/video_player_tablet.dart';
 import 'package:geo_monitor/library/ui/media/list/project_media_main.dart';
+import 'package:geo_monitor/library/ui/ratings/rating_adder.dart';
 import 'package:geo_monitor/library/ui/settings/settings_main.dart';
 import 'package:geo_monitor/ui/activity/geo_activity.dart';
+import 'package:geo_monitor/ui/charts/summary_chart.dart';
 import 'package:geo_monitor/ui/dashboard/dashboard_grid.dart';
 import 'package:geo_monitor/ui/dashboard/photo_card.dart';
 import 'package:geo_monitor/ui/intro/intro_main.dart';
@@ -45,11 +47,11 @@ class DashboardTablet extends StatefulWidget {
   final User user;
 
   @override
-  State<DashboardTablet> createState() => _DashboardTabletState();
+  State<DashboardTablet> createState() => DashboardTabletState();
 }
 
-class _DashboardTabletState extends State<DashboardTablet> {
-  final mm = '🍎🍎🍎🍎 DashboardTabletLandscape: ';
+class DashboardTabletState extends State<DashboardTablet> {
+  final mm = '🍎🍎🍎🍎 DashboardTablet: 🔵 ';
   late StreamSubscription<List<Project>> projectSubscription;
   late StreamSubscription<List<User>> userSubscription;
   late StreamSubscription<List<Photo>> photoSubscription;
@@ -217,7 +219,7 @@ class _DashboardTabletState extends State<DashboardTablet> {
   }
 
   void _navigateToIntro() {
-    pp('$mm .................. _navigateToIntro to Intro ....');
+    pp('$mm .................. _navigateToIntro  ....');
     if (mounted) {
       Navigator.push(
           context,
@@ -226,6 +228,18 @@ class _DashboardTabletState extends State<DashboardTablet> {
               alignment: Alignment.topLeft,
               duration: const Duration(seconds: 1),
               child: const IntroMain()));
+    }
+  }
+  void _navigateToCharts() {
+    pp('$mm .................. _navigateToCharts  ....');
+    if (mounted) {
+      Navigator.push(
+          context,
+          PageTransition(
+              type: PageTransitionType.scale,
+              alignment: Alignment.topLeft,
+              duration: const Duration(seconds: 1),
+              child: const ProjectSummaryChart()));
     }
   }
 
@@ -382,10 +396,31 @@ class _DashboardTabletState extends State<DashboardTablet> {
 
   onMapRequested(Photo p1) {
     pp('$mm onMapRequested ... ');
+    if (mounted) {
+      Navigator.push(
+          context,
+          PageTransition(
+              type: PageTransitionType.scale,
+              alignment: Alignment.topLeft,
+              duration: const Duration(milliseconds: 1000),
+              child: PhotoMapTablet(
+                photo: p1,
+              )));
+    }
   }
+
+  bool _showRatingAdder = false;
 
   onRatingRequested(Photo p1) {
     pp('$mm onRatingRequested ...');
+    if (mounted) {
+      setState(() {
+        photo = p1;
+        _showRatingAdder = true;
+        _showAudio = false;
+        _showVideo = false;
+      });
+    }
   }
 
   Project? selectedProject;
@@ -459,6 +494,13 @@ class _DashboardTabletState extends State<DashboardTablet> {
                 color: Theme.of(context).primaryColor,
               ),
               onPressed: _navigateToIntro),
+          IconButton(
+              icon: Icon(
+                Icons.bar_chart,
+                size: 24,
+                color: Theme.of(context).primaryColor,
+              ),
+              onPressed: _navigateToCharts),
           user == null
               ? const SizedBox()
               : user!.userType == UserType.fieldMonitor
@@ -526,7 +568,7 @@ class _DashboardTabletState extends State<DashboardTablet> {
               return Row(
                 children: [
                   SizedBox(
-                    width: (size.width / 2) + 100,
+                    width: (size.width / 2) + 80,
                     child: dataBag == null
                         ? const SizedBox()
                         : DashboardGrid(
@@ -717,6 +759,18 @@ class _DashboardTabletState extends State<DashboardTablet> {
                     },
                   ))
               : const SizedBox(),
+          _showRatingAdder? Positioned(
+              left: 200, right: 200, top: 60,
+              child: RatingAdder(
+            photo: photo,
+            audio: audio,
+            video: video,
+            width: 400.0, onDone: (){
+              setState(() {
+                _showRatingAdder = false;
+              });
+              }, elevation: 8.0,
+          )) : const SizedBox(),
         ],
       ),
     ));

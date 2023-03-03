@@ -21,6 +21,10 @@ class AudioForUploadAdapter extends TypeAdapter<AudioForUpload> {
       project: fields[2] as Project?,
       position: fields[5] as Position?,
       audioId: fields[7] as String?,
+      userId: fields[8] as String?,
+      userName: fields[9] as String?,
+      userThumbnailUrl: fields[11] as String?,
+      organizationId: fields[10] as String?,
       date: fields[6] as String?,
     );
   }
@@ -28,7 +32,7 @@ class AudioForUploadAdapter extends TypeAdapter<AudioForUpload> {
   @override
   void write(BinaryWriter writer, AudioForUpload obj) {
     writer
-      ..writeByte(5)
+      ..writeByte(9)
       ..writeByte(0)
       ..write(obj.filePath)
       ..writeByte(2)
@@ -38,7 +42,15 @@ class AudioForUploadAdapter extends TypeAdapter<AudioForUpload> {
       ..writeByte(6)
       ..write(obj.date)
       ..writeByte(7)
-      ..write(obj.audioId);
+      ..write(obj.audioId)
+      ..writeByte(8)
+      ..write(obj.userId)
+      ..writeByte(9)
+      ..write(obj.userName)
+      ..writeByte(10)
+      ..write(obj.organizationId)
+      ..writeByte(11)
+      ..write(obj.userThumbnailUrl);
   }
 
   @override

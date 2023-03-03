@@ -23,6 +23,7 @@ import '../../bloc/video_for_upload.dart';
 import '../../cache_manager.dart';
 import '../../data/position.dart';
 import '../../data/project_polygon.dart';
+import '../../data/user.dart';
 import '../../functions.dart';
 import '../../generic_functions.dart';
 import '../media/list/project_media_list_mobile.dart';
@@ -49,6 +50,7 @@ class VideoHandlerState extends State<VideoHandler>
   var polygons = <ProjectPolygon>[];
   var positions = <ProjectPosition>[];
   var videos = <Video>[];
+  User? user;
 
   @override
   void initState() {
@@ -86,6 +88,7 @@ class VideoHandlerState extends State<VideoHandler>
       busy = true;
     });
     try {
+      user = await prefsOGx.getUser();
       pp('$mm .......... getting project positions and polygons');
       polygons = await projectBloc.getProjectPolygons(
           projectId: widget.project.projectId!, forceRefresh: false);
@@ -191,6 +194,10 @@ class VideoHandlerState extends State<VideoHandler>
           Position(type: 'Point', coordinates: [loc.longitude, loc.latitude]);
     }
     var videoForUpload = VideoForUpload(
+        userName: user!.name,
+        userThumbnailUrl: user!.thumbnailUrl,
+        userId: user!.userId,
+        organizationId: user!.organizationId,
         filePath: videoFile.path,
         thumbnailPath: thumbnailFile.path,
         project: widget.project,

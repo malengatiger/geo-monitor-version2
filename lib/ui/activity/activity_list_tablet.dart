@@ -109,13 +109,13 @@ class _ActivityListTabletState extends State<ActivityListTablet>
       pp('$mm ... get Activity (n hours) ... : $hours');
       if (widget.project != null) {
         pp('$mm ... widget.project != null, should get project data');
-        _getProjectData(forceRefresh, hours);
+        await _getProjectData(forceRefresh, hours);
       } else if (widget.user != null) {
         pp('$mm ... widget.user != null, should get user data');
-        _getUserData(forceRefresh, hours);
+        await _getUserData(forceRefresh, hours);
       } else {
         pp('$mm ... widget.project and widget.user == null, should get organization data');
-        _getOrganizationActivity(forceRefresh, hours);
+        await _getOrganizationActivity(forceRefresh, hours);
       }
       _sortDescending();
       _animationController.reset();
@@ -131,16 +131,16 @@ class _ActivityListTabletState extends State<ActivityListTablet>
     });
   }
 
-  void _getOrganizationActivity(bool forceRefresh, int hours) async {
+  Future _getOrganizationActivity(bool forceRefresh, int hours) async {
     models = await organizationBloc.getOrganizationActivity(
-        organizationId: settings!.organizationId!,
+        organizationId: me!.organizationId!,
         hours: hours,
         forceRefresh: forceRefresh);
     _sortDescending();
     setState(() {});
   }
 
-  void _getProjectData(bool forceRefresh, int hours) async {
+  Future _getProjectData(bool forceRefresh, int hours) async {
     models = await projectBloc.getProjectActivity(
         projectId: widget.project!.projectId!,
         hours: hours,
@@ -149,7 +149,7 @@ class _ActivityListTabletState extends State<ActivityListTablet>
     setState(() {});
   }
 
-  void _getUserData(bool forceRefresh, int hours) async {
+  Future _getUserData(bool forceRefresh, int hours) async {
     models = await userBloc.getUserActivity(
         userId: widget.user!.userId!, hours: hours, forceRefresh: forceRefresh);
     _sortDescending();
@@ -315,7 +315,7 @@ class _ActivityListTabletState extends State<ActivityListTablet>
                           model: act,
                           frontPadding: 36,
                           thinMode: widget.thinMode,
-                          width: widget.thinMode ? 300 : widget.width,
+                          width: widget.thinMode ? 320 : widget.width,
                         ),
                       );
                     }),

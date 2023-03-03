@@ -83,8 +83,8 @@ class GeoActivityState extends State<GeoActivity>
 
       activitySubscriptionFCM =
           fcmBloc.activityStream.listen((ActivityModel event) {
-        pp('$mm: 🍎activitySubscriptionFCM: 🍎 ActivityModel: '
-            ' ${event.toJson()} arrived: ${event.date} ');
+        // pp('$mm: 🍎activitySubscriptionFCM: 🍎 ActivityModel: '
+        //     ' ${event.toJson()} arrived: ${event.date} ');
         if (mounted) {
           pp('$mm activitySubscriptionFCM: DOING NOTHING!!!!!!!!!!!!!!');
           setState(() {});

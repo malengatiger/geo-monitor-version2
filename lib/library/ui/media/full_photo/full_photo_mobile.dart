@@ -71,6 +71,7 @@ class FullPhotoMobileState extends State<FullPhotoMobile>
                     color: Colors.black12,
                     child: RatingAdder(
                       width: 400,
+                      elevation: 8.0,
                       photo: widget.photo,
                       onDone: () {
                         Navigator.of(context).pop();

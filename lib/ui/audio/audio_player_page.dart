@@ -196,6 +196,7 @@ class AudioPlayerCardState extends State<AudioPlayerCard>
                 child: Container(
                     color: Colors.black12,
                     child: RatingAdder(
+                      elevation: 8.0,
                       width: 400,
                       audio: widget.audio,
                       onDone: () {

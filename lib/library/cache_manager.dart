@@ -6,6 +6,7 @@ import 'package:geo_monitor/library/bloc/video_for_upload.dart';
 import 'package:geo_monitor/library/data/activity_model.dart';
 import 'package:geo_monitor/library/data/activity_type_enum.dart';
 import 'package:geo_monitor/library/data/project_assignment.dart';
+import 'package:geo_monitor/library/data/project_summary.dart';
 import 'package:geo_monitor/library/data/settings_model.dart';
 import 'package:geo_monitor/library/data/weather/daily_forecast.dart';
 import 'package:geo_monitor/library/data/weather/daily_units.dart';
@@ -90,6 +91,9 @@ class CacheManager {
 
   LazyBox<ActivityModel>? _activityBox;
   LazyBox<ActivityModel>? _activityHistoryBox;
+  LazyBox<ProjectSummary>? _summaryBox;
+
+
 
   bool _isInitialized = false;
 
@@ -154,6 +158,7 @@ class CacheManager {
   }
 
   Future<void> _openBoxes() async {
+    _summaryBox = await Hive.openLazyBox<ProjectSummary>('summaries');
     _activityBox = await Hive.openLazyBox<ActivityModel>('activities');
 
     _orgBox = await Hive.openLazyBox<Organization>('organizations');
@@ -203,6 +208,10 @@ class CacheManager {
 
   void _registerAdapters() {
     p('\n$xx ... Registering Hive object adapters ...');
+    if (!Hive.isAdapterRegistered(65)) {
+      Hive.registerAdapter(ProjectSummaryAdapter());
+      p('$xx Hive ProjectSummaryAdapter registered');
+    }
     if (!Hive.isAdapterRegistered(61)) {
       Hive.registerAdapter(ActivityTypeAdapter());
       p('$xx Hive ActivityTypeAdapter registered');
@@ -344,7 +353,53 @@ class CacheManager {
       '${E.appleRed}${E.appleRed}${E.appleRed}${E.appleRed} CacheManager: ';
   var random = Random(DateTime.now().millisecondsSinceEpoch);
 
-  Future addActivityModel({required ActivityModel activity}) async {
+  Future addProjectSummaries({required List<ProjectSummary> summaries}) async {
+
+    for (var element in summaries) {
+      await addProjectSummary(summary: element);
+    }
+    pp('$mm ${summaries.length} ProjectSummaries added to hive cache}');
+  }
+  Future addProjectSummary({required ProjectSummary summary}) async {
+    var key = '${DateTime.parse(summary.projectId!)}_${summary.date!}';
+    await _summaryBox?.put(key, summary);
+
+    pp('$mm ProjectSummary added to hive cache}');
+  }
+  Future<List<ProjectSummary>> getOrganizationSummaries(String startDate, String endDate) async {
+    var sums = <ProjectSummary>[];
+    var keys = _summaryBox?.keys;
+    if (keys != null) {
+      for (var key in keys) {
+        var summary = await _summaryBox?.get(key);
+        if (summary != null) {
+          var sDate = DateTime.parse(startDate).millisecondsSinceEpoch;
+          var eDate = DateTime.parse(endDate).millisecondsSinceEpoch;
+          var sumDate = DateTime.parse(summary.date!).millisecondsSinceEpoch;
+          if (sumDate >= sDate && sumDate <= eDate ) {
+            sums.add(summary);
+          }
+        }
+      }
+    }
+    sums.sort((a,b) => a.date!.compareTo(b.date!));
+    pp('$mm ProjectSummaries found in hive cache: ${sums.length}');
+    return sums;
+  }
+  Future<List<ProjectSummary>> getProjectSummaries(String projectId, String startDate, String endDate) async {
+     var list = await getOrganizationSummaries(startDate, endDate);
+     var sums = <ProjectSummary>[];
+     for (var value in list) {
+       if (value.projectId == projectId) {
+         sums.add(value);
+       }
+     }
+     sums.sort((a,b) => a.date!.compareTo(b.date!));
+     pp('$mm ProjectSummaries found in hive cache: ${sums.length}');
+     return sums;
+  }
+
+    Future addActivityModel({required ActivityModel activity}) async {
     late String key;
     if (activity.projectId == null) {
       key =
@@ -1330,7 +1385,7 @@ class CacheManager {
         '${projectPosition.organizationId}_${projectPosition.projectId}_${projectPosition.projectPositionId}';
     await _positionBox?.put(key, projectPosition);
 
-    pp('$mm ProjectPosition added to local cache:  🔵 🔵 🔵 🔵 ${projectPosition.projectName} 🔆key: $key');
+    // pp('$mm ProjectPosition added to local cache:  🔵 🔵 🔵 🔵 ${projectPosition.projectName} 🔆key: $key');
   }
 
   Future addUser({required User user}) async {

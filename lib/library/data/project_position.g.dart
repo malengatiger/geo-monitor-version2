@@ -26,6 +26,7 @@ class ProjectPositionAdapter extends TypeAdapter<ProjectPosition> {
       nearestCities: (fields[8] as List?)?.cast<City>(),
       organizationId: fields[5] as String?,
       name: fields[9] as String?,
+      possibleAddress: fields[12] as String?,
       userId: fields[10] as String?,
       userName: fields[11] as String?,
       projectId: fields[1] as String?,
@@ -35,7 +36,7 @@ class ProjectPositionAdapter extends TypeAdapter<ProjectPosition> {
   @override
   void write(BinaryWriter writer, ProjectPosition obj) {
     writer
-      ..writeByte(12)
+      ..writeByte(13)
       ..writeByte(0)
       ..write(obj.projectName)
       ..writeByte(1)
@@ -59,7 +60,9 @@ class ProjectPositionAdapter extends TypeAdapter<ProjectPosition> {
       ..writeByte(10)
       ..write(obj.userId)
       ..writeByte(11)
-      ..write(obj.userName);
+      ..write(obj.userName)
+      ..writeByte(12)
+      ..write(obj.possibleAddress);
   }
 
   @override

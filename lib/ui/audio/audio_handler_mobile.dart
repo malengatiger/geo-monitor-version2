@@ -24,7 +24,6 @@ import '../../library/data/user.dart';
 import '../../library/data/video.dart';
 import '../../library/functions.dart';
 import '../../library/generic_functions.dart';
-import '../dashboard/dashboard_portrait.dart';
 
 class AudioHandlerMobile extends StatefulWidget {
   const AudioHandlerMobile({Key? key, required this.project}) : super(key: key);
@@ -244,6 +243,10 @@ class AudioHandlerMobileState extends State<AudioHandlerMobile>
             Position(coordinates: [loc.longitude, loc.latitude], type: 'Point');
       }
       var audioForUpload = AudioForUpload(
+          userName: user!.name,
+          userThumbnailUrl: user!.thumbnailUrl,
+          userId: user!.userId,
+          organizationId: user!.organizationId,
           filePath: _recordedFile!.path,
           project: widget.project,
           position: position,

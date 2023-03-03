@@ -33,12 +33,15 @@ class PhotoCard extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 48.0),
               child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
-                  Text(
-                    '${photo.projectName}',
-                    style: myTextStyleLargePrimaryColor(context),
+                  Flexible(
+                    child: Text(
+                      '${photo.projectName}',
+                      style: myTextStyleLargePrimaryColor(context),
+                    ),
                   ),
+                  const SizedBox(width: 24),
                   IconButton(
                       onPressed: () {
                         onMapRequested(photo);
@@ -61,7 +64,7 @@ class PhotoCard extends StatelessWidget {
               ),
             ),
             const SizedBox(
-              height: 12,
+              height: 24,
             ),
             Text(
               '${photo.userName}',

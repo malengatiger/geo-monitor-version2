@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:geo_monitor/library/api/prefs_og.dart';
+import 'package:geo_monitor/library/bloc/theme_bloc.dart';
 import 'package:geo_monitor/library/data/country.dart';
 import 'package:geo_monitor/library/data/organization.dart';
 import 'package:geo_monitor/library/data/organization_registration_bag.dart';
@@ -170,10 +171,10 @@ class AuthEmailRegistrationPortraitState
     await prefsOGx.saveUser(user!);
 
     var mSettings = await DataAPI.addSettings(SettingsModel(
-        distanceFromProject: 100,
+        distanceFromProject: 200,
         photoSize: 0,
         maxVideoLengthInMinutes: 3,
-        maxAudioLengthInMinutes: 10,
+        maxAudioLengthInMinutes: 30,
         themeIndex: 0,
         settingsId: const Uuid().v4(),
         created: DateTime.now().toUtc().toIso8601String(),
@@ -202,6 +203,7 @@ class AuthEmailRegistrationPortraitState
           email: user!.email!, password: password);
       pp('$mm cred after signing in again after auth update: 🍎 $cred 🍎');
       await prefsOGx.getUser();
+      await themeBloc.changeToTheme(mSettings.themeIndex!);
 
       pp('\n\n$mm Organization registered: 🌍🌍🌍🌍 🍎 resultBag: ${resultBag.toJson()} 🌍🌍🌍🌍\n\n');
     } else {

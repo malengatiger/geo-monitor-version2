@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:geo_monitor/library/api/data_api.dart';
 import 'package:geo_monitor/library/api/prefs_og.dart';
 import 'package:geo_monitor/library/bloc/organization_bloc.dart';
+import 'package:geo_monitor/library/bloc/theme_bloc.dart';
 import 'package:geo_monitor/library/functions.dart';
 import 'package:geo_monitor/ui/intro/intro_page_one.dart';
 
@@ -53,6 +54,10 @@ class _AuthEmailSignInTabletPortraitState
           await prefsOGx.saveUser(user);
           await organizationBloc.getOrganizationData(
               organizationId: user.organizationId!, forceRefresh: true);
+          var settings =await DataAPI.getOrganizationSettings(user.organizationId!);
+          settings.sort((a,b) => b.created!.compareTo(a.created!));
+          await prefsOGx.saveSettings(settings.first);
+          await themeBloc.changeToTheme(settings.first.themeIndex!);
           if (mounted) {
             showToast(message: 'Member sign in succeeded', context: context);
             Navigator.of(context).pop(user);

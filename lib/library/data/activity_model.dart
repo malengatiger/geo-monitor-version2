@@ -62,6 +62,8 @@ class ActivityModel extends HiveObject {
   LocationRequest? locationRequest;
   @HiveField(19)
   LocationResponse? locationResponse;
+  @HiveField(20)
+  String? userThumbnailUrl;
 
   ActivityModel({
     required this.activityTypeId,
@@ -83,7 +85,7 @@ class ActivityModel extends HiveObject {
     required this.locationRequest,
     required this.user,
     required this.geofenceEvent,
-    required this.orgMessage,
+    required this.orgMessage, required this.userThumbnailUrl,
   });
 
   ActivityModel.fromJson(Map data) {
@@ -101,6 +103,7 @@ class ActivityModel extends HiveObject {
     userName = data['userName'];
     projectId = data['projectId'];
     projectName = data['projectName'];
+    userThumbnailUrl = data['userThumbnailUrl'];
     if (data[''] != null) {}
     if (data['locationResponse'] != null) {
       locationResponse = LocationResponse.fromJson(data['locationResponse']);
@@ -144,6 +147,7 @@ class ActivityModel extends HiveObject {
       'userName': userName,
       'projectId': projectId,
       'projectName': projectName,
+      'userThumbnailUrl': userThumbnailUrl,
       'activityType':
           activityType == null ? null : activityType!.toShortString(),
       'organizationId': organizationId,

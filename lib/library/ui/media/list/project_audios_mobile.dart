@@ -179,6 +179,7 @@ class ProjectAudiosState extends State<ProjectAudios> {
                     color: Colors.black12,
                     child: RatingAdder(
                       width: 400,
+                      elevation: 8.0,
                       audio: _selectedAudio!,
                       onDone: () {
                         Navigator.of(context).pop();

@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:geo_monitor/library/bloc/multi_part_uploader.dart';
 import 'package:image/image.dart' as img;
 import 'package:image_picker/image_picker.dart';
 import 'package:native_device_orientation/native_device_orientation.dart';
@@ -22,6 +23,7 @@ import '../../data/position.dart';
 import '../../data/project.dart';
 import '../../data/project_polygon.dart';
 import '../../data/project_position.dart';
+import '../../data/user.dart';
 import '../../data/video.dart';
 import '../../emojis.dart';
 import '../../functions.dart';
@@ -51,6 +53,7 @@ class PhotoHandlerState extends State<PhotoHandler>
   NativeDeviceOrientation? _deviceOrientation;
   var polygons = <ProjectPolygon>[];
   var positions = <ProjectPosition>[];
+  User? user;
 
   @override
   void initState() {
@@ -78,6 +81,7 @@ class PhotoHandlerState extends State<PhotoHandler>
     });
     try {
       pp('$mm .......... getting project positions and polygons');
+      user = await prefsOGx.getUser();
       polygons = await projectBloc.getProjectPolygons(
           projectId: widget.project.projectId!, forceRefresh: false);
       positions = await projectBloc.getProjectPositions(
@@ -178,13 +182,18 @@ class PhotoHandlerState extends State<PhotoHandler>
       var position =
           Position(type: 'Point', coordinates: [loc.longitude, loc.latitude]);
       var photoForUpload = PhotoForUpload(
+          userThumbnailUrl: user!.thumbnailUrl,
+          userName: user!.name,
+          organizationId: user!.organizationId,
           filePath: mFile.path,
           thumbnailPath: tFile.path,
           project: widget.project,
           position: position,
           photoId: const Uuid().v4(),
-          date: DateTime.now().toUtc().toIso8601String());
+          date: DateTime.now().toUtc().toIso8601String(),
+          userId: user!.userId!);
       await cacheManager.addPhotoForUpload(photo: photoForUpload);
+      multiPartUploader.startPhotoUpload(photoForUpload);
     }
 
     var size = await mFile.length();
@@ -377,23 +386,23 @@ class PhotoHandlerState extends State<PhotoHandler>
         children: [
           finalFile == null
               ? Container(
-            width: double.infinity,
-            height: double.infinity,
-            decoration: const BoxDecoration(
-              image: DecorationImage(
-                  image: AssetImage('assets/intro/pic2.jpg'),
-                  opacity: 0.1,
-                  fit: BoxFit.cover),
-            ),
-          )
+                  width: double.infinity,
+                  height: double.infinity,
+                  decoration: const BoxDecoration(
+                    image: DecorationImage(
+                        image: AssetImage('assets/intro/pic2.jpg'),
+                        opacity: 0.1,
+                        fit: BoxFit.cover),
+                  ),
+                )
               : Container(
-            width: double.infinity,
-            height: double.infinity,
-            decoration: BoxDecoration(
-              image: DecorationImage(
-                  image: FileImage(finalFile!), fit: BoxFit.cover),
-            ),
-          ),
+                  width: double.infinity,
+                  height: double.infinity,
+                  decoration: BoxDecoration(
+                    image: DecorationImage(
+                        image: FileImage(finalFile!), fit: BoxFit.cover),
+                  ),
+                ),
           Positioned(
             left: 12,
             right: 12,

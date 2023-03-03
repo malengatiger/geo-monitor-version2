@@ -13,6 +13,7 @@ import 'package:pin_code_fields/pin_code_fields.dart';
 import 'package:uuid/uuid.dart';
 
 import '../../library/api/data_api.dart';
+import '../../library/bloc/theme_bloc.dart';
 import '../../library/data/user.dart' as ur;
 import '../../library/functions.dart';
 import '../../library/generic_functions.dart';
@@ -178,14 +179,12 @@ class AuthPhoneSignInMobileState extends State<AuthPhoneSignInMobile>
         await prefsOGx.saveUser(user!);
         await cacheManager.addUser(user: user!);
         ;
-        var list = await DataAPI.getOrganizationSettings(user!.organizationId!);
-        for (var settings in list) {
-          if (settings.projectId == null) {
-            await prefsOGx.saveSettings(settings);
-            break;
-          }
-        }
-        if (list.isEmpty) {
+        var settings =await DataAPI.getOrganizationSettings(user!.organizationId!);
+        settings.sort((a,b) => b.created!.compareTo(a.created!));
+
+        await themeBloc.changeToTheme(settings.first.themeIndex!);
+
+        if (settings.isEmpty) {
           await prefsOGx.saveSettings(SettingsModel(
               distanceFromProject: 100,
               photoSize: 0,
@@ -197,6 +196,11 @@ class AuthPhoneSignInMobileState extends State<AuthPhoneSignInMobile>
               organizationId: user!.organizationId,
               projectId: null,
               activityStreamHours: 12));
+          await themeBloc.changeToTheme(0);
+
+        } else {
+          await prefsOGx.saveSettings(settings.first);
+          await themeBloc.changeToTheme(settings.first.themeIndex!);
         }
         setState(() {
           busy = false;

@@ -1,12 +1,7 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:geo_monitor/library/api/data_api.dart';
-import 'package:geo_monitor/library/api/prefs_og.dart';
-import 'package:geo_monitor/library/bloc/organization_bloc.dart';
 import 'package:geo_monitor/library/functions.dart';
 import 'package:geo_monitor/ui/intro/intro_page_one.dart';
 
-import '../../library/generic_functions.dart';
 import 'auth_email_signin_tablet_portrait.dart';
 
 

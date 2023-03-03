@@ -37,13 +37,14 @@ class ActivityModelAdapter extends TypeAdapter<ActivityModel> {
       user: fields[12] as User?,
       geofenceEvent: fields[17] as GeofenceEvent?,
       orgMessage: fields[16] as OrgMessage?,
+      userThumbnailUrl: fields[20] as String?,
     );
   }
 
   @override
   void write(BinaryWriter writer, ActivityModel obj) {
     writer
-      ..writeByte(20)
+      ..writeByte(21)
       ..writeByte(0)
       ..write(obj.activityTypeId)
       ..writeByte(1)
@@ -83,7 +84,9 @@ class ActivityModelAdapter extends TypeAdapter<ActivityModel> {
       ..writeByte(18)
       ..write(obj.locationRequest)
       ..writeByte(19)
-      ..write(obj.locationResponse);
+      ..write(obj.locationResponse)
+      ..writeByte(20)
+      ..write(obj.userThumbnailUrl);
   }
 
   @override

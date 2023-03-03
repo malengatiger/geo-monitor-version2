@@ -41,7 +41,7 @@ class PrefsOGx {
   }
   Future saveUser(User user) async {
     await box.write('user', user.toJson());
-    pp("\n\n$mm saveUser SAVED: 🌽 ${user.toJson()}\n");
+    pp("\n\n$mm saveUser SAVED: 🌽 ${user.name}\n");
     return null;
   }
 
