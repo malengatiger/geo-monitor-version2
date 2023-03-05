@@ -76,6 +76,7 @@ class DashboardTabletState extends State<DashboardTablet> {
   User? user;
   DataBag? dataBag;
   bool busy = false;
+  int numberOfDays = 7;
 
   @override
   void initState() {
@@ -166,6 +167,10 @@ class DashboardTabletState extends State<DashboardTablet> {
     });
     try {
       user = await prefsOGx.getUser();
+      var settings = await prefsOGx.getSettings();
+      if (settings != null) {
+        numberOfDays = settings.numberOfDays!;
+      }
       var map = await getStartEndDates();
       final startDate = map['startDate'];
       final endDate = map['endDate'];
@@ -533,7 +538,7 @@ class DashboardTabletState extends State<DashboardTablet> {
           )
         ],
         bottom: PreferredSize(
-          preferredSize: const Size.fromHeight(80),
+          preferredSize: const Size.fromHeight(140),
           child: Column(
             children: [
               user == null
@@ -556,14 +561,33 @@ class DashboardTabletState extends State<DashboardTablet> {
                                 radius: 8,
                               )
                             : CircleAvatar(
-                                radius: 22,
+                                radius: 28,
                                 backgroundImage: NetworkImage(user!.imageUrl!),
                               )
                       ],
                     ),
               const SizedBox(
                 height: 8,
-              )
+              ),
+              const SizedBox(
+                height: 32,
+              ),
+              Padding(
+                padding: const EdgeInsets.only(left: 28.0),
+                child: Row(mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    Text('Data is for the last', style: myTextStyleSmall(context),),
+                    const SizedBox(width: 8,),
+                    Text('$numberOfDays', style: myNumberStyleMediumPrimaryColor(context),),
+                    const SizedBox(width: 8,),
+                    Text('days', style: myTextStyleSmall(context),),
+
+                  ],
+                ),
+              ),
+              const SizedBox(
+                height: 4,
+              ),
             ],
           ),
         ),

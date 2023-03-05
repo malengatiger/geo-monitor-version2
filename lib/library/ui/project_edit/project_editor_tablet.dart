@@ -41,7 +41,7 @@ class ProjectEditorTabletState extends State<ProjectEditorTablet>
   void _getUser() async {
     admin = await prefsOGx.getUser();
     if (admin != null) {
-      pp('🎽 🎽 🎽 We have an admin user? 🎽 🎽 🎽 ${admin!.toJson()}');
+      pp('🎽 🎽 🎽 We have an admin user? 🎽 🎽 🎽 ${admin!.name!}');
       setState(() {});
     }
   }

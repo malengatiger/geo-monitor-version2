@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:geo_monitor/library/api/prefs_og.dart';
 import 'package:geo_monitor/library/data/project.dart';
 import 'package:geo_monitor/library/ui/camera/video_controls.dart';
@@ -44,6 +45,10 @@ class VideoHandlerTwoState extends State<VideoHandlerTwo>
 
   CameraDescription? cameraDescription;
   bool _isCameraInitialized = false;
+  Timer? timer;
+  Duration duration = const Duration(seconds: 0);
+  Duration finalDuration = const Duration(seconds: 0);
+  bool _showChoice = false;
 
   @override
   void initState() {
@@ -153,10 +158,6 @@ class VideoHandlerTwoState extends State<VideoHandlerTwo>
     }
   }
 
-  Timer? timer;
-  Duration duration = const Duration(seconds: 0);
-  Duration finalDuration = const Duration(seconds: 0);
-  bool _showChoice = false;
   void startTimer() async {
     timer = Timer.periodic(const Duration(seconds: 1), (timer) {
       duration = Duration(seconds: timer.tick);
@@ -186,7 +187,6 @@ class VideoHandlerTwoState extends State<VideoHandlerTwo>
       duration == const Duration(seconds: 0);
       startTimer();
       await cameraController!.startVideoRecording();
-
     } on CameraException catch (e) {
       pp('Error starting to record video: $e');
     }
@@ -215,7 +215,7 @@ class VideoHandlerTwoState extends State<VideoHandlerTwo>
         _showChoice = true;
         pp('$mm setting state:_isRecordingInProgress: $_isRecordingInProgress');
       });
-      _processFile();
+
       return file;
     } on CameraException catch (e) {
       pp('$mm Error stopping video recording: $e');
@@ -275,7 +275,16 @@ class VideoHandlerTwoState extends State<VideoHandlerTwo>
 
     await cacheManager.addVideoForUpload(video: videoForUpload);
     geoUploader.manageMediaUploads();
-
+    if (mounted) {
+      showToast(
+          duration: const Duration(seconds: 3),
+          padding: 16,
+          textStyle: myTextStyleMediumBold(context),
+          toastGravity: ToastGravity.TOP,
+          backgroundColor: Theme.of(context).primaryColor,
+          message: 'Video will be uploaded soon!',
+          context: context);
+    }
   }
 
   void pauseVideoRecording() {}
@@ -307,7 +316,8 @@ class VideoHandlerTwoState extends State<VideoHandlerTwo>
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return SafeArea(
+        child: Scaffold(
       body: Stack(
         children: [
           _isCameraInitialized
@@ -376,39 +386,52 @@ class VideoHandlerTwoState extends State<VideoHandlerTwo>
                       aspectRatio: 1 / _cameraController.value.aspectRatio,
                       child: _cameraController.buildPreview(),
                     )
-              : Container(
-                  color: Colors.teal,
+              : Center(
+                  child: Card(
+                    child: Padding(
+                      padding: const EdgeInsets.all(20.0),
+                      child: Text(
+                        'Getting camera ready',
+                        style: myTextStyleMediumBold(context),
+                      ),
+                    ),
+                  ),
                 ),
           Positioned(
-              right: 12,
-              top: 48,
+              right: 8,
+              top: 8,
               child: Card(
-                shape: getRoundedBorder(radius: 12),
-                color: Colors.black38,
+                shape: getRoundedBorder(radius: 16),
+                color: Colors.black12,
                 elevation: 8,
                 child: Padding(
-                  padding: const EdgeInsets.all(8.0),
+                  padding: const EdgeInsets.all(12.0),
                   child: Text(
                     getHourMinuteSecond(duration),
-                    style: myTextStyleMediumBold(context),
+                    style: myTextStyleMediumPrimaryColor(context),
                   ),
                 ),
               )),
           Positioned(
-              bottom: 60,
-              right: 20,
+              bottom: 8,
+              right: 100,
+              left: 100,
               child: VideoControls(
-                  onRecord: onRecord,
-                  onPlay: onPlay,
-                  onPause: onPause,
-                  onStop: onStop,
-                  isPlaying: isPlaying,
-                  isPaused: isPaused,
-                  isStopped: isStopped,
-                  isRecording: isRecording)),
+                onRecord: onRecord,
+                onPlay: onPlay,
+                onPause: onPause,
+                onStop: onStop,
+                isPlaying: isPlaying,
+                isPaused: isPaused,
+                isStopped: isStopped,
+                isRecording: isRecording,
+                onClose: () {
+                  Navigator.of(context).pop();
+                },
+              )),
         ],
       ),
-    );
+    ));
   }
 
   void onUpload() {

@@ -44,7 +44,7 @@ import 'functions.dart';
 import 'generic_functions.dart';
 
 const stillWorking = 201, doneCaching = 200;
-const String hiveName = 'GeoHive5a';
+const String hiveName = 'GeoHive5b';
 CacheManager cacheManager = CacheManager._instance;
 
 class CacheManager {

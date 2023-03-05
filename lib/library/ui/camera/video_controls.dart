@@ -12,12 +12,14 @@ class VideoControls extends StatelessWidget {
       required this.isPlaying,
       required this.isPaused,
       required this.isStopped,
-      required this.isRecording})
+      required this.isRecording,
+      required this.onClose})
       : super(key: key);
   final Function onPlay;
   final Function onPause;
   final Function onStop;
   final Function onRecord;
+  final Function onClose;
   final bool isPlaying;
   final bool isPaused;
   final bool isStopped;
@@ -28,13 +30,13 @@ class VideoControls extends StatelessWidget {
     var showStop = false;
     var showPause = false;
     var showRecord = false;
-    var width = 120.0;
+    var width = 200.0;
     if (!isPlaying && !isPaused && !isStopped) {
-      showStop = false;
+      showStop = true;
       showRecord = true;
       showPause = false;
       showPlay = false;
-      width = 120;
+      width = 200;
     } else {
       if (isPlaying) {
         showStop = true;
@@ -65,16 +67,14 @@ class VideoControls extends StatelessWidget {
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 8.0),
           child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const SizedBox(
-                width: 4,
-              ),
+              const SizedBox(width: 12,),
               showRecord
                   ? IconButton(
-                  onPressed: _onRecordTapped,
-                  icon: Icon(Icons.videocam,
-                      color: Theme.of(context).primaryColor))
+                      onPressed: _onRecordTapped,
+                      icon: Icon(Icons.videocam,
+                          color: Theme.of(context).primaryColor))
                   : const SizedBox(),
               showPlay
                   ? IconButton(
@@ -88,9 +88,6 @@ class VideoControls extends StatelessWidget {
                       icon: Icon(Icons.pause,
                           color: Theme.of(context).primaryColor))
                   : const SizedBox(),
-              // const SizedBox(
-              //   width: 28,
-              // ),
               showStop
                   ? IconButton(
                       onPressed: _onPlayStopped,
@@ -99,6 +96,12 @@ class VideoControls extends StatelessWidget {
                         color: Theme.of(context).primaryColor,
                       ))
                   : const SizedBox(),
+              IconButton(
+                  onPressed: () {
+                    onClose();
+                  },
+                  icon:  Icon(Icons.close, color: Theme.of(context).primaryColor,)),
+              const SizedBox(width: 2,),
             ],
           ),
         ),

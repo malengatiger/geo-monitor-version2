@@ -115,14 +115,18 @@ class ProjectListMobileState extends State<ProjectListMobile>
       setState(() {});
     }
   }
-
+  int numberOfDays = 7;
   void _getUser() async {
     setState(() {
       isBusy = true;
     });
     user = await prefsOGx.getUser();
+    var settings = await prefsOGx.getSettings();
+    if (settings != null) {
+      numberOfDays = settings.numberOfDays!;
+    }
     if (user != null) {
-      pp('$mm user found: ${user!.toJson()}');
+      pp('$mm user found: ${user!.name!}');
       _setUserType();
       await refreshProjects(false);
     } else {

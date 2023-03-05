@@ -157,17 +157,17 @@ class FCMBloc {
         // RemoteNotification? notification = message.notification;
         // AndroidNotification? android = message.notification?.android;
         if (message.data['activity'] != null) {
-          pp("\n\n$mm onMessage: 🍎 🍎 activity message has arrived!  ... 🍎 🍎\n ");
+          pp("$mm onMessage: 🍎 🍎 activity message has arrived!  ... 🍎 🍎\n ");
         } else if (message.data['geofenceEvent'] != null) {
-          pp("\n\n$mm onMessage: 🍎 🍎 geofenceEvent message has arrived!  ... 🍎 🍎\n ");
+          pp("$mm onMessage: 🍎 🍎 geofenceEvent message has arrived!  ... 🍎 🍎\n ");
         } else if (message.data['locationRequest'] != null) {
-          pp("\n\n$mm onMessage: 🍎 🍎 locationRequest message has arrived!  ... 🍎 🍎\n ");
+          pp("$mm onMessage: 🍎 🍎 locationRequest message has arrived!  ... 🍎 🍎\n ");
         } else if (message.data['locationResponse'] != null) {
-          pp("\n\n$mm onMessage: 🍎 🍎 locationResponse message has arrived!  ... 🍎 🍎\n ");
+          pp("$mm onMessage: 🍎 🍎 locationResponse message has arrived!  ... 🍎 🍎\n ");
         } else if (message.data['user'] != null) {
-          pp("\n\n$mm onMessage: 🍎 🍎 user message has arrived!  ... 🍎 🍎\n ");
+          pp("$mm onMessage: 🍎 🍎 user message has arrived!  ... 🍎 🍎\n ");
         } else {
-          pp("\n\n$mm onMessage: 🍎 🍎 other geo message has arrived!  ... 🍎 🍎\n ");
+          pp("$mm onMessage: 🍎 🍎 some other geo message has arrived!  ... 🍎 🍎\n ");
         }
         processFCMMessage(message);
       });

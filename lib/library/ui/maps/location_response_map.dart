@@ -70,7 +70,7 @@ class LocationResponseMapState extends State<LocationResponseMap>
   Future _getUser() async {
     user = await cacheManager.getUserById(widget.locationResponse.userId!);
     if (user != null) {
-      pp('$mm user found in Hive cache ${user!.toJson()}');
+      pp('$mm user found in Hive cache ${user!.name!}');
       _showUser = true;
     } else {
       pp('$mm user NOT found in Hive cache');

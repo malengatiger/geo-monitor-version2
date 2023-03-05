@@ -84,6 +84,7 @@ class DashboardPortraitState extends State<DashboardPortrait>
   int instruction = stayOnList;
   var items = <BottomNavigationBarItem>[];
 
+  int numberOfDays = 7;
   @override
   void initState() {
     _gridViewAnimationController = AnimationController(
@@ -193,6 +194,10 @@ class DashboardPortraitState extends State<DashboardPortrait>
   Future _getData(bool forceRefresh) async {
     pp('\n\n$mm ............................................ Refreshing dashboard data ....\n');
     deviceUser = await prefsOGx.getUser();
+    var settings = await prefsOGx.getSettings();
+    if (settings != null) {
+      numberOfDays = settings.numberOfDays!;
+    }
     if (deviceUser != null) {
       if (deviceUser!.userType == UserType.orgAdministrator) {
         type = 'Administrator';
@@ -651,7 +656,7 @@ class DashboardPortraitState extends State<DashboardPortrait>
             )
           ],
           bottom: PreferredSize(
-            preferredSize: const Size.fromHeight(132),
+            preferredSize: const Size.fromHeight(180),
             child: Padding(
               padding: const EdgeInsets.all(8.0),
               child: Column(
@@ -710,6 +715,19 @@ class DashboardPortraitState extends State<DashboardPortrait>
                             fontWeight: FontWeight.normal,
                           ),
                         ),
+                  const SizedBox(
+                    height: 12,
+                  ),
+                  Row(mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                       Text('Data is for the last', style: myTextStyleSmall(context),),
+                      const SizedBox(width: 8,),
+                      Text('$numberOfDays', style: myNumberStyleMediumPrimaryColor(context),),
+                      const SizedBox(width: 8,),
+                       Text('days', style: myTextStyleSmall(context),),
+
+                    ],
+                  ),
                   const SizedBox(
                     height: 4,
                   ),

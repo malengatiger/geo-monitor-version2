@@ -96,10 +96,11 @@ class DailyForecastPageState extends State<DailyForecastPage>
           showToast(message: '$e', context: context);
         }
       }
-
-      setState(() {
-        busy = false;
-      });
+     if (mounted) {
+       setState(() {
+         busy = false;
+       });
+     }
     });
   }
 
