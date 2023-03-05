@@ -3,7 +3,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:geo_monitor/library/bloc/multi_part_uploader.dart';
+import 'package:geo_monitor/library/bloc/geo_uploader.dart';
 import 'package:image/image.dart' as img;
 import 'package:image_picker/image_picker.dart';
 import 'package:native_device_orientation/native_device_orientation.dart';
@@ -14,7 +14,6 @@ import 'package:uuid/uuid.dart';
 
 import '../../../device_location/device_location_bloc.dart';
 import '../../api/prefs_og.dart';
-import '../../bloc/cloud_storage_bloc.dart';
 import '../../bloc/photo_for_upload.dart';
 import '../../bloc/project_bloc.dart';
 import '../../cache_manager.dart';
@@ -41,7 +40,7 @@ class PhotoHandler extends StatefulWidget {
 
 class PhotoHandlerState extends State<PhotoHandler>
     with SingleTickerProviderStateMixin
-    implements StorageBlocListener {
+     {
   final mm =
       '${E.blueDot}${E.blueDot}${E.blueDot}${E.blueDot} PhotoHandler: 🌿';
 
@@ -181,12 +180,16 @@ class PhotoHandlerState extends State<PhotoHandler>
     if (loc != null) {
       var position =
           Position(type: 'Point', coordinates: [loc.longitude, loc.latitude]);
+      // var bytes = await mFile.readAsBytes();
+      // var tBytes = await tFile.readAsBytes();
       var photoForUpload = PhotoForUpload(
           userThumbnailUrl: user!.thumbnailUrl,
           userName: user!.name,
           organizationId: user!.organizationId,
           filePath: mFile.path,
           thumbnailPath: tFile.path,
+          fileBytes: null,
+          thumbnailBytes: null,
           project: widget.project,
           position: position,
           photoId: const Uuid().v4(),
@@ -194,7 +197,7 @@ class PhotoHandlerState extends State<PhotoHandler>
           userId: user!.userId!);
 
       await cacheManager.addPhotoForUpload(photo: photoForUpload);
-      multiPartUploader.startPhotoUpload(photoForUpload);
+      geoUploader.manageMediaUploads();
     }
 
     var size = await mFile.length();
@@ -219,7 +222,6 @@ class PhotoHandlerState extends State<PhotoHandler>
   @override
   void dispose() {
     _controller.dispose();
-    killSubscription.cancel();
     super.dispose();
   }
 

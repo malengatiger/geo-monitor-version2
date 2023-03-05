@@ -216,7 +216,7 @@ class AuthPhoneRegistrationMobileState
       var mSettings = await DataAPI.addSettings(SettingsModel(
           distanceFromProject: 100,
           photoSize: 0,
-          maxVideoLengthInMinutes: 3,
+          maxVideoLengthInSeconds: 3,
           maxAudioLengthInMinutes: 10,
           themeIndex: 0,
           settingsId: const Uuid().v4(),

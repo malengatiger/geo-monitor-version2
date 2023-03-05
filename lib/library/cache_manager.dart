@@ -44,7 +44,7 @@ import 'functions.dart';
 import 'generic_functions.dart';
 
 const stillWorking = 201, doneCaching = 200;
-const String hiveName = 'GeoHive4';
+const String hiveName = 'GeoHive5a';
 CacheManager cacheManager = CacheManager._instance;
 
 class CacheManager {
@@ -808,7 +808,7 @@ class CacheManager {
         }
       }
     }
-    pp('$mm ${list.length} list found in cache 🔵');
+    // pp('$mm ${list.length} list found in cache 🔵');
 
     return list;
   }
@@ -863,15 +863,15 @@ class CacheManager {
 
   Future<List<SettingsModel>> getOrganizationSettings() async {
     List<SettingsModel> list = [];
-    pp('$mm org settings search in cache ..........');
+    // pp('$mm org settings search in cache ..........');
     var keys = _settingsBox?.keys;
 
     if (keys != null) {
-      pp('$mm org settings search in cache ..........  🔵 keys: ${keys.length}');
+      // pp('$mm org settings search in cache ..........  🔵 keys: ${keys.length}');
       for (var key in keys) {
         var mSettings = await _settingsBox?.get(key);
-        pp('$mm org settings search in cache .......... mSettings:  😡 ${mSettings!.toJson()}');
-        list.add(mSettings);
+        // pp('$mm org settings search in cache .......... mSettings:  😡 ${mSettings!.toJson()}');
+        list.add(mSettings!);
       }
     }
     pp('$mm ${list.length} org settings list found in cache 🔵');
@@ -1075,7 +1075,7 @@ class CacheManager {
       }
     }
 
-    pp('$mm ${mList.length} photos found in cache');
+    // pp('$mm ${mList.length} photos found in cache');
     return mList;
   }
 
@@ -1229,7 +1229,7 @@ class CacheManager {
         }
       }
     }
-    pp('$mm ${mList.length} videos found in cache');
+    // pp('$mm ${mList.length} videos found in cache');
     return mList;
   }
 
@@ -1244,7 +1244,7 @@ class CacheManager {
         }
       }
     }
-    pp('$mm ${mList.length} audios found in cache');
+    // pp('$mm ${mList.length} audios found in cache');
     return mList;
   }
 
@@ -1276,7 +1276,7 @@ class CacheManager {
         }
       }
     }
-    pp('$mm ${mList.length} users found in cache');
+    // pp('$mm ${mList.length} users found in cache');
     return mList;
   }
 
@@ -1448,7 +1448,7 @@ class CacheManager {
         }
       }
     }
-    pp('$mm ${mList.length} projects found in cache');
+    // pp('$mm ${mList.length} projects found in cache');
     return mList;
   }
 
@@ -1624,7 +1624,7 @@ class CacheManager {
       }
     }
 
-    pp('$mm ${mList.length} ProjectPositions found in cache');
+    // pp('$mm ${mList.length} ProjectPositions found in cache');
     return mList;
   }
 
@@ -1647,7 +1647,7 @@ class CacheManager {
       }
     }
 
-    pp('$mm ${mList.length} ProjectPolygons (all) found in cache');
+    // pp('$mm ${mList.length} ProjectPolygons (all) found in cache');
     return mList;
   }
 

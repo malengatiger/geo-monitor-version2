@@ -3,22 +3,20 @@ import 'dart:async';
 import 'package:animations/animations.dart';
 import 'package:flutter/material.dart';
 import 'package:geo_monitor/library/ui/camera/chewie_video_player.dart';
+import 'package:geo_monitor/library/ui/camera/video_handler_two.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:page_transition/page_transition.dart';
 
 import '../../../../ui/audio/audio_handler_mobile.dart';
 import '../../../api/prefs_og.dart';
-import '../../../bloc/cloud_storage_bloc.dart';
 import '../../../bloc/project_bloc.dart';
 import '../../../data/audio.dart';
 import '../../../data/photo.dart';
 import '../../../data/project.dart';
 import '../../../data/user.dart';
 import '../../../data/video.dart';
-import '../../../emojis.dart';
 import '../../../functions.dart';
 import '../../camera/photo_handler.dart';
-import '../../camera/video_handler.dart';
 import '../full_photo/full_photo_mobile.dart';
 import 'photo_details.dart';
 import 'project_audios_mobile.dart';
@@ -95,14 +93,14 @@ class ProjectMediaListMobileState extends State<ProjectMediaListMobile>
   }
 
   void _listenToPhotoStream() async {
-    newPhotoStreamSubscription = cloudStorageBloc.photoStream.listen((mPhoto) {
-      pp('${E.blueDot}${E.blueDot} '
-          'New photo arrived from newPhotoStreamSubscription: ${mPhoto.toJson()} ${E.blueDot}');
-      _photos.add(mPhoto);
-      if (mounted) {
-        setState(() {});
-      }
-    });
+    // newPhotoStreamSubscription = cloudStorageBloc.photoStream.listen((mPhoto) {
+    //   pp('${E.blueDot}${E.blueDot} '
+    //       'New photo arrived from newPhotoStreamSubscription: ${mPhoto.toJson()} ${E.blueDot}');
+    //   _photos.add(mPhoto);
+    //   if (mounted) {
+    //     setState(() {});
+    //   }
+    // // });
   }
 
   Future<void> _refresh(bool forceRefresh) async {
@@ -201,7 +199,7 @@ class ProjectMediaListMobileState extends State<ProjectMediaListMobile>
             type: PageTransitionType.fade,
             alignment: Alignment.topLeft,
             duration: const Duration(seconds: 1),
-            child: VideoHandler(
+            child: VideoHandlerTwo(
               project: widget.project,
               projectPosition: null,
             )));

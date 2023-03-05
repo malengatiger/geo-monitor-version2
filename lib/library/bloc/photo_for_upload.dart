@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:hive/hive.dart';
 
 import '../data/position.dart';
@@ -32,6 +34,11 @@ class PhotoForUpload extends HiveObject {
   @HiveField(11)
   String? userThumbnailUrl;
 
+  @HiveField(12)
+  Uint8List? thumbnailBytes;
+  @HiveField(13)
+  Uint8List? fileBytes;
+
   PhotoForUpload(
       {required this.filePath,
       required this.thumbnailPath,
@@ -43,6 +50,8 @@ class PhotoForUpload extends HiveObject {
       required this.date,
       required this.userId,
       required this.userName,
+      required this.fileBytes,
+      required this.thumbnailBytes,
       required this.userThumbnailUrl,
       required this.organizationId});
 
@@ -52,11 +61,19 @@ class PhotoForUpload extends HiveObject {
     thumbnailPath = data['thumbnailPath'];
     date = data['date'];
 
+    if (data['fileBytes'] != null) {
+      var fb = getImageBinary(data['fileBytes']);
+      fileBytes = fb;
+    }
+    if (data['thumbnailBytes'] != null) {
+      var tb = getImageBinary(data['thumbnailBytes']);
+      thumbnailBytes = tb;
+    }
+
     userId = data['userId'];
     userName = data['userName'];
     organizationId = data['organizationId'];
     userThumbnailUrl = data['userThumbnailUrl'];
-
 
     projectPolygonId = data['projectPolygonId'];
     projectPositionId = data['projectPositionId'];
@@ -74,6 +91,8 @@ class PhotoForUpload extends HiveObject {
       'photoId': photoId,
       'filePath': filePath,
       'thumbnailPath': thumbnailPath,
+      'fileBytes': fileBytes,
+      'thumbnailBytes': thumbnailBytes,
       'project': project == null ? null : project!.toJson(),
       'projectPositionId': projectPositionId,
       'projectPolygonId': projectPolygonId,
@@ -86,4 +105,11 @@ class PhotoForUpload extends HiveObject {
     };
     return map;
   }
+}
+
+Uint8List getImageBinary(dynamicList) {
+  List<int> intList =
+      dynamicList.cast<int>().toList(); //This is the magical line.
+  Uint8List data = Uint8List.fromList(intList);
+  return data;
 }

@@ -31,9 +31,8 @@ class VideoAdapter extends TypeAdapter<Video> {
       videoId: fields[4] as String?,
       durationInSeconds: fields[14] as int?,
       organizationId: fields[8] as String?,
-      height: fields[16] as double?,
-      width: fields[15] as double?,
-      userUrl: fields[17] as String?,
+      size: fields[15] as double?,
+      userUrl: fields[16] as String?,
       projectName: fields[12] as String?,
     );
   }
@@ -41,7 +40,7 @@ class VideoAdapter extends TypeAdapter<Video> {
   @override
   void write(BinaryWriter writer, Video obj) {
     writer
-      ..writeByte(18)
+      ..writeByte(17)
       ..writeByte(0)
       ..write(obj.url)
       ..writeByte(1)
@@ -73,10 +72,8 @@ class VideoAdapter extends TypeAdapter<Video> {
       ..writeByte(14)
       ..write(obj.durationInSeconds)
       ..writeByte(15)
-      ..write(obj.width)
+      ..write(obj.size)
       ..writeByte(16)
-      ..write(obj.height)
-      ..writeByte(17)
       ..write(obj.userUrl);
   }
 

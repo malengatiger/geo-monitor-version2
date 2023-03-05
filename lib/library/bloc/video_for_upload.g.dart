@@ -31,6 +31,8 @@ class VideoForUploadAdapter extends TypeAdapter<VideoForUpload> {
       userName: fields[12] as String?,
       userThumbnailUrl: fields[14] as String?,
       organizationId: fields[13] as String?,
+      fileBytes: fields[16] as Uint8List?,
+      thumbnailBytes: fields[15] as Uint8List?,
       date: fields[6] as String?,
     );
   }
@@ -38,7 +40,7 @@ class VideoForUploadAdapter extends TypeAdapter<VideoForUpload> {
   @override
   void write(BinaryWriter writer, VideoForUpload obj) {
     writer
-      ..writeByte(15)
+      ..writeByte(17)
       ..writeByte(0)
       ..write(obj.filePath)
       ..writeByte(1)
@@ -68,7 +70,11 @@ class VideoForUploadAdapter extends TypeAdapter<VideoForUpload> {
       ..writeByte(13)
       ..write(obj.organizationId)
       ..writeByte(14)
-      ..write(obj.userThumbnailUrl);
+      ..write(obj.userThumbnailUrl)
+      ..writeByte(15)
+      ..write(obj.thumbnailBytes)
+      ..writeByte(16)
+      ..write(obj.fileBytes);
   }
 
   @override

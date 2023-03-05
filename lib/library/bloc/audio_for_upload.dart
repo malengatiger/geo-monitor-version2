@@ -1,3 +1,6 @@
+import 'dart:typed_data';
+
+import 'package:geo_monitor/library/bloc/photo_for_upload.dart';
 import 'package:hive/hive.dart';
 
 import '../data/position.dart';
@@ -29,6 +32,8 @@ class AudioForUpload extends HiveObject {
   String? userThumbnailUrl;
   @HiveField(12)
   int? durationInSeconds;
+  @HiveField(13)
+  Uint8List? fileBytes;
 
   AudioForUpload(
       {required this.filePath,
@@ -40,6 +45,7 @@ class AudioForUpload extends HiveObject {
       required this.userThumbnailUrl,
       required this.organizationId,
       required this.durationInSeconds,
+      required this.fileBytes,
       required this.date});
 
   AudioForUpload.fromJson(Map data) {
@@ -52,6 +58,10 @@ class AudioForUpload extends HiveObject {
     userName = data['userName'];
     organizationId = data['organizationId'];
     userThumbnailUrl = data['userThumbnailUrl'];
+
+    if (data['fileBytes'] != null) {
+      fileBytes = getImageBinary(data['fileBytes']);
+    }
 
     if (data['project'] != null) {
       project = Project.fromJson(data['project']);
@@ -70,6 +80,7 @@ class AudioForUpload extends HiveObject {
       'organizationId': organizationId,
       'userName': userName,
       'userId': userId,
+      'fileBytes': fileBytes,
       'durationInSeconds': durationInSeconds,
       'userThumbnailUrl': userThumbnailUrl,
       'position': position == null ? null : position!.toJson(),

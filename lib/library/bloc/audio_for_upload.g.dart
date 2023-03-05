@@ -26,6 +26,7 @@ class AudioForUploadAdapter extends TypeAdapter<AudioForUpload> {
       userThumbnailUrl: fields[11] as String?,
       organizationId: fields[10] as String?,
       durationInSeconds: fields[12] as int?,
+      fileBytes: fields[13] as Uint8List?,
       date: fields[6] as String?,
     );
   }
@@ -33,7 +34,7 @@ class AudioForUploadAdapter extends TypeAdapter<AudioForUpload> {
   @override
   void write(BinaryWriter writer, AudioForUpload obj) {
     writer
-      ..writeByte(10)
+      ..writeByte(11)
       ..writeByte(0)
       ..write(obj.filePath)
       ..writeByte(2)
@@ -53,7 +54,9 @@ class AudioForUploadAdapter extends TypeAdapter<AudioForUpload> {
       ..writeByte(11)
       ..write(obj.userThumbnailUrl)
       ..writeByte(12)
-      ..write(obj.durationInSeconds);
+      ..write(obj.durationInSeconds)
+      ..writeByte(13)
+      ..write(obj.fileBytes);
   }
 
   @override

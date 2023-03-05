@@ -28,7 +28,7 @@ class _SettingsFormState extends State<SettingsForm> {
   SettingsModel? settingsModel;
 
   var distController = TextEditingController(text: '200');
-  var videoController = TextEditingController(text: '5');
+  var videoController = TextEditingController(text: '15');
   var audioController = TextEditingController(text: '60');
   var activityController = TextEditingController(text: '24');
 
@@ -69,7 +69,7 @@ class _SettingsFormState extends State<SettingsForm> {
     settingsModel ??= SettingsModel(
         distanceFromProject: 500,
         photoSize: 1,
-        maxVideoLengthInMinutes: 2,
+        maxVideoLengthInSeconds: 2,
         maxAudioLengthInMinutes: 15,
         themeIndex: 0,
         settingsId: const Uuid().v4(),
@@ -80,7 +80,7 @@ class _SettingsFormState extends State<SettingsForm> {
 
     currentThemeIndex = settingsModel!.themeIndex!;
     distController.text = '${settingsModel?.distanceFromProject}';
-    videoController.text = '${settingsModel?.maxVideoLengthInMinutes}';
+    videoController.text = '${settingsModel?.maxVideoLengthInSeconds}';
     audioController.text = '${settingsModel?.maxAudioLengthInMinutes}';
     activityController.text = '${settingsModel?.activityStreamHours}';
 
@@ -109,10 +109,20 @@ class _SettingsFormState extends State<SettingsForm> {
       var date = DateTime.now().toUtc().toIso8601String();
       pp('$mm 🔵🔵🔵 writing settings to remote database ... '
           'currentThemeIndex: $currentThemeIndex 🔆🔆🔆 and date: $date} 🔆 stream hours: ${activityController.value.text}');
+      var len = int.parse(videoController.value.text);
+      if (len > 60) {
+        showToast(message: 'The maximum video length should be 60 seconds or less',
+            context: context);
+        return;
+      }
+      if (len < 5) {
+        showToast(message: 'The minimum video length should be 5 seconds', context: context);
+        return;
+      }
       settingsModel = SettingsModel(
         distanceFromProject: int.parse(distController.value.text),
         photoSize: groupValue,
-        maxVideoLengthInMinutes: int.parse(videoController.value.text),
+        maxVideoLengthInSeconds: int.parse(videoController.value.text),
         maxAudioLengthInMinutes: int.parse(audioController.value.text),
         themeIndex: currentThemeIndex,
         settingsId: const Uuid().v4(),
@@ -223,7 +233,7 @@ class _SettingsFormState extends State<SettingsForm> {
                             padding: const EdgeInsets.all(8.0),
                             child: SizedBox(
                               height: 32,
-                              width: 240,
+                              width: 200,
                               child: Container(
                                 color: Theme.of(context).primaryColor,
                                 child: Center(
@@ -319,14 +329,14 @@ class _SettingsFormState extends State<SettingsForm> {
                       keyboardType: TextInputType.number,
                       validator: (value) {
                         if (value!.isEmpty) {
-                          return 'Please enter maximum video length in minutes';
+                          return 'Please enter maximum video length in seconds';
                         }
                         return null;
                       },
                       decoration: InputDecoration(
-                        hintText: 'Enter maximum video length in minutes',
+                        hintText: 'Enter maximum video length in seconds',
                         label: Text(
-                          'Maximum Video Length in Minutes',
+                          'Maximum Video Length in Seconds',
                           style: myTextStyleSmall(context),
                         ),
                         hintStyle: myTextStyleSmall(context),

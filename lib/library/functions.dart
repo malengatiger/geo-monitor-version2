@@ -716,6 +716,18 @@ String getDeviceType() {
   return data.size.shortestSide < 600 ? 'phone' : 'tablet';
 }
 
+String getFileSizeString({required int bytes, int decimals = 0}) {
+const suffixes = [" bytes", " KB", " MB", " GB", " TB"];
+var i = (log(bytes) / log(1024)).floor();
+return ((bytes / pow(1024, i)).toStringAsFixed(decimals)) + suffixes[i];
+}
+
+double getFileSizeInMB({required int bytes, int decimals = 0}) {
+  var i = (log(bytes) / log(1024)).floor();
+  var size = (bytes / pow(1024, i));
+  return size;
+}
+
 pp(dynamic msg) {
   var time = getFormattedDateHourMinSec(DateTime.now().toString());
   if (kReleaseMode) {

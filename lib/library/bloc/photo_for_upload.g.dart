@@ -27,6 +27,8 @@ class PhotoForUploadAdapter extends TypeAdapter<PhotoForUpload> {
       date: fields[6] as String?,
       userId: fields[8] as String?,
       userName: fields[9] as String?,
+      fileBytes: fields[13] as Uint8List?,
+      thumbnailBytes: fields[12] as Uint8List?,
       userThumbnailUrl: fields[11] as String?,
       organizationId: fields[10] as String?,
     );
@@ -35,7 +37,7 @@ class PhotoForUploadAdapter extends TypeAdapter<PhotoForUpload> {
   @override
   void write(BinaryWriter writer, PhotoForUpload obj) {
     writer
-      ..writeByte(12)
+      ..writeByte(14)
       ..writeByte(0)
       ..write(obj.filePath)
       ..writeByte(1)
@@ -59,7 +61,11 @@ class PhotoForUploadAdapter extends TypeAdapter<PhotoForUpload> {
       ..writeByte(10)
       ..write(obj.organizationId)
       ..writeByte(11)
-      ..write(obj.userThumbnailUrl);
+      ..write(obj.userThumbnailUrl)
+      ..writeByte(12)
+      ..write(obj.thumbnailBytes)
+      ..writeByte(13)
+      ..write(obj.fileBytes);
   }
 
   @override

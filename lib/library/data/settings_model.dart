@@ -9,7 +9,7 @@ class SettingsModel {
   @HiveField(1)
   int? photoSize;
   @HiveField(2)
-  int? maxVideoLengthInMinutes;
+  int? maxVideoLengthInSeconds;
   @HiveField(3)
   int? maxAudioLengthInMinutes;
   @HiveField(4)
@@ -28,7 +28,7 @@ class SettingsModel {
   SettingsModel(
       {required this.distanceFromProject,
       required this.photoSize,
-      required this.maxVideoLengthInMinutes,
+      required this.maxVideoLengthInSeconds,
       required this.maxAudioLengthInMinutes,
       required this.themeIndex,
       required this.settingsId,
@@ -54,7 +54,11 @@ class SettingsModel {
     if (data['themeIndex'] != null) {
       themeIndex = data['themeIndex'];
     }
-    maxVideoLengthInMinutes = data['maxVideoLengthInMinutes'];
+    if (data['maxVideoLengthInSeconds'] == null) {
+      maxVideoLengthInSeconds = 15;
+    } else {
+      maxVideoLengthInSeconds = data['maxVideoLengthInSeconds'];
+    }
     maxAudioLengthInMinutes = data['maxAudioLengthInMinutes'];
   }
   Map<String, dynamic> toJson() {
@@ -67,7 +71,7 @@ class SettingsModel {
       'activityStreamHours': activityStreamHours,
       'settingsId': settingsId,
       'themeIndex': themeIndex,
-      'maxVideoLengthInMinutes': maxVideoLengthInMinutes,
+      'maxVideoLengthInSeconds': maxVideoLengthInSeconds,
       'maxAudioLengthInMinutes': maxAudioLengthInMinutes,
     };
     return map;

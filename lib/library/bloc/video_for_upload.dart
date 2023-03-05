@@ -1,3 +1,6 @@
+import 'dart:typed_data';
+
+import 'package:geo_monitor/library/bloc/photo_for_upload.dart';
 import 'package:hive/hive.dart';
 
 import '../data/position.dart';
@@ -39,6 +42,10 @@ class VideoForUpload extends HiveObject {
   String? organizationId;
   @HiveField(14)
   String? userThumbnailUrl;
+  @HiveField(15)
+  Uint8List? thumbnailBytes;
+  @HiveField(16)
+  Uint8List? fileBytes;
 
   VideoForUpload(
       {required this.filePath,
@@ -51,10 +58,12 @@ class VideoForUpload extends HiveObject {
       required this.durationInSeconds,
       required this.height,
       required this.width,
-        required this.userId,
-        required this.userName,
-        required this.userThumbnailUrl,
-        required this.organizationId,
+      required this.userId,
+      required this.userName,
+      required this.userThumbnailUrl,
+      required this.organizationId,
+      required this.fileBytes,
+      required this.thumbnailBytes,
       required this.date});
 
   VideoForUpload.fromJson(Map data) {
@@ -65,6 +74,15 @@ class VideoForUpload extends HiveObject {
     date = data['date'];
     height = data['height'];
     width = data['width'];
+
+    if (data['fileBytes'] != null) {
+      var fb = getImageBinary(data['fileBytes']);
+      fileBytes = fb;
+    }
+    if (data['thumbnailBytes'] != null) {
+      var tb = getImageBinary(data['thumbnailBytes']);
+      thumbnailBytes = tb;
+    }
 
     userId = data['userId'];
     userName = data['userName'];
@@ -95,6 +113,8 @@ class VideoForUpload extends HiveObject {
       'projectPolygonId': projectPolygonId,
       'date': date,
       'organizationId': organizationId,
+      'fileBytes': fileBytes,
+      'thumbnailBytes': thumbnailBytes,
       'userName': userName,
       'userId': userId,
       'userThumbnailUrl': userThumbnailUrl,

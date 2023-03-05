@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:geo_monitor/library/ui/camera/video_handler_two.dart';
 import 'package:geo_monitor/ui/audio/audio_handler_mobile.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:map_launcher/map_launcher.dart';
@@ -13,7 +14,6 @@ import '../../data/project_polygon.dart';
 import '../../data/project_position.dart';
 import '../../functions.dart';
 import '../camera/photo_handler.dart';
-import '../camera/video_handler.dart';
 import '../project_location/project_location_handler.dart';
 
 class ProjectMonitorMobile extends StatefulWidget {
@@ -315,7 +315,7 @@ class ProjectMonitorMobileState extends State<ProjectMonitorMobile>
             type: PageTransitionType.scale,
             alignment: Alignment.topLeft,
             duration: const Duration(seconds: 1),
-            child: VideoHandler(
+            child: VideoHandlerTwo(
               project: widget.project,
               projectPosition: null,
             )));

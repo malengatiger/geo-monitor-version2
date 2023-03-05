@@ -4,7 +4,7 @@ import 'package:animations/animations.dart';
 import 'package:flutter/material.dart';
 import 'package:geo_monitor/library/ui/camera/chewie_video_player.dart';
 import 'package:geo_monitor/library/ui/camera/photo_handler.dart';
-import 'package:geo_monitor/library/ui/camera/video_handler.dart';
+import 'package:geo_monitor/library/ui/camera/video_handler_two.dart';
 import 'package:geo_monitor/library/ui/media/list/project_audios_tablet.dart';
 import 'package:geo_monitor/library/ui/media/list/project_photos_tablet.dart';
 import 'package:geo_monitor/library/ui/media/list/project_videos_tablet.dart';
@@ -14,14 +14,12 @@ import 'package:page_transition/page_transition.dart';
 import 'package:responsive_builder/responsive_builder.dart';
 
 import '../../../api/prefs_og.dart';
-import '../../../bloc/cloud_storage_bloc.dart';
 import '../../../bloc/project_bloc.dart';
 import '../../../data/audio.dart';
 import '../../../data/photo.dart';
 import '../../../data/project.dart';
 import '../../../data/user.dart';
 import '../../../data/video.dart';
-import '../../../emojis.dart';
 import '../../../functions.dart';
 import '../../project_monitor/project_monitor_mobile.dart';
 import '../full_photo/full_photo_mobile.dart';
@@ -105,15 +103,15 @@ class ProjectMediaListTabletState extends State<ProjectMediaListTablet>
   }
 
   void _listenToPhotoStream() async {
-    newPhotoStreamSubscription = cloudStorageBloc.photoStream.listen((mPhoto) {
-      pp('${E.blueDot}${E.blueDot} '
-          'New photo arrived from newPhotoStreamSubscription: ${mPhoto
-          .toJson()} ${E.blueDot}');
-      _photos.add(mPhoto);
-      if (mounted) {
-        setState(() {});
-      }
-    });
+    // newPhotoStreamSubscription = cloudStorageBloc.photoStream.listen((mPhoto) {
+    //   pp('${E.blueDot}${E.blueDot} '
+    //       'New photo arrived from newPhotoStreamSubscription: ${mPhoto
+    //       .toJson()} ${E.blueDot}');
+    //   _photos.add(mPhoto);
+    //   if (mounted) {
+    //     setState(() {});
+    //   }
+    // });
   }
 
   Future<void> _getData(bool forceRefresh) async {
@@ -499,7 +497,7 @@ class ProjectMediaListTabletState extends State<ProjectMediaListTablet>
                 left: 300,
                 right: 300,
                 top: 12,
-                child: VideoHandler(
+                child: VideoHandlerTwo(
                   project: widget.project,
                 ),
               )

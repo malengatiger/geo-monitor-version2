@@ -148,6 +148,7 @@ class OrganizationBloc {
 
   Future<DataBag> getOrganizationData(
       {required String organizationId, required bool forceRefresh}) async {
+
     pp('$mm refreshing organization data ... photos, videos and schedules'
         ' ...forceRefresh: $forceRefresh');
 
@@ -170,8 +171,8 @@ class OrganizationBloc {
   }
 
   void _putContentsOfBagIntoStreams(DataBag bag) {
-    pp('$mm _putContentsOfBagIntoStreams: .................................... '
-        '🔵 send data to streams ...');
+    // pp('$mm _putContentsOfBagIntoStreams: .................................... '
+    //     '🔵 send data to streams ...');
     try {
       try {
         if (bag.photos != null) {
@@ -239,8 +240,8 @@ class OrganizationBloc {
         pp('$mm _putContentsOfBagIntoStreams projectPolygons ERROR - $e');
       }
 
-      pp('$mm _putContentsOfBagIntoStreams: .................................... '
-          '🔵🔵🔵🔵 send data to streams completed...');
+      // pp('$mm _putContentsOfBagIntoStreams: .................................... '
+      //     '🔵🔵🔵🔵 send data to streams completed...');
     } catch (e) {
       pp('$mm _putContentsOfBagIntoStreams ERROR - $e');
     }
@@ -248,14 +249,14 @@ class OrganizationBloc {
 
   Future<List<User>> getUsers(
       {required String organizationId, required bool forceRefresh}) async {
-    pp('$mm getOrganizationUsers ... forceRefresh: $forceRefresh');
+    // pp('$mm getOrganizationUsers ... forceRefresh: $forceRefresh');
     var users = await cacheManager.getUsers();
 
     if (users.isEmpty || forceRefresh) {
       users = await DataAPI.findUsersByOrganization(organizationId);
       pp('$mm getOrganizationUsers ... _users: ${users.length} ... will add to cache');
     }
-    pp('$mm getOrganizationUsers found: 💜 ${users.length} users. adding to stream ... ');
+    // pp('$mm getOrganizationUsers found: 💜 ${users.length} users. adding to stream ... ');
     userController.sink.add(users);
 
     for (var element in users) {

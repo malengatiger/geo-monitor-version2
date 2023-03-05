@@ -19,7 +19,7 @@ class SettingsModelAdapter extends TypeAdapter<SettingsModel> {
     return SettingsModel(
       distanceFromProject: fields[0] as int?,
       photoSize: fields[1] as int?,
-      maxVideoLengthInMinutes: fields[2] as int?,
+      maxVideoLengthInSeconds: fields[2] as int?,
       maxAudioLengthInMinutes: fields[3] as int?,
       themeIndex: fields[4] as int?,
       settingsId: fields[5] as String?,
@@ -39,7 +39,7 @@ class SettingsModelAdapter extends TypeAdapter<SettingsModel> {
       ..writeByte(1)
       ..write(obj.photoSize)
       ..writeByte(2)
-      ..write(obj.maxVideoLengthInMinutes)
+      ..write(obj.maxVideoLengthInSeconds)
       ..writeByte(3)
       ..write(obj.maxAudioLengthInMinutes)
       ..writeByte(4)

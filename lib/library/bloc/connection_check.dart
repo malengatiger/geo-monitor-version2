@@ -38,10 +38,10 @@ class ConnectionCheck {
     bool connected = false;
 
     if (connectivityResult == ConnectivityResult.mobile) {
-      pp('$mm internetAvailable: 🔆 I am connected to a mobile network. 🧡');
+      // pp('$mm internetAvailable: 🔆 I am connected to a mobile network. 🧡');
       connected = true;
     } else if (connectivityResult == ConnectivityResult.wifi) {
-      pp('$mm internetAvailable: 🔆 I am connected to a wifi network. 🔵');
+      // pp('$mm internetAvailable: 🔆 I am connected to a wifi network. 🔵');
       connected = true;
     }
     return connected;

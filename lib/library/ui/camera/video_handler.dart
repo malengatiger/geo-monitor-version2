@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:geo_monitor/library/api/prefs_og.dart';
 import 'package:geo_monitor/library/bloc/fcm_bloc.dart';
-import 'package:geo_monitor/library/bloc/multi_part_uploader.dart';
+import 'package:geo_monitor/library/bloc/geo_uploader.dart';
 import 'package:geo_monitor/library/data/project.dart';
 import 'package:geo_monitor/library/data/project_position.dart';
 import 'package:geo_monitor/library/data/video.dart';
@@ -52,6 +52,7 @@ class VideoHandlerState extends State<VideoHandler>
   var positions = <ProjectPosition>[];
   var videos = <Video>[];
   User? user;
+  Timer? timer;
 
   @override
   void initState() {
@@ -61,6 +62,22 @@ class VideoHandlerState extends State<VideoHandler>
     _observeOrientation();
     _getData();
     //_startVideo();
+  }
+
+  int totalSecs = 0;
+  int maxSeconds = 0;
+  void _stopCamera() {
+    timer!.cancel();
+    showToast(message: "Please stop recording, limit is in 5 seconds", context: context);
+  }
+  void _startTimer() {
+    timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      totalSecs += 1;
+      if (totalSecs > (maxSeconds - 5)) {
+        pp('$mm ABOUT TO WARN user of time limit 🍎🍎🍎🍎 ...maxSeconds: $maxSeconds');
+        _stopCamera();
+      }
+    });
   }
 
   Future<void> _observeOrientation() async {
@@ -90,6 +107,12 @@ class VideoHandlerState extends State<VideoHandler>
     });
     try {
       user = await prefsOGx.getUser();
+      var s = await prefsOGx.getSettings();
+      if (s != null) {
+        maxSeconds = s.maxVideoLengthInSeconds!;
+      } else {
+        maxSeconds = 15;
+      }
       pp('$mm .......... getting project positions and polygons');
       polygons = await projectBloc.getProjectPolygons(
           projectId: widget.project.projectId!, forceRefresh: false);
@@ -112,34 +135,79 @@ class VideoHandlerState extends State<VideoHandler>
 
   int start = 0;
   VideoPlayerController? _videoPlayerController;
+  var videoHeight = 0.0;
+  var videoWidth = 0.0;
+  var videoDurationInSeconds = 0;
+  var videoDurationInMinutes = 0.0;
+  XFile? file;
+
+  Future _getVideoMetadata(
+      {required VideoForUpload videoForUpload, required File file}) async {
+    pp('$mm _processVideo:  ... ️💛️💛 getting duration .... ');
+
+    try {
+      _videoPlayerController = VideoPlayerController.file(file);
+      if (_videoPlayerController != null) {
+        pp('\n\n$mm _processVideo:  ... ️💛️💛 videoPlayerController!.initialize .... ');
+        await _videoPlayerController!.initialize();
+        pp('$mm _processVideo: doing shit with videoController ... getting duration .... '
+            ' 🍎DURATION: ${_videoPlayerController!.value.duration} seconds!');
+
+        var size = _videoPlayerController?.value.size;
+        videoHeight = size!.height;
+        videoWidth = size.width;
+        var length = await file.length();
+        var kb = length/1024;
+        var mb = kb/1024;
+        pp('$mm  size of video ... ️💛️💛 '
+            'videoHeight: $videoHeight videoWidth: $videoWidth .... '
+            'file length: $length bytes, $mb MB');
+        if (_videoPlayerController != null) {
+          videoDurationInSeconds =
+              _videoPlayerController!.value.duration.inSeconds;
+
+          videoForUpload.durationInSeconds = videoDurationInSeconds;
+          videoForUpload.height = videoHeight;
+          videoForUpload.width = videoWidth;
+        }
+      }
+    } catch (e) {
+      pp('\n\n$mm _processVideo:  ... we fell down with the video controller, Boss? '
+          '🔴 could not get metadata : $e \n');
+    }
+  }
+
   void _startVideo() async {
     pp('$mm video making started ....');
     setState(() {
       videoIsReady = false;
     });
-    var minutes = 0;
+    var seconds = 15;
     var settings = await prefsOGx.getSettings();
     if (settings != null) {
-      minutes = settings.maxVideoLengthInMinutes!;
+      seconds = settings.maxVideoLengthInSeconds!;
     }
 
-    final XFile? file = await _picker
+    _startTimer();
+
+     file = await _picker
         .pickVideo(
             source: ImageSource.camera,
-            maxDuration: Duration(minutes: minutes),
+            maxDuration: Duration(seconds: seconds),
             preferredCameraDevice: CameraDevice.rear)
-        .whenComplete(() {});
+        .whenComplete(() {}).onError((error, stackTrace) {
+
+     }).timeout(Duration(seconds: seconds));
 
     if (file != null) {
-      await _processFile(file);
+      await _processFile();
       setState(() {});
     }
 
-    // file.saveTo(path);
   }
 
   File? finalFile, thumbnailFile;
-  Future<void> _processFile(XFile file) async {
+  Future<void> _processFile() async {
     final Directory directory = await getApplicationDocumentsDirectory();
     const x = '/video';
     final File mFile =
@@ -149,7 +217,7 @@ class VideoHandlerState extends State<VideoHandler>
     final File tFile =
         File('${directory.path}$z${DateTime.now().millisecondsSinceEpoch}.jpg');
 
-    File mImageFile = File(file.path);
+    File mImageFile = File(file!.path);
     await mImageFile.copy(mFile.path);
     pp('$mm _processFile 🔵🔵🔵 video file to upload: ${mFile.path}'
         ' size: ${await mFile.length()} bytes 🔵');
@@ -194,6 +262,8 @@ class VideoHandlerState extends State<VideoHandler>
       position =
           Position(type: 'Point', coordinates: [loc.longitude, loc.latitude]);
     }
+    // var bytes = await videoFile.readAsBytes();
+    // var tBytes = await thumbnailFile.readAsBytes();
     var videoForUpload = VideoForUpload(
         userName: user!.name,
         userThumbnailUrl: user!.thumbnailUrl,
@@ -207,10 +277,13 @@ class VideoHandlerState extends State<VideoHandler>
         position: position,
         width: 0.0,
         height: 0.0,
-        date: DateTime.now().toUtc().toIso8601String());
+        date: DateTime.now().toUtc().toIso8601String(),
+        fileBytes: null,
+        thumbnailBytes: null);
 
+    await _getVideoMetadata(videoForUpload: videoForUpload, file: videoFile);
     await cacheManager.addVideoForUpload(video: videoForUpload);
-    multiPartUploader.startVideoUpload(videoForUpload);
+    geoUploader.manageMediaUploads();
   }
 
   void _startNextVideo() {
@@ -221,7 +294,6 @@ class VideoHandlerState extends State<VideoHandler>
   @override
   void dispose() {
     _controller.dispose();
-    killSubscription.cancel();
     super.dispose();
   }
 

@@ -56,15 +56,22 @@ class ZipBloc {
 
   Future<void> _cacheTheData(DataBag? bag) async {
     pp('\n$xz Data returned from server, adding to Hive cache ...');
+
     await cacheManager.addProjects(projects: bag!.projects!);
     await cacheManager.addProjectPolygons(polygons: bag.projectPolygons!);
     await cacheManager.addProjectPositions(positions: bag.projectPositions!);
+    pp('$xz debug point 0');
     await cacheManager.deleteUsers();
     await cacheManager.addUsers(users: bag.users!);
+    pp('$xz debug point 1');
     await cacheManager.addPhotos(photos: bag.photos!);
+    pp('$xz debug point 2');
     await cacheManager.addVideos(videos: bag.videos!);
+    pp('$xz debug point 3');
     await cacheManager.addAudios(audios: bag.audios!);
+    pp('$xz debug point 4');
     await cacheManager.addSettingsList(settings: bag.settings!);
+    pp('$xz debug point 5');
     await cacheManager.addFieldMonitorSchedules(
         schedules: bag.fieldMonitorSchedules!);
     pp('\n$xz Org Data saved in Hive cache ...');

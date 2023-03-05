@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:ui';
 
 import 'package:animated_splash_screen/animated_splash_screen.dart';
+import 'package:camera/camera.dart';
 import 'package:firebase_auth/firebase_auth.dart' as fb;
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -28,6 +29,7 @@ import 'library/bloc/theme_bloc.dart';
 import 'library/cache_manager.dart';
 import 'library/emojis.dart';
 import 'library/geofence/geofencer_two.dart';
+import 'library/ui/camera/video_handler_two.dart';
 
 int themeIndex = 0;
 late FirebaseApp firebaseApp;
@@ -59,6 +61,7 @@ void main() async {
       await fb.FirebaseAuth.instance.signOut();
       fbAuthedUser = null;
     }
+    cameras = await availableCameras();
   }
 
   await SystemChrome.setPreferredOrientations([
@@ -96,6 +99,7 @@ class GeoApp extends StatelessWidget {
               theme: themeBloc.getTheme(themeIndex).darkTheme,
               darkTheme: themeBloc.getTheme(themeIndex).darkTheme,
               themeMode: ThemeMode.dark,
+              // home: const VideoHandlerTwo(),
               home: AnimatedSplashScreen(
                 duration: 2000,
                 splash: const SplashWidget(),
@@ -105,7 +109,6 @@ class GeoApp extends StatelessWidget {
                 nextScreen: fbAuthedUser == null
                     ? const IntroMain()
                     : const DashboardMain(),
-                // nextScreen: const TestUpload(),
                 splashTransition: SplashTransition.fadeTransition,
                 pageTransitionType: PageTransitionType.leftToRight,
                 backgroundColor: Colors.pink.shade900,
@@ -155,8 +158,8 @@ Future<void> _initializeGeoMonitor() async {
 
   pp('\n$mx _buildGeofences starting ........................');
   theGreatGeofencer.buildGeofences();
-
-  // uploader.startTimer(const Duration(seconds: 15));
+  pp('\n$mx manageMediaUploads starting ........................');
+  //geoUploader.manageMediaUploads();
 
   if (settings != null) {
     pp('\n\n$mx ${E.heartGreen}${E.heartGreen}}${E.heartGreen} _initializeGeoMonitor: App Settings are 🍎${settings.toJson()}🍎\n\n');

@@ -6,7 +6,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:geo_monitor/library/api/prefs_og.dart';
-import 'package:geo_monitor/library/bloc/multi_part_uploader.dart';
+import 'package:geo_monitor/library/bloc/geo_uploader.dart';
 import 'package:geo_monitor/library/cache_manager.dart';
 import 'package:geo_monitor/library/data/audio.dart';
 import 'package:geo_monitor/ui/audio/recording_controls.dart';
@@ -17,7 +17,6 @@ import 'package:uuid/uuid.dart';
 
 import '../../device_location/device_location_bloc.dart';
 import '../../library/bloc/audio_for_upload.dart';
-import '../../library/bloc/cloud_storage_bloc.dart';
 import '../../library/data/position.dart';
 import '../../library/data/project.dart';
 import '../../library/data/settings_model.dart';
@@ -36,7 +35,7 @@ class AudioHandlerMobile extends StatefulWidget {
 
 class AudioHandlerMobileState extends State<AudioHandlerMobile>
     with SingleTickerProviderStateMixin
-    implements StorageBlocListener {
+     {
   late AnimationController _animationController;
 
   final mm = '🔆🔆🔆🔆🔆🔆 AudioHandlerMobile: 🔆 ';
@@ -244,8 +243,9 @@ class AudioHandlerMobileState extends State<AudioHandlerMobile>
       }
       AudioPlayer audioPlayer = AudioPlayer();
       var dur = await audioPlayer.setFilePath(_recordedFile!.path);
-
+      // var bytes = await _recordedFile!.readAsBytes();
       var audioForUpload = AudioForUpload(
+          fileBytes: null,
           userName: user!.name,
           userThumbnailUrl: user!.thumbnailUrl,
           userId: user!.userId,
@@ -258,7 +258,7 @@ class AudioHandlerMobileState extends State<AudioHandlerMobile>
           date: DateTime.now().toUtc().toIso8601String());
 
       await cacheManager.addAudioForUpload(audio: audioForUpload);
-      multiPartUploader.startAudioUpload(audioForUpload);
+      geoUploader.manageMediaUploads();
 
       _recordedFile = null;
     } catch (e) {

@@ -81,7 +81,7 @@ class SettingsMobileState extends State<SettingsMobile>
     settingsModel = await prefsOGx.getSettings();
     currentThemeIndex = settingsModel!.themeIndex!;
     distController.text = '${settingsModel?.distanceFromProject}';
-    videoController.text = '${settingsModel?.maxVideoLengthInMinutes}';
+    videoController.text = '${settingsModel?.maxVideoLengthInSeconds}';
     audioController.text = '${settingsModel?.maxAudioLengthInMinutes}';
     if (settingsModel?.photoSize == 0) {
       photoSize = 0;
@@ -109,7 +109,7 @@ class SettingsMobileState extends State<SettingsMobile>
       var model = SettingsModel(
           distanceFromProject: int.parse(distController.value.text),
           photoSize: groupValue,
-          maxVideoLengthInMinutes: int.parse(videoController.value.text),
+          maxVideoLengthInSeconds: int.parse(videoController.value.text),
           maxAudioLengthInMinutes: int.parse(audioController.value.text),
           themeIndex: currentThemeIndex,
           activityStreamHours: int.parse(activityController.text),
