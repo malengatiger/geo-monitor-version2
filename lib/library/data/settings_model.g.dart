@@ -26,6 +26,7 @@ class SettingsModelAdapter extends TypeAdapter<SettingsModel> {
       created: fields[6] as String?,
       organizationId: fields[7] as String?,
       projectId: fields[8] as String?,
+      numberOfDays: fields[10] as int?,
       activityStreamHours: fields[9] as int?,
     );
   }
@@ -33,7 +34,7 @@ class SettingsModelAdapter extends TypeAdapter<SettingsModel> {
   @override
   void write(BinaryWriter writer, SettingsModel obj) {
     writer
-      ..writeByte(10)
+      ..writeByte(11)
       ..writeByte(0)
       ..write(obj.distanceFromProject)
       ..writeByte(1)
@@ -53,7 +54,9 @@ class SettingsModelAdapter extends TypeAdapter<SettingsModel> {
       ..writeByte(8)
       ..write(obj.projectId)
       ..writeByte(9)
-      ..write(obj.activityStreamHours);
+      ..write(obj.activityStreamHours)
+      ..writeByte(10)
+      ..write(obj.numberOfDays);
   }
 
   @override

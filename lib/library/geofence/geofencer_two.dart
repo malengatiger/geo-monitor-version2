@@ -82,8 +82,10 @@ class TheGreatGeofencer {
     pp('$xx buildGeofences .... build geofences for the organization 🌀 ${_user!.organizationName}  🌀 \n\n');
 
     await locationBloc.requestPermission();
+    var startDate = DateTime.now().subtract(const Duration(days: (365*2))).toUtc().toIso8601String();
+    var endDate = DateTime.now().toUtc().toIso8601String();
     var list = await organizationBloc.getProjectPositions(
-        organizationId: _user!.organizationId!, forceRefresh: false);
+        organizationId: _user!.organizationId!, forceRefresh: false, startDate: startDate,endDate: endDate);
 
     // try {
       for (var pos in list) {

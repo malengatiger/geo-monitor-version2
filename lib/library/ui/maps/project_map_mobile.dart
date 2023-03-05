@@ -163,8 +163,14 @@ class ProjectMapMobileState extends State<ProjectMapMobile>
       busy = true;
     });
     try {
+      var map = await getStartEndDates();
+      final startDate = map['startDate'];
+      final endDate = map['endDate'];
       projectPositions = await projectBloc.getProjectPositions(
-          projectId: widget.project.projectId!, forceRefresh: forceRefresh);
+          projectId: widget.project.projectId!,
+          forceRefresh: forceRefresh,
+          startDate: startDate!,
+          endDate: endDate!);
       projectPolygons = await projectBloc.getProjectPolygons(
           projectId: widget.project.projectId!, forceRefresh: forceRefresh);
     } catch (e) {
@@ -498,7 +504,8 @@ class ProjectMapMobileState extends State<ProjectMapMobile>
                           _buildCircles();
                           _animateCamera(
                               latitude: currentLat!,
-                              longitude: currentLng!, zoom: 12.6);
+                              longitude: currentLng!,
+                              zoom: 12.6);
                           setState(() {});
                         },
                         // myLocationEnabled: true,

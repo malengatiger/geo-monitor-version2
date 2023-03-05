@@ -126,8 +126,14 @@ class ProjectDashboardTabletState extends State<ProjectDashboardTablet>
   }
 
   Future _getProjectData(String projectId, bool forceRefresh) async {
+    var map = await getStartEndDates();
+    final startDate = map['startDate'];
+    final endDate = map['endDate'];
     dataBag = await projectBloc.getProjectData(
-        projectId: projectId, forceRefresh: forceRefresh);
+        projectId: projectId,
+        forceRefresh: forceRefresh,
+        startDate: startDate!,
+        endDate: endDate!);
   }
 
   void _listenForFCM() async {

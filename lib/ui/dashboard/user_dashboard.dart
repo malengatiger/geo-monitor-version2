@@ -98,8 +98,14 @@ class UserDashboardState extends State<UserDashboard>
     }
     try {
       user = await prefsOGx.getUser();
+      var map = await getStartEndDates();
+      final startDate = map['startDate'];
+      final endDate = map['endDate'];
       dataBag = await userBloc.getUserData(
-          userId: widget.user.userId!, forceRefresh: forceRefresh);
+          userId: widget.user.userId!,
+          forceRefresh: forceRefresh,
+          startDate: startDate!,
+          endDate: endDate!);
       _filterProjects();
       _gridViewAnimationController.forward();
     } catch (e) {
@@ -433,106 +439,113 @@ class UserDashboardState extends State<UserDashboard>
               children: [
                 dataBag == null
                     ? const SizedBox()
-                    :  ScreenTypeLayout(
-                  mobile: UserDashboardGrid(user: widget.user,
-                    dataBag: dataBag!,
-                    width: width,
-                    topPadding: 40,
-                    gridPadding: 12,
-                    crossAxisCount: 2,
-                    onTypeTapped: (type) {
-                      switch (type) {
-                        case typePhotos:
-                          _showUserPhotos();
-                          break;
-                        case typeVideos:
-                          _showUserVideos();
-                          break;
-                        case typeAudios:
-                          _showUserAudios();
-                          break;
-                      }
-                    },),
-                  tablet: OrientationLayoutBuilder(
-                    portrait: (context) {
-                      return Row(
-                        children: [
-                          Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                            child: UserDashboardGrid(
-                                user: widget.user,
-                                dataBag: dataBag!,
-                                width: (width /2),
-                                topPadding: 40,
-                                onTypeTapped: (type) {
-                                  switch (type) {
-                                    case typePhotos:
-                                      _showUserPhotos();
-                                      break;
-                                    case typeVideos:
-                                      _showUserVideos();
-                                      break;
-                                    case typeAudios:
-                                      _showUserAudios();
-                                      break;
-                                  }
-                                },
-                                gridPadding: 16,
-                                crossAxisCount: 2,
-                                leftPadding: 16),
-                          ),
-                          const SizedBox(width: 16,),
-                          GeoActivity(
-                              user: widget.user,
-                              width: (width / 2) - 60,
-                              thinMode: true,
-                              showPhoto: _displayPhoto,
-                              showVideo: _displayVideo,
-                              showAudio: _displayAudio,
-                              forceRefresh: true),
-                        ],
-                      );
-                    },
-                    landscape: (context) {
-                      return Row(
-                        children: [
-                          UserDashboardGrid(
-                              user: widget.user,
-                              dataBag: dataBag!,
-                              width: (width /2),
-                              topPadding: 28,
-                              elementPadding: 48,
-                              onTypeTapped: (type) {
-                                switch (type) {
-                                  case typePhotos:
-                                    _showUserPhotos();
-                                    break;
-                                  case typeVideos:
-                                    _showUserVideos();
-                                    break;
-                                  case typeAudios:
-                                    _showUserAudios();
-                                    break;
-                                }
-                              },
-                              gridPadding: 32,
-                              crossAxisCount: 3,
-                              leftPadding: 16),
-                          // Container(width: (width/2), color: Colors.deepPurple,),
-                          const SizedBox(width: 48,),
-                          GeoActivity(
-                              width: (width / 2) - 120,
-                              thinMode: false,
-                              user: widget.user,
-                              showPhoto: _displayPhoto,
-                              showVideo: _displayVideo,
-                              showAudio: _displayAudio,
-                              forceRefresh: true),
-                        ],
-                      );
-                    },
-                  ),
-                ),
+                    : ScreenTypeLayout(
+                        mobile: UserDashboardGrid(
+                          user: widget.user,
+                          dataBag: dataBag!,
+                          width: width,
+                          topPadding: 40,
+                          gridPadding: 12,
+                          crossAxisCount: 2,
+                          onTypeTapped: (type) {
+                            switch (type) {
+                              case typePhotos:
+                                _showUserPhotos();
+                                break;
+                              case typeVideos:
+                                _showUserVideos();
+                                break;
+                              case typeAudios:
+                                _showUserAudios();
+                                break;
+                            }
+                          },
+                        ),
+                        tablet: OrientationLayoutBuilder(
+                          portrait: (context) {
+                            return Row(
+                              children: [
+                                Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 8.0),
+                                  child: UserDashboardGrid(
+                                      user: widget.user,
+                                      dataBag: dataBag!,
+                                      width: (width / 2),
+                                      topPadding: 40,
+                                      onTypeTapped: (type) {
+                                        switch (type) {
+                                          case typePhotos:
+                                            _showUserPhotos();
+                                            break;
+                                          case typeVideos:
+                                            _showUserVideos();
+                                            break;
+                                          case typeAudios:
+                                            _showUserAudios();
+                                            break;
+                                        }
+                                      },
+                                      gridPadding: 16,
+                                      crossAxisCount: 2,
+                                      leftPadding: 16),
+                                ),
+                                const SizedBox(
+                                  width: 16,
+                                ),
+                                GeoActivity(
+                                    user: widget.user,
+                                    width: (width / 2) - 60,
+                                    thinMode: true,
+                                    showPhoto: _displayPhoto,
+                                    showVideo: _displayVideo,
+                                    showAudio: _displayAudio,
+                                    forceRefresh: true),
+                              ],
+                            );
+                          },
+                          landscape: (context) {
+                            return Row(
+                              children: [
+                                UserDashboardGrid(
+                                    user: widget.user,
+                                    dataBag: dataBag!,
+                                    width: (width / 2),
+                                    topPadding: 28,
+                                    elementPadding: 48,
+                                    onTypeTapped: (type) {
+                                      switch (type) {
+                                        case typePhotos:
+                                          _showUserPhotos();
+                                          break;
+                                        case typeVideos:
+                                          _showUserVideos();
+                                          break;
+                                        case typeAudios:
+                                          _showUserAudios();
+                                          break;
+                                      }
+                                    },
+                                    gridPadding: 32,
+                                    crossAxisCount: 3,
+                                    leftPadding: 16),
+                                // Container(width: (width/2), color: Colors.deepPurple,),
+                                const SizedBox(
+                                  width: 48,
+                                ),
+                                GeoActivity(
+                                    width: (width / 2) - 120,
+                                    thinMode: false,
+                                    user: widget.user,
+                                    showPhoto: _displayPhoto,
+                                    showVideo: _displayVideo,
+                                    showAudio: _displayAudio,
+                                    forceRefresh: true),
+                              ],
+                            );
+                          },
+                        ),
+                      ),
                 _showPhoto
                     ? Positioned(
                         left: 100,

@@ -130,8 +130,14 @@ class ProjectDashboardMobileState extends State<ProjectDashboardMobile>
 
   Future<void> _doTheWork(bool forceRefresh) async {
     try {
+      var map = await getStartEndDates();
+      final startDate = map['startDate'];
+      final endDate = map['endDate'];
       var bag = await projectBloc.getProjectData(
-          projectId: widget.project.projectId!, forceRefresh: forceRefresh);
+          projectId: widget.project.projectId!,
+          forceRefresh: forceRefresh,
+          startDate: startDate!,
+          endDate: endDate!);
       await _extractData(bag);
       setState(() {});
     } catch (e) {

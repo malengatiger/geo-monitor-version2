@@ -48,8 +48,12 @@ class ProjectVideosMobileState extends State<ProjectVideosMobile> {
     setState(() {
       loading = true;
     });
+    var map = await getStartEndDates();
+    final startDate = map['startDate'];
+    final endDate = map['endDate'];
     videos = await projectBloc.getProjectVideos(
-        projectId: widget.project.projectId!, forceRefresh: widget.refresh);
+        projectId: widget.project.projectId!,
+        forceRefresh: widget.refresh, startDate: startDate!, endDate: endDate!);
     videos.sort((a, b) => b.created!.compareTo(a.created!));
     setState(() {
       loading = false;

@@ -177,15 +177,16 @@ class VideoHandlerTwoState extends State<VideoHandlerTwo>
       return;
     }
     try {
-      duration == const Duration(seconds: 0);
-      startTimer();
-      await cameraController!.startVideoRecording();
       setState(() {
         _isRecordingInProgress = true;
         isRecording = false;
         _showChoice = false;
         pp('$mm _isRecordingInProgress: $_isRecordingInProgress');
       });
+      duration == const Duration(seconds: 0);
+      startTimer();
+      await cameraController!.startVideoRecording();
+
     } on CameraException catch (e) {
       pp('Error starting to record video: $e');
     }
@@ -223,6 +224,9 @@ class VideoHandlerTwoState extends State<VideoHandlerTwo>
   }
 
   void _processFile() async {
+    setState(() {
+      _showChoice = false;
+    });
     var bytes = await file?.length();
     var size = getFileSizeString(bytes: bytes!, decimals: 2);
     pp('\n\n$mm _processFile ... video file size: $size ');
@@ -271,6 +275,7 @@ class VideoHandlerTwoState extends State<VideoHandlerTwo>
 
     await cacheManager.addVideoForUpload(video: videoForUpload);
     geoUploader.manageMediaUploads();
+
   }
 
   void pauseVideoRecording() {}

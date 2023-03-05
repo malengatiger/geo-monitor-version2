@@ -8,6 +8,7 @@ import 'package:responsive_builder/responsive_builder.dart';
 import '../../../bloc/project_bloc.dart';
 import '../../../data/project.dart';
 import '../../../data/video.dart';
+import '../../../functions.dart';
 
 class ProjectVideosTablet extends StatefulWidget {
   final Project project;
@@ -49,8 +50,14 @@ class ProjectVideosTabletState extends State<ProjectVideosTablet> {
     setState(() {
       loading = true;
     });
+    var map = await getStartEndDates();
+    final startDate = map['startDate'];
+    final endDate = map['endDate'];
     videos = await projectBloc.getProjectVideos(
-        projectId: widget.project.projectId!, forceRefresh: widget.refresh);
+        projectId: widget.project.projectId!,
+        forceRefresh: widget.refresh,
+        startDate: startDate!,
+        endDate: endDate!);
     videos.sort((a, b) => b.created!.compareTo(a.created!));
     setState(() {
       loading = false;

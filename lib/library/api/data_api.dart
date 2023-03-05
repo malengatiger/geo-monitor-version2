@@ -364,12 +364,12 @@ class DataAPI {
   }
 
   static Future<List<FieldMonitorSchedule>> getOrgFieldMonitorSchedules(
-      String organizationId) async {
+      String organizationId, String startDate, String endDate) async {
     String? mURL = await getUrl();
     List<FieldMonitorSchedule> mList = [];
     try {
       List result = await _sendHttpGET(
-          '${mURL!}getOrgFieldMonitorSchedules?organizationId=$organizationId');
+          '${mURL!}getOrgFieldMonitorSchedules?organizationId=$organizationId&startDate=$startDate&endDate=$endDate');
       for (var element in result) {
         mList.add(FieldMonitorSchedule.fromJson(element));
       }
@@ -538,24 +538,24 @@ class DataAPI {
     }
   }
 
-  static Future<List<ProjectPosition>> findProjectPositionsById(
-      String projectId) async {
-    String? mURL = await getUrl();
-
-    try {
-      var result = await _sendHttpGET(
-          '${mURL!}getProjectPositions?projectId=$projectId');
-      List<ProjectPosition> list = [];
-      result.forEach((m) {
-        list.add(ProjectPosition.fromJson(m));
-      });
-      await cacheManager.addProjectPositions(positions: list);
-      return list;
-    } catch (e) {
-      pp(e);
-      rethrow;
-    }
-  }
+  // static Future<List<ProjectPosition>> findProjectPositionsById(
+  //     String projectId, String startDate, String endDate) async {
+  //   String? mURL = await getUrl();
+  //
+  //   try {
+  //     var result = await _sendHttpGET(
+  //         '${mURL!}getProjectPositions?projectId=$projectId&startDate=$startDate&endDate=$endDate');
+  //     List<ProjectPosition> list = [];
+  //     result.forEach((m) {
+  //       list.add(ProjectPosition.fromJson(m));
+  //     });
+  //     await cacheManager.addProjectPositions(positions: list);
+  //     return list;
+  //   } catch (e) {
+  //     pp(e);
+  //     rethrow;
+  //   }
+  // }
 
   static Future<List<ProjectPolygon>> findProjectPolygonsById(
       String projectId) async {
@@ -577,12 +577,12 @@ class DataAPI {
   }
 
   static Future<List<ProjectPosition>> getOrganizationProjectPositions(
-      String organizationId) async {
+      String organizationId, String startDate, String endDate) async {
     String? mURL = await getUrl();
 
     try {
       var result = await _sendHttpGET(
-          '${mURL!}getOrganizationProjectPositions?organizationId=$organizationId');
+          '${mURL!}getOrganizationProjectPositions?organizationId=$organizationId&startDate=$startDate&endDate=$endDate');
       List<ProjectPosition> list = [];
       result.forEach((m) {
         list.add(ProjectPosition.fromJson(m));
@@ -596,33 +596,6 @@ class DataAPI {
     }
   }
 
-  static Future<DataBag> getOrganizationData(String organizationId) async {
-    String? mURL = await getUrl();
-
-    try {
-      var result = await _sendHttpGET(
-          '${mURL!}getOrganizationData?organizationId=$organizationId');
-
-      final bag = DataBag.fromJson(result);
-      pp('\n$mm Data returned from server, adding to Hive cache ...');
-      await cacheManager.addProjects(projects: bag.projects!);
-      await cacheManager.addProjectPolygons(polygons: bag.projectPolygons!);
-      await cacheManager.addProjectPositions(positions: bag.projectPositions!);
-      await cacheManager.deleteUsers();
-      await cacheManager.addUsers(users: bag.users!);
-      await cacheManager.addPhotos(photos: bag.photos!);
-      await cacheManager.addVideos(videos: bag.videos!);
-      await cacheManager.addAudios(audios: bag.audios!);
-      await cacheManager.addSettingsList(settings: bag.settings!);
-      await cacheManager.addFieldMonitorSchedules(
-          schedules: bag.fieldMonitorSchedules!);
-      pp('\n$mm Data returned from server, sending to caller ...');
-      return bag;
-    } catch (e) {
-      pp('$mm getOrganizationData: $e');
-      rethrow;
-    }
-  }
 
   static Future<LocationRequest> sendLocationRequest(
       LocationRequest request) async {
@@ -651,36 +624,14 @@ class DataAPI {
     }
   }
 
-  static Future<DataBag?> getUserData(String userId) async {
-    String? mURL = await getUrl();
-    DataBag? bag;
-    try {
-      var result = await _sendHttpGET('${mURL!}getUserData?userId=$userId');
-
-      bag = DataBag.fromJson(result);
-      await cacheManager.addProjects(projects: bag.projects!);
-      await cacheManager.addProjectPolygons(polygons: bag.projectPolygons!);
-      await cacheManager.addProjectPositions(positions: bag.projectPositions!);
-      await cacheManager.addUsers(users: bag.users!);
-      await cacheManager.addPhotos(photos: bag.photos!);
-      await cacheManager.addVideos(videos: bag.videos!);
-      await cacheManager.addFieldMonitorSchedules(
-          schedules: bag.fieldMonitorSchedules!);
-
-      return bag;
-    } catch (e) {
-      pp(e);
-      throw Exception('User data refresh fell down!: $e');
-    }
-  }
 
   static Future<List<ProjectPosition>> getProjectPositions(
-      String projectId) async {
+      String projectId, String startDate, String endDate) async {
     String? mURL = await getUrl();
 
     try {
       var result = await _sendHttpGET(
-          '${mURL!}getProjectPositions?projectId=$projectId');
+          '${mURL!}getProjectPositions?projectId=$projectId&startDate=$startDate&endDate=$endDate');
       List<ProjectPosition> list = [];
       result.forEach((m) {
         list.add(ProjectPosition.fromJson(m));
@@ -694,12 +645,12 @@ class DataAPI {
   }
 
   static Future<List<ProjectPolygon>> getProjectPolygons(
-      String projectId) async {
+      String projectId, String startDate, String endDate) async {
     String? mURL = await getUrl();
 
     try {
       var result =
-          await _sendHttpGET('${mURL!}getProjectPolygons?projectId=$projectId');
+          await _sendHttpGET('${mURL!}getProjectPolygons?projectId=$projectId&startDate=$startDate&endDate=$endDate');
       List<ProjectPolygon> list = [];
       result.forEach((m) {
         list.add(ProjectPolygon.fromJson(m));
@@ -806,7 +757,7 @@ class DataAPI {
     }
   }
 
-  static Future<DataBag> getProjectData(String projectId) async {
+  static Future<DataBag> getProjectData(String projectId, String startDate, String endDate) async {
     String? mURL = await getUrl();
 
     var bag = DataBag(
@@ -822,7 +773,7 @@ class DataAPI {
         settings: []);
     try {
       var result =
-          await _sendHttpGET('${mURL!}getProjectData?projectId=$projectId');
+          await _sendHttpGET('${mURL!}getProjectData?projectId=$projectId&startDate=$startDate&endDate=$endDate');
 
       bag = DataBag.fromJson(result);
       await cacheManager.addProjects(projects: bag.projects!);
@@ -878,12 +829,12 @@ class DataAPI {
     }
   }
 
-  static Future<List<Video>> findVideosById(String projectId) async {
+  static Future<List<Video>> getProjectVideos(String projectId, String startDate, String endDate) async {
     String? mURL = await getUrl();
 
     try {
       var result =
-          await _sendHttpGET('${mURL!}getProjectVideos?projectId=$projectId');
+          await _sendHttpGET('${mURL!}getProjectVideos?projectId=$projectId&startDate=$startDate&endDate=$endDate');
       List<Video> list = [];
       result.forEach((m) {
         list.add(Video.fromJson(m));
@@ -896,12 +847,12 @@ class DataAPI {
     }
   }
 
-  static Future<List<Audio>> findAudiosById(String audioId) async {
+  static Future<List<Audio>> getProjectAudios(String projectId, String startDate, String endDate) async {
     String? mURL = await getUrl();
 
     try {
       var result =
-          await _sendHttpGET('${mURL!}findAudiosById?audioId=$audioId');
+          await _sendHttpGET('${mURL!}getProjectAudios?projectId=$projectId&startDate=$startDate&endDate=$endDate');
       List<Audio> list = [];
       result.forEach((m) {
         list.add(Audio.fromJson(m));
@@ -979,11 +930,11 @@ class DataAPI {
   }
 
   static Future<List<Photo>> getOrganizationPhotos(
-      String organizationId) async {
+      String organizationId, String startDate, String endDate) async {
     pp('$mm getOrganizationPhotos: 🍏 id: $organizationId');
     String? mURL = await getUrl();
     var cmd = 'getOrganizationPhotos';
-    var url = '$mURL$cmd?organizationId=$organizationId';
+    var url = '$mURL$cmd?organizationId=$organizationId&startDate=$startDate&endDate=$endDate';
     try {
       List result = await _sendHttpGET(url);
       pp('$mm getOrganizationPhotos: 🍏 found: ${result.length} org photos');
@@ -1001,11 +952,11 @@ class DataAPI {
   }
 
   static Future<List<Video>> getOrganizationVideos(
-      String organizationId) async {
+      String organizationId, String startDate, String endDate) async {
     pp('$mm getOrganizationVideos: 🍏 id: $organizationId');
     String? mURL = await getUrl();
     var cmd = 'getOrganizationVideos';
-    var url = '$mURL$cmd?organizationId=$organizationId';
+    var url = '$mURL$cmd?organizationId=$organizationId&startDate=$startDate&endDate=$endDate';
     try {
       List result = await _sendHttpGET(url);
       List<Video> list = [];

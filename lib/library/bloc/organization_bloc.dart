@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:geo_monitor/library/data/activity_model.dart';
 import 'package:geo_monitor/library/data/project_summary.dart';
 import 'package:geo_monitor/library/data/settings_model.dart';
-import 'package:universal_platform/universal_platform.dart';
 
 import '../api/data_api.dart';
 import '../cache_manager.dart';
@@ -147,7 +146,7 @@ class OrganizationBloc {
   }
 
   Future<DataBag> getOrganizationData(
-      {required String organizationId, required bool forceRefresh}) async {
+      {required String organizationId, required bool forceRefresh, required String startDate, required String endDate}) async {
 
     pp('$mm refreshing organization data ... photos, videos and schedules'
         ' ...forceRefresh: $forceRefresh');
@@ -157,12 +156,12 @@ class OrganizationBloc {
 
     if (forceRefresh) {
       pp('$mm get data from server .....................; forceRefresh: $forceRefresh');
-      bag = await zipBloc.getOrganizationDataZippedFile(organizationId);
+      bag = await zipBloc.getOrganizationDataZippedFile(organizationId,startDate,endDate);
     } else {
       if (bag.isEmpty()) {
         pp('$mm bag is empty. No organization data anywhere yet? ... '
             'will force refresh, forceRefresh: $forceRefresh');
-        bag = await zipBloc.getOrganizationDataZippedFile(organizationId);
+        bag = await zipBloc.getOrganizationDataZippedFile(organizationId,startDate,endDate);
       }
     }
 
@@ -267,13 +266,13 @@ class OrganizationBloc {
   }
 
   Future<List<ProjectPosition>> getProjectPositions(
-      {required String organizationId, required bool forceRefresh}) async {
+      {required String organizationId, required bool forceRefresh, required String startDate, required String endDate}) async {
     var projectPositions = await cacheManager.getOrganizationProjectPositions();
     pp('$mm getOrganizationProjectPositions found ${projectPositions.length} positions in local cache ');
 
     if (projectPositions.isEmpty || forceRefresh) {
       projectPositions =
-          await DataAPI.getOrganizationProjectPositions(organizationId);
+          await DataAPI.getOrganizationProjectPositions(organizationId,startDate,endDate);
       pp('$mm getOrganizationProjectPositions found ${projectPositions.length} positions from remote database ');
       await cacheManager.addProjectPositions(positions: projectPositions);
     }
@@ -283,12 +282,12 @@ class OrganizationBloc {
   }
 
   Future<List<ProjectPolygon>> getProjectPolygons(
-      {required String organizationId, required bool forceRefresh}) async {
+      {required String organizationId, required bool forceRefresh, required String startDate, required String endDate}) async {
     var projectPolygons = await cacheManager.getOrganizationProjectPolygons();
     pp('$mm getProjectPolygons found ${projectPolygons.length} polygons in local cache ');
 
     if (projectPolygons.isEmpty || forceRefresh) {
-      projectPolygons = await DataAPI.getProjectPolygons(organizationId);
+      projectPolygons = await DataAPI.getProjectPolygons(organizationId,startDate,endDate);
       pp('$mm getProjectPolygons found ${projectPolygons.length} polygons from remote database ');
       await cacheManager.addProjectPolygons(polygons: projectPolygons);
     }
@@ -298,11 +297,11 @@ class OrganizationBloc {
   }
 
   Future<List<FieldMonitorSchedule>> getFieldMonitorSchedules(
-      {required String organizationId, required bool forceRefresh}) async {
+      {required String organizationId, required bool forceRefresh,required String startDate, required String endDate}) async {
     var schedules = await cacheManager.getOrganizationMonitorSchedules();
 
     if (schedules.isEmpty || forceRefresh) {
-      schedules = await DataAPI.getOrgFieldMonitorSchedules(organizationId);
+      schedules = await DataAPI.getOrgFieldMonitorSchedules(organizationId,startDate,endDate);
       await cacheManager.addFieldMonitorSchedules(schedules: schedules);
     }
 
@@ -310,25 +309,6 @@ class OrganizationBloc {
     pp('$mm getOrgFieldMonitorSchedules found: 🔵 ${schedules.length} schedules ');
 
     return schedules;
-  }
-
-  Future<List<Photo>> getPhotos(
-      {required String organizationId, required bool forceRefresh}) async {
-    var photos = <Photo>[];
-    try {
-      photos = await cacheManager.getOrganizationPhotos();
-      if (photos.isEmpty || forceRefresh) {
-        photos = await DataAPI.getOrganizationPhotos(organizationId);
-        await cacheManager.addPhotos(photos: photos);
-      }
-      photoController.sink.add(photos);
-      pp('$mm getPhotos found: 💜 ${photos.length} photos 💜 ');
-    } catch (e) {
-      pp('😈😈😈😈😈 MonitorBloc: getOrganizationPhotos FAILED: 😈😈😈😈😈 $e');
-      rethrow;
-    }
-
-    return photos;
   }
 
   Future<List<SettingsModel>> getSettings(
@@ -353,13 +333,13 @@ class OrganizationBloc {
   }
 
   Future<List<Video>> getVideos(
-      {required String organizationId, required bool forceRefresh}) async {
+      {required String organizationId, required bool forceRefresh,required String startDate, required String endDate}) async {
     var videos = <Video>[];
     try {
       videos = await cacheManager.getVideos();
 
       if (videos.isEmpty || forceRefresh) {
-        videos = await DataAPI.getOrganizationVideos(organizationId);
+        videos = await DataAPI.getOrganizationVideos(organizationId, startDate, endDate);
         await cacheManager.addVideos(videos: videos);
       }
       videoController.sink.add(videos);
@@ -372,26 +352,6 @@ class OrganizationBloc {
     return videos;
   }
 
-  Future<List<Audio>> getAudios(
-      {required String organizationId, required bool forceRefresh}) async {
-    var audios = <Audio>[];
-    var android = UniversalPlatform.isAndroid;
-
-    try {
-      audios = await cacheManager.getOrganizationAudios();
-      if (audios.isEmpty || forceRefresh) {
-        audios = await DataAPI.getOrganizationAudios(organizationId);
-        if (android) await cacheManager.addAudios(audios: audios);
-      }
-      audioController.sink.add(audios);
-      pp('$mm getAudios found: 💜 ${audios.length} Audios ');
-    } catch (e) {
-      pp('😈😈😈😈😈 MonitorBloc: getOrganizationAudios FAILED');
-      rethrow;
-    }
-
-    return audios;
-  }
 
   Future<List<Project>> getOrganizationProjects(
       {required String organizationId, required bool forceRefresh}) async {
@@ -402,7 +362,7 @@ class OrganizationBloc {
         projects = await DataAPI.findProjectsByOrganization(organizationId);
       }
       projController.sink.add(projects);
-      pp('💜💜💜💜 MonitorBloc: OrganizationProjects found: 💜 ${projects.length} projects ; organizationId: $organizationId💜');
+      pp('💜💜💜💜 OrgBloc: OrganizationProjects found: 💜 ${projects.length} projects ; organizationId: $organizationId💜');
       for (var project in projects) {
         pp('💜💜 Org PROJECT: ${project.name} 🍏 ${project.organizationName}  🍏 ${project.organizationId}');
       }

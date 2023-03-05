@@ -15,6 +15,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:video_thumbnail/video_thumbnail.dart' as vt;
 
 import '../device_location/device_location_bloc.dart';
+import 'api/prefs_og.dart';
 import 'data/position.dart';
 import 'data/project_position.dart';
 
@@ -726,6 +727,21 @@ double getFileSizeInMB({required int bytes, int decimals = 0}) {
   var i = (log(bytes) / log(1024)).floor();
   var size = (bytes / pow(1024, i));
   return size;
+}
+
+Future<Map<String,String>> getStartEndDates() async{
+  int numberOfDays = 7;
+  var settings = await prefsOGx.getSettings();
+  if (settings != null) {
+    numberOfDays = settings.numberOfDays!;
+  }
+  var startDate = DateTime.now().subtract(Duration(days: numberOfDays)).toUtc().toIso8601String();
+  var endDate = DateTime.now().toUtc().toIso8601String();
+  var map = <String,String>{};
+  map['startDate'] = startDate;
+  map['endDate'] = endDate;
+
+  return map;
 }
 
 pp(dynamic msg) {

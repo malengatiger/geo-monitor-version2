@@ -51,8 +51,11 @@ class ChewieVideoPlayerState extends State<ChewieVideoPlayer>
       busy = true;
     });
     try {
+
+      var map = await getStartEndDates();
       videos = await projectBloc.getProjectVideos(
-          projectId: widget.project.projectId!, forceRefresh: forceRefresh);
+          projectId: widget.project.projectId!,
+          forceRefresh: forceRefresh, startDate: map['startDate']!, endDate: map['endDate']!);
       pp('$mm .... getVideos, found: ${videos.length}');
       if (widget.videoIndex != null) {
         selectedVideo = videos.elementAt(widget.videoIndex!);

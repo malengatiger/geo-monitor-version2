@@ -10,7 +10,12 @@ import 'package:geo_monitor/ui/intro/intro_page_one.dart';
 import '../../library/generic_functions.dart';
 
 class AuthEmailSignInTabletPortrait extends StatefulWidget {
-  const AuthEmailSignInTabletPortrait({Key? key, required this.showHeader, this.externalPadding, this.internalPadding}) : super(key: key);
+  const AuthEmailSignInTabletPortrait(
+      {Key? key,
+      required this.showHeader,
+      this.externalPadding,
+      this.internalPadding})
+      : super(key: key);
 
   final bool showHeader;
   final double? externalPadding;
@@ -52,10 +57,17 @@ class _AuthEmailSignInTabletPortraitState
         var user = await DataAPI.getUserById(userId: userCred.user!.uid);
         if (user != null) {
           await prefsOGx.saveUser(user);
+          var map = await getStartEndDates();
+          final startDate = map['startDate'];
+          final endDate = map['endDate'];
           await organizationBloc.getOrganizationData(
-              organizationId: user.organizationId!, forceRefresh: true);
-          var settings =await DataAPI.getOrganizationSettings(user.organizationId!);
-          settings.sort((a,b) => b.created!.compareTo(a.created!));
+              organizationId: user.organizationId!,
+              forceRefresh: true,
+              startDate: startDate!,
+              endDate: endDate!);
+          var settings =
+              await DataAPI.getOrganizationSettings(user.organizationId!);
+          settings.sort((a, b) => b.created!.compareTo(a.created!));
           await prefsOGx.saveSettings(settings.first);
           await themeBloc.changeToTheme(settings.first.themeIndex!);
           if (mounted) {
@@ -92,23 +104,32 @@ class _AuthEmailSignInTabletPortraitState
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-        appBar:  widget.showHeader? AppBar(
-          title: Text(
-            'Geo Sign In',
-            style: myTextStyleMedium(context),
-          ),
-        ): const PreferredSize(preferredSize: Size.fromHeight(0.0),child: SizedBox(),),
+        appBar: widget.showHeader
+            ? AppBar(
+                title: Text(
+                  'Geo Sign In',
+                  style: myTextStyleMedium(context),
+                ),
+              )
+            : const PreferredSize(
+                preferredSize: Size.fromHeight(0.0),
+                child: SizedBox(),
+              ),
         body: Stack(
           children: [
             SizedBox(
                 child: SingleChildScrollView(
               child: Padding(
-                padding: EdgeInsets.all(widget.externalPadding == null?  64.0: widget.externalPadding!),
+                padding: EdgeInsets.all(widget.externalPadding == null
+                    ? 64.0
+                    : widget.externalPadding!),
                 child: Card(
                   elevation: 4,
                   shape: getRoundedBorder(radius: 16),
                   child: Padding(
-                    padding: EdgeInsets.all(widget.internalPadding == null? 100.0: widget.internalPadding!),
+                    padding: EdgeInsets.all(widget.internalPadding == null
+                        ? 100.0
+                        : widget.internalPadding!),
                     child: Column(
                       children: [
                         Form(
@@ -118,7 +139,10 @@ class _AuthEmailSignInTabletPortraitState
                                 const SizedBox(
                                   height: 48,
                                 ),
-                                Text('Geo Email Authentication', style: myTextStyleLarge(context),),
+                                Text(
+                                  'Geo Email Authentication',
+                                  style: myTextStyleLarge(context),
+                                ),
                                 const SizedBox(
                                   height: 48,
                                 ),
@@ -183,16 +207,17 @@ class _AuthEmailSignInTabletPortraitState
                                           backgroundColor: Colors.pink,
                                         ),
                                       )
-                                    : SizedBox(width: 200,
-                                      child: ElevatedButton(
-                                          onPressed: () {
-                                            _submitSignIn();
-                                          },
-                                          child: const Padding(
-                                            padding: EdgeInsets.all(16.0),
-                                            child: Text('Sign In'),
-                                          )),
-                                    ),
+                                    : SizedBox(
+                                        width: 200,
+                                        child: ElevatedButton(
+                                            onPressed: () {
+                                              _submitSignIn();
+                                            },
+                                            child: const Padding(
+                                              padding: EdgeInsets.all(16.0),
+                                              child: Text('Sign In'),
+                                            )),
+                                      ),
                                 const SizedBox(
                                   height: 48,
                                 ),
@@ -229,11 +254,18 @@ class AuthEmailLinkSignInTabletLandscape extends StatelessWidget {
         children: const [
           SizedBox(
             width: 500,
-            child: AuthEmailSignInTabletPortrait(showHeader: false, externalPadding: 24, internalPadding: 24,),
+            child: AuthEmailSignInTabletPortrait(
+              showHeader: false,
+              externalPadding: 24,
+              internalPadding: 24,
+            ),
           ),
           SizedBox(
             width: 500,
-            child: IntroPage(assetPath: 'assets/intro/pic3.webp', title: 'Geo Monitor', text: lorem),
+            child: IntroPage(
+                assetPath: 'assets/intro/pic3.webp',
+                title: 'Geo Monitor',
+                text: lorem),
           ),
         ],
       ),

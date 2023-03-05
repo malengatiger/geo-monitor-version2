@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:responsive_builder/responsive_builder.dart';
+
 import '../../../api/prefs_og.dart';
 import '../../../bloc/organization_bloc.dart';
 import '../../../data/project.dart';
 import '../../../data/user.dart';
 import '../../../functions.dart';
 import 'media_list_desktop.dart';
-import 'project_media_list_mobile.dart';
 import 'media_list_tablet.dart';
+import 'project_media_list_mobile.dart';
 
 class MediaListMain extends StatefulWidget {
   final Project project;
@@ -45,24 +46,27 @@ class MediaListMainState extends State<MediaListMain>
 
     var user = await prefsOGx.getUser();
     if (user != null) {
+      var map = await getStartEndDates();
+      final startDate = map['startDate'];
+      final endDate = map['endDate'];
       switch (user.userType!) {
         case UserType.fieldMonitor:
           // await userBloc.refreshUserData(
           //     userId: user.userId!, forceRefresh: true,);
           await organizationBloc.getOrganizationData(
               organizationId: user.organizationId!,
-              forceRefresh: true);
+              forceRefresh: true, startDate: startDate!, endDate: endDate!);
 
           break;
         case UserType.orgAdministrator:
           await organizationBloc.getOrganizationData(
               organizationId: user.organizationId!,
-              forceRefresh: true);
+              forceRefresh: true, startDate: startDate!, endDate: endDate!);
           break;
         case UserType.orgExecutive:
           await organizationBloc.getOrganizationData(
               organizationId: user.organizationId!,
-              forceRefresh: true);
+              forceRefresh: true, startDate: startDate!, endDate: endDate!);
           break;
       }
     }

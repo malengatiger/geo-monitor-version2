@@ -58,8 +58,12 @@ class ProjectAudiosState extends State<ProjectAudios> {
     setState(() {
       loading = true;
     });
+    var map = await getStartEndDates();
+    final startDate = map['startDate'];
+    final endDate = map['endDate'];
     audios = await projectBloc.getProjectAudios(
-        projectId: widget.project.projectId!, forceRefresh: widget.refresh);
+        projectId: widget.project.projectId!, forceRefresh: widget.refresh,
+         startDate: startDate!, endDate: endDate!);
     audios.sort((a, b) => b.created!.compareTo(a.created!));
     setState(() {
       loading = false;

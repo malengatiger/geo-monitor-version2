@@ -47,8 +47,14 @@ class ProjectMonitorMobileState extends State<ProjectMonitorMobile>
       isBusy = true;
     });
     try {
+      var map = await getStartEndDates();
+      final startDate = map['startDate'];
+      final endDate = map['endDate'];
       positions = await projectBloc.getProjectPositions(
-          projectId: widget.project.projectId!, forceRefresh: forceRefresh);
+          projectId: widget.project.projectId!,
+          forceRefresh: forceRefresh,
+          startDate: startDate!,
+          endDate: endDate!);
       polygons = await projectBloc.getProjectPolygons(
           projectId: widget.project.projectId!, forceRefresh: forceRefresh);
     } catch (e) {

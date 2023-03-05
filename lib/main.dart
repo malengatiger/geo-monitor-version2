@@ -25,6 +25,7 @@ import 'package:universal_platform/universal_platform.dart';
 import 'firebase_options.dart';
 import 'library/api/prefs_og.dart';
 import 'library/bloc/fcm_bloc.dart';
+import 'library/bloc/geo_uploader.dart';
 import 'library/bloc/theme_bloc.dart';
 import 'library/cache_manager.dart';
 import 'library/emojis.dart';
@@ -159,7 +160,8 @@ Future<void> _initializeGeoMonitor() async {
   pp('\n$mx _buildGeofences starting ........................');
   theGreatGeofencer.buildGeofences();
   pp('\n$mx manageMediaUploads starting ........................');
-  //geoUploader.manageMediaUploads();
+  fcmBloc.initialize();
+  geoUploader.manageMediaUploads();
 
   if (settings != null) {
     pp('\n\n$mx ${E.heartGreen}${E.heartGreen}}${E.heartGreen} _initializeGeoMonitor: App Settings are 🍎${settings.toJson()}🍎\n\n');

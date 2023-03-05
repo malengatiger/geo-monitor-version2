@@ -128,8 +128,14 @@ class ProjectLocationHandlerState extends State<ProjectLocationHandler>
     try {
       user = await prefsOGx.getUser();
       await _getLocation();
+      var map = await getStartEndDates();
+      final startDate = map['startDate'];
+      final endDate = map['endDate'];
       _projectPositions = await projectBloc.getProjectPositions(
-          projectId: widget.project.projectId!, forceRefresh: forceRefresh);
+          projectId: widget.project.projectId!,
+          forceRefresh: forceRefresh,
+          startDate: startDate!,
+          endDate: endDate!);
       _projectPolygons = await projectBloc.getProjectPolygons(
           projectId: widget.project.projectId!, forceRefresh: forceRefresh);
 

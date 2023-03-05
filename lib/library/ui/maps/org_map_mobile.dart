@@ -65,9 +65,12 @@ class OrganizationMapMobileState extends State<OrganizationMapMobile>
     setState(() {
       loading = true;
     });
+    var map = await getStartEndDates();
+    final startDate = map['startDate'];
+    final endDate = map['endDate'];
     _projectPositions = await organizationBloc.getProjectPositions(
         organizationId: organization!.organizationId!,
-        forceRefresh: forceRefresh);
+        forceRefresh: forceRefresh, startDate: startDate!, endDate: endDate!);
     _projects = await organizationBloc.getOrganizationProjects(
         organizationId: organization!.organizationId!, forceRefresh: forceRefresh);
     _createMarkers();

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-
 import 'package:responsive_builder/responsive_builder.dart';
 
 import '../../bloc/project_bloc.dart';
@@ -8,7 +7,6 @@ import '../../data/project.dart';
 import '../../data/project_polygon.dart';
 import '../../data/project_position.dart';
 import '../../functions.dart';
-import 'project_map_desktop.dart';
 import 'project_map_mobile.dart';
 import 'project_map_tablet.dart';
 
@@ -40,8 +38,11 @@ class ProjectMapMainState extends State<ProjectMapMain> {
       isBusy = true;
     });
     try {
+      var map = await getStartEndDates();
+      final startDate = map['startDate'];
+      final endDate = map['endDate'];
       _positions = await projectBloc.getProjectPositions(
-          projectId: widget.project.projectId!, forceRefresh: false);
+          projectId: widget.project.projectId!, forceRefresh: false, startDate: startDate!, endDate: endDate!);
       _polygons = await projectBloc.getProjectPolygons(
           projectId: widget.project.projectId!, forceRefresh: false);
     } catch (e) {

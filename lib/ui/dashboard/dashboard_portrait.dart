@@ -97,8 +97,7 @@ class DashboardPortraitState extends State<DashboardPortrait>
     _getAuthenticationStatus();
     _subscribeToConnectivity();
     _subscribeToGeofenceStream();
-    ;
-    _startTimer();
+    // _startTimer();
   }
 
   void _getAuthenticationStatus() async {
@@ -139,18 +138,18 @@ class DashboardPortraitState extends State<DashboardPortrait>
     });
   }
 
-  void _startTimer() async {
-    Future.delayed(const Duration(seconds: 5), () {
-      Timer.periodic(const Duration(minutes: 60), (timer) async {
-        pp('$mm ........ refresh data ... every 60 minutes;  timer tick: ${timer.tick}');
-        try {
-          _getData(true);
-        } catch (e) {
-          //ignore
-        }
-      });
-    });
-  }
+  // void _startTimer() async {
+  //   Future.delayed(const Duration(seconds: 5), () {
+  //     Timer.periodic(const Duration(minutes: 60), (timer) async {
+  //       pp('$mm ........ refresh data ... every 60 minutes;  timer tick: ${timer.tick}');
+  //       try {
+  //         _getData(true);
+  //       } catch (e) {
+  //         //ignore
+  //       }
+  //     });
+  //   });
+  // }
 
   @override
   void dispose() {
@@ -242,18 +241,36 @@ class DashboardPortraitState extends State<DashboardPortrait>
   }
 
   Future _getOrganizationData(String organizationId, bool forceRefresh) async {
+    var map = await getStartEndDates();
+    final startDate = map['startDate'];
+    final endDate = map['endDate'];
     dataBag = await organizationBloc.getOrganizationData(
-        organizationId: organizationId, forceRefresh: forceRefresh);
+        organizationId: organizationId,
+        forceRefresh: forceRefresh,
+        startDate: startDate!,
+        endDate: endDate!);
   }
 
   Future _getProjectData(String projectId, bool forceRefresh) async {
+    var map = await getStartEndDates();
+    final startDate = map['startDate'];
+    final endDate = map['endDate'];
     dataBag = await projectBloc.getProjectData(
-        projectId: projectId, forceRefresh: forceRefresh);
+        projectId: projectId,
+        forceRefresh: forceRefresh,
+        startDate: startDate!,
+        endDate: endDate!);
   }
 
   Future _getUserData(String userId, bool forceRefresh) async {
-    dataBag =
-        await userBloc.getUserData(userId: userId, forceRefresh: forceRefresh);
+    var map = await getStartEndDates();
+    final startDate = map['startDate'];
+    final endDate = map['endDate'];
+    dataBag = await userBloc.getUserData(
+        userId: userId,
+        forceRefresh: forceRefresh,
+        startDate: startDate!,
+        endDate: endDate!);
   }
 
   void _listenForFCM() async {

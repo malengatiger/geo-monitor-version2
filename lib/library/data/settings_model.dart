@@ -24,6 +24,8 @@ class SettingsModel {
   String? projectId;
   @HiveField(9)
   int? activityStreamHours;
+  @HiveField(10)
+  int? numberOfDays;
 
   SettingsModel(
       {required this.distanceFromProject,
@@ -35,6 +37,7 @@ class SettingsModel {
       required this.created,
       required this.organizationId,
       required this.projectId,
+        required this.numberOfDays,
       required this.activityStreamHours});
 
   SettingsModel.fromJson(Map data) {
@@ -46,6 +49,11 @@ class SettingsModel {
     activityStreamHours = data['activityStreamHours'];
     organizationId = data['organizationId'];
 
+    if (data['numberOfDays'] != null) {
+      numberOfDays = data['numberOfDays'];
+    } else {
+      numberOfDays = 7;
+    }
     if (data['projectId'] != null) {
       projectId = data['projectId'];
     }
@@ -68,6 +76,7 @@ class SettingsModel {
       'projectId': projectId,
       'organizationId': organizationId,
       'created': created,
+      'numberOfDays': numberOfDays ?? 7,
       'activityStreamHours': activityStreamHours,
       'settingsId': settingsId,
       'themeIndex': themeIndex,

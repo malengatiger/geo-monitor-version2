@@ -186,15 +186,16 @@ class AuthPhoneSignInMobileState extends State<AuthPhoneSignInMobile>
 
         if (settings.isEmpty) {
           await prefsOGx.saveSettings(SettingsModel(
-              distanceFromProject: 100,
+              distanceFromProject: 500,
               photoSize: 0,
-              maxVideoLengthInSeconds: 3,
-              maxAudioLengthInMinutes: 10,
+              maxVideoLengthInSeconds: 15,
+              maxAudioLengthInMinutes: 30,
               themeIndex: 0,
               settingsId: const Uuid().v4(),
               created: DateTime.now().toUtc().toIso8601String(),
               organizationId: user!.organizationId,
               projectId: null,
+              numberOfDays: 7,
               activityStreamHours: 12));
           await themeBloc.changeToTheme(0);
 
@@ -214,7 +215,10 @@ class AuthPhoneSignInMobileState extends State<AuthPhoneSignInMobile>
               context: context);
         }
         pp('$mm getting GeoMonitor org data from the db using zip file:  🍎🍎');
-        zipBloc.getOrganizationDataZippedFile(user!.organizationId!);
+        var map = await getStartEndDates();
+        final startDate = map['startDate'];
+        final endDate = map['endDate'];
+        zipBloc.getOrganizationDataZippedFile(user!.organizationId!,startDate!, endDate!);
         _navigateToAvatarBuilder();
         return;
       }

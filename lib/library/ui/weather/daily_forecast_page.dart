@@ -51,8 +51,11 @@ class DailyForecastPageState extends State<DailyForecastPage>
       try {
         pp('$mm  get project positions and get forecast for each ....');
         user = await prefsOGx.getUser();
+        var mapX = await getStartEndDates();
+        final startDate = mapX['startDate'];
+        final endDate = mapX['endDate'];
         positions = await organizationBloc.getProjectPositions(
-            organizationId: user!.organizationId!, forceRefresh: false);
+            organizationId: user!.organizationId!, forceRefresh: false, startDate: startDate!, endDate: endDate!);
         //todo filter positions - use distance to identify what positions qualfy ..
         //for now - 1 position per project
         var map = HashMap<String, ProjectPosition>();

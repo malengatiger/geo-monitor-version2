@@ -166,8 +166,14 @@ class DashboardTabletState extends State<DashboardTablet> {
     });
     try {
       user = await prefsOGx.getUser();
+      var map = await getStartEndDates();
+      final startDate = map['startDate'];
+      final endDate = map['endDate'];
       dataBag = await organizationBloc.getOrganizationData(
-          organizationId: user!.organizationId!, forceRefresh: forceRefresh);
+          organizationId: user!.organizationId!,
+          forceRefresh: forceRefresh,
+          startDate: startDate!,
+          endDate: endDate!);
     } catch (e) {
       pp(e);
       if (mounted) {
@@ -230,6 +236,7 @@ class DashboardTabletState extends State<DashboardTablet> {
               child: const IntroMain()));
     }
   }
+
   void _navigateToCharts() {
     pp('$mm .................. _navigateToCharts  ....');
     if (mounted) {
@@ -759,18 +766,24 @@ class DashboardTabletState extends State<DashboardTablet> {
                     },
                   ))
               : const SizedBox(),
-          _showRatingAdder? Positioned(
-              left: 200, right: 200, top: 60,
-              child: RatingAdder(
-            photo: photo,
-            audio: audio,
-            video: video,
-            width: 400.0, onDone: (){
-              setState(() {
-                _showRatingAdder = false;
-              });
-              }, elevation: 8.0,
-          )) : const SizedBox(),
+          _showRatingAdder
+              ? Positioned(
+                  left: 200,
+                  right: 200,
+                  top: 60,
+                  child: RatingAdder(
+                    photo: photo,
+                    audio: audio,
+                    video: video,
+                    width: 400.0,
+                    onDone: () {
+                      setState(() {
+                        _showRatingAdder = false;
+                      });
+                    },
+                    elevation: 8.0,
+                  ))
+              : const SizedBox(),
         ],
       ),
     ));

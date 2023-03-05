@@ -122,7 +122,7 @@ Future<Video?> uploadVideoFile(
     required double distance}) async {
 
   pp('\n\n$xx 🍐🍐🍐🍐🍐🍐 _uploadVideoFile: objectName: $objectName '
-      'url: $url size : $size MB');
+      ' size : $size MB');
   var map = json.decode(mJson);
   var videoForUpload = VideoForUpload.fromJson(map);
 

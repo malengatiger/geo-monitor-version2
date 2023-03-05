@@ -171,16 +171,17 @@ class AuthEmailRegistrationPortraitState
     await prefsOGx.saveUser(user!);
 
     var mSettings = await DataAPI.addSettings(SettingsModel(
-        distanceFromProject: 200,
+        distanceFromProject: 500,
         photoSize: 0,
-        maxVideoLengthInSeconds: 3,
+        maxVideoLengthInSeconds: 15,
         maxAudioLengthInMinutes: 30,
         themeIndex: 0,
         settingsId: const Uuid().v4(),
         created: DateTime.now().toUtc().toIso8601String(),
         organizationId: org.organizationId,
         projectId: null,
-        activityStreamHours: 12));
+        numberOfDays: 7,
+        activityStreamHours: 24));
 
     await prefsOGx.saveSettings(mSettings);
 

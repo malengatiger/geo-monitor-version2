@@ -27,10 +27,11 @@ class _SettingsFormState extends State<SettingsForm> {
   Project? selectedProject;
   SettingsModel? settingsModel;
 
-  var distController = TextEditingController(text: '200');
+  var distController = TextEditingController(text: '500');
   var videoController = TextEditingController(text: '15');
   var audioController = TextEditingController(text: '60');
   var activityController = TextEditingController(text: '24');
+  var daysController = TextEditingController(text: '7');
 
   int photoSize = 0;
   int currentThemeIndex = 0;
@@ -69,20 +70,21 @@ class _SettingsFormState extends State<SettingsForm> {
     settingsModel ??= SettingsModel(
         distanceFromProject: 500,
         photoSize: 1,
-        maxVideoLengthInSeconds: 2,
-        maxAudioLengthInMinutes: 15,
+        maxVideoLengthInSeconds: 20,
+        maxAudioLengthInMinutes: 30,
         themeIndex: 0,
         settingsId: const Uuid().v4(),
         created: DateTime.now().toUtc().toIso8601String(),
         organizationId: user!.organizationId!,
         projectId: null,
-        activityStreamHours: 12);
+        activityStreamHours: 24, numberOfDays: 7);
 
     currentThemeIndex = settingsModel!.themeIndex!;
     distController.text = '${settingsModel?.distanceFromProject}';
     videoController.text = '${settingsModel?.maxVideoLengthInSeconds}';
     audioController.text = '${settingsModel?.maxAudioLengthInMinutes}';
     activityController.text = '${settingsModel?.activityStreamHours}';
+    daysController.text = '${settingsModel?.numberOfDays}';
 
     if (settingsModel?.photoSize == 0) {
       photoSize = 0;
@@ -124,6 +126,7 @@ class _SettingsFormState extends State<SettingsForm> {
         photoSize: groupValue,
         maxVideoLengthInSeconds: int.parse(videoController.value.text),
         maxAudioLengthInMinutes: int.parse(audioController.value.text),
+        numberOfDays: int.parse(daysController.value.text),
         themeIndex: currentThemeIndex,
         settingsId: const Uuid().v4(),
         created: date,
@@ -386,6 +389,30 @@ class _SettingsFormState extends State<SettingsForm> {
                         hintText: 'Enter activity stream length in hours',
                         label: Text(
                           'Activity Stream Audio Length in Hours',
+                          style: myTextStyleSmall(context),
+                        ),
+                        hintStyle: myTextStyleSmall(context),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(
+                    height: 12,
+                  ),
+                  SizedBox(
+                    width: 260,
+                    child: TextFormField(
+                      controller: daysController,
+                      keyboardType: TextInputType.number,
+                      validator: (value) {
+                        if (value!.isEmpty) {
+                          return 'Please enter the number of days your dashboard must show';
+                        }
+                        return null;
+                      },
+                      decoration: InputDecoration(
+                        hintText: 'Enter the number of days your dashboard must show',
+                        label: Text(
+                          'Number of Dashboard Days',
                           style: myTextStyleSmall(context),
                         ),
                         hintStyle: myTextStyleSmall(context),

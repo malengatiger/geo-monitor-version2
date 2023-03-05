@@ -144,13 +144,13 @@ class UserBloc {
   }
 
   Future<DataBag> getUserData(
-      {required String userId, required bool forceRefresh}) async {
+      {required String userId, required bool forceRefresh,required String startDate, required String endDate}) async {
     pp('$mm refreshUserData ... forceRefresh: $forceRefresh');
 
     //todo - for monitor, only their projects must show
     DataBag? bag = await cacheManager.getUserData(userId: userId);
     if (forceRefresh || bag.isEmpty()) {
-      bag = await zipBloc.getUserDataZippedFile(userId);
+      bag = await zipBloc.getUserDataZippedFile(userId, startDate, endDate);
     }
 
     return bag!;

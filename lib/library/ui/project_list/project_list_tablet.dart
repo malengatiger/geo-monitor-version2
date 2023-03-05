@@ -375,8 +375,11 @@ class ProjectListTabletState extends State<ProjectListTablet>
       isBusy = true;
     });
     try {
+      var map = await getStartEndDates();
+      final startDate = map['startDate'];
+      final endDate = map['endDate'];
       positions = await projectBloc.getProjectPositions(
-          projectId: project.projectId!, forceRefresh: false);
+          projectId: project.projectId!, forceRefresh: false, startDate: startDate!, endDate: endDate!);
       polygons = await projectBloc.getProjectPolygons(
           projectId: project.projectId!, forceRefresh: false);
       if (positions.length == 1 && polygons.isEmpty) {

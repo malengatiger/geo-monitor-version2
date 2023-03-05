@@ -164,10 +164,13 @@ class ProjectMapTabletState extends State<ProjectMapTablet>
       busy = true;
     });
     try {
+      var map = await getStartEndDates();
+      final startDate = map['startDate'];
+      final endDate = map['endDate'];
       projectPolygons = await projectBloc.getProjectPolygons(
           projectId: widget.project.projectId!, forceRefresh: forceRefresh);
       projectPositions = await projectBloc.getProjectPositions(
-          projectId: widget.project.projectId!, forceRefresh: forceRefresh);
+          projectId: widget.project.projectId!, forceRefresh: forceRefresh, startDate: startDate!, endDate: endDate!);
     } catch (e) {
       pp(e);
       if (mounted) {

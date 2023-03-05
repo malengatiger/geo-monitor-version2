@@ -124,12 +124,12 @@ class ProjectBloc {
 
   //
   Future<List<ProjectPosition>> getProjectPositions(
-      {required String projectId, required bool forceRefresh}) async {
+      {required String projectId, required bool forceRefresh,required String startDate, required String endDate}) async {
     var projectPositions = await cacheManager.getProjectPositions(projectId);
     pp('$mm getProjectPositions found ${projectPositions.length} positions in local cache ');
 
     if (projectPositions.isEmpty || forceRefresh) {
-      projectPositions = await DataAPI.findProjectPositionsById(projectId);
+      projectPositions = await DataAPI.getProjectPositions(projectId,startDate,endDate);
       pp('$mm getProjectPositions found ${projectPositions.length} positions from remote database ');
       await cacheManager.addProjectPositions(positions: projectPositions);
     }
@@ -145,7 +145,10 @@ class ProjectBloc {
     pp('$mm getProjectPolygons found ${projectPolygons.length} polygons in local cache ');
 
     if (projectPolygons.isEmpty || forceRefresh) {
-      projectPolygons = await DataAPI.findProjectPolygonsById(projectId);
+      var map = await getStartEndDates();
+      final startDate = map['startDate'];
+      final endDate = map['endDate'];
+      projectPolygons = await DataAPI.getProjectPolygons(projectId,startDate!,endDate!);
       pp('$mm getProjectPolygons found ${projectPolygons.length} polygons from remote database ');
       await cacheManager.addProjectPolygons(polygons: projectPolygons);
     }
@@ -200,14 +203,11 @@ class ProjectBloc {
   }
 
   Future<List<Video>> getProjectVideos(
-      {required String projectId, required bool forceRefresh}) async {
+      {required String projectId, required bool forceRefresh,required String startDate, required String endDate}) async {
     List<Video> videos = await cacheManager.getProjectVideos(projectId);
-    // var android = UniversalPlatform.isAndroid;
-    // if (android) {
-    //   //videos = await hiveUtil.getProjectVideos(projectId);
-    // }
+
     if (videos.isEmpty || forceRefresh) {
-      videos = await DataAPI.findVideosById(projectId);
+      videos = await DataAPI.getProjectVideos(projectId,startDate,endDate);
     }
     videos.sort((a, b) => b.created!.compareTo(a.created!));
     _projectVideoController.sink.add(videos);
@@ -217,11 +217,11 @@ class ProjectBloc {
   }
 
   Future<List<Audio>> getProjectAudios(
-      {required String projectId, required bool forceRefresh}) async {
+      {required String projectId, required bool forceRefresh,required String startDate, required String endDate}) async {
     List<Audio> audios = await cacheManager.getProjectAudios(projectId);
 
     if (audios.isEmpty || forceRefresh) {
-      audios = await DataAPI.findAudiosById(projectId);
+      audios = await DataAPI.getProjectAudios(projectId,startDate,endDate);
     }
     audios.sort((a, b) => b.created!.compareTo(a.created!));
 
@@ -232,7 +232,7 @@ class ProjectBloc {
   }
 
   Future<DataBag> getProjectData(
-      {required String projectId, required bool forceRefresh}) async {
+      {required String projectId, required bool forceRefresh, required String startDate, required String endDate}) async {
     List<Video> videos = await cacheManager.getProjectVideos(projectId);
     List<Audio> audios = await cacheManager.getProjectAudios(projectId);
     List<Photo> photos = await cacheManager.getProjectPhotos(projectId);
@@ -256,7 +256,7 @@ class ProjectBloc {
         settings: settings);
 
     if (videos.isEmpty || photos.isEmpty || audios.isEmpty || forceRefresh) {
-      dataBag = await DataAPI.getProjectData(projectId);
+      dataBag = await DataAPI.getProjectData(projectId,startDate,endDate);
     }
     _projectVideoController.sink.add(videos);
     pp('$mm getProjectData found: 💜 ${dataBag.videos!.length} videos ');
@@ -270,13 +270,13 @@ class ProjectBloc {
   }
 
   Future<DataBag> refreshProjectData(
-      {required String projectId, required bool forceRefresh}) async {
+      {required String projectId, required bool forceRefresh,required String startDate, required String endDate}) async {
     pp('$mm refreshing project data ... photos, videos and schedules '
         '... forceRefresh: $forceRefresh');
     var bag = await _loadBag(projectId);
 
     if (forceRefresh) {
-      bag = await DataAPI.getProjectData(projectId);
+      bag = await DataAPI.getProjectData(projectId,startDate,endDate);
     }
     _putBagContentsToStreams(bag);
     return bag;

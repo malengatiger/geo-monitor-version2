@@ -110,8 +110,12 @@ class ProjectMediaListMobileState extends State<ProjectMediaListMobile>
     });
 
     try {
+      var map = await getStartEndDates();
+      final startDate = map['startDate'];
+      final endDate = map['endDate'];
       var bag = await projectBloc.refreshProjectData(
-          projectId: widget.project.projectId!, forceRefresh: forceRefresh);
+          projectId: widget.project.projectId!,
+          forceRefresh: forceRefresh, startDate: startDate!, endDate: endDate!);
       pp('$mm bag has arrived safely! Yeah!! photos: ${bag.photos!.length} videos: ${bag.videos!.length}');
       _photos = bag.photos!;
       setState(() {});

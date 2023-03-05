@@ -20,34 +20,34 @@ class ZipBloc {
   static final client = http.Client();
   static int start = 0;
 
-  Future<DataBag?> getUserDataZippedFile(String userId) async {
+  Future<DataBag?> getUserDataZippedFile(String userId, String startDate, String endDate) async {
     pp('\n\n$xz getUserDataZippedFile  🔆🔆🔆 userId : 💙  $userId  💙');
     start = DateTime.now().millisecondsSinceEpoch;
     var url = await DataAPI.getUrl();
-    var mUrl = '${url!}getUserData?userId=$userId';
+    var mUrl = '${url!}getUserData?userId=$userId&startDate=$startDate&endDate=$endDate';
 
     var bag = await _getDataBag(mUrl);
     await _cacheTheData(bag);
     return bag;
   }
 
-  Future<DataBag?> getProjectDataZippedFile(String projectId) async {
+  Future<DataBag?> getProjectDataZippedFile(String projectId,String startDate, String endDate) async {
     pp('\n\n$xz getProjectDataZippedFile  🔆🔆🔆 projectId : 💙  $projectId  💙');
     start = DateTime.now().millisecondsSinceEpoch;
     var url = await DataAPI.getUrl();
-    var mUrl = '${url!}getProjectDataZippedFile?projectId=$projectId';
+    var mUrl = '${url!}getProjectDataZippedFile?projectId=$projectId&startDate=$startDate&endDate=$endDate';
 
     var bag = await _getDataBag(mUrl);
     await _cacheTheData(bag);
     return bag;
   }
 
-  Future<DataBag?> getOrganizationDataZippedFile(String organizationId) async {
+  Future<DataBag?> getOrganizationDataZippedFile(String organizationId, String startDate, String endDate) async {
     pp('\n\n$xz getOrganizationDataZippedFile  🔆🔆🔆 orgId : 💙  $organizationId  💙');
     start = DateTime.now().millisecondsSinceEpoch;
     var url = await DataAPI.getUrl();
     var mUrl =
-        '${url!}getOrganizationDataZippedFile?organizationId=$organizationId';
+        '${url!}getOrganizationDataZippedFile?organizationId=$organizationId&startDate=$startDate&endDate=$endDate';
 
     var bag = await _getDataBag(mUrl);
     await _cacheTheData(bag);

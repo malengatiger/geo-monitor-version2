@@ -93,8 +93,15 @@ class ProjectEditCardState extends State<ProjectEditCard>
         }
 
         /// refresh data from backend ...
+        ///
+        var map = await getStartEndDates();
+        final startDate = map['startDate'];
+        final endDate = map['endDate'];
         await projectBloc.getProjectData(
-            projectId: project!.projectId!, forceRefresh: true);
+            projectId: project!.projectId!,
+            forceRefresh: true,
+            startDate: startDate!,
+            endDate: endDate!);
 
         ///a chance to create locations for the project
         widget.navigateToLocation(project!);
@@ -255,16 +262,18 @@ class ProjectEditCardState extends State<ProjectEditCard>
                               ),
                               SizedBox(
                                 width: 220,
-                                child: project == null? ElevatedButton(
-                                  onPressed: _submit,
-                                  child: Padding(
-                                    padding: const EdgeInsets.all(12.0),
-                                    child: Text(
-                                      'Submit Project',
-                                      style: myTextStyleMedium(context),
-                                    ),
-                                  ),
-                                ) : const SizedBox(),
+                                child: project == null
+                                    ? ElevatedButton(
+                                        onPressed: _submit,
+                                        child: Padding(
+                                          padding: const EdgeInsets.all(12.0),
+                                          child: Text(
+                                            'Submit Project',
+                                            style: myTextStyleMedium(context),
+                                          ),
+                                        ),
+                                      )
+                                    : const SizedBox(),
                               ),
                             ],
                           ),

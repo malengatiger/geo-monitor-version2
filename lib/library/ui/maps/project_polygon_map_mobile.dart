@@ -62,10 +62,16 @@ class ProjectPolygonMapMobileState extends State<ProjectPolygonMapMobile>
     });
     try {
       user = await prefsOGx.getUser();
+      var map = await getStartEndDates();
+      final startDate = map['startDate'];
+      final endDate = map['endDate'];
       projectPolygons = await projectBloc.getProjectPolygons(
           projectId: widget.project.projectId!, forceRefresh: forceRefresh);
       projectPositions = await projectBloc.getProjectPositions(
-          projectId: widget.project.projectId!, forceRefresh: forceRefresh);
+          projectId: widget.project.projectId!,
+          forceRefresh: forceRefresh,
+          startDate: startDate!,
+          endDate: endDate!);
       var loc = await locationBloc.getLocation();
       if (loc != null) {
         _latitude = loc.latitude!;

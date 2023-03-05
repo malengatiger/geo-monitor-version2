@@ -4,7 +4,6 @@ import 'package:geo_monitor/library/functions.dart';
 import 'package:geofence_service/geofence_service.dart';
 import 'package:responsive_builder/responsive_builder.dart';
 
-import '../../library/bloc/fcm_bloc.dart';
 import '../../library/data/user.dart';
 import '../../library/geofence/geofencer_two.dart';
 import 'dashboard_portrait.dart';
@@ -35,9 +34,6 @@ class DashboardMainState extends State<DashboardMain>
   void _getUser() async {
     user = await prefsOGx.getUser();
     setState(() {});
-    fcmBloc.initialize();
-    pp('DashboardMain: 🍎🍎🍎🍎 FCM should have started initialization!!  ... 🍎🍎');
-
   }
 
   @override

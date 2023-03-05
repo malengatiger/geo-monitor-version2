@@ -105,8 +105,14 @@ class _ProjectDashboardGridState extends State<ProjectDashboardGrid>
       });
     }
     try {
+      var map = await getStartEndDates();
+      final startDate = map['startDate'];
+      final endDate = map['endDate'];
       var dataBag = await projectBloc.getProjectData(
-          projectId: widget.project.projectId!, forceRefresh: forceRefresh);
+          projectId: widget.project.projectId!,
+          forceRefresh: forceRefresh,
+          startDate: startDate!,
+          endDate: endDate!);
       _projects = dataBag.projects!;
       _users = dataBag.users!;
       _photos = dataBag.photos!;
@@ -295,24 +301,42 @@ class _ProjectDashboardGridState extends State<ProjectDashboardGrid>
         pp('$mm: 🍎 🍎 videoSubscriptionFCM video arrived... 🍎 🍎');
         if (mounted) {
           pp('DashboardMobile: 🍎 🍎 showMessageSnackbar: ${message.projectName} ... 🍎 🍎');
+          var map = await getStartEndDates();
+          final startDate = map['startDate'];
+          final endDate = map['endDate'];
           _videos = await projectBloc.getProjectVideos(
-              projectId: widget.project.projectId!, forceRefresh: false);
+              projectId: widget.project.projectId!,
+              forceRefresh: false,
+              startDate: startDate!,
+              endDate: endDate!);
           setState(() {});
         }
       });
       audioSubscriptionFCM = fcmBloc.audioStream.listen((Audio message) async {
         pp('$mm: 🍎 🍎 audioSubscriptionFCM audio arrived... 🍎 🍎');
         if (mounted) {
+          var map = await getStartEndDates();
+          final startDate = map['startDate'];
+          final endDate = map['endDate'];
           _audios = await projectBloc.getProjectAudios(
-              projectId: widget.project.projectId!, forceRefresh: false);
+              projectId: widget.project.projectId!,
+              forceRefresh: false,
+              startDate: startDate!,
+              endDate: endDate!);
         }
       });
       projectPositionSubscriptionFCM =
           fcmBloc.projectPositionStream.listen((ProjectPosition message) async {
         pp('$mm: 🍎 🍎 projectPositionSubscriptionFCM position arrived... 🍎 🍎');
         if (mounted) {
+          var map = await getStartEndDates();
+          final startDate = map['startDate'];
+          final endDate = map['endDate'];
           _projectPositions = await projectBloc.getProjectPositions(
-              projectId: widget.project.projectId!, forceRefresh: false);
+              projectId: widget.project.projectId!,
+              forceRefresh: false,
+              startDate: startDate!,
+              endDate: endDate!);
         }
       });
       projectPolygonSubscriptionFCM =

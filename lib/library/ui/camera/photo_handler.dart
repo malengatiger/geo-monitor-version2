@@ -39,8 +39,7 @@ class PhotoHandler extends StatefulWidget {
 }
 
 class PhotoHandlerState extends State<PhotoHandler>
-    with SingleTickerProviderStateMixin
-     {
+    with SingleTickerProviderStateMixin {
   final mm =
       '${E.blueDot}${E.blueDot}${E.blueDot}${E.blueDot} PhotoHandler: 🌿';
 
@@ -83,8 +82,14 @@ class PhotoHandlerState extends State<PhotoHandler>
       user = await prefsOGx.getUser();
       polygons = await projectBloc.getProjectPolygons(
           projectId: widget.project.projectId!, forceRefresh: false);
+      var map = await getStartEndDates();
+      final startDate = map['startDate'];
+      final endDate = map['endDate'];
       positions = await projectBloc.getProjectPositions(
-          projectId: widget.project.projectId!, forceRefresh: false);
+          projectId: widget.project.projectId!,
+          forceRefresh: false,
+          startDate: startDate!,
+          endDate: endDate!);
       pp('$mm positions: ${positions.length} polygons: ${polygons.length} found');
     } catch (e) {
       if (mounted) {

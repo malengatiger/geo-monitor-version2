@@ -4,12 +4,13 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+
 import '../api/prefs_og.dart';
 import '../bloc/organization_bloc.dart';
 import '../bloc/project_bloc.dart';
-import '../data/user.dart';
-import '../data/project_position.dart';
 import '../data/project.dart';
+import '../data/project_position.dart';
+import '../data/user.dart';
 import '../functions.dart';
 
 
@@ -74,10 +75,13 @@ class MonitorMapMobileState extends State<MonitorMapMobile>
       projects = await organizationBloc.getOrganizationProjects(
           organizationId: user!.organizationId!, forceRefresh: forceRefresh);
 
+      var map = await getStartEndDates();
+      final startDate = map['startDate'];
+      final endDate = map['endDate'];
       for (var i = 0; i < projects.length; i++) {
         var pos = await projectBloc.getProjectPositions(
             projectId: projects.elementAt(i).projectId!,
-            forceRefresh: forceRefresh);
+            forceRefresh: forceRefresh, startDate: startDate!, endDate: endDate!);
         projectPositions.addAll(pos);
       }
 

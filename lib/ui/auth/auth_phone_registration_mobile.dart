@@ -214,16 +214,17 @@ class AuthPhoneRegistrationMobileState
           password: '');
 
       var mSettings = await DataAPI.addSettings(SettingsModel(
-          distanceFromProject: 100,
+          distanceFromProject: 500,
           photoSize: 0,
-          maxVideoLengthInSeconds: 3,
-          maxAudioLengthInMinutes: 10,
+          maxVideoLengthInSeconds: 15,
+          maxAudioLengthInMinutes: 30,
           themeIndex: 0,
           settingsId: const Uuid().v4(),
           created: DateTime.now().toUtc().toIso8601String(),
           organizationId: org.organizationId,
           projectId: null,
-          activityStreamHours: 12));
+          numberOfDays: 7,
+          activityStreamHours: 24));
 
       var bag = OrganizationRegistrationBag(
           organization: org,
