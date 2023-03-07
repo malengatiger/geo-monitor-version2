@@ -139,19 +139,6 @@ class DashboardPortraitState extends State<DashboardPortrait>
     });
   }
 
-  // void _startTimer() async {
-  //   Future.delayed(const Duration(seconds: 5), () {
-  //     Timer.periodic(const Duration(minutes: 60), (timer) async {
-  //       pp('$mm ........ refresh data ... every 60 minutes;  timer tick: ${timer.tick}');
-  //       try {
-  //         _getData(true);
-  //       } catch (e) {
-  //         //ignore
-  //       }
-  //     });
-  //   });
-  // }
-
   @override
   void dispose() {
     _gridViewAnimationController.dispose();
@@ -216,11 +203,13 @@ class DashboardPortraitState extends State<DashboardPortrait>
       busy = true;
     });
     await _doTheWork(forceRefresh);
+
     _gridViewAnimationController.forward();
+
   }
 
   Future<void> _doTheWork(bool forceRefresh) async {
-    try {
+
       if (deviceUser == null) {
         throw Exception("Tax man is fucked! User is not found");
       }
@@ -233,12 +222,6 @@ class DashboardPortraitState extends State<DashboardPortrait>
       }
       setState(() {});
       _gridViewAnimationController.forward();
-    } catch (e) {
-      pp('$mm $e - will show snackbar ..');
-      showConnectionProblemSnackBar(
-          context: context,
-          message: 'Data refresh failed. Possible network problem - $e');
-    }
 
     setState(() {
       busy = false;
@@ -249,6 +232,7 @@ class DashboardPortraitState extends State<DashboardPortrait>
     var map = await getStartEndDates();
     final startDate = map['startDate'];
     final endDate = map['endDate'];
+
     dataBag = await organizationBloc.getOrganizationData(
         organizationId: organizationId,
         forceRefresh: forceRefresh,
@@ -301,6 +285,9 @@ class DashboardPortraitState extends State<DashboardPortrait>
       });
       userSubscriptionFCM = fcmBloc.userStream.listen((user) async {
         pp('$mm: 🍎 🍎 user arrived... 🍎 🍎');
+        if (user.userId == deviceUser!.userId!) {
+          deviceUser = user;
+        }
         await _getData(false);
         if (mounted) {
           setState(() {});

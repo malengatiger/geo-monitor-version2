@@ -52,41 +52,41 @@ class RecordingControls extends StatelessWidget {
 
     return Card(
       elevation: 4,
-      shape: getRoundedBorder(radius: 16),
+      shape: getRoundedBorder(radius: 12),
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 8.0),
-        child: Row(
+        child: Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
-            const SizedBox(
-              width: 4,
-            ),
+            // const SizedBox(
+            //   width: 4,
+            // ),
             showRecord
                 ? IconButton(
                     onPressed: _onRecord,
                     icon:
                         Icon(Icons.mic, color: Theme.of(context).primaryColor))
                 : const SizedBox(),
-            const SizedBox(
-              width: 28,
-            ),
+            // const SizedBox(
+            //   width: 28,
+            // ),
             showPlay
                 ? IconButton(
                     onPressed: _onPlayTapped,
                     icon: Icon(Icons.play_arrow,
                         color: Theme.of(context).primaryColor))
                 : const SizedBox(),
-            const SizedBox(
-              width: 28,
-            ),
+            // const SizedBox(
+            //   width: 28,
+            // ),
             showPause
                 ? IconButton(
                     onPressed: _onPlayPaused,
                     icon: Icon(Icons.pause,
                         color: Theme.of(context).primaryColor))
                 : const SizedBox(),
-            const SizedBox(
-              width: 28,
-            ),
+            // const SizedBox(
+            //   width: 28,
+            // ),
             showStop
                 ? IconButton(
                     onPressed: _onPlayStopped,
@@ -135,8 +135,9 @@ class TimerCard extends StatelessWidget {
 
     return Card(
       elevation: 8,
+      shape: getRoundedBorder(radius: 12),
       child: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(20.0),
         child: Row(
           children: [
             Text(
@@ -148,10 +149,10 @@ class TimerCard extends StatelessWidget {
             ),
             Text(
               '$result ',
-              style: GoogleFonts.lato(
+              style: GoogleFonts.secularOne(
                   textStyle: Theme.of(context).textTheme.bodyLarge,
                   fontWeight: FontWeight.w900,
-                  fontSize: 24,
+                  fontSize: 28,
                   color: Theme.of(context).primaryColor),
             ),
           ],

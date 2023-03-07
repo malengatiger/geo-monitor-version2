@@ -8,7 +8,7 @@ import 'package:geo_monitor/library/ui/camera/video_handler_two.dart';
 import 'package:geo_monitor/library/ui/media/list/project_audios_tablet.dart';
 import 'package:geo_monitor/library/ui/media/list/project_photos_tablet.dart';
 import 'package:geo_monitor/library/ui/media/list/project_videos_tablet.dart';
-import 'package:geo_monitor/ui/audio/audio_handler_mobile.dart';
+import 'package:geo_monitor/ui/audio/audio_handler.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:responsive_builder/responsive_builder.dart';
@@ -47,7 +47,7 @@ class ProjectMediaListTabletState extends State<ProjectMediaListTablet>
 
   var _photos = <Photo>[];
   User? user;
-  static const mm = '🔆🔆🔆 MediaListMobile 💜💜 ';
+  static const mm = '🔆🔆🔆 ProjectMediaListTablet 💜💜 ';
   bool _showPhotoDetail = false;
   Photo? selectedPhoto;
   Audio? selectedAudio;
@@ -94,7 +94,7 @@ class ProjectMediaListTabletState extends State<ProjectMediaListTablet>
     videoStreamSubscription = projectBloc.videoStream.listen((value) {
       pp('$mm Videos received from projectVideoStream: 🏈 ${value.length}');
       if (mounted) {
-        _animationController.forward();
+        // _animationController.forward();
         setState(() {});
       } else {
         pp(' 😡😡😡 what the fuck? this thing is not mounted  😡😡😡');
@@ -215,7 +215,13 @@ class ProjectMediaListTabletState extends State<ProjectMediaListTablet>
   @override
   Widget build(BuildContext context) {
     _photos.sort((a, b) => b.created!.compareTo(a.created!));
-
+    final ori = MediaQuery.of(context).orientation;
+    var padding = 300.0;
+    var top = 0.0;
+    if (ori.name == 'portrait') {
+       padding = 180.0;
+       top = 64.0;
+    }
     return SafeArea(
         child: Scaffold(
           appBar: AppBar(
@@ -243,22 +249,22 @@ class ProjectMediaListTabletState extends State<ProjectMediaListTablet>
                         .of(context)
                         .primaryColor,
                   )),
-              IconButton(
-                  onPressed: () {
-                    pp('...... navigate to take video');
-                    setState(() {
-                      _showPhotoHandler = false;
-                      _showVideoHandler = true;
-                      _showAudioHandler = false;
-                    });
-                  },
-                  icon: Icon(
-                    Icons.video_camera_front,
-                    size: 18,
-                    color: Theme
-                        .of(context)
-                        .primaryColor,
-                  )),
+              // IconButton(
+              //     onPressed: () {
+              //       pp('...... navigate to take video');
+              //       setState(() {
+              //         _showPhotoHandler = false;
+              //         _showVideoHandler = true;
+              //         _showAudioHandler = false;
+              //       });
+              //     },
+              //     icon: Icon(
+              //       Icons.video_camera_front,
+              //       size: 18,
+              //       color: Theme
+              //           .of(context)
+              //           .primaryColor,
+              //     )),
               IconButton(
                   onPressed: () {
                     pp('...... navigate to take audio');
@@ -498,21 +504,35 @@ class ProjectMediaListTabletState extends State<ProjectMediaListTablet>
                   : const SizedBox(),
               _showVideoHandler
                   ? Positioned(
-                left: 300,
-                right: 300,
+                left: padding,
+                right: padding,
                 top: 12,
                 child: VideoHandlerTwo(
-                  project: widget.project,
+                  project: widget.project, onClose: (){
+                    setState(() {
+                      _showVideoHandler = false;
+                    });
+                },
                 ),
               )
                   : const SizedBox(),
               _showAudioHandler
                   ? Positioned(
-                left: 100,
-                right: 100,
-                top: 12,
-                child: AudioHandlerMobile(
-                  project: widget.project,
+                left: padding,
+                right: padding,
+                top: top,
+                child: Card(
+                  elevation: 8,
+                  shape: getRoundedBorder(radius: 16),
+                  child: SizedBox(width: 600,
+                    child: AudioHandler(
+                      project: widget.project, onClose: () {
+                        setState(() {
+                          _showAudioHandler = false;
+                        });
+                    },
+                    ),
+                  ),
                 ),
               )
                   : const SizedBox(),

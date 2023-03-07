@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 import '../library/functions.dart';
+import '../main.dart';
 
 class SplashWidget extends StatefulWidget {
   const SplashWidget({Key? key}) : super(key: key);
@@ -11,6 +12,7 @@ class SplashWidget extends StatefulWidget {
 }
 
 class _SplashWidgetState extends State<SplashWidget> {
+  static const mm = '💠💠💠💠💠💠💠💠 SplashWidget';
   @override
   void initState() {
     super.initState();
@@ -18,6 +20,9 @@ class _SplashWidgetState extends State<SplashWidget> {
   }
 
   void _performSetup() async {
+    pp('$mm starting to cook with Gas!');
+    initializeGeoMonitor();
+
   }
 
   @override

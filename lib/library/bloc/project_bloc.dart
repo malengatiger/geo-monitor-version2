@@ -1,5 +1,7 @@
 import 'dart:async';
 
+import 'package:geo_monitor/library/bloc/organization_bloc.dart';
+import 'package:geo_monitor/library/bloc/zip_bloc.dart';
 import 'package:geo_monitor/library/data/activity_model.dart';
 import 'package:geo_monitor/library/data/settings_model.dart';
 
@@ -254,7 +256,11 @@ class ProjectBloc {
         users: [],
         projectPolygons: polygons,
         settings: settings);
-
+    pp('$mm filter bag by the dates ....');
+    printDataBag(dataBag);
+    var mBag = filterBagContentsByDate(bag: dataBag,  startDate: startDate, endDate: endDate);
+    pp('$mm filtered bag ..');
+    printDataBag(mBag);
     if (videos.isEmpty || photos.isEmpty || audios.isEmpty || forceRefresh) {
       dataBag = await DataAPI.getProjectData(projectId,startDate,endDate);
     }

@@ -145,7 +145,7 @@ class ProjectDashboardTabletState extends State<ProjectDashboardTablet>
 
       activitySubscriptionFCM =
           fcmBloc.activityStream.listen((ActivityModel model) {
-        pp('\n\n$mm activityStream delivered activity data ... ${model.toJson()}\n\n');
+        pp('\n\n$mm activityStream delivered activity data ... ${model.date!}\n\n');
         // if (isActivityValid(model)) {
         //   models.insert(0, model);
         // }
@@ -425,7 +425,8 @@ class ProjectDashboardTabletState extends State<ProjectDashboardTablet>
                   left: 100,
                   right: 100,
                   top: 12,
-                  child: VideoPlayerTabletPage(
+                  child: VideoPlayerTablet(
+                    width: 400,
                     video: video!,
                     onCloseRequested: () {
                       if (mounted) {

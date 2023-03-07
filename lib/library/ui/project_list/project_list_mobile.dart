@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:focused_menu/modals.dart';
 import 'package:geo_monitor/library/ui/maps/project_map_mobile.dart';
 import 'package:geo_monitor/library/ui/project_list/project_list_card.dart';
-import 'package:geo_monitor/ui/audio/audio_handler_mobile.dart';
+import 'package:geo_monitor/ui/audio/audio_handler.dart';
 import 'package:geo_monitor/ui/dashboard/project_dashboard_mobile.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:map_launcher/map_launcher.dart';
@@ -272,7 +272,9 @@ class ProjectListMobileState extends State<ProjectListMobile>
             type: PageTransitionType.scale,
             alignment: Alignment.topLeft,
             duration: const Duration(milliseconds: 1500),
-            child: AudioHandlerMobile(project: p)));
+            child: AudioHandler(project: p, onClose: (){
+              Navigator.of(context).pop();
+            },)));
   }
 
   Future<void> _navigateToOrgMap() async {

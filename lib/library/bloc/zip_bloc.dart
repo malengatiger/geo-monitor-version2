@@ -98,7 +98,7 @@ class ZipBloc {
           var m = outFile.readAsStringSync(encoding: utf8);
           var mJson = json.decode(m);
           dataBag = DataBag.fromJson(mJson);
-          _printDataBag(dataBag);
+          printDataBag(dataBag);
 
           var end = DateTime.now().millisecondsSinceEpoch;
           var ms = (end - start) / 1000;
@@ -162,25 +162,27 @@ class ZipBloc {
     }
   }
 
-  void _printDataBag(DataBag bag) {
-    final projects = bag.projects!.length;
-    final users = bag.users!.length;
-    final positions = bag.projectPositions!.length;
-    final polygons = bag.projectPolygons!.length;
-    final photos = bag.photos!.length;
-    final videos = bag.videos!.length;
-    final audios = bag.audios!.length;
-    final schedules = bag.fieldMonitorSchedules!.length;
+}
 
-    pp('\n\n$xz all org data extracted from zipped file on: 🔵🔵🔵${bag.date}');
-    pp('$xz projects: $projects');
-    pp('$xz users: $users');
-    pp('$xz positions: $positions');
-    pp('$xz polygons: $polygons');
-    pp('$xz photos: $photos');
-    pp('$xz videos: $videos');
-    pp('$xz audios: $audios');
-    pp('$xz schedules: $schedules');
-    pp('$xz data from backend listed above: 🔵🔵🔵 ${bag.date}');
-  }
+void printDataBag(DataBag bag) {
+  final projects = bag.projects!.length;
+  final users = bag.users!.length;
+  final positions = bag.projectPositions!.length;
+  final polygons = bag.projectPolygons!.length;
+  final photos = bag.photos!.length;
+  final videos = bag.videos!.length;
+  final audios = bag.audios!.length;
+  final schedules = bag.fieldMonitorSchedules!.length;
+
+  const xz = '👌👌👌 DataBag print 👌';
+  pp('\n\n$xz all org data extracted from zipped file on: 🔵🔵🔵${bag.date}');
+  pp('$xz projects: $projects');
+  pp('$xz users: $users');
+  pp('$xz positions: $positions');
+  pp('$xz polygons: $polygons');
+  pp('$xz photos: $photos');
+  pp('$xz videos: $videos');
+  pp('$xz audios: $audios');
+  pp('$xz schedules: $schedules');
+  pp('$xz data from backend listed above: 🔵🔵🔵 ${bag.date}');
 }

@@ -28,7 +28,6 @@ class ProjectEditorTabletState extends State<ProjectEditorTablet>
   var isBusy = false;
 
   User? admin;
-  final _formKey = GlobalKey<FormState>();
 
   @override
   void initState() {
@@ -173,8 +172,8 @@ class ProjectEditorTabletState extends State<ProjectEditorTablet>
                         },
                       ),
                     ),
-                    const SizedBox(width: 64,),
-                    GeoActivity(width: width / 3,
+                    const SizedBox(width: 24,),
+                    GeoActivity(width: (width / 2) - 80,
                         thinMode: true,
                         project: widget.project,
                         showPhoto: (photo){},

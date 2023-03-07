@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:geo_monitor/library/bloc/organization_bloc.dart';
 import 'package:geo_monitor/library/bloc/zip_bloc.dart';
 import 'package:geo_monitor/library/data/data_bag.dart';
 
@@ -152,8 +153,12 @@ class UserBloc {
     if (forceRefresh || bag.isEmpty()) {
       bag = await zipBloc.getUserDataZippedFile(userId, startDate, endDate);
     }
-
-    return bag!;
+    pp('$mm filter bag by the dates ....');
+    printDataBag(bag!);
+    var mBag = filterBagContentsByDate(bag: bag!,  startDate: startDate, endDate: endDate);
+    pp('$mm filtered bag ....');
+    printDataBag(mBag);
+    return mBag;
   }
 
   close() {

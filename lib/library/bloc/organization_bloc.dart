@@ -146,27 +146,49 @@ class OrganizationBloc {
   }
 
   Future<DataBag> getOrganizationData(
-      {required String organizationId, required bool forceRefresh, required String startDate, required String endDate}) async {
-
-    pp('$mm refreshing organization data ... photos, videos and schedules'
-        ' ...forceRefresh: $forceRefresh');
+      {required String organizationId,
+      required bool forceRefresh,
+      required String startDate,
+      required String endDate}) async {
+    pp('$mm getOrganizationData ... photos, videos and schedules'
+        ' ... forceRefresh: $forceRefresh');
 
     DataBag? bag =
         await cacheManager.getOrganizationData(organizationId: organizationId);
 
     if (forceRefresh) {
       pp('$mm get data from server .....................; forceRefresh: $forceRefresh');
-      bag = await zipBloc.getOrganizationDataZippedFile(organizationId,startDate,endDate);
+      bag = await zipBloc.getOrganizationDataZippedFile(
+          organizationId, startDate, endDate);
     } else {
       if (bag.isEmpty()) {
         pp('$mm bag is empty. No organization data anywhere yet? ... '
             'will force refresh, forceRefresh: $forceRefresh');
-        bag = await zipBloc.getOrganizationDataZippedFile(organizationId,startDate,endDate);
+        bag = await zipBloc.getOrganizationDataZippedFile(
+            organizationId, startDate, endDate);
       }
     }
+    pp('$mm filter bag by the dates ....');
+    printDataBag(bag!);
+    var mBag = filterBagContentsByDate(
+        bag: bag!, startDate: startDate, endDate: endDate);
+    _putContentsOfBagIntoStreams(mBag);
+    pp('$mm filtered bag ....');
+    printDataBag(mBag);
+    return mBag;
+  }
 
-    _putContentsOfBagIntoStreams(bag!);
-    return bag;
+  Future<DataBag> refreshOrganizationData(
+      {required String organizationId,
+      required String startDate,
+      required String endDate}) async {
+
+    pp('$mm getOrganizationData ... photos, videos and schedules etc.');
+    pp('$mm get data from server .....................');
+    var bag = await zipBloc.getOrganizationDataZippedFile(
+        organizationId, startDate, endDate);
+
+    return bag!;
   }
 
   void _putContentsOfBagIntoStreams(DataBag bag) {
@@ -248,31 +270,32 @@ class OrganizationBloc {
 
   Future<List<User>> getUsers(
       {required String organizationId, required bool forceRefresh}) async {
-    // pp('$mm getOrganizationUsers ... forceRefresh: $forceRefresh');
     var users = await cacheManager.getUsers();
 
     if (users.isEmpty || forceRefresh) {
       users = await DataAPI.findUsersByOrganization(organizationId);
       pp('$mm getOrganizationUsers ... _users: ${users.length} ... will add to cache');
     }
-    // pp('$mm getOrganizationUsers found: 💜 ${users.length} users. adding to stream ... ');
     userController.sink.add(users);
 
     for (var element in users) {
-      pp('$mm 😲 😡 USER:  🍏 ${element.name} 🍏 ${element.organizationName}');
+      pp('$mm 😲USER:  🍏 ${element.name} 🍏 ${element.thumbnailUrl}');
     }
 
     return users;
   }
 
   Future<List<ProjectPosition>> getProjectPositions(
-      {required String organizationId, required bool forceRefresh, required String startDate, required String endDate}) async {
+      {required String organizationId,
+      required bool forceRefresh,
+      required String startDate,
+      required String endDate}) async {
     var projectPositions = await cacheManager.getOrganizationProjectPositions();
     pp('$mm getOrganizationProjectPositions found ${projectPositions.length} positions in local cache ');
 
     if (projectPositions.isEmpty || forceRefresh) {
-      projectPositions =
-          await DataAPI.getOrganizationProjectPositions(organizationId,startDate,endDate);
+      projectPositions = await DataAPI.getOrganizationProjectPositions(
+          organizationId, startDate, endDate);
       pp('$mm getOrganizationProjectPositions found ${projectPositions.length} positions from remote database ');
       await cacheManager.addProjectPositions(positions: projectPositions);
     }
@@ -282,12 +305,16 @@ class OrganizationBloc {
   }
 
   Future<List<ProjectPolygon>> getProjectPolygons(
-      {required String organizationId, required bool forceRefresh, required String startDate, required String endDate}) async {
+      {required String organizationId,
+      required bool forceRefresh,
+      required String startDate,
+      required String endDate}) async {
     var projectPolygons = await cacheManager.getOrganizationProjectPolygons();
     pp('$mm getProjectPolygons found ${projectPolygons.length} polygons in local cache ');
 
     if (projectPolygons.isEmpty || forceRefresh) {
-      projectPolygons = await DataAPI.getProjectPolygons(organizationId,startDate,endDate);
+      projectPolygons =
+          await DataAPI.getProjectPolygons(organizationId, startDate, endDate);
       pp('$mm getProjectPolygons found ${projectPolygons.length} polygons from remote database ');
       await cacheManager.addProjectPolygons(polygons: projectPolygons);
     }
@@ -297,11 +324,15 @@ class OrganizationBloc {
   }
 
   Future<List<FieldMonitorSchedule>> getFieldMonitorSchedules(
-      {required String organizationId, required bool forceRefresh,required String startDate, required String endDate}) async {
+      {required String organizationId,
+      required bool forceRefresh,
+      required String startDate,
+      required String endDate}) async {
     var schedules = await cacheManager.getOrganizationMonitorSchedules();
 
     if (schedules.isEmpty || forceRefresh) {
-      schedules = await DataAPI.getOrgFieldMonitorSchedules(organizationId,startDate,endDate);
+      schedules = await DataAPI.getOrgFieldMonitorSchedules(
+          organizationId, startDate, endDate);
       await cacheManager.addFieldMonitorSchedules(schedules: schedules);
     }
 
@@ -333,13 +364,17 @@ class OrganizationBloc {
   }
 
   Future<List<Video>> getVideos(
-      {required String organizationId, required bool forceRefresh,required String startDate, required String endDate}) async {
+      {required String organizationId,
+      required bool forceRefresh,
+      required String startDate,
+      required String endDate}) async {
     var videos = <Video>[];
     try {
       videos = await cacheManager.getVideos();
 
       if (videos.isEmpty || forceRefresh) {
-        videos = await DataAPI.getOrganizationVideos(organizationId, startDate, endDate);
+        videos = await DataAPI.getOrganizationVideos(
+            organizationId, startDate, endDate);
         await cacheManager.addVideos(videos: videos);
       }
       videoController.sink.add(videos);
@@ -351,7 +386,6 @@ class OrganizationBloc {
 
     return videos;
   }
-
 
   Future<List<Project>> getOrganizationProjects(
       {required String organizationId, required bool forceRefresh}) async {
@@ -450,4 +484,84 @@ class OrganizationBloc {
 
     return org;
   }
+}
+
+DataBag filterBagContentsByDate(
+    {required DataBag bag,
+    required String startDate,
+    required String endDate}) {
+
+  pp('💜💜💜💜💜 filterBagContentsByDate ... ');
+  final users = <User>[];
+  bag.users?.forEach((user) {
+    if (checkDate(
+        date: user!.created!, startDate: startDate, endDate: endDate)) {
+      users.add(user);
+    }
+  });
+  final projects = <Project>[];
+  bag.projects?.forEach((p) {
+    if (checkDate(date: p.created!, startDate: startDate, endDate: endDate)) {
+      projects.add(p);
+    }
+  });
+  final positions = <ProjectPosition>[];
+  bag.projectPositions?.forEach((p) {
+    if (p.created != null) {
+      //pp('🍎🍎🍎🍎 check created for null:  ${p.toJson()}');
+      if (checkDate(date: p.created!, startDate: startDate, endDate: endDate)) {
+        positions.add(p);
+      }
+    } else {
+      pp('Created is null! 🍎🍎🍎 what de fuck?');
+    }
+  });
+  final polygons = <ProjectPolygon>[];
+  bag.projectPolygons?.forEach((p) {
+    if (checkDate(date: p.created!, startDate: startDate, endDate: endDate)) {
+      polygons.add(p);
+    }
+  });
+  final photos = <Photo>[];
+  bag.photos?.forEach((p) {
+    if (checkDate(date: p.created!, startDate: startDate, endDate: endDate)) {
+      photos.add(p);
+    }
+  });
+  final videos = <Video>[];
+  bag.videos?.forEach((p) {
+    if (checkDate(date: p.created!, startDate: startDate, endDate: endDate)) {
+      videos.add(p);
+    }
+  });
+  final audios = <Audio>[];
+  bag.audios?.forEach((p) {
+    if (checkDate(date: p.created!, startDate: startDate, endDate: endDate)) {
+      audios.add(p);
+    }
+  });
+
+  bag.users = users;
+  bag.projects = projects;
+  bag.projectPositions = positions;
+  bag.projectPolygons = polygons;
+  bag.photos = photos;
+  bag.videos = videos;
+  bag.audios = audios;
+
+  return bag;
+}
+
+bool checkDate(
+    {required String date,
+    required String startDate,
+    required String endDate}) {
+  final userDate = DateTime.parse(date);
+  final sDate = DateTime.parse(startDate);
+  final eDate = DateTime.parse(endDate);
+  if (userDate.millisecondsSinceEpoch >= sDate.millisecondsSinceEpoch &&
+      userDate.millisecondsSinceEpoch <= eDate.millisecondsSinceEpoch) {
+    return true;
+  }
+  return false;
 }

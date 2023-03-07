@@ -581,7 +581,8 @@ class UserDashboardState extends State<UserDashboard>
                         left: 100,
                         right: 100,
                         top: 12,
-                        child: VideoPlayerTabletPage(
+                        child: VideoPlayerTablet(
+                          width: 400,
                           video: video!,
                           onCloseRequested: () {
                             if (mounted) {

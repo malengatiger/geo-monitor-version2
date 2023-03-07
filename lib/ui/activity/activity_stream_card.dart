@@ -24,7 +24,6 @@ class ActivityStreamCard extends StatefulWidget {
 }
 
 class ActivityStreamCardState extends State<ActivityStreamCard> {
-
   @override
   void initState() {
     super.initState();
@@ -35,139 +34,148 @@ class ActivityStreamCardState extends State<ActivityStreamCard> {
         DateTime.parse(widget.model.date!).toLocal().toIso8601String();
     final dt = getFormattedDateHourMinuteSecond(
         date: DateTime.parse(localDate), context: context);
-    return  widget.thinMode
-            ? Card(
-                shape: getRoundedBorder(radius: 16),
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Column(
-                    children: [
-                      const SizedBox(
-                        height: 8,
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.only(left: 12.0),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: [
-                            Text(
-                              dt,
-                              style: myTextStyleSmallBoldPrimaryColor(context),
-                            ),
-                          ],
-                        ),
-                      ),
-                      const SizedBox(
-                        height: 8,
-                      ),
-                      widget.model.userThumbnailUrl == null
-                          ? const CircleAvatar(
-                              radius: 16,
-                            )
-                          : CircleAvatar(
-                              radius: 16,
-                              backgroundImage:
-                                  NetworkImage(widget.model.userThumbnailUrl!),
-                            ),
-                      const SizedBox(
-                        height: 8,
-                      ),
-                      Text(
-                        widget.model.userName!,
-                        style: myTextStyleTiny(context),
-                      ),
-                      const SizedBox(
-                        height: 8,
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.only(left: 14.0),
-                        child: Text(
-                          msg,
-                          style: myTextStyleTiny(context),
-                        ),
-                      ),
-                      const SizedBox(
-                        height: 24,
-                      ),
-                    ],
+    return widget.thinMode
+        ? Card(
+            shape: getRoundedBorder(radius: 16),
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Column(
+                children: [
+                  const SizedBox(
+                    height: 8,
                   ),
-                ),
-              )
-            : Card(
-                shape: getRoundedBorder(radius: 16),
-                child: Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: SizedBox(
-                    height: 120,
-                    child: Column(
+                  Padding(
+                    padding: const EdgeInsets.only(left: 12.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
                       children: [
-                        Row(
-                          children: [
-                            icon,
-                            const SizedBox(
-                              width: 8,
-                            ),
-                            Text(
-                              msg,
-                              style: myTextStyleSmall(context),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(
-                          height: 20,
-                        ),
-                        Padding(
-                          padding: EdgeInsets.symmetric(
-                              horizontal: widget.frontPadding),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            children: [
-                              widget.model.userThumbnailUrl == null
-                                  ? const CircleAvatar(
-                                      radius: 16,
-                                    )
-                                  : CircleAvatar(
-                                      radius: 16,
-                                      backgroundImage:
-                                          NetworkImage(widget.model.userThumbnailUrl!),
-                                    ),
-                              const SizedBox(
-                                width: 8,
-                              ),
-                              Text(
-                                widget.model.userName!,
-                                style: myTextStyleSmall(context),
-                              ),
-                            ],
-                          ),
-                        ),
-                        const SizedBox(
-                          height: 16,
-                        ),
-                        Padding(
-                          padding: EdgeInsets.only(left: widget.frontPadding),
-                          child: Row(
-                            children: [
-                              Text(
-                                getFormattedDateShortWithTime(
-                                    widget.model.date!, context),
-                                style: myTextStyleTiny(context),
-                              )
-                            ],
-                          ),
+                        Text(
+                          dt,
+                          style: myTextStyleSmallBoldPrimaryColor(context),
                         ),
                       ],
                     ),
                   ),
+                  const SizedBox(
+                    height: 8,
+                  ),
+                  widget.model.userThumbnailUrl == null
+                      ? const CircleAvatar(
+                          radius: 16,
+                        )
+                      : CircleAvatar(
+                          radius: 16,
+                          backgroundImage:
+                              NetworkImage(widget.model.userThumbnailUrl!),
+                        ),
+                  const SizedBox(
+                    height: 8,
+                  ),
+                  Text(
+                    widget.model.userName!,
+                    style: myTextStyleTiny(context),
+                  ),
+                  const SizedBox(
+                    height: 8,
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(left: 14.0),
+                    child: Text(
+                      msg,
+                      style: myTextStyleTiny(context),
+                    ),
+                  ),
+                  const SizedBox(
+                    height: 24,
+                  ),
+                ],
+              ),
+            ),
+          )
+        : Card(
+            shape: getRoundedBorder(radius: 16),
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: SizedBox(
+                height: 120,
+                child: Column(
+                  children: [
+                    Row(
+                      children: [
+                        icon,
+                        const SizedBox(
+                          width: 8,
+                        ),
+                        Text(
+                          msg,
+                          style: myTextStyleSmall(context),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(
+                      height: 20,
+                    ),
+                    Padding(
+                      padding:
+                          EdgeInsets.symmetric(horizontal: widget.frontPadding),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          widget.model.userThumbnailUrl == null
+                              ? const CircleAvatar(
+                                  radius: 16,
+                                )
+                              : CircleAvatar(
+                                  radius: 16,
+                                  backgroundImage: NetworkImage(
+                                      widget.model.userThumbnailUrl!),
+                                ),
+                          const SizedBox(
+                            width: 8,
+                          ),
+                          Text(
+                            widget.model.userName!,
+                            style: myTextStyleSmall(context),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(
+                      height: 16,
+                    ),
+                    Padding(
+                      padding: EdgeInsets.only(left: widget.frontPadding),
+                      child: Row(
+                        children: [
+                          Text(
+                            getFormattedDateShortWithTime(
+                                widget.model.date!, context),
+                            style: myTextStyleTiny(context),
+                          )
+                        ],
+                      ),
+                    ),
+                  ],
                 ),
-              );
+              ),
+            ),
+          );
   }
 
-  Widget _getGeneric(Icon icon, String msg) {
-
+  Widget _getGeneric(Icon icon, String msg, double height) {
     return widget.thinMode
-        ? ThinCard(model: widget.model, icon: icon, message: msg)
-        : WideCard(model: widget.model, icon: icon, message: msg);
+        ? ThinCard(
+            model: widget.model,
+            width: 420,
+            height: height,
+            icon: icon,
+            message: msg)
+        : WideCard(
+            model: widget.model,
+            width: 600,
+            height: height,
+            icon: icon,
+            message: msg);
   }
 
   @override
@@ -179,28 +187,28 @@ class ActivityStreamCardState extends State<ActivityStreamCard> {
       case ActivityType.projectAdded:
         icon = Icon(Icons.access_time, color: Theme.of(context).primaryColor);
         message = 'Project added: ${widget.model.projectName}';
-        return _getGeneric(icon, message);
+        return _getGeneric(icon, message, 80.0);
         break;
       case ActivityType.photoAdded:
         icon = Icon(Icons.camera_alt, color: Theme.of(context).primaryColor);
         message = '${widget.model.projectName}';
-        return _getGeneric(icon, message);
+        return _getGeneric(icon, message, 132.0);
         break;
       case ActivityType.videoAdded:
         icon = Icon(Icons.video_camera_front,
             color: Theme.of(context).primaryColorLight);
         message = '${widget.model.projectName}';
-        return _getGeneric(icon, message);
+        return _getGeneric(icon, message, 132.0);
         break;
       case ActivityType.audioAdded:
         icon = Icon(Icons.mic, color: Theme.of(context).primaryColor);
         message = '${widget.model.projectName}';
-        return _getGeneric(icon, message);
+        return _getGeneric(icon, message, 132.0);
         break;
       case ActivityType.messageAdded:
         icon = Icon(Icons.message, color: Theme.of(context).primaryColor);
         message = 'Message added';
-        return _getGeneric(icon, message);
+        return _getGeneric(icon, message, 100);
         break;
       case ActivityType.userAddedOrModified:
         icon = Icon(Icons.person, color: Theme.of(context).primaryColor);
@@ -210,18 +218,18 @@ class ActivityStreamCardState extends State<ActivityStreamCard> {
       case ActivityType.positionAdded:
         icon = Icon(Icons.home, color: Theme.of(context).primaryColor);
         message = 'Location added: ${widget.model.projectName}';
-        return _getGeneric(icon, message);
+        return _getGeneric(icon, message, 140);
         break;
       case ActivityType.polygonAdded:
         icon =
             Icon(Icons.circle_outlined, color: Theme.of(context).primaryColor);
         message = 'Area added: ${widget.model.projectName}';
-        return _getGeneric(icon, message);
+        return _getGeneric(icon, message, 100);
         break;
       case ActivityType.settingsChanged:
         icon = Icon(Icons.settings, color: Theme.of(context).primaryColor);
         message = 'Settings changed or added';
-        return _getGeneric(icon, message);
+        return _getGeneric(icon, message, 80);
         break;
       case ActivityType.geofenceEventAdded:
         icon = Icon(Icons.person_2, color: Theme.of(context).primaryColor);
@@ -231,25 +239,25 @@ class ActivityStreamCardState extends State<ActivityStreamCard> {
       case ActivityType.conditionAdded:
         icon = Icon(Icons.access_alarm, color: Theme.of(context).primaryColor);
         message = 'Project Condition added';
-        return _getGeneric(icon, message);
+        return _getGeneric(icon, message, 120);
         break;
       case ActivityType.locationRequest:
         icon = Icon(Icons.location_on, color: Theme.of(context).primaryColor);
         message =
             'Location requested from ${widget.model.locationRequest!.userName}';
-        return _getGeneric(icon, message);
+        return _getGeneric(icon, message, 120);
         break;
       case ActivityType.locationResponse:
         icon =
             Icon(Icons.location_history, color: Theme.of(context).primaryColor);
         message =
             'Location request responded to by ${widget.model.locationResponse!.userName}';
-        return _getGeneric(icon, message);
+        return _getGeneric(icon, message, 120);
         break;
       case ActivityType.kill:
         icon = Icon(Icons.cancel, color: Theme.of(context).primaryColor);
         message = 'User KILL request made, cancel ${widget.model.userName}';
-        return _getGeneric(icon, message);
+        return _getGeneric(icon, message, 120);
         break;
       default:
         return const SizedBox(
@@ -260,5 +268,3 @@ class ActivityStreamCardState extends State<ActivityStreamCard> {
     }
   }
 }
-
-

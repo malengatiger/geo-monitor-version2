@@ -7,7 +7,7 @@ import 'package:geo_monitor/library/ui/camera/video_handler_two.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:page_transition/page_transition.dart';
 
-import '../../../../ui/audio/audio_handler_mobile.dart';
+import '../../../../ui/audio/audio_handler.dart';
 import '../../../api/prefs_og.dart';
 import '../../../bloc/project_bloc.dart';
 import '../../../data/audio.dart';
@@ -205,7 +205,9 @@ class ProjectMediaListMobileState extends State<ProjectMediaListMobile>
             duration: const Duration(seconds: 1),
             child: VideoHandlerTwo(
               project: widget.project,
-              projectPosition: null,
+              projectPosition: null, onClose: (){
+                Navigator.of(context).pop();
+            },
             )));
   }
 
@@ -218,8 +220,10 @@ class ProjectMediaListMobileState extends State<ProjectMediaListMobile>
             type: PageTransitionType.fade,
             alignment: Alignment.topLeft,
             duration: const Duration(seconds: 1),
-            child: AudioHandlerMobile(
-              project: widget.project,
+            child: AudioHandler(
+              project: widget.project, onClose: (){
+                Navigator.of(context).pop();
+            },
             )));
   }
 

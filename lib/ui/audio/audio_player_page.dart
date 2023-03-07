@@ -281,7 +281,7 @@ class AudioPlayerCardState extends State<AudioPlayerCard>
                       onPressed: _onFavorite,
                       child: Text(
                         E.heartRed,
-                        style: const TextStyle(fontSize: 18),
+                        style: const TextStyle(fontSize: 14),
                       ),
                     ),
                     const SizedBox(
@@ -295,7 +295,7 @@ class AudioPlayerCardState extends State<AudioPlayerCard>
                   ],
                 ),
                 const SizedBox(
-                  height: 12,
+                  height: 48,
                 ),
                 Text(
                   '${widget.audio.projectName}',
@@ -304,36 +304,37 @@ class AudioPlayerCardState extends State<AudioPlayerCard>
                 const SizedBox(
                   height: 32,
                 ),
-                Row(
+                Column(
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: [
                     SizedBox(
                       width: 80,
                       child: Text(
-                        'Created by:',
+                        'Created by',
                         style: myTextStyleSmall(context),
                       ),
                     ),
+
                     const SizedBox(
-                      width: 12,
-                    ),
-                    Text(
-                      '${widget.audio.userName}',
-                      style: myTextStyleLargePrimaryColor(context),
-                    ),
-                    const SizedBox(
-                      width: 24,
+                      height: 24,
                     ),
                     user == null
                         ? const SizedBox()
                         : CircleAvatar(
                             backgroundImage: NetworkImage(user!.thumbnailUrl!),
-                            radius: 36,
-                          )
+                            radius: 28,
+                          ),
+                    const SizedBox(
+                      height: 24,
+                    ),
+                    Text(
+                      '${widget.audio.userName}',
+                      style: myTextStyleMedium(context),
+                    ),
                   ],
                 ),
                 const SizedBox(
-                  height: 24,
+                  height: 48,
                 ),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.start,

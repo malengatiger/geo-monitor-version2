@@ -1,6 +1,5 @@
 import 'package:chewie/chewie.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:video_player/video_player.dart';
 
@@ -9,21 +8,21 @@ import '../../emojis.dart';
 import '../../functions.dart';
 import '../ratings/rating_adder.dart';
 
-class VideoPlayerTabletPage extends StatefulWidget {
-  const VideoPlayerTabletPage({
+class VideoPlayerTablet extends StatefulWidget {
+  const VideoPlayerTablet({
     Key? key,
     required this.video,
-    required this.onCloseRequested,
+    required this.onCloseRequested, required this.width,
   }) : super(key: key);
 
   final Video video;
   final Function() onCloseRequested;
-
+  final double width;
   @override
-  VideoPlayerTabletPageState createState() => VideoPlayerTabletPageState();
+  VideoPlayerTabletState createState() => VideoPlayerTabletState();
 }
 
-class VideoPlayerTabletPageState extends State<VideoPlayerTabletPage>
+class VideoPlayerTabletState extends State<VideoPlayerTablet>
     with SingleTickerProviderStateMixin {
   late AnimationController _animationController;
   VideoPlayerController? _videoPlayerController;
@@ -67,38 +66,6 @@ class VideoPlayerTabletPageState extends State<VideoPlayerTabletPage>
           }
         });
       });
-  }
-
-  void _setChewie(String url) {
-    _videoPlayerController = VideoPlayerController.network(url);
-    _chewieController = ChewieController(
-      allowedScreenSleep: false,
-      allowFullScreen: true,
-      deviceOrientationsAfterFullScreen: [
-        DeviceOrientation.landscapeRight,
-        DeviceOrientation.landscapeLeft,
-        DeviceOrientation.portraitUp,
-        DeviceOrientation.portraitDown,
-      ],
-      videoPlayerController: _videoPlayerController!,
-      aspectRatio: _aspectRatio,
-      autoInitialize: true,
-      autoPlay: true,
-      showControls: true,
-    );
-    _chewieController.addListener(() {
-      if (_chewieController.isFullScreen) {
-        SystemChrome.setPreferredOrientations([
-          DeviceOrientation.landscapeRight,
-          DeviceOrientation.landscapeLeft,
-        ]);
-      } else {
-        SystemChrome.setPreferredOrientations([
-          DeviceOrientation.portraitUp,
-          DeviceOrientation.portraitDown,
-        ]);
-      }
-    });
   }
 
   bool _toggleFloatingButton = true;
@@ -169,7 +136,7 @@ class VideoPlayerTabletPageState extends State<VideoPlayerTabletPage>
   bool _showElapsed = false;
   @override
   Widget build(BuildContext context) {
-    var mDateTime =
+    final mDateTime =
         getFormattedDateLongWithTime(widget.video.created!, context);
     var elapsedMinutes = 0.0;
     var elapsedSeconds = 0;
@@ -177,20 +144,17 @@ class VideoPlayerTabletPageState extends State<VideoPlayerTabletPage>
       elapsedSeconds = _videoPlayerController!.value.position.inSeconds;
       elapsedMinutes = (elapsedSeconds / 60);
     }
-
-    var width = 400.0;
-    final ori = MediaQuery.of(context).orientation;
-    final tWidth = MediaQuery.of(context).size.width;
+    final size = MediaQuery.of(context).size;
+    var ori = MediaQuery.of(context).orientation;
+    var height = (size.height / 2);
     if (ori.name == 'portrait') {
-      width = tWidth / 2;
+      height += 160;
     } else {
-      width = tWidth / 3;
+      height += 200;
     }
-    final tHeight = MediaQuery.of(context).size.height;
-    // pp('$mm video player: width: $width height: $tHeight');
+
     return SizedBox(
-      width: width,
-      height: tHeight - 120,
+      width: widget.width, height: height,
       child: Card(
         shape: getRoundedBorder(radius: 16),
         elevation: 8,
@@ -210,7 +174,7 @@ class VideoPlayerTabletPageState extends State<VideoPlayerTabletPage>
               ),
               Text(
                 '${widget.video.projectName}',
-                style: myTextStyleLarge(context),
+                style: myTextStyleMediumPrimaryColor(context),
               ),
               const SizedBox(
                 height: 8,

@@ -57,7 +57,7 @@ class PhotoCard extends StatelessWidget {
                     },
                     child: Text(
                       E.heartRed,
-                      style: const TextStyle(fontSize: 20),
+                      style: const TextStyle(fontSize: 14),
                     ),
                   ),
                 ],

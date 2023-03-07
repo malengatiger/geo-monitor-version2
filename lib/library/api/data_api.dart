@@ -596,6 +596,65 @@ class DataAPI {
     }
   }
 
+  static Future<List<ProjectPosition>> getAllOrganizationProjectPositions(
+      String organizationId) async {
+    String? mURL = await getUrl();
+
+    try {
+      var result = await _sendHttpGET(
+          '${mURL!}getAllOrganizationProjectPositions?organizationId=$organizationId');
+      List<ProjectPosition> list = [];
+      result.forEach((m) {
+        list.add(ProjectPosition.fromJson(m));
+      });
+      pp('$mm org project positions found .... ${list.length}');
+      await cacheManager.addProjectPositions(positions: list);
+      return list;
+    } catch (e) {
+      pp(e);
+      rethrow;
+    }
+  }
+  static Future<List<ProjectPolygon>> getOrganizationProjectPolygons(
+      String organizationId, String startDate, String endDate) async {
+    String? mURL = await getUrl();
+
+    try {
+      var result = await _sendHttpGET(
+          '${mURL!}getOrganizationProjectPolygons?organizationId=$organizationId&startDate=$startDate&endDate=$endDate');
+      List<ProjectPolygon> list = [];
+      result.forEach((m) {
+        list.add(ProjectPolygon.fromJson(m));
+      });
+      pp('$mm org project positions found .... ${list.length}');
+      await cacheManager.addProjectPolygons(polygons: list);
+      return list;
+    } catch (e) {
+      pp(e);
+      rethrow;
+    }
+  }
+  static Future<List<ProjectPolygon>> getAllOrganizationProjectPolygons(
+      String organizationId) async {
+    String? mURL = await getUrl();
+
+    try {
+      var result = await _sendHttpGET(
+          '${mURL!}getAllOrganizationProjectPolygons?organizationId=$organizationId');
+      List<ProjectPolygon> list = [];
+      result.forEach((m) {
+        list.add(ProjectPolygon.fromJson(m));
+      });
+      pp('$mm org project positions found .... ${list.length}');
+      await cacheManager.addProjectPolygons(polygons: list);
+      return list;
+    } catch (e) {
+      pp(e);
+      rethrow;
+    }
+  }
+
+
 
   static Future<LocationRequest> sendLocationRequest(
       LocationRequest request) async {
@@ -868,7 +927,7 @@ class DataAPI {
   static Future<List<User>> findUsersByOrganization(
       String organizationId) async {
     String? mURL = await getUrl();
-    var cmd = 'getOrganizationUsers?organizationId=$organizationId';
+    var cmd = 'getAllOrganizationUsers?organizationId=$organizationId';
     var url = '$mURL$cmd';
     try {
       List result = await _sendHttpGET(url);
@@ -1006,6 +1065,25 @@ class DataAPI {
         list.add(Project.fromJson(m));
       }
       await cacheManager.addProjects(projects: list);
+      return list;
+    } catch (e) {
+      pp('Houston, 😈😈😈😈😈 we have a problem! 😈😈😈😈😈');
+      gen.p(e);
+      rethrow;
+    }
+  }
+  static Future<List<User>> getOrganizationUsers(
+      String organizationId) async {
+    String? mURL = await getUrl();
+    var cmd = 'getAllOrganizationUsers';
+    var url = '$mURL$cmd?organizationId=$organizationId';
+    try {
+      List result = await _sendHttpGET(url);
+      List<User> list = [];
+      for (var m in result) {
+        list.add(User.fromJson(m));
+      }
+      await cacheManager.addUsers(users: list);
       return list;
     } catch (e) {
       pp('Houston, 😈😈😈😈😈 we have a problem! 😈😈😈😈😈');

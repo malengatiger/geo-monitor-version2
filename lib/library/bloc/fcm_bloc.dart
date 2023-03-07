@@ -7,6 +7,7 @@ import 'package:firebase_messaging/firebase_messaging.dart' as fb;
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:geo_monitor/library/bloc/location_request_handler.dart';
+import 'package:geo_monitor/library/bloc/organization_data_refresh.dart';
 import 'package:geo_monitor/library/data/activity_model.dart';
 // import 'package:geolocator/geolocator.dart';
 import 'package:get_storage/get_storage.dart';
@@ -39,7 +40,7 @@ const mm = '🔵 🔵 🔵 🔵 🔵 🔵 FCMBloc: ';
 class FCMBloc {
   fb.FirebaseMessaging messaging = fb.FirebaseMessaging.instance;
 
-  final StreamController<User> _userController = StreamController.broadcast();
+  final StreamController<User> userController = StreamController.broadcast();
   final StreamController<LocationResponse> _locationResponseController =
       StreamController.broadcast();
 
@@ -74,7 +75,7 @@ class FCMBloc {
   Stream<GeofenceEvent> get geofenceStream => _geofenceController.stream;
   Stream<SettingsModel> get settingsStream => _settingsController.stream;
 
-  Stream<User> get userStream => _userController.stream;
+  Stream<User> get userStream => userController.stream;
   Stream<Project> get projectStream => _projectController.stream;
   Stream<ProjectPosition> get projectPositionStream =>
       _projectPositionController.stream;
@@ -91,7 +92,7 @@ class FCMBloc {
   User? user;
   void closeStreams() {
     _geofenceController.close();
-    _userController.close();
+    userController.close();
     _projectController.close();
     _photoController.close();
     _videoController.close();
@@ -330,9 +331,12 @@ class FCMBloc {
     if (data['user'] != null) {
       pp("$mm processFCMMessage  🔵 🔵 🔵 ........................... cache USER  🍎  🍎 ");
       var m = jsonDecode(data['user']);
-      var user = User.fromJson(m);
+      var mUser = User.fromJson(m);
+      if (mUser.userId == user!.userId) {
+        await prefsOGx.saveUser(mUser);
+      }
       await cacheManager.addUser(user: user);
-      _userController.sink.add(user);
+      userController.sink.add(user);
     }
     if (data['project'] != null) {
       pp("$mm processFCMMessage  🔵 🔵 🔵 ........................... cache PROJECT  🍎  🍎");
@@ -399,14 +403,14 @@ class FCMBloc {
     if (data['settings'] != null) {
       pp("$mm processFCMMessage  🔵 🔵 🔵 ........................... cache SETTINGS and change THEME  🍎  🍎");
       var m = jsonDecode(data['settings']);
-      var msg = SettingsModel.fromJson(m);
-      await cacheManager.addSettings(settings: msg);
-      if (msg.projectId == null) {
-        pp('$mm This is an organization-wide setting, update the act cached settings ...');
-        await prefsOGx.saveSettings(msg);
-        await themeBloc.changeToTheme(msg.themeIndex!);
-        _settingsController.sink.add(msg);
-
+      var settings = SettingsModel.fromJson(m);
+      await cacheManager.addSettings(settings: settings);
+      if (settings.projectId == null) {
+        pp('$mm This is an organization-wide setting, update the cached settings ...');
+        await prefsOGx.saveSettings(settings);
+        await themeBloc.changeToTheme(settings.themeIndex!);
+        _settingsController.sink.add(settings);
+        organizationDataRefresh.startRefresh(settings.numberOfDays!);
         pp('$mm This is an organization-wide setting, hopefully the ui changes to new color ...');
       }
     }

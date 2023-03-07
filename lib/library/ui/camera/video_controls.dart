@@ -26,84 +26,68 @@ class VideoControls extends StatelessWidget {
   final bool isRecording;
   @override
   Widget build(BuildContext context) {
-    var showPlay = false;
-    var showStop = false;
-    var showPause = false;
-    var showRecord = false;
-    var width = 200.0;
-    if (!isPlaying && !isPaused && !isStopped) {
-      showStop = true;
-      showRecord = true;
-      showPause = false;
-      showPlay = false;
-      width = 200;
-    } else {
-      if (isPlaying) {
-        showStop = true;
-        showPause = true;
-        showPlay = false;
-        showRecord = false;
-        width = 240;
-      } else if (isStopped) {
-        showStop = false;
-        showPlay = true;
-        showPause = false;
-        showRecord = false;
-        width = 240;
-      } else if (isPaused) {
-        showStop = true;
-        showPlay = true;
-        showPause = false;
-        showRecord = false;
-        width = 240;
-      }
-    }
-
-    return SizedBox(
-      width: width,
+    // var showPlay = false;
+    // var showStop = false;
+    // var showPause = false;
+    // var showRecord = false;
+    // var width = 320.0;
+    // if (!isPlaying && !isPaused && !isStopped) {
+    //   showStop = true;
+    //   showRecord = true;
+    //   showPause = false;
+    //   showPlay = false;
+    //   width = 420;
+    // } else {
+    //   if (isPlaying) {
+    //     showStop = true;
+    //     showPause = true;
+    //     showPlay = false;
+    //     showRecord = false;
+    //     width = 320;
+    //   } else if (isStopped) {
+    //     showStop = false;
+    //     showPlay = true;
+    //     showPause = false;
+    //     showRecord = false;
+    //     width = 320;
+    //   } else if (isPaused) {
+    //     showStop = true;
+    //     showPlay = true;
+    //     showPause = false;
+    //     showRecord = false;
+    //     width = 320;
+    //   }
+    // }
+    // pp('This is the width fucking up: $width');
+    return SizedBox(width: 100,
       child: Card(
-        elevation: 4,
-        shape: getRoundedBorder(radius: 16),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 8.0),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const SizedBox(width: 12,),
-              showRecord
-                  ? IconButton(
-                      onPressed: _onRecordTapped,
-                      icon: Icon(Icons.videocam,
-                          color: Theme.of(context).primaryColor))
-                  : const SizedBox(),
-              showPlay
-                  ? IconButton(
-                      onPressed: _onPlayTapped,
-                      icon: Icon(Icons.play_arrow,
-                          color: Theme.of(context).primaryColor))
-                  : const SizedBox(),
-              showPause
-                  ? IconButton(
-                      onPressed: _onPlayPaused,
-                      icon: Icon(Icons.pause,
-                          color: Theme.of(context).primaryColor))
-                  : const SizedBox(),
-              showStop
-                  ? IconButton(
-                      onPressed: _onPlayStopped,
-                      icon: Icon(
-                        Icons.stop,
-                        color: Theme.of(context).primaryColor,
-                      ))
-                  : const SizedBox(),
-              IconButton(
-                  onPressed: () {
-                    onClose();
-                  },
-                  icon:  Icon(Icons.close, color: Theme.of(context).primaryColor,)),
-              const SizedBox(width: 2,),
-            ],
-          ),
+        elevation: 8,
+        shape: getRoundedBorder(radius: 12),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: [
+            IconButton(
+                onPressed: _onRecordTapped,
+                icon: Icon(Icons.videocam,
+                    color: Theme.of(context).primaryColor)),
+
+            // IconButton(
+            //     onPressed: _onPlayTapped,
+            //     icon: Icon(Icons.play_arrow,
+            //         color: Theme.of(context).primaryColor)),
+
+            IconButton(
+                onPressed: _onPlayPaused,
+                icon: Icon(Icons.pause, color: Theme.of(context).primaryColor)),
+
+            IconButton(
+                onPressed: _onPlayStopped,
+                icon: Icon(
+                  Icons.stop,
+                  color: Theme.of(context).primaryColor,
+                )),
+
+          ],
         ),
       ),
     );
@@ -118,6 +102,7 @@ class VideoControls extends StatelessWidget {
   }
 
   void _onPlayStopped() {
+    pp('Video controls, onStop');
     onStop();
   }
 

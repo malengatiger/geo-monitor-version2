@@ -24,7 +24,8 @@ class RatingAdder extends StatefulWidget {
     this.video,
     this.photo,
     required this.width,
-    required this.onDone, required this.elevation,
+    required this.onDone,
+    required this.elevation,
   }) : super(key: key);
 
   final Audio? audio;
@@ -134,8 +135,6 @@ class RatingAdderState extends State<RatingAdder>
             message: "Rating added, thank you!",
             context: context);
       }
-
-      widget.onDone();
     } catch (e) {
       pp(e);
       if (mounted) {
@@ -146,6 +145,8 @@ class RatingAdderState extends State<RatingAdder>
     setState(() {
       busy = false;
     });
+    await Future.delayed(const Duration(milliseconds: 200));
+    widget.onDone();
   }
 
   @override
@@ -172,41 +173,48 @@ class RatingAdderState extends State<RatingAdder>
       userName = widget.audio!.userName!;
     }
 
-    return busy
-        ? const Center(
-            child: SizedBox(
-              width: 20,
-              height: 20,
-              child: CircularProgressIndicator(
-                strokeWidth: 4,
-                backgroundColor: Colors.pink,
-              ),
-            ),
-          )
-        : ScreenTypeLayout(
-            mobile: RatingCard(
-              width: widget.width,
-              height: 360,
-              padding: 24,
-              projectName: projectName,
-              date: date,
-              title: title,
-              onRatingSelected: _sendRating,
-              userName: userName,
-              userThumbnailUrl: user == null ? null : user!.thumbnailUrl!, elevation: 8.0,
-            ),
-            tablet: RatingCard(
-              width: widget.width,
-              height: 460,
-              padding: 24,
-              projectName: projectName,
-              date: date,
-              title: title,
-              onRatingSelected: _sendRating,
-              userName: userName,
-              userThumbnailUrl: user == null ? null : user!.thumbnailUrl!, elevation: 8.0,
-            ),
-          );
+    return Stack(
+      children: [
+        ScreenTypeLayout(
+          mobile: RatingCard(
+            width: widget.width,
+            height: 360,
+            padding: 24,
+            projectName: projectName,
+            date: date,
+            title: title,
+            onRatingSelected: _sendRating,
+            userName: userName,
+            userThumbnailUrl: user == null ? null : user!.thumbnailUrl!,
+            elevation: 8.0,
+          ),
+          tablet: RatingCard(
+            width: widget.width,
+            height: 460,
+            padding: 24,
+            projectName: projectName,
+            date: date,
+            title: title,
+            onRatingSelected: _sendRating,
+            userName: userName,
+            userThumbnailUrl: user == null ? null : user!.thumbnailUrl!,
+            elevation: 8.0,
+          ),
+        ),
+        busy
+            ? const Center(
+                child: SizedBox(
+                  width: 20,
+                  height: 20,
+                  child: CircularProgressIndicator(
+                    strokeWidth: 4,
+                    backgroundColor: Colors.pink,
+                  ),
+                ),
+              )
+            : const SizedBox(),
+      ],
+    );
   }
 }
 
@@ -221,7 +229,8 @@ class RatingCard extends StatelessWidget {
       required this.projectName,
       required this.date,
       required this.userName,
-      this.userThumbnailUrl, required this.elevation})
+      required this.userThumbnailUrl,
+      required this.elevation})
       : super(key: key);
 
   final Function(double) onRatingSelected;

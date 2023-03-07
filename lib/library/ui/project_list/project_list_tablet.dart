@@ -13,7 +13,7 @@ import 'package:geo_monitor/library/ui/media/list/project_media_main.dart';
 import 'package:geo_monitor/library/ui/project_list/project_list_card.dart';
 import 'package:geo_monitor/library/ui/project_list/project_list_mobile.dart';
 import 'package:geo_monitor/ui/activity/geo_activity.dart';
-import 'package:geo_monitor/ui/audio/audio_handler_mobile.dart';
+import 'package:geo_monitor/ui/audio/audio_handler.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:map_launcher/map_launcher.dart';
 import 'package:page_transition/page_transition.dart';
@@ -275,7 +275,9 @@ class ProjectListTabletState extends State<ProjectListTablet>
             type: PageTransitionType.scale,
             alignment: Alignment.topLeft,
             duration: const Duration(milliseconds: 1500),
-            child: AudioHandlerMobile(project: p)));
+            child: AudioHandler(project: p, onClose: (){
+              Navigator.of(context).pop();
+            },)));
   }
 
   Future<void> _navigateToOrgMap() async {

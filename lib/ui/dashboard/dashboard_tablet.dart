@@ -94,7 +94,7 @@ class DashboardTabletState extends State<DashboardTablet> {
 
       activitySubscriptionFCM =
           fcmBloc.activityStream.listen((ActivityModel model) {
-        pp('\n\n$mm activityStream delivered activity data ... ${model.toJson()}\n\n');
+        pp('\n\n$mm activityStream delivered activity data ... ${model.date!}\n\n');
         _getData(false);
         if (mounted) {
           setState(() {});
@@ -174,11 +174,14 @@ class DashboardTabletState extends State<DashboardTablet> {
       var map = await getStartEndDates();
       final startDate = map['startDate'];
       final endDate = map['endDate'];
+
       dataBag = await organizationBloc.getOrganizationData(
           organizationId: user!.organizationId!,
           forceRefresh: forceRefresh,
           startDate: startDate!,
           endDate: endDate!);
+
+
     } catch (e) {
       pp(e);
       if (mounted) {
@@ -493,6 +496,18 @@ class DashboardTabletState extends State<DashboardTablet> {
   @override
   Widget build(BuildContext context) {
     var size = MediaQuery.of(context).size;
+    var ori = MediaQuery.of(context).orientation;
+    var bottomHeight = 140.0;
+    var padding = 360.0;
+    var extPadding = 200.0;
+    var top = -12.0;
+    if (ori.name == 'portrait') {
+      padding = 200;
+      top = 0;
+      bottomHeight = 140;
+      extPadding = 120;
+    }
+
     return SafeArea(
         child: Scaffold(
       appBar: AppBar(
@@ -538,7 +553,7 @@ class DashboardTabletState extends State<DashboardTablet> {
           )
         ],
         bottom: PreferredSize(
-          preferredSize: const Size.fromHeight(140),
+          preferredSize: Size.fromHeight(bottomHeight),
           child: Column(
             children: [
               user == null
@@ -574,20 +589,31 @@ class DashboardTabletState extends State<DashboardTablet> {
               ),
               Padding(
                 padding: const EdgeInsets.only(left: 28.0),
-                child: Row(mainAxisAlignment: MainAxisAlignment.start,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
                   children: [
-                    Text('Data is for the last', style: myTextStyleSmall(context),),
-                    const SizedBox(width: 8,),
-                    Text('$numberOfDays', style: myNumberStyleMediumPrimaryColor(context),),
-                    const SizedBox(width: 8,),
-                    Text('days', style: myTextStyleSmall(context),),
-
+                    Text(
+                      'Data is for the last',
+                      style: myTextStyleSmall(context),
+                    ),
+                    const SizedBox(
+                      width: 8,
+                    ),
+                    Text(
+                      '$numberOfDays',
+                      style: myNumberStyleMediumPrimaryColor(context),
+                    ),
+                    const SizedBox(
+                      width: 8,
+                    ),
+                    Text(
+                      'days',
+                      style: myTextStyleSmall(context),
+                    ),
                   ],
                 ),
               ),
-              const SizedBox(
-                height: 4,
-              ),
+
             ],
           ),
         ),
@@ -718,6 +744,7 @@ class DashboardTabletState extends State<DashboardTablet> {
               );
             },
           ),
+
           busy
               ? const Positioned(
                   left: 80,
@@ -738,11 +765,11 @@ class DashboardTabletState extends State<DashboardTablet> {
               : const SizedBox(),
           _showPhoto
               ? Positioned(
-                  left: 0,
+                  left: extPadding, right: extPadding,
                   top: 0,
                   child: SizedBox(
-                    width: 420,
-                    height: 640,
+                    width: 600,
+                    height: 800,
                     // color: Theme.of(context).primaryColor,
                     child: Padding(
                       padding: const EdgeInsets.all(8.0),
@@ -762,11 +789,12 @@ class DashboardTabletState extends State<DashboardTablet> {
               : const SizedBox(),
           _showVideo
               ? Positioned(
-                  left: 300,
-                  right: 300,
-                  top: 12,
-                  child: VideoPlayerTabletPage(
+                  left: padding,
+                  right: padding,
+                  top: top,
+                  child: VideoPlayerTablet(
                     video: video!,
+                    width: 400,
                     onCloseRequested: () {
                       setState(() {
                         _showVideo = false;
@@ -776,8 +804,8 @@ class DashboardTabletState extends State<DashboardTablet> {
               : const SizedBox(),
           _showAudio
               ? Positioned(
-                  left: 100,
-                  right: 100,
+                  left: padding,
+                  right: padding,
                   top: 12,
                   child: AudioPlayerCard(
                     audio: audio!,

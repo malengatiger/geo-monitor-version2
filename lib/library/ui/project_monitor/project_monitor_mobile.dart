@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:geo_monitor/library/ui/camera/video_handler_two.dart';
-import 'package:geo_monitor/ui/audio/audio_handler_mobile.dart';
+import 'package:geo_monitor/ui/audio/audio_handler.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:map_launcher/map_launcher.dart';
 import 'package:page_transition/page_transition.dart';
@@ -323,7 +323,9 @@ class ProjectMonitorMobileState extends State<ProjectMonitorMobile>
             duration: const Duration(seconds: 1),
             child: VideoHandlerTwo(
               project: widget.project,
-              projectPosition: null,
+              projectPosition: null, onClose: (){
+                Navigator.of(context).pop();
+            },
             )));
   }
 
@@ -336,8 +338,10 @@ class ProjectMonitorMobileState extends State<ProjectMonitorMobile>
             type: PageTransitionType.scale,
             alignment: Alignment.topLeft,
             duration: const Duration(seconds: 1),
-            child: AudioHandlerMobile(
-              project: widget.project,
+            child: AudioHandler(
+              project: widget.project, onClose: (){
+                Navigator.of(context).pop();
+            },
             )));
   }
 
