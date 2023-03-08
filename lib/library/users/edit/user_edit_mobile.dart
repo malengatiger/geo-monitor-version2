@@ -275,12 +275,11 @@ class UserEditMobileState extends State<UserEditMobile>
       child: Scaffold(
         key: _key,
         appBar: AppBar(
-          title: Text(
+          title: const Text(
             'User Editor',
-            style: myTextStyleSmall(context),
           ),
           bottom: PreferredSize(
-            preferredSize: const Size.fromHeight(60),
+            preferredSize: const Size.fromHeight(100),
             child: Column(
               children: [
                 Text(
@@ -320,7 +319,7 @@ class UserEditMobileState extends State<UserEditMobile>
                       child: Column(
                         children: [
                           const SizedBox(
-                            height: 8,
+                            height: 16,
                           ),
                           Row(
                             children: [
@@ -341,7 +340,7 @@ class UserEditMobileState extends State<UserEditMobile>
                             ],
                           ),
                           const SizedBox(
-                            height: 8,
+                            height: 16,
                           ),
                           TextFormField(
                             controller: nameController,

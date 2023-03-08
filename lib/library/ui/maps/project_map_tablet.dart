@@ -393,7 +393,7 @@ class ProjectMapTabletState extends State<ProjectMapTablet>
         key: _key,
         appBar: AppBar(
           title: Text(
-            'Project Locations & Areasxx',
+            'Project Locations & Areas',
             style: myTextStyleLarge(context),
           ),
           actions: [

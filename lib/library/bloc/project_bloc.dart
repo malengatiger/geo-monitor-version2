@@ -354,6 +354,7 @@ class ProjectBloc {
       rethrow;
     }
     var projects = await DataAPI.findProjectsByLocation(
+        organizationId: user!.organizationId!,
         latitude: pos.latitude!,
         longitude: pos.longitude!,
         radiusInKM: radiusInKM);

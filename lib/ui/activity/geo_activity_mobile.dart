@@ -33,7 +33,6 @@ import '../../library/ui/maps/project_polygon_map_mobile.dart';
 class GeoActivityMobile extends StatefulWidget {
   const GeoActivityMobile({
     Key? key,
-
     this.user,
     this.project,
   }) : super(key: key);
@@ -159,7 +158,7 @@ class GeoActivityMobileState extends State<GeoActivityMobile>
               type: PageTransitionType.scale,
               alignment: Alignment.topLeft,
               duration: const Duration(milliseconds: 1000),
-              child: PhotoMapTablet(
+              child: PhotoMap(
                 photo: photo,
               )));
     }
@@ -266,44 +265,36 @@ class GeoActivityMobileState extends State<GeoActivityMobile>
   Widget build(BuildContext context) {
     final width = MediaQuery.of(context).size.width;
     return SafeArea(
-      child: Scaffold(
-        appBar: AppBar(
-          title: Text(
-            'Project Activity',
-            style: myTextStyleLargePrimaryColor(context),
-          ),
-        ),
-        body: ActivityListMobile(
-          user: widget.user,
-          project: widget.project,
-          onPhotoTapped: (photo) {
-            _navigateToPhotoMap(photo);
-          },
-          onVideoTapped: (video) {
-            _navigateToVideo(video);
-          },
-          onAudioTapped: (audio) {
-            _navigateToAudio(audio);
-          },
-          onUserTapped: (user) {
-            _navigateToUserDashboard(user);
-          },
-          onProjectTapped: (project) {},
-          onProjectPositionTapped: (projectPosition) {
-            _navigateToPositionsMap(projectPosition);
-          },
-          onPolygonTapped: (projectPolygon) {
-            _navigateToPolygonsMap(projectPolygon);
-          },
-          onGeofenceEventTapped: (geofenceEvent) {
-            _navigateToGeofenceMap(geofenceEvent);
-          },
-          onOrgMessage: (orgMessage) {},
-          onLocationResponse: (locationResponse) {
-            _navigateToLocationResponseMap(locationResponse);
-          },
-          onLocationRequest: (locationRequest) {},
-        ),
+      child: ActivityListMobile(
+        user: widget.user,
+        project: widget.project,
+        onPhotoTapped: (photo) {
+          _navigateToPhotoMap(photo);
+        },
+        onVideoTapped: (video) {
+          _navigateToVideo(video);
+        },
+        onAudioTapped: (audio) {
+          _navigateToAudio(audio);
+        },
+        onUserTapped: (user) {
+          _navigateToUserDashboard(user);
+        },
+        onProjectTapped: (project) {},
+        onProjectPositionTapped: (projectPosition) {
+          _navigateToPositionsMap(projectPosition);
+        },
+        onPolygonTapped: (projectPolygon) {
+          _navigateToPolygonsMap(projectPolygon);
+        },
+        onGeofenceEventTapped: (geofenceEvent) {
+          _navigateToGeofenceMap(geofenceEvent);
+        },
+        onOrgMessage: (orgMessage) {},
+        onLocationResponse: (locationResponse) {
+          _navigateToLocationResponseMap(locationResponse);
+        },
+        onLocationRequest: (locationRequest) {},
       ),
     );
   }

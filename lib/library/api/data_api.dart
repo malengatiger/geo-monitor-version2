@@ -1139,7 +1139,9 @@ class DataAPI {
   }
 
   static Future<List<Project>> findProjectsByLocation(
-      {required double latitude,
+      {
+        required String organizationId,
+        required double latitude,
       required double longitude,
       required double radiusInKM}) async {
     pp('\n$mm ......... findProjectsByLocation: 🍏 radiusInKM: $radiusInKM kilometres,  '
@@ -1147,7 +1149,7 @@ class DataAPI {
     String? mURL = await getUrl();
     var cmd = 'findProjectsByLocation';
     var url =
-        '$mURL$cmd?latitude=$latitude&longitude=$longitude&radiusInKM=$radiusInKM';
+        '$mURL$cmd?latitude=$latitude&longitude=$longitude&radiusInKM=$radiusInKM&organizationId=$organizationId';
     try {
       List result = await _sendHttpGET(url);
       List<Project> list = [];

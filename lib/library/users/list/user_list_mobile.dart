@@ -143,9 +143,11 @@ class UserListMobileState extends State<UserListMobile>
 
   bool sortedByName = false;
   void navigateToUserEdit(User? user) async {
-    if (user!.userType == UserType.fieldMonitor) {
-      if (user.userId != user.userId!) {
-        return;
+    if (user != null) {
+      if (user!.userType == UserType.fieldMonitor) {
+        if (user.userId != user.userId!) {
+          return;
+        }
       }
     }
     Navigator.push(

@@ -325,7 +325,7 @@ class ProjectDashboardTabletState extends State<ProjectDashboardTablet>
               type: PageTransitionType.scale,
               alignment: Alignment.topLeft,
               duration: const Duration(milliseconds: 1000),
-              child: PhotoMapTablet(
+              child: PhotoMap(
                 photo: photo!,
               )));
     }

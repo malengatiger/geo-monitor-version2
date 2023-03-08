@@ -118,11 +118,35 @@ class LocationResponseMapState extends State<LocationResponseMap>
     pp('$mm _onMarkerTapped ....... ');
   }
 
+  void _navigateToDirections(
+      {required double latitude, required double longitude}) async {
+    pp('$mm 🍎 🍎 🍎 start Google Maps Directions .....');
+
+    final availableMaps = await ml.MapLauncher.installedMaps;
+    pp('$mm 🍎 🍎 🍎 availableMaps: $availableMaps'); // [AvailableMap { mapName: Google Maps, mapType: google }, ...]
+
+    var coordinates = ml.Coords(latitude, longitude);
+    await availableMaps.first.showDirections(destination: coordinates);
+  }
+
+  void _animateCamera(
+      {required double latitude,
+        required double longitude,
+        required double zoom}) {
+    final CameraPosition cameraPosition = CameraPosition(
+      target: LatLng(latitude, longitude),
+      zoom: zoom,
+    );
+    googleMapController!
+        .animateCamera(CameraUpdate.newCameraPosition(cameraPosition));
+  }
+
   @override
   Widget build(BuildContext context) {
     var date = DateTime.parse(widget.locationResponse.date!)
         .toLocal()
         .toIso8601String();
+    var deviceType = getDeviceType();
     return SafeArea(
       child: Scaffold(
         key: _key,
@@ -132,24 +156,24 @@ class LocationResponseMapState extends State<LocationResponseMap>
             style: myTextStyleLarge(context),
           ),
           bottom: PreferredSize(
-            preferredSize: const Size.fromHeight(60),
+            preferredSize:  Size.fromHeight(deviceType == 'phone'? 100: 80),
             child: Column(
               children: [
+
+                Text(
+                  widget.locationResponse.userName!,
+                  style: myTextStyleLargerPrimaryColor(context),
+                ),
                 const SizedBox(
-                  height: 16,
+                  height: 8,
                 ),
                 Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     const SizedBox(
                       width: 12,
                     ),
-                    Flexible(
-                      child: Text(
-                        widget.locationResponse.userName!,
-                        style: myTextStyleLargePrimaryColor(context),
-                      ),
-                    ),
+
                     const SizedBox(
                       width: 28,
                     ),
@@ -159,10 +183,10 @@ class LocationResponseMapState extends State<LocationResponseMap>
                       style: myNumberStyleLarge(context),
                     ),
                     Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      mainAxisAlignment: MainAxisAlignment.end,
                       children: [
                         const SizedBox(
-                          width: 120,
+                          width: 0,
                         ),
                         IconButton(
                           onPressed: () {
@@ -190,15 +214,18 @@ class LocationResponseMapState extends State<LocationResponseMap>
                                 textStyle: myTextStyleMediumBold(context),
                                 context: context);
                           },
-                          icon: const Icon(Icons.send),
+                          icon: Icon(Icons.send, color: Theme.of(context).primaryColor,),
                           color: Colors.blue,
+                        ),
+                        const SizedBox(
+                          height: 8,
                         ),
                       ],
                     ),
                   ],
                 ),
                 const SizedBox(
-                  height: 16,
+                  height: 8,
                 ),
               ],
             ),
@@ -240,8 +267,8 @@ class LocationResponseMapState extends State<LocationResponseMap>
                         elevation: 8,
                         color: Colors.black26,
                         child: SizedBox(
-                          height: 360,
-                          width: 200,
+                          height: deviceType =='phone'? 200: 360,
+                          width: deviceType =='phone'? 100: 200,
                           child: Column(
                             children: [
                               const SizedBox(
@@ -249,8 +276,6 @@ class LocationResponseMapState extends State<LocationResponseMap>
                               ),
                               Image.network(
                                 user!.thumbnailUrl!,
-                                height: 280,
-                                width: 180,
                                 fit: BoxFit.cover,
                               ),
                               const SizedBox(
@@ -276,26 +301,5 @@ class LocationResponseMapState extends State<LocationResponseMap>
     );
   }
 
-  void _navigateToDirections(
-      {required double latitude, required double longitude}) async {
-    pp('$mm 🍎 🍎 🍎 start Google Maps Directions .....');
 
-    final availableMaps = await ml.MapLauncher.installedMaps;
-    pp('$mm 🍎 🍎 🍎 availableMaps: $availableMaps'); // [AvailableMap { mapName: Google Maps, mapType: google }, ...]
-
-    var coordinates = ml.Coords(latitude, longitude);
-    await availableMaps.first.showDirections(destination: coordinates);
-  }
-
-  void _animateCamera(
-      {required double latitude,
-      required double longitude,
-      required double zoom}) {
-    final CameraPosition cameraPosition = CameraPosition(
-      target: LatLng(latitude, longitude),
-      zoom: zoom,
-    );
-    googleMapController!
-        .animateCamera(CameraUpdate.newCameraPosition(cameraPosition));
-  }
 }

@@ -328,7 +328,7 @@ class UserDashboardState extends State<UserDashboard>
               type: PageTransitionType.scale,
               alignment: Alignment.topLeft,
               duration: const Duration(milliseconds: 1000),
-              child: PhotoMapTablet(
+              child: PhotoMap(
                 photo: photo!,
               )));
     }

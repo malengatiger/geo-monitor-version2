@@ -14,19 +14,19 @@ import '../../data/project_position.dart';
 import '../../data/user.dart';
 import '../../functions.dart';
 
-class PhotoMapTablet extends StatefulWidget {
+class PhotoMap extends StatefulWidget {
   final Photo photo;
 
-  const PhotoMapTablet({
+  const PhotoMap({
     super.key,
     required this.photo,
   });
 
   @override
-  PhotoMapTabletState createState() => PhotoMapTabletState();
+  PhotoMapState createState() => PhotoMapState();
 }
 
-class PhotoMapTabletState extends State<PhotoMapTablet>
+class PhotoMapState extends State<PhotoMap>
     with SingleTickerProviderStateMixin {
   final mm = '🔷🔷🔷PhotoMapTablet: ';
   late AnimationController _animationController;
@@ -131,6 +131,7 @@ class PhotoMapTabletState extends State<PhotoMapTablet>
     String formattedDate =
         DateFormat.yMMMEd().format(DateTime.parse(widget.photo.created!));
     var time = TimeOfDay.fromDateTime(DateTime.parse(widget.photo.created!));
+    var deviceType = getDeviceType();
     return SafeArea(
       child: Scaffold(
         key: _key,
@@ -286,41 +287,45 @@ class PhotoMapTabletState extends State<PhotoMapTablet>
                         },
                         child: Card(
                           elevation: 8,
+                          shape: getRoundedBorder(radius: 12),
                           color: Colors.black38,
-                          child: SizedBox(
-                            height: 420,
-                            width: 220,
-                            child: Column(
-                              children: [
-                                const SizedBox(
-                                  height: 12,
-                                ),
-                                InteractiveViewer(
-                                  child: Image.network(
-                                    widget.photo.thumbnailUrl!,
-                                    width: 220,
-                                    height: 340,
-                                    fit: BoxFit.fill,
+                          child: Padding(
+                            padding: const EdgeInsets.all(16.0),
+                            child: SizedBox(
+                              // width: deviceType == 'phone' ? 100 : 220,
+                              // height: deviceType == 'phone' ? 120 : 340,
+                              child: Column(
+                                children: [
+                                  const SizedBox(
+                                    height: 12,
                                   ),
-                                ),
-                                const SizedBox(
-                                  height: 8,
-                                ),
-                                Text(
-                                  '$formattedDate ${time.hour}:${time.minute}',
-                                  style: myTextStyleSmall(context),
-                                ),
-                                const SizedBox(
-                                  height: 8,
-                                ),
-                                Text(
-                                  '${widget.photo.userName}',
-                                  style: myTextStyleSmall(context),
-                                ),
-                                const SizedBox(
-                                  height: 8,
-                                ),
-                              ],
+                                  InteractiveViewer(
+                                    child: Image.network(
+                                      widget.photo.thumbnailUrl!,
+                                      width: deviceType == 'phone' ? 160 : 220,
+                                      height: deviceType == 'phone' ? 200 : 340,
+                                      fit: BoxFit.fill,
+                                    ),
+                                  ),
+                                  const SizedBox(
+                                    height: 8,
+                                  ),
+                                  Text(
+                                    '$formattedDate ${time.hour}:${time.minute}',
+                                    style: myTextStyleSmall(context),
+                                  ),
+                                  const SizedBox(
+                                    height: 8,
+                                  ),
+                                  Text(
+                                    '${widget.photo.userName}',
+                                    style: myTextStyleSmallBold(context),
+                                  ),
+                                  const SizedBox(
+                                    height: 8,
+                                  ),
+                                ],
+                              ),
                             ),
                           ),
                         ),

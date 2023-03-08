@@ -25,6 +25,7 @@ import '../../bloc/admin_bloc.dart';
 import '../../bloc/fcm_bloc.dart';
 import '../../bloc/organization_bloc.dart';
 import '../../bloc/project_bloc.dart';
+import '../../cache_manager.dart';
 import '../../data/location_response.dart';
 import '../../data/position.dart';
 import '../../data/project.dart';
@@ -792,7 +793,9 @@ class ProjectListTabletState extends State<ProjectListTablet>
                                                       _navigateToProjectDashboard(
                                                           p);
                                                     },
-                                                    user: user!,
+                                                    user: user!, navigateToProjectDirections: (project ) {
+                                                      _navigateToProjectDirections(project);
+                                                  },
                                                   ),
                                                 ),
                                         ),
@@ -885,7 +888,7 @@ class ProjectListTabletState extends State<ProjectListTablet>
                                                       _navigateToProjectDashboard(
                                                           p);
                                                     },
-                                                    user: user!,
+                                                    user: user!, navigateToProjectDirections: (project ) {  },
                                                   ),
                                                 ),
                                         ),
@@ -938,6 +941,15 @@ class ProjectListTabletState extends State<ProjectListTablet>
                           ))));
   }
 
+  void _navigateToProjectDirections(Project project) async {
+    var poss = await cacheManager.getProjectPositions(project.projectId!);
+    if (poss.isNotEmpty) {
+      _navigateToDirections(
+        latitude: poss.first.position!.coordinates[1],
+        longitude: poss.first.position!.coordinates[0],);
+    }
+
+  }
   void _navigateToLocationResponseMap(LocationResponse locationResponse) async {
     Navigator.push(
         context,

@@ -171,20 +171,19 @@ class VideoPlayerMobilePageState extends State<VideoPlayerMobilePage>
     return SafeArea(
       child: Scaffold(
         appBar: AppBar(
-          title: Text(
+          title: const Text(
             'Video Player',
-            style: myTextStyleSmall(context),
           ),
           bottom: PreferredSize(
             preferredSize: const Size.fromHeight(100),
             child: Column(
               children: [
                 const SizedBox(
-                  height: 20,
+                  height: 8,
                 ),
                 Text(
                   '${widget.video.projectName}',
-                  style: myTextStyleLarge(context),
+                  style: myTextStyleLargePrimaryColor(context),
                 ),
                 const SizedBox(
                   height: 8,
@@ -236,7 +235,7 @@ class VideoPlayerMobilePageState extends State<VideoPlayerMobilePage>
                   ],
                 ),
                 const SizedBox(
-                  height: 16,
+                  height: 8,
                 ),
               ],
             ),

@@ -423,7 +423,7 @@ class DashboardTabletState extends State<DashboardTablet> {
               type: PageTransitionType.scale,
               alignment: Alignment.topLeft,
               duration: const Duration(milliseconds: 1000),
-              child: PhotoMapTablet(
+              child: PhotoMap(
                 photo: p1,
               )));
     }
@@ -572,7 +572,7 @@ class DashboardTabletState extends State<DashboardTablet> {
               type: PageTransitionType.scale,
               alignment: Alignment.topLeft,
               duration: const Duration(milliseconds: 1000),
-              child: PhotoMapTablet(
+              child: PhotoMap(
                 photo: photo!,
               )));
     }

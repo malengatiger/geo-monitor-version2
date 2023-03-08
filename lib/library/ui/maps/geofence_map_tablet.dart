@@ -141,6 +141,7 @@ class GeofenceMapTabletState extends State<GeofenceMapTablet>
         showPicture = true;
       }
     }
+    var deviceType = getDeviceType();
     return SafeArea(
       child: Scaffold(
         key: _key,
@@ -153,38 +154,11 @@ class GeofenceMapTabletState extends State<GeofenceMapTablet>
             preferredSize: const Size.fromHeight(60),
             child: Column(
               children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const SizedBox(
-                      width: 12,
-                    ),
-                    Flexible(
-                      child: Text(
-                        widget.geofenceEvent.projectName!,
-                        style: myTextStyleLargePrimaryColor(context),
-                      ),
-                    ),
-                    const SizedBox(
-                      width: 28,
-                    ),
-                    busy
-                        ? const SizedBox(
-                            width: 48,
-                          )
-                        : const SizedBox(),
-                    busy
-                        ? const SizedBox(
-                            width: 12,
-                            height: 12,
-                            child: CircularProgressIndicator(
-                              strokeWidth: 3,
-                              backgroundColor: Colors.pink,
-                            ),
-                          )
-                        : const SizedBox(),
-                  ],
+                Text(
+                  widget.geofenceEvent.projectName!,
+                  style: myTextStyleLargePrimaryColor(context),
                 ),
+
                 const SizedBox(
                   height: 16,
                 )
@@ -234,8 +208,8 @@ class GeofenceMapTabletState extends State<GeofenceMapTablet>
                           elevation: 8,
                           color: Colors.black38,
                           child: SizedBox(
-                            height: 660,
-                            width: 480,
+                            height: deviceType == 'phone'? 120:660,
+                            width: deviceType == 'phone'? 80: 480,
                             child: Column(
                               children: [
                                 const SizedBox(
@@ -247,8 +221,7 @@ class GeofenceMapTabletState extends State<GeofenceMapTablet>
                                           child: Image.network(
                                             widget.geofenceEvent.user!
                                                 .thumbnailUrl!!,
-                                            height: 600,
-                                            width: 460,
+
                                             fit: BoxFit.cover,
                                           ),
                                         ),
@@ -300,43 +273,47 @@ class GeofenceMapTabletState extends State<GeofenceMapTablet>
                         child: Card(
                           elevation: 8,
                           color: Colors.black38,
-                          child: SizedBox(
-                            height: 420,
-                            width: 220,
-                            child: Column(
-                              children: [
-                                const SizedBox(
-                                  height: 12,
-                                ),
-                                showPicture
-                                    ? InteractiveViewer(
-                                        child: Image.network(
-                                          widget.geofenceEvent.user!
-                                              .thumbnailUrl!,
-                                          width: 220,
-                                          height: 340,
-                                          fit: BoxFit.fill,
-                                        ),
-                                      )
-                                    : const SizedBox(),
-                                const SizedBox(
-                                  height: 8,
-                                ),
-                                Text(
-                                  '$formattedDate ${time.hour}:${time.minute}',
-                                  style: myTextStyleSmall(context),
-                                ),
-                                const SizedBox(
-                                  height: 8,
-                                ),
-                                Text(
-                                  widget.geofenceEvent.user!.name!,
-                                  style: myTextStyleSmall(context),
-                                ),
-                                const SizedBox(
-                                  height: 8,
-                                ),
-                              ],
+                          shape: getRoundedBorder(radius: 12),
+                          child: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: SizedBox(
+                              // height: deviceType == 'phone'? 140: 420,
+                              width: deviceType == 'phone'? 120: 220,
+                              child: Column(
+                                children: [
+                                  const SizedBox(
+                                    height: 12,
+                                  ),
+                                  showPicture
+                                      ? InteractiveViewer(
+                                          child: Image.network(
+                                            widget.geofenceEvent.user!
+                                                .thumbnailUrl!,
+                                            height: deviceType == 'phone'? 140: 420,
+                                            width: deviceType == 'phone'? 140: 220,
+                                            fit: BoxFit.fill,
+                                          ),
+                                        )
+                                      : const SizedBox(),
+                                  const SizedBox(
+                                    height: 8,
+                                  ),
+                                  Text(
+                                    '$formattedDate ${time.hour}:${time.minute}',
+                                    style: myTextStyleSmall(context),
+                                  ),
+                                  const SizedBox(
+                                    height: 8,
+                                  ),
+                                  Text(
+                                    widget.geofenceEvent.user!.name!,
+                                    style: myTextStyleSmallBold(context),
+                                  ),
+                                  const SizedBox(
+                                    height: 8,
+                                  ),
+                                ],
+                              ),
                             ),
                           ),
                         ),

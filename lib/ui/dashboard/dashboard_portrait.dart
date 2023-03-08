@@ -733,11 +733,11 @@ class DashboardPortraitState extends State<DashboardPortrait>
           ),
         ),
         // backgroundColor: Colors.brown[100],
-        bottomNavigationBar: BottomNavigationBar(
-          items: items,
-          onTap: _handleBottomNav,
-          elevation: 8,
-        ),
+        // bottomNavigationBar: BottomNavigationBar(
+        //   items: items,
+        //   onTap: _handleBottomNav,
+        //   elevation: 8,
+        // ),
         body: busy
             ? const Center(
                 child: SizedBox(
@@ -752,41 +752,39 @@ class DashboardPortraitState extends State<DashboardPortrait>
             : Stack(children: [
                 dataBag == null
                     ? const SizedBox()
-                    : SingleChildScrollView(
-                        child: DashboardGrid(
-                          gridPadding: 16,
-                          topPadding: 12,
-                          elementPadding: 48,
-                          leftPadding: 12,
-                          crossAxisCount: 2,
-                          dataBag: dataBag!,
-                          onTypeTapped: (type) {
-                            switch (type) {
-                              case typeProjects:
-                                _navigateToProjectList();
-                                break;
-                              case typeUsers:
-                                _navigateToUserList();
-                                break;
-                              case typePhotos:
-                                _navigateToProjectList();
-                                break;
-                              case typeVideos:
-                                _navigateToProjectList();
-                                break;
-                              case typeAudios:
-                                _navigateToProjectList();
-                                break;
-                              case typePositions:
-                                _navigateToProjectList();
-                                break;
-                              case typePolygons:
-                                _navigateToProjectList();
-                                break;
-                            }
-                          },
-                        ),
-                      ),
+                    : DashboardGrid(
+                      gridPadding: 16,
+                      topPadding: 12,
+                      elementPadding: 48,
+                      leftPadding: 12,
+                      crossAxisCount: 2,
+                      dataBag: dataBag!,
+                      onTypeTapped: (type) {
+                        switch (type) {
+                          case typeProjects:
+                            _navigateToProjectList();
+                            break;
+                          case typeUsers:
+                            _navigateToUserList();
+                            break;
+                          case typePhotos:
+                            _navigateToProjectList();
+                            break;
+                          case typeVideos:
+                            _navigateToProjectList();
+                            break;
+                          case typeAudios:
+                            _navigateToProjectList();
+                            break;
+                          case typePositions:
+                            _navigateToProjectList();
+                            break;
+                          case typePolygons:
+                            _navigateToProjectList();
+                            break;
+                        }
+                      },
+                    ),
               ]),
       ),
     );

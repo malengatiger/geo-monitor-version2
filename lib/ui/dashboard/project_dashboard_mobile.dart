@@ -172,10 +172,17 @@ class ProjectDashboardMobileState extends State<ProjectDashboardMobile>
       pp('$mm 🍎 🍎 _listen to FCM message streams ... 🍎 🍎');
       projectSubscriptionFCM =
           fcmBloc.projectStream.listen((Project project) async {
-        pp('$mm: 🍎 🍎 projects arrived: ${project.name} ... 🍎 🍎');
+        pp('$mm: 🍎 🍎 project arrived: ${project.name} ... 🍎 🍎');
 
         await _getData(false);
       });
+      projectPolygonSubscriptionFCM =
+          fcmBloc.projectPolygonStream.listen((ProjectPolygon polygon) async {
+            pp('$mm: 🍎 🍎 polygon arrived: ${polygon.name} ... 🍎 🍎');
+
+            await _getData(false);
+          });
+
 
       settingsSubscriptionFCM = fcmBloc.settingsStream.listen((settings) async {
         pp('$mm: 🍎🍎 settings arrived with themeIndex: ${settings.themeIndex}... 🍎🍎');
@@ -258,9 +265,8 @@ class ProjectDashboardMobileState extends State<ProjectDashboardMobile>
     return SafeArea(
       child: Scaffold(
         appBar: AppBar(
-          title: Text(
+          title: const Text(
             'Project Dashboard',
-            style: myTextStyleMedium(context),
           ),
           actions: [
             IconButton(

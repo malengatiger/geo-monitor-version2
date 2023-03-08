@@ -37,8 +37,8 @@ class ActivityListMobile extends StatefulWidget {
     required this.onPolygonTapped,
     required this.onGeofenceEventTapped,
     required this.onOrgMessage,
-    this.user,
-    this.project,
+    required this.user,
+    required this.project,
     required this.onLocationResponse,
     required this.onLocationRequest,
   }) : super(key: key);
@@ -68,8 +68,9 @@ class ActivityListMobileState extends State<ActivityListMobile>
   SettingsModel? settings;
   var models = <ActivityModel>[];
   late AnimationController _animationController;
-
   late StreamSubscription<ActivityModel> subscription;
+  static const userActive = 0, projectActive = 1, orgActive = 2;
+  late int activeType;
   User? user;
   bool busy = true;
   final mm = '😎😎😎😎😎😎 ActivityListMobile: ';
@@ -107,10 +108,13 @@ class ActivityListMobileState extends State<ActivityListMobile>
       }
       pp('$mm ... get Activity (n hours) ... : $hours');
       if (widget.project != null) {
+        activeType = projectActive;
         await _getProjectData(forceRefresh, hours);
       } else if (widget.user != null) {
+        activeType = userActive;
         await _getUserData(forceRefresh, hours);
       } else {
+        activeType = orgActive;
         await _getOrganizationData(forceRefresh, hours);
       }
       _sortDescending();
@@ -263,13 +267,29 @@ class ActivityListMobileState extends State<ActivityListMobile>
         ),
       );
     }
+    var title = 'Activity';
+    var name = '';
+    switch(activeType) {
+      case orgActive:
+        title = 'Organization Activity';
+        name = '';
+        break;
+      case userActive:
+        title = 'Member Activity';
+        name = widget.user!.name!;
+        break;
+      case projectActive:
+        title = 'Project Activity';
+        name = widget.project!.name!;
+        break;
+      default:
+        break;
+    }
 
     return SafeArea(
         child: Scaffold(
       appBar: AppBar(
-        title: widget.user == null
-            ? const Text('Project Activity')
-            : const Text('Member Activity'),
+        title: Text(title),
         actions: [
           IconButton(
               onPressed: () {
@@ -281,38 +301,14 @@ class ActivityListMobileState extends State<ActivityListMobile>
               )),
         ],
         bottom: PreferredSize(
-            preferredSize: const Size.fromHeight(100),
+            preferredSize: const Size.fromHeight(48),
             child: Column(
               children: [
-                const SizedBox(
-                  height: 24,
-                ),
+
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    widget.user == null
-                        ? Text(
-                            '${widget.project?.name!}',
-                            style: myTextStyleLargePrimaryColor(context),
-                          )
-                        : Row(
-                            children: [
-                              widget.user!.thumbnailUrl == null
-                                  ? const SizedBox()
-                                  : CircleAvatar(
-                                      backgroundImage: NetworkImage(
-                                          widget.user!.thumbnailUrl!),
-                                      radius: 32,
-                                    ),
-                              const SizedBox(
-                                width: 24,
-                              ),
-                              Text(
-                                '${widget.user?.name!}',
-                                style: myTextStyleLargePrimaryColor(context),
-                              ),
-                            ],
-                          ),
+                    Text(name, style: myTextStyleLargePrimaryColor(context),),
                   ],
                 ),
                 const SizedBox(

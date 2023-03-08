@@ -18,7 +18,7 @@ class ProjectListCard extends StatelessWidget {
       required this.navigateToProjectPolygonMap,
       required this.navigateToProjectDashboard,
       required this.user,
-      required this.horizontalPadding})
+      required this.horizontalPadding, required this.navigateToProjectDirections})
       : super(key: key);
 
   final List<Project> projects;
@@ -32,6 +32,7 @@ class ProjectListCard extends StatelessWidget {
   final Function(Project) navigateToProjectMap;
   final Function(Project) navigateToProjectPolygonMap;
   final Function(Project) navigateToProjectDashboard;
+  final Function(Project) navigateToProjectDirections;
 
   @override
   Widget build(BuildContext context) {
@@ -62,7 +63,7 @@ class ProjectListCard extends StatelessWidget {
               color: Theme.of(context).primaryColor,
             ),
             onPressed: () {
-              //startDirections(project);
+              navigateToProjectDirections(project);
             }),
       );
       menuItems.add(

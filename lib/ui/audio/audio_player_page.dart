@@ -244,208 +244,423 @@ class AudioPlayerCardState extends State<AudioPlayerCard>
     return SizedBox(
       width: width,
       height: widget.height ?? height - delta,
-      child: Card(
-        shape: getRoundedBorder(radius: 16),
-        elevation: 8,
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 10),
-          child: SizedBox(
-            height: height - delta,
-            child: Column(
-              children: [
-                isLoading
-                    ? SizedBox(
-                        width: 100,
-                        child: Card(
-                          shape: getRoundedBorder(radius: 16),
-                          child: const Padding(
-                            padding: EdgeInsets.all(24.0),
-                            child: Center(
-                              child: SizedBox(
-                                height: 14,
-                                width: 14,
-                                child: CircularProgressIndicator(
-                                  strokeWidth: 4,
-                                  backgroundColor: Colors.teal,
+      child: deviceType == 'phone'
+          ? Scaffold(
+              appBar: AppBar(
+                title: const Text('Audio Player'),
+              ),
+              body: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Card(
+                  shape: getRoundedBorder(radius: 16),
+                  elevation: 8,
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 24.0, vertical: 10),
+                    child: SizedBox(
+                      child: Column(
+                        children: [
+                          isLoading
+                              ? SizedBox(
+                                  width: 100,
+                                  child: Card(
+                                    shape: getRoundedBorder(radius: 16),
+                                    child: const Padding(
+                                      padding: EdgeInsets.all(24.0),
+                                      child: Center(
+                                        child: SizedBox(
+                                          height: 14,
+                                          width: 14,
+                                          child: CircularProgressIndicator(
+                                            strokeWidth: 4,
+                                            backgroundColor: Colors.teal,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                )
+                              : const SizedBox(),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children: [
+                              TextButton(
+                                onPressed: _onFavorite,
+                                child: Text(
+                                  E.heartRed,
+                                  style: const TextStyle(fontSize: 14),
                                 ),
                               ),
+                               SizedBox(
+                                width: deviceType == 'phone'? 0: 24,
+                              ),
+                              deviceType == 'phone'? const SizedBox(): IconButton(
+                                  onPressed: () {
+                                    widget.onCloseRequested();
+                                  },
+                                  icon: const Icon(Icons.close)),
+                            ],
+                          ),
+                          const SizedBox(
+                            height: 48,
+                          ),
+                          Text(
+                            '${widget.audio.projectName}',
+                            style: myTextStyleLargerPrimaryColor(context),
+                          ),
+                          const SizedBox(
+                            height: 40,
+                          ),
+                          Column(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: [
+                              SizedBox(
+                                width: 80,
+                                child: Text(
+                                  'Created by',
+                                  style: myTextStyleSmall(context),
+                                ),
+                              ),
+                              const SizedBox(
+                                height: 24,
+                              ),
+                              user == null
+                                  ? const SizedBox()
+                                  : CircleAvatar(
+                                      backgroundImage:
+                                          NetworkImage(user!.thumbnailUrl!),
+                                      radius: 28,
+                                    ),
+                              const SizedBox(
+                                height: 24,
+                              ),
+                              Text(
+                                '${widget.audio.userName}',
+                                style: myTextStyleMediumBold(context),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(
+                            height: 60,
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: [
+                              Text(
+                                'Created at:',
+                                style: myTextStyleSmall(context),
+                              ),
+                              const SizedBox(
+                                width: 12,
+                              ),
+                              Text(
+                                dt,
+                                style: myNumberStyleMedium(context),
+                              ),
+                              const SizedBox(
+                                width: 12,
+                              ),
+                              Text(
+                                getFormattedDate(widget.audio.created!),
+                                style: myTextStyleTiny(context),
+                              )
+                            ],
+                          ),
+                          const SizedBox(
+                            height: 16,
+                          ),
+                          duration == null
+                              ? const SizedBox()
+                              : Row(
+                                  children: [
+                                    Text(
+                                      'Duration:',
+                                      style: myTextStyleSmall(context),
+                                    ),
+                                    const SizedBox(
+                                      width: 12,
+                                    ),
+                                    const SizedBox(
+                                      width: 8,
+                                    ),
+                                    updatePosition == null
+                                        ? const SizedBox()
+                                        : Text(
+                                            getHourMinuteSecond(
+                                                updatePosition!),
+                                            style:
+                                                myNumberStyleMediumPrimaryColor(
+                                                    context),
+                                          ),
+                                    updatePosition == null
+                                        ? const SizedBox()
+                                        : const SizedBox(
+                                            width: 12,
+                                          ),
+                                    updatePosition == null
+                                        ? const SizedBox()
+                                        : Text(
+                                            'of',
+                                            style: myTextStyleSmall(context),
+                                          ),
+                                    updatePosition == null
+                                        ? const SizedBox()
+                                        : const SizedBox(
+                                            width: 12,
+                                          ),
+                                    Text(
+                                      getHourMinuteSecond(duration!),
+                                      style: myNumberStyleMedium(context),
+                                    ),
+                                  ],
+                                ),
+                          const SizedBox(
+                            height: 8,
+                          ),
+                          _showWave
+                              ? Card(
+                                  color:
+                                      Theme.of(context).dialogBackgroundColor,
+                                  shape: getRoundedBorder(radius: 16),
+                                  child: SizedBox(
+                                    height: 60,
+                                    child: SiriWave(
+                                        options: SiriWaveOptions(
+                                            backgroundColor:
+                                                Theme.of(context).primaryColor),
+                                        controller: controller),
+                                  ))
+                              : const SizedBox(),
+                          const SizedBox(
+                            height: 8,
+                          ),
+                          _showControls
+                              ? isPlaying
+                                  ? SeekBar(duration: duration!, seekTo: seekTo)
+                                  : const SizedBox()
+                              : const SizedBox(),
+                          const SizedBox(
+                            height: 16,
+                          ),
+                          _showControls
+                              ? PlayerControls(
+                                  onPlay: _onPlay,
+                                  onPause: _onPause,
+                                  onStop: _onStop,
+                                  isPlaying: isPlaying,
+                                  isPaused: isPaused,
+                                  isStopped: isStopped)
+                              : const SizedBox(),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            )
+          : Card(
+              shape: getRoundedBorder(radius: 16),
+              elevation: 8,
+              child: Padding(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 24.0, vertical: 10),
+                child: SizedBox(
+                  height: height - delta,
+                  child: Column(
+                    children: [
+                      isLoading
+                          ? SizedBox(
+                              width: 100,
+                              child: Card(
+                                shape: getRoundedBorder(radius: 16),
+                                child: const Padding(
+                                  padding: EdgeInsets.all(24.0),
+                                  child: Center(
+                                    child: SizedBox(
+                                      height: 14,
+                                      width: 14,
+                                      child: CircularProgressIndicator(
+                                        strokeWidth: 4,
+                                        backgroundColor: Colors.teal,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            )
+                          : const SizedBox(),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          TextButton(
+                            onPressed: _onFavorite,
+                            child: Text(
+                              E.heartRed,
+                              style: const TextStyle(fontSize: 14),
                             ),
                           ),
-                        ),
-                      )
-                    : const SizedBox(),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    TextButton(
-                      onPressed: _onFavorite,
-                      child: Text(
-                        E.heartRed,
-                        style: const TextStyle(fontSize: 14),
-                      ),
-                    ),
-                    const SizedBox(
-                      width: 24,
-                    ),
-                    IconButton(
-                        onPressed: () {
-                          widget.onCloseRequested();
-                        },
-                        icon: const Icon(Icons.close)),
-                  ],
-                ),
-                const SizedBox(
-                  height: 48,
-                ),
-                Text(
-                  '${widget.audio.projectName}',
-                  style: myTextStyleMediumPrimaryColor(context),
-                ),
-                const SizedBox(
-                  height: 32,
-                ),
-                Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    SizedBox(
-                      width: 80,
-                      child: Text(
-                        'Created by',
-                        style: myTextStyleSmall(context),
-                      ),
-                    ),
-
-                    const SizedBox(
-                      height: 24,
-                    ),
-                    user == null
-                        ? const SizedBox()
-                        : CircleAvatar(
-                            backgroundImage: NetworkImage(user!.thumbnailUrl!),
-                            radius: 28,
+                          const SizedBox(
+                            width: 24,
                           ),
-                    const SizedBox(
-                      height: 24,
-                    ),
-                    Text(
-                      '${widget.audio.userName}',
-                      style: myTextStyleMedium(context),
-                    ),
-                  ],
-                ),
-                const SizedBox(
-                  height: 48,
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Created at:',
-                      style: myTextStyleSmall(context),
-                    ),
-                    const SizedBox(
-                      width: 12,
-                    ),
-                    Text(
-                      dt,
-                      style: myNumberStyleMedium(context),
-                    ),
-                    const SizedBox(
-                      width: 12,
-                    ),
-                    Text(
-                      getFormattedDate(widget.audio.created!),
-                      style: myTextStyleTiny(context),
-                    )
-                  ],
-                ),
-                const SizedBox(
-                  height: 16,
-                ),
-                duration == null
-                    ? const SizedBox()
-                    : Row(
+                          IconButton(
+                              onPressed: () {
+                                widget.onCloseRequested();
+                              },
+                              icon: const Icon(Icons.close)),
+                        ],
+                      ),
+                      const SizedBox(
+                        height: 48,
+                      ),
+                      Text(
+                        '${widget.audio.projectName}',
+                        style: myTextStyleMediumPrimaryColor(context),
+                      ),
+                      const SizedBox(
+                        height: 32,
+                      ),
+                      Column(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          SizedBox(
+                            width: 80,
+                            child: Text(
+                              'Created by',
+                              style: myTextStyleSmall(context),
+                            ),
+                          ),
+                          const SizedBox(
+                            height: 24,
+                          ),
+                          user == null
+                              ? const SizedBox()
+                              : CircleAvatar(
+                                  backgroundImage:
+                                      NetworkImage(user!.thumbnailUrl!),
+                                  radius: 28,
+                                ),
+                          const SizedBox(
+                            height: 24,
+                          ),
+                          Text(
+                            '${widget.audio.userName}',
+                            style: myTextStyleMedium(context),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(
+                        height: 48,
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.start,
                         children: [
                           Text(
-                            'Duration:',
+                            'Created at:',
                             style: myTextStyleSmall(context),
                           ),
                           const SizedBox(
                             width: 12,
                           ),
-                          const SizedBox(
-                            width: 8,
-                          ),
-                          updatePosition == null
-                              ? const SizedBox()
-                              : Text(
-                                  getHourMinuteSecond(updatePosition!),
-                                  style:
-                                      myNumberStyleMediumPrimaryColor(context),
-                                ),
-                          updatePosition == null
-                              ? const SizedBox()
-                              : const SizedBox(
-                                  width: 12,
-                                ),
-                          updatePosition == null
-                              ? const SizedBox()
-                              : Text(
-                                  'of',
-                                  style: myTextStyleSmall(context),
-                                ),
-                          updatePosition == null
-                              ? const SizedBox()
-                              : const SizedBox(
-                                  width: 12,
-                                ),
                           Text(
-                            getHourMinuteSecond(duration!),
+                            dt,
                             style: myNumberStyleMedium(context),
                           ),
+                          const SizedBox(
+                            width: 12,
+                          ),
+                          Text(
+                            getFormattedDate(widget.audio.created!),
+                            style: myTextStyleTiny(context),
+                          )
                         ],
                       ),
-                const SizedBox(
-                  height: 8,
+                      const SizedBox(
+                        height: 16,
+                      ),
+                      duration == null
+                          ? const SizedBox()
+                          : Row(
+                              children: [
+                                Text(
+                                  'Duration:',
+                                  style: myTextStyleSmall(context),
+                                ),
+                                const SizedBox(
+                                  width: 12,
+                                ),
+                                const SizedBox(
+                                  width: 8,
+                                ),
+                                updatePosition == null
+                                    ? const SizedBox()
+                                    : Text(
+                                        getHourMinuteSecond(updatePosition!),
+                                        style: myNumberStyleMediumPrimaryColor(
+                                            context),
+                                      ),
+                                updatePosition == null
+                                    ? const SizedBox()
+                                    : const SizedBox(
+                                        width: 12,
+                                      ),
+                                updatePosition == null
+                                    ? const SizedBox()
+                                    : Text(
+                                        'of',
+                                        style: myTextStyleSmall(context),
+                                      ),
+                                updatePosition == null
+                                    ? const SizedBox()
+                                    : const SizedBox(
+                                        width: 12,
+                                      ),
+                                Text(
+                                  getHourMinuteSecond(duration!),
+                                  style: myNumberStyleMedium(context),
+                                ),
+                              ],
+                            ),
+                      const SizedBox(
+                        height: 8,
+                      ),
+                      _showWave
+                          ? Card(
+                              color: Theme.of(context).dialogBackgroundColor,
+                              shape: getRoundedBorder(radius: 16),
+                              child: SizedBox(
+                                height: 60,
+                                child: SiriWave(
+                                    options: SiriWaveOptions(
+                                        backgroundColor:
+                                            Theme.of(context).primaryColor),
+                                    controller: controller),
+                              ))
+                          : const SizedBox(),
+                      const SizedBox(
+                        height: 8,
+                      ),
+                      _showControls
+                          ? isPlaying
+                              ? SeekBar(duration: duration!, seekTo: seekTo)
+                              : const SizedBox()
+                          : const SizedBox(),
+                      const SizedBox(
+                        height: 16,
+                      ),
+                      _showControls
+                          ? PlayerControls(
+                              onPlay: _onPlay,
+                              onPause: _onPause,
+                              onStop: _onStop,
+                              isPlaying: isPlaying,
+                              isPaused: isPaused,
+                              isStopped: isStopped)
+                          : const SizedBox(),
+                    ],
+                  ),
                 ),
-                _showWave
-                    ? Card(
-                        color: Theme.of(context).dialogBackgroundColor,
-                        shape: getRoundedBorder(radius: 16),
-                        child: SizedBox(
-                          height: 60,
-                          child: SiriWave(
-                              options: SiriWaveOptions(
-                                  backgroundColor:
-                                      Theme.of(context).primaryColor),
-                              controller: controller),
-                        ))
-                    : const SizedBox(),
-                const SizedBox(
-                  height: 8,
-                ),
-                _showControls
-                    ? isPlaying
-                        ? SeekBar(duration: duration!, seekTo: seekTo)
-                        : const SizedBox()
-                    : const SizedBox(),
-                const SizedBox(
-                  height: 16,
-                ),
-                _showControls
-                    ? PlayerControls(
-                        onPlay: _onPlay,
-                        onPause: _onPause,
-                        onStop: _onStop,
-                        isPlaying: isPlaying,
-                        isPaused: isPaused,
-                        isStopped: isStopped)
-                    : const SizedBox(),
-              ],
+              ),
             ),
-          ),
-        ),
-      ),
     );
   }
 

@@ -4,6 +4,7 @@ import 'package:animations/animations.dart';
 import 'package:badges/badges.dart' as bd;
 import 'package:flutter/material.dart';
 import 'package:focused_menu/modals.dart';
+import 'package:geo_monitor/library/cache_manager.dart';
 import 'package:geo_monitor/library/ui/maps/project_map_mobile.dart';
 import 'package:geo_monitor/library/ui/project_list/project_list_card.dart';
 import 'package:geo_monitor/ui/audio/audio_handler.dart';
@@ -753,7 +754,14 @@ class ProjectListMobileState extends State<ProjectListMobile>
                                             _navigateToProjectPolygonMap,
                                         navigateToProjectDashboard:
                                             _navigateToProjectDashboard,
-                                        user: user!),
+                                        user: user!, navigateToProjectDirections: (project ) async {
+                                          var poss = await cacheManager.getProjectPositions(project.projectId!);
+                                          if (poss.isNotEmpty) {
+                                            _navigateToDirections(
+                                                latitude: poss.first.position!.coordinates[1],
+                                                longitude: poss.first.position!.coordinates[0],);
+                                          }
+                                    },),
                                   )),
                               _showPositionChooser
                                   ? Positioned(
