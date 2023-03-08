@@ -17,9 +17,12 @@ import '../../library/bloc/connection_check.dart';
 import '../../library/bloc/fcm_bloc.dart';
 import '../../library/bloc/project_bloc.dart';
 import '../../library/bloc/theme_bloc.dart';
+import '../../library/cache_manager.dart';
 import '../../library/data/audio.dart';
 import '../../library/data/data_bag.dart';
 import '../../library/data/field_monitor_schedule.dart';
+import '../../library/data/geofence_event.dart';
+import '../../library/data/location_response.dart';
 import '../../library/data/photo.dart';
 import '../../library/data/project.dart';
 import '../../library/data/project_polygon.dart';
@@ -29,7 +32,10 @@ import '../../library/data/user.dart';
 import '../../library/data/video.dart';
 import '../../library/functions.dart';
 import '../../library/ui/camera/video_player_tablet.dart';
+import '../../library/ui/maps/geofence_map_tablet.dart';
+import '../../library/ui/maps/location_response_map.dart';
 import '../../library/ui/maps/photo_map_tablet.dart';
+import '../../library/ui/maps/project_map_main.dart';
 import '../activity/geo_activity.dart';
 import '../audio/audio_player_page.dart';
 
@@ -232,29 +238,7 @@ class ProjectDashboardTabletState extends State<ProjectDashboardTablet>
             )));
   }
 
-  _navigateToPositionsMap() async {
-    Navigator.push(
-        context,
-        PageTransition(
-            type: PageTransitionType.scale,
-            alignment: Alignment.topLeft,
-            duration: const Duration(seconds: 1),
-            child: ProjectMapMobile(
-              project: widget.project,
-            )));
-  }
 
-  _navigateToPolygonsMap() async {
-    Navigator.push(
-        context,
-        PageTransition(
-            type: PageTransitionType.scale,
-            alignment: Alignment.topLeft,
-            duration: const Duration(seconds: 1),
-            child: ProjectPolygonMapMobile(
-              project: widget.project,
-            )));
-  }
 
   bool _showPhoto = false;
   bool _showVideo = false;
@@ -294,6 +278,43 @@ class ProjectDashboardTabletState extends State<ProjectDashboardTablet>
   Photo? photo;
   Video? video;
   Audio? audio;
+
+  void _navigateToPositionsMap() async {
+    Navigator.push(
+        context,
+        PageTransition(
+            type: PageTransitionType.scale,
+            alignment: Alignment.topLeft,
+            duration: const Duration(seconds: 1),
+            child: ProjectMapMobile(
+              project: widget.project,
+            )));
+  }
+
+  void _navigateToPolygonsMap() async {
+    Navigator.push(
+        context,
+        PageTransition(
+            type: PageTransitionType.scale,
+            alignment: Alignment.topLeft,
+            duration: const Duration(seconds: 1),
+            child: ProjectPolygonMapMobile(
+              project: widget.project,
+            )));
+  }
+
+  void _navigateToGeofenceMap(GeofenceEvent event) async {
+    Navigator.push(
+        context,
+        PageTransition(
+            type: PageTransitionType.scale,
+            alignment: Alignment.topLeft,
+            duration: const Duration(seconds: 1),
+            child: GeofenceMapTablet(
+              geofenceEvent: event!,
+            )));
+  }
+
   void _navigateToPhotoMap() {
     pp('$mm _navigateToPhotoMap ...');
 
@@ -306,6 +327,22 @@ class ProjectDashboardTabletState extends State<ProjectDashboardTablet>
               duration: const Duration(milliseconds: 1000),
               child: PhotoMapTablet(
                 photo: photo!,
+              )));
+    }
+  }
+
+  void _navigateToProjectMap(Project project) {
+    pp('$mm _navigateToProjectMap ...');
+
+    if (mounted) {
+      Navigator.push(
+          context,
+          PageTransition(
+              type: PageTransitionType.scale,
+              alignment: Alignment.topLeft,
+              duration: const Duration(milliseconds: 1000),
+              child: ProjectMapMain(
+                project: project,
               )));
     }
   }
@@ -356,6 +393,27 @@ class ProjectDashboardTabletState extends State<ProjectDashboardTablet>
                   showAudio: (audio) {
                     _displayAudio(audio);
                   },
+                  showUser: (user) {},
+                  showLocationRequest: (req) {},
+                  showLocationResponse: (resp) {
+                    _navigateToLocationResponseMap(resp);
+                  },
+                  showGeofenceEvent: (event) {
+                    _navigateToGeofenceMap(event);
+                  },
+                  showProjectPolygon: (polygon) async {
+                    var proj = await cacheManager.getProjectById(projectId: polygon.projectId!);
+                    if (proj != null) {
+                      _navigateToProjectMap(proj);
+                    }
+                  },
+                  showProjectPosition: (position) async {
+                    var proj = await cacheManager.getProjectById(projectId: position.projectId!);
+                    if (proj != null) {
+                      _navigateToProjectMap(proj);
+                    }
+                  },
+                  showOrgMessage: (message) {},
                 ),
               ],
             );
@@ -387,6 +445,29 @@ class ProjectDashboardTabletState extends State<ProjectDashboardTablet>
                   showAudio: (audio) {
                     _displayAudio(audio);
                   },
+                  showUser: (user) {},
+                  showLocationRequest: (req) {},
+                  showLocationResponse: (resp) {
+                    _navigateToLocationResponseMap(resp);
+                  },
+                  showGeofenceEvent: (event) {
+                    _navigateToGeofenceMap(event);
+                  },
+                  showProjectPolygon: (polygon) async {
+                    var proj = await cacheManager.getProjectById(
+                        projectId: polygon.projectId!);
+                    if (proj != null) {
+                      _navigateToProjectMap(proj);
+                    }
+                  },
+                  showProjectPosition: (position) async {
+                    var proj = await cacheManager.getProjectById(
+                        projectId: position.projectId!);
+                    if (proj != null) {
+                      _navigateToProjectMap(proj);
+                    }
+                  },
+                  showOrgMessage: (message) {},
                 ),
               ],
             );
@@ -457,6 +538,18 @@ class ProjectDashboardTabletState extends State<ProjectDashboardTablet>
         ],
       ),
     ));
+  }
+
+  void _navigateToLocationResponseMap(LocationResponse locationResponse) async {
+    Navigator.push(
+        context,
+        PageTransition(
+            type: PageTransitionType.scale,
+            alignment: Alignment.topLeft,
+            duration: const Duration(seconds: 1),
+            child: LocationResponseMap(
+              locationResponse: locationResponse!,
+            )));
   }
 
   onTypeTapped(int p1) {

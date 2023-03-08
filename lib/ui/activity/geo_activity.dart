@@ -3,12 +3,15 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:geo_monitor/library/data/activity_model.dart';
 import 'package:geo_monitor/library/data/geofence_event.dart';
+import 'package:geo_monitor/library/data/location_response.dart';
 import 'package:geo_monitor/ui/activity/activity_list_mobile.dart';
 import 'package:responsive_builder/responsive_builder.dart';
 import 'package:universal_platform/universal_platform.dart';
 
 import '../../library/bloc/fcm_bloc.dart';
 import '../../library/data/audio.dart';
+import '../../library/data/location_request.dart';
+import '../../library/data/org_message.dart';
 import '../../library/data/photo.dart';
 import '../../library/data/project.dart';
 import '../../library/data/project_polygon.dart';
@@ -30,6 +33,13 @@ class GeoActivity extends StatefulWidget {
     this.user,
     this.project,
     required this.forceRefresh,
+    required this.showLocationResponse,
+    required this.showLocationRequest,
+    required this.showUser,
+    required this.showProjectPosition,
+    required this.showOrgMessage,
+    required this.showGeofenceEvent,
+    required this.showProjectPolygon,
   }) : super(key: key);
   final double width;
   final bool thinMode;
@@ -37,6 +47,13 @@ class GeoActivity extends StatefulWidget {
   final Function(Photo) showPhoto;
   final Function(Video) showVideo;
   final Function(Audio) showAudio;
+  final Function(LocationResponse) showLocationResponse;
+  final Function(LocationRequest) showLocationRequest;
+  final Function(User) showUser;
+  final Function(ProjectPosition) showProjectPosition;
+  final Function(OrgMessage) showOrgMessage;
+  final Function(GeofenceEvent) showGeofenceEvent;
+  final Function(ProjectPolygon) showProjectPolygon;
 
   final User? user;
   final Project? project;
@@ -136,10 +153,24 @@ class GeoActivityState extends State<GeoActivity>
               },
               onUserTapped: (user) {},
               onProjectTapped: (project) {},
-              onProjectPositionTapped: (projectPosition) {},
-              onPolygonTapped: (projectPolygon) {},
-              onGeofenceEventTapped: (geofenceEvent) {},
-              onOrgMessage: (orgMessage) {},
+              onProjectPositionTapped: (projectPosition) {
+                widget.showProjectPosition(projectPosition);
+              },
+              onPolygonTapped: (projectPolygon) {
+                widget.showProjectPolygon(projectPolygon);
+              },
+              onGeofenceEventTapped: (geofenceEvent) {
+                widget.showGeofenceEvent(geofenceEvent);
+              },
+              onOrgMessage: (orgMessage) {
+                widget.showOrgMessage(orgMessage);
+              },
+              onLocationRequest: (locRequest) {
+                widget.showLocationRequest(locRequest);
+              },
+              onLocationResponse: (locResp) {
+                widget.showLocationResponse(locResp);
+              },
             ),
             tablet: OrientationLayoutBuilder(
               portrait: (context) {
@@ -156,12 +187,26 @@ class GeoActivityState extends State<GeoActivity>
                   onAudioTapped: (audio) {
                     widget.showAudio(audio);
                   },
+                  onLocationRequest: (locRequest) {
+                    widget.showLocationRequest(locRequest);
+                  },
+                  onLocationResponse: (locResp) {
+                    widget.showLocationResponse(locResp);
+                  },
                   onUserTapped: (user) {},
                   onProjectTapped: (project) {},
-                  onProjectPositionTapped: (projectPosition) {},
-                  onPolygonTapped: (projectPolygon) {},
-                  onGeofenceEventTapped: (geofenceEvent) {},
-                  onOrgMessage: (orgMessage) {},
+                  onProjectPositionTapped: (projectPosition) {
+                    widget.showProjectPosition(projectPosition);
+                  },
+                  onPolygonTapped: (projectPolygon) {
+                    widget.showProjectPolygon(projectPolygon);
+                  },
+                  onGeofenceEventTapped: (geofenceEvent) {
+                    widget.showGeofenceEvent(geofenceEvent);
+                  },
+                  onOrgMessage: (orgMessage) {
+                    widget.showOrgMessage(orgMessage);
+                  },
                   thinMode: widget.thinMode,
                 );
               },
@@ -180,12 +225,26 @@ class GeoActivityState extends State<GeoActivity>
                   onAudioTapped: (audio) {
                     widget.showAudio(audio);
                   },
-                  onUserTapped: (user) {},
+                  onUserTapped: (user) {
+                    widget.showUser(user);
+                  },
                   onProjectTapped: (project) {},
-                  onProjectPositionTapped: (projectPosition) {},
-                  onPolygonTapped: (projectPolygon) {},
-                  onGeofenceEventTapped: (geofenceEvent) {},
+                  onProjectPositionTapped: (projectPosition) {
+                    widget.showProjectPosition(projectPosition);
+                  },
+                  onPolygonTapped: (projectPolygon) {
+                    widget.showProjectPolygon(projectPolygon);
+                  },
+                  onGeofenceEventTapped: (geofenceEvent) {
+                    widget.showGeofenceEvent(geofenceEvent);
+                  },
                   onOrgMessage: (orgMessage) {},
+                  onLocationResponse: (locResp) {
+                    widget.showLocationResponse(locResp);
+                  },
+                  onLocationRequest: (locReq) {
+                    widget.showLocationRequest(locReq);
+                  },
                 );
               },
             ),

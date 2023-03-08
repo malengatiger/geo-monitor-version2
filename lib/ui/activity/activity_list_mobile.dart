@@ -3,6 +3,8 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:geo_monitor/library/bloc/fcm_bloc.dart';
 import 'package:geo_monitor/library/bloc/organization_bloc.dart';
+import 'package:geo_monitor/library/data/location_request.dart';
+import 'package:geo_monitor/library/data/location_response.dart';
 import 'package:geo_monitor/ui/activity/activity_header.dart';
 import 'package:geo_monitor/ui/activity/activity_stream_card_mobile.dart';
 
@@ -37,6 +39,8 @@ class ActivityListMobile extends StatefulWidget {
     required this.onOrgMessage,
     this.user,
     this.project,
+    required this.onLocationResponse,
+    required this.onLocationRequest,
   }) : super(key: key);
 
   final Function(Photo) onPhotoTapped;
@@ -48,6 +52,8 @@ class ActivityListMobile extends StatefulWidget {
   final Function(ProjectPolygon) onPolygonTapped;
   final Function(GeofenceEvent) onGeofenceEventTapped;
   final Function(OrgMessage) onOrgMessage;
+  final Function(LocationResponse) onLocationResponse;
+  final Function(LocationRequest) onLocationRequest;
 
   final User? user;
   final Project? project;
@@ -242,19 +248,14 @@ class ActivityListMobileState extends State<ActivityListMobile>
             onTap: () {
               _getData(true);
             },
-            child: GestureDetector(
-              onTap: (){
-                _getData(true);
-              },
-              child: Card(
-                shape: getRoundedBorder(radius: 16),
-                elevation: 4,
-                child: Padding(
-                  padding: const EdgeInsets.all(20.0),
-                  child: Text(
-                    'No activities happening yet\n\nTap to Refresh',
-                    style: myTextStyleMediumPrimaryColor(context),
-                  ),
+            child: Card(
+              shape: getRoundedBorder(radius: 16),
+              elevation: 4,
+              child: Padding(
+                padding: const EdgeInsets.all(20.0),
+                child: Text(
+                  'No activities happening yet\n\nTap to Refresh',
+                  style: myTextStyleMediumPrimaryColor(context),
                 ),
               ),
             ),
@@ -312,9 +313,6 @@ class ActivityListMobileState extends State<ActivityListMobile>
                               ),
                             ],
                           ),
-                    const SizedBox(
-                      height: 24,
-                    )
                   ],
                 ),
                 const SizedBox(
@@ -341,7 +339,7 @@ class ActivityListMobileState extends State<ActivityListMobile>
             ),
           ),
           const SizedBox(
-            height: 20,
+            height: 8,
           ),
           Expanded(
             child: Padding(
@@ -382,10 +380,20 @@ class ActivityListMobileState extends State<ActivityListMobile>
     }
 
     if (act.user != null) {}
-    if (act.projectPosition != null) {}
-    if (act.locationRequest != null) {}
-    if (act.locationResponse != null) {}
-    if (act.geofenceEvent != null) {}
-    if (act.orgMessage != null) {}
+    if (act.projectPosition != null) {
+      widget.onProjectPositionTapped(act.projectPosition!);
+    }
+    if (act.locationRequest != null) {
+      widget.onLocationRequest(act.locationRequest!);
+    }
+    if (act.locationResponse != null) {
+      widget.onLocationResponse(act.locationResponse!);
+    }
+    if (act.geofenceEvent != null) {
+      widget.onGeofenceEventTapped(act.geofenceEvent!);
+    }
+    if (act.orgMessage != null) {
+      widget.onOrgMessage(act.orgMessage!);
+    }
   }
 }

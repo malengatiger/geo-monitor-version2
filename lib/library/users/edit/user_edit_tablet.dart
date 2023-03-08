@@ -16,10 +16,12 @@ import '../../api/prefs_og.dart';
 import '../../bloc/admin_bloc.dart';
 import '../../bloc/organization_bloc.dart';
 import '../../data/country.dart';
+import '../../data/location_response.dart';
 import '../../data/user.dart' as ar;
 import '../../data/user.dart';
 import '../../functions.dart';
 import '../../generic_functions.dart';
+import '../../ui/maps/location_response_map.dart';
 import '../avatar_editor.dart';
 
 class UserEditTablet extends StatefulWidget {
@@ -303,7 +305,6 @@ class UserEditTabletState extends State<UserEditTablet>
                       : 'Edit Monitor User',
                   style: myTextStyleMedium(context),
                 ),
-
                 const SizedBox(
                   height: 12,
                 )
@@ -330,13 +331,22 @@ class UserEditTabletState extends State<UserEditTablet>
                           showPhoto: showPhoto,
                           showVideo: showVideo,
                           showAudio: showAudio,
+                          showUser: (user) {},
+                          showLocationRequest: (req) {},
+                          showLocationResponse: (resp) {
+                            _navigateToLocationResponseMap(resp);
+                          },
+                          showGeofenceEvent: (event) {},
+                          showProjectPolygon: (polygon) {},
+                          showProjectPosition: (position) {},
+                          showOrgMessage: (message) {},
                           forceRefresh: false)
                     ],
                   ),
                 ),
                 widget.user?.thumbnailUrl == null
-                    ?  Positioned(
-                        right:  (width / 2) - 60,
+                    ? Positioned(
+                        right: (width / 2) - 60,
                         top: 16,
                         child: const CircleAvatar(
                           radius: 24,
@@ -373,6 +383,15 @@ class UserEditTabletState extends State<UserEditTablet>
                           showPhoto: showPhoto,
                           showVideo: showVideo,
                           showAudio: showAudio,
+                          showUser: (user) {},
+                          showLocationRequest: (req) {},
+                          showLocationResponse: (resp) {
+                            _navigateToLocationResponseMap(resp);
+                          },
+                          showGeofenceEvent: (event) {},
+                          showProjectPolygon: (polygon) {},
+                          showProjectPosition: (position) {},
+                          showOrgMessage: (message) {},
                           forceRefresh: false)
                     ],
                   ),
@@ -405,6 +424,17 @@ class UserEditTabletState extends State<UserEditTablet>
 
   String? type;
   String? gender;
+  void _navigateToLocationResponseMap(LocationResponse locationResponse) async {
+    Navigator.push(
+        context,
+        PageTransition(
+            type: PageTransitionType.scale,
+            alignment: Alignment.topLeft,
+            duration: const Duration(seconds: 1),
+            child: LocationResponseMap(
+              locationResponse: locationResponse!,
+            )));
+  }
 
   void _handleGenderValueChange(Object? value) {
     pp('🌸 🌸 🌸 🌸 🌸 _handleGenderValueChange: 🌸 $value');

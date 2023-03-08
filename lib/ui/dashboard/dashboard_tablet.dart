@@ -4,8 +4,14 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:geo_monitor/library/bloc/fcm_bloc.dart';
 import 'package:geo_monitor/library/bloc/organization_bloc.dart';
+import 'package:geo_monitor/library/cache_manager.dart';
 import 'package:geo_monitor/library/data/activity_model.dart';
+import 'package:geo_monitor/library/data/geofence_event.dart';
+import 'package:geo_monitor/library/data/location_request.dart';
+import 'package:geo_monitor/library/data/location_response.dart';
+import 'package:geo_monitor/library/data/org_message.dart';
 import 'package:geo_monitor/library/ui/camera/video_player_tablet.dart';
+import 'package:geo_monitor/library/ui/maps/geofence_map_tablet.dart';
 import 'package:geo_monitor/library/ui/media/list/project_media_main.dart';
 import 'package:geo_monitor/library/ui/ratings/rating_adder.dart';
 import 'package:geo_monitor/library/ui/settings/settings_main.dart';
@@ -33,6 +39,7 @@ import '../../library/data/user.dart';
 import '../../library/data/video.dart';
 import '../../library/functions.dart';
 import '../../library/generic_functions.dart';
+import '../../library/ui/maps/location_response_map.dart';
 import '../../library/ui/maps/photo_map_tablet.dart';
 import '../../library/ui/maps/project_map_main.dart';
 import '../../library/ui/project_list/project_chooser.dart';
@@ -180,8 +187,6 @@ class DashboardTabletState extends State<DashboardTablet> {
           forceRefresh: forceRefresh,
           startDate: startDate!,
           endDate: endDate!);
-
-
     } catch (e) {
       pp(e);
       if (mounted) {
@@ -443,39 +448,119 @@ class DashboardTabletState extends State<DashboardTablet> {
   bool _showVideo = false;
   bool _showAudio = false;
 
+  bool _showLocationResponse = false;
+  bool _showProjectPosition = false;
+  bool _showALocationRequest = false;
+  bool _showProjectPolygon = false;
+  bool _showMessage = false;
+  bool _showUser = false;
+
+  Photo? photo;
+  Video? video;
+  Audio? audio;
+  LocationRequest? request;
+  LocationResponse? response;
+  ProjectPolygon? projectPolygon;
+  ProjectPosition? projectPosition;
+  OrgMessage? orgMessage;
+  User? someUser;
+
+  void _resetFlags() {
+    _showPhoto = false;
+    _showVideo = false;
+    _showAudio = false;
+    _showLocationResponse = false;
+    _showALocationRequest = false;
+    _showProjectPosition = false;
+    _showProjectPolygon = false;
+    _showMessage = false;
+    _showUser = false;
+  }
+
   void _displayPhoto(Photo photo) async {
     pp('$mm _displayPhoto ...');
     this.photo = photo;
+    _resetFlags();
     setState(() {
       _showPhoto = true;
-      _showVideo = false;
-      _showAudio = false;
     });
   }
 
   void _displayVideo(Video video) async {
     pp('$mm _displayVideo ...');
     this.video = video;
+    _resetFlags();
     setState(() {
-      _showPhoto = false;
       _showVideo = true;
-      _showAudio = false;
     });
   }
 
   void _displayAudio(Audio audio) async {
     pp('$mm _displayAudio ...');
     this.audio = audio;
+    _resetFlags();
     setState(() {
-      _showPhoto = false;
-      _showVideo = false;
       _showAudio = true;
     });
   }
 
-  Photo? photo;
-  Video? video;
-  Audio? audio;
+  void _displayProjectPosition(ProjectPosition pos) async {
+    pp('$mm _displayProjectPosition ...');
+    projectPosition = pos;
+    _resetFlags();
+    setState(() {
+      _showProjectPosition = true;
+    });
+  }
+  void _displayProjectPolygon(ProjectPolygon pol) async {
+    pp('$mm _displayProjectPolygon ...');
+    projectPolygon = pol;
+    _resetFlags();
+    setState(() {
+      _showProjectPolygon = true;
+    });
+  }
+  void _displayLocationRequest(LocationRequest req) async {
+    pp('$mm _displayLocationRequest ...');
+    request = req;
+    _resetFlags();
+    setState(() {
+      _showALocationRequest = true;
+    });
+  }
+
+  void _navigateToLocationResponseMap(LocationResponse resp) async {
+    Navigator.push(
+        context,
+        PageTransition(
+            type: PageTransitionType.scale,
+            alignment: Alignment.topLeft,
+            duration: const Duration(seconds: 1),
+            child: LocationResponseMap(
+              locationResponse: resp!,
+            )));
+  }
+  void _navigateToGeofenceMap(GeofenceEvent event) async {
+    Navigator.push(
+        context,
+        PageTransition(
+            type: PageTransitionType.scale,
+            alignment: Alignment.topLeft,
+            duration: const Duration(seconds: 1),
+            child: GeofenceMapTablet(
+              geofenceEvent: event!,
+            )));
+  }
+  void _displayUser(User user) async {
+    pp('$mm _displayUser ...');
+    someUser = user;
+    _resetFlags();
+    setState(() {
+      _showALocationRequest = true;
+    });
+  }
+
+
 
   void _navigateToPhotoMap() {
     pp('$mm _navigateToPhotoMap ...');
@@ -613,7 +698,6 @@ class DashboardTabletState extends State<DashboardTablet> {
                   ],
                 ),
               ),
-
             ],
           ),
         ),
@@ -678,6 +762,15 @@ class DashboardTabletState extends State<DashboardTablet> {
                     showAudio: (audio) {
                       _displayAudio(audio);
                     },
+                    showUser: (user) {},
+                    showLocationRequest: (req) {},
+                    showLocationResponse: (resp) {
+                      _navigateToLocationResponseMap(resp);
+                    },
+                    showGeofenceEvent: (event) {},
+                    showProjectPolygon: (polygon) {},
+                    showProjectPosition: (position) {},
+                    showOrgMessage: (message) {},
                   ),
                 ],
               );
@@ -739,12 +832,32 @@ class DashboardTabletState extends State<DashboardTablet> {
                     showAudio: (audio) {
                       _displayAudio(audio);
                     },
+                    showUser: (user) {},
+                    showLocationRequest: (req) {},
+                    showLocationResponse: (resp) {
+                      _navigateToLocationResponseMap(resp);
+                    },
+                    showGeofenceEvent: (event) {
+                      _navigateToGeofenceMap(event);
+                    },
+                    showProjectPolygon: (polygon) async {
+                      var proj = await cacheManager.getProjectById(projectId: polygon.projectId!);
+                      if (proj != null) {
+                        _navigateToProjectMap(proj);
+                      }
+                    },
+                    showProjectPosition: (position) async {
+                      var proj = await cacheManager.getProjectById(projectId: position.projectId!);
+                      if (proj != null) {
+                        _navigateToProjectMap(proj);
+                      }
+                    },
+                    showOrgMessage: (message) {},
                   ),
                 ],
               );
             },
           ),
-
           busy
               ? const Positioned(
                   left: 80,
@@ -765,7 +878,8 @@ class DashboardTabletState extends State<DashboardTablet> {
               : const SizedBox(),
           _showPhoto
               ? Positioned(
-                  left: extPadding, right: extPadding,
+                  left: extPadding,
+                  right: extPadding,
                   top: 0,
                   child: SizedBox(
                     width: 600,

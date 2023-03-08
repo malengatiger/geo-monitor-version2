@@ -25,6 +25,7 @@ import '../../bloc/admin_bloc.dart';
 import '../../bloc/fcm_bloc.dart';
 import '../../bloc/organization_bloc.dart';
 import '../../bloc/project_bloc.dart';
+import '../../data/location_response.dart';
 import '../../data/position.dart';
 import '../../data/project.dart';
 import '../../data/project_polygon.dart';
@@ -33,6 +34,7 @@ import '../../data/user.dart' as mon;
 import '../../data/user.dart';
 import '../../functions.dart';
 import '../../snack.dart';
+import '../maps/location_response_map.dart';
 import '../maps/org_map_mobile.dart';
 import '../maps/project_polygon_map_mobile.dart';
 import '../project_edit/project_edit_main.dart';
@@ -275,9 +277,12 @@ class ProjectListTabletState extends State<ProjectListTablet>
             type: PageTransitionType.scale,
             alignment: Alignment.topLeft,
             duration: const Duration(milliseconds: 1500),
-            child: AudioHandler(project: p, onClose: (){
-              Navigator.of(context).pop();
-            },)));
+            child: AudioHandler(
+              project: p,
+              onClose: () {
+                Navigator.of(context).pop();
+              },
+            )));
   }
 
   Future<void> _navigateToOrgMap() async {
@@ -381,7 +386,10 @@ class ProjectListTabletState extends State<ProjectListTablet>
       final startDate = map['startDate'];
       final endDate = map['endDate'];
       positions = await projectBloc.getProjectPositions(
-          projectId: project.projectId!, forceRefresh: false, startDate: startDate!, endDate: endDate!);
+          projectId: project.projectId!,
+          forceRefresh: false,
+          startDate: startDate!,
+          endDate: endDate!);
       polygons = await projectBloc.getProjectPolygons(
           projectId: project.projectId!, forceRefresh: false);
       if (positions.length == 1 && polygons.isEmpty) {
@@ -794,12 +802,22 @@ class ProjectListTabletState extends State<ProjectListTablet>
                                       width: 20,
                                     ),
                                     GeoActivity(
-                                        width: firstWidth - 60,
-                                        thinMode: false,
-                                        forceRefresh: true,
-                                        showPhoto: showPhoto,
-                                        showVideo: showVideo,
-                                        showAudio: showAudio),
+                                      width: firstWidth - 60,
+                                      thinMode: false,
+                                      forceRefresh: true,
+                                      showPhoto: showPhoto,
+                                      showVideo: showVideo,
+                                      showAudio: showAudio,
+                                      showUser: (user) {},
+                                      showLocationRequest: (req) {},
+                                      showLocationResponse: (resp) {
+                                        _navigateToLocationResponseMap(resp);
+                                      },
+                                      showGeofenceEvent: (event) {},
+                                      showProjectPolygon: (polygon) {},
+                                      showProjectPosition: (position) {},
+                                      showOrgMessage: (message) {},
+                                    ),
                                   ],
                                 );
                               }, portrait: (context) {
@@ -877,12 +895,22 @@ class ProjectListTabletState extends State<ProjectListTablet>
                                       width: 24,
                                     ),
                                     GeoActivity(
-                                        width: secondWidth,
-                                        thinMode: true,
-                                        forceRefresh: true,
-                                        showPhoto: showPhoto,
-                                        showVideo: showVideo,
-                                        showAudio: showAudio),
+                                      width: secondWidth,
+                                      thinMode: true,
+                                      forceRefresh: true,
+                                      showPhoto: showPhoto,
+                                      showVideo: showVideo,
+                                      showAudio: showAudio,
+                                      showUser: (user) {},
+                                      showLocationRequest: (req) {},
+                                      showLocationResponse: (resp) {
+                                        _navigateToLocationResponseMap(resp);
+                                      },
+                                      showGeofenceEvent: (event) {},
+                                      showProjectPolygon: (polygon) {},
+                                      showProjectPosition: (position) {},
+                                      showOrgMessage: (message) {},
+                                    ),
                                   ],
                                 );
                               }),
@@ -908,6 +936,18 @@ class ProjectListTabletState extends State<ProjectListTablet>
                                   : const SizedBox(),
                             ],
                           ))));
+  }
+
+  void _navigateToLocationResponseMap(LocationResponse locationResponse) async {
+    Navigator.push(
+        context,
+        PageTransition(
+            type: PageTransitionType.scale,
+            alignment: Alignment.topLeft,
+            duration: const Duration(seconds: 1),
+            child: LocationResponseMap(
+              locationResponse: locationResponse!,
+            )));
   }
 
   double sliderValue = 3.0;

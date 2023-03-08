@@ -6,17 +6,18 @@ import 'package:responsive_builder/responsive_builder.dart';
 
 import '../../../ui/activity/geo_activity.dart';
 import '../../api/prefs_og.dart';
+import '../../data/location_response.dart';
 import '../../data/project.dart';
 import '../../data/user.dart';
 import '../../functions.dart';
+import '../maps/location_response_map.dart';
 
 class ProjectEditorTablet extends StatefulWidget {
   final Project? project;
   const ProjectEditorTablet({this.project, super.key});
 
   @override
-  ProjectEditorTabletState createState() =>
-      ProjectEditorTabletState();
+  ProjectEditorTabletState createState() => ProjectEditorTabletState();
 }
 
 class ProjectEditorTabletState extends State<ProjectEditorTablet>
@@ -58,7 +59,6 @@ class ProjectEditorTabletState extends State<ProjectEditorTablet>
     _controller.dispose();
     super.dispose();
   }
-
 
   void _navigateToProjectLocation(Project mProject) async {
     pp(' 😡 _navigateToProjectLocation  😡 😡 😡 ${mProject.name}');
@@ -124,7 +124,7 @@ class ProjectEditorTabletState extends State<ProjectEditorTablet>
                   admin == null ? '' : admin!.organizationName!,
                   style: myTextStyleLargerPrimaryColor(context),
                 ),
-                 SizedBox(
+                SizedBox(
                   height: bottomPadding,
                 )
               ],
@@ -132,58 +132,96 @@ class ProjectEditorTabletState extends State<ProjectEditorTablet>
           ),
         ),
         // backgroundColor: Colors.brown[100],
-        body: OrientationLayoutBuilder(
-            landscape: (ctx){
-              return Padding(
-                padding: const EdgeInsets.all(48.0),
-                child: Row(
-                  children: [
-                    SizedBox(width: width / 2,
-                      child: ProjectEditCard(
-                        width: width / 2,
-                        project: widget.project,
-                        navigateToLocation: (project) {
-                          _navigateToProjectLocation(project);
-                        },
-                      ),
-                    ),
-                    const SizedBox(width: 64,),
-                    GeoActivity(width: (width / 2) - 200,
-                        thinMode: false,
-                        project: widget.project,
-                        showPhoto: (photo){},
-                        showVideo: (video){},
-                        showAudio: (audio){}, forceRefresh: false),
-                  ],
+        body: OrientationLayoutBuilder(landscape: (ctx) {
+          return Padding(
+            padding: const EdgeInsets.all(48.0),
+            child: Row(
+              children: [
+                SizedBox(
+                  width: width / 2,
+                  child: ProjectEditCard(
+                    width: width / 2,
+                    project: widget.project,
+                    navigateToLocation: (project) {
+                      _navigateToProjectLocation(project);
+                    },
+                  ),
                 ),
-              );
-            },
-            portrait: (ctx){
-              return Padding(
-                padding: const EdgeInsets.all(24.0),
-                child: Row(
-                  children: [
-                    SizedBox(width: width / 2,
-                      child: ProjectEditCard(
-                        width: width / 2,
-                        project: widget.project,
-                        navigateToLocation: (project) {
-                          _navigateToProjectLocation(project);
-                        },
-                      ),
-                    ),
-                    const SizedBox(width: 24,),
-                    GeoActivity(width: (width / 2) - 80,
-                        thinMode: true,
-                        project: widget.project,
-                        showPhoto: (photo){},
-                        showVideo: (video){},
-                        showAudio: (audio){}, forceRefresh: false),
-                  ],
+                const SizedBox(
+                  width: 64,
                 ),
-              );
-            }),
+                GeoActivity(
+                    width: (width / 2) - 200,
+                    thinMode: false,
+                    project: widget.project,
+                    showPhoto: (photo) {},
+                    showVideo: (video) {},
+                    showAudio: (audio) {},
+                    showUser: (user) {},
+                    showLocationRequest: (req) {},
+                    showLocationResponse: (resp) {
+                      _navigateToLocationResponseMap(resp);
+                    },
+                    showGeofenceEvent: (event) {},
+                    showProjectPolygon: (polygon) {},
+                    showProjectPosition: (position) {},
+                    showOrgMessage: (message) {},
+                    forceRefresh: false),
+              ],
+            ),
+          );
+        }, portrait: (ctx) {
+          return Padding(
+            padding: const EdgeInsets.all(24.0),
+            child: Row(
+              children: [
+                SizedBox(
+                  width: width / 2,
+                  child: ProjectEditCard(
+                    width: width / 2,
+                    project: widget.project,
+                    navigateToLocation: (project) {
+                      _navigateToProjectLocation(project);
+                    },
+                  ),
+                ),
+                const SizedBox(
+                  width: 24,
+                ),
+                GeoActivity(
+                    width: (width / 2) - 80,
+                    thinMode: true,
+                    project: widget.project,
+                    showPhoto: (photo) {},
+                    showVideo: (video) {},
+                    showAudio: (audio) {},
+                    showUser: (user) {},
+                    showLocationRequest: (req) {},
+                    showLocationResponse: (resp) {
+                      _navigateToLocationResponseMap(resp);
+                    },
+                    showGeofenceEvent: (event) {},
+                    showProjectPolygon: (polygon) {},
+                    showProjectPosition: (position) {},
+                    showOrgMessage: (message) {},
+                    forceRefresh: false),
+              ],
+            ),
+          );
+        }),
       ),
     );
+  }
+
+  void _navigateToLocationResponseMap(LocationResponse locationResponse) async {
+    Navigator.push(
+        context,
+        PageTransition(
+            type: PageTransitionType.scale,
+            alignment: Alignment.topLeft,
+            duration: const Duration(seconds: 1),
+            child: LocationResponseMap(
+              locationResponse: locationResponse!,
+            )));
   }
 }

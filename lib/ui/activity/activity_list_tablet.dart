@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:geo_monitor/library/bloc/fcm_bloc.dart';
 import 'package:geo_monitor/library/bloc/organization_bloc.dart';
+import 'package:geo_monitor/library/data/location_request.dart';
 
 import '../../library/api/prefs_og.dart';
 import '../../library/bloc/project_bloc.dart';
@@ -10,6 +11,7 @@ import '../../library/bloc/user_bloc.dart';
 import '../../library/data/activity_model.dart';
 import '../../library/data/audio.dart';
 import '../../library/data/geofence_event.dart';
+import '../../library/data/location_response.dart';
 import '../../library/data/org_message.dart';
 import '../../library/data/photo.dart';
 import '../../library/data/project.dart';
@@ -38,7 +40,9 @@ class ActivityListTablet extends StatefulWidget {
       required this.onOrgMessage,
       required this.thinMode,
       this.user,
-      this.project})
+      this.project,
+      required this.onLocationResponse,
+      required this.onLocationRequest})
       : super(key: key);
   final double width;
   final bool thinMode;
@@ -51,6 +55,8 @@ class ActivityListTablet extends StatefulWidget {
   final Function(ProjectPolygon) onPolygonTapped;
   final Function(GeofenceEvent) onGeofenceEventTapped;
   final Function(OrgMessage) onOrgMessage;
+  final Function(LocationResponse) onLocationResponse;
+  final Function(LocationRequest) onLocationRequest;
 
   final User? user;
   final Project? project;
@@ -262,12 +268,19 @@ class _ActivityListTabletState extends State<ActivityListTablet>
     }
     if (models.isEmpty) {
       return Center(
-        child: Card(
-          child: Padding(
-            padding: const EdgeInsets.all(20.0),
-            child: Text(
-              'No activities happening yet',
-              style: myTextStyleSmall(context),
+        child: GestureDetector(
+          onTap: (){
+            _getData(true);
+          },
+          child: Card(
+            shape: getRoundedBorder(radius: 12),
+            elevation: 8,
+            child: Padding(
+              padding: const EdgeInsets.all(28.0),
+              child: Text(
+                'No activities happening yet\n\nTap to refresh',
+                style: myTextStyleSmall(context),
+              ),
             ),
           ),
         ),
@@ -384,11 +397,21 @@ class _ActivityListTabletState extends State<ActivityListTablet>
       widget.onAudioTapped(act.audio!);
     }
 
-    if (act.user != null) {}
-    if (act.projectPosition != null) {}
+    if (act.user != null) {
+      widget.onUserTapped(act.user!);
+    }
+    if (act.projectPosition != null) {
+      widget.onProjectPositionTapped(act.projectPosition!);
+    }
     if (act.locationRequest != null) {}
-    if (act.locationResponse != null) {}
-    if (act.geofenceEvent != null) {}
-    if (act.orgMessage != null) {}
+    if (act.locationResponse != null) {
+      widget.onLocationResponse(act.locationResponse!);
+    }
+    if (act.geofenceEvent != null) {
+      widget.onGeofenceEventTapped(act.geofenceEvent!);
+    }
+    if (act.orgMessage != null) {
+      widget.onOrgMessage(act.orgMessage!);
+    }
   }
 }

@@ -4,7 +4,11 @@ import 'package:geo_monitor/library/data/photo.dart';
 import 'package:geo_monitor/library/data/video.dart';
 import 'package:geo_monitor/library/ui/settings/settings_form.dart';
 import 'package:geo_monitor/ui/activity/geo_activity.dart';
+import 'package:page_transition/page_transition.dart';
 import 'package:responsive_builder/responsive_builder.dart';
+
+import '../../data/location_response.dart';
+import '../maps/location_response_map.dart';
 
 class SettingsTablet extends StatefulWidget {
   const SettingsTablet({Key? key}) : super(key: key);
@@ -39,7 +43,8 @@ class SettingsTabletState extends State<SettingsTablet>
       ),
       body: OrientationLayoutBuilder(landscape: (ctx) {
         return Padding(
-          padding: const EdgeInsets.only(left: 28.0, right: 28, top: 28.0, bottom: 28.0),
+          padding: const EdgeInsets.only(
+              left: 28.0, right: 28, top: 28.0, bottom: 28.0),
           child: Row(
             children: [
               SizedBox(
@@ -51,13 +56,24 @@ class SettingsTabletState extends State<SettingsTablet>
                   ),
                 ),
               ),
-              const SizedBox(width: 24.0,),
+              const SizedBox(
+                width: 24.0,
+              ),
               GeoActivity(
                   width: (size.width / 2) - 80,
                   thinMode: false,
                   showPhoto: showPhoto,
                   showVideo: showVideo,
                   showAudio: showAudio,
+                  showUser: (user) {},
+                  showLocationRequest: (req) {},
+                  showLocationResponse: (resp) {
+                    _navigateToLocationResponseMap(resp);
+                  },
+                  showGeofenceEvent: (event) {},
+                  showProjectPolygon: (polygon) {},
+                  showProjectPosition: (position) {},
+                  showOrgMessage: (message) {},
                   forceRefresh: false),
             ],
           ),
@@ -74,18 +90,41 @@ class SettingsTabletState extends State<SettingsTablet>
                 ),
               ),
             ),
-            const SizedBox(width: 4.0,),
+            const SizedBox(
+              width: 4.0,
+            ),
             GeoActivity(
                 width: (size.width / 2) - 80,
                 thinMode: false,
                 showPhoto: showPhoto,
                 showVideo: showVideo,
                 showAudio: showAudio,
+                showUser: (user) {},
+                showLocationRequest: (req) {},
+                showLocationResponse: (resp) {
+                  _navigateToLocationResponseMap(resp);
+                },
+                showGeofenceEvent: (event) {},
+                showProjectPolygon: (polygon) {},
+                showProjectPosition: (position) {},
+                showOrgMessage: (message) {},
                 forceRefresh: false),
           ],
         );
       }),
     ));
+  }
+
+  void _navigateToLocationResponseMap(LocationResponse locationResponse) async {
+    Navigator.push(
+        context,
+        PageTransition(
+            type: PageTransitionType.scale,
+            alignment: Alignment.topLeft,
+            duration: const Duration(seconds: 1),
+            child: LocationResponseMap(
+              locationResponse: locationResponse!,
+            )));
   }
 
   showPhoto(Photo p1) {}

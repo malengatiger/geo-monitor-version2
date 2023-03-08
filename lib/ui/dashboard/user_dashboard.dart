@@ -22,6 +22,7 @@ import '../../library/cache_manager.dart';
 import '../../library/data/audio.dart';
 import '../../library/data/data_bag.dart';
 import '../../library/data/geofence_event.dart';
+import '../../library/data/location_response.dart';
 import '../../library/data/photo.dart';
 import '../../library/data/project.dart';
 import '../../library/data/project_polygon.dart';
@@ -32,6 +33,7 @@ import '../../library/data/video.dart';
 import '../../library/functions.dart';
 import '../../library/generic_functions.dart';
 import '../../library/geofence/geofencer_two.dart';
+import '../../library/ui/maps/location_response_map.dart';
 import '../../library/ui/project_list/project_list_mobile.dart';
 import 'user_dashboard_grid.dart';
 
@@ -332,6 +334,18 @@ class UserDashboardState extends State<UserDashboard>
     }
   }
 
+  void _navigateToLocationResponseMap(LocationResponse locationResponse) async {
+    Navigator.push(
+        context,
+        PageTransition(
+            type: PageTransitionType.scale,
+            alignment: Alignment.topLeft,
+            duration: const Duration(seconds: 1),
+            child: LocationResponseMap(
+              locationResponse: locationResponse!,
+            )));
+  }
+
   void _navigateToUserActivity() {
     var deviceType = getDeviceType();
     pp('$mm .................. _navigateToUserActivity .... deviceType: $deviceType');
@@ -350,6 +364,15 @@ class UserDashboardState extends State<UserDashboard>
                   showPhoto: _displayPhoto,
                   showVideo: _displayVideo,
                   showAudio: _displayAudio,
+                  showUser: (user) {},
+                  showLocationRequest: (req) {},
+                  showLocationResponse: (resp) {
+                    _navigateToLocationResponseMap(resp);
+                  },
+                  showGeofenceEvent: (event) {},
+                  showProjectPolygon: (polygon) {},
+                  showProjectPosition: (position) {},
+                  showOrgMessage: (message) {},
                   forceRefresh: true)));
     }
   }
@@ -500,6 +523,15 @@ class UserDashboardState extends State<UserDashboard>
                                     showPhoto: _displayPhoto,
                                     showVideo: _displayVideo,
                                     showAudio: _displayAudio,
+                                    showUser: (user) {},
+                                    showLocationRequest: (req) {},
+                                    showLocationResponse: (resp) {
+                                      _navigateToLocationResponseMap(resp);
+                                    },
+                                    showGeofenceEvent: (event) {},
+                                    showProjectPolygon: (polygon) {},
+                                    showProjectPosition: (position) {},
+                                    showOrgMessage: (message) {},
                                     forceRefresh: true),
                               ],
                             );
@@ -540,6 +572,15 @@ class UserDashboardState extends State<UserDashboard>
                                     showPhoto: _displayPhoto,
                                     showVideo: _displayVideo,
                                     showAudio: _displayAudio,
+                                    showUser: (user) {},
+                                    showLocationRequest: (req) {},
+                                    showLocationResponse: (resp) {
+                                      _navigateToLocationResponseMap(resp);
+                                    },
+                                    showGeofenceEvent: (event) {},
+                                    showProjectPolygon: (polygon) {},
+                                    showProjectPosition: (position) {},
+                                    showOrgMessage: (message) {},
                                     forceRefresh: true),
                               ],
                             );

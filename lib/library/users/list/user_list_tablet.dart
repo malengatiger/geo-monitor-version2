@@ -32,8 +32,7 @@ class UserListTablet extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  State<UserListTablet> createState() =>
-      _UserListTabletState();
+  State<UserListTablet> createState() => _UserListTabletState();
 }
 
 class _UserListTabletState extends State<UserListTablet> {
@@ -78,10 +77,11 @@ class _UserListTabletState extends State<UserListTablet> {
               shape: getRoundedBorder(radius: 16),
               title: Text(
                 "Location Response",
-                style: myTextStyleLarge(context),
+                style: myTextStyleMediumBold(context),
               ),
               content: SizedBox(
-                height: 160.0,
+                height: 260.0,
+                width: 440.0,
                 child: Card(
                   shape: getRoundedBorder(radius: 16),
                   child: Padding(
@@ -92,10 +92,10 @@ class _UserListTabletState extends State<UserListTablet> {
                           locationResponse == null
                               ? ''
                               : locationResponse!.userName!,
-                          style: myTextStyleMediumBold(context),
+                          style: myTextStyleLargePrimaryColor(context),
                         ),
                         const SizedBox(
-                          height: 12,
+                          height: 48,
                         ),
                         const Padding(
                           padding: EdgeInsets.all(8.0),
@@ -325,15 +325,15 @@ class _UserListTabletState extends State<UserListTablet> {
               ))
         ],
       ),
-      body: OrientationLayoutBuilder(
-          landscape: (ctx){
-            return Padding(
-              padding: const EdgeInsets.only(left: 48.0, right: 24.0, top: 24.0, bottom: 24),
-              child: Row(
-                children: [
-                  user == null
-                      ? const SizedBox()
-                      : SizedBox(
+      body: OrientationLayoutBuilder(landscape: (ctx) {
+        return Padding(
+          padding: const EdgeInsets.only(
+              left: 48.0, right: 24.0, top: 24.0, bottom: 24),
+          child: Row(
+            children: [
+              user == null
+                  ? const SizedBox()
+                  : SizedBox(
                       width: (mWidth / 2) - 80,
                       child: UserListCard(
                         amInLandscape: true,
@@ -365,20 +365,30 @@ class _UserListTabletState extends State<UserListTablet> {
                           _sort();
                         },
                       )),
-                  GeoActivity(
-                      width: mWidth / 2,
-                      thinMode: false,
-                      showPhoto: showPhoto,
-                      showVideo: showVideo,
-                      showAudio: showAudio,
-                      forceRefresh: false),
-                ],
-              ),
-            );
-          },
-          portrait: (ctx) {
+              GeoActivity(
+                  width: mWidth / 2,
+                  thinMode: false,
+                  showPhoto: showPhoto,
+                  showVideo: showVideo,
+                  showAudio: showAudio,
+                  showUser: (user) {},
+                  showLocationRequest: (req) {},
+                  showLocationResponse: (resp) {
+                    locationResponse = resp;
+                    _navigateToLocationResponseMap();
+                  },
+                  showGeofenceEvent: (event) {},
+                  showProjectPolygon: (polygon) {},
+                  showProjectPosition: (position) {},
+                  showOrgMessage: (message) {},
+                  forceRefresh: false),
+            ],
+          ),
+        );
+      }, portrait: (ctx) {
         return Padding(
-          padding: const EdgeInsets.only(left: 16, right: 16.0, top: 48, bottom: 48),
+          padding:
+              const EdgeInsets.only(left: 16, right: 16.0, top: 48, bottom: 48),
           child: Row(
             children: [
               user == null
@@ -415,13 +425,25 @@ class _UserListTabletState extends State<UserListTablet> {
                           _sort();
                         },
                       )),
-              const SizedBox(width: 32,),
+              const SizedBox(
+                width: 32,
+              ),
               GeoActivity(
                   width: (mWidth / 2) - 80,
                   thinMode: false,
                   showPhoto: showPhoto,
                   showVideo: showVideo,
                   showAudio: showAudio,
+                  showUser: (user) {},
+                  showLocationRequest: (req) {},
+                  showLocationResponse: (resp) {
+                    locationResponse = resp;
+                    _navigateToLocationResponseMap();
+                  },
+                  showGeofenceEvent: (event) {},
+                  showProjectPolygon: (polygon) {},
+                  showProjectPosition: (position) {},
+                  showOrgMessage: (message) {},
                   forceRefresh: false),
             ],
           ),

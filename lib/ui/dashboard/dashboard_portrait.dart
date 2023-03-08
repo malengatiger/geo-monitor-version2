@@ -205,23 +205,21 @@ class DashboardPortraitState extends State<DashboardPortrait>
     await _doTheWork(forceRefresh);
 
     _gridViewAnimationController.forward();
-
   }
 
   Future<void> _doTheWork(bool forceRefresh) async {
-
-      if (deviceUser == null) {
-        throw Exception("Tax man is fucked! User is not found");
-      }
-      if (widget.project != null) {
-        await _getProjectData(widget.project!.projectId!, forceRefresh);
-      } else if (widget.user != null) {
-        await _getUserData(widget.user!.userId!, forceRefresh);
-      } else {
-        await _getOrganizationData(deviceUser!.organizationId!, forceRefresh);
-      }
-      setState(() {});
-      _gridViewAnimationController.forward();
+    if (deviceUser == null) {
+      throw Exception("Tax man is fucked! User is not found");
+    }
+    if (widget.project != null) {
+      await _getProjectData(widget.project!.projectId!, forceRefresh);
+    } else if (widget.user != null) {
+      await _getUserData(widget.user!.userId!, forceRefresh);
+    } else {
+      await _getOrganizationData(deviceUser!.organizationId!, forceRefresh);
+    }
+    setState(() {});
+    _gridViewAnimationController.forward();
 
     setState(() {
       busy = false;
@@ -457,11 +455,9 @@ class DashboardPortraitState extends State<DashboardPortrait>
               alignment: Alignment.center,
               duration: const Duration(seconds: 1),
               child: GeoActivityMobile(
-                  user: widget.user,
-                  project: widget.project,
-                  showPhoto: showPhoto,
-                  showVideo: showVideo,
-                  showAudio: showAudio)));
+                user: widget.user,
+                project: widget.project,
+              )));
     }
   }
 
@@ -705,14 +701,27 @@ class DashboardPortraitState extends State<DashboardPortrait>
                   const SizedBox(
                     height: 12,
                   ),
-                  Row(mainAxisAlignment: MainAxisAlignment.center,
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                       Text('Data is for the last', style: myTextStyleSmall(context),),
-                      const SizedBox(width: 8,),
-                      Text('$numberOfDays', style: myNumberStyleMediumPrimaryColor(context),),
-                      const SizedBox(width: 8,),
-                       Text('days', style: myTextStyleSmall(context),),
-
+                      Text(
+                        'Data is for the last',
+                        style: myTextStyleSmall(context),
+                      ),
+                      const SizedBox(
+                        width: 8,
+                      ),
+                      Text(
+                        '$numberOfDays',
+                        style: myNumberStyleMediumPrimaryColor(context),
+                      ),
+                      const SizedBox(
+                        width: 8,
+                      ),
+                      Text(
+                        'days',
+                        style: myTextStyleSmall(context),
+                      ),
                     ],
                   ),
                   const SizedBox(

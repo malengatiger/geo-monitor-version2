@@ -252,7 +252,7 @@ class ActivityStreamCardState extends State<ActivityStreamCard> {
             Icon(Icons.location_history, color: Theme.of(context).primaryColor);
         message =
             'Location request responded to by ${widget.model.locationResponse!.userName}';
-        return _getGeneric(icon, message, 120);
+        return _getGeneric(icon, message, 140);
         break;
       case ActivityType.kill:
         icon = Icon(Icons.cancel, color: Theme.of(context).primaryColor);

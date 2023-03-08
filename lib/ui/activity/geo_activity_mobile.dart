@@ -1,9 +1,17 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:geo_monitor/library/cache_manager.dart';
 import 'package:geo_monitor/library/data/activity_model.dart';
 import 'package:geo_monitor/library/data/geofence_event.dart';
+import 'package:geo_monitor/library/data/location_response.dart';
+import 'package:geo_monitor/library/data/org_message.dart';
+import 'package:geo_monitor/library/ui/camera/video_player_mobile.dart';
+import 'package:geo_monitor/library/ui/maps/location_response_map.dart';
 import 'package:geo_monitor/ui/activity/activity_list_mobile.dart';
+import 'package:geo_monitor/ui/audio/audio_player_page.dart';
+import 'package:geo_monitor/ui/dashboard/user_dashboard.dart';
+import 'package:page_transition/page_transition.dart';
 import 'package:universal_platform/universal_platform.dart';
 
 import '../../library/bloc/fcm_bloc.dart';
@@ -16,20 +24,19 @@ import '../../library/data/user.dart';
 import '../../library/data/video.dart';
 import '../../library/functions.dart';
 import '../../library/generic_functions.dart';
+import '../../library/ui/maps/geofence_map_tablet.dart';
+import '../../library/ui/maps/photo_map_tablet.dart';
+import '../../library/ui/maps/project_map_main.dart';
+import '../../library/ui/maps/project_map_mobile.dart';
+import '../../library/ui/maps/project_polygon_map_mobile.dart';
 
 class GeoActivityMobile extends StatefulWidget {
   const GeoActivityMobile({
     Key? key,
-    required this.showPhoto,
-    required this.showVideo,
-    required this.showAudio,
+
     this.user,
     this.project,
   }) : super(key: key);
-
-  final Function(Photo) showPhoto;
-  final Function(Video) showVideo;
-  final Function(Audio) showAudio;
 
   final User? user;
   final Project? project;
@@ -95,6 +102,166 @@ class GeoActivityMobileState extends State<GeoActivityMobile>
     super.dispose();
   }
 
+  void _navigateToPositionsMap(ProjectPosition position) async {
+    var proj =
+        await cacheManager.getProjectById(projectId: position.projectId!);
+    if (proj != null) {
+      if (mounted) {
+        Navigator.push(
+            context,
+            PageTransition(
+                type: PageTransitionType.scale,
+                alignment: Alignment.topLeft,
+                duration: const Duration(seconds: 1),
+                child: ProjectMapMobile(
+                  project: proj,
+                )));
+      }
+    }
+  }
+
+  void _navigateToPolygonsMap(ProjectPolygon polygon) async {
+    var proj = await cacheManager.getProjectById(projectId: polygon.projectId!);
+    if (proj != null) {
+      if (mounted) {
+        Navigator.push(
+            context,
+            PageTransition(
+                type: PageTransitionType.scale,
+                alignment: Alignment.topLeft,
+                duration: const Duration(seconds: 1),
+                child: ProjectPolygonMapMobile(
+                  project: proj,
+                )));
+      }
+    }
+  }
+
+  void _navigateToGeofenceMap(GeofenceEvent event) async {
+    Navigator.push(
+        context,
+        PageTransition(
+            type: PageTransitionType.scale,
+            alignment: Alignment.topLeft,
+            duration: const Duration(seconds: 1),
+            child: GeofenceMapTablet(
+              geofenceEvent: event,
+            )));
+  }
+
+  void _navigateToPhotoMap(Photo photo) {
+    pp('$mm _navigateToPhotoMap ...');
+
+    if (mounted) {
+      Navigator.push(
+          context,
+          PageTransition(
+              type: PageTransitionType.scale,
+              alignment: Alignment.topLeft,
+              duration: const Duration(milliseconds: 1000),
+              child: PhotoMapTablet(
+                photo: photo,
+              )));
+    }
+  }
+
+  void _navigateToProjectMap(Project project) {
+    pp('$mm _navigateToProjectMap ...');
+
+    if (mounted) {
+      Navigator.push(
+          context,
+          PageTransition(
+              type: PageTransitionType.scale,
+              alignment: Alignment.topLeft,
+              duration: const Duration(milliseconds: 1000),
+              child: ProjectMapMain(
+                project: project,
+              )));
+    }
+  }
+
+  void _navigateToLocationResponseMap(LocationResponse response) {
+    pp('$mm _navigateToLocationResponseMap ...');
+
+    if (mounted) {
+      Navigator.push(
+          context,
+          PageTransition(
+              type: PageTransitionType.scale,
+              alignment: Alignment.topLeft,
+              duration: const Duration(milliseconds: 1000),
+              child: LocationResponseMap(
+                locationResponse: response,
+              )));
+    }
+  }
+
+  void _navigateToVideo(Video video) {
+    pp('$mm _navigateToVideo ...');
+
+    if (mounted) {
+      Navigator.push(
+          context,
+          PageTransition(
+              type: PageTransitionType.scale,
+              alignment: Alignment.topLeft,
+              duration: const Duration(milliseconds: 1000),
+              child: VideoPlayerMobilePage(
+                video: video,
+              )));
+    }
+  }
+
+  void _navigateToAudio(Audio audio) {
+    pp('$mm _navigateToAudio ...');
+
+    if (mounted) {
+      Navigator.push(
+          context,
+          PageTransition(
+              type: PageTransitionType.scale,
+              alignment: Alignment.topLeft,
+              duration: const Duration(milliseconds: 1000),
+              child: AudioPlayerCard(
+                audio: audio,
+                onCloseRequested: () {},
+              )));
+    }
+  }
+
+  void _navigateToUserDashboard(User user) {
+    pp('$mm _navigateToUserDashboard ...');
+
+    if (mounted) {
+      Navigator.push(
+          context,
+          PageTransition(
+              type: PageTransitionType.scale,
+              alignment: Alignment.topLeft,
+              duration: const Duration(milliseconds: 1000),
+              child: UserDashboard(
+                user: user,
+              )));
+    }
+  }
+
+  void _navigateToMessage(OrgMessage message) {
+    pp('$mm _navigateToUserDashboard ...');
+
+    if (mounted) {
+      // Navigator.push(
+      //     context,
+      //     PageTransition(
+      //         type: PageTransitionType.scale,
+      //         alignment: Alignment.topLeft,
+      //         duration: const Duration(milliseconds: 1000),
+      //         child: MessageMobile(
+      //           user: user,
+      //         )));
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final width = MediaQuery.of(context).size.width;
@@ -110,20 +277,32 @@ class GeoActivityMobileState extends State<GeoActivityMobile>
           user: widget.user,
           project: widget.project,
           onPhotoTapped: (photo) {
-            widget.showPhoto(photo);
+            _navigateToPhotoMap(photo);
           },
           onVideoTapped: (video) {
-            widget.showVideo(video);
+            _navigateToVideo(video);
           },
           onAudioTapped: (audio) {
-            widget.showAudio(audio);
+            _navigateToAudio(audio);
           },
-          onUserTapped: (user) {},
+          onUserTapped: (user) {
+            _navigateToUserDashboard(user);
+          },
           onProjectTapped: (project) {},
-          onProjectPositionTapped: (projectPosition) {},
-          onPolygonTapped: (projectPolygon) {},
-          onGeofenceEventTapped: (geofenceEvent) {},
+          onProjectPositionTapped: (projectPosition) {
+            _navigateToPositionsMap(projectPosition);
+          },
+          onPolygonTapped: (projectPolygon) {
+            _navigateToPolygonsMap(projectPolygon);
+          },
+          onGeofenceEventTapped: (geofenceEvent) {
+            _navigateToGeofenceMap(geofenceEvent);
+          },
           onOrgMessage: (orgMessage) {},
+          onLocationResponse: (locationResponse) {
+            _navigateToLocationResponseMap(locationResponse);
+          },
+          onLocationRequest: (locationRequest) {},
         ),
       ),
     );

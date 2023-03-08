@@ -6,7 +6,7 @@ import 'package:geo_monitor/library/data/geofence_event.dart';
 import 'package:geo_monitor/library/data/settings_model.dart';
 import 'package:geo_monitor/library/ui/maps/project_map_mobile.dart';
 import 'package:geo_monitor/library/ui/media/list/project_media_list_mobile.dart';
-import 'package:geo_monitor/ui/activity/activity_list_mobile.dart';
+import 'package:geo_monitor/ui/activity/geo_activity_mobile.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:universal_platform/universal_platform.dart';
@@ -215,23 +215,16 @@ class ProjectDashboardMobileState extends State<ProjectDashboardMobile>
 
   void _navigateToActivity() {
     Navigator.push(
-        context,
-        PageTransition(
-            type: PageTransitionType.fade,
-            alignment: Alignment.topLeft,
-            duration: const Duration(seconds: 1),
-            child: ActivityListMobile(
-              project: widget.project,
-              onPhotoTapped: (photo) {},
-              onVideoTapped: (video) {},
-              onAudioTapped: (audio) {},
-              onUserTapped: (user) {},
-              onProjectTapped: (project) {},
-              onProjectPositionTapped: (projectPosition) {},
-              onPolygonTapped: (projectPolygon) {},
-              onGeofenceEventTapped: (geofenceEvent) {},
-              onOrgMessage: (orgMessage) {},
-            )));
+      context,
+      PageTransition(
+        type: PageTransitionType.fade,
+        alignment: Alignment.topLeft,
+        duration: const Duration(seconds: 1),
+        child: GeoActivityMobile(
+          project: widget.project,
+        ),
+      ),
+    );
   }
 
   void _navigateToProjectMap(Project project) {

@@ -13,6 +13,7 @@ import '../../api/prefs_og.dart';
 import '../../bloc/organization_bloc.dart';
 import '../../bloc/project_bloc.dart';
 import '../../data/city.dart';
+import '../../data/location_response.dart';
 import '../../data/place_mark.dart';
 import '../../data/position.dart' as mon;
 import '../../data/project.dart';
@@ -20,6 +21,7 @@ import '../../data/project_polygon.dart';
 import '../../data/project_position.dart';
 import '../../data/user.dart';
 import '../../functions.dart';
+import '../maps/location_response_map.dart';
 import '../maps/project_map_mobile.dart';
 import '../maps/project_polygon_map_mobile.dart';
 
@@ -446,6 +448,15 @@ class ProjectLocationHandlerState extends State<ProjectLocationHandler>
                             showPhoto: (p) {},
                             showVideo: (p) {},
                             showAudio: (p) {},
+                            showUser: (user) {},
+                            showLocationRequest: (req) {},
+                            showLocationResponse: (resp) {
+                              _navigateToLocationResponseMap(resp);
+                            },
+                            showGeofenceEvent: (event) {},
+                            showProjectPolygon: (polygon) {},
+                            showProjectPosition: (position) {},
+                            showOrgMessage: (message) {},
                             forceRefresh: false),
                       )
                     ],
@@ -475,6 +486,15 @@ class ProjectLocationHandlerState extends State<ProjectLocationHandler>
                           showPhoto: (p) {},
                           showVideo: (p) {},
                           showAudio: (p) {},
+                          showUser: (user) {},
+                          showLocationRequest: (req) {},
+                          showLocationResponse: (resp) {
+                            _navigateToLocationResponseMap(resp);
+                          },
+                          showGeofenceEvent: (event) {},
+                          showProjectPolygon: (polygon) {},
+                          showProjectPosition: (position) {},
+                          showOrgMessage: (message) {},
                           forceRefresh: false)
                     ],
                   );
@@ -482,6 +502,18 @@ class ProjectLocationHandlerState extends State<ProjectLocationHandler>
         ),
       ),
     );
+  }
+
+  void _navigateToLocationResponseMap(LocationResponse locationResponse) async {
+    Navigator.push(
+        context,
+        PageTransition(
+            type: PageTransitionType.scale,
+            alignment: Alignment.topLeft,
+            duration: const Duration(seconds: 1),
+            child: LocationResponseMap(
+              locationResponse: locationResponse!,
+            )));
   }
 }
 
