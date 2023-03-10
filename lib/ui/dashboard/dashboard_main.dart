@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:geo_monitor/initializer.dart';
 import 'package:geo_monitor/library/api/prefs_og.dart';
 import 'package:geo_monitor/library/functions.dart';
 import 'package:geofence_service/geofence_service.dart';
@@ -28,11 +29,16 @@ class DashboardMainState extends State<DashboardMain>
   void initState() {
     _controller = AnimationController(vsync: this);
     super.initState();
+    _initialize();
     _getUser();
   }
 
+  void _initialize() async {
+    initializer.initializeGeo();
+  }
   void _getUser() async {
     user = await prefsOGx.getUser();
+    pp('$mm starting to cook with Gas!');
     setState(() {});
   }
 

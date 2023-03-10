@@ -123,6 +123,8 @@ dependencies:
   flutter_background_service: ^2.4.6
   device_info_plus:
   flutter_isolate: ^2.0.4
+  realm: ^1.0.2
+  collection: ^1.17.0
 
 
 

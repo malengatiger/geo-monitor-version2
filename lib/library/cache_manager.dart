@@ -56,44 +56,42 @@ class CacheManager {
 
   CacheManager._internal();
 
-  LazyBox<Organization>? _orgBox;
-  LazyBox<Project>? _projectBox;
-  LazyBox<ProjectPosition>? _positionBox;
-  LazyBox<City>? _cityBox;
-  LazyBox<Photo>? _photoBox;
-  LazyBox<Video>? _videoBox;
-  LazyBox<Community>? _communityBox;
-  LazyBox<Condition>? _conditionBox;
-  LazyBox<FieldMonitorSchedule>? _scheduleBox;
-  LazyBox<OrgMessage>? _orgMessageBox;
-  LazyBox<User>? _userBox;
-  LazyBox<MonitorReport>? _reportBox;
-  LazyBox<GeofenceEvent>? _geofenceEventBox;
-  LazyBox<ProjectPolygon>? _projectPolygonBox;
-  LazyBox<Photo>? _failedPhotoBox;
-  LazyBox<Video>? _failedVideoBox;
-  LazyBox<FailedBag>? _failedBagBox;
-  LazyBox<Country>? _countryBox;
-  LazyBox<OrganizationRegistrationBag>? _registrationBox;
-  LazyBox<Audio>? _audioBox;
-  LazyBox<FailedAudio>? _failedAudioBox;
-  LazyBox<Rating>? _ratingBox;
-  LazyBox<LocationResponse>? _locationResponseBox;
-  LazyBox<SettingsModel>? _settingsBox;
+  Box<Organization>? _orgBox;
+  Box<Project>? _projectBox;
+  Box<ProjectPosition>? _positionBox;
+  Box<City>? _cityBox;
+  Box<Photo>? _photoBox;
+  Box<Video>? _videoBox;
+  Box<Community>? _communityBox;
+  Box<Condition>? _conditionBox;
+  Box<FieldMonitorSchedule>? _scheduleBox;
+  Box<OrgMessage>? _orgMessageBox;
+  Box<User>? _userBox;
+  Box<MonitorReport>? _reportBox;
+  Box<GeofenceEvent>? _geofenceEventBox;
+  Box<ProjectPolygon>? _projectPolygonBox;
+  Box<Photo>? _failedPhotoBox;
+  Box<Video>? _failedVideoBox;
+  Box<FailedBag>? _failedBagBox;
+  Box<Country>? _countryBox;
+  Box<OrganizationRegistrationBag>? _registrationBox;
+  Box<Audio>? _audioBox;
+  Box<FailedAudio>? _failedAudioBox;
+  Box<Rating>? _ratingBox;
+  Box<LocationResponse>? _locationResponseBox;
+  Box<SettingsModel>? _settingsBox;
 
-  LazyBox<PhotoForUpload>? _uploadPhotoBox;
-  LazyBox<VideoForUpload>? _uploadVideoBox;
-  LazyBox<AudioForUpload>? _uploadAudioBox;
-  LazyBox<ProjectAssignment>? _assignmentBox;
+  Box<PhotoForUpload>? _uploadPhotoBox;
+  Box<VideoForUpload>? _uploadVideoBox;
+  Box<AudioForUpload>? _uploadAudioBox;
+  Box<ProjectAssignment>? _assignmentBox;
 
-  LazyBox<DailyForecast>? _dailyForecastBox;
-  LazyBox<HourlyForecast>? _hourlyForecastBox;
+  Box<DailyForecast>? _dailyForecastBox;
+  Box<HourlyForecast>? _hourlyForecastBox;
 
-  LazyBox<ActivityModel>? _activityBox;
-  LazyBox<ActivityModel>? _activityHistoryBox;
-  LazyBox<ProjectSummary>? _summaryBox;
-
-
+  Box<ActivityModel>? _activityBox;
+  Box<ActivityModel>? _activityHistoryBox;
+  Box<ProjectSummary>? _summaryBox;
 
   bool _isInitialized = false;
 
@@ -158,52 +156,52 @@ class CacheManager {
   }
 
   Future<void> _openBoxes() async {
-    _summaryBox = await Hive.openLazyBox<ProjectSummary>('summaries');
-    _activityBox = await Hive.openLazyBox<ActivityModel>('activities');
+    _summaryBox = await Hive.openBox<ProjectSummary>('summaries');
+    _activityBox = await Hive.openBox<ActivityModel>('activities');
 
-    _orgBox = await Hive.openLazyBox<Organization>('organizations');
-    _settingsBox = await Hive.openLazyBox<SettingsModel>('settings');
-    _projectBox = await Hive.openLazyBox<Project>('projects');
-    _positionBox = await Hive.openLazyBox<ProjectPosition>('positions');
+    _orgBox = await Hive.openBox<Organization>('organizations');
+    _settingsBox = await Hive.openBox<SettingsModel>('settings');
+    _projectBox = await Hive.openBox<Project>('projects');
+    _positionBox = await Hive.openBox<ProjectPosition>('positions');
 
-    _dailyForecastBox = await Hive.openLazyBox<DailyForecast>('dailyForecasts');
+    _dailyForecastBox = await Hive.openBox<DailyForecast>('dailyForecasts');
     _hourlyForecastBox =
-        await Hive.openLazyBox<HourlyForecast>('hourlyForecasts');
+        await Hive.openBox<HourlyForecast>('hourlyForecasts');
 
-    _cityBox = await Hive.openLazyBox<City>('cities');
-    _photoBox = await Hive.openLazyBox<Photo>('photos');
-    _videoBox = await Hive.openLazyBox<Video>('videos');
+    _cityBox = await Hive.openBox<City>('cities');
+    _photoBox = await Hive.openBox<Photo>('photos');
+    _videoBox = await Hive.openBox<Video>('videos');
 
-    _uploadAudioBox = await Hive.openLazyBox<AudioForUpload>('uploadAudios');
-    _uploadPhotoBox = await Hive.openLazyBox<PhotoForUpload>('uploadPhotos');
-    _uploadVideoBox = await Hive.openLazyBox<VideoForUpload>('uploadVideos');
+    _uploadAudioBox = await Hive.openBox<AudioForUpload>('uploadAudios');
+    _uploadPhotoBox = await Hive.openBox<PhotoForUpload>('uploadPhotos');
+    _uploadVideoBox = await Hive.openBox<VideoForUpload>('uploadVideos');
 
-    _communityBox = await Hive.openLazyBox<Community>('communities');
-    _conditionBox = await Hive.openLazyBox<Condition>('conditions');
-    _countryBox = await Hive.openLazyBox<Country>('countries');
+    _communityBox = await Hive.openBox<Community>('communities');
+    _conditionBox = await Hive.openBox<Condition>('conditions');
+    _countryBox = await Hive.openBox<Country>('countries');
 
-    _scheduleBox = await Hive.openLazyBox<FieldMonitorSchedule>('schedules');
-    _orgMessageBox = await Hive.openLazyBox<OrgMessage>('messages');
-    _reportBox = await Hive.openLazyBox<MonitorReport>('reports');
-    _geofenceEventBox = await Hive.openLazyBox<GeofenceEvent>('geofenceEvents');
+    _scheduleBox = await Hive.openBox<FieldMonitorSchedule>('schedules');
+    _orgMessageBox = await Hive.openBox<OrgMessage>('messages');
+    _reportBox = await Hive.openBox<MonitorReport>('reports');
+    _geofenceEventBox = await Hive.openBox<GeofenceEvent>('geofenceEvents');
 
-    _userBox = await Hive.openLazyBox<User>('users');
+    _userBox = await Hive.openBox<User>('users');
     _projectPolygonBox =
-        await Hive.openLazyBox<ProjectPolygon>('projectPolygons');
+        await Hive.openBox<ProjectPolygon>('projectPolygons');
 
-    _assignmentBox = await Hive.openLazyBox<ProjectAssignment>('assignments');
+    _assignmentBox = await Hive.openBox<ProjectAssignment>('assignments');
 
-    _failedPhotoBox = await Hive.openLazyBox<Photo>('failedPhotos');
-    _failedVideoBox = await Hive.openLazyBox<Video>('failedVideos');
-    _failedBagBox = await Hive.openLazyBox<FailedBag>('failedBags');
+    _failedPhotoBox = await Hive.openBox<Photo>('failedPhotos');
+    _failedVideoBox = await Hive.openBox<Video>('failedVideos');
+    _failedBagBox = await Hive.openBox<FailedBag>('failedBags');
 
     _registrationBox =
-        await Hive.openLazyBox<OrganizationRegistrationBag>('registrations');
-    _audioBox = await Hive.openLazyBox<Audio>('audios');
-    _failedAudioBox = await Hive.openLazyBox<FailedAudio>('failedAudios');
-    _ratingBox = await Hive.openLazyBox<Rating>('ratings');
+        await Hive.openBox<OrganizationRegistrationBag>('registrations');
+    _audioBox = await Hive.openBox<Audio>('audios');
+    _failedAudioBox = await Hive.openBox<FailedAudio>('failedAudios');
+    _ratingBox = await Hive.openBox<Rating>('ratings');
     _locationResponseBox =
-        await Hive.openLazyBox<LocationResponse>('locationResponses');
+        await Hive.openBox<LocationResponse>('locationResponses');
   }
 
   void _registerAdapters() {
@@ -354,19 +352,21 @@ class CacheManager {
   var random = Random(DateTime.now().millisecondsSinceEpoch);
 
   Future addProjectSummaries({required List<ProjectSummary> summaries}) async {
-
     for (var element in summaries) {
       await addProjectSummary(summary: element);
     }
     pp('$mm ${summaries.length} ProjectSummaries added to hive cache}');
   }
+
   Future addProjectSummary({required ProjectSummary summary}) async {
     var key = '${DateTime.parse(summary.projectId!)}_${summary.date!}';
     await _summaryBox?.put(key, summary);
 
     pp('$mm ProjectSummary added to hive cache}');
   }
-  Future<List<ProjectSummary>> getOrganizationSummaries(String startDate, String endDate) async {
+
+  Future<List<ProjectSummary>> getOrganizationSummaries(
+      String startDate, String endDate) async {
     var sums = <ProjectSummary>[];
     var keys = _summaryBox?.keys;
     if (keys != null) {
@@ -376,30 +376,32 @@ class CacheManager {
           var sDate = DateTime.parse(startDate).millisecondsSinceEpoch;
           var eDate = DateTime.parse(endDate).millisecondsSinceEpoch;
           var sumDate = DateTime.parse(summary.date!).millisecondsSinceEpoch;
-          if (sumDate >= sDate && sumDate <= eDate ) {
+          if (sumDate >= sDate && sumDate <= eDate) {
             sums.add(summary);
           }
         }
       }
     }
-    sums.sort((a,b) => a.date!.compareTo(b.date!));
+    sums.sort((a, b) => a.date!.compareTo(b.date!));
     pp('$mm ProjectSummaries found in hive cache: ${sums.length}');
     return sums;
   }
-  Future<List<ProjectSummary>> getProjectSummaries(String projectId, String startDate, String endDate) async {
-     var list = await getOrganizationSummaries(startDate, endDate);
-     var sums = <ProjectSummary>[];
-     for (var value in list) {
-       if (value.projectId == projectId) {
-         sums.add(value);
-       }
-     }
-     sums.sort((a,b) => a.date!.compareTo(b.date!));
-     pp('$mm ProjectSummaries found in hive cache: ${sums.length}');
-     return sums;
+
+  Future<List<ProjectSummary>> getProjectSummaries(
+      String projectId, String startDate, String endDate) async {
+    var list = await getOrganizationSummaries(startDate, endDate);
+    var sums = <ProjectSummary>[];
+    for (var value in list) {
+      if (value.projectId == projectId) {
+        sums.add(value);
+      }
+    }
+    sums.sort((a, b) => a.date!.compareTo(b.date!));
+    pp('$mm ProjectSummaries found in hive cache: ${sums.length}');
+    return sums;
   }
 
-    Future addActivityModel({required ActivityModel activity}) async {
+  Future addActivityModel({required ActivityModel activity}) async {
     late String key;
     if (activity.projectId == null) {
       key =
@@ -728,10 +730,10 @@ class CacheManager {
     return users.length;
   }
 
-  Future deleteUsers() async {
-    _userBox?.clear();
-    pp('$mm all users removed from cache 🔆🔆');
-  }
+  // Future deleteUsers() async {
+  //   _userBox?.clear();
+  //   pp('$mm all users removed from cache 🔆🔆');
+  // }
 
   Future addVideos({required List<Video> videos}) async {
     for (var v in videos) {
@@ -956,7 +958,7 @@ class CacheManager {
     if (keys != null) {
       for (var key in keys) {
         if (key.contains(userId)) {
-          var e = await _userBox?.get(key);
+          var e = _userBox?.get(key);
           user = e;
         }
       }
@@ -997,16 +999,33 @@ class CacheManager {
 
   Future<DataBag> getOrganizationData({required String organizationId}) async {
     pp('$mm$mm getOrganizationData starting ...');
+    final start = DateTime.now();
+    if (!_isInitialized) {
+      pp('$mm$mm getOrganizationData: Hive not initialized yet; waiting for 3 seconds ... ${DateTime.now().toIso8601String()}');
+      await Future.delayed(const Duration(seconds: 5));
+      pp('$mm$mm getOrganizationData: Done waiting ... ${DateTime.now().toIso8601String()}');
+      if (_isInitialized) {
+        pp('$mm$mm getOrganizationData: Hive initialized!!');
+      } else {
+        getOrganizationData(organizationId: organizationId);
+      }
+
+    }
+
     final projects = await getOrganizationProjects();
     final users = await getUsers();
     final photos = await getOrganizationPhotos();
     final videos = await getOrganizationVideos();
     final audios = await getOrganizationAudios();
-    final settings = await getOrganizationSettings();
 
+    final settings = await getOrganizationSettings();
     final schedules = await getOrganizationMonitorSchedules();
     final positions = await getOrganizationProjectPositions();
     final polygons = await getOrganizationProjectPolygons();
+    final end1 = DateTime.now();
+
+    pp('$mm getOrganizationData: 🍎 ${end1.difference(start).inSeconds} seconds elapsed');
+
 
     final bag = DataBag(
         photos: photos,
@@ -1020,11 +1039,15 @@ class CacheManager {
         users: users,
         settings: settings);
 
+    final end = DateTime.now();
+
     pp('$mm getOrganizationData: 🍎projects: ${projects.length} '
-        '🍎users: ${users.length} 🍎photos: ${photos.length}'
-        ' 🍎videos: ${videos.length} 🍎schedules: ${schedules.length} '
+        '🍎users: ${users.length} 🍎photos: ${photos.length} '
+        '🍎videos: ${videos.length} 🍎schedules: ${schedules.length} '
         '🍎positions: ${positions.length} '
         '🍎polygons: ${polygons.length} 🍎audios: ${audios.length}');
+
+    pp('$mm getOrganizationData: 🍎 ${end.difference(start).inSeconds} seconds elapsed');
 
     return bag;
   }
@@ -1064,18 +1087,22 @@ class CacheManager {
   }
 
   Future<List<Photo>> getOrganizationPhotos() async {
+    var m = _photoBox?.values.cast();
     List<Photo> mList = [];
-    var keys = _photoBox?.keys;
-    if (keys != null) {
-      for (var key in keys) {
-        var m = await _photoBox!.get(key);
-        if (m != null) {
-          mList.add(m);
-        }
-      }
-    }
+    m?.forEach((element) {
+      mList.add(element);
+    });
+    // var keys = _photoBox?.keys;
+    // if (keys != null) {
+    //   for (var key in keys) {
+    //     var m = await _photoBox!.get(key);
+    //     if (m != null) {
+    //       mList.add(m);
+    //     }
+    //   }
+    // }
 
-    // pp('$mm ${mList.length} photos found in cache');
+    pp('$mm getOrganizationPhotos: ${mList.length} photos found in cache');
     return mList;
   }
 
@@ -1220,31 +1247,27 @@ class CacheManager {
 
   Future<List<Video>> getOrganizationVideos() async {
     List<Video> mList = [];
-    var keys = _videoBox?.keys;
-    if (keys != null) {
-      for (var key in keys) {
-        var m = await _videoBox!.get(key);
-        if (m != null) {
-          mList.add(m);
-        }
+    var videos = _videoBox?.values.cast();
+    if (videos != null) {
+      for (var video in videos) {
+       mList.add(video);
       }
     }
-    // pp('$mm ${mList.length} videos found in cache');
+    pp('$mm getOrganizationVideos: ${mList.length} videos found in cache');
     return mList;
   }
 
   Future<List<Audio>> getOrganizationAudios() async {
     List<Audio> mList = [];
-    var keys = _audioBox?.keys;
-    if (keys != null) {
-      for (var key in keys) {
-        var m = await _audioBox!.get(key);
-        if (m != null) {
-          mList.add(m);
-        }
+    var audios = _audioBox?.values.cast();
+    if (audios != null) {
+      for (var element in audios) {
+        mList.add(element);
       }
+    } else {
+      pp('$mm audios is null. 🍎🍎🍎🍎 WTF??????');
     }
-    // pp('$mm ${mList.length} audios found in cache');
+    pp('$mm getOrganizationAudios: ${mList.length} audios found in cache');
     return mList;
   }
 
@@ -1266,17 +1289,16 @@ class CacheManager {
   }
 
   Future<List<User>> getUsers() async {
-    var keys = _userBox?.keys;
+    var users = _userBox?.values.cast();
     var mList = <User>[];
-    if (keys != null) {
-      for (var value in keys) {
-        var m = await _userBox?.get(value);
-        if (m != null) {
+    if (users != null) {
+      for (var m in users) {
           mList.add(m);
-        }
       }
+    } else {
+      pp('$mm users is NULL!, 🔆🔆🔆 wtf?');
     }
-    // pp('$mm ${mList.length} users found in cache');
+    pp('$mm getUsers: ${mList.length} users found in cache');
     return mList;
   }
 
@@ -1437,18 +1459,21 @@ class CacheManager {
   }
 
   Future<List<Project>> getOrganizationProjects() async {
-    var keys = _projectBox?.keys;
-
+    //return Hive.box('history').values.cast();
+    var m = _projectBox?.values.cast();
     var mList = <Project>[];
-    if (keys != null) {
-      for (var value in keys) {
-        var m = await _projectBox?.get(value);
-        if (m != null) {
-          mList.add(m);
-        }
-      }
-    }
-    // pp('$mm ${mList.length} projects found in cache');
+    m?.forEach((element) {
+      mList.add(element);
+    });
+    // if (keys != null) {
+    //   for (var value in keys) {
+    //     var m = await _projectBox?.get(value);
+    //     if (m != null) {
+    //       mList.add(m);
+    //     }
+    //   }
+    // }
+    pp('$mm getOrganizationProjects: ${mList.length} projects found in cache');
     return mList;
   }
 
@@ -1614,17 +1639,15 @@ class CacheManager {
 
   Future<List<ProjectPosition>> getOrganizationProjectPositions() async {
     var mList = <ProjectPosition>[];
-    var keys = _positionBox?.keys;
+    var keys = _positionBox?.values.cast();
     if (keys != null) {
-      for (var value in keys) {
-        var m = await _positionBox?.get(value);
-        if (m != null) {
+      for (var m in keys) {
           mList.add(m);
-        }
+
       }
     }
 
-    // pp('$mm ${mList.length} ProjectPositions found in cache');
+    pp('$mm getOrganizationProjectPositions: ${mList.length} ProjectPositions found in cache');
     return mList;
   }
 
@@ -1637,17 +1660,15 @@ class CacheManager {
 
   Future<List<ProjectPolygon>> getOrganizationProjectPolygons() async {
     var mList = <ProjectPolygon>[];
-    var keys = _projectPolygonBox?.keys;
+    var keys = _projectPolygonBox?.values.cast();
     if (keys != null) {
-      for (var value in keys) {
-        var m = await _projectPolygonBox?.get(value);
-        if (m != null) {
+      for (var m in keys) {
           mList.add(m);
-        }
+
       }
     }
 
-    // pp('$mm ${mList.length} ProjectPolygons (all) found in cache');
+    pp('$mm getOrganizationProjectPolygons: ${mList.length} ProjectPolygons (all) found in cache');
     return mList;
   }
 

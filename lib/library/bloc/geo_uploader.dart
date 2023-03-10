@@ -34,16 +34,16 @@ class GeoUploader {
   static const xx = '🤞🏾🤞🏾🤞🏾🤞🏾🤞🏾🤞🏾GeoUploader: 🤞🏾🤞🏾🤞🏾🤞🏾';
 
   Future manageMediaUploads() async {
-    pp('\n\n\n$xx manageMediaUploads: starting ... 🔵🔵🔵😡😡\n\n');
+    pp('$xx manageMediaUploads: starting ... 🔵🔵🔵');
 
     try {
       await uploadCachedPhotos();
       await uploadCachedAudios();
       await uploadCachedVideos();
 
-      pp('\n\n$xx manageMediaUploads: 🥬🥬🥬🥬🥬🥬 '
+      pp('$xx manageMediaUploads: 🥬🥬🥬🥬🥬🥬 '
           'completed and uploads done if needed. 🥬🥬🥬 '
-          'should be Okey Dokey!\n');
+          'should be Okey Dokey!');
     } catch (e) {
       pp('$xx Something went horribly wrong: $e');
       throw Exception('Upload Exception: $e');

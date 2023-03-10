@@ -1216,7 +1216,7 @@ class DataAPI {
       for (var m in result) {
         list.add(ProjectPosition.fromJson(m));
       }
-      pp('$mm findProjectPositionsByLocation: 🍏 found: ${list.length} cities');
+      pp('$mm findProjectPositionsByLocation: 🍏 found: ${list.length} project positions');
       await cacheManager.addProjectPositions(positions: list);
       return list;
     } catch (e) {

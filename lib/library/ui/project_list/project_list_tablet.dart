@@ -60,6 +60,12 @@ class ProjectListTabletState extends State<ProjectListTablet>
   var userTypeLabel = 'Unknown User Type';
   final mm = '🔵🔵🔵🔵 ProjectListTabletPortrait:  ';
   late StreamSubscription<String> killSubscription;
+  var positions = <ProjectPosition>[];
+  var polygons = <ProjectPolygon>[];
+  final _key = GlobalKey<ScaffoldState>();
+  bool _showPositionChooser = false;
+  double sliderValue = 3.0;
+
 
   @override
   void initState() {
@@ -348,8 +354,6 @@ class ProjectListTabletState extends State<ProjectListTablet>
     }
   }
 
-  bool _showPositionChooser = false;
-
   void _navigateToDirections(
       {required double latitude, required double longitude}) async {
     pp('$mm 🍎 🍎 🍎 start Google Maps Directions .....');
@@ -374,9 +378,6 @@ class ProjectListTabletState extends State<ProjectListTablet>
       _showPositionChooser = false;
     });
   }
-
-  var positions = <ProjectPosition>[];
-  var polygons = <ProjectPolygon>[];
 
   void _startDirections(Project project) async {
     setState(() {
@@ -541,8 +542,6 @@ class ProjectListTabletState extends State<ProjectListTablet>
 
     return menuItems;
   }
-
-  final _key = GlobalKey<ScaffoldState>();
 
   List<IconButton> _getActions() {
     List<IconButton> list = [];
@@ -962,7 +961,6 @@ class ProjectListTabletState extends State<ProjectListTablet>
             )));
   }
 
-  double sliderValue = 3.0;
   void _onSliderChanged(double value) {
     pp('ProjectListTabletPortrait  🥏 🥏 🥏 🥏 🥏 _onSliderChanged: $value');
     setState(() {

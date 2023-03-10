@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:geo_monitor/library/bloc/data_refresher.dart';
 import 'package:geo_monitor/library/data/activity_model.dart';
 import 'package:geo_monitor/library/data/project_summary.dart';
 import 'package:geo_monitor/library/data/settings_model.dart';
@@ -32,8 +33,10 @@ class OrganizationBloc {
   }
   final mm = '${E.blueDot}${E.blueDot}${E.blueDot} '
       'OrganizationBloc: ';
-  final StreamController<List<MonitorReport>> _reportController =
+  final StreamController<DataBag> dataBagController =
       StreamController.broadcast();
+  final StreamController<List<MonitorReport>> _reportController =
+  StreamController.broadcast();
   final StreamController<List<User>> userController =
       StreamController.broadcast();
   final StreamController<List<Community>> communityController =
@@ -64,6 +67,8 @@ class OrganizationBloc {
 
   final StreamController<Questionnaire> activeQuestionnaireController =
       StreamController.broadcast();
+
+  Stream<DataBag> get dataBagStream => dataBagController.stream;
 
   Stream<List<MonitorReport>> get reportStream => _reportController.stream;
 
@@ -153,27 +158,40 @@ class OrganizationBloc {
     pp('$mm getOrganizationData ... photos, videos and schedules'
         ' ... forceRefresh: $forceRefresh');
 
-    DataBag? bag =
-        await cacheManager.getOrganizationData(organizationId: organizationId);
-
+    final start = DateTime.now();
+    DataBag? bag;
+    final sDate = DateTime.parse(startDate);
+    final eDate = DateTime.parse(endDate);
+    final numberOfDays = eDate.difference(sDate).inDays;
     if (forceRefresh) {
-      pp('$mm get data from server .....................; forceRefresh: $forceRefresh');
-      bag = await zipBloc.getOrganizationDataZippedFile(
-          organizationId, startDate, endDate);
+      pp('$mm get data from server .....................; '
+          'forceRefresh: $forceRefresh; if true do the refresh ...');
+      bag = await dataRefresher.manageRefresh(numberOfDays: numberOfDays,
+          organizationId: organizationId, projectId: null, userId: null);
+
     } else {
+      bag = await cacheManager.getOrganizationData(organizationId: organizationId);
       if (bag.isEmpty()) {
         pp('$mm bag is empty. No organization data anywhere yet? ... '
             'will force refresh, forceRefresh: $forceRefresh');
-        bag = await zipBloc.getOrganizationDataZippedFile(
-            organizationId, startDate, endDate);
+        bag = await dataRefresher.manageRefresh(numberOfDays: numberOfDays,
+            organizationId: organizationId, projectId: null, userId: null);
       }
     }
-    pp('$mm filter bag by the dates ....');
-    printDataBag(bag!);
+    final end = DateTime.now();
+    pp('$mm getOrganizationData: 🍎 ${end.difference(start).inSeconds} seconds elapsed, will start filter ...');
+
+    final start2 = DateTime.now();
+    pp('\n\n$mm ... filter bag by the dates .... before filter');
+    if (bag == null) {
+      throw 'Bag is NULL. wtf?';
+    }
+    printDataBag(bag);
     var mBag = filterBagContentsByDate(
-        bag: bag!, startDate: startDate, endDate: endDate);
-    _putContentsOfBagIntoStreams(mBag);
-    pp('$mm filtered bag ....');
+        bag: bag, startDate: startDate, endDate: endDate);
+    dataBagController.sink.add(mBag);
+    final end2 = DateTime.now();
+    pp('\n$mm filtered bag .... ${end2.difference(start2)} seconds elapsed for filter');
     printDataBag(mBag);
     return mBag;
   }

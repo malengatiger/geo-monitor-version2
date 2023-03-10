@@ -71,6 +71,16 @@ class DashboardPortraitState extends State<DashboardPortrait>
   late StreamSubscription<String> killSubscriptionFCM;
   late StreamSubscription<bool> connectionSubscription;
   late StreamSubscription<GeofenceEvent> geofenceSubscription;
+  //
+  late StreamSubscription<Photo> photoSubscription;
+  late StreamSubscription<Video> videoSubscription;
+  late StreamSubscription<Audio> audioSubscription;
+  late StreamSubscription<ProjectPosition> projectPositionSubscription;
+  late StreamSubscription<ProjectPolygon> projectPolygonSubscription;
+  late StreamSubscription<Project> projectSubscription;
+
+  late StreamSubscription<DataBag> dataBagSubscription;
+  //
 
   var busy = false;
   User? deviceUser;
@@ -94,11 +104,24 @@ class DashboardPortraitState extends State<DashboardPortrait>
     super.initState();
     _getData(false);
     _setItems();
+    _listenForDataBag();
     _listenForFCM();
     _getAuthenticationStatus();
     _subscribeToConnectivity();
     _subscribeToGeofenceStream();
     // _startTimer();
+  }
+
+  void _listenForDataBag() async {
+    dataBagSubscription = organizationBloc.dataBagStream.listen((DataBag bag) {
+      dataBag = bag;
+      pp('$mm dataBagStream delivered a dataBag!! 🍐Yebo! 🍐');
+      if (mounted) {
+        setState(() {
+
+        });
+      }
+    });
   }
 
   void _getAuthenticationStatus() async {
@@ -179,7 +202,7 @@ class DashboardPortraitState extends State<DashboardPortrait>
   }
 
   Future _getData(bool forceRefresh) async {
-    pp('\n\n$mm ............................................ Refreshing dashboard data ....\n');
+    pp('$mm ............................................ Refreshing dashboard data ....');
     deviceUser = await prefsOGx.getUser();
     var settings = await prefsOGx.getSettings();
     if (settings != null) {
@@ -209,7 +232,7 @@ class DashboardPortraitState extends State<DashboardPortrait>
 
   Future<void> _doTheWork(bool forceRefresh) async {
     if (deviceUser == null) {
-      throw Exception("Tax man is fucked! User is not found");
+      throw Exception("The data refresh man is fucked! Device User is not found");
     }
     if (widget.project != null) {
       await _getProjectData(widget.project!.projectId!, forceRefresh);
@@ -218,9 +241,7 @@ class DashboardPortraitState extends State<DashboardPortrait>
     } else {
       await _getOrganizationData(deviceUser!.organizationId!, forceRefresh);
     }
-    setState(() {});
     _gridViewAnimationController.forward();
-
     setState(() {
       busy = false;
     });
@@ -230,34 +251,41 @@ class DashboardPortraitState extends State<DashboardPortrait>
     var map = await getStartEndDates();
     final startDate = map['startDate'];
     final endDate = map['endDate'];
-
+    pp('$mm _getOrganizationData: startDate : $startDate endDate: $endDate');
+    final start = DateTime.now();
     dataBag = await organizationBloc.getOrganizationData(
         organizationId: organizationId,
         forceRefresh: forceRefresh,
         startDate: startDate!,
         endDate: endDate!);
+    final end = DateTime.now();
+    pp('$mm _getOrganizationData: data bag returned ... ${end.difference(start).inSeconds} seconds elepased');
   }
 
   Future _getProjectData(String projectId, bool forceRefresh) async {
     var map = await getStartEndDates();
     final startDate = map['startDate'];
     final endDate = map['endDate'];
+    pp('$mm _getOrganizationData: startDate : $startDate endDate: $endDate');
     dataBag = await projectBloc.getProjectData(
         projectId: projectId,
         forceRefresh: forceRefresh,
         startDate: startDate!,
         endDate: endDate!);
+    pp('$mm _getProjectData: data bag returned ...');
   }
 
   Future _getUserData(String userId, bool forceRefresh) async {
     var map = await getStartEndDates();
     final startDate = map['startDate'];
     final endDate = map['endDate'];
+    pp('$mm _getOrganizationData: startDate : $startDate endDate: $endDate');
     dataBag = await userBloc.getUserData(
         userId: userId,
         forceRefresh: forceRefresh,
         startDate: startDate!,
         endDate: endDate!);
+    pp('$mm _getUserData: data bag returned ...');
   }
 
   void _listenForFCM() async {
@@ -277,26 +305,20 @@ class DashboardPortraitState extends State<DashboardPortrait>
       settingsSubscriptionFCM = fcmBloc.settingsStream.listen((settings) async {
         pp('$mm: 🍎🍎 settings arrived with themeIndex: ${settings.themeIndex}... 🍎🍎');
         themeBloc.themeStreamController.sink.add(settings.themeIndex!);
-        if (mounted) {
-          setState(() {});
-        }
+        _getData(false);
+
       });
       userSubscriptionFCM = fcmBloc.userStream.listen((user) async {
         pp('$mm: 🍎 🍎 user arrived... 🍎 🍎');
         if (user.userId == deviceUser!.userId!) {
           deviceUser = user;
         }
-        await _getData(false);
-        if (mounted) {
-          setState(() {});
-        }
+        _getData(false);
       });
       photoSubscriptionFCM = fcmBloc.photoStream.listen((user) async {
         pp('$mm: 🍎 🍎 photoSubscriptionFCM photo arrived... 🍎 🍎');
-        await _getData(false);
-        if (mounted) {
-          setState(() {});
-        }
+        _getData(false);
+
       });
 
       videoSubscriptionFCM = fcmBloc.videoStream.listen((Video message) async {
@@ -441,7 +463,9 @@ class DashboardPortraitState extends State<DashboardPortrait>
   }
 
   void showPhoto(Photo p) async {}
+
   void showVideo(Video p) async {}
+
   void showAudio(Audio p) async {}
 
   void _navigateToActivity() {

@@ -23,6 +23,7 @@ import '../data/questionnaire.dart';
 import '../data/user.dart';
 import '../data/video.dart';
 import '../functions.dart';
+import 'data_refresher.dart';
 
 final ProjectBloc projectBloc = ProjectBloc();
 
@@ -32,6 +33,8 @@ class ProjectBloc {
   }
   final mm = '💛️💛️💛️💛️💛️💛️ '
       'ProjectBloc';
+  final StreamController<DataBag> dataBagController =
+  StreamController.broadcast();
   final StreamController<List<MonitorReport>> _reportController =
       StreamController.broadcast();
   final StreamController<List<User>> _userController =
@@ -71,6 +74,8 @@ class ProjectBloc {
       StreamController.broadcast();
   final StreamController<List<ActivityModel>> activityController =
       StreamController.broadcast();
+
+  Stream<DataBag> get dataBagStream => dataBagController.stream;
 
   Stream<List<ActivityModel>> get activityStream => activityController.stream;
 
@@ -235,6 +240,9 @@ class ProjectBloc {
 
   Future<DataBag> getProjectData(
       {required String projectId, required bool forceRefresh, required String startDate, required String endDate}) async {
+    final sDate = DateTime.parse(startDate);
+    final eDate = DateTime.parse(endDate);
+    final numberOfDays = eDate.difference(sDate).inDays;
     List<Video> videos = await cacheManager.getProjectVideos(projectId);
     List<Audio> audios = await cacheManager.getProjectAudios(projectId);
     List<Photo> photos = await cacheManager.getProjectPhotos(projectId);
@@ -245,7 +253,7 @@ class ProjectBloc {
     List<SettingsModel> settings =
         await cacheManager.getProjectSettings(projectId);
 
-    var dataBag = DataBag(
+    DataBag? dataBag = DataBag(
         photos: photos,
         videos: videos,
         fieldMonitorSchedules: [],
@@ -260,19 +268,22 @@ class ProjectBloc {
     printDataBag(dataBag);
     var mBag = filterBagContentsByDate(bag: dataBag,  startDate: startDate, endDate: endDate);
     pp('$mm filtered bag ..');
+    dataBagController.sink.add(mBag);
     printDataBag(mBag);
     if (videos.isEmpty || photos.isEmpty || audios.isEmpty || forceRefresh) {
-      dataBag = await DataAPI.getProjectData(projectId,startDate,endDate);
+      dataBag = await dataRefresher.manageRefresh(numberOfDays: numberOfDays,
+          organizationId: null, projectId: projectId, userId: null);
+      dataBagController.sink.add(dataBag!);
     }
-    _projectVideoController.sink.add(videos);
-    pp('$mm getProjectData found: 💜 ${dataBag.videos!.length} videos ');
-    pp('$mm getProjectData found: 💜 ${dataBag.photos!.length} photos ');
-    pp('$mm getProjectData found: 💜 ${dataBag.audios!.length} audios ');
-    pp('$mm getProjectData found: 💜 ${dataBag.projectPositions!.length} positions ');
-    pp('$mm getProjectData found: 💜 ${dataBag.projectPolygons!.length} polygons ');
-    pp('$mm getProjectData found: 💜 ${dataBag.settings!.length} settings ');
 
-    return dataBag;
+    pp('$mm getProjectData found: 💜 ${mBag.videos!.length} videos ');
+    pp('$mm getProjectData found: 💜 ${mBag.photos!.length} photos ');
+    pp('$mm getProjectData found: 💜 ${mBag.audios!.length} audios ');
+    pp('$mm getProjectData found: 💜 ${mBag.projectPositions!.length} positions ');
+    pp('$mm getProjectData found: 💜 ${mBag.projectPolygons!.length} polygons ');
+    pp('$mm getProjectData found: 💜 ${mBag.settings!.length} settings ');
+
+    return mBag;
   }
 
   Future<DataBag> refreshProjectData(

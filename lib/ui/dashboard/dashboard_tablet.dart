@@ -29,7 +29,6 @@ import '../../library/bloc/downloader.dart';
 import '../../library/bloc/theme_bloc.dart';
 import '../../library/data/audio.dart';
 import '../../library/data/data_bag.dart';
-import '../../library/data/field_monitor_schedule.dart';
 import '../../library/data/photo.dart';
 import '../../library/data/project.dart';
 import '../../library/data/project_polygon.dart';
@@ -59,14 +58,14 @@ class DashboardTablet extends StatefulWidget {
 
 class DashboardTabletState extends State<DashboardTablet> {
   final mm = '🍎🍎🍎🍎 DashboardTablet: 🔵 ';
-  late StreamSubscription<List<Project>> projectSubscription;
-  late StreamSubscription<List<User>> userSubscription;
-  late StreamSubscription<List<Photo>> photoSubscription;
-  late StreamSubscription<List<Video>> videoSubscription;
-  late StreamSubscription<List<Audio>> audioSubscription;
-  late StreamSubscription<List<ProjectPosition>> projectPositionSubscription;
-  late StreamSubscription<List<ProjectPolygon>> projectPolygonSubscription;
-  late StreamSubscription<List<FieldMonitorSchedule>> schedulesSubscription;
+  // late StreamSubscription<List<Project>> projectSubscription;
+  // late StreamSubscription<List<User>> userSubscription;
+  // late StreamSubscription<List<Photo>> photoSubscription;
+  // late StreamSubscription<List<Video>> videoSubscription;
+  // late StreamSubscription<List<Audio>> audioSubscription;
+  // late StreamSubscription<List<ProjectPosition>> projectPositionSubscription;
+  // late StreamSubscription<List<ProjectPolygon>> projectPolygonSubscription;
+  // late StreamSubscription<List<FieldMonitorSchedule>> schedulesSubscription;
 
   late StreamSubscription<Photo> photoSubscriptionFCM;
   late StreamSubscription<Video> videoSubscriptionFCM;
@@ -78,18 +77,49 @@ class DashboardTabletState extends State<DashboardTablet> {
   late StreamSubscription<SettingsModel> settingsSubscriptionFCM;
   late StreamSubscription<ActivityModel> activitySubscriptionFCM;
 
+  late StreamSubscription<DataBag> dataBagSubscription;
+
   late StreamSubscription<String> killSubscriptionFCM;
   var users = <User>[];
   User? user;
   DataBag? dataBag;
   bool busy = false;
   int numberOfDays = 7;
+  SettingsModel? settingsModel;
 
   @override
   void initState() {
     super.initState();
+    _listenForDataBag();
     _listenForFCM();
     _getData(false);
+  }
+
+  @override
+  void dispose() {
+    activitySubscriptionFCM.cancel();
+    projectPolygonSubscriptionFCM.cancel();
+    projectPositionSubscriptionFCM.cancel();
+    photoSubscriptionFCM.cancel();
+    videoSubscriptionFCM.cancel();
+    audioSubscriptionFCM.cancel();
+    settingsSubscriptionFCM.cancel();
+    dataBagSubscription.cancel();
+    killSubscriptionFCM.cancel();
+    userSubscriptionFCM.cancel();
+    settingsSubscriptionFCM.cancel();
+
+    super.dispose();
+  }
+
+  void _listenForDataBag() async {
+    dataBagSubscription = organizationBloc.dataBagStream.listen((DataBag bag) {
+      dataBag = bag;
+      pp('$mm dataBagStream delivered a dataBag!! 🍐Yebo! 🍐');
+      if (mounted) {
+        setState(() {});
+      }
+    });
   }
 
   void _listenForFCM() async {
@@ -110,58 +140,40 @@ class DashboardTabletState extends State<DashboardTablet> {
       projectSubscriptionFCM =
           fcmBloc.projectStream.listen((Project project) async {
         _getData(false);
-        if (mounted) {
-          pp('$mm: 🍎 🍎 project arrived: ${project.name} ... 🍎 🍎');
-          setState(() {});
-        }
       });
 
       settingsSubscriptionFCM = fcmBloc.settingsStream.listen((settings) async {
         pp('$mm: 🍎🍎 settings arrived with themeIndex: ${settings.themeIndex}... 🍎🍎');
         themeBloc.themeStreamController.sink.add(settings.themeIndex!);
-        if (mounted) {
-          setState(() {});
-        }
+        settingsModel = settings;
+        _getData(false);
       });
       userSubscriptionFCM = fcmBloc.userStream.listen((user) async {
         pp('$mm: 🍎 🍎 user arrived... 🍎 🍎');
         _getData(false);
-        if (mounted) {
-          setState(() {});
-        }
       });
       photoSubscriptionFCM = fcmBloc.photoStream.listen((user) async {
         pp('$mm: 🍎 🍎 photoSubscriptionFCM photo arrived... 🍎 🍎');
         _getData(false);
-        if (mounted) {
-          setState(() {});
-        }
       });
 
       videoSubscriptionFCM = fcmBloc.videoStream.listen((Video message) async {
         pp('$mm: 🍎 🍎 videoSubscriptionFCM video arrived... 🍎 🍎');
         _getData(false);
-        if (mounted) {
-          pp('DashboardMobile: 🍎 🍎 showMessageSnackbar: ${message.projectName} ... 🍎 🍎');
-          setState(() {});
-        }
       });
       audioSubscriptionFCM = fcmBloc.audioStream.listen((Audio message) async {
         pp('$mm: 🍎 🍎 audioSubscriptionFCM audio arrived... 🍎 🍎');
         _getData(false);
-        if (mounted) {}
       });
       projectPositionSubscriptionFCM =
           fcmBloc.projectPositionStream.listen((ProjectPosition message) async {
         pp('$mm: 🍎 🍎 projectPositionSubscriptionFCM position arrived... 🍎 🍎');
         _getData(false);
-        if (mounted) {}
       });
       projectPolygonSubscriptionFCM =
           fcmBloc.projectPolygonStream.listen((ProjectPolygon message) async {
         pp('$mm: 🍎 🍎 projectPolygonSubscriptionFCM polygon arrived... 🍎 🍎');
         _getData(false);
-        if (mounted) {}
       });
     } else {
       pp('App is running on the Web 👿👿👿firebase messaging is OFF 👿👿👿');
@@ -512,6 +524,7 @@ class DashboardTabletState extends State<DashboardTablet> {
       _showProjectPosition = true;
     });
   }
+
   void _displayProjectPolygon(ProjectPolygon pol) async {
     pp('$mm _displayProjectPolygon ...');
     projectPolygon = pol;
@@ -520,6 +533,7 @@ class DashboardTabletState extends State<DashboardTablet> {
       _showProjectPolygon = true;
     });
   }
+
   void _displayLocationRequest(LocationRequest req) async {
     pp('$mm _displayLocationRequest ...');
     request = req;
@@ -540,6 +554,7 @@ class DashboardTabletState extends State<DashboardTablet> {
               locationResponse: resp!,
             )));
   }
+
   void _navigateToGeofenceMap(GeofenceEvent event) async {
     Navigator.push(
         context,
@@ -551,6 +566,7 @@ class DashboardTabletState extends State<DashboardTablet> {
               geofenceEvent: event!,
             )));
   }
+
   void _displayUser(User user) async {
     pp('$mm _displayUser ...');
     someUser = user;
@@ -559,8 +575,6 @@ class DashboardTabletState extends State<DashboardTablet> {
       _showALocationRequest = true;
     });
   }
-
-
 
   void _navigateToPhotoMap() {
     pp('$mm _navigateToPhotoMap ...');
@@ -767,10 +781,26 @@ class DashboardTabletState extends State<DashboardTablet> {
                     showLocationResponse: (resp) {
                       _navigateToLocationResponseMap(resp);
                     },
-                    showGeofenceEvent: (event) {},
-                    showProjectPolygon: (polygon) {},
-                    showProjectPosition: (position) {},
-                    showOrgMessage: (message) {},
+                    showGeofenceEvent: (event) {
+                      _navigateToGeofenceMap(event);
+                    },
+                    showProjectPolygon: (polygon) async {
+                      var proj = await cacheManager.getProjectById(
+                          projectId: polygon.projectId!);
+                      if (proj != null) {
+                        _navigateToProjectMap(proj);
+                      }
+                    },
+                    showProjectPosition: (position) async {
+                      var proj = await cacheManager.getProjectById(
+                          projectId: position.projectId!);
+                      if (proj != null) {
+                        _navigateToProjectMap(proj);
+                      }
+                    },
+                    showOrgMessage: (message) {
+                      _navigateToMessageSender();
+                    },
                   ),
                 ],
               );
@@ -841,18 +871,22 @@ class DashboardTabletState extends State<DashboardTablet> {
                       _navigateToGeofenceMap(event);
                     },
                     showProjectPolygon: (polygon) async {
-                      var proj = await cacheManager.getProjectById(projectId: polygon.projectId!);
+                      var proj = await cacheManager.getProjectById(
+                          projectId: polygon.projectId!);
                       if (proj != null) {
                         _navigateToProjectMap(proj);
                       }
                     },
                     showProjectPosition: (position) async {
-                      var proj = await cacheManager.getProjectById(projectId: position.projectId!);
+                      var proj = await cacheManager.getProjectById(
+                          projectId: position.projectId!);
                       if (proj != null) {
                         _navigateToProjectMap(proj);
                       }
                     },
-                    showOrgMessage: (message) {},
+                    showOrgMessage: (message) {
+                      _navigateToMessageSender();
+                    },
                   ),
                 ],
               );

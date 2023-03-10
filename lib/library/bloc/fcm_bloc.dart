@@ -6,8 +6,8 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart' as fb;
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:geo_monitor/library/bloc/data_refresher.dart';
 import 'package:geo_monitor/library/bloc/location_request_handler.dart';
-import 'package:geo_monitor/library/bloc/organization_data_refresh.dart';
 import 'package:geo_monitor/library/data/activity_model.dart';
 // import 'package:geolocator/geolocator.dart';
 import 'package:get_storage/get_storage.dart';
@@ -35,7 +35,7 @@ import 'organization_bloc.dart';
 import 'theme_bloc.dart';
 
 FCMBloc fcmBloc = FCMBloc();
-const mm = '🔵 🔵 🔵 🔵 🔵 🔵 FCMBloc: ';
+const mm = '🔵🔵🔵🔵🔵🔵 FCMBloc: 🔵🔵 ';
 
 class FCMBloc {
   fb.FirebaseMessaging messaging = fb.FirebaseMessaging.instance;
@@ -109,7 +109,7 @@ class FCMBloc {
   }
 
   Future initialize() async {
-    pp("\n\n$mm initialize ....... FIREBASE MESSAGING ...........................");
+    pp("$mm initialize ....... FIREBASE MESSAGING ...........................");
     user = await prefsOGx.getUser();
     var android = UniversalPlatform.isAndroid;
     var ios = UniversalPlatform.isIOS;
@@ -158,17 +158,17 @@ class FCMBloc {
         // RemoteNotification? notification = message.notification;
         // AndroidNotification? android = message.notification?.android;
         if (message.data['activity'] != null) {
-          pp("$mm onMessage: 🍎 🍎 activity message has arrived!  ... 🍎 🍎\n ");
+          pp("$mm onMessage: 🍎 🍎 activity message has arrived!  ... 🍎 🍎 ");
         } else if (message.data['geofenceEvent'] != null) {
-          pp("$mm onMessage: 🍎 🍎 geofenceEvent message has arrived!  ... 🍎 🍎\n ");
+          pp("$mm onMessage: 🍎 🍎 geofenceEvent message has arrived!  ... 🍎 🍎 ");
         } else if (message.data['locationRequest'] != null) {
-          pp("$mm onMessage: 🍎 🍎 locationRequest message has arrived!  ... 🍎 🍎\n ");
+          pp("$mm onMessage: 🍎 🍎 locationRequest message has arrived!  ... 🍎 🍎 ");
         } else if (message.data['locationResponse'] != null) {
-          pp("$mm onMessage: 🍎 🍎 locationResponse message has arrived!  ... 🍎 🍎\n ");
+          pp("$mm onMessage: 🍎 🍎 locationResponse message has arrived!  ... 🍎 🍎 ");
         } else if (message.data['user'] != null) {
           pp("$mm onMessage: 🍎 🍎 user message has arrived!  ... 🍎 🍎\n ");
         } else {
-          pp("$mm onMessage: 🍎 🍎 some other geo message has arrived!  ... 🍎 🍎\n ");
+          pp("$mm onMessage: 🍎 🍎 some other geo message has arrived!  ... 🍎 🍎 ");
         }
         processFCMMessage(message);
       });
@@ -179,7 +179,7 @@ class FCMBloc {
       FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
         pp('$mm onMessageOpenedApp:  🍎 🍎 A new onMessageOpenedApp event was published! ${message.data}');
       });
-      await _subscribeToTopics();
+      _subscribeToTopics();
     }
   }
 
@@ -189,7 +189,7 @@ class FCMBloc {
       return;
     }
 
-    pp("$mm ..... subscribeToTopics ...........................");
+    pp("\n$mm ..... subscribe to Geo FCM Topics ...........................");
     // await prefsOGx.resetFCMSubscriptionFlag();
 
     // bool flag = await prefsOGx.getFCMSubscriptionFlag();
@@ -197,62 +197,31 @@ class FCMBloc {
     //   pp("\n\b$mm ..... app already subscribed to GeoMonitor FCM Topics ...... ✅✅✅?\n\n");
     //   return;
     // }
-    await messaging.subscribeToTopic('activities_${user.organizationId}');
-    pp("$mm ..... subscribed to topic: activities_${user.organizationId}");
+    messaging.subscribeToTopic('activities_${user.organizationId}');
+    messaging.subscribeToTopic('projects_${user.organizationId}');
+    messaging.subscribeToTopic('projectPositions_${user.organizationId}');
+    messaging.subscribeToTopic('projectPolygons_${user.organizationId}');
+    messaging.subscribeToTopic('photos_${user.organizationId}');
+    messaging.subscribeToTopic('videos_${user.organizationId}');
+    messaging.subscribeToTopic('conditions_${user.organizationId}');
+    messaging.subscribeToTopic('messages_${user.organizationId}');
+    messaging.subscribeToTopic('users_${user.organizationId}');
+    messaging.subscribeToTopic('audios_${user.organizationId}');
+    messaging.subscribeToTopic('kill_${user.organizationId}');
+    messaging.subscribeToTopic('locationRequests_${user.organizationId}');
+    messaging.subscribeToTopic('locationResponses_${user.organizationId}');
+    messaging.subscribeToTopic('settings_${user.organizationId}');
+    messaging.subscribeToTopic('geofenceEvents_${user.organizationId}');
 
-    await messaging.subscribeToTopic('projects_${user.organizationId}');
-    pp("$mm ..... subscribed to topic: projects_${user.organizationId}");
-
-    await messaging.subscribeToTopic('projectPositions_${user.organizationId}');
-    pp("$mm ..... subscribed to topic: projectPositions_${user.organizationId}");
-
-    await messaging.subscribeToTopic('projectPolygons_${user.organizationId}');
-    pp("$mm ..... subscribed to topic: projectPolygons__${user.organizationId}");
-
-    await messaging.subscribeToTopic('photos_${user.organizationId}');
-    pp("$mm ..... subscribed to topic: photos_${user.organizationId}");
-
-    await messaging.subscribeToTopic('videos_${user.organizationId}');
-    pp("$mm ..... subscribed to topic: videos_${user.organizationId}");
-
-    await messaging.subscribeToTopic('conditions_${user.organizationId}');
-    pp("$mm ..... subscribed to topic: conditions_${user.organizationId}");
-
-    await messaging.subscribeToTopic('messages_${user.organizationId}');
-    pp("$mm ..... subscribed to topic: messages_${user.organizationId}");
-
-    await messaging.subscribeToTopic('users_${user.organizationId}');
-    pp("$mm ..... subscribed to topic: users_${user.organizationId}");
-
-    await messaging.subscribeToTopic('audios_${user.organizationId}');
-    pp("$mm ..... subscribed to topic: audios_${user.organizationId}");
-
-    await messaging.subscribeToTopic('kill_${user.organizationId}');
-    pp("$mm ..... subscribed to topic: kill_${user.organizationId}");
-
-    await messaging.subscribeToTopic('locationRequests_${user.organizationId}');
-    pp("$mm ..... subscribed to topic: locationRequests_${user.organizationId}");
-
-    await messaging
-        .subscribeToTopic('locationResponses_${user.organizationId}');
-    pp("$mm ..... subscribed to topic: locationResponses_${user.organizationId}");
-
-    await messaging.subscribeToTopic('settings_${user.organizationId}');
-    pp("$mm ..... subscribed to topic: settings_${user.organizationId}");
-
-    await messaging.subscribeToTopic('geofenceEvents_${user.organizationId}');
-    pp("$mm ..... subscribed to topic: geofenceEvents_${user.organizationId}");
-
-    //geofenceEvents_
-    await prefsOGx.setFCMSubscriptionFlag();
-    pp("$mm subscribeToTopics: 🍎 subscribed to all 14 organization topics 🍎");
+    // prefsOGx.setFCMSubscriptionFlag();
+    pp("$mm subscribeToTopics: 🍎 subscription process has been started for all 14 organization topics 🍎");
 
     return null;
   }
 
-  final blue = '🔵 🔵 🔵';
+  final blue = '🔵🔵🔵';
   Future processFCMMessage(fb.RemoteMessage message) async {
-    pp('\n\n$mm processFCMMessage: $blue processing newly arrived FCM message; messageId:: ${message.messageId}');
+    // pp('$mm processFCMMessage: $blue processing newly arrived FCM message; messageId:: ${message.messageId}');
 
     Map data = message.data;
     if (data['settings'] != null) {
@@ -410,7 +379,9 @@ class FCMBloc {
         await prefsOGx.saveSettings(settings);
         await themeBloc.changeToTheme(settings.themeIndex!);
         _settingsController.sink.add(settings);
-        organizationDataRefresh.startRefresh(settings.numberOfDays!);
+        dataRefresher.manageRefresh(numberOfDays: settings.numberOfDays,
+            organizationId: settings.organizationId,
+            projectId: null, userId: null);
         pp('$mm This is an organization-wide setting, hopefully the ui changes to new color ...');
       }
     }

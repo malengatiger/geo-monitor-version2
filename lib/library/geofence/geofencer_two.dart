@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:geo_monitor/library/bloc/organization_bloc.dart';
 import 'package:geo_monitor/library/data/position.dart';
 import 'package:geofence_service/geofence_service.dart';
 import 'package:geofence_service/models/geofence.dart' as geo;
@@ -28,7 +27,7 @@ final TheGreatGeofencer theGreatGeofencer = TheGreatGeofencer();
 
 class TheGreatGeofencer {
   static const mm = '💦 💦 💦 💦 💦 TheGreatGeofencer: 💦 💦 ';
-  final xx = '😡 😡 😡 😡 😡 😡 😡 😡 😡 TheGreatGeofencer: ';
+  final xx = '😡😡😡😡😡😡😡 TheGreatGeofencer: 😡😡 ';
   final StreamController<GeofenceEvent> _streamController =
       StreamController.broadcast();
   Stream<GeofenceEvent> get geofenceEventStream => _streamController.stream;
@@ -73,22 +72,26 @@ class TheGreatGeofencer {
   }
 
   Future buildGeofences({double? radiusInKM}) async {
-    pp('$xx buildGeofences .... build geofences for the organization started ... 🌀 \n\n');
-
+    pp('$xx buildGeofences .... build geofences for the organization started ... 🌀 ');
     _user ??= await prefsOGx.getUser();
     if (_user == null) {
       return;
     }
-    pp('$xx buildGeofences .... build geofences for the organization 🌀 ${_user!.organizationName}  🌀 \n\n');
+    pp('$xx buildGeofences .... build geofences for the organization 🌀 ${_user!.organizationName}  🌀');
 
     await locationBloc.requestPermission();
     var startDate = DateTime.now().subtract(const Duration(days: (365*2))).toUtc().toIso8601String();
     var endDate = DateTime.now().toUtc().toIso8601String();
-    var list = await organizationBloc.getProjectPositions(
-        organizationId: _user!.organizationId!, forceRefresh: false, startDate: startDate,endDate: endDate);
+    //todo - get project positions and polygons by location of this device ...
+    var loc = await locationBloc.getLocation();
+    var locList = await _findProjectPositionsByLocation(organizationId: _user!.organizationId!,
+        latitude: loc!.latitude!, longitude: loc!.longitude!, radiusInKM: radiusInKM ?? 5);
+    pp('$xx buildGeofences .... project positions found by location: ${locList.length} ');
+    // var list = await organizationBloc.getProjectPositions(
+    //     organizationId: _user!.organizationId!, forceRefresh: false, startDate: startDate,endDate: endDate);
+    // pp('$xx buildGeofences .... project positions for Organization:: ${list.length} ');
 
-    // try {
-      for (var pos in list) {
+      for (var pos in locList) {
         await addGeofence(projectPosition: pos);
       }
       pp('$xx ${_geofenceList.length} geofences added to list');
@@ -106,7 +109,7 @@ class TheGreatGeofencer {
       });
 
       try {
-        pp('\n\n$xx  🔶🔶🔶🔶🔶🔶 Starting GeofenceService ...... 🔶🔶🔶🔶🔶🔶 ');
+        pp('\n$xx  🔶🔶🔶🔶🔶🔶 Starting GeofenceService ...... 🔶🔶🔶🔶🔶🔶 ');
         await geofenceService.start().onError((error, stackTrace) => {
               pp('\n\n\n$mm $reds GeofenceService failed to start, onError: 🔴 $error 🔴 \n\n\n')
               //todo - navigate user to system settings - explain why activity permission required
@@ -132,8 +135,8 @@ class TheGreatGeofencer {
       required GeofenceRadius geofenceRadius,
       required GeofenceStatus geofenceStatus,
       required Location location}) async {
-    pp('$xx _processing new GeofenceEvent; 🔵 ${geofence.data['projectName']} '
-        '🔵geofenceStatus: ${geofenceStatus.toString()}');
+    // pp('$xx _processing new GeofenceEvent; 🔵 ${geofence.data['projectName']} '
+    //     '🔵geofenceStatus: ${geofenceStatus.toString()}');
 
     var loc = await locationBloc.getLocation();
 
@@ -190,8 +193,8 @@ class TheGreatGeofencer {
       );
 
       _geofenceList.add(fence);
-      pp('$mm added Geofence .... 👽👽👽👽👽👽👽 _geofenceList now has ${_geofenceList
-          .length} fences 🍎 ');
+      pp('$mm added Geofence : 👽👽👽 ${projectPosition.projectName} 👽👽👽👽 '
+          '_geofenceList now has ${_geofenceList.length} fences 🍎 ');
     } else {
       pp('🔴🔴🔴🔴🔴🔴 project position is null, WTF??? ${projectPosition.projectName}');
     }

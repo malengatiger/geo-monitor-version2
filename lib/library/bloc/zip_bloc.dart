@@ -60,7 +60,6 @@ class ZipBloc {
     await cacheManager.addProjects(projects: bag!.projects!);
     await cacheManager.addProjectPolygons(polygons: bag.projectPolygons!);
     await cacheManager.addProjectPositions(positions: bag.projectPositions!);
-    await cacheManager.deleteUsers();
     await cacheManager.addUsers(users: bag.users!);
     await cacheManager.addPhotos(photos: bag.photos!);
     await cacheManager.addVideos(videos: bag.videos!);

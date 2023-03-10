@@ -37,6 +37,11 @@ class UserEditMobileState extends State<UserEditMobile>
   final _key = GlobalKey<ScaffoldState>();
   var isBusy = false;
   Country? country;
+  int userType = -1;
+  int genderType = -1;
+  String? type;
+  String? gender;
+
 
   @override
   void initState() {
@@ -199,9 +204,6 @@ class UserEditMobileState extends State<UserEditMobile>
     }
   }
 
-  int userType = -1;
-  int genderType = -1;
-
   void _setTypeRadio() {
     if (widget.user != null) {
       if (widget.user!.userType == UserType.fieldMonitor) {
@@ -267,6 +269,46 @@ class UserEditMobileState extends State<UserEditMobile>
             child: FullUserPhoto(
               user: widget.user!,
             )));
+  }
+
+  void _handleGenderValueChange(Object? value) {
+    pp('🌸 🌸 🌸 🌸 🌸 _handleGenderValueChange: 🌸 $value');
+    setState(() {
+      switch (value) {
+        case 0:
+          gender = 'Male';
+          genderType = 0;
+          break;
+        case 1:
+          gender = 'Female';
+          genderType = 1;
+          break;
+        case 2:
+          gender = 'Other';
+          genderType = 2;
+          break;
+      }
+    });
+  }
+
+  void _handleRadioValueChange(Object? value) {
+    pp('🌸 🌸 🌸 🌸 🌸 _handleRadioValueChange: 🌸 $value');
+    setState(() {
+      switch (value) {
+        case 0:
+          type = UserType.fieldMonitor;
+          userType = 0;
+          break;
+        case 1:
+          type = UserType.orgAdministrator;
+          userType = 1;
+          break;
+        case 2:
+          type = UserType.orgExecutive;
+          userType = 2;
+          break;
+      }
+    });
   }
 
   @override
@@ -537,46 +579,5 @@ class UserEditMobileState extends State<UserEditMobile>
     );
   }
 
-  String? type;
-  String? gender;
 
-  void _handleGenderValueChange(Object? value) {
-    pp('🌸 🌸 🌸 🌸 🌸 _handleGenderValueChange: 🌸 $value');
-    setState(() {
-      switch (value) {
-        case 0:
-          gender = 'Male';
-          genderType = 0;
-          break;
-        case 1:
-          gender = 'Female';
-          genderType = 1;
-          break;
-        case 2:
-          gender = 'Other';
-          genderType = 2;
-          break;
-      }
-    });
-  }
-
-  void _handleRadioValueChange(Object? value) {
-    pp('🌸 🌸 🌸 🌸 🌸 _handleRadioValueChange: 🌸 $value');
-    setState(() {
-      switch (value) {
-        case 0:
-          type = UserType.fieldMonitor;
-          userType = 0;
-          break;
-        case 1:
-          type = UserType.orgAdministrator;
-          userType = 1;
-          break;
-        case 2:
-          type = UserType.orgExecutive;
-          userType = 2;
-          break;
-      }
-    });
-  }
 }

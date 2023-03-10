@@ -17,6 +17,7 @@ import '../data/questionnaire.dart';
 import '../data/user.dart';
 import '../data/video.dart';
 import '../functions.dart';
+import 'data_refresher.dart';
 
 final UserBloc userBloc = UserBloc();
 
@@ -28,8 +29,10 @@ class UserBloc {
   User? _user;
 
   User get user => _user!;
-  final StreamController<List<Community>> _reportController =
+  final StreamController<DataBag> dataBagController =
       StreamController.broadcast();
+  final StreamController<List<Community>> _reportController =
+  StreamController.broadcast();
   final StreamController<List<User>> _userController =
       StreamController.broadcast();
   final StreamController<List<Community>> _communityController =
@@ -54,6 +57,8 @@ class UserBloc {
       StreamController.broadcast();
 
   Stream<List<ActivityModel>> get activityStream => activityController.stream;
+
+  Stream get dataBagStream => dataBagController.stream;
 
   Stream get audioStream => _audioController.stream;
 
@@ -147,15 +152,19 @@ class UserBloc {
   Future<DataBag> getUserData(
       {required String userId, required bool forceRefresh,required String startDate, required String endDate}) async {
     pp('$mm refreshUserData ... forceRefresh: $forceRefresh');
-
+    final sDate = DateTime.parse(startDate);
+    final eDate = DateTime.parse(endDate);
+    final numberOfDays = eDate.difference(sDate).inDays;
     //todo - for monitor, only their projects must show
     DataBag? bag = await cacheManager.getUserData(userId: userId);
     if (forceRefresh || bag.isEmpty()) {
-      bag = await zipBloc.getUserDataZippedFile(userId, startDate, endDate);
+      bag = await dataRefresher.manageRefresh(numberOfDays: numberOfDays,
+          organizationId: null, projectId: null, userId: userId);
     }
     pp('$mm filter bag by the dates ....');
     printDataBag(bag!);
     var mBag = filterBagContentsByDate(bag: bag!,  startDate: startDate, endDate: endDate);
+    dataBagController.sink.add(mBag);
     pp('$mm filtered bag ....');
     printDataBag(mBag);
     return mBag;

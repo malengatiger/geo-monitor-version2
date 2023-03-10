@@ -58,6 +58,9 @@ class ProjectListMobileState extends State<ProjectListMobile>
   var userTypeLabel = 'Unknown User Type';
   final mm = '🔵🔵🔵🔵 ProjectListMobile:  ';
   late StreamSubscription<String> killSubscription;
+  int numberOfDays = 30;
+  bool sortedByName = true;
+  bool openProjectActions = false;
 
   @override
   void initState() {
@@ -92,7 +95,6 @@ class ProjectListMobileState extends State<ProjectListMobile>
     });
   }
 
-  bool sortedByName = true;
   void _sort() {
     if (sortedByName) {
       _sortByDate();
@@ -116,7 +118,7 @@ class ProjectListMobileState extends State<ProjectListMobile>
       setState(() {});
     }
   }
-  int numberOfDays = 7;
+
   void _getUser() async {
     setState(() {
       isBusy = true;
@@ -206,7 +208,6 @@ class ProjectListMobileState extends State<ProjectListMobile>
     }
   }
 
-  bool openProjectActions = false;
   void _navigateToDetail(Project? p) {
     if (user!.userType == UserType.fieldMonitor) {
       pp('$mm Field Monitors not allowed to edit or create a project');

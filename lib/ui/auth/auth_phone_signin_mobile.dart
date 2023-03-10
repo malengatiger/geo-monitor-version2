@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:geo_monitor/library/api/prefs_og.dart';
 import 'package:geo_monitor/library/bloc/zip_bloc.dart';
@@ -53,8 +54,12 @@ class AuthPhoneSignInMobileState extends State<AuthPhoneSignInMobile>
         reverseDuration: const Duration(milliseconds: 2000),
         vsync: this);
     super.initState();
+    setDotEnv();
   }
 
+  void setDotEnv() async {
+    await dotenv.load(fileName: ".env");
+  }
   void _start() async {
     pp('$mm _start: ....... Verifying phone number ...');
     setState(() {

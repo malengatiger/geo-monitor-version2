@@ -33,6 +33,10 @@ class UserListMobileState extends State<UserListMobile>
   bool busy = false;
   var users = <User>[];
   final _key = GlobalKey<ScaffoldState>();
+  bool sortedByName = false;
+  bool _showPlusIcon = false;
+  bool _showEditorIcon = false;
+
   User? user;
   final mm =
       '${E.diamond}${E.diamond}${E.diamond}${E.diamond} UserListMobile: ';
@@ -60,8 +64,6 @@ class UserListMobileState extends State<UserListMobile>
     });
   }
 
-  bool _showPlusIcon = false;
-  bool _showEditorIcon = false;
   Future _getData(bool forceRefresh) async {
     setState(() {
       busy = true;
@@ -141,7 +143,6 @@ class UserListMobileState extends State<UserListMobile>
             child: SchedulerMobile(user)));
   }
 
-  bool sortedByName = false;
   void navigateToUserEdit(User? user) async {
     if (user != null) {
       if (user!.userType == UserType.fieldMonitor) {

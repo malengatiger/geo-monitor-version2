@@ -1,33 +1,23 @@
 import 'dart:async';
 
 import 'package:animated_splash_screen/animated_splash_screen.dart';
-import 'package:camera/camera.dart';
 import 'package:firebase_auth/firebase_auth.dart' as fb;
 import 'package:firebase_core/firebase_core.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:geo_monitor/library/auth/app_auth.dart';
 import 'package:geo_monitor/library/functions.dart';
 import 'package:geo_monitor/splash/splash_page.dart';
 import 'package:geo_monitor/ui/dashboard/dashboard_main.dart';
 import 'package:geo_monitor/ui/intro/intro_main.dart';
 import 'package:get_storage/get_storage.dart';
-import 'package:hive_flutter/adapters.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:universal_platform/universal_platform.dart';
 
 import 'firebase_options.dart';
 import 'library/api/prefs_og.dart';
 import 'library/bloc/fcm_bloc.dart';
-import 'library/bloc/geo_uploader.dart';
-import 'library/bloc/organization_data_refresh.dart';
 import 'library/bloc/theme_bloc.dart';
-import 'library/cache_manager.dart';
 import 'library/emojis.dart';
-import 'library/geofence/geofencer_two.dart';
-import 'library/ui/camera/video_handler_two.dart';
 
 int themeIndex = 0;
 late FirebaseApp firebaseApp;
@@ -59,7 +49,7 @@ void main() async {
       await fb.FirebaseAuth.instance.signOut();
       fbAuthedUser = null;
     }
-    cameras = await availableCameras();
+    //cameras = await availableCameras();
   }
 
   await SystemChrome.setPreferredOrientations([
@@ -85,8 +75,8 @@ class GeoApp extends StatelessWidget {
           stream: themeBloc.themeStream,
           builder: (_, snapshot) {
             if (snapshot.hasData) {
-              pp('\n\n${E.check}${E.check}${E.check}${E.check}${E.check} '
-                  'main: theme index has changed to ${snapshot.data}\n\n');
+              pp('${E.check}${E.check}${E.check}${E.check}${E.check} '
+                  'main: theme index has changed to ${snapshot.data}');
               themeIndex = snapshot.data!;
             }
             return MaterialApp(
@@ -116,61 +106,6 @@ class GeoApp extends StatelessWidget {
   }
 }
 late StreamSubscription killSubscriptionFCM;
-
-Future<void> initializeGeoMonitor() async {
-  pp('$mx _initializeGeoMonitor: ... GET CACHED SETTINGS; set themeIndex .............. ');
-  var settings = await prefsOGx.getSettings();
-  if (settings != null) {
-    themeIndex = settings.themeIndex!;
-    themeBloc.themeStreamController.sink.add(settings.themeIndex!);
-  }
-
-  if (fbAuthedUser != null) {
-    pp('$mx _initializeGeoMonitor: Firebase user is OK, checking cached user ...');
-    var user = await prefsOGx.getUser();
-    if (user == null) {
-      pp('\n\n$mx no cached user found, will set fbAuthedUser to null ...');
-      fbAuthedUser = null;
-      //await fb.FirebaseAuth.instance.signOut();
-    } else {
-      pp('$mx _initializeGeoMonitor: GeoMonitor user is OK');
-    }
-  } else {
-    pp('$mx Firebase has no current user!');
-  }
-  pp('$mx _initializeGeoMonitor: THEME: themeIndex up top is: $themeIndex ');
-  //pp('THEME: user up top is: ${user!.name}');
-  await dotenv.load(fileName: ".env");
-  pp('$mx $heartBlue DotEnv has been loaded');
-
-  await Hive.initFlutter(hiveName);
-  await cacheManager.initialize(forceInitialization: false);
-
-  pp('$mx ${E.heartGreen}${E.heartGreen}}${E.heartGreen} '
-      '_initializeGeoMonitor: Hive initialized and boxCollection set up');
-
-  //APNS - Key ID:F9S83G3AX4
-  FirebaseMessaging.instance.requestPermission();
-  await AppAuth.listenToFirebaseAuthentication();
-
-  pp('\n$mx _buildGeofences starting ........................');
-  theGreatGeofencer.buildGeofences();
-
-  pp('$mx fcm initialization starting ........................');
-  fcmBloc.initialize();
-
-  pp('$mx manageMediaUploads starting ........................');
-  geoUploader.manageMediaUploads();
-
-  pp('$mx organizationDataRefresh starting ........................');
-
-  if (settings != null) {
-    organizationDataRefresh.startRefresh(settings.numberOfDays!);
-    pp('\n\n$mx ${E.heartGreen}${E.heartGreen}}${E.heartGreen} '
-        '_initializeGeoMonitor: App Settings are 🍎${settings.toJson()}🍎\n\n');
-  }
-}
-
 
 void showKillDialog({required String message, required BuildContext context}) {
   showDialog(

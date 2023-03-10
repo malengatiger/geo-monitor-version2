@@ -251,9 +251,6 @@ class ProjectDashboardMobileState extends State<ProjectDashboardMobile>
       typePolygons = 4,
       typeSchedules = 5;
 
-  // bool _showProjectChooser = false;
-  // bool _showProjectSelected = false;
-
   Project? selectedProject;
 
   @override
