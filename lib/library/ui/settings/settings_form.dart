@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:geo_monitor/library/bloc/data_refresher.dart';
 import 'package:geo_monitor/library/data/settings_model.dart';
 import 'package:uuid/uuid.dart';
 
@@ -10,7 +11,6 @@ import '../../data/project.dart';
 import '../../data/user.dart';
 import '../../functions.dart';
 import '../../generic_functions.dart';
-import '../../project_selector.dart';
 
 class SettingsForm extends StatefulWidget {
   const SettingsForm({Key? key, required this.padding}) : super(key: key);
@@ -63,7 +63,7 @@ class _SettingsFormState extends State<SettingsForm> {
     if (settingsModel != null) {
       if (settingsModel!.activityStreamHours == null ||
           settingsModel!.activityStreamHours == 0) {
-        settingsModel!.activityStreamHours = 18;
+        settingsModel!.activityStreamHours = 24;
         await prefsOGx.saveSettings(settingsModel!);
       }
     }
@@ -77,7 +77,9 @@ class _SettingsFormState extends State<SettingsForm> {
         created: DateTime.now().toUtc().toIso8601String(),
         organizationId: user!.organizationId!,
         projectId: null,
-        activityStreamHours: 24, numberOfDays: 7);
+        activityStreamHours: 24,
+        numberOfDays: 7,
+        locale: 'en');
 
     currentThemeIndex = settingsModel!.themeIndex!;
     distController.text = '${settingsModel?.distanceFromProject}';
@@ -113,15 +115,24 @@ class _SettingsFormState extends State<SettingsForm> {
           'currentThemeIndex: $currentThemeIndex 🔆🔆🔆 and date: $date} 🔆 stream hours: ${activityController.value.text}');
       var len = int.parse(videoController.value.text);
       if (len > 60) {
-        showToast(message: 'The maximum video length should be 60 seconds or less',
+        showToast(
+            message: 'The maximum video length should be 60 seconds or less',
             context: context);
         return;
       }
       if (len < 5) {
-        showToast(message: 'The minimum video length should be 5 seconds', context: context);
+        showToast(
+            message:
+                'The minimum video length should not be less than 5 seconds',
+            context: context);
+        return;
+      }
+      if (selectedLocale == null) {
+        showToast(message: 'Please select language', context: context);
         return;
       }
       settingsModel = SettingsModel(
+        locale: selectedLocale.toString(),
         distanceFromProject: int.parse(distController.value.text),
         photoSize: groupValue,
         maxVideoLengthInSeconds: int.parse(videoController.value.text),
@@ -136,10 +147,13 @@ class _SettingsFormState extends State<SettingsForm> {
       );
 
       pp('🌸 🌸 🌸 🌸 🌸 ... about to save settings: ${settingsModel!.toJson()}');
-      if (settingsModel!.projectId == null) {
-        await prefsOGx.saveSettings(settingsModel!);
-        themeBloc.themeStreamController.sink.add(settingsModel!.themeIndex!);
-      }
+
+      await prefsOGx.saveSettings(settingsModel!);
+      Locale newLocale = Locale(settingsModel!.locale!);
+      final m = LocaleAndTheme(
+          themeIndex: settingsModel!.themeIndex!, locale: newLocale);
+      themeBloc.themeStreamController.sink.add(m);
+
       await cacheManager.addSettings(settings: settingsModel!);
       await _sendSettings();
     }
@@ -160,6 +174,16 @@ class _SettingsFormState extends State<SettingsForm> {
     try {
       var s = await DataAPI.addSettings(settingsModel!);
       pp('\n\n🔵🔵🔵 settings sent to database: ${s.toJson()}');
+      if (s.projectId == null) {
+        await prefsOGx.saveSettings(s);
+        themeBloc.changeToTheme(s.themeIndex!);
+        //todo - do something with new settings ....
+        dataRefresher.manageRefresh(
+            numberOfDays: null,
+            organizationId: s.organizationId,
+            projectId: null,
+            userId: null);
+      }
     } catch (e) {
       pp(e);
       if (mounted) {
@@ -193,15 +217,52 @@ class _SettingsFormState extends State<SettingsForm> {
     });
   }
 
-  Project? project;
-  void onProjectSelected(Project p1) {
-    setState(() {
-      project = p1;
-    });
-  }
+  Locale? selectedLocale;
 
   @override
   Widget build(BuildContext context) {
+    var localeText = 'English';
+    if (selectedLocale != null) {
+      switch (selectedLocale.toString()) {
+        case 'en':
+          localeText = 'English';
+          break;
+        case 'af':
+          localeText = 'Afrikaans';
+          break;
+        case 'fr':
+          localeText = 'French';
+          break;
+        case 'pt':
+          localeText = 'Portuguese';
+          break;
+        case 'es':
+          localeText = 'Spanish';
+          break;
+        case 'zu':
+          localeText = 'Zulu';
+          break;
+        case 'nso':
+          localeText = 'Sepedi';
+          break;
+        case 'ts':
+          localeText = 'Tsonga';
+          break;
+        case 'xh':
+          localeText = 'Xhosa';
+          break;
+
+        case 'st':
+          localeText = 'Sotho';
+          break;
+        case 'ig':
+          localeText = 'Ingala';
+          break;
+        case 'sw':
+          localeText = 'Swahili';
+          break;
+      }
+    }
     return Card(
       elevation: 4,
       shape: getRoundedBorder(radius: 16),
@@ -410,7 +471,8 @@ class _SettingsFormState extends State<SettingsForm> {
                         return null;
                       },
                       decoration: InputDecoration(
-                        hintText: 'Enter the number of days your dashboard must show',
+                        hintText:
+                            'Enter the number of days your dashboard must show',
                         label: Text(
                           'Number of Dashboard Days',
                           style: myTextStyleSmall(context),
@@ -465,23 +527,32 @@ class _SettingsFormState extends State<SettingsForm> {
                     children: [
                       Flexible(
                         child: Text(
-                          'Select project only if these setting are for a single project. '
-                          'Otherwise, the settings are for the entire organization',
+                          'Select language ',
                           style: myTextStyleSmall(context),
                         ),
                       ),
+                      const SizedBox(
+                        width: 16,
+                      ),
+                      selectedLocale == null
+                          ? const Text('No language')
+                          : Text(localeText),
                     ],
                   ),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
-                      ProjectSelector(onSelected: onSelected),
+                      LocaleChooser(onSelected: (locale) {
+                        pp('✅✅✅ form received locale: $locale - will set state}');
+                        setState(() {
+                          selectedLocale = locale;
+                        });
+                      }),
                     ],
                   ),
                   const SizedBox(
                     height: 24,
                   ),
-
                   busyWritingToDB
                       ? const SizedBox(
                           height: 20,
@@ -499,6 +570,40 @@ class _SettingsFormState extends State<SettingsForm> {
         ),
       ),
     );
+  }
+}
+
+class LocaleChooser extends StatelessWidget {
+  const LocaleChooser({Key? key, required this.onSelected}) : super(key: key);
+
+  final Function(Locale) onSelected;
+
+  @override
+  Widget build(BuildContext context) {
+    return DropdownButton<Locale>(
+        hint: const Text('Please select language'),
+        items: const [
+          DropdownMenuItem(value: Locale('en'), child: Text('English')),
+          DropdownMenuItem(value: Locale('fr'), child: Text('French')),
+          DropdownMenuItem(value: Locale('pt'), child: Text('Portuguese')),
+          DropdownMenuItem(value: Locale('ig'), child: Text('Ingala')),
+          DropdownMenuItem(value: Locale('nso'), child: Text('Sepedi')),
+          DropdownMenuItem(value: Locale('st'), child: Text('Sotho')),
+          DropdownMenuItem(value: Locale('es'), child: Text('Spanish')),
+          DropdownMenuItem(value: Locale('sw'), child: Text('Swahili')),
+          DropdownMenuItem(value: Locale('ts'), child: Text('Tsonga')),
+          DropdownMenuItem(value: Locale('xh'), child: Text('Xhosa')),
+          DropdownMenuItem(value: Locale('zu'), child: Text('Zulu')),
+        ],
+        onChanged: onChanged);
+  }
+
+  void onChanged(Locale? locale) {
+    pp('LocaleChooser 🌀🌀🌀🌀:onChanged: selected locale: '
+        '${locale.toString()}');
+    if (locale != null) {
+      onSelected(locale);
+    }
   }
 }
 

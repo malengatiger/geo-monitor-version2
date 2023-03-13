@@ -17,7 +17,7 @@ class ActivityModelAdapter extends TypeAdapter<ActivityModel> {
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
     return ActivityModel(
-      activityTypeId: fields[0] as String?,
+      activityModelId: fields[0] as String?,
       activityType: fields[1] as ActivityType?,
       date: fields[2] as String?,
       userId: fields[3] as String?,
@@ -46,7 +46,7 @@ class ActivityModelAdapter extends TypeAdapter<ActivityModel> {
     writer
       ..writeByte(21)
       ..writeByte(0)
-      ..write(obj.activityTypeId)
+      ..write(obj.activityModelId)
       ..writeByte(1)
       ..write(obj.activityType)
       ..writeByte(2)

@@ -173,8 +173,9 @@ class AuthEmailRegistrationPortraitState
     var mSettings = await DataAPI.addSettings(SettingsModel(
         distanceFromProject: 500,
         photoSize: 0,
-        maxVideoLengthInSeconds: 15,
-        maxAudioLengthInMinutes: 30,
+        locale: 'en',
+        maxVideoLengthInSeconds: 20,
+        maxAudioLengthInMinutes: 60,
         themeIndex: 0,
         settingsId: const Uuid().v4(),
         created: DateTime.now().toUtc().toIso8601String(),

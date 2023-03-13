@@ -1,6 +1,8 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:geo_monitor/library/data/location_response.dart';
+import 'package:geo_monitor/library/ui/maps/location_response_map.dart';
 import 'package:geo_monitor/library/ui/schedule/scheduler_mobile.dart';
 import 'package:geo_monitor/library/users/kill_user_page.dart';
 import 'package:geo_monitor/library/users/list/user_list_card.dart';
@@ -54,15 +56,23 @@ class UserListMobileState extends State<UserListMobile>
   }
 
   late StreamSubscription<User> _streamSubscription;
+  late StreamSubscription<LocationResponse> _locationResponseSubscription;
+
   void _listen() {
     _streamSubscription = fcmBloc.userStream.listen((User user) {
       pp('$mm new user just arrived: ${user.toJson()}');
-
       if (mounted) {
         _getData(false);
       }
     });
+    _locationResponseSubscription = fcmBloc.locationResponseStream.listen((LocationResponse response) {
+      pp('$mm LocationResponse just arrived: ${response.toJson()}');
+      if (mounted) {
+        navigateToLocationResponse(response);
+      }
+    });
   }
+
 
   Future _getData(bool forceRefresh) async {
     setState(() {
@@ -96,7 +106,18 @@ class UserListMobileState extends State<UserListMobile>
   void dispose() {
     _animationController.dispose();
     _streamSubscription.cancel();
+    _locationResponseSubscription.cancel();
     super.dispose();
+  }
+
+  void navigateToLocationResponse(LocationResponse response) {
+    Navigator.push(
+        context,
+        PageTransition(
+            type: PageTransitionType.fade,
+            alignment: Alignment.topLeft,
+            duration: const Duration(seconds: 1),
+            child: LocationResponseMap(locationResponse: response)));
   }
 
   void navigateToUserDashboard(User user) {
@@ -262,59 +283,67 @@ class UserListMobileState extends State<UserListMobile>
                       : const SizedBox(),
                 ],
         ),
-        body: busy
-            ? const Center(
-                child: SizedBox(
-                  width: 16,
-                  height: 16,
-                  child: CircularProgressIndicator(
-                    strokeWidth: 2,
-                    backgroundColor: Colors.pink,
+        body: Stack(
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                children: [
+                  const SizedBox(
+                    height: 24,
+                  ),
+                  user == null? const SizedBox(): Expanded(
+                    child: UserListCard(
+                      amInLandscape: true,
+                      users: users,
+                      avatarRadius: 20,
+                      deviceUser: user!,
+                      navigateToLocationRequest: (mUser) {
+                        _sendLocationRequest(mUser);
+                      },
+                      navigateToPhone: (mUser) {
+                        navigateToPhone(mUser);
+                      },
+                      navigateToMessaging: (user) {
+                        navigateToMessaging(user);
+                      },
+                      navigateToUserDashboard: (user) {
+                        navigateToUserDashboard(user);
+                      },
+                      navigateToUserEdit: (user) {
+                        navigateToUserEdit(user);
+                      },
+                      navigateToScheduler: (user) {
+                        navigateToScheduler(user);
+                      },
+                      navigateToKillPage: (user) {
+                        navigateToKillPage(user);
+                      },
+                      badgeTapped: () {
+                        _sort();
+                      },
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            busy? const Center(
+              child: Card(
+                child: Padding(
+                  padding: EdgeInsets.all(20.0),
+                  child: SizedBox(
+                    width: 16,
+                    height: 16,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 4,
+                      backgroundColor: Colors.pink,
+                    ),
                   ),
                 ),
-              )
-            : Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Column(
-                  children: [
-                    const SizedBox(
-                      height: 24,
-                    ),
-                    Expanded(
-                      child: UserListCard(
-                        amInLandscape: true,
-                        users: users,
-                        avatarRadius: 20,
-                        deviceUser: user!,
-                        navigateToLocationRequest: (mUser) {
-                          _sendLocationRequest(mUser);
-                        },
-                        navigateToPhone: (mUser) {
-                          navigateToPhone(mUser);
-                        },
-                        navigateToMessaging: (user) {
-                          navigateToMessaging(user);
-                        },
-                        navigateToUserDashboard: (user) {
-                          navigateToUserDashboard(user);
-                        },
-                        navigateToUserEdit: (user) {
-                          navigateToUserEdit(user);
-                        },
-                        navigateToScheduler: (user) {
-                          navigateToScheduler(user);
-                        },
-                        navigateToKillPage: (user) {
-                          navigateToKillPage(user);
-                        },
-                        badgeTapped: () {
-                          _sort();
-                        },
-                      ),
-                    ),
-                  ],
-                ),
               ),
+            ) : const SizedBox(),
+          ],
+        ),
       ),
     );
   }

@@ -38,6 +38,7 @@ import '../data/questionnaire.dart';
 import '../data/rating.dart';
 import '../data/section.dart';
 import '../data/settings_model.dart';
+import '../data/translation_bag.dart';
 import '../data/user.dart';
 import '../data/video.dart';
 import '../data/weather/daily_forecast.dart';
@@ -214,6 +215,23 @@ class DataAPI {
       }
       pp('🌿 🌿 🌿 getMonitorFieldMonitorSchedules returned: 🌿 ${mList.length}');
       await cacheManager.addFieldMonitorSchedules(schedules: mList);
+      return mList;
+    } catch (e) {
+      pp(e);
+      rethrow;
+    }
+  }
+
+  static Future<List<TranslationBag>> getTranslationBags() async {
+    String? mURL = await getUrl();
+    List<TranslationBag> mList = [];
+    try {
+      List result = await _sendHttpGET(
+          '${mURL!}getTranslationBags');
+      for (var element in result) {
+        mList.add(TranslationBag.fromJson(element));
+      }
+      pp('🌿 🌿 🌿 getTranslationBags returned: 🌿 ${mList.length}');
       return mList;
     } catch (e) {
       pp(e);

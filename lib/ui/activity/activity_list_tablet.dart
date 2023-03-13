@@ -74,6 +74,8 @@ class _ActivityListTabletState extends State<ActivityListTablet>
   var models = <ActivityModel>[];
 
   late StreamSubscription<ActivityModel> subscription;
+  late StreamSubscription<SettingsModel> settingsSubscriptionFCM;
+
   User? me;
   bool busy = true;
   final mm = '😎😎😎😎😎😎 ActivityListTablet: ';
@@ -165,8 +167,17 @@ class _ActivityListTabletState extends State<ActivityListTablet>
   void _listenToFCM() async {
     pp('$mm ... _listenToFCM activityStream ...');
 
+    settingsSubscriptionFCM =
+        fcmBloc.settingsStream.listen((SettingsModel event) {
+          _getData(false);
+          if (mounted) {
+            pp('$mm activitySubscriptionFCM: DOING NOTHING!!!!!!!!!!!!!!');
+            setState(() {});
+          }
+        });
+
     subscription = fcmBloc.activityStream.listen((ActivityModel model) {
-      pp('\n\n$mm activityStream delivered activity data ... '
+      pp('$mm activityStream delivered activity data ... '
           'current models: ${models.length}\n\n');
 
       if (model.geofenceEvent != null) {

@@ -69,6 +69,8 @@ class ActivityListMobileState extends State<ActivityListMobile>
   var models = <ActivityModel>[];
   late AnimationController _animationController;
   late StreamSubscription<ActivityModel> subscription;
+  late StreamSubscription<SettingsModel> settingsSubscriptionFCM;
+
   static const userActive = 0, projectActive = 1, orgActive = 2;
   late int activeType;
   User? user;
@@ -152,6 +154,15 @@ class ActivityListMobileState extends State<ActivityListMobile>
 
   void _listenToFCM() async {
     pp('$mm ... _listenToFCM activityStream ...');
+
+    settingsSubscriptionFCM =
+        fcmBloc.settingsStream.listen((SettingsModel event) {
+      _getData(false);
+      if (mounted) {
+        pp('$mm activitySubscriptionFCM: DOING NOTHING!!!!!!!!!!!!!!');
+        setState(() {});
+      }
+    });
 
     subscription = fcmBloc.activityStream.listen((ActivityModel model) {
       pp('$mm activityStream delivered activity data ... ${model.date!}');
@@ -269,7 +280,7 @@ class ActivityListMobileState extends State<ActivityListMobile>
     }
     var title = 'Activity';
     var name = '';
-    switch(activeType) {
+    switch (activeType) {
       case orgActive:
         title = 'Organization Activity';
         name = '';
@@ -304,11 +315,13 @@ class ActivityListMobileState extends State<ActivityListMobile>
             preferredSize: const Size.fromHeight(48),
             child: Column(
               children: [
-
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Text(name, style: myTextStyleLargePrimaryColor(context),),
+                    Text(
+                      name,
+                      style: myTextStyleLargePrimaryColor(context),
+                    ),
                   ],
                 ),
                 const SizedBox(

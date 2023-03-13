@@ -220,7 +220,7 @@ class ProjectLocationHandlerState extends State<ProjectLocationHandler>
       } catch (e) {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text('Project Position failed: $e')));
+              SnackBar(content: Text('Project Location failed: $e')));
         }
       }
 

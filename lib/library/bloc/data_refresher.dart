@@ -84,9 +84,14 @@ class DataRefresher {
     }
 
     pp('$xx Done with org data, refreshing projects and users');
-    await _startProjectsRefresh(organizationId: organizationId!);
-    await _startUsersRefresh(organizationId: organizationId);
-    pp('$xx Done with refresh of projects and users');
+    var projects = await _startProjectsRefresh(organizationId: organizationId!);
+    var users = await _startUsersRefresh(organizationId: organizationId);
+    bag!.projects = projects;
+    bag.users = users;
+
+    organizationBloc.dataBagController.sink.add(bag);
+
+    pp('\n$xx Done with refresh of projects and users');
     return bag;
   }
 

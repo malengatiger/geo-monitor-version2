@@ -193,7 +193,8 @@ class AuthPhoneSignInMobileState extends State<AuthPhoneSignInMobile>
           await prefsOGx.saveSettings(SettingsModel(
               distanceFromProject: 500,
               photoSize: 0,
-              maxVideoLengthInSeconds: 15,
+              locale: 'en',
+              maxVideoLengthInSeconds: 20,
               maxAudioLengthInMinutes: 30,
               themeIndex: 0,
               settingsId: const Uuid().v4(),

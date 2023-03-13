@@ -469,7 +469,7 @@ class ProjectListMobileState extends State<ProjectListMobile>
     menuItems.add(
       FocusedMenuItem(
           backgroundColor: Theme.of(context).primaryColor,
-          title: Text('Create Audio', style: myTextStyleSmallBlack(context)),
+          title: Text('Create Audio Clip', style: myTextStyleSmallBlack(context)),
           trailingIcon: Icon(
             Icons.camera,
             color: Theme.of(context).primaryColor,

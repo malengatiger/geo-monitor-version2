@@ -93,9 +93,15 @@
 	<false/>
 	<key>io.flutter.embedded_views_preview</key>
 	<true/>
-    <key>BGTaskSchedulerPermittedIdentifiers</key>
-    <array>
-        <string>dev.flutter.background.refresh</string>
-    </array>
+	<key>CFBundleLocalizations</key>
+	<array>
+		<string>en</string>
+		<string>fr</string>
+		<string>zh_CN</string>
+	</array>
+	<key>BGTaskSchedulerPermittedIdentifiers</key>
+	<array>
+		<string>dev.flutter.background.refresh</string>
+	</array>
 </dict>
 </plist>

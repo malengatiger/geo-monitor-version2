@@ -45,7 +45,7 @@ class ProjectEditorState extends State<ProjectEditor> {
     return Scaffold(
       key: _key,
       appBar: AppBar(
-        title: const Text('Project Editor aaaa'),
+        title: const Text('Project Editor'),
         backgroundColor: Colors.purple[300],
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(120),

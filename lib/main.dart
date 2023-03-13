@@ -5,6 +5,8 @@ import 'package:firebase_auth/firebase_auth.dart' as fb;
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:geo_monitor/library/data/settings_model.dart';
 import 'package:geo_monitor/library/functions.dart';
 import 'package:geo_monitor/splash/splash_page.dart';
 import 'package:geo_monitor/ui/dashboard/dashboard_main.dart';
@@ -14,12 +16,15 @@ import 'package:page_transition/page_transition.dart';
 import 'package:universal_platform/universal_platform.dart';
 
 import 'firebase_options.dart';
+import 'generated/l10n.dart';
 import 'library/api/prefs_og.dart';
 import 'library/bloc/fcm_bloc.dart';
 import 'library/bloc/theme_bloc.dart';
 import 'library/emojis.dart';
 
 int themeIndex = 0;
+var locale = const Locale('en');
+SettingsModel? settings;
 late FirebaseApp firebaseApp;
 fb.User? fbAuthedUser;
 final mx =
@@ -34,7 +39,12 @@ void main() async {
   pp('$mx main: '
       ' Firebase App has been initialized: ${firebaseApp.name}, checking for authed current user');
   fbAuthedUser = fb.FirebaseAuth.instance.currentUser;
+  settings = await prefsOGx.getSettings();
+  if (settings != null) {
+    locale = Locale(settings!.locale!);
+  }
   await GetStorage.init(cacheName);
+
 
   /// check user auth status
   if (fbAuthedUser == null) {
@@ -66,20 +76,47 @@ class GeoApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Locale myLocale = Localizations.localeOf(context);
+    // pp('$mx 🌀🌀🌀🌀 Current Locale: $myLocale ...');
     return GestureDetector(
       onTap: () {
         pp('$mx 🌀🌀🌀🌀 Tap detected; should dismiss keyboard ...');
         FocusManager.instance.primaryFocus?.unfocus();
       },
-      child: StreamBuilder(
-          stream: themeBloc.themeStream,
+      child: StreamBuilder<LocaleAndTheme>(
+          stream: themeBloc.localeAndThemeStream,
           builder: (_, snapshot) {
             if (snapshot.hasData) {
               pp('${E.check}${E.check}${E.check}${E.check}${E.check} '
-                  'main: theme index has changed to ${snapshot.data}');
-              themeIndex = snapshot.data!;
+                  'main: theme index has changed to ${snapshot.data!.themeIndex}'
+                  '  and locale is ${snapshot.data!.locale.toString()}');
+              themeIndex = snapshot.data!.themeIndex;
+              locale = snapshot.data!.locale;
             }
             return MaterialApp(
+              localizationsDelegates:  const [
+                // ... app-specific localization delegate[s] here
+                GlobalMaterialLocalizations.delegate,
+                GlobalWidgetsLocalizations.delegate,
+                GlobalCupertinoLocalizations.delegate,
+                AppLocalizationDelegate(),
+              ],
+              supportedLocales: const [
+                Locale('en'), // English
+                Locale('fr'), // French
+                Locale('pt'), // Portuguese
+                Locale('es'), // Spanish
+                Locale('af'), // Afrikaans
+                Locale('nso'), // Sepedi
+                Locale('st'), // Sotho
+                Locale('sw'), // Swahili
+                Locale('ts'), // Tsonga
+                Locale('xh'), // Xhosa
+                Locale('zu'), // Zulu
+                // Locale.fromSubtags(languageCode: 'zh'), // Chinese *See Advanced Locales below*
+                // ... other locales the app supports
+              ],
+              locale: locale,
               scaffoldMessengerKey: rootScaffoldMessengerKey,
               debugShowCheckedModeBanner: false,
               title: 'GeoMonitor',

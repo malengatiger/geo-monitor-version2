@@ -3,6 +3,7 @@ import 'dart:math';
 
 import 'package:flex_color_scheme/flex_color_scheme.dart';
 import 'package:flutter/material.dart';
+import 'package:geo_monitor/library/data/settings_model.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import '../api/prefs_og.dart';
@@ -17,23 +18,28 @@ class ThemeBloc {
     _initialize();
   }
 
-  final StreamController<int> themeStreamController =
+  final StreamController<LocaleAndTheme> themeStreamController =
       StreamController.broadcast();
-  Stream<int> get themeStream => themeStreamController.stream;
+
+  Stream<LocaleAndTheme> get localeAndThemeStream => themeStreamController.stream;
 
   final _rand = Random(DateTime.now().millisecondsSinceEpoch);
-
   int _themeIndex = 0;
-
   int get themeIndex => _themeIndex;
+  SettingsModel? settings;
 
   _initialize() async {
-    var settings = await prefsOGx.getSettings();
+    settings = await prefsOGx.getSettings();
     if (settings != null) {
-      pp('$mm ThemeBloc: initialize:: adding index to stream ....theme index: ${settings.themeIndex}');
-      themeStreamController.sink.add(settings.themeIndex!);
+      pp('$mm ThemeBloc: initialize:: adding index to stream ....theme index: ${settings!.themeIndex}');
+      Locale newLocale = Locale(settings!.locale!);
+      final m = LocaleAndTheme(themeIndex: settings!.themeIndex!,
+          locale: newLocale);
+      themeStreamController.sink.add(m);
     } else {
-      themeStreamController.sink.add(0);
+      Locale newLocale = Locale(settings!.locale!);
+      final m = LocaleAndTheme(themeIndex: 0, locale: newLocale);
+      themeStreamController.sink.add(m);
     }
   }
 
@@ -41,31 +47,44 @@ class ThemeBloc {
     return SchemeUtil.getTheme(themeIndex: index);
   }
 
-  Future<int> changeToRandomTheme() async {
+  Future<void> changeToRandomTheme() async {
     _themeIndex = _rand.nextInt(SchemeUtil.getThemeCount() - 1);
     pp('\n\n$mm changing to theme index: $_themeIndex');
     pp('$mm _setStream: setting stream .... to theme index: $_themeIndex');
-    var settings = await prefsOGx.getSettings();
+    settings ??= await prefsOGx.getSettings();
     if (settings != null) {
-      settings.themeIndex = _themeIndex;
-      await prefsOGx.saveSettings(settings);
+      settings!.themeIndex = _themeIndex;
+      await prefsOGx.saveSettings(settings!);
     }
-    themeStreamController.sink.add(_themeIndex);
-    return _themeIndex;
+    Locale newLocale = Locale(settings!.locale!);
+    final m = LocaleAndTheme(themeIndex: settings!.themeIndex!,
+        locale: newLocale);
+    themeStreamController.sink.add(m);
   }
 
-  Future<int> changeToTheme(int index) async {
+  Future<void> changeToTheme(int index) async {
     pp('\n\n$mm changing to theme index: $index, adding index to stream');
-    themeStreamController.sink.add(index);
+    settings = await prefsOGx.getSettings();
+    await _dance(index, settings!.locale!, settings!);
+    pp('$mm changed theme index: $index, locale: ${settings!.locale} update current cached settings');
+  }
 
-    pp('$mm changing to theme index: $index, update current cached settings');
+  Future<void> changeToLocale(String locale) async {
+    pp('\n\n$mm changing to locale: $locale, adding locale to stream');
     var settings = await prefsOGx.getSettings();
-    if (settings != null) {
-      settings.themeIndex = index;
-      await prefsOGx.saveSettings(settings);
-    }
+    await _dance(settings!.themeIndex!, locale, settings);
+    pp('$mm changing locale: ${settings!.locale} updated cached settings');
+  }
 
-    return index;
+  Future<void> _dance(int index, String locale, SettingsModel settings) async {
+      settings.themeIndex = index;
+      settings.locale = locale;
+      await prefsOGx.saveSettings(settings);
+
+    Locale newLocale = Locale(settings.locale!);
+    final m = LocaleAndTheme(themeIndex: settings.themeIndex!,
+        locale: newLocale);
+    themeStreamController.sink.add(m);
   }
 
   int getThemeCount() {
@@ -350,4 +369,11 @@ class CustomTheme {
 // If you do not have a themeMode switch, uncomment this line
 // to let the device system mode control the theme mode:
 // themeMode: ThemeMode.system,
+}
+
+class LocaleAndTheme {
+  late int themeIndex;
+  late Locale locale;
+
+  LocaleAndTheme({required this.themeIndex, required this.locale});
 }

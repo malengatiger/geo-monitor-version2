@@ -76,6 +76,7 @@ class GeoActivityState extends State<GeoActivity>
   late StreamSubscription<GeofenceEvent> geofenceSubscriptionFCM;
   late StreamSubscription<ActivityModel> activitySubscriptionFCM;
 
+
   ScrollController listScrollController = ScrollController();
 
   final mm = '❇️❇️❇️❇️❇️ GeoActivityTablet: ';
@@ -97,6 +98,7 @@ class GeoActivityState extends State<GeoActivity>
     if (android || ios) {
       pp('$mm 🍎🍎 _listen to FCM message streams ... 🍎🍎 '
           'geofence stream via geofenceSubscriptionFCM...');
+
 
       activitySubscriptionFCM =
           fcmBloc.activityStream.listen((ActivityModel event) {

@@ -151,7 +151,7 @@ class ProjectDashboardTabletState extends State<ProjectDashboardTablet>
 
       activitySubscriptionFCM =
           fcmBloc.activityStream.listen((ActivityModel model) {
-        pp('\n\n$mm activityStream delivered activity data ... ${model.date!}\n\n');
+        pp('$mm activityStream delivered activity data ... ${model.date!}');
         // if (isActivityValid(model)) {
         //   models.insert(0, model);
         // }
@@ -170,7 +170,10 @@ class ProjectDashboardTabletState extends State<ProjectDashboardTablet>
 
       settingsSubscriptionFCM = fcmBloc.settingsStream.listen((settings) async {
         pp('$mm: 🍎🍎 settings arrived with themeIndex: ${settings.themeIndex}... 🍎🍎');
-        themeBloc.themeStreamController.sink.add(settings.themeIndex!);
+        Locale newLocale = Locale(settings!.locale!);
+        final m = LocaleAndTheme(themeIndex: settings!.themeIndex!,
+            locale: newLocale);
+        themeBloc.themeStreamController.sink.add(m);
         if (mounted) {
           setState(() {});
         }

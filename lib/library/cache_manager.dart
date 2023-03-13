@@ -44,7 +44,7 @@ import 'functions.dart';
 import 'generic_functions.dart';
 
 const stillWorking = 201, doneCaching = 200;
-const String hiveName = 'GeoHive5b';
+const String hiveName = 'GeoHive5c';
 CacheManager cacheManager = CacheManager._instance;
 
 class CacheManager {
@@ -70,13 +70,13 @@ class CacheManager {
   Box<MonitorReport>? _reportBox;
   Box<GeofenceEvent>? _geofenceEventBox;
   Box<ProjectPolygon>? _projectPolygonBox;
-  Box<Photo>? _failedPhotoBox;
-  Box<Video>? _failedVideoBox;
-  Box<FailedBag>? _failedBagBox;
+  // Box<Photo>? _failedPhotoBox;
+  // Box<Video>? _failedVideoBox;
+  // Box<FailedBag>? _failedBagBox;
   Box<Country>? _countryBox;
   Box<OrganizationRegistrationBag>? _registrationBox;
   Box<Audio>? _audioBox;
-  Box<FailedAudio>? _failedAudioBox;
+  // Box<FailedAudio>? _failedAudioBox;
   Box<Rating>? _ratingBox;
   Box<LocationResponse>? _locationResponseBox;
   Box<SettingsModel>? _settingsBox;
@@ -90,7 +90,7 @@ class CacheManager {
   Box<HourlyForecast>? _hourlyForecastBox;
 
   Box<ActivityModel>? _activityBox;
-  Box<ActivityModel>? _activityHistoryBox;
+  // Box<ActivityModel>? _activityHistoryBox;
   Box<ProjectSummary>? _summaryBox;
 
   bool _isInitialized = false;
@@ -100,7 +100,7 @@ class CacheManager {
     if (forceInitialization != null) {
       if (forceInitialization) {
         pp('\n\n$mm Setting up Hive');
-        await _clearAllBoxes();
+        await clearAllBoxes();
         await _doTheInitializationWork();
         return;
       }
@@ -112,13 +112,10 @@ class CacheManager {
     }
   }
 
-  Future _clearAllBoxes() async {
+  Future clearAllBoxes() async {
     pp('$mm clearing all Hive boxes ....');
-    _countryBox?.clear();
+    _assignmentBox?.clear();
     _registrationBox?.clear();
-    _failedBagBox?.clear();
-    _failedVideoBox?.clear();
-    _failedPhotoBox?.clear();
     _scheduleBox?.clear();
     _projectPolygonBox?.clear();
     _projectBox?.clear();
@@ -132,7 +129,7 @@ class CacheManager {
     _settingsBox?.clear();
     _conditionBox?.clear();
     _audioBox?.clear();
-    _failedAudioBox?.clear();
+    _activityBox?.clear();
     _ratingBox?.clear();
     _videoBox?.clear();
     _locationResponseBox?.clear();
@@ -190,15 +187,9 @@ class CacheManager {
         await Hive.openBox<ProjectPolygon>('projectPolygons');
 
     _assignmentBox = await Hive.openBox<ProjectAssignment>('assignments');
-
-    _failedPhotoBox = await Hive.openBox<Photo>('failedPhotos');
-    _failedVideoBox = await Hive.openBox<Video>('failedVideos');
-    _failedBagBox = await Hive.openBox<FailedBag>('failedBags');
-
     _registrationBox =
         await Hive.openBox<OrganizationRegistrationBag>('registrations');
     _audioBox = await Hive.openBox<Audio>('audios');
-    _failedAudioBox = await Hive.openBox<FailedAudio>('failedAudios');
     _ratingBox = await Hive.openBox<Rating>('ratings');
     _locationResponseBox =
         await Hive.openBox<LocationResponse>('locationResponses');
@@ -360,7 +351,7 @@ class CacheManager {
 
   Future addProjectSummary({required ProjectSummary summary}) async {
     var key = '${DateTime.parse(summary.projectId!)}_${summary.date!}';
-    await _summaryBox?.put(key, summary);
+    _summaryBox?.put(key, summary);
 
     pp('$mm ProjectSummary added to hive cache}');
   }
@@ -371,7 +362,7 @@ class CacheManager {
     var keys = _summaryBox?.keys;
     if (keys != null) {
       for (var key in keys) {
-        var summary = await _summaryBox?.get(key);
+        var summary = _summaryBox?.get(key);
         if (summary != null) {
           var sDate = DateTime.parse(startDate).millisecondsSinceEpoch;
           var eDate = DateTime.parse(endDate).millisecondsSinceEpoch;
@@ -410,7 +401,7 @@ class CacheManager {
       key =
           '${DateTime.parse(activity.date!).millisecondsSinceEpoch}_${activity.projectId}_${activity.userId}';
     }
-    await _activityBox?.put(key, activity);
+    _activityBox?.put(key, activity);
 
     pp('$mm ActivityModel added to local cache}');
   }
@@ -418,20 +409,11 @@ class CacheManager {
   Future addActivityModels({required List<ActivityModel> activities}) async {
     late String key;
     for (var activity in activities) {
-      if (activity.projectId == null) {
-        key =
-            '${DateTime.parse(activity.date!).millisecondsSinceEpoch}_${activity.userId}';
-      } else {
-        key =
-            '${DateTime.parse(activity.date!).millisecondsSinceEpoch}_${activity.projectId}_${activity.userId}';
-      }
-      //store in active list and historical box
-      await _activityBox?.put(key, activity);
-      await _activityHistoryBox?.put(key, activity);
+        key = '${activity.activityModelId}';
+      _activityBox?.put(key, activity);
     }
 
-    pp('$mm ${_activityBox?.length} ActivityModels added to local cache and history}');
-    pp('$mm ${_activityHistoryBox?.length} ActivityModels in history box');
+    pp('$mm ${_activityBox?.length} ActivityModels added to local cache}');
   }
 
   Future deleteActivityModels() async {
@@ -446,7 +428,7 @@ class CacheManager {
     var keys = _activityBox?.keys;
     if (keys != null) {
       for (var key in keys) {
-        var act = await _activityBox?.get(key);
+        var act = _activityBox?.get(key);
         if (act != null) {
           var actDate = DateTime.parse(act.date!);
           if (actDate.millisecondsSinceEpoch >=
@@ -467,7 +449,7 @@ class CacheManager {
     var keys = _activityBox?.keys;
     if (keys != null) {
       for (var key in keys) {
-        var act = await _activityBox?.get(key);
+        var act = _activityBox?.get(key);
         if (act != null) {
           var actDate = DateTime.parse(act.date!);
           if (actDate.millisecondsSinceEpoch >=
@@ -490,7 +472,7 @@ class CacheManager {
     var keys = _activityBox?.keys;
     if (keys != null) {
       for (var key in keys) {
-        var act = await _activityBox?.get(key);
+        var act = _activityBox?.get(key);
         if (act != null) {
           var actDate = DateTime.parse(act.date!);
           if (actDate.millisecondsSinceEpoch >=
@@ -511,7 +493,7 @@ class CacheManager {
     var keys = _activityBox?.keys;
     if (keys != null) {
       for (var key in keys) {
-        var act = await _activityBox?.get(key);
+        var act = _activityBox?.get(key);
         list.add(act!);
       }
     }
@@ -523,7 +505,7 @@ class CacheManager {
       {required LocationResponse locationResponse}) async {
     pp('$mm .... addLocationResponse .....');
     var key = '${locationResponse.userId}_${locationResponse.date}';
-    await _locationResponseBox?.put(key, locationResponse);
+    _locationResponseBox?.put(key, locationResponse);
 
     pp('$mm locationResponse added to local cache}');
   }
@@ -536,7 +518,7 @@ class CacheManager {
 
   Future addDailyForecast({required DailyForecast forecast}) async {
     var key = '${DateTime.now().millisecondsSinceEpoch}';
-    await _dailyForecastBox?.put(key, forecast);
+    _dailyForecastBox?.put(key, forecast);
 
     pp('$mm DailyForecast added to local cache}');
   }
@@ -549,7 +531,7 @@ class CacheManager {
 
   Future addHourlyForecast({required HourlyForecast forecast}) async {
     var key = '${DateTime.now().millisecondsSinceEpoch}';
-    await _hourlyForecastBox?.put(key, forecast);
+    _hourlyForecastBox?.put(key, forecast);
 
     pp('$mm HourlyForecast added to local cache}');
   }
@@ -565,7 +547,7 @@ class CacheManager {
 
   Future addProjectAssignment({required ProjectAssignment assignment}) async {
     var key = '${assignment.projectId}_${assignment.userId}_${assignment.date}';
-    await _assignmentBox?.put(key, assignment);
+    _assignmentBox?.put(key, assignment);
 
     pp('$mm ProjectAssignment added to local cache}');
   }
@@ -573,7 +555,7 @@ class CacheManager {
   Future addRegistration({required OrganizationRegistrationBag bag}) async {
     pp('$mm .... addRegistration .....');
     var key = '${bag.date}';
-    await _registrationBox?.put(key, bag);
+    _registrationBox?.put(key, bag);
 
     pp('$mm OrganizationRegistrationBag added to local cache: ${bag.organization!.name}');
   }
@@ -581,28 +563,28 @@ class CacheManager {
   Future addCondition({required Condition condition}) async {
     pp('$mm .... addCondition .....');
     var key = '${condition.conditionId}';
-    await _conditionBox?.put(key, condition);
+    _conditionBox?.put(key, condition);
 
     pp('$mm Condition added to local cache: ${condition.projectName}');
   }
 
   Future addAudioForUpload({required AudioForUpload audio}) async {
     var key = '${audio.project!.projectId!}_${audio.date}';
-    await _uploadAudioBox?.put(key, audio);
+    _uploadAudioBox?.put(key, audio);
 
     pp('$mm AudioForUpload added to local cache: ${audio.project!.name}');
   }
 
   Future addVideoForUpload({required VideoForUpload video}) async {
     var key = '${video.project!.projectId!}_${video.date}';
-    await _uploadVideoBox?.put(key, video);
+    _uploadVideoBox?.put(key, video);
 
     pp('$mm VideoForUpload added to local cache: ${video.project!.name}');
   }
 
   Future addPhotoForUpload({required PhotoForUpload photo}) async {
     var key = '${photo.project!.projectId!}_${photo.date}';
-    await _uploadPhotoBox?.put(key, photo);
+    _uploadPhotoBox?.put(key, photo);
 
     pp('$mm PhotoForUpload added to local cache: ${photo.project!.name}');
   }
@@ -627,14 +609,14 @@ class CacheManager {
       key = '$key${settings.projectId}';
     }
 
-    await _settingsBox?.put(key, settings);
+    _settingsBox?.put(key, settings);
 
     pp('$mm SettingsModel added to local cache: ${settings.organizationId}');
   }
 
   Future addRating({required Rating rating}) async {
     var key = '${rating.projectId}_${rating.ratingId}_${rating.created}';
-    await _ratingBox?.put(key, rating);
+    _ratingBox?.put(key, rating);
   }
 
   Future addRatings({required List<Rating> ratings}) async {
@@ -649,7 +631,7 @@ class CacheManager {
     var keys = _ratingBox?.keys;
     keys?.forEach((key) async {
       if (key.contains(projectId)) {
-        var rating = await _ratingBox?.get(key);
+        var rating = _ratingBox?.get(key);
         if (rating != null) {
           mList.add(rating);
         }
@@ -680,7 +662,7 @@ class CacheManager {
   Future addOrgMessage({required OrgMessage message}) async {
     pp('$mm .... addOrgMessage .....');
     var key = '${message.created}_${message.organizationId}';
-    await _orgMessageBox?.put(key, message);
+    _orgMessageBox?.put(key, message);
     pp('$mm OrgMessage added to local cache: ${message.projectName}');
   }
 
@@ -770,13 +752,13 @@ class CacheManager {
     if (keys != null) {
       for (var key in keys) {
         if (key.contains(projectId)) {
-          project = await _projectBox?.get(key);
+          project =  _projectBox?.get(key);
           break;
         }
       }
     }
     if (project != null) {
-      pp('$mm project found: ${project!.name}');
+      pp('$mm project found: ${project.name}');
     }
     return project;
   }
@@ -788,7 +770,7 @@ class CacheManager {
     if (keys != null) {
       for (var r in keys) {
         if (r.contains(userId)) {
-          var x = await _scheduleBox?.get(r);
+          var x = _scheduleBox?.get(r);
           schedules.add(x!);
         }
       }
@@ -804,7 +786,7 @@ class CacheManager {
 
     if (keys != null) {
       for (var key in keys) {
-        var m = await _scheduleBox!.get(key);
+        var m = _scheduleBox!.get(key);
         if (m != null) {
           list.add(m);
         }
@@ -821,7 +803,7 @@ class CacheManager {
 
     if (keys != null) {
       for (var key in keys) {
-        var mSettings = await _uploadAudioBox?.get(key);
+        var mSettings = _uploadAudioBox?.get(key);
         list.add(mSettings!);
       }
     }
@@ -837,7 +819,7 @@ class CacheManager {
 
     if (keys != null) {
       for (var key in keys) {
-        var video = await _uploadVideoBox?.get(key);
+        var video = _uploadVideoBox?.get(key);
         list.add(video!);
       }
     }
@@ -853,7 +835,7 @@ class CacheManager {
 
     if (keys != null) {
       for (var key in keys) {
-        var photo = await _uploadPhotoBox?.get(key);
+        var photo = _uploadPhotoBox?.get(key);
         list.add(photo!);
       }
     }
@@ -871,7 +853,7 @@ class CacheManager {
     if (keys != null) {
       // pp('$mm org settings search in cache ..........  🔵 keys: ${keys.length}');
       for (var key in keys) {
-        var mSettings = await _settingsBox?.get(key);
+        var mSettings = _settingsBox?.get(key);
         // pp('$mm org settings search in cache .......... mSettings:  😡 ${mSettings!.toJson()}');
         list.add(mSettings!);
       }
@@ -886,7 +868,7 @@ class CacheManager {
 
     if (keys != null) {
       for (var key in keys) {
-        var m = await _settingsBox!.get(key);
+        var m = _settingsBox!.get(key);
         if (m != null) {
           if (projectId == m.projectId) {
             list.add(m);
@@ -905,7 +887,7 @@ class CacheManager {
 
     if (keys != null) {
       for (var key in keys) {
-        var m = await _assignmentBox!.get(key);
+        var m = _assignmentBox!.get(key);
         if (m != null) {
           if (projectId == m.projectId) {
             list.add(m);
@@ -924,7 +906,7 @@ class CacheManager {
 
     if (keys != null) {
       for (var key in keys) {
-        var m = await _assignmentBox!.get(key);
+        var m = _assignmentBox!.get(key);
         if (m != null) {
           if (userId == m.userId) {
             list.add(m);
@@ -942,7 +924,7 @@ class CacheManager {
 
     if (keys != null) {
       for (var key in keys) {
-        var m = await _assignmentBox!.get(key);
+        var m = _assignmentBox!.get(key);
         if (m != null) {
           list.add(m);
         }
@@ -972,7 +954,7 @@ class CacheManager {
     if (keys != null) {
       for (var key in keys) {
         if (key.contains(userId)) {
-          var e = await _geofenceEventBox?.get(key);
+          var e = _geofenceEventBox?.get(key);
           mList.add(e!);
         }
       }
@@ -988,7 +970,7 @@ class CacheManager {
     if (keys != null) {
       for (var key in keys) {
         if (key.contains(projectPositionId)) {
-          var e = await _geofenceEventBox?.get(key);
+          var e = _geofenceEventBox?.get(key);
           mList.add(e!);
         }
       }
@@ -1095,7 +1077,7 @@ class CacheManager {
     // var keys = _photoBox?.keys;
     // if (keys != null) {
     //   for (var key in keys) {
-    //     var m = await _photoBox!.get(key);
+    //     var m = _photoBox!.get(key);
     //     if (m != null) {
     //       mList.add(m);
     //     }
@@ -1112,7 +1094,7 @@ class CacheManager {
     List<FieldMonitorSchedule> mList = [];
     if (keys != null) {
       for (var key in keys) {
-        var m = await _scheduleBox!.get(key);
+        var m = _scheduleBox!.get(key);
         if (m != null) {
           if (m.projectId == projectId) {
             mList.add(m);
@@ -1129,7 +1111,7 @@ class CacheManager {
     List<Photo> mList = [];
     if (keys != null) {
       for (var key in keys) {
-        var m = await _photoBox!.get(key);
+        var m = _photoBox!.get(key);
         if (m != null) {
           if (m.projectId == projectId) {
             mList.add(m);
@@ -1148,7 +1130,7 @@ class CacheManager {
 
     if (keys != null) {
       for (var key in keys) {
-        var m = await _projectPolygonBox!.get(key);
+        var m = _projectPolygonBox!.get(key);
         if (m != null) {
           if (m.projectId == projectId) {
             mList.add(m);
@@ -1165,7 +1147,7 @@ class CacheManager {
     List<Video> mList = [];
     if (keys != null) {
       for (var key in keys) {
-        var m = await _videoBox!.get(key);
+        var m = _videoBox!.get(key);
         if (m != null) {
           if (m.projectId == projectId) {
             mList.add(m);
@@ -1182,7 +1164,7 @@ class CacheManager {
     Video? vid;
     if (keys != null) {
       for (var key in keys) {
-        var m = await _videoBox!.get(key);
+        var m = _videoBox!.get(key);
         if (m != null) {
           if (m.videoId == id) {
             vid = m;
@@ -1199,7 +1181,7 @@ class CacheManager {
     Photo? photo;
     if (keys != null) {
       for (var key in keys) {
-        var m = await _photoBox!.get(key);
+        var m = _photoBox!.get(key);
         if (m != null) {
           if (m.photoId == id) {
             photo = m;
@@ -1216,7 +1198,7 @@ class CacheManager {
     Audio? audio;
     if (keys != null) {
       for (var key in keys) {
-        var m = await _audioBox!.get(key);
+        var m = _audioBox!.get(key);
         if (m != null) {
           if (m.audioId == id) {
             audio = m;
@@ -1233,7 +1215,7 @@ class CacheManager {
     List<Audio> mList = [];
     if (keys != null) {
       for (var key in keys) {
-        var m = await _audioBox!.get(key);
+        var m = _audioBox!.get(key);
         if (m != null) {
           if (m.projectId == projectId) {
             mList.add(m);
@@ -1277,7 +1259,7 @@ class CacheManager {
     if (keys != null) {
       for (var key in keys) {
         if (key.contains(userId)) {
-          var photo = await _photoBox?.get(key);
+          var photo = _photoBox?.get(key);
           if (photo != null) {
             mList.add(photo);
           }
@@ -1308,7 +1290,7 @@ class CacheManager {
     var mList = <Video>[];
     if (keys != null) {
       for (var value in keys) {
-        var m = await _videoBox?.get(value);
+        var m = _videoBox?.get(value);
         if (m != null) {
           mList.add(m);
         }
@@ -1320,100 +1302,55 @@ class CacheManager {
   Future addFieldMonitorSchedule(
       {required FieldMonitorSchedule schedule}) async {
     var key = '${schedule.projectId}_${schedule.fieldMonitorScheduleId}';
-    await _scheduleBox?.put(key, schedule);
+    _scheduleBox?.put(key, schedule);
     // pp('$mm FieldMonitorSchedule added to local cache:  🔵 🔵 ${schedule.projectName}');
   }
 
   Future addPhoto({required Photo photo}) async {
     var key =
         '${photo.organizationId}_${photo.projectId}_${photo.userId}_${photo.photoId}_${photo.created}';
-    await _photoBox?.put(key, photo);
+    _photoBox?.put(key, photo);
     // pp('$mm Photo added to local cache:  🔵 🔵 ${photo.projectName}');
   }
-
-  Future addFailedPhoto({required Photo photo}) async {
-    var key =
-        '${photo.organizationId}_${photo.projectId}_${photo.userId}_${photo.created}';
-    await _failedPhotoBox?.put(key, photo);
-    pp('$mm Failed Photo added to local cache:  🔵 🔵 ${photo.projectName}');
-  }
-
-  Future addFailedAudio({required FailedAudio failedAudio}) async {
-    var key = '${failedAudio.date}';
-    await _failedAudioBox?.put(key, failedAudio);
-    pp('$mm Failed Audio added to local cache  🔵');
-  }
+  
 
   Future removeUploadedPhoto({required PhotoForUpload photo}) async {
     var key = '${photo.project!.projectId}_${photo.date}';
-    await _uploadPhotoBox?.delete(key);
+    _uploadPhotoBox?.delete(key);
     pp('$mm PhotoForUpload deleted from local cache:  🔵 🔵 ${photo.project!.name}');
   }
 
   Future removeUploadedAudio({required AudioForUpload audio}) async {
     var key = '${audio.project!.projectId}_${audio.date}';
-    await _uploadAudioBox?.delete(key);
+    _uploadAudioBox?.delete(key);
     pp('$mm AudioForUpload deleted from local cache: 🔵 🔵 ${audio.project!.name}');
   }
 
   Future removeUploadedVideo({required VideoForUpload video}) async {
     var key = '${video.project!.projectId}_${video.date}';
-    await _uploadVideoBox?.delete(key);
+    _uploadVideoBox?.delete(key);
     pp('$mm VideoForUpload deleted from local cache:  🔵 🔵 ${video.project!.name}');
   }
-
-  Future removeFailedPhoto({required Photo photo}) async {
-    var key =
-        '${photo.organizationId}_${photo.projectId}_${photo.userId}_${photo.created}';
-    await _failedPhotoBox?.delete(key);
-    pp('$mm Failed Photo deleted from local cache:  🔵 🔵 ${photo.projectName}');
-  }
-
-  Future removeFailedVideo({required Video video}) async {
-    var key =
-        '${video.organizationId}_${video.projectId}_${video.userId}_${video.created}';
-    await _failedVideoBox?.delete(key);
-    pp('$mm Failed Video deleted from local cache:  🔵 🔵 ${video.projectName}');
-  }
-
-  Future removeFailedAudio({required FailedAudio failedAudio}) async {
-    var key = '${failedAudio.date}';
-    await _failedAudioBox?.delete(key);
-    pp('$mm Failed Audio deleted from local cache  🔵');
-  }
-
-  Future addFailedBag({required FailedBag bag}) async {
-    var key = bag.date!;
-    await _failedBagBox?.put(key, bag);
-    pp('$mm FailedBag added to local cache:  🔵 🔵 '
-        '${bag.date!} - ${bag.project!.name!}');
-  }
-
-  Future removeFailedBag({required FailedBag bag}) async {
-    var key = bag.date!;
-    await _failedBagBox?.delete(key);
-    pp('$mm FailedBag deleted from local cache:  🔵 🔵  '
-        '${bag.date!} - ${bag.project!.name!}');
-  }
+  
 
   Future addProject({required Project project}) async {
     var key = '${project.organizationId}_${project.projectId}';
-    await _projectBox?.put(key, project);
+    _projectBox?.put(key, project);
     // pp('$mm Project added to local cache:  🔵 🔵 ${project.name} ');
   }
 
   Future addProjectPosition({required ProjectPosition projectPosition}) async {
     var key =
         '${projectPosition.organizationId}_${projectPosition.projectId}_${projectPosition.projectPositionId}';
-    await _positionBox?.put(key, projectPosition);
+    _positionBox?.put(key, projectPosition);
 
     // pp('$mm ProjectPosition added to local cache:  🔵 🔵 🔵 🔵 ${projectPosition.projectName} 🔆key: $key');
   }
 
   Future addUser({required User user}) async {
     var key = '${user.organizationId}_${user.userId}';
-    await _userBox?.put(key, user);
-    pp('$mm User added to local cache:  🔵 🔵 ${user.name} organizationId: ${user.organizationId} ');
+    _userBox?.put(key, user);
+    pp('$mm User added to local cache: 🔵🔵 cellphone: ${user.cellphone} 🔵 ${user.email} 🍎 ${user.name}');
   }
 
   Future deleteUser({required User user}) async {
@@ -1422,7 +1359,7 @@ class CacheManager {
     if (keys != null) {
       for (var mKey in keys) {
         if (mKey == key) {
-          await _userBox?.delete(mKey);
+          _userBox?.delete(mKey);
           break;
         }
       }
@@ -1433,7 +1370,7 @@ class CacheManager {
   Future addVideo({required Video video}) async {
     var key =
         '${video.organizationId}_${video.projectId}_${video.userId}_${video.videoId}_${video.created}';
-    await _videoBox?.put(key, video);
+    _videoBox?.put(key, video);
     // pp('$mm Video added to local cache:  🔵 🔵 ${video.projectName}');
   }
 
@@ -1441,7 +1378,7 @@ class CacheManager {
     try {
       var key =
           '${audio.organizationId}_${audio.projectId}_${audio.userId}_${audio.audioId}_${audio.created}';
-      await _audioBox?.put(key, audio);
+      _audioBox?.put(key, audio);
       // pp('$mm looks like hive has cached an audio object');
       return 0;
     } catch (e) {
@@ -1451,12 +1388,6 @@ class CacheManager {
     // pp('$mm Video added to local cache:  🔵 🔵 ${video.projectName}');
   }
 
-  Future addFailedVideo({required Video video}) async {
-    var key =
-        '${video.organizationId}_${video.projectId}_${video.userId}_${video.created}';
-    await _failedVideoBox?.put(key, video);
-    pp('$mm failed Video added to local cache:  🔵 🔵 ${video.projectName}');
-  }
 
   Future<List<Project>> getOrganizationProjects() async {
     //return Hive.box('history').values.cast();
@@ -1467,44 +1398,13 @@ class CacheManager {
     });
     // if (keys != null) {
     //   for (var value in keys) {
-    //     var m = await _projectBox?.get(value);
+    //     var m = _projectBox?.get(value);
     //     if (m != null) {
     //       mList.add(m);
     //     }
     //   }
     // }
     pp('$mm getOrganizationProjects: ${mList.length} projects found in cache');
-    return mList;
-  }
-
-  Future<List<FailedAudio>> getFailedAudios() async {
-    var keys = _failedAudioBox?.keys;
-
-    var mList = <FailedAudio>[];
-    if (keys != null) {
-      for (var value in keys) {
-        var m = await _failedAudioBox?.get(value);
-        if (m != null) {
-          mList.add(m);
-        }
-      }
-    }
-    pp('$mm ${mList.length} failed Audios found in cache');
-    return mList;
-  }
-
-  Future<List<FailedBag>> getFailedBags() async {
-    var keys = _failedBagBox?.keys;
-    var mList = <FailedBag>[];
-    if (keys != null) {
-      for (var value in keys) {
-        var m = await _failedBagBox?.get(value);
-        if (m != null) {
-          mList.add(m);
-        }
-      }
-    }
-    pp('$mm ${mList.length} FailedBags found in cache');
     return mList;
   }
 
@@ -1517,20 +1417,20 @@ class CacheManager {
 
   Future addCity({required City city}) async {
     var key = '${city.cityId}';
-    await _cityBox?.put(key, city);
+    _cityBox?.put(key, city);
     pp('$mm City added to local cache: 🌿 ${city.name}');
   }
 
   Future addCountry({required Country country}) async {
     var key = '${country.countryId}';
-    await _countryBox?.put(key, country);
+    _countryBox?.put(key, country);
     pp('$mm Country added to local cache: 🌿 ${country.name}');
   }
 
   Future addMonitorReport({required MonitorReport monitorReport}) async {
     var key =
         '${monitorReport.organizationId}_${monitorReport.projectId}_${monitorReport.monitorReportId}';
-    await _reportBox?.put(key, monitorReport);
+    _reportBox?.put(key, monitorReport);
     pp('$mm MonitorReport added to local cache: 🌿 ${monitorReport.projectId}');
   }
 
@@ -1552,19 +1452,19 @@ class CacheManager {
   Future addGeofenceEvent({required GeofenceEvent geofenceEvent}) async {
     var key =
         '${geofenceEvent.user!.userId!}_${geofenceEvent.projectPositionId}';
-    await _geofenceEventBox?.put(key, geofenceEvent);
+    _geofenceEventBox?.put(key, geofenceEvent);
     pp('$mm GeofenceEvent added to local cache: ${geofenceEvent.projectName}');
   }
 
   Future addCommunity({required Community community}) async {
     var key = '${community.countryId}_${community.communityId}';
-    await _communityBox?.put(key, community);
+    _communityBox?.put(key, community);
     pp('$mm Community added to local cache: ${community.name}');
   }
 
   Future addOrganization({required Organization organization}) async {
     var key = '${organization.countryId}_${organization.organizationId}';
-    await _orgBox?.put(key, organization);
+    _orgBox?.put(key, organization);
     pp('$mm Organization added to local cache: ${organization.name}');
   }
 
@@ -1573,7 +1473,7 @@ class CacheManager {
     var mList = <Community>[];
     if (keys != null) {
       for (var key in keys) {
-        var comm = await _communityBox?.get(key);
+        var comm = _communityBox?.get(key);
         mList.add(comm!);
       }
     }
@@ -1588,7 +1488,7 @@ class CacheManager {
     var mList = <Country>[];
     if (keys != null) {
       for (var value in keys) {
-        var m = await _countryBox?.get(value);
+        var m = _countryBox?.get(value);
         if (m != null) {
           mList.add(m);
         }
@@ -1603,7 +1503,7 @@ class CacheManager {
     var mList = <Organization>[];
     if (keys != null) {
       for (var key in keys) {
-        var comm = await _orgBox?.get(key);
+        var comm = _orgBox?.get(key);
         mList.add(comm!);
       }
     }
@@ -1628,7 +1528,7 @@ class CacheManager {
     if (keys != null) {
       for (var key in keys) {
         if (key.contains(organizationId)) {
-          org = await _orgBox?.get(key);
+          org = _orgBox?.get(key);
         }
       }
     }
@@ -1654,7 +1554,7 @@ class CacheManager {
   Future addProjectPolygon({required ProjectPolygon projectPolygon}) async {
     var key =
         '${projectPolygon.organizationId}_${projectPolygon.projectId}_${projectPolygon.projectPolygonId}';
-    await _projectPolygonBox?.put(key, projectPolygon);
+    _projectPolygonBox?.put(key, projectPolygon);
     // pp('$mm ProjectPolygon added to local cache:  🔵 🔵 ${projectPolygon.projectName} ');
   }
 
@@ -1680,7 +1580,7 @@ class CacheManager {
     if (keys != null) {
       for (var key in keys) {
         if (key.contains(projectId)) {
-          var pos = await _positionBox?.get(key);
+          var pos = _positionBox?.get(key);
           mList.add(pos!);
         }
       }
@@ -1695,7 +1595,7 @@ class CacheManager {
     if (keys != null) {
       for (var key in keys) {
         if (key.contains(projectPositionId)) {
-          position = await _positionBox?.get(key);
+          position = _positionBox?.get(key);
         }
       }
     }
@@ -1709,7 +1609,7 @@ class CacheManager {
     if (keys != null) {
       for (var key in keys) {
         if (key.contains(userId)) {
-          var video = await _videoBox?.get(key);
+          var video = _videoBox?.get(key);
           mList.add(video!);
         }
       }
@@ -1724,7 +1624,7 @@ class CacheManager {
     if (keys != null) {
       for (var key in keys) {
         if (key.contains(userId)) {
-          var audio = await _audioBox?.get(key);
+          var audio = _audioBox?.get(key);
           mList.add(audio!);
         }
       }

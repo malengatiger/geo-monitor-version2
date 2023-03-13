@@ -1,13 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:geo_monitor/library/ui/settings/settings_form.dart';
 
-import '../../api/prefs_og.dart';
-import '../../cache_manager.dart';
 import '../../data/project.dart';
 import '../../data/settings_model.dart';
 import '../../data/user.dart';
 import '../../functions.dart';
-import '../../generic_functions.dart';
 
 class SettingsMobile extends StatefulWidget {
   const SettingsMobile({Key? key}) : super(key: key);
@@ -21,10 +18,10 @@ class SettingsMobileState extends State<SettingsMobile>
   late AnimationController _animationController;
 
   SettingsModel? settingsModel;
-  var distController = TextEditingController(text: '100');
-  var videoController = TextEditingController(text: '5');
+  var distController = TextEditingController(text: '500');
+  var videoController = TextEditingController(text: '20');
   var audioController = TextEditingController(text: '60');
-  var activityController = TextEditingController(text: '12');
+  var activityController = TextEditingController(text: '24');
 
   var orgSettings = <SettingsModel>[];
 
@@ -35,37 +32,36 @@ class SettingsMobileState extends State<SettingsMobile>
   bool busyWritingToDB = false;
   Project? selectedProject;
   User? user;
-  final _formKey = GlobalKey<FormState>();
 
   @override
   void initState() {
     _animationController = AnimationController(vsync: this);
     super.initState();
-    _getOrganizationSettings();
+    // _getOrganizationSettings();
   }
 
-  void _getOrganizationSettings() async {
-    pp('🍎🍎 ............. getting user from prefs ...');
-    user = await prefsOGx.getUser();
-    pp('🍎🍎 user is here, huh? ${user!.toJson()}');
-    setState(() {
-      busy = true;
-    });
-    try {
-      orgSettings = await cacheManager.getOrganizationSettings();
-    } catch (e) {
-      pp(e);
-      if (mounted) {
-        showToast(
-            duration: const Duration(seconds: 5),
-            message: '$e',
-            context: context);
-      }
-    }
-    setState(() {
-      busy = false;
-    });
-  }
+  // void _getOrganizationSettings() async {
+  //   pp('🍎🍎 ............. getting user from prefs ...');
+  //   user = await prefsOGx.getUser();
+  //   pp('🍎🍎 user is here, huh? ${user!.toJson()}');
+  //   setState(() {
+  //     busy = true;
+  //   });
+  //   try {
+  //     orgSettings = await cacheManager.getOrganizationSettings();
+  //   } catch (e) {
+  //     pp(e);
+  //     if (mounted) {
+  //       showToast(
+  //           duration: const Duration(seconds: 5),
+  //           message: '$e',
+  //           context: context);
+  //     }
+  //   }
+  //   setState(() {
+  //     busy = false;
+  //   });
+  // }
 
   @override
   void dispose() {

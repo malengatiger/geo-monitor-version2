@@ -182,7 +182,10 @@ class UserDashboardState extends State<UserDashboard>
 
       settingsSubscriptionFCM = fcmBloc.settingsStream.listen((settings) async {
         pp('$mm: 🍎🍎 settings arrived with themeIndex: ${settings.themeIndex}... 🍎🍎');
-        themeBloc.themeStreamController.sink.add(settings.themeIndex!);
+        Locale newLocale = Locale(settings!.locale!);
+        final m = LocaleAndTheme(themeIndex: settings!.themeIndex!,
+            locale: newLocale);
+        themeBloc.themeStreamController.sink.add(m);
         if (mounted) {
           setState(() {});
         }

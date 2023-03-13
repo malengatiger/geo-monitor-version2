@@ -163,11 +163,17 @@ class OrganizationBloc {
     final sDate = DateTime.parse(startDate);
     final eDate = DateTime.parse(endDate);
     final numberOfDays = eDate.difference(sDate).inDays;
+    final projects = await getOrganizationProjects(organizationId: organizationId, forceRefresh: false);
+    final users = await cacheManager.getUsers();
     if (forceRefresh) {
       pp('$mm get data from server .....................; '
           'forceRefresh: $forceRefresh; if true do the refresh ...');
       bag = await dataRefresher.manageRefresh(numberOfDays: numberOfDays,
           organizationId: organizationId, projectId: null, userId: null);
+      bag!.projects = projects;
+      bag.users = users;
+      printDataBag(bag!);
+      return bag;
 
     } else {
       bag = await cacheManager.getOrganizationData(organizationId: organizationId);
@@ -176,6 +182,10 @@ class OrganizationBloc {
             'will force refresh, forceRefresh: $forceRefresh');
         bag = await dataRefresher.manageRefresh(numberOfDays: numberOfDays,
             organizationId: organizationId, projectId: null, userId: null);
+        bag!.projects = projects;
+        bag.users = users;
+        printDataBag(bag);
+        return bag;
       }
     }
     final end = DateTime.now();
@@ -183,12 +193,13 @@ class OrganizationBloc {
 
     final start2 = DateTime.now();
     pp('\n\n$mm ... filter bag by the dates .... before filter');
-    if (bag == null) {
-      throw 'Bag is NULL. wtf?';
-    }
+
     printDataBag(bag);
     var mBag = filterBagContentsByDate(
         bag: bag, startDate: startDate, endDate: endDate);
+
+    mBag.projects = projects;
+    mBag.users = users;
     dataBagController.sink.add(mBag);
     final end2 = DateTime.now();
     pp('\n$mm filtered bag .... ${end2.difference(start2)} seconds elapsed for filter');
@@ -211,76 +222,8 @@ class OrganizationBloc {
 
   void _putContentsOfBagIntoStreams(DataBag bag) {
     // pp('$mm _putContentsOfBagIntoStreams: .................................... '
-    //     '🔵 send data to streams ...');
     try {
-      try {
-        if (bag.photos != null) {
-          bag.photos!.sort((a, b) => b.created!.compareTo(a.created!));
-          photoController.sink.add(bag.photos!);
-        }
-      } catch (e) {
-        pp('$mm _putContentsOfBagIntoStreams photos ERROR - $e');
-      }
-      try {
-        if (bag.videos != null) {
-          bag.videos!.sort((a, b) => b.created!.compareTo(a.created!));
-          videoController.sink.add(bag.videos!);
-        }
-      } catch (e) {
-        pp('$mm _putContentsOfBagIntoStreams videos ERROR - $e');
-      }
-      try {
-        if (bag.audios != null) {
-          bag.audios!.sort((a, b) => b.created!.compareTo(a.created!));
-          audioController.sink.add(bag.audios!);
-        }
-      } catch (e) {
-        pp('$mm _putContentsOfBagIntoStreams audios ERROR - $e');
-      }
-      try {
-        if (bag.fieldMonitorSchedules != null) {
-          bag.fieldMonitorSchedules!.sort((a, b) => b.date!.compareTo(a.date!));
-          fieldMonitorScheduleController.sink.add(bag.fieldMonitorSchedules!);
-        }
-      } catch (e) {
-        pp('$mm _putContentsOfBagIntoStreams fieldMonitorSchedules ERROR - $e');
-      }
-      try {
-        if (bag.users != null) {
-          bag.users!.sort((a, b) => a.name!.compareTo(b.name!));
-          userController.sink.add(bag.users!);
-        }
-      } catch (e) {
-        pp('$mm _putContentsOfBagIntoStreams users ERROR - $e');
-      }
-      try {
-        if (bag.projects != null) {
-          bag.projects!.sort((a, b) => a.name!.compareTo(b.name!));
-          projController.sink.add(bag.projects!);
-        }
-      } catch (e) {
-        pp('$mm _putContentsOfBagIntoStreams projects ERROR - $e');
-      }
-      try {
-        if (bag.projectPositions != null) {
-          // bag.projectPositions!
-          //     .sort((a, b) => b.created!.compareTo(a.created!));
-          projPositionsController.sink.add(bag.projectPositions!);
-        }
-      } catch (e) {
-        pp('$mm _putContentsOfBagIntoStreams projectPositions ERROR - $e');
-      }
-      try {
-        if (bag.projectPolygons != null) {
-          bag.projectPolygons!.sort((a, b) => b.created!.compareTo(a.created!));
-          projPolygonsController.sink.add(bag.projectPolygons!);
-        }
-      } catch (e) {
-        pp('$mm _putContentsOfBagIntoStreams projectPolygons ERROR - $e');
-      }
-
-      // pp('$mm _putContentsOfBagIntoStreams: .................................... '
-      //     '🔵🔵🔵🔵 send data to streams completed...');
+      dataBagController.sink.add(bag);
     } catch (e) {
       pp('$mm _putContentsOfBagIntoStreams ERROR - $e');
     }
@@ -295,10 +238,6 @@ class OrganizationBloc {
       pp('$mm getOrganizationUsers ... _users: ${users.length} ... will add to cache');
     }
     userController.sink.add(users);
-
-    for (var element in users) {
-      pp('$mm 😲USER:  🍏 ${element.name} 🍏 ${element.thumbnailUrl}');
-    }
 
     return users;
   }
@@ -510,36 +449,36 @@ DataBag filterBagContentsByDate(
     required String endDate}) {
 
   pp('💜💜💜💜💜 filterBagContentsByDate ... ');
-  final users = <User>[];
-  bag.users?.forEach((user) {
-    if (checkDate(
-        date: user!.created!, startDate: startDate, endDate: endDate)) {
-      users.add(user);
-    }
-  });
-  final projects = <Project>[];
-  bag.projects?.forEach((p) {
-    if (checkDate(date: p.created!, startDate: startDate, endDate: endDate)) {
-      projects.add(p);
-    }
-  });
-  final positions = <ProjectPosition>[];
-  bag.projectPositions?.forEach((p) {
-    if (p.created != null) {
-      //pp('🍎🍎🍎🍎 check created for null:  ${p.toJson()}');
-      if (checkDate(date: p.created!, startDate: startDate, endDate: endDate)) {
-        positions.add(p);
-      }
-    } else {
-      pp('Created is null! 🍎🍎🍎 what de fuck?');
-    }
-  });
-  final polygons = <ProjectPolygon>[];
-  bag.projectPolygons?.forEach((p) {
-    if (checkDate(date: p.created!, startDate: startDate, endDate: endDate)) {
-      polygons.add(p);
-    }
-  });
+  // final users = <User>[];
+  // bag.users?.forEach((user) {
+  //   if (checkDate(
+  //       date: user!.created!, startDate: startDate, endDate: endDate)) {
+  //     users.add(user);
+  //   }
+  // });
+  // final projects = <Project>[];
+  // bag.projects?.forEach((p) {
+  //   if (checkDate(date: p.created!, startDate: startDate, endDate: endDate)) {
+  //     projects.add(p);
+  //   }
+  // });
+  // final positions = <ProjectPosition>[];
+  // bag.projectPositions?.forEach((p) {
+  //   if (p.created != null) {
+  //     //pp('🍎🍎🍎🍎 check created for null:  ${p.toJson()}');
+  //     if (checkDate(date: p.created!, startDate: startDate, endDate: endDate)) {
+  //       positions.add(p);
+  //     }
+  //   } else {
+  //     pp('Created is null! 🍎🍎🍎 what de fuck?');
+  //   }
+  // });
+  // final polygons = <ProjectPolygon>[];
+  // bag.projectPolygons?.forEach((p) {
+  //   if (checkDate(date: p.created!, startDate: startDate, endDate: endDate)) {
+  //     polygons.add(p);
+  //   }
+  // });
   final photos = <Photo>[];
   bag.photos?.forEach((p) {
     if (checkDate(date: p.created!, startDate: startDate, endDate: endDate)) {
@@ -559,10 +498,10 @@ DataBag filterBagContentsByDate(
     }
   });
 
-  bag.users = users;
-  bag.projects = projects;
-  bag.projectPositions = positions;
-  bag.projectPolygons = polygons;
+  // bag.users = users;
+  // bag.projects = projects;
+  // bag.projectPositions = positions;
+  // bag.projectPolygons = polygons;
   bag.photos = photos;
   bag.videos = videos;
   bag.audios = audios;

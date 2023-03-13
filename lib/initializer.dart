@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:hive_flutter/adapters.dart';
@@ -25,7 +27,10 @@ class Initializer {
     var settings = await prefsOGx.getSettings();
     if (settings != null) {
       themeIndex = settings.themeIndex!;
-      themeBloc.themeStreamController.sink.add(settings.themeIndex!);
+      Locale newLocale = Locale(settings!.locale!);
+      final m = LocaleAndTheme(themeIndex: settings!.themeIndex!,
+          locale: newLocale);
+      themeBloc.themeStreamController.sink.add(m);
     }
 
     pp('$mx THEME: themeIndex up top is: $themeIndex ');

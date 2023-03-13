@@ -24,6 +24,7 @@ import 'package:page_transition/page_transition.dart';
 import 'package:responsive_builder/responsive_builder.dart';
 import 'package:universal_platform/universal_platform.dart';
 
+import '../../generated/l10n.dart';
 import '../../library/api/prefs_og.dart';
 import '../../library/bloc/downloader.dart';
 import '../../library/bloc/theme_bloc.dart';
@@ -131,7 +132,7 @@ class DashboardTabletState extends State<DashboardTablet> {
 
       activitySubscriptionFCM =
           fcmBloc.activityStream.listen((ActivityModel model) {
-        pp('\n\n$mm activityStream delivered activity data ... ${model.date!}\n\n');
+        pp('$mm activityStream delivered activity data ... ${model.date!}');
         _getData(false);
         if (mounted) {
           setState(() {});
@@ -144,7 +145,10 @@ class DashboardTabletState extends State<DashboardTablet> {
 
       settingsSubscriptionFCM = fcmBloc.settingsStream.listen((settings) async {
         pp('$mm: 🍎🍎 settings arrived with themeIndex: ${settings.themeIndex}... 🍎🍎');
-        themeBloc.themeStreamController.sink.add(settings.themeIndex!);
+        Locale newLocale = Locale(settings!.locale!);
+        final m = LocaleAndTheme(themeIndex: settings!.themeIndex!,
+            locale: newLocale);
+        themeBloc.themeStreamController.sink.add(m);
         settingsModel = settings;
         _getData(false);
       });
@@ -607,11 +611,13 @@ class DashboardTabletState extends State<DashboardTablet> {
       extPadding = 120;
     }
 
+    var b = S.of(context)!.organizationDashboard;
+
     return SafeArea(
         child: Scaffold(
       appBar: AppBar(
         centerTitle: true,
-        title: const Text('Organization Dashboard'),
+        title: Text(b),
         actions: [
           IconButton(
               icon: Icon(

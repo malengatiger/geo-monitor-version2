@@ -31,7 +31,7 @@ class AppAuth {
     });
 
     firebaseAuth.userChanges().listen((event) async {
-      pp('\n\n$locks user changes from Firebase. will need to update the user, maybe ...');
+      pp('$locks user changes from Firebase. will need to update the user, maybe ...');
       var token = await event?.getIdToken();
       await _checkUser(token);
     });
@@ -43,7 +43,7 @@ class AppAuth {
       var user = await prefsOGx.getUser();
       if (user != null) {
         if (user.fcmRegistration != token) {
-          pp('\n\n$locks token has changed; different from cached token.  🥬🥬🥬 will update the user ...');
+          pp('$locks token has changed; different from cached token.  🥬🥬🥬 will update the user ...');
 
           user.fcmRegistration = token;
           var pswd = user.password;

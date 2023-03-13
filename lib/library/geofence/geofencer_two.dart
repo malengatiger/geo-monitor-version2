@@ -8,6 +8,7 @@ import 'package:uuid/uuid.dart';
 import '../../device_location/device_location_bloc.dart';
 import '../api/data_api.dart';
 import '../api/prefs_og.dart';
+import '../bloc/organization_bloc.dart';
 import '../data/geofence_event.dart';
 import '../data/project_position.dart';
 import '../data/user.dart';
@@ -77,54 +78,72 @@ class TheGreatGeofencer {
     if (_user == null) {
       return;
     }
+
     pp('$xx buildGeofences .... build geofences for the organization 🌀 ${_user!.organizationName}  🌀');
 
     await locationBloc.requestPermission();
-    var startDate = DateTime.now().subtract(const Duration(days: (365*2))).toUtc().toIso8601String();
+    var startDate = DateTime.now()
+        .subtract(const Duration(days: (365 * 2)))
+        .toUtc()
+        .toIso8601String();
     var endDate = DateTime.now().toUtc().toIso8601String();
-    //todo - get project positions and polygons by location of this device ...
-    var loc = await locationBloc.getLocation();
-    var locList = await _findProjectPositionsByLocation(organizationId: _user!.organizationId!,
-        latitude: loc!.latitude!, longitude: loc!.longitude!, radiusInKM: radiusInKM ?? 5);
-    pp('$xx buildGeofences .... project positions found by location: ${locList.length} ');
-    // var list = await organizationBloc.getProjectPositions(
-    //     organizationId: _user!.organizationId!, forceRefresh: false, startDate: startDate,endDate: endDate);
-    // pp('$xx buildGeofences .... project positions for Organization:: ${list.length} ');
 
-      for (var pos in locList) {
-        await addGeofence(projectPosition: pos);
+    var mList = <ProjectPosition>[];
+    try {
+      var loc = await locationBloc.getLocation();
+      mList = await _findProjectPositionsByLocation(
+          organizationId: _user!.organizationId!,
+          latitude: loc!.latitude!,
+          longitude: loc!.longitude!,
+          radiusInKM: radiusInKM ?? 5);
+      pp('$xx buildGeofences .... project positions found by location: ${mList.length} ');
+    } catch (e) {
+      pp(e);
+    }
+
+    if (mList.isEmpty) {
+      mList = await organizationBloc.getProjectPositions(
+          organizationId: _user!.organizationId!,
+          forceRefresh: false,
+          startDate: startDate,
+          endDate: endDate);
+    }
+    int cnt = 0;
+    for (var pos in mList) {
+      await addGeofence(projectPosition: pos);
+      cnt++;
+      if (cnt > 98) {
+        break;
       }
-      pp('$xx ${_geofenceList.length} geofences added to list');
-      geofenceService.addGeofenceList(_geofenceList);
-      geofenceService.addGeofenceStatusChangeListener(
-          (geofence, geofenceRadius, geofenceStatus, location) async {
-        pp('$xx Geofence Listener 💠 FIRED!! '
-            '🔵🔵🔵 geofenceStatus: ${geofenceStatus.name}  at ${geofence.data['projectName']}');
+    }
+    pp('$xx ${_geofenceList.length} geofences added to list');
+    geofenceService.addGeofenceList(_geofenceList);
+    geofenceService.addGeofenceStatusChangeListener(
+        (geofence, geofenceRadius, geofenceStatus, location) async {
+      pp('$xx Geofence Listener 💠 FIRED!! '
+          '🔵🔵🔵 geofenceStatus: ${geofenceStatus.name}  at 🔶 ${geofence.data['projectName']}');
 
-        await _processGeofenceEvent(
-            geofence: geofence,
-            geofenceRadius: geofenceRadius,
-            geofenceStatus: geofenceStatus,
-            location: location);
-      });
+      await _processGeofenceEvent(
+          geofence: geofence,
+          geofenceRadius: geofenceRadius,
+          geofenceStatus: geofenceStatus,
+          location: location);
+    });
 
-      try {
-        pp('\n$xx  🔶🔶🔶🔶🔶🔶 Starting GeofenceService ...... 🔶🔶🔶🔶🔶🔶 ');
-        await geofenceService.start().onError((error, stackTrace) => {
-              pp('\n\n\n$mm $reds GeofenceService failed to start, onError: 🔴 $error 🔴 \n\n\n')
-              //todo - navigate user to system settings - explain why activity permission required
-              //todo - see ErrorCodes.ACTIVITY_RECOGNITION_PERMISSION_PERMANENTLY_DENIED
-            });
+    try {
+      pp('\n$xx  🔶🔶🔶🔶🔶🔶 Starting GeofenceService ...... 🔶🔶🔶🔶🔶🔶 ');
+      await geofenceService.start().onError((error, stackTrace) => {
+            pp('\n\n\n$mm $reds GeofenceService failed to start, onError: 🔴 $error 🔴 \n\n\n')
+            //todo - navigate user to system settings - explain why activity permission required
+            //todo - see ErrorCodes.ACTIVITY_RECOGNITION_PERMISSION_PERMANENTLY_DENIED
+          });
 
-        pp('$xx ✅✅✅✅✅✅ geofences 🍐🍐🍐 STARTED OK 🍐🍐🍐 '
-            '🔆🔆🔆 will wait for geofence status change 🔵🔵🔵🔵🔵 ');
-      } catch (e) {
-        pp('\n\n$xx GeofenceService failed to start: 🔴 $e 🔴 }');
-      }
-    // } catch (e) {
-    //   pp('$reds ERROR: probably to do with API call: 🔴 $e 🔴');
-    //   pp(e);
-    // }
+      pp('$xx ✅✅✅✅✅✅ geofences 🍐🍐🍐 STARTED OK 🍐🍐🍐 '
+          '🔆🔆🔆 will wait for geofence status change 🔵🔵🔵🔵🔵 ');
+    } catch (e) {
+      pp('\n\n$xx GeofenceService failed to start: 🔴 $e 🔴 }');
+    }
+
   }
 
   final reds = '🔴 🔴 🔴 🔴 🔴 🔴 TheGreatGeofencer: ';

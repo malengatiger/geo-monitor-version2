@@ -6,7 +6,6 @@ list(APPEND FLUTTER_PLUGIN_LIST
   connectivity_plus
   desktop_webview_auth
   permission_handler_windows
-  realm
   record_windows
   url_launcher_windows
 )
