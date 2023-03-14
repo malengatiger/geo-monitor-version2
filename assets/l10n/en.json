@@ -1,23 +1,8 @@
 {
   "dashboardSubTitle": "Data represents the last {count} days",
-  "@dashboardSubTitle": {
-    "placeholders": {
-      "count": {
-        "type": "int",
-        "format": "decimalPattern",
-        "example":"30"}
-    }
-  },
+
   "activityTitle": "Activities in the last {count} hours",
-  "@activityTitle": {
-    "placeholders": {
-      "count": {
-        "type": "int",
-        "example": "24",
-        "format": "decimalPattern"
-      }
-    }
-  },
+
   "organizationDashboard": "Organization Dashboard",
   "projectDashboard": "Project Dashboard",
   "projectLocationsMap": "Project Locations Map",
@@ -83,6 +68,53 @@
   "pleaseSelectCountry": "Please select Country",
   "internetConnectionNotAvailable": "Internet Connection not available",
   "signInFailed": "Sign in failed",
-  "organizationRegistered": "Organization has been registered"
+  "organizationRegistered": "Organization has been registered",
+  "welcomeToGeo": "Welcome To Geo!",
+  "endDate": "End Date",
+  "sendCode": "Send Code",
+  "locationNotAvailable": "location Not Available",
+  "weGotAProblem": "We Got A Problem, Sir!",
+  "numberOfDays": "Number Of Days",
+  "projectDetails": "project Details",
+  "dataRefreshFailed": "Data Refresh Failed",
+  "projectLocationFailed": "Project Location Failed",
+  "duration": "Duration",
+  "updateFailed": "Update Failed",
+  "audioPlayer": "Audio Player",
+  "projectActivities": "Project Activities",
+  "projectAddedToOrganization": "{projectName} Project Added To Organization",
+  "verifyPhoneNumber": "Verify Phone Number",
+  "fieldMonitorSchedules": "Field Monitor Schedules",
+  "projectsNotFound": "Projects Not Found",
+  "projectAudio": "Project Audio",
+  "videoBuffering": "Video buffering",
+  "notReadyYet": "Not Ready Yet",
+  "userCreateFailed": "User Creation Failed",
+  "createAudioClip": "Create Audio Clip",
+  "phoneNumber": "phoneNumber",
+  "fileSize": "File Size",
+  "memberDashboard": "Member Dashboard",
+  "projectEditor": "Project Editor",
+  "startDate": "Start Date",
+  "memberCreateFailed": "Member Creation Failed",
+  "small": "Small",
+  "selectLanguage": "Select Language",
+  "maxAudioLength": "Please enter maximum audio length in minutes",
+  "pleaseEnterVideoLength": "Please enter maximum video length in seconds",
+  "large": "Large",
+  "enterVideoLength": "Enter maximum video length in seconds",
+  "pleaseNumberOfDays": "Please enter the number of days your dashboard must show",
+  "dashNumberOfDays": "Enter the number of days your dashboard must show",
+  "medium": "Medium",
+  "enterDistance": "Enter maximum distance from project in metres",
+  "pleaseSelectLanguage": "Please Select Language",
+  "pleaseActivityStreamHours": "Please enter the number of hours your activity stream must show",
+  "at": "at",
+  "arrivedAt": "Arrived at $project",
+  "pleaseEnterDistance": "Please enter maximum distance from project in metres",
+  "leftFrom": "Leaving $project",
+  "loadingActivities": "Loading Activities",
+  "maxVideoLength": "Maximum Video Length in Seconds",
+  "dashboard": "Dashboard"
 
 }

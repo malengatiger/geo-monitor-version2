@@ -35,6 +35,7 @@ class ThemeBloc {
       Locale newLocale = Locale(settings!.locale!);
       final m = LocaleAndTheme(themeIndex: settings!.themeIndex!,
           locale: newLocale);
+      pp('$mm ThemeBloc: initialize: locale = ${m.locale.toString()}');
       themeStreamController.sink.add(m);
     } else {
       Locale newLocale = Locale(settings!.locale!);

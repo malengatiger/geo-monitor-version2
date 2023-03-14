@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:geo_monitor/library/api/prefs_og.dart';
 import 'package:geo_monitor/library/data/audio.dart';
 import 'package:geo_monitor/library/data/photo.dart';
 import 'package:geo_monitor/library/data/video.dart';
@@ -7,6 +8,7 @@ import 'package:geo_monitor/ui/activity/geo_activity.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:responsive_builder/responsive_builder.dart';
 
+import '../../../l10n/translation_handler.dart';
 import '../../data/location_response.dart';
 import '../maps/location_response_map.dart';
 
@@ -25,6 +27,15 @@ class SettingsTabletState extends State<SettingsTablet>
   void initState() {
     _controller = AnimationController(vsync: this);
     super.initState();
+    _getTitles();
+  }
+  String? title;
+  void _getTitles() async {
+    var sett = await prefsOGx.getSettings();
+    title = await mTx.tx('settings', sett!.locale!);
+    setState(() {
+
+    });
   }
 
   @override
@@ -35,16 +46,17 @@ class SettingsTabletState extends State<SettingsTablet>
 
   @override
   Widget build(BuildContext context) {
+
     var size = MediaQuery.of(context).size;
     return SafeArea(
         child: Scaffold(
       appBar: AppBar(
-        title: const Text('Geo Settings'),
+        title:   Text(title == null?'Settings': title!),
       ),
       body: OrientationLayoutBuilder(landscape: (ctx) {
         return Padding(
           padding: const EdgeInsets.only(
-              left: 28.0, right: 28, top: 28.0, bottom: 28.0),
+              left: 28.0, right: 28, top: 56.0, bottom: 28.0),
           child: Row(
             children: [
               SizedBox(

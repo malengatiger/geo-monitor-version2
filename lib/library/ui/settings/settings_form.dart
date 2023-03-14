@@ -3,6 +3,7 @@ import 'package:geo_monitor/library/bloc/data_refresher.dart';
 import 'package:geo_monitor/library/data/settings_model.dart';
 import 'package:uuid/uuid.dart';
 
+import '../../../l10n/translation_handler.dart';
 import '../../api/data_api.dart';
 import '../../api/prefs_og.dart';
 import '../../bloc/theme_bloc.dart';
@@ -11,6 +12,7 @@ import '../../data/project.dart';
 import '../../data/user.dart';
 import '../../functions.dart';
 import '../../generic_functions.dart';
+
 
 class SettingsForm extends StatefulWidget {
   const SettingsForm({Key? key, required this.padding}) : super(key: key);
@@ -45,13 +47,46 @@ class _SettingsFormState extends State<SettingsForm> {
     _getSettings();
   }
 
+
   void _getSettings() async {
     pp('$mm 🍎🍎 ............. getting user from prefs ...');
     user = await prefsOGx.getUser();
     settingsModel = await prefsOGx.getSettings();
     pp('$mm 🍎🍎 user is here, huh? ${user!.toJson()}');
     _setExistingSettings();
+    _setTitles();
   }
+
+  String? fieldMonitorInstruction, maximumMonitoringDistance,
+      maximumVideoLength, maximumAudioLength, activityStreamHours,
+    numberOfDays, pleaseSelectCountry, tapForColorScheme, settings,
+    small, medium, large;
+
+  void _setTitles() async {
+    fieldMonitorInstruction = await mTx.tx('fieldMonitorInstruction', settingsModel!.locale!);
+    maximumMonitoringDistance = await mTx.tx('maximumMonitoringDistance', settingsModel!.locale!);
+    maximumVideoLength = await mTx.tx('maximumVideoLength', settingsModel!.locale!);
+    maximumAudioLength = await mTx.tx('maximumAudioLength', settingsModel!.locale!);
+    activityStreamHours = await mTx.tx('activityStreamHours', settingsModel!.locale!);
+
+    pleaseSelectCountry = await mTx.tx('pleaseSelectCountry', settingsModel!.locale!);
+    tapForColorScheme = await mTx.tx('tapForColorScheme', settingsModel!.locale!);
+    numberOfDays = await mTx.tx('numberOfDays', settingsModel!.locale!);
+    settings = await mTx.tx('settings', settingsModel!.locale!);
+    small = await mTx.tx('small', settingsModel!.locale!);
+    medium = await mTx.tx('medium', settingsModel!.locale!);
+    large = await mTx.tx('large', settingsModel!.locale!);
+
+    setState(() {
+
+    });
+
+  }
+
+  // var instruction = S.of(context).fieldMonitorInstruction;
+  // var maxDistance = S.of(context).maximumMonitoringDistance;
+  // pp('$mm instruction: $instruction');
+  // pp('$mm maxDistance: $maxDistance');
 
   void onSelected(Project p1) {
     setState(() {
@@ -87,6 +122,14 @@ class _SettingsFormState extends State<SettingsForm> {
     audioController.text = '${settingsModel?.maxAudioLengthInMinutes}';
     activityController.text = '${settingsModel?.activityStreamHours}';
     daysController.text = '${settingsModel?.numberOfDays}';
+
+    if (settingsModel?.locale != null) {
+      Locale newLocale = Locale(settingsModel!.locale!);
+      selectedLocale = newLocale;
+      final m = LocaleAndTheme(themeIndex: settingsModel!.themeIndex!,
+          locale: newLocale);
+      themeBloc.changeToLocale(m.locale.toString());
+    }
 
     if (settingsModel?.photoSize == 0) {
       photoSize = 0;
@@ -242,8 +285,8 @@ class _SettingsFormState extends State<SettingsForm> {
         case 'zu':
           localeText = 'Zulu';
           break;
-        case 'nso':
-          localeText = 'Sepedi';
+        case 'yo':
+          localeText = 'Yoruba';
           break;
         case 'ts':
           localeText = 'Tsonga';
@@ -263,6 +306,8 @@ class _SettingsFormState extends State<SettingsForm> {
           break;
       }
     }
+
+
     return Card(
       elevation: 4,
       shape: getRoundedBorder(radius: 16),
@@ -301,8 +346,8 @@ class _SettingsFormState extends State<SettingsForm> {
                               child: Container(
                                 color: Theme.of(context).primaryColor,
                                 child: Center(
-                                  child: Text(
-                                    'Tap Me for Colour Scheme',
+                                  child: Text(tapForColorScheme == null?
+                                    'Tap Me for Colour Scheme': tapForColorScheme!,
                                     style: myTextStyleSmall(context),
                                   ),
                                 ),
@@ -353,9 +398,7 @@ class _SettingsFormState extends State<SettingsForm> {
                             ),
                           ),
                         ),
-                  Text(
-                    'The field monitors that are working '
-                    'with projects must be within this distance when they are making media.',
+                  Text(fieldMonitorInstruction == null? 'instruction':fieldMonitorInstruction!,
                     style: myTextStyleSmall(context),
                   ),
                   const SizedBox(
@@ -368,15 +411,15 @@ class _SettingsFormState extends State<SettingsForm> {
                       keyboardType: TextInputType.number,
                       validator: (value) {
                         if (value!.isEmpty) {
-                          return 'Please enter maximum distance from project in metres';
+                          return maximumMonitoringDistance == null?
+                          'Please enter maximum distance from project in metres': maximumMonitoringDistance!;
                         }
                         return null;
                       },
                       decoration: InputDecoration(
-                        hintText:
-                            'Enter maximum distance from project in metres',
-                        label: Text(
-                          'Maximum Monitoring Distance in metres',
+                        hintText: maximumMonitoringDistance == null?
+                            'Enter maximum distance from project in metres': maximumMonitoringDistance!,
+                        label: Text( maximumMonitoringDistance == null?'sentence': maximumMonitoringDistance!,
                           style: myTextStyleSmall(context),
                         ),
                         hintStyle: myTextStyleSmall(context),
@@ -393,14 +436,14 @@ class _SettingsFormState extends State<SettingsForm> {
                       keyboardType: TextInputType.number,
                       validator: (value) {
                         if (value!.isEmpty) {
-                          return 'Please enter maximum video length in seconds';
+                          return maximumVideoLength == null? 'Please enter maximum video length in seconds': maximumVideoLength!;
                         }
                         return null;
                       },
                       decoration: InputDecoration(
-                        hintText: 'Enter maximum video length in seconds',
+                        hintText: maximumVideoLength == null? 'Enter maximum video length in seconds': maximumVideoLength!,
                         label: Text(
-                          'Maximum Video Length in Seconds',
+                          maximumVideoLength == null?'Maximum Video Length in Seconds': maximumVideoLength!,
                           style: myTextStyleSmall(context),
                         ),
                         hintStyle: myTextStyleSmall(context),
@@ -417,14 +460,14 @@ class _SettingsFormState extends State<SettingsForm> {
                       keyboardType: TextInputType.number,
                       validator: (value) {
                         if (value!.isEmpty) {
-                          return 'Please enter maximum audio length in minutes';
+                          return maximumAudioLength == null?'Please enter maximum audio length in minutes': maximumVideoLength!;
                         }
                         return null;
                       },
                       decoration: InputDecoration(
-                        hintText: 'Enter maximum audio length in minutes',
+                        hintText: maximumAudioLength == null?'Enter maximum audio length in minutes': maximumAudioLength!,
                         label: Text(
-                          'Maximum Audio Length in Minutes',
+                          maximumAudioLength == null?'Maximum Audio Length in Minutes': maximumAudioLength!,
                           style: myTextStyleSmall(context),
                         ),
                         hintStyle: myTextStyleSmall(context),
@@ -441,15 +484,15 @@ class _SettingsFormState extends State<SettingsForm> {
                       keyboardType: TextInputType.number,
                       validator: (value) {
                         if (value!.isEmpty) {
-                          return 'Please enter the number of hours your activity stream must show';
+                          return activityStreamHours == null?
+                          'Please enter the number of hours your activity stream must show': activityStreamHours!;
                         }
-                        pp('💜💜💜💜 activityController: validated value is $value');
                         return null;
                       },
                       decoration: InputDecoration(
-                        hintText: 'Enter activity stream length in hours',
+                        hintText: activityStreamHours == null?'Enter activity stream length in hours':activityStreamHours!,
                         label: Text(
-                          'Activity Stream Audio Length in Hours',
+                          activityStreamHours == null?'Activity Stream Audio Length in Hours': activityStreamHours!,
                           style: myTextStyleSmall(context),
                         ),
                         hintStyle: myTextStyleSmall(context),
@@ -466,7 +509,7 @@ class _SettingsFormState extends State<SettingsForm> {
                       keyboardType: TextInputType.number,
                       validator: (value) {
                         if (value!.isEmpty) {
-                          return 'Please enter the number of days your dashboard must show';
+                          return numberOfDays == null?'Please enter the number of days your dashboard must show':numberOfDays!;
                         }
                         return null;
                       },
@@ -502,7 +545,7 @@ class _SettingsFormState extends State<SettingsForm> {
                         onChanged: _handlePhotoSizeValueChange,
                       ),
                       Text(
-                        'Small',
+                        small == null?'Small':small!,
                         style: myTextStyleSmall(context),
                       ),
                       Radio(
@@ -510,13 +553,15 @@ class _SettingsFormState extends State<SettingsForm> {
                         groupValue: groupValue,
                         onChanged: _handlePhotoSizeValueChange,
                       ),
-                      Text('Medium', style: myTextStyleSmall(context)),
+                      Text(medium == null?'Medium':medium!,
+                          style: myTextStyleSmall(context)),
                       Radio(
                         value: 2,
                         groupValue: groupValue,
                         onChanged: _handlePhotoSizeValueChange,
                       ),
-                      Text('Large', style: myTextStyleSmall(context)),
+                      Text(large == null?'Large':large!,
+                          style: myTextStyleSmall(context)),
                     ],
                   ),
                   const SizedBox(

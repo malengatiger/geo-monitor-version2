@@ -183,12 +183,10 @@ class AuthPhoneSignInMobileState extends State<AuthPhoneSignInMobile>
         pp('$mm GeoMonitor user found on db:  🍎 ${user!.name!} 🍎');
         await prefsOGx.saveUser(user!);
         await cacheManager.addUser(user: user!);
-        ;
         var settings =await DataAPI.getOrganizationSettings(user!.organizationId!);
         settings.sort((a,b) => b.created!.compareTo(a.created!));
-
         await themeBloc.changeToTheme(settings.first.themeIndex!);
-
+        pp('$mm .......... do we get here: 1');
         if (settings.isEmpty) {
           await prefsOGx.saveSettings(SettingsModel(
               distanceFromProject: 500,
@@ -208,6 +206,7 @@ class AuthPhoneSignInMobileState extends State<AuthPhoneSignInMobile>
         } else {
           await prefsOGx.saveSettings(settings.first);
           await themeBloc.changeToTheme(settings.first.themeIndex!);
+          pp('$mm .......... do we get here: 2');
         }
         setState(() {
           busy = false;
@@ -229,7 +228,7 @@ class AuthPhoneSignInMobileState extends State<AuthPhoneSignInMobile>
         return;
       }
     } catch (e) {
-      pp('\n\n\n $e \n\n\n');
+      pp('\n\n\n .... $e \n\n\n');
       String msg = '$e';
       if (msg.contains('dup key')) {
         msg = 'Duplicate organization name';
@@ -243,6 +242,7 @@ class AuthPhoneSignInMobileState extends State<AuthPhoneSignInMobile>
       if (msg.contains('server cannot be reached')) {
         msg = 'server cannot be reached';
       }
+      pp(msg);
       if (mounted) {
         showToast(
             duration: const Duration(seconds: 3),

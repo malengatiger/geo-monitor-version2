@@ -24,7 +24,6 @@ import 'package:page_transition/page_transition.dart';
 import 'package:responsive_builder/responsive_builder.dart';
 import 'package:universal_platform/universal_platform.dart';
 
-import '../../generated/l10n.dart';
 import '../../library/api/prefs_og.dart';
 import '../../library/bloc/downloader.dart';
 import '../../library/bloc/theme_bloc.dart';
@@ -57,7 +56,7 @@ class DashboardTablet extends StatefulWidget {
   State<DashboardTablet> createState() => DashboardTabletState();
 }
 
-class DashboardTabletState extends State<DashboardTablet> {
+class DashboardTabletState extends State<DashboardTablet> with WidgetsBindingObserver {
   final mm = '🍎🍎🍎🍎 DashboardTablet: 🔵 ';
   // late StreamSubscription<List<Project>> projectSubscription;
   // late StreamSubscription<List<User>> userSubscription;
@@ -90,11 +89,26 @@ class DashboardTabletState extends State<DashboardTablet> {
 
   @override
   void initState() {
+    WidgetsBinding.instance.addObserver(this);
     super.initState();
     _listenForDataBag();
     _listenForFCM();
     _getData(false);
   }
+
+  @override
+  void didChangeLocales(List<Locale>? locales) {
+    super.didChangeLocales(locales);
+    pp('$mm didChangeLocales: This is run when system locales are changed, '
+        'locales; ${locales?.length}');
+    locales?.forEach((loc) {
+      pp('$mm didChangeLocales: System Locale: $loc');
+    });
+    // Update state with the new values and redraw controls
+    setState(() {
+    });
+  }
+
 
   @override
   void dispose() {
@@ -598,6 +612,8 @@ class DashboardTabletState extends State<DashboardTablet> {
 
   @override
   Widget build(BuildContext context) {
+    final Locale appLocale = Localizations.localeOf(context);
+    pp('$mm build: app locale: $appLocale');
     var size = MediaQuery.of(context).size;
     var ori = MediaQuery.of(context).orientation;
     var bottomHeight = 140.0;
@@ -611,13 +627,15 @@ class DashboardTabletState extends State<DashboardTablet> {
       extPadding = 120;
     }
 
-    var b = S.of(context)!.organizationDashboard;
+    // var b = S.of(context).organizationDashboard;
+    // var c = S.of(context).dashboardSubTitle(33);
+    // pp('$mm - title from arb file? $b sub: $c');
 
     return SafeArea(
         child: Scaffold(
       appBar: AppBar(
         centerTitle: true,
-        title: Text(b),
+        title: const Text('Org Dashboard'),
         actions: [
           IconButton(
               icon: Icon(

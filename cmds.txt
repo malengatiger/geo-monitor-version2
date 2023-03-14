@@ -8,6 +8,9 @@ flutter pub cache clean
 
 flutter packages pub run build_runner build --delete-conflicting-outputs
 
+flutter pub run easy_localization:generate -S assets/l10n -f keys -O lib/l10n -o locale_keys.g.dart
+
+
  flutter pub run intl_translation:generate_from_arb \
     --output-dir=lib/l10n --no-use-deferred-loading \
     lib/main.dart lib/l10n/intl_*.arb

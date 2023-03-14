@@ -13,15 +13,6 @@
   "emailAddress": "Barua pepe",
   "profilePhoto": "Picha ya Wasifu",
   "activityTitle": "Shughuli katika saa {count} zilizopita",
-  "@activityTitle": {
-    "placeholders": {
-      "count": {
-        "type": "int",
-        "example": "24",
-        "format": "decimalPattern"
-      }
-    }
-  },
   "members": "Wanachama",
   "maximumVideoLength": "Upeo wa Urefu wa Video kwa sekunde",
   "selectProjectIfNecessary": "Chagua mradi tu ikiwa mipangilio hii ni ya mradi mmoja, vinginevyo mipangilio ni ya shirika zima",
@@ -75,14 +66,54 @@
   "locations": "Maeneo",
   "addProjectLocationHere": "Ongeza Eneo la Mradi Hapa",
   "dashboardSubTitle": "Data inawakilisha siku {count} zilizopita",
-  "@dashboardSubTitle": {
-    "placeholders": {
-      "count": {
-        "type": "int",
-        "format": "decimalPattern",
-        "example":"30"}
-    }
-  },
   "numberOfDaysForDashboardData": "Idadi ya siku za data ya Dashibodi",
-  "directionsToProject": "Maelekezo kwa Mradi"
+  "directionsToProject": "Maelekezo kwa Mradi",
+  "welcomeToGeo": "Karibu kwenye Geo!",
+  "endDate": "Tarehe ya mwisho",
+  "sendCode": "Tuma Msimbo",
+  "locationNotAvailable": "Eneo la Kifaa halipatikani",
+  "weGotAProblem": "Tuna shida, bwana!",
+  "numberOfDays": "Idadi ya Siku",
+  "projectDetails": "Maelezo ya Mradi",
+  "dataRefreshFailed": "Imeshindwa kuonyesha upya data",
+  "projectLocationFailed": "Eneo la Mradi halikufaulu",
+  "duration": "Muda",
+  "updateFailed": "Usasishaji haukufaulu",
+  "audioPlayer": "Kicheza Sauti",
+  "projectActivities": "Shughuli za Mradi",
+  "projectAddedToOrganization": "{projectName} imeongezwa kwenye shirika",
+  "verifyPhoneNumber": "Thibitisha Nambari ya Simu",
+  "fieldMonitorSchedules": "Ratiba za FieldMonitor",
+  "projectsNotFound": "Miradi Haijapatikana\u0027",
+  "projectAudio": "Mradi wa Klipu za Sauti",
+  "videoBuffering": "Video inaakibisha",
+  "notReadyYet": "Bado haijawa tayari",
+  "userCreateFailed": "Uundaji wa Mtumiaji umeshindwa",
+  "createAudioClip": "Unda Klipu ya Sauti",
+  "phoneNumber": "Nambari ya simu",
+  "fileSize": "Ukubwa wa faili",
+  "memberDashboard": "Dashibodi ya Mwanachama",
+  "projectEditor": "Mhariri wa Mradi",
+  "startDate": "Tarehe ya Kuanza",
+  "memberCreateFailed": "Uundaji wa Mwanachama haukufaulu",
+  "small": "Ndogo",
+  "selectLanguage": "Chagua Lugha",
+  "maxAudioLength": "Tafadhali weka upeo wa urefu wa sauti kwa dakika",
+  "pleaseEnterVideoLength": "Tafadhali weka upeo wa urefu wa video kwa sekunde",
+  "large": "Kubwa",
+  "enterVideoLength": "Weka upeo wa urefu wa video kwa sekunde",
+  "pleaseNumberOfDays": "Tafadhali weka idadi ya siku ambazo dashibodi yako lazima ionyeshe",
+  "dashNumberOfDays": "Weka idadi ya siku ambazo dashibodi yako lazima ionyeshe",
+  "medium": "Kati",
+  "enterDistance": "Weka umbali wa juu zaidi kutoka kwa mradi kwa mita",
+  "pleaseSelectLanguage": "Tafadhali Chagua Lugha",
+  "pleaseActivityStreamHours": "Tafadhali weka idadi ya saa ambazo mtiririko wako wa shughuli lazima uonyeshe",
+  "at": "katika",
+  "arrivedAt": "Iliwasili katika mradi wa $",
+  "pleaseEnterDistance": "Tafadhali weka umbali wa juu zaidi kutoka kwa mradi kwa mita",
+  "leftFrom": "Unaondoka kwenye mradi wa $",
+  "loadingActivities": "Inapakia Shughuli",
+  "maxVideoLength": "Upeo wa Urefu wa Video kwa Sekunde",
+  "activityStreamHours": "Weka idadi ya saa ambazo mtiririko wako wa shughuli lazima uonyeshe",
+  "dashboard": "Dashibodi"
 }

@@ -13,15 +13,6 @@
   "emailAddress": "Adirese ya Imeyili",
   "profilePhoto": "Xifaniso xa Profile",
   "activityTitle": "Mintirho eka tiawara to hetelela ta $count",
-  "@activityTitle": {
-    "placeholders": {
-      "count": {
-        "type": "int",
-        "example": "24",
-        "format": "decimalPattern"
-      }
-    }
-  },
   "members": "Swirho",
   "maximumVideoLength": "Ku leha ka Vhidiyo lokukulu hi tisekoni",
   "selectProjectIfNecessary": "Hlawula phurojeke ntsena loko swiyimiso leswi swi ri swa phurojeke yin’we, handle ka sweswo swiyimiso swi ri swa nhlangano hinkwawo",
@@ -75,14 +66,54 @@
   "locations": "Tindhawu",
   "addProjectLocationHere": "Engetela Ndhawu ya Phurojeke Laha",
   "dashboardSubTitle": "Data yi yimela masiku yo hetelela ya $count",
-  "@dashboardSubTitle": {
-    "placeholders": {
-      "count": {
-        "type": "int",
-        "format": "decimalPattern",
-        "example":"30"}
-    }
-  },
   "numberOfDaysForDashboardData": "Nhlayo ya masiku ya datha ya Dashboard",
-  "directionsToProject": "Swiletelo swo ya eka Phurojeke"
+  "directionsToProject": "Swiletelo swo ya eka Phurojeke",
+  "welcomeToGeo": "Mi amukeriwile eka Geo!",
+  "endDate": "Siku ro Hetelela",
+  "sendCode": "Rhumela Khodi",
+  "locationNotAvailable": "Ndhawu ya Xitirhisiwa a yi kumeki",
+  "weGotAProblem": "Hi kume xiphiqo, Nkulukumba!",
+  "numberOfDays": "Nhlayo ya Masiku",
+  "projectDetails": "Vuxokoxoko bya Phurojeke",
+  "dataRefreshFailed": "Ku pfuxetiwa ka data ku tsandzekile",
+  "projectLocationFailed": "Ndhawu ya Phurojeke yi tsandzekile",
+  "duration": "Nkarhi",
+  "updateFailed": "Update yi tsandzekile",
+  "audioPlayer": "Xichayachayani xa Audio",
+  "projectActivities": "Mintirho ya Phurojeke",
+  "projectAddedToOrganization": "{projectName} yi engeteriwile eka nhlangano",
+  "verifyPhoneNumber": "Tiyisisa Nomboro ya Foni",
+  "fieldMonitorSchedules": "Tixedulu ta FieldMonitor",
+  "projectsNotFound": "Tiphurojeke A Ti Kumiwanga\u0027.",
+  "projectAudio": "Ti-Clip ta Mpfumawulo ta Phurojeke",
+  "videoBuffering": "Vhidiyo yi le ku buffering",
+  "notReadyYet": "A swi si lungheka ku fikela sweswi",
+  "userCreateFailed": "Ku Tumbuluxiwa ka Mutirhisi ku tsandzekile",
+  "createAudioClip": "Endla Xiphemu xa Audio",
+  "phoneNumber": "Nomboro ya Riqingho",
+  "fileSize": "Vukulu bya Fayili",
+  "memberDashboard": "Dashboard ya Xirho",
+  "projectEditor": "Muhleri wa Phurojeke",
+  "startDate": "Siku ro Sungula",
+  "memberCreateFailed": "Member Create yi tsandzekile",
+  "small": "Xitsongo",
+  "selectLanguage": "Hlawula Ririmi",
+  "maxAudioLength": "Hi kombela u nghenisa ku leha lokukulu ka mpfumawulo hi timinete",
+  "pleaseEnterVideoLength": "Hi kombela u nghenisa ku leha lokukulu ka vhidiyo hi tisekoni",
+  "large": "Lexikulu",
+  "enterVideoLength": "Nghenisa ku leha lokukulu ka vhidiyo hi tisekoni",
+  "pleaseNumberOfDays": "Hi kombela u nghenisa nhlayo ya masiku lawa dashboard ya wena yi faneleke ku ma kombisa",
+  "dashNumberOfDays": "Nghenisa nhlayo ya masiku lawa dashboard ya wena yi faneleke ku ma kombisa",
+  "medium": "Xikarhi",
+  "enterDistance": "Nghenisa mpfhuka lowukulu ku suka eka phurojeke hi timitara",
+  "pleaseSelectLanguage": "Hi kombela u Hlawula Ririmi",
+  "pleaseActivityStreamHours": "Hi kombela u nghenisa nhlayo ya tiawara leti xirhendzevutani xa wena xa migingiriko xi faneleke ku ti kombisa",
+  "at": "e",
+  "arrivedAt": "Ku fika eka $project",
+  "pleaseEnterDistance": "Hi kombela u nghenisa mpfhuka lowukulu ku suka eka phurojeke hi timitara",
+  "leftFrom": "Ku suka eka $project",
+  "loadingActivities": "Ku Layicha Mintirho",
+  "maxVideoLength": "Ku leha Ka Vhidiyo Leyikulu hi Tisekoni",
+  "activityStreamHours": "Nghenisa nhlayo ya tiawara leti xirhendzevutani xa wena xa migingiriko xi faneleke ku ti kombisa",
+  "dashboard": "Dashboard"
 }

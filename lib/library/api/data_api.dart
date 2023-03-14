@@ -252,7 +252,8 @@ class DataAPI {
       }
       if (mList.isNotEmpty) {
         mList.sort((a, b) => b.created!.compareTo(a.created!));
-        await cacheManager.addOrganizationSettingsList(mList);
+        await prefsOGx.saveSettings(mList.first);
+        await cacheManager.addOrganizationSettingsList([mList.first]);
       }
 
       pp('🌿 🌿 🌿 getOrganizationSettings returned: 🌿 ${mList.length}');

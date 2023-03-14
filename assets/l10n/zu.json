@@ -13,15 +13,6 @@
   "emailAddress": "Ikheli le-imeyili",
   "profilePhoto": "Isithombe Sephrofayela",
   "activityTitle": "Imisebenzi emahoreni wokugcina e-{count}",
-  "@activityTitle": {
-    "placeholders": {
-      "count": {
-        "type": "int",
-        "example": "24",
-        "format": "decimalPattern"
-      }
-    }
-  },
   "members": "Amalungu",
   "maximumVideoLength": "Ubude obukhulu bevidiyo ngemizuzwana",
   "selectProjectIfNecessary": "Khetha iphrojekthi kuphela uma lezi zilungiselelo ezephrojekthi eyodwa, ngaphandle kwalokho izilungiselelo ezenhlangano yonke",
@@ -44,7 +35,6 @@
   "name": "Igama",
   "organizationRegistered": "Inhlangano ibhalisiwe",
   "october": "Okthoba",
-  "activityStreamHours": "Ukusakaza komsebenzi ngamahora",
   "submitMember": "Thumela Ilungu",
   "projectName": "Igama lephrojekthi",
   "male": "Owesilisa",
@@ -75,14 +65,54 @@
   "locations": "Izindawo",
   "addProjectLocationHere": "Engeza Indawo Yephrojekthi Lapha",
   "dashboardSubTitle": "Idatha imele izinsuku zokugcina ezingu-{count}",
-  "@dashboardSubTitle": {
-    "placeholders": {
-      "count": {
-        "type": "int",
-        "format": "decimalPattern",
-        "example":"30"}
-    }
-  },
   "numberOfDaysForDashboardData": "Inombolo yezinsuku zedatha yedeshibhodi",
-  "directionsToProject": "Izikhombisi-ndlela eziya kuphrojekthi"
+  "directionsToProject": "Izikhombisi-ndlela eziya kuphrojekthi",
+  "welcomeToGeo": "Siyakwamukela ku-Geo!",
+  "endDate": "Idethi Yokuphela",
+  "sendCode": "Thumela Ikhodi",
+  "locationNotAvailable": "Indawo Yedivayisi ayitholakali",
+  "weGotAProblem": "Sinenkinga, Mnumzane!",
+  "numberOfDays": "Inombolo Yezinsuku",
+  "projectDetails": "Imininingwane Yephrojekthi",
+  "dataRefreshFailed": "Ukuvuselela idatha kuhlulekile",
+  "projectLocationFailed": "Indawo Yephrojekthi yehlulekile",
+  "duration": "Ubude besikhathi",
+  "updateFailed": "Ukubuyekeza kuhlulekile",
+  "audioPlayer": "Isidlali Somsindo",
+  "projectActivities": "Imisebenzi Yephrojekthi",
+  "projectAddedToOrganization": "I-{projectName} yengezwe enhlanganweni",
+  "verifyPhoneNumber": "Qinisekisa Inombolo Yocingo",
+  "fieldMonitorSchedules": "Amashejuli we-FieldMonitor",
+  "projectsNotFound": "Amaphrojekthi awatholakali\u0027",
+  "projectAudio": "Iziqeshana Zomsindo Wephrojekthi",
+  "videoBuffering": "Ividiyo iyabhafa",
+  "notReadyYet": "Ayikalungi",
+  "userCreateFailed": "Ukudalwa komsebenzisi kwehlulekile",
+  "createAudioClip": "Dala Isiqeshana Somsindo",
+  "phoneNumber": "Inombolo yocingo",
+  "fileSize": "Usayizi Wefayela",
+  "memberDashboard": "Ideshibhodi Yelungu",
+  "projectEditor": "Umhleli Wephrojekthi",
+  "startDate": "Usuku okuqalwa ngalo",
+  "memberCreateFailed": "Ukudala Ilungu kuhlulekile",
+  "small": "Encane",
+  "selectLanguage": "Khetha Ulimi",
+  "maxAudioLength": "Sicela ufake ubude bomsindo obukhulu ngamaminithi",
+  "pleaseEnterVideoLength": "Sicela ufake ubude bevidiyo obuphelele ngemizuzwana",
+  "large": "Okukhulu",
+  "enterVideoLength": "Faka ubude bevidiyo obukhulu ngemizuzwana",
+  "pleaseNumberOfDays": "Sicela ufake inombolo yezinsuku okufanele ideshibhodi yakho izibonise",
+  "dashNumberOfDays": "Faka inombolo yezinsuku okufanele ideshibhodi yakho izibonise",
+  "medium": "Maphakathi",
+  "enterDistance": "Faka ibanga eliphakeme ukusuka kuphrojekthi ngamamitha",
+  "pleaseSelectLanguage": "Sicela ukhethe Ulimi",
+  "pleaseActivityStreamHours": "Sicela ufake inombolo yamahora okufanele uboniswe ukusakaza komsebenzi wakho",
+  "at": "kwe",
+  "arrivedAt": "Ifike e-$project",
+  "pleaseEnterDistance": "Sicela ufake ibanga eliphezulu ukusuka kuphrojekthi ngamamitha",
+  "leftFrom": "Ishiya iphrojekthi ye-$",
+  "loadingActivities": "Ilayisha Imisebenzi",
+  "maxVideoLength": "Ubude obukhulu bevidiyo ngamasekhondi",
+  "activityStreamHours": "Faka inani lamahora okufanele kuboniswe ukusakazwa komsebenzi wakho",
+  "dashboard": "Ideshibhodi"
 }

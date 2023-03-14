@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:geo_monitor/library/api/prefs_og.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+import '../../l10n/translation_handler.dart';
 import '../../library/bloc/downloader.dart';
 import '../../library/data/data_bag.dart';
 import '../../library/functions.dart';
 
-class DashboardGrid extends StatelessWidget {
-  final mm = '🔵🔵🔵🔵 DashboardGrid:  🍎 ';
+class DashboardGrid extends StatefulWidget {
   final Function(int) onTypeTapped;
   final double? totalHeight;
   final double? topPadding, elementPadding;
@@ -27,25 +28,52 @@ class DashboardGrid extends StatelessWidget {
       required this.crossAxisCount});
 
   @override
+  State<DashboardGrid> createState() => _DashboardGridState();
+}
+
+class _DashboardGridState extends State<DashboardGrid> {
+  final mm = '🔵🔵🔵🔵 DashboardGrid:  🍎 ';
+
+  String? projects, members, photos,
+      videos, audios, areas, locations, schedules, audioClips;
+  @override
+  void initState() {
+    super.initState();
+    _setTitles();
+  }
+  void _setTitles() async {
+    var sett = await prefsOGx.getSettings();
+    projects = await mTx.tx('projects', sett!.locale!);
+    members = await mTx.tx('members', sett.locale!);
+    photos = await mTx.tx('photos', sett.locale!);
+    audioClips = await mTx.tx('audioClips', sett.locale!);
+    locations = await mTx.tx('locations', sett.locale!);
+    areas = await mTx.tx('areas', sett.locale!);
+    schedules = await mTx.tx('schedules', sett.locale!);
+    setState(() {
+
+    });
+  }
+  @override
   Widget build(BuildContext context) {
     return SizedBox(
       // height: totalHeight == null ? 1000 : totalHeight!,
       child: Padding(
-        padding: EdgeInsets.all(gridPadding),
+        padding: EdgeInsets.all(widget.gridPadding),
         child: GridView.count(
-          crossAxisCount: crossAxisCount,
+          crossAxisCount: widget.crossAxisCount,
           children: [
             GestureDetector(
               onTap: () {
                 pp('$mm widget on tapped: typeProjects $typeProjects ...');
-                onTypeTapped(typeProjects);
+                widget.onTypeTapped(typeProjects);
               },
               child: DashboardElement(
-                title: 'Projects',
-                topPadding: elementPadding,
-                number: dataBag.projects!.length,
+                title: projects == null? 'Projects':projects!,
+                topPadding: widget.elementPadding,
+                number: widget.dataBag.projects!.length,
                 onTapped: () {
-                  onTypeTapped(typeProjects);
+                  widget.onTypeTapped(typeProjects);
                 },
               ),
             ),
@@ -53,14 +81,14 @@ class DashboardGrid extends StatelessWidget {
               onTap: () {
                 pp('$mm widget on tapped: typeUsers $typeUsers ...');
 
-                onTypeTapped(typeUsers);
+                widget.onTypeTapped(typeUsers);
               },
               child: DashboardElement(
-                title: 'Members',
-                number: dataBag.users!.length,
-                topPadding: elementPadding,
+                title: members == null? 'Members': members!,
+                number: widget.dataBag.users!.length,
+                topPadding: widget.elementPadding,
                 onTapped: () {
-                  onTypeTapped(typeUsers);
+                  widget.onTypeTapped(typeUsers);
                 },
               ),
             ),
@@ -68,18 +96,18 @@ class DashboardGrid extends StatelessWidget {
               onTap: () {
                 pp('$mm widget on tapped: typePhotos $typePhotos ...');
 
-                onTypeTapped(typePhotos);
+                widget.onTypeTapped(typePhotos);
               },
               child: DashboardElement(
-                title: 'Photos',
-                number: dataBag.photos!.length,
-                topPadding: elementPadding,
+                title: photos == null?'Photos':photos!,
+                number: widget.dataBag.photos!.length,
+                topPadding: widget.elementPadding,
                 textStyle: GoogleFonts.secularOne(
                     textStyle: Theme.of(context).textTheme.titleLarge,
                     fontWeight: FontWeight.w900,
                     color: Theme.of(context).primaryColor),
                 onTapped: () {
-                  onTypeTapped(typePhotos);
+                  widget.onTypeTapped(typePhotos);
                 },
               ),
             ),
@@ -87,18 +115,18 @@ class DashboardGrid extends StatelessWidget {
               onTap: () {
                 pp('$mm widget on tapped: typeVideos $typeVideos ...');
 
-                onTypeTapped(typeVideos);
+                widget.onTypeTapped(typeVideos);
               },
               child: DashboardElement(
-                title: 'Videos',
-                topPadding: elementPadding,
-                number: dataBag.videos!.length,
+                title: videos == null? 'Videos':videos!,
+                topPadding: widget.elementPadding,
+                number: widget.dataBag.videos!.length,
                 textStyle: GoogleFonts.secularOne(
                     textStyle: Theme.of(context).textTheme.titleLarge,
                     fontWeight: FontWeight.w900,
                     color: Theme.of(context).primaryColor),
                 onTapped: () {
-                  onTypeTapped(typeVideos);
+                  widget.onTypeTapped(typeVideos);
                 },
               ),
             ),
@@ -106,18 +134,18 @@ class DashboardGrid extends StatelessWidget {
               onTap: () {
                 pp('$mm widget on tapped: typeAudios $typeAudios ...');
 
-                onTypeTapped(typeAudios);
+                widget.onTypeTapped(typeAudios);
               },
               child: DashboardElement(
-                title: 'Audio Clips',
-                topPadding: elementPadding,
-                number: dataBag.audios!.length,
+                title: audioClips == null? 'Audio Clips': audioClips!,
+                topPadding: widget.elementPadding,
+                number: widget.dataBag.audios!.length,
                 textStyle: GoogleFonts.secularOne(
                     textStyle: Theme.of(context).textTheme.titleLarge,
                     fontWeight: FontWeight.w900,
                     color: Theme.of(context).primaryColor),
                 onTapped: () {
-                  onTypeTapped(typeAudios);
+                  widget.onTypeTapped(typeAudios);
                 },
               ),
             ),
@@ -125,14 +153,14 @@ class DashboardGrid extends StatelessWidget {
               onTap: () {
                 pp('$mm widget on tapped: typePositions $typePositions ...');
 
-                onTypeTapped(typePositions);
+                widget.onTypeTapped(typePositions);
               },
               child: DashboardElement(
-                title: 'Locations',
-                topPadding: elementPadding,
-                number: dataBag.projectPositions!.length,
+                title: locations == null? 'Locations': locations!,
+                topPadding: widget.elementPadding,
+                number: widget.dataBag.projectPositions!.length,
                 onTapped: () {
-                  onTypeTapped(typePositions);
+                  widget.onTypeTapped(typePositions);
                 },
               ),
             ),
@@ -140,15 +168,15 @@ class DashboardGrid extends StatelessWidget {
               onTap: () {
                 pp('$mm widget on tapped: typePolygons $typePolygons ...');
 
-                onTypeTapped(typePolygons);
+                widget.onTypeTapped(typePolygons);
               },
               child: DashboardElement(
-                title: 'Areas',
-                topPadding: elementPadding,
-                number: dataBag.projectPolygons!.length,
+                title: areas == null? 'Areas': areas!,
+                topPadding: widget.elementPadding,
+                number: widget.dataBag.projectPolygons!.length,
 
                 onTapped: () {
-                  onTypeTapped(typePolygons);
+                  widget.onTypeTapped(typePolygons);
                 },
               ),
             ),
@@ -156,14 +184,14 @@ class DashboardGrid extends StatelessWidget {
               onTap: () {
                 pp('$mm widget on tapped: typeSchedules $typeSchedules ...');
 
-                onTypeTapped(typeSchedules);
+                widget.onTypeTapped(typeSchedules);
               },
               child: DashboardElement(
                 title: 'Schedules',
-                topPadding: elementPadding,
-                number: dataBag.fieldMonitorSchedules!.length,
+                topPadding: widget.elementPadding,
+                number: widget.dataBag.fieldMonitorSchedules!.length,
                 onTapped: () {
-                  onTypeTapped(typeSchedules);
+                  widget.onTypeTapped(typeSchedules);
                 },
               ),
             ),

@@ -12,7 +12,7 @@ import 'package:geo_monitor/library/data/weather/daily_forecast.dart';
 import 'package:geo_monitor/library/data/weather/daily_units.dart';
 import 'package:geo_monitor/library/data/weather/hourly_forecast.dart';
 import 'package:geo_monitor/library/data/weather/hourly_units.dart';
-import 'package:hive/hive.dart';
+import 'package:hive_flutter/adapters.dart';
 
 import 'bloc/failed_audio.dart';
 import 'bloc/failed_bag.dart';
@@ -107,6 +107,7 @@ class CacheManager {
     }
     if (!_isInitialized) {
       pp('\n\n$mm Setting Hive files to existing suffix');
+      Hive.initFlutter(hiveName);
       await _doTheInitializationWork();
       return;
     }

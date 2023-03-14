@@ -1,8 +1,6 @@
 import 'dart:ui';
 
 import 'package:firebase_messaging/firebase_messaging.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:hive_flutter/adapters.dart';
 
 import 'library/api/prefs_og.dart';
 import 'library/auth/app_auth.dart';
@@ -34,10 +32,7 @@ class Initializer {
     }
 
     pp('$mx THEME: themeIndex up top is: $themeIndex ');
-    await dotenv.load(fileName: ".env");
-    pp('$mx $heartBlue DotEnv has been loaded');
 
-    await Hive.initFlutter(hiveName);
     await cacheManager.initialize(forceInitialization: false);
 
     pp('$mx  '

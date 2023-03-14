@@ -13,15 +13,6 @@
   "emailAddress": "E-pos adres",
   "profilePhoto": "Profielfoto",
   "activityTitle": "Aktiwiteite in die afgelope $count ure",
-  "@activityTitle": {
-    "placeholders": {
-      "count": {
-        "type": "int",
-        "example": "24",
-        "format": "decimalPattern"
-      }
-    }
-  },
   "members": "Lede",
   "maximumVideoLength": "Maksimum videolengte in sekondes",
   "selectProjectIfNecessary": "Kies projek slegs as hierdie instellings vir \u0027n enkele projek is, anders is die instellings vir die hele organisasie",
@@ -44,7 +35,6 @@
   "name": "Naam",
   "organizationRegistered": "Organisasie is geregistreer",
   "october": "Oktober",
-  "activityStreamHours": "Aktiwiteitstroom in ure",
   "submitMember": "Dien lid in",
   "projectName": "Projek Naam",
   "male": "Manlik",
@@ -75,14 +65,55 @@
   "locations": "Liggings",
   "addProjectLocationHere": "Voeg projekligging hier by",
   "dashboardSubTitle": "Data verteenwoordig die laaste $count dae",
-  "@dashboardSubTitle": {
-    "placeholders": {
-      "count": {
-        "type": "int",
-        "format": "decimalPattern",
-        "example":"30"}
-    }
-  },
+
   "numberOfDaysForDashboardData": "Aantal dae vir Dashboard-data ${count}",
-  "directionsToProject": "Aanwysings na Projek"
+  "directionsToProject": "Aanwysings na Projek",
+  "welcomeToGeo": "Welkom by Geo!",
+  "endDate": "Einddatum",
+  "sendCode": "Stuur kode",
+  "locationNotAvailable": "Toestelligging nie beskikbaar nie",
+  "weGotAProblem": "Ons het \u0027n probleem, Meneer!",
+  "numberOfDays": "Aantal dae",
+  "projectDetails": "Projekbesonderhede",
+  "dataRefreshFailed": "Kon nie data herlaai nie",
+  "projectLocationFailed": "Projekligging het misluk",
+  "duration": "Duur",
+  "updateFailed": "Opdatering misluk",
+  "audioPlayer": "Oudiospeler",
+  "projectActivities": "Projek Aktiwiteite",
+  "projectAddedToOrganization": "{projectName} is by organisasie gevoeg",
+  "verifyPhoneNumber": "Verifieer telefoonnommer",
+  "fieldMonitorSchedules": "FieldMonitor-skedules",
+  "projectsNotFound": "Projekte nie gevind nie\u0027",
+  "projectAudio": "Projek oudiosnitte",
+  "videoBuffering": "Video buffer",
+  "notReadyYet": "Nog nie gereed nie",
+  "userCreateFailed": "Gebruikerskepping het misluk",
+  "createAudioClip": "Skep oudiosnit",
+  "phoneNumber": "Telefoon nommer",
+  "fileSize": "Lêergrootte",
+  "memberDashboard": "Lede Dashboard",
+  "projectEditor": "Projekredakteur",
+  "startDate": "Begindatum",
+  "memberCreateFailed": "Lid skep het misluk",
+  "small": "Klein",
+  "selectLanguage": "Kies taal",
+  "maxAudioLength": "Voer asseblief maksimum oudiolengte in minute in",
+  "pleaseEnterVideoLength": "Voer asseblief maksimum videolengte in sekondes in",
+  "large": "Groot",
+  "enterVideoLength": "Voer maksimum videolengte in sekondes in",
+  "pleaseNumberOfDays": "Voer asseblief die aantal dae in wat jou kontroleskerm moet wys",
+  "dashNumberOfDays": "Voer die aantal dae in wat jou kontroleskerm moet wys",
+  "medium": "Medium",
+  "enterDistance": "Voer maksimum afstand vanaf projek in meter in",
+  "pleaseSelectLanguage": "Kies asseblief taal",
+  "pleaseActivityStreamHours": "Voer asseblief die aantal ure in wat jou aktiwiteitstroom moet wys",
+  "at": "by",
+  "arrivedAt": "Aangekom by $project",
+  "pleaseEnterDistance": "Voer asseblief maksimum afstand vanaf projek in meter in",
+  "leftFrom": "Verlaat $projek",
+  "loadingActivities": "Laai aktiwiteite",
+  "maxVideoLength": "Maksimum videolengte in sekondes",
+  "activityStreamHours": "Voer die aantal ure in wat jou aktiwiteitstroom moet wys",
+  "dashboard": "Dashboard"
 }

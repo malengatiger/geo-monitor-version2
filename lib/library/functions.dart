@@ -656,6 +656,11 @@ Future<File> getImageFileFromAssets(String path) async {
 
   return file;
 }
+Future<String> getStringFromAssets(String path) async {
+  final stringData = await rootBundle.loadString('assets/l10n/$path.json');
+  return stringData;
+
+}
 
 LatLngBounds boundsFromLatLngList(List<LatLng> list) {
   assert(list.isNotEmpty);

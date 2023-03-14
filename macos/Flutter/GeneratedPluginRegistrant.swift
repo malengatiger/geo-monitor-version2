@@ -6,7 +6,7 @@ import FlutterMacOS
 import Foundation
 
 import audio_session
-import connectivity_plus
+import connectivity_plus_macos
 import desktop_webview_auth
 import firebase_analytics
 import firebase_auth

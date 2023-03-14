@@ -13,15 +13,7 @@
   "emailAddress": "Dirección de correo electrónico",
   "profilePhoto": "Foto de perfil",
   "activityTitle": "Actividades en las últimas $conteo de horas",
-  "@activityTitle": {
-    "placeholders": {
-      "count": {
-        "type": "int",
-        "example": "24",
-        "format": "decimalPattern"
-      }
-    }
-  },
+
   "members": "Miembros",
   "maximumVideoLength": "Duración máxima del video en segundos",
   "selectProjectIfNecessary": "Seleccione el proyecto solo si esta configuración es para un solo proyecto; de lo contrario, la configuración es para toda la organización",
@@ -75,14 +67,55 @@
   "locations": "Ubicaciones",
   "addProjectLocationHere": "Agregue la ubicación del proyecto aquí",
   "dashboardSubTitle": "Los datos representan los últimos $recuentos de días",
-  "@dashboardSubTitle": {
-    "placeholders": {
-      "count": {
-        "type": "int",
-        "format": "decimalPattern",
-        "example":"30"}
-    }
-  },
+
   "numberOfDaysForDashboardData": "Número de días para los datos del panel {count}",
-  "directionsToProject": "Direcciones al Proyecto"
+  "directionsToProject": "Direcciones al Proyecto",
+  "welcomeToGeo": "¡Bienvenido a Geo!",
+  "endDate": "Fecha final",
+  "sendCode": "Enviar código",
+  "locationNotAvailable": "Ubicación del dispositivo no disponible",
+  "weGotAProblem": "¡Tenemos un problema, señor!",
+  "numberOfDays": "Número de días",
+  "projectDetails": "detalles del proyecto",
+  "dataRefreshFailed": "Actualización de datos fallida",
+  "projectLocationFailed": "La ubicación del proyecto falló",
+  "duration": "Duración",
+  "updateFailed": "Actualización fallida",
+  "audioPlayer": "Reproductor de música",
+  "projectActivities": "Actividades del proyecto",
+  "projectAddedToOrganization": "{projectName} agregado a la organización",
+  "verifyPhoneNumber": "Verificar número de teléfono",
+  "fieldMonitorSchedules": "Horarios de FieldMonitor",
+  "projectsNotFound": "Proyectos no encontrados\u0027",
+  "projectAudio": "Clips de audio del proyecto",
+  "videoBuffering": "El video se está almacenando en búfer",
+  "notReadyYet": "No está listo todavía",
+  "userCreateFailed": "La creación del usuario falló",
+  "createAudioClip": "Crear clip de audio",
+  "phoneNumber": "Número de teléfono",
+  "fileSize": "Tamaño del archivo",
+  "memberDashboard": "Panel de miembros",
+  "projectEditor": "Editor de proyectos",
+  "startDate": "Fecha de inicio",
+  "memberCreateFailed": "Error al crear miembro",
+  "small": "Pequeño",
+  "selectLanguage": "Seleccione el idioma",
+  "maxAudioLength": "Ingrese la duración máxima del audio en minutos",
+  "pleaseEnterVideoLength": "Ingrese la duración máxima del video en segundos",
+  "large": "Grande",
+  "enterVideoLength": "Ingrese la duración máxima del video en segundos",
+  "pleaseNumberOfDays": "Ingrese la cantidad de días que debe mostrar su tablero",
+  "dashNumberOfDays": "Ingrese la cantidad de días que debe mostrar su tablero",
+  "medium": "Medio",
+  "enterDistance": "Introduzca la distancia máxima desde el proyecto en metros",
+  "pleaseSelectLanguage": "Seleccione idioma",
+  "pleaseActivityStreamHours": "Ingrese la cantidad de horas que debe mostrar su flujo de actividad",
+  "at": "en",
+  "arrivedAt": "Llegó a $proyecto",
+  "pleaseEnterDistance": "Ingrese la distancia máxima del proyecto en metros",
+  "leftFrom": "Dejando $proyecto",
+  "loadingActivities": "Cargando Actividades",
+  "maxVideoLength": "Duración máxima del video en segundos",
+  "activityStreamHours": "Ingrese la cantidad de horas que debe mostrar su flujo de actividad",
+  "dashboard": "Panel"
 }

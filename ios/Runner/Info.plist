@@ -97,8 +97,21 @@
 	<array>
 		<string>en</string>
 		<string>fr</string>
+		<string>es</string>
+		<string>pt</string>
+		<string>sw</string>
+		<string>sn</string>
+		<string>st</string>
+		<string>ts</string>
+		<string>ig</string>
+		<string>xh</string>
+		<string>zu</string>
+		<string>yo</string>
+		<string>af</string>
 		<string>zh_CN</string>
 	</array>
+	<key>FirebaseMessagingAutoInitEnabled</key>
+	<false/>
 	<key>BGTaskSchedulerPermittedIdentifiers</key>
 	<array>
 		<string>dev.flutter.background.refresh</string>

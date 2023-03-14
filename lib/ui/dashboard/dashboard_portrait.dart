@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:firebase_auth/firebase_auth.dart' as fb;
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:geo_monitor/l10n/translation_handler.dart';
 import 'package:geo_monitor/library/generic_functions.dart';
 import 'package:geo_monitor/library/ui/project_list/project_list_main.dart';
 import 'package:geo_monitor/library/ui/settings/settings_main.dart';
@@ -93,6 +94,7 @@ class DashboardPortraitState extends State<DashboardPortrait>
   final _key = GlobalKey<ScaffoldState>();
   int instruction = stayOnList;
   var items = <BottomNavigationBarItem>[];
+  SettingsModel? settings;
 
   int numberOfDays = 7;
   @override
@@ -201,22 +203,32 @@ class DashboardPortraitState extends State<DashboardPortrait>
         label: 'Weather'));
   }
 
+  var subTitle = 'Data is for ';
+
   Future _getData(bool forceRefresh) async {
     pp('$mm ............................................ Refreshing dashboard data ....');
     deviceUser = await prefsOGx.getUser();
-    var settings = await prefsOGx.getSettings();
+    settings = await prefsOGx.getSettings();
     if (settings != null) {
-      numberOfDays = settings.numberOfDays!;
+      numberOfDays = settings!.numberOfDays!;
     }
+    var sub = await mTx.tx('dashboardSubTitle', settings!.locale!);
+    pp(sub);
+    subTitle = sub.replaceAll('\$count', '$numberOfDays');
+    pp(subTitle);
+    setState(() {
+
+    });
+
     if (deviceUser != null) {
       if (deviceUser!.userType == UserType.orgAdministrator) {
-        type = 'Administrator';
+        type = await mTx.tx('administrator', settings!.locale!);
       }
       if (deviceUser!.userType == UserType.orgExecutive) {
-        type = 'Executive';
+        type = await mTx.tx('executive', settings!.locale!);
       }
       if (deviceUser!.userType == UserType.fieldMonitor) {
-        type = 'Field Monitor';
+        type = await mTx.tx('fieldMonitor', settings!.locale!);
       }
     } else {
       throw Exception('No user cached on device');
@@ -731,24 +743,10 @@ class DashboardPortraitState extends State<DashboardPortrait>
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Text(
-                        'Data is for the last',
+                      Text(subTitle,
                         style: myTextStyleSmall(context),
                       ),
-                      const SizedBox(
-                        width: 8,
-                      ),
-                      Text(
-                        '$numberOfDays',
-                        style: myNumberStyleMediumPrimaryColor(context),
-                      ),
-                      const SizedBox(
-                        width: 8,
-                      ),
-                      Text(
-                        'days',
-                        style: myTextStyleSmall(context),
-                      ),
+
                     ],
                   ),
                   const SizedBox(

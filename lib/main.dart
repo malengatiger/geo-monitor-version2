@@ -1,29 +1,33 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:animated_splash_screen/animated_splash_screen.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_auth/firebase_auth.dart' as fb;
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:geo_monitor/l10n/translation_handler.dart';
 import 'package:geo_monitor/library/data/settings_model.dart';
 import 'package:geo_monitor/library/functions.dart';
 import 'package:geo_monitor/splash/splash_page.dart';
 import 'package:geo_monitor/ui/dashboard/dashboard_main.dart';
 import 'package:geo_monitor/ui/intro/intro_main.dart';
 import 'package:get_storage/get_storage.dart';
+import 'package:hive_flutter/adapters.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:universal_platform/universal_platform.dart';
 
 import 'firebase_options.dart';
-import 'generated/l10n.dart';
 import 'library/api/prefs_og.dart';
 import 'library/bloc/fcm_bloc.dart';
 import 'library/bloc/theme_bloc.dart';
+import 'library/cache_manager.dart';
 import 'library/emojis.dart';
 
 int themeIndex = 0;
-var locale = const Locale('en');
+var locale = const Locale('fr');
 SettingsModel? settings;
 late FirebaseApp firebaseApp;
 fb.User? fbAuthedUser;
@@ -34,16 +38,31 @@ final GlobalKey<ScaffoldMessengerState> rootScaffoldMessengerKey =
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await Hive.initFlutter();
+
   firebaseApp = await Firebase.initializeApp(
       options: DefaultFirebaseOptions.currentPlatform);
   pp('$mx main: '
       ' Firebase App has been initialized: ${firebaseApp.name}, checking for authed current user');
   fbAuthedUser = fb.FirebaseAuth.instance.currentUser;
+
+
   settings = await prefsOGx.getSettings();
   if (settings != null) {
     locale = Locale(settings!.locale!);
   }
+  pp('$mx main: locale set up ...');
   await GetStorage.init(cacheName);
+
+  // final prefs = await SharedPreferences.getInstance();
+  // pp('$mx main: SharedPreferences.getInstance: $prefs ');
+  //
+  try {
+    await EasyLocalization.ensureInitialized();
+    pp('$mx ..... EasyLocalization.ensureInitialized OK!');
+  } catch (e) {
+    pp('$mx EasyLocalization.ensureInitialized failed: $e');
+  }
 
 
   /// check user auth status
@@ -61,16 +80,43 @@ void main() async {
     }
     //cameras = await availableCameras();
   }
+  await dotenv.load(fileName: ".env");
+  pp('$mx $heartBlue DotEnv has been loaded');
+
+  await Hive.initFlutter(hiveName);
+
+  var test = await mTx.tx('dashboardSubTitle', 'fr');
+  pp('$mx $heartBlue translated members to: $test');
 
   await SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
     DeviceOrientation.portraitDown,
   ]);
 
-  runApp(const GeoApp());
-
+  final android = Platform.isAndroid;
+  if (android) {
+     runApp(EasyLocalization(
+         path: 'assets/l10n',
+         supportedLocales: const [
+           Locale('en'),
+           Locale('af'),
+           Locale('es'),
+           Locale('fr'),
+           Locale('ig'),
+           Locale('pt'),
+           Locale('sn'),
+           Locale('st'),
+           Locale('sw'),
+           Locale('ts'),
+           Locale('xh'),
+           Locale('yo'),
+           Locale('zu'),
+         ],
+         child: const GeoAndroidApp()));
+  } else {
+    runApp(const GeoApp());
+  }
 }
-
 class GeoApp extends StatelessWidget {
   const GeoApp({super.key});
 
@@ -92,30 +138,11 @@ class GeoApp extends StatelessWidget {
                   '  and locale is ${snapshot.data!.locale.toString()}');
               themeIndex = snapshot.data!.themeIndex;
               locale = snapshot.data!.locale;
+              pp('${E.check}${E.check}${E.check} locale object received: $locale}');
             }
             return MaterialApp(
-              localizationsDelegates:  const [
-                // ... app-specific localization delegate[s] here
-                GlobalMaterialLocalizations.delegate,
-                GlobalWidgetsLocalizations.delegate,
-                GlobalCupertinoLocalizations.delegate,
-                AppLocalizationDelegate(),
-              ],
-              supportedLocales: const [
-                Locale('en'), // English
-                Locale('fr'), // French
-                Locale('pt'), // Portuguese
-                Locale('es'), // Spanish
-                Locale('af'), // Afrikaans
-                Locale('nso'), // Sepedi
-                Locale('st'), // Sotho
-                Locale('sw'), // Swahili
-                Locale('ts'), // Tsonga
-                Locale('xh'), // Xhosa
-                Locale('zu'), // Zulu
-                // Locale.fromSubtags(languageCode: 'zh'), // Chinese *See Advanced Locales below*
-                // ... other locales the app supports
-              ],
+              // localizationsDelegates: context.localizationDelegates,
+              // supportedLocales: context.supportedLocales,
               locale: locale,
               scaffoldMessengerKey: rootScaffoldMessengerKey,
               debugShowCheckedModeBanner: false,
@@ -142,6 +169,60 @@ class GeoApp extends StatelessWidget {
     );
   }
 }
+
+class GeoAndroidApp extends StatelessWidget {
+  const GeoAndroidApp({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    // Locale myLocale = Localizations.localeOf(context);
+    // pp('$mx 🌀🌀🌀🌀 Current Locale: $myLocale ...');
+    return GestureDetector(
+      onTap: () {
+        pp('$mx 🌀🌀🌀🌀 Tap detected; should dismiss keyboard ...');
+        FocusManager.instance.primaryFocus?.unfocus();
+      },
+      child: StreamBuilder<LocaleAndTheme>(
+          stream: themeBloc.localeAndThemeStream,
+          builder: (_, snapshot) {
+            if (snapshot.hasData) {
+              pp('${E.check}${E.check}${E.check}${E.check}${E.check} '
+                  'main: theme index has changed to ${snapshot.data!.themeIndex}'
+                  '  and locale is ${snapshot.data!.locale.toString()}');
+              themeIndex = snapshot.data!.themeIndex;
+              locale = snapshot.data!.locale;
+              pp('${E.check}${E.check}${E.check} locale object received: $locale}');
+            }
+            return MaterialApp(
+              localizationsDelegates: context.localizationDelegates,
+              supportedLocales: context.supportedLocales,
+              locale: locale,
+              scaffoldMessengerKey: rootScaffoldMessengerKey,
+              debugShowCheckedModeBanner: false,
+              title: 'Geo',
+              theme: themeBloc.getTheme(themeIndex).darkTheme,
+              darkTheme: themeBloc.getTheme(themeIndex).darkTheme,
+              themeMode: ThemeMode.dark,
+              // home: const VideoHandlerTwo(),
+              home: AnimatedSplashScreen(
+                duration: 2000,
+                splash: const SplashWidget(),
+                animationDuration: const Duration(milliseconds: 2000),
+                curve: Curves.easeInCirc,
+                splashIconSize: 160.0,
+                nextScreen: fbAuthedUser == null
+                    ? const IntroMain()
+                    : const DashboardMain(),
+                splashTransition: SplashTransition.fadeTransition,
+                pageTransitionType: PageTransitionType.leftToRight,
+                backgroundColor: Colors.pink.shade900,
+              ),
+            );
+          }),
+    );
+  }
+}
+
 late StreamSubscription killSubscriptionFCM;
 
 void showKillDialog({required String message, required BuildContext context}) {
@@ -193,5 +274,3 @@ StreamSubscription<String> listenForKill({required BuildContext context}) {
 
   return sub;
 }
-
-

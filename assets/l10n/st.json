@@ -13,15 +13,6 @@
   "emailAddress": "Aterese ea imeile",
   "profilePhoto": "Senepe sa Boemo",
   "activityTitle": "Mesebetsi ea lihoreng tse $count tse fetileng",
-  "@activityTitle": {
-    "placeholders": {
-      "count": {
-        "type": "int",
-        "example": "24",
-        "format": "decimalPattern"
-      }
-    }
-  },
   "members": "Litho",
   "maximumVideoLength": "Bolelele bo phahameng ba Video ka metsotsoana",
   "selectProjectIfNecessary": "Khetha morero ha feela litlhophiso tsena e le tsa morero o le mong, ho seng joalo litlhophiso ke tsa mokhatlo oohle",
@@ -44,7 +35,6 @@
   "name": "Lebitso",
   "organizationRegistered": "Mokhatlo o ngolisitsoe",
   "october": "Mphalane",
-  "activityStreamHours": "Ts\u0027ebetso e phalle ka lihora tse ngata",
   "submitMember": "Fana ka Setho",
   "projectName": "Lebitso la Morero",
   "male": "Monna",
@@ -75,14 +65,54 @@
   "locations": "Libaka",
   "addProjectLocationHere": "Kenya Sebaka sa Morero Mona",
   "dashboardSubTitle": "Lintlha li emela matsatsi a ho qetela a $count",
-  "@dashboardSubTitle": {
-    "placeholders": {
-      "count": {
-        "type": "int",
-        "format": "decimalPattern",
-        "example":"30"}
-    }
-  },
   "numberOfDaysForDashboardData": "Nomoro ea matsatsi a data ea Dashboard",
-  "directionsToProject": "Litaelo ho Project"
+  "directionsToProject": "Litaelo ho Project",
+  "welcomeToGeo": "Rea u amohela ho Geo!",
+  "endDate": "Letsatsi la ho Qetela",
+  "sendCode": "Romela Khoutu",
+  "locationNotAvailable": "Sebaka sa Sesebelisoa ha se fumanehe",
+  "weGotAProblem": "Re na le bothata, Mohlomphehi!",
+  "numberOfDays": "Palo ea Matsatsi",
+  "projectDetails": "Lintlha tsa Morero",
+  "dataRefreshFailed": "Tlhabollo ya data e hlolehile",
+  "projectLocationFailed": "Sebaka sa Morero se hlotsoe",
+  "duration": "Nako",
+  "updateFailed": "Nchafatso e hlolehile",
+  "audioPlayer": "Audio Player",
+  "projectActivities": "Mesebetsi ea Morero",
+  "projectAddedToOrganization": "{projectName} e kentsoe mokhatlong",
+  "verifyPhoneNumber": "Netefatsa Nomoro ea Mohala",
+  "fieldMonitorSchedules": "Lits\u0027ebetso tsa FieldMonitor",
+  "projectsNotFound": "Merero ha e Fumaneha\u0027",
+  "projectAudio": "Project Audio Clips",
+  "videoBuffering": "Video e ea buffer",
+  "notReadyYet": "Ha e so lokisoe",
+  "userCreateFailed": "Mosebelisi e hlolehile",
+  "createAudioClip": "Theha Audio Clip",
+  "phoneNumber": "Nomoro ea mohala",
+  "fileSize": "Boholo ba faele",
+  "memberDashboard": "Setho sa Dashboard",
+  "projectEditor": "Mohlophisi oa morero",
+  "startDate": "Letsatsi la qalo",
+  "memberCreateFailed": "Member Create hlolehile",
+  "small": "Nyenyane",
+  "selectLanguage": "Kgetha Puo",
+  "maxAudioLength": "Ka kopo, kenya bolelele ba molumo ka metsotso",
+  "pleaseEnterVideoLength": "Ka kopo, kenya boholo ba video ka metsotsoana",
+  "large": "E kholoanyane",
+  "enterVideoLength": "Kenya bolelele ba video ka metsotsoana",
+  "pleaseNumberOfDays": "Ka kopo, kenya palo ea matsatsi ao dashboard e tlamehang ho e bontša",
+  "dashNumberOfDays": "Kenya palo ea matsatsi ao dashboard e tlamehang ho e bontša",
+  "medium": "Mahareng",
+  "enterDistance": "Kenya sebaka se phahameng ho tloha projeke ka limithara",
+  "pleaseSelectLanguage": "Ka kopo, Khetha Puo",
+  "pleaseActivityStreamHours": "Ka kopo, kenya palo ea lihora tseo u tla li bontša",
+  "at": "ho",
+  "arrivedAt": "E fihlile $project",
+  "pleaseEnterDistance": "Ka kopo, kenya sebaka se lekaneng ho tloha projeke ka limithara",
+  "leftFrom": "Ho tlohela morero oa $",
+  "loadingActivities": "Loading Activities",
+  "maxVideoLength": "Bolelele bo Holimo ba Video ka Metsotsoana",
+  "activityStreamHours": "Kenya palo ea lihora tseo u tla li bonts\u0027a tšebetsong ea hau",
+  "dashboard": "Dashboard"
 }
