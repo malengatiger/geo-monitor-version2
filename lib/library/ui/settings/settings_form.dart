@@ -60,7 +60,7 @@ class _SettingsFormState extends State<SettingsForm> {
   String? fieldMonitorInstruction, maximumMonitoringDistance,
       maximumVideoLength, maximumAudioLength, activityStreamHours,
     numberOfDays, pleaseSelectCountry, tapForColorScheme, settings,
-    small, medium, large;
+    small, medium, large, selectLanguage, hint;
 
   void _setTitles() async {
     fieldMonitorInstruction = await mTx.tx('fieldMonitorInstruction', settingsModel!.locale!);
@@ -76,6 +76,8 @@ class _SettingsFormState extends State<SettingsForm> {
     small = await mTx.tx('small', settingsModel!.locale!);
     medium = await mTx.tx('medium', settingsModel!.locale!);
     large = await mTx.tx('large', settingsModel!.locale!);
+    selectLanguage = await mTx.tx('selectLanguage', settingsModel!.locale!);
+    hint = await mTx.tx('selectLanguage', settingsModel!.locale!);
 
     setState(() {
 
@@ -571,8 +573,8 @@ class _SettingsFormState extends State<SettingsForm> {
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
                       Flexible(
-                        child: Text(
-                          'Select language ',
+                        child: Text(selectLanguage == null?
+                          'Select language ': selectLanguage!,
                           style: myTextStyleSmall(context),
                         ),
                       ),
@@ -592,7 +594,7 @@ class _SettingsFormState extends State<SettingsForm> {
                         setState(() {
                           selectedLocale = locale;
                         });
-                      }),
+                      }, hint: hint == null? 'Select Country': hint!,),
                     ],
                   ),
                   const SizedBox(
@@ -619,14 +621,15 @@ class _SettingsFormState extends State<SettingsForm> {
 }
 
 class LocaleChooser extends StatelessWidget {
-  const LocaleChooser({Key? key, required this.onSelected}) : super(key: key);
+  const LocaleChooser({Key? key, required this.onSelected, required this.hint}) : super(key: key);
 
   final Function(Locale) onSelected;
+  final String hint;
 
   @override
   Widget build(BuildContext context) {
     return DropdownButton<Locale>(
-        hint: const Text('Please select language'),
+        hint:  Text(hint),
         items: const [
           DropdownMenuItem(value: Locale('en'), child: Text('English')),
           DropdownMenuItem(value: Locale('fr'), child: Text('French')),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:geo_monitor/l10n/translation_handler.dart';
 import 'package:geo_monitor/library/ui/project_edit/project_edit_card.dart';
 import 'package:geo_monitor/library/ui/project_location/project_location_handler.dart';
 import 'package:page_transition/page_transition.dart';
@@ -28,6 +29,9 @@ class ProjectEditorTabletState extends State<ProjectEditorTablet>
   var maxController = TextEditingController(text: '500.0');
   var isBusy = false;
 
+  String? projectEditor, newProject, editProject, submitProject,
+      projectName, descriptionOfProject, maximumMonitoringDistance;
+
   User? admin;
 
   @override
@@ -40,6 +44,16 @@ class ProjectEditorTabletState extends State<ProjectEditorTablet>
 
   void _getUser() async {
     admin = await prefsOGx.getUser();
+    var sett = await prefsOGx.getSettings();
+    if (sett != null) {
+      projectEditor = await mTx.tx('projectEditor', sett.locale!);
+      editProject = await mTx.tx('editProject', sett.locale!);
+
+      setState(() {
+
+      });
+
+    }
     if (admin != null) {
       pp('🎽 🎽 🎽 We have an admin user? 🎽 🎽 🎽 ${admin!.name!}');
       setState(() {});
@@ -90,8 +104,8 @@ class ProjectEditorTabletState extends State<ProjectEditorTablet>
       child: Scaffold(
         key: _key,
         appBar: AppBar(
-          title: Text(
-            'Project Editor',
+          title: Text(projectEditor == null?
+            'Project Editor': projectEditor!,
             style: myTextStyleLarge(context),
           ),
           actions: [
@@ -114,7 +128,8 @@ class ProjectEditorTabletState extends State<ProjectEditorTablet>
                   height: 28,
                 ),
                 Text(
-                  widget.project == null ? 'New Project' : 'Edit Project',
+                  widget.project == null ? newProject == null?'New Project':newProject! :
+                  editProject == null? 'Edit Project': editProject!,
                   style: myTextStyleMedium(context),
                 ),
                 const SizedBox(

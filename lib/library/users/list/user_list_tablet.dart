@@ -13,6 +13,7 @@ import 'package:page_transition/page_transition.dart';
 import 'package:responsive_builder/responsive_builder.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import '../../../l10n/translation_handler.dart';
 import '../../bloc/fcm_bloc.dart';
 import '../../bloc/location_request_handler.dart';
 import '../../data/audio.dart';
@@ -50,6 +51,8 @@ class _UserListTabletState extends State<UserListTablet> {
   late StreamSubscription<LocationResponse> _locationResponseSubscription;
 
   LocationResponse? locationResponse;
+
+  String? title;
 
   void _listen() {
     _streamSubscription = fcmBloc.userStream.listen((User user) {
@@ -144,12 +147,21 @@ class _UserListTabletState extends State<UserListTablet> {
   }
 
   final mm = '🔵🔵🔵🔵🔵🔵 UserListTabletLandscape: ';
+  String? subTitle;
   void _getData(bool forceRefresh) async {
     setState(() {
       busy = true;
     });
     try {
       user = await prefsOGx.getUser();
+      var sett = await prefsOGx.getSettings();
+      if (sett != null) {
+        title = await mTx.tx('organizationMembers', sett!.locale!);
+        subTitle = await mTx.tx('administratorsMembers', sett!.locale!);
+        setState(() {
+
+        });
+      }
       users = await organizationBloc.getUsers(
           organizationId: user!.organizationId!, forceRefresh: forceRefresh);
       p('$mm data refreshed, users: ${users.length}');
@@ -302,8 +314,8 @@ class _UserListTabletState extends State<UserListTablet> {
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
-        title: Text(
-          'Organization Members',
+        title: Text(title == null?
+          'Organization Members': title!,
           style: myTextStyleLarge(context),
         ),
         actions: [
@@ -336,6 +348,7 @@ class _UserListTabletState extends State<UserListTablet> {
                   : SizedBox(
                       width: (mWidth / 2) - 80,
                       child: UserListCard(
+                        subTitle: subTitle == null?'Admins & Monitors': subTitle!,
                         amInLandscape: true,
                         avatarRadius: 20,
                         users: users,
@@ -396,6 +409,7 @@ class _UserListTabletState extends State<UserListTablet> {
                   : SizedBox(
                       width: mWidth / 2,
                       child: UserListCard(
+                        subTitle: subTitle == null?'Admins & Monitors': subTitle!,
                         amInLandscape: true,
                         avatarRadius: 20,
                         users: users,

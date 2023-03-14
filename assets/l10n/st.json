@@ -114,5 +114,24 @@
   "loadingActivities": "Loading Activities",
   "maxVideoLength": "Bolelele bo Holimo ba Video ka Metsotsoana",
   "activityStreamHours": "Kenya palo ea lihora tseo u tla li bonts\u0027a tšebetsong ea hau",
-  "dashboard": "Dashboard"
+  "dashboard": "Dashboard",
+  "st": "Sotho",
+  "pt": "Sepotoketsi",
+  "sw": "Seswahili",
+  "noActivities": "Ha ho mesebetsi e etsahalang hajoale",
+  "en": "Senyesemane",
+  "fr": "Sefora",
+  "es": "Sepanish",
+  "xh": "Sexhosa",
+  "yo": "Yoruba",
+  "tapToRefresh": "Tlanya ho Nchafatsa",
+  "selectPhotoSize": "Khetha Boholo ba Lifoto",
+  "zu": "Sezulu",
+  "ig": "Selingala",
+  "ts": "Tsonga",
+
+  "newProject": "Morero o Mocha",
+  "enterProjectName": "Kenya Lebitso la Morero"
+
+
 }

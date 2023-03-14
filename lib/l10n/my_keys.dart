@@ -127,6 +127,28 @@ class  MyKeys {
     hashMap["maxVideoLength"] = "maxVideoLength";
     hashMap["activityStreamHours"] = "activityStreamHours";
     hashMap["dashboard"] = "dashboard";
+    
+    //
+    hashMap["selectPhotoSize"] = "selectPhotoSize";
+    hashMap["fr"] = "fr";
+    hashMap["en"] = "en";
+    hashMap["es"] = "es";
+    hashMap["pt"] = "pt";
+    hashMap["zu"] = "zu";
+    hashMap["sh"] = "sh";
+    hashMap["sw"] = "sw";
+    hashMap["ts"] = "ts";
+    hashMap["st"] = "st";
+    hashMap["yo"] = "yo";
+    hashMap["ig"] = "ig";
+    hashMap['xh'] = 'xh';
+    hashMap["noActivities"] = "noActivities";
+    hashMap["tapToRefresh"] = "tapToRefresh";
+    hashMap["loadingActivities"] = "loadingActivities";
+
+    hashMap["projectsNotFound"] ="projectsNotFound";
+    hashMap["newProject"] ="newProject";
+    hashMap["enterProjectName"] = "enterProjectName";
   }
   
 }

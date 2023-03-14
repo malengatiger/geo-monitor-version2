@@ -3,6 +3,7 @@ import 'package:geo_monitor/library/api/prefs_og.dart';
 import 'package:geo_monitor/library/functions.dart';
 import 'package:uuid/uuid.dart';
 
+import '../../../l10n/translation_handler.dart';
 import '../../bloc/admin_bloc.dart';
 import '../../bloc/project_bloc.dart';
 import '../../data/project.dart';
@@ -33,16 +34,41 @@ class ProjectEditCardState extends State<ProjectEditCard>
   var maxController = TextEditingController();
   bool busy = false;
   User? admin;
+  String? projectEditor, newProject, editProject, submitProject,
+      enterProjectName,
+      projectName, descriptionOfProject, maximumMonitoringDistance, addProjectLocations;
 
   @override
   void initState() {
     _controller = AnimationController(vsync: this);
     super.initState();
+    _setControllers();
     _getUser();
+  }
+  void _setControllers() {
+    if (widget.project != null) {
+      nameController = TextEditingController(text: widget.project!.name!);
+      descController = TextEditingController(text: widget.project!.description!);
+      maxController = TextEditingController(text: '${widget.project!.monitorMaxDistanceInMetres!}');
+    }
   }
 
   void _getUser() async {
     admin = await prefsOGx.getUser();
+    var sett = await prefsOGx.getSettings();
+    if (sett != null) {
+      projectEditor = await mTx.tx('projectEditor', sett.locale!);
+      projectName = await mTx.tx('projectName', sett.locale!);
+      maximumMonitoringDistance = await mTx.tx('maximumMonitoringDistance', sett.locale!);
+      descriptionOfProject = await mTx.tx('descriptionOfProject', sett.locale!);
+      submitProject = await mTx.tx('submitProject', sett.locale!);
+      addProjectLocations = await mTx.tx('addProjectLocations', sett.locale!);
+      enterProjectName = await mTx.tx('enterProjectName', sett.locale!);
+      setState(() {
+
+      });
+
+    }
   }
 
   @override
@@ -150,11 +176,11 @@ class ProjectEditCardState extends State<ProjectEditCard>
                             Icons.event,
                             color: Theme.of(context).primaryColor,
                           ),
-                          labelText: 'Project Name',
-                          hintText: 'Enter Project Name'),
+                          labelText: projectName == null? 'Project Name': projectName!,
+                          hintText: enterProjectName == null?'Enter Project Name': enterProjectName!),
                       validator: (value) {
                         if (value!.isEmpty) {
-                          return 'Please enter Project name';
+                          return enterProjectName == null?'Please enter Project name': enterProjectName!;
                         }
                         return null;
                       },
@@ -174,11 +200,13 @@ class ProjectEditCardState extends State<ProjectEditCard>
                             Icons.info_outline,
                             color: Theme.of(context).primaryColor,
                           ),
-                          labelText: 'Description of the Project',
+                          labelText: descriptionOfProject == null?
+                          'Description of the Project': descriptionOfProject!,
                           hintText: 'Enter Description'),
                       validator: (value) {
                         if (value!.isEmpty) {
-                          return 'Please enter Description';
+                          return descriptionOfProject == null?
+                          'Please enter Description': descriptionOfProject!;
                         }
                         return null;
                       },
@@ -195,11 +223,14 @@ class ProjectEditCardState extends State<ProjectEditCard>
                             Icons.camera_enhance_outlined,
                             color: Theme.of(context).primaryColor,
                           ),
-                          labelText: 'Max Monitor Distance in Metres',
-                          hintText: 'Enter Maximum Monitor Distance in metres'),
+                          labelText: maximumMonitoringDistance == null?
+                          'Max Monitor Distance in Metres': maximumMonitoringDistance!,
+                          hintText: maximumMonitoringDistance == null?
+                          'Enter Maximum Monitor Distance in metres': maximumMonitoringDistance!),
                       validator: (value) {
                         if (value!.isEmpty) {
-                          return 'Please enter Maximum Monitor Distance in Metres';
+                          return maximumMonitoringDistance == null?
+                          'Please enter Maximum Monitor Distance in Metres': maximumMonitoringDistance!;
                         }
                         return null;
                       },
@@ -244,8 +275,8 @@ class ProjectEditCardState extends State<ProjectEditCard>
                                           project == null
                                               ? const SizedBox()
                                               : ElevatedButton(
-                                                  child: Text(
-                                                    'Add Project Location',
+                                                  child: Text(addProjectLocations == null?
+                                                    'Add Project Locations': addProjectLocations!,
                                                     style: myTextStyleMedium(
                                                         context),
                                                   ),
@@ -267,8 +298,8 @@ class ProjectEditCardState extends State<ProjectEditCard>
                                         onPressed: _submit,
                                         child: Padding(
                                           padding: const EdgeInsets.all(12.0),
-                                          child: Text(
-                                            'Submit Project',
+                                          child: Text(submitProject == null?
+                                            'Submit Project': submitProject!,
                                             style: myTextStyleMedium(context),
                                           ),
                                         ),

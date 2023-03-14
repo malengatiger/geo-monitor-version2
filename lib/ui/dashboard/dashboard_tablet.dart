@@ -24,6 +24,7 @@ import 'package:page_transition/page_transition.dart';
 import 'package:responsive_builder/responsive_builder.dart';
 import 'package:universal_platform/universal_platform.dart';
 
+import '../../l10n/translation_handler.dart';
 import '../../library/api/prefs_og.dart';
 import '../../library/bloc/downloader.dart';
 import '../../library/bloc/theme_bloc.dart';
@@ -86,6 +87,8 @@ class DashboardTabletState extends State<DashboardTablet> with WidgetsBindingObs
   bool busy = false;
   int numberOfDays = 7;
   SettingsModel? settingsModel;
+
+  String? title;
 
   @override
   void initState() {
@@ -198,15 +201,28 @@ class DashboardTabletState extends State<DashboardTablet> with WidgetsBindingObs
     }
   }
 
+  String? dashboardSubTitle, prefix, suffix;
+  Row? subtitleRow;
   void _getData(bool forceRefresh) async {
     setState(() {
       busy = true;
     });
     try {
       user = await prefsOGx.getUser();
-      var settings = await prefsOGx.getSettings();
-      if (settings != null) {
-        numberOfDays = settings.numberOfDays!;
+      settingsModel = await prefsOGx.getSettings();
+      if (settingsModel != null) {
+        numberOfDays = settingsModel!.numberOfDays!;
+        title = await mTx.tx('dashboard', settingsModel!.locale!);
+        var sub = await mTx.tx('dashboardSubTitle', settingsModel!.locale!);
+        int index = sub.indexOf('\$');
+        prefix = sub.substring(0, index);
+        suffix = sub.substring(index+6);
+        pp('$mm prefix: $prefix suffix: $suffix');
+        dashboardSubTitle = sub.replaceAll('\$count', '$numberOfDays');
+
+        setState(() {
+
+        });
       }
       var map = await getStartEndDates();
       final startDate = map['startDate'];
@@ -635,7 +651,7 @@ class DashboardTabletState extends State<DashboardTablet> with WidgetsBindingObs
         child: Scaffold(
       appBar: AppBar(
         centerTitle: true,
-        title: const Text('Org Dashboard'),
+        title:  Text(title == null?'Dashboard':title!),
         actions: [
           IconButton(
               icon: Icon(
@@ -713,28 +729,14 @@ class DashboardTabletState extends State<DashboardTablet> with WidgetsBindingObs
               Padding(
                 padding: const EdgeInsets.only(left: 28.0),
                 child: Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
                   children: [
-                    Text(
-                      'Data is for the last',
-                      style: myTextStyleSmall(context),
-                    ),
-                    const SizedBox(
-                      width: 8,
-                    ),
-                    Text(
-                      '$numberOfDays',
-                      style: myNumberStyleMediumPrimaryColor(context),
-                    ),
-                    const SizedBox(
-                      width: 8,
-                    ),
-                    Text(
-                      'days',
-                      style: myTextStyleSmall(context),
-                    ),
+                    Text(prefix == null?'': prefix!),
+                    const SizedBox(width: 8,),
+                    Text('$numberOfDays', style: myTextStyleLargePrimaryColor(context),),
+                    const SizedBox(width: 8,),
+                    Text(suffix == null?'': suffix!),
                   ],
-                ),
+                )
               ),
             ],
           ),
@@ -747,14 +749,14 @@ class DashboardTabletState extends State<DashboardTablet> with WidgetsBindingObs
               return Row(
                 children: [
                   SizedBox(
-                    width: (size.width / 2) + 80,
+                    width: (size.width / 2)+60,
                     child: dataBag == null
                         ? const SizedBox()
                         : DashboardGrid(
                             dataBag: dataBag!,
                             crossAxisCount: 2,
                             topPadding: 48,
-                            elementPadding: 56,
+                            elementPadding: 48,
                             leftPadding: 12,
                             onTypeTapped: (type) {
                               switch (type) {
@@ -788,7 +790,7 @@ class DashboardTabletState extends State<DashboardTablet> with WidgetsBindingObs
                           ),
                   ),
                   GeoActivity(
-                    width: (size.width / 2) - 100,
+                    width: (size.width / 2) - 60,
                     forceRefresh: true,
                     thinMode: true,
                     showPhoto: (photo) {

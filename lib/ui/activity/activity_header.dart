@@ -8,12 +8,13 @@ class ActivityHeader extends StatelessWidget {
       {Key? key,
       required this.onRefreshRequested,
       required this.hours,
-      required this.number})
+      required this.number, required this.prefix, required this.suffix})
       : super(key: key);
 
   final Function() onRefreshRequested;
   final int hours;
   final int number;
+  final String prefix, suffix;
   @override
   Widget build(BuildContext context) {
     return Row(
@@ -25,9 +26,10 @@ class ActivityHeader extends StatelessWidget {
           },
           child: Row(
             children: [
-              Text(
-                'Activity Last',
-                style: myTextStyleSmallBold(context),
+              SizedBox(width: 140,
+                child: Text(prefix,
+                  style: myTextStyleSmall(context),
+                ),
               ),
               const SizedBox(
                 width: 8,
@@ -37,17 +39,17 @@ class ActivityHeader extends StatelessWidget {
                 style: myTextStyleSmallBoldPrimaryColor(context),
               ),
               const SizedBox(
-                width: 8,
+                width: 4,
               ),
               Text(
-                'Hours',
-                style: myTextStyleSmallBold(context),
+                suffix,
+                style: myTextStyleSmall(context),
               ),
             ],
           ),
         ),
         const SizedBox(
-          width: 32,
+          width: 16,
         ),
         GestureDetector(
           onTap: () {

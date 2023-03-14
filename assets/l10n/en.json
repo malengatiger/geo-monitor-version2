@@ -113,8 +113,24 @@
   "arrivedAt": "Arrived at $project",
   "pleaseEnterDistance": "Please enter maximum distance from project in metres",
   "leftFrom": "Leaving $project",
-  "loadingActivities": "Loading Activities",
   "maxVideoLength": "Maximum Video Length in Seconds",
-  "dashboard": "Dashboard"
+  "dashboard": "Dashboard",
+  "xh": "Xhosa",
+  "st": "Sotho",
+  "pt": "Portuguese",
+  "sw": "Swahili",
+  "noActivities": "No activities happening yet",
+  "en": "English",
+  "fr": "French",
+  "es": "Spanish",
+  "yo": "Yoruba",
+  "tapToRefresh": "Tap to Refresh",
+  "selectPhotoSize": "Select Size of Photos",
+  "zu": "Zulu",
+  "ig": "Lingala",
+  "ts": "Tsonga",
+  "loadingActivities": "Loading Activity Data",
+  "newProject": "New Project",
+  "enterProjectName": "Enter Project Name"
 
 }

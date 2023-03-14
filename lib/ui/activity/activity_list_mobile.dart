@@ -8,6 +8,7 @@ import 'package:geo_monitor/library/data/location_response.dart';
 import 'package:geo_monitor/ui/activity/activity_header.dart';
 import 'package:geo_monitor/ui/activity/activity_stream_card_mobile.dart';
 
+import '../../l10n/translation_handler.dart';
 import '../../library/api/prefs_og.dart';
 import '../../library/bloc/project_bloc.dart';
 import '../../library/bloc/user_bloc.dart';
@@ -75,6 +76,7 @@ class ActivityListMobileState extends State<ActivityListMobile>
   late int activeType;
   User? user;
   bool busy = true;
+  String? prefix, suffix;
   final mm = '😎😎😎😎😎😎 ActivityListMobile: ';
 
   @override
@@ -107,6 +109,11 @@ class ActivityListMobileState extends State<ActivityListMobile>
       var hours = 12;
       if (settings != null) {
         hours = settings!.activityStreamHours!;
+        var sub = await mTx.tx('activityTitle', settings!.locale!);
+        int index = sub.indexOf('\$');
+        prefix = sub.substring(0, index);
+        suffix = sub.substring(index+6);
+        pp('$mm prefix: $prefix suffix: $suffix');
       }
       pp('$mm ... get Activity (n hours) ... : $hours');
       if (widget.project != null) {
@@ -338,7 +345,9 @@ class ActivityListMobileState extends State<ActivityListMobile>
             },
             child: Padding(
               padding: const EdgeInsets.all(8.0),
-              child: ActivityHeader(
+              child: prefix == null? const SizedBox():ActivityHeader(
+                prefix: prefix!,
+                suffix: suffix!,
                 onRefreshRequested: () {
                   _getData(true);
                 },

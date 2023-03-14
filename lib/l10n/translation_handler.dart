@@ -46,10 +46,15 @@ class TranslationHandler {
     var start = DateTime.now();
     var s = await getStringFromAssets(locale);
     var mJson = jsonDecode(s);
+    pp(mJson);
     final map = MyKeys.getKeys();
 
     map.forEach((key, value) {
-      hashMap[key] = mJson[key];
+      try {
+        hashMap[key] = mJson[key];
+      } catch (e) {
+        pp('$mm $e key: $key');
+      }
     });
     currentLocale = locale;
     pp('$mm LOCALE MAP built .....');

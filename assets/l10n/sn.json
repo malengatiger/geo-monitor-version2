@@ -114,5 +114,21 @@
   "loadingActivities": "Loading Activities",
   "maxVideoLength": "Maximum Vhidhiyo Kureba muSekondi",
   "activityStreamHours": "Isa nhamba yemaawa echiito chako anofanira kuratidza",
-  "dashboard": "Dashboard"
+  "dashboard": "Dashboard",
+  "st": "Sotho",
+  "pt": "ChiPutukezi",
+  "sw": "ChiSwahili",
+  "noActivities": "Hapana mabasa arikuitika",
+  "en": "Chirungu",
+  "fr": "ChiFrench",
+  "es": "ChiSpanish",
+  "xh": "Xhosa",
+  "yo": "Yoruba",
+  "tapToRefresh": "Tinya kuti Umutsidze",
+  "selectPhotoSize": "Sarudza Saizi Yemifananidzo",
+  "zu": "Zulu",
+  "ig": "Lingala",
+  "ts": "Tsonga",
+  "newProject": "New Project",
+  "enterProjectName": "Pinda Zita reProjekti"
 }

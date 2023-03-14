@@ -5,6 +5,7 @@ import 'package:geo_monitor/library/bloc/fcm_bloc.dart';
 import 'package:geo_monitor/library/bloc/organization_bloc.dart';
 import 'package:geo_monitor/library/data/location_request.dart';
 
+import '../../l10n/translation_handler.dart';
 import '../../library/api/prefs_og.dart';
 import '../../library/bloc/project_bloc.dart';
 import '../../library/bloc/user_bloc.dart';
@@ -87,13 +88,19 @@ class _ActivityListTabletState extends State<ActivityListTablet>
         reverseDuration: const Duration(milliseconds: 2000),
         vsync: this);
     super.initState();
-    pp('$mm init state');
     _getData(true);
     _listenToFCM();
   }
 
+  String? title;
+  String?  prefix, suffix, loadingActivities, noActivities, tapToRefresh;
+
   void _getData(bool forceRefresh) async {
     pp('$mm ... getting activity data ... forceRefresh: $forceRefresh');
+    settings = await prefsOGx.getSettings();
+    loadingActivities =  await mTx.tx('loadingActivities', settings!.locale!);
+    noActivities =  await mTx.tx('noActivities', settings!.locale!);
+    tapToRefresh =  await mTx.tx('tapToRefresh', settings!.locale!);
     if (models.isNotEmpty) {
       _animationController.reverse().then((value) {
         setState(() {
@@ -108,11 +115,19 @@ class _ActivityListTabletState extends State<ActivityListTablet>
     pp('$mm ... getting activity data ... forceRefresh: $forceRefresh');
     try {
       me = await prefsOGx.getUser();
-      settings = await prefsOGx.getSettings();
+
 
       var hours = 12;
       if (settings != null) {
         hours = settings!.activityStreamHours!;
+        var sub = await mTx.tx('activityTitle', settings!.locale!);
+        int index = sub.indexOf('\$');
+        prefix = sub.substring(0, index);
+        suffix = sub.substring(index+6);
+        pp('$mm prefix: $prefix suffix: $suffix');
+
+        loadingActivities = await mTx.tx('loadingActivities', settings!.locale!);
+
       }
       pp('$mm ... get Activity (n hours) ... : $hours');
       if (widget.project != null) {
@@ -266,8 +281,8 @@ class _ActivityListTabletState extends State<ActivityListTablet>
                   const SizedBox(
                     height: 20,
                   ),
-                  Text(
-                    'Loading activities ...',
+                  Text(loadingActivities == null?
+                    'Loading activities': loadingActivities!,
                     style: myTextStyleSmall(context),
                   ),
                 ],
@@ -283,14 +298,28 @@ class _ActivityListTabletState extends State<ActivityListTablet>
           onTap: (){
             _getData(true);
           },
-          child: Card(
-            shape: getRoundedBorder(radius: 12),
-            elevation: 8,
-            child: Padding(
-              padding: const EdgeInsets.all(28.0),
-              child: Text(
-                'No activities happening yet\n\nTap to refresh',
-                style: myTextStyleSmall(context),
+          child: SizedBox(height: 200,
+            child: Card(
+              shape: getRoundedBorder(radius: 12),
+              elevation: 8,
+              child: Center(
+                child: Padding(
+                  padding: const EdgeInsets.all(28.0),
+                  child: Column(
+                    children: [
+                      const SizedBox(height: 32,),
+                      Text(noActivities == null?
+                        'No activities happening yet': noActivities!,
+                        style: myTextStyleSmall(context),
+                      ),
+                      const SizedBox(height: 16,),
+                      Text(tapToRefresh == null?
+                        'Tap to refresh': tapToRefresh!,
+                        style: myTextStyleSmallBold(context),
+                      ),
+                    ],
+                  ),
+                ),
               ),
             ),
           ),
@@ -310,7 +339,9 @@ class _ActivityListTabletState extends State<ActivityListTablet>
                             left: 4.0, top: 12, bottom: 8),
                         child: Padding(
                           padding: const EdgeInsets.only(top: 16.0),
-                          child: ActivityHeader(
+                          child: prefix == null? const SizedBox():ActivityHeader(
+                            prefix: prefix!,
+                            suffix: suffix!,
                             onRefreshRequested: () {
                               _getData(true);
                             },
@@ -358,7 +389,9 @@ class _ActivityListTabletState extends State<ActivityListTablet>
                             left: 12.0, top: 12, bottom: 8),
                         child: Padding(
                           padding: const EdgeInsets.only(top: 16.0),
-                          child: ActivityHeader(
+                          child: prefix == null? const SizedBox(): ActivityHeader(
+                            prefix: prefix!,
+                            suffix: suffix!,
                             onRefreshRequested: () {
                               _getData(true);
                             },

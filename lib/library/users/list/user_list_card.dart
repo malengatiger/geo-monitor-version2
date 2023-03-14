@@ -20,13 +20,14 @@ class UserListCard extends StatelessWidget {
       required this.amInLandscape,
       required this.badgeTapped,
       required this.navigateToLocationRequest,
-      required this.avatarRadius})
+      required this.avatarRadius, required this.subTitle})
       : super(key: key);
 
   final List<User> users;
   final User deviceUser;
   final bool amInLandscape;
   final double avatarRadius;
+  final String subTitle;
 
   final Function(User) navigateToPhone;
   final Function(User) navigateToMessaging;
@@ -151,8 +152,7 @@ class UserListCard extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Text(
-                  'Admins & Field Monitors',
+                Text(subTitle,
                   style: myTextStyleSmall(context),
                 ),
                 const SizedBox(

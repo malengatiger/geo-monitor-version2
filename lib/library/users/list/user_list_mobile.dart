@@ -10,6 +10,7 @@ import 'package:geo_monitor/ui/dashboard/user_dashboard.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import '../../../l10n/translation_handler.dart';
 import '../../api/prefs_og.dart';
 import '../../bloc/fcm_bloc.dart';
 import '../../bloc/location_request_handler.dart';
@@ -73,12 +74,17 @@ class UserListMobileState extends State<UserListMobile>
     });
   }
 
-
+  String? subTitle, title;
   Future _getData(bool forceRefresh) async {
     setState(() {
       busy = true;
     });
     try {
+      var sett = await prefsOGx.getSettings();
+      if (sett != null) {
+        title = await mTx.tx('organizationMembers', sett!.locale!);
+        subTitle = await mTx.tx('administratorsMembers', sett!.locale!);
+      }
       user = await prefsOGx.getUser();
       if (user!.userType == UserType.orgAdministrator ||
           user!.userType == UserType.orgExecutive) {
@@ -246,8 +252,8 @@ class UserListMobileState extends State<UserListMobile>
       child: Scaffold(
         key: _key,
         appBar: AppBar(
-          title: Text(
-            'Members',
+          title: Text(title == null?
+            'Members': title!,
             style: myTextStyleLarge(context),
           ),
           actions: busy
@@ -294,6 +300,7 @@ class UserListMobileState extends State<UserListMobile>
                   ),
                   user == null? const SizedBox(): Expanded(
                     child: UserListCard(
+                      subTitle: subTitle == null?'Admins & Monitors': subTitle!,
                       amInLandscape: true,
                       users: users,
                       avatarRadius: 20,

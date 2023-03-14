@@ -4,6 +4,7 @@ import 'package:animations/animations.dart';
 import 'package:badges/badges.dart' as bd;
 import 'package:flutter/material.dart';
 import 'package:focused_menu/modals.dart';
+import 'package:geo_monitor/l10n/translation_handler.dart';
 import 'package:geo_monitor/library/data/audio.dart';
 import 'package:geo_monitor/library/data/photo.dart';
 import 'package:geo_monitor/library/data/video.dart';
@@ -58,14 +59,14 @@ class ProjectListTabletState extends State<ProjectListTablet>
   bool isBusy = false;
   bool isProjectsByLocation = false;
   var userTypeLabel = 'Unknown User Type';
-  final mm = '🔵🔵🔵🔵 ProjectListTabletPortrait:  ';
+  final mm = '🔵🔵🔵🔵 ProjectListTablet:  ';
   late StreamSubscription<String> killSubscription;
   var positions = <ProjectPosition>[];
   var polygons = <ProjectPolygon>[];
   final _key = GlobalKey<ScaffoldState>();
   bool _showPositionChooser = false;
   double sliderValue = 3.0;
-
+  String? organizationProjects;
 
   @override
   void initState() {
@@ -129,6 +130,10 @@ class ProjectListTabletState extends State<ProjectListTablet>
       isBusy = true;
     });
     user = await prefsOGx.getUser();
+    var sett = await prefsOGx.getSettings();
+    if (sett != null) {
+      organizationProjects = await mTx.tx('organizationProjects', sett!.locale!);
+    }
     if (user != null) {
       pp('$mm user found: ${user!.toJson()}');
       _setUserType();
@@ -613,8 +618,8 @@ class ProjectListTabletState extends State<ProjectListTablet>
             key: _key,
             appBar: AppBar(
               centerTitle: true,
-              title: Text(
-                'Organization Projects',
+              title: Text(organizationProjects == null?
+                'Organization Projects': organizationProjects!,
                 style: myTextStyleLarge(context),
               ),
               actions: _getActions(),
@@ -824,8 +829,8 @@ class ProjectListTabletState extends State<ProjectListTablet>
                                 );
                               }, portrait: (context) {
                                 final width = MediaQuery.of(context).size.width;
-                                final firstWidth = (width / 2);
-                                final secondWidth = (width / 2) - 100;
+                                final firstWidth = (width / 2) - 20;
+                                final secondWidth = (width / 2) - 80;
                                 return Row(
                                   children: [
                                     GestureDetector(
