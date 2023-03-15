@@ -138,7 +138,10 @@
   "projectLocationAdded": "Sebaka sa morero se kentsoe",
   "enterDescription": "Kenya Tlhaloso",
   "projectAreaAdded": "Sebaka sa Morero se ekelitsoe",
-  "settingsChanged": "Litlhophiso li fetotsoe kapa li kentsoe"
+  "settingsChanged": "Litlhophiso li fetotsoe kapa li kentsoe",
+  "enterEmail": "Kenya Aterese ea Imeile",
+  "enterCell": "Kenya Nomoro ea Mohala",
+  "enterFullName": "Kenya Lebitso le Felletseng",
 
 
 }

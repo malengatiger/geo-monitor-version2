@@ -6,8 +6,9 @@ import '../../data/country.dart';
 import '../../functions.dart';
 
 class CountryChooser extends StatefulWidget {
-  const CountryChooser({Key? key, required this.onSelected}) : super(key: key);
+  const CountryChooser({Key? key, required this.onSelected, required this.hint}) : super(key: key);
   final Function(Country) onSelected;
+  final String hint;
 
   @override
   State<CountryChooser> createState() => CountryChooserState();
@@ -63,8 +64,7 @@ class CountryChooserState extends State<CountryChooser> {
           )
         : DropdownButton(
             elevation: 4,
-            hint: Text(
-              'Please Select Country',
+            hint: Text(widget.hint,
               style: myTextStyleMedium(context),
             ),
             items: list,

@@ -137,5 +137,8 @@
   "projectLocationAdded": "Indawo yephrojekthi yengeziwe",
   "enterDescription": "Faka Incazelo",
   "projectAreaAdded": "Indawo Yephrojekthi yengeziwe",
-  "settingsChanged": "Izilungiselelo zishintshiwe noma zengeziwe"
+  "settingsChanged": "Izilungiselelo zishintshiwe noma zengeziwe",
+  "enterEmail": "Faka Ikheli Le-imeyili",
+  "enterCell": "Faka Inombolo Yocingo",
+  "enterFullName": "Faka Igama Eligcwele",
 }

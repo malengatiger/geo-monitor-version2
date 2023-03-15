@@ -137,5 +137,8 @@
   "projectLocationAdded": "Ibi ise agbese kun",
   "enterDescription": "Tẹ Apejuwe",
   "projectAreaAdded": "Agbegbe Project kun",
-  "settingsChanged": "Awọn eto yipada tabi ṣafikun"
+  "settingsChanged": "Awọn eto yipada tabi ṣafikun",
+  "enterEmail": "Tẹ adirẹsi imeeli sii",
+  "enterCell": "Tẹ Nọmba Tẹlifoonu sii",
+  "enterFullName": "Tẹ Orukọ kikun sii",
 }

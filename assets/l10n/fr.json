@@ -17,7 +17,6 @@
   "members": "Membres",
   "maximumVideoLength": "Durée maximale de la vidéo en secondes",
   "selectProjectIfNecessary": "Sélectionnez le projet uniquement si ces paramètres sont pour un seul projet, sinon les paramètres sont pour l\u0027ensemble de l\u0027organisation",
-  "female": "Femme",
   "descriptionOfProject": "Description du projet",
   "submitProject": "Soumettre un projet",
   "settings": "Paramètres",
@@ -38,7 +37,6 @@
   "october": "Octobre",
   "submitMember": "Soumettre un membre",
   "projectName": "nom du projet",
-  "male": "Homme",
   "projectDashboard": "Tableau de bord du projet",
   "internetConnectionNotAvailable": "Connexion Internet non disponible",
   "fieldMonitor": "Moniteur de terrain",
@@ -139,5 +137,10 @@
   "projectLocationAdded": "Emplacement du projet ajouté",
   "enterDescription": "Entrez la description",
   "projectAreaAdded": "Zone de projet ajoutée",
-  "settingsChanged": "Paramètres modifiés ou ajoutés"
+  "settingsChanged": "Paramètres modifiés ou ajoutés",
+  "enterEmail": "Entrer l\u0027adresse e-mail",
+  "enterCell": "Entrez le numéro de téléphone",
+  "enterFullName": "Entrez le nom complet",
+  "female": "Femme",
+  "male": "Homme"
 }

@@ -139,5 +139,9 @@
   "projectLocationAdded": "Se agregó la ubicación del proyecto",
   "enterDescription": "Introduce la descripción",
   "projectAreaAdded": "Área de proyecto añadida",
-  "settingsChanged": "Configuraciones cambiadas o añadidas"
+  "settingsChanged": "Configuraciones cambiadas o añadidas",
+  "enterEmail": "Introducir la dirección de correo electrónico",
+  "enterCell": "Ingrese el número de teléfono",
+  "enterFullName": "Ingrese el nombre completo",
+
 }

@@ -137,5 +137,8 @@
   "projectLocationAdded": "Indawo yeprojekthi yongeziwe",
   "enterDescription": "Ngenisa iNkcazo",
   "projectAreaAdded": "Indawo yeProjekthi yongeziwe",
-  "settingsChanged": "Iisetingi zitshintshiwe okanye zongeziwe"
+  "settingsChanged": "Iisetingi zitshintshiwe okanye zongeziwe",
+  "enterEmail": "Ngenisa idilesi ye-imeyile",
+  "enterCell": "Faka inombolo yomnxeba",
+  "enterFullName": "Ngenisa Igama elipheleleyo",
 }

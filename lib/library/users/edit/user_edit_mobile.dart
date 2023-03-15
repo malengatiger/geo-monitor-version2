@@ -5,6 +5,7 @@ import 'package:geo_monitor/library/users/full_user_photo.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:uuid/uuid.dart';
 
+import '../../../l10n/translation_handler.dart';
 import '../../api/data_api.dart';
 import '../../api/prefs_og.dart';
 import '../../bloc/admin_bloc.dart';
@@ -41,6 +42,7 @@ class UserEditMobileState extends State<UserEditMobile>
   int genderType = -1;
   String? type;
   String? gender;
+  String? name, hint, title, newMember, editMember;
 
 
   @override
@@ -53,6 +55,14 @@ class UserEditMobileState extends State<UserEditMobile>
 
   void _getAdministrator() async {
     admin = await prefsOGx.getUser();
+    var sett = await prefsOGx.getSettings();
+    if (sett != null) {
+      hint = await mTx.tx('pleaseSelectCountry', sett.locale!);
+      title = await mTx.tx('members', sett.locale!);
+      newMember = await mTx.tx('newMember', sett.locale!);
+      editMember = await mTx.tx('editMember', sett.locale!);
+      name = await mTx.tx('name', sett.locale!);
+    }
     setState(() {});
   }
 
@@ -317,8 +327,8 @@ class UserEditMobileState extends State<UserEditMobile>
       child: Scaffold(
         key: _key,
         appBar: AppBar(
-          title: const Text(
-            'User Editor',
+          title:  Text(title == null?
+            'User Editor': title!,
           ),
           bottom: PreferredSize(
             preferredSize: const Size.fromHeight(100),
@@ -326,8 +336,8 @@ class UserEditMobileState extends State<UserEditMobile>
               children: [
                 Text(
                   widget.user == null
-                      ? 'New Monitor User'
-                      : 'Edit Monitor User',
+                      ? newMember == null?'New Member': newMember!
+                      : editMember == null? 'Edit Member': editMember!,
                   style: myTextStyleSmall(context),
                 ),
                 admin == null
@@ -369,7 +379,7 @@ class UserEditMobileState extends State<UserEditMobile>
                                 setState(() {
                                   country = c;
                                 });
-                              }),
+                              }, hint: hint == null? 'Please select country': hint!,),
                               const SizedBox(
                                 width: 12,
                               ),
@@ -394,7 +404,7 @@ class UserEditMobileState extends State<UserEditMobile>
                                   size: 18,
                                   color: Theme.of(context).primaryColor,
                                 ),
-                                labelText: 'Name',
+                                labelText: name == null? 'Name': name!,
                                 hintStyle: myTextStyleSmall(context),
                                 hintText: 'Enter Full Name'),
                             validator: (value) {

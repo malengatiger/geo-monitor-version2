@@ -329,7 +329,8 @@ class AuthPhoneRegistrationMobileState
                       padding: const EdgeInsets.symmetric(horizontal: 28.0),
                       child: Row(
                         children: [
-                          CountryChooser(onSelected: _onCountrySelected),
+                          CountryChooser(onSelected: _onCountrySelected,
+                            hint: 'Please select country',),
                           const SizedBox(
                             width: 24,
                           ),

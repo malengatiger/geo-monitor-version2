@@ -11,6 +11,7 @@ import 'package:page_transition/page_transition.dart';
 import 'package:responsive_builder/responsive_builder.dart';
 import 'package:uuid/uuid.dart';
 
+import '../../../l10n/translation_handler.dart';
 import '../../api/data_api.dart';
 import '../../api/prefs_og.dart';
 import '../../bloc/admin_bloc.dart';
@@ -45,6 +46,7 @@ class UserEditTabletState extends State<UserEditTablet>
   final _key = GlobalKey<ScaffoldState>();
   var isBusy = false;
   Country? country;
+  String? title, subTitle;
 
 
   @override
@@ -57,6 +59,10 @@ class UserEditTabletState extends State<UserEditTablet>
 
   void _getAdministrator() async {
     admin = await prefsOGx.getUser();
+    var sett = await prefsOGx.getSettings();
+    if (sett != null) {
+      title = await mTx.tx('editMember', sett.locale!);
+    }
 
     setState(() {});
   }
@@ -293,33 +299,33 @@ class UserEditTabletState extends State<UserEditTablet>
       child: Scaffold(
         key: _key,
         appBar: AppBar(
-          title: Text(
-            'Geo Member Editor',
+          title: Text(title == null?
+            'Geo Member Editor': title!,
             style: myTextStyleLarge(context),
           ),
-          bottom: PreferredSize(
-            preferredSize: Size.fromHeight(topPadding),
-            child: Column(
-              children: [
-                Text(
-                  widget.user == null
-                      ? 'New Monitor User'
-                      : 'Edit Monitor User',
-                  style: myTextStyleMedium(context),
-                ),
-                const SizedBox(
-                  height: 12,
-                )
-              ],
-            ),
-          ),
+          // bottom: PreferredSize(
+          //   preferredSize: Size.fromHeight(topPadding),
+          //   child: Column(
+          //     children: [
+          //       Text(
+          //         widget.user == null
+          //             ? 'New Monitor User'
+          //             : 'Edit Monitor User',
+          //         style: myTextStyleMedium(context),
+          //       ),
+          //       const SizedBox(
+          //         height: 12,
+          //       )
+          //     ],
+          //   ),
+          // ),
         ),
         body: OrientationLayoutBuilder(
           portrait: (ctx) {
             return Stack(
               children: [
                 Padding(
-                  padding: const EdgeInsets.all(48.0),
+                  padding: const EdgeInsets.all(32.0),
                   child: Row(
                     children: [
                       UserForm(
@@ -327,8 +333,9 @@ class UserEditTabletState extends State<UserEditTablet>
                         internalPadding: 32,
                         user: widget.user,
                       ),
+                      const SizedBox(width: 24,),
                       GeoActivity(
-                          width: (width / 2) - 100,
+                          width: (width / 2) - 90,
                           thinMode: true,
                           showPhoto: showPhoto,
                           showVideo: showVideo,
@@ -347,15 +354,15 @@ class UserEditTabletState extends State<UserEditTablet>
                   ),
                 ),
                 widget.user?.thumbnailUrl == null
-                    ? Positioned(
-                        right: (width / 2) - 60,
-                        top: 16,
-                        child: const CircleAvatar(
+                    ? const Positioned(
+                        left: 48,
+                        top: 48,
+                        child: CircleAvatar(
                           radius: 24,
                         ))
                     : Positioned(
-                        right: (width / 2) - 60,
-                        top: 16,
+                        left: 48,
+                        top: 48,
                         child: GestureDetector(
                           onTap: _navigateToFullPhoto,
                           child: CircleAvatar(
@@ -400,14 +407,15 @@ class UserEditTabletState extends State<UserEditTablet>
                 ),
                 widget.user?.thumbnailUrl == null
                     ? const Positioned(
-                        right: 36,
-                        top: 36,
+                        right: 72,
+                        top: 48,
                         child: CircleAvatar(
                           radius: 48,
+                          backgroundColor: Colors.teal,
                         ))
                     : Positioned(
-                        right: 36,
-                        top: 16,
+                        right: 72,
+                        top: 48,
                         child: GestureDetector(
                           onTap: _navigateToFullPhoto,
                           child: CircleAvatar(

@@ -138,5 +138,10 @@
   "projectLocationAdded": "Projekligging bygevoeg",
   "enterDescription": "Voer beskrywing in",
   "projectAreaAdded": "Projekgebied bygevoeg",
-  "settingsChanged": "Instellings verander of bygevoeg"
+  "settingsChanged": "Instellings verander of bygevoeg",
+  "enterEmail": "Voer e-posadres in",
+  "enterCell": "Voer telefoonnommer in",
+  "enterFullName": "Voer volle naam in",
+
+
 }

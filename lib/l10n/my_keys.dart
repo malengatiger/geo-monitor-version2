@@ -161,5 +161,10 @@ class MyKeys {
     hashMap["projectAreaAdded"] = "Project Area added";
     hashMap["memberAtProject"] = "Member at Project";
     hashMap["memberAddedChanged"] = "Member changed or added";
+    hashMap["enterFullName"] ="Enter Full Name";
+    hashMap["enterEmail"] ="Enter Email Address";
+    hashMap["enterCell"] ="Enter Telephone Number";
+    hashMap["submitMember"] ="Submit Member";
+    hashMap["profilePhoto"] ="Create Profile Photo";
   }
 }

@@ -8,7 +8,6 @@
   "april": "Kubvumbi",
   "organizationMembers": "Nhengo dzeSangano",
   "executive": "Executive",
-  "profilePhoto": "Profile Photo",
   "activityTitle": "Zviitwa mu$count maawa ekupedzisira",
   "projectAddedToOrganization": "{projectName} yakawedzerwa kusangano",
   "selectProjectIfNecessary": "Sarudza chirongwa chete kana zvigadziriso izvi zviri zvepurojekiti imwe chete, zvikasadaro marongero ari esangano rose",
@@ -137,5 +136,9 @@
   "projectLocationAdded": "Nzvimbo yeprojekiti yakawedzerwa",
   "enterDescription": "Pinda Tsanangudzo",
   "projectAreaAdded": "Project Area yakawedzerwa",
-  "settingsChanged": "Zvirongwa zvakachinjwa kana kuwedzerwa"
+  "settingsChanged": "Zvirongwa zvakachinjwa kana kuwedzerwa",
+  "enterEmail": "Isa Email Kero",
+  "profilePhoto": "Gadzira Profile Photo",
+  "enterCell": "Isa Nhamba Yerunhare",
+  "enterFullName": "Pinda Zita Rakazara",
 }

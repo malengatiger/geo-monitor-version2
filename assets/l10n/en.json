@@ -138,6 +138,9 @@
   "projectLocationAdded": "Project location added",
   "enterDescription": "Enter Description",
   "projectAreaAdded": "Project Area added",
-  "settingsChanged": "Settings changed or added"
+  "settingsChanged": "Settings changed or added",
+  "enterEmail": "Enter Email Address",
+  "enterCell": "Enter Telephone Number",
+  "enterFullName": "Enter Full Name",
 
 }
