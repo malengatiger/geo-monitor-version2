@@ -43,13 +43,13 @@ class _DashboardGridState extends State<DashboardGrid> {
   }
   void _setTitles() async {
     var sett = await prefsOGx.getSettings();
-    projects = await mTx.tx('projects', sett!.locale!);
-    members = await mTx.tx('members', sett.locale!);
-    photos = await mTx.tx('photos', sett.locale!);
-    audioClips = await mTx.tx('audioClips', sett.locale!);
-    locations = await mTx.tx('locations', sett.locale!);
-    areas = await mTx.tx('areas', sett.locale!);
-    schedules = await mTx.tx('schedules', sett.locale!);
+    projects = await mTx.translate('projects', sett!.locale!);
+    members = await mTx.translate('members', sett.locale!);
+    photos = await mTx.translate('photos', sett.locale!);
+    audioClips = await mTx.translate('audioClips', sett.locale!);
+    locations = await mTx.translate('locations', sett.locale!);
+    areas = await mTx.translate('areas', sett.locale!);
+    schedules = await mTx.translate('schedules', sett.locale!);
     setState(() {
 
     });

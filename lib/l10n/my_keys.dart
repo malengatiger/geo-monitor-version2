@@ -138,7 +138,7 @@ class MyKeys {
     hashMap["es"] = "es";
     hashMap["pt"] = "pt";
     hashMap["zu"] = "zu";
-    hashMap["sh"] = "sh";
+    hashMap["sn"] = "sn";
     hashMap["sw"] = "sw";
     hashMap["ts"] = "ts";
     hashMap["st"] = "st";

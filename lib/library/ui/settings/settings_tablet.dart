@@ -32,7 +32,7 @@ class SettingsTabletState extends State<SettingsTablet>
   String? title;
   void _getTitles() async {
     var sett = await prefsOGx.getSettings();
-    title = await mTx.tx('settings', sett!.locale!);
+    title = await mTx.translate('settings', sett!.locale!);
     setState(() {
 
     });
@@ -94,19 +94,17 @@ class SettingsTabletState extends State<SettingsTablet>
         return Row(
           children: [
             SizedBox(
-              width: (size.width / 2) + 64,
+              width: (size.width / 2) + 48,
               child: const Padding(
                 padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 8),
                 child: SettingsForm(
-                  padding: 24,
+                  padding: 20,
                 ),
               ),
             ),
-            const SizedBox(
-              width: 4.0,
-            ),
+
             GeoActivity(
-                width: (size.width / 2) - 80,
+                width: (size.width / 2) - 72,
                 thinMode: false,
                 showPhoto: showPhoto,
                 showVideo: showVideo,

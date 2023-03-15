@@ -26,13 +26,13 @@ class ActivityHeader extends StatelessWidget {
           },
           child: Row(
             children: [
-              SizedBox(width: 140,
+              SizedBox(width: 132,
                 child: Text(prefix,
                   style: myTextStyleSmall(context),
                 ),
               ),
               const SizedBox(
-                width: 8,
+                width: 4,
               ),
               Text(
                 '$hours',
@@ -49,7 +49,7 @@ class ActivityHeader extends StatelessWidget {
           ),
         ),
         const SizedBox(
-          width: 16,
+          width: 8,
         ),
         GestureDetector(
           onTap: () {

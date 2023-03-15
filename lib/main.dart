@@ -138,7 +138,7 @@ class GeoApp extends StatelessWidget {
                   '  and locale is ${snapshot.data!.locale.toString()}');
               themeIndex = snapshot.data!.themeIndex;
               locale = snapshot.data!.locale;
-              pp('${E.check}${E.check}${E.check} locale object received: $locale}');
+              pp('${E.check}${E.check}${E.check} GeoApp: main: locale object received from stream: $locale}');
             }
             return MaterialApp(
               // localizationsDelegates: context.localizationDelegates,
@@ -179,7 +179,7 @@ class GeoAndroidApp extends StatelessWidget {
     // pp('$mx 🌀🌀🌀🌀 Current Locale: $myLocale ...');
     return GestureDetector(
       onTap: () {
-        pp('$mx 🌀🌀🌀🌀 Tap detected; should dismiss keyboard ...');
+        pp('$mx 🌀🌀🌀🌀 GeoAndroidApp: Tap detected; should dismiss keyboard ...');
         FocusManager.instance.primaryFocus?.unfocus();
       },
       child: StreamBuilder<LocaleAndTheme>(
@@ -191,7 +191,7 @@ class GeoAndroidApp extends StatelessWidget {
                   '  and locale is ${snapshot.data!.locale.toString()}');
               themeIndex = snapshot.data!.themeIndex;
               locale = snapshot.data!.locale;
-              pp('${E.check}${E.check}${E.check} locale object received: $locale}');
+              pp('${E.check}${E.check}${E.check} AndroidApp main: locale object received from stream: $locale');
             }
             return MaterialApp(
               localizationsDelegates: context.localizationDelegates,

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:geo_monitor/library/bloc/data_refresher.dart';
+import 'package:geo_monitor/library/bloc/organization_bloc.dart';
 import 'package:geo_monitor/library/data/settings_model.dart';
 import 'package:uuid/uuid.dart';
 
@@ -12,7 +14,6 @@ import '../../data/project.dart';
 import '../../data/user.dart';
 import '../../functions.dart';
 import '../../generic_functions.dart';
-
 
 class SettingsForm extends StatefulWidget {
   const SettingsForm({Key? key, required this.padding}) : super(key: key);
@@ -28,6 +29,7 @@ class _SettingsFormState extends State<SettingsForm> {
   var orgSettings = <SettingsModel>[];
   Project? selectedProject;
   SettingsModel? settingsModel;
+  SettingsModel? oldSettingsModel;
 
   var distController = TextEditingController(text: '500');
   var videoController = TextEditingController(text: '20');
@@ -41,66 +43,120 @@ class _SettingsFormState extends State<SettingsForm> {
   bool busy = false;
   bool busyWritingToDB = false;
 
+  String? currentLocale;
+
   @override
   void initState() {
     super.initState();
     _getSettings();
   }
 
-
   void _getSettings() async {
     pp('$mm 🍎🍎 ............. getting user from prefs ...');
     user = await prefsOGx.getUser();
     settingsModel = await prefsOGx.getSettings();
-    pp('$mm 🍎🍎 user is here, huh? ${user!.toJson()}');
+    oldSettingsModel = await prefsOGx.getSettings();
+    if (settingsModel != null) {
+      currentLocale = settingsModel!.locale!;
+    }
+    pp('$mm 🍎🍎 user is here, huh? 🌎 ${user!.name!}');
     _setExistingSettings();
     _setTitles();
   }
 
-  String? fieldMonitorInstruction, maximumMonitoringDistance,
-      maximumVideoLength, maximumAudioLength, activityStreamHours,
-    numberOfDays, pleaseSelectCountry, tapForColorScheme, settings,
-    small, medium, large, selectLanguage, hint;
+  String? fieldMonitorInstruction,
+      maximumMonitoringDistance,
+      maximumVideoLength,
+      maximumAudioLength,
+      activityStreamHours,
+      numberOfDays,
+      pleaseSelectCountry,
+      tapForColorScheme,
+      settings,
+      small,
+      medium,
+      large,
+      selectLanguage,
+      hint;
 
   void _setTitles() async {
-    fieldMonitorInstruction = await mTx.tx('fieldMonitorInstruction', settingsModel!.locale!);
-    maximumMonitoringDistance = await mTx.tx('maximumMonitoringDistance', settingsModel!.locale!);
-    maximumVideoLength = await mTx.tx('maximumVideoLength', settingsModel!.locale!);
-    maximumAudioLength = await mTx.tx('maximumAudioLength', settingsModel!.locale!);
-    activityStreamHours = await mTx.tx('activityStreamHours', settingsModel!.locale!);
+    fieldMonitorInstruction =
+        await mTx.translate('fieldMonitorInstruction', settingsModel!.locale!);
+    maximumMonitoringDistance =
+        await mTx.translate('maximumMonitoringDistance', settingsModel!.locale!);
+    maximumVideoLength =
+        await mTx.translate('maximumVideoLength', settingsModel!.locale!);
+    maximumAudioLength =
+        await mTx.translate('maximumAudioLength', settingsModel!.locale!);
+    activityStreamHours =
+        await mTx.translate('activityStreamHours', settingsModel!.locale!);
 
-    pleaseSelectCountry = await mTx.tx('pleaseSelectCountry', settingsModel!.locale!);
-    tapForColorScheme = await mTx.tx('tapForColorScheme', settingsModel!.locale!);
-    numberOfDays = await mTx.tx('numberOfDays', settingsModel!.locale!);
-    settings = await mTx.tx('settings', settingsModel!.locale!);
-    small = await mTx.tx('small', settingsModel!.locale!);
-    medium = await mTx.tx('medium', settingsModel!.locale!);
-    large = await mTx.tx('large', settingsModel!.locale!);
-    selectLanguage = await mTx.tx('selectLanguage', settingsModel!.locale!);
-    hint = await mTx.tx('selectLanguage', settingsModel!.locale!);
+    pleaseSelectCountry =
+        await mTx.translate('pleaseSelectCountry', settingsModel!.locale!);
+    tapForColorScheme =
+        await mTx.translate('tapForColorScheme', settingsModel!.locale!);
+    numberOfDays = await mTx.translate('numberOfDays', settingsModel!.locale!);
+    settings = await mTx.translate('settings', settingsModel!.locale!);
+    small = await mTx.translate('small', settingsModel!.locale!);
+    medium = await mTx.translate('medium', settingsModel!.locale!);
+    large = await mTx.translate('large', settingsModel!.locale!);
+    selectLanguage = await mTx.translate('selectLanguage', settingsModel!.locale!);
+    hint = await mTx.translate('selectLanguage', settingsModel!.locale!);
 
-    setState(() {
-
-    });
-
+    setState(() {});
   }
-  void _checkLocaleChangeAndExit() {
 
-    //if locale changed - display dialog with shutDown button
-    showDialog(
-        context: context,
-        barrierDismissible: true,
-        builder: (_) => const Padding(
-          padding: EdgeInsets.all(16.0),
-          child: Center(
-            child: SizedBox(width: 400, height: 400,
-              child: Text('If you have changed the language of the app please press STOP and then then restart the app to use the new language'),),
-          ),
-        ),
-
-    );
-
-    Navigator.of(context).pop();
+  void _checkLocaleChangeAndExit() async {
+    pp('$mm if locale changed - display dialog with shutDown button');
+    var sett = await prefsOGx.getSettings();
+    String? message, stop;
+    if (sett != null) {
+      message = await mTx.translate('stopMessage', sett.locale!);
+      stop = await mTx.translate('stop', sett.locale!);
+      if (sett.locale == oldSettingsModel!.locale!) {
+        if (mounted) {
+          pp('Pooping out ... will not display dialog');
+          // Navigator.of(context).pop();
+        }
+      } else {
+        if (mounted) {
+          pp('$mm is mounted, so show dialog');
+          showDialog(
+            context: context,
+            barrierDismissible: false,
+            builder: (_) => Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Center(
+                child: SizedBox(
+                  width: 400,
+                  height: 400,
+                  child: Column(
+                    children: [
+                      Text(message == null
+                          ? 'If you have changed the language of the app please press stop'
+                              ' and then then restart the app to use the new language'
+                          : message!),
+                      const SizedBox(
+                        height: 64,
+                      ),
+                      ElevatedButton(
+                          onPressed: () {
+                            SystemChannels.platform
+                                .invokeMethod('SystemNavigator.pop');
+                          },
+                          child: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Text(stop == null ? 'Stop' : stop!),
+                          )),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          );
+        }
+      }
+    }
   }
 
   // var instruction = S.of(context).fieldMonitorInstruction;
@@ -146,8 +202,8 @@ class _SettingsFormState extends State<SettingsForm> {
     if (settingsModel?.locale != null) {
       Locale newLocale = Locale(settingsModel!.locale!);
       selectedLocale = newLocale;
-      final m = LocaleAndTheme(themeIndex: settingsModel!.themeIndex!,
-          locale: newLocale);
+      final m = LocaleAndTheme(
+          themeIndex: settingsModel!.themeIndex!, locale: newLocale);
       themeBloc.changeToLocale(m.locale.toString());
     }
 
@@ -225,7 +281,9 @@ class _SettingsFormState extends State<SettingsForm> {
           backgroundColor: Theme.of(context).primaryColor,
           message: 'Settings have been saved',
           context: context);
-       _checkLocaleChangeAndExit();
+
+      await Future.delayed(const Duration(milliseconds: 200));
+      _checkLocaleChangeAndExit();
     }
   }
 
@@ -237,16 +295,18 @@ class _SettingsFormState extends State<SettingsForm> {
     try {
       var s = await DataAPI.addSettings(settingsModel!);
       pp('\n\n🔵🔵🔵 settings sent to database: ${s.toJson()}');
-      if (s.projectId == null) {
-        await prefsOGx.saveSettings(s);
-        themeBloc.changeToTheme(s.themeIndex!);
-        //todo - do something with new settings ....
-        dataRefresher.manageRefresh(
-            numberOfDays: null,
-            organizationId: s.organizationId,
-            projectId: null,
-            userId: null);
-      }
+
+      await prefsOGx.saveSettings(s);
+      organizationBloc.settingsController.sink.add(s);
+      themeBloc.changeToTheme(s.themeIndex!);
+      //todo - do something with new settings ....
+      dataRefresher.manageRefresh(
+          numberOfDays: null,
+          organizationId: s.organizationId,
+          projectId: null,
+          userId: null);
+
+
     } catch (e) {
       pp(e);
       if (mounted) {
@@ -327,7 +387,6 @@ class _SettingsFormState extends State<SettingsForm> {
       }
     }
 
-
     return Card(
       elevation: 4,
       shape: getRoundedBorder(radius: 16),
@@ -368,8 +427,10 @@ class _SettingsFormState extends State<SettingsForm> {
                                 child: Center(
                                   child: Padding(
                                     padding: const EdgeInsets.all(8.0),
-                                    child: Text(tapForColorScheme == null?
-                                      'Tap Me for Colour Scheme': tapForColorScheme!,
+                                    child: Text(
+                                      tapForColorScheme == null
+                                          ? 'Tap Me for Colour Scheme'
+                                          : tapForColorScheme!,
                                       style: myTextStyleSmall(context),
                                     ),
                                   ),
@@ -406,22 +467,10 @@ class _SettingsFormState extends State<SettingsForm> {
                   const SizedBox(
                     height: 12,
                   ),
-                  selectedProject == null
-                      ? const SizedBox()
-                      : InkWell(
-                          onTap: () {
-                            selectedProject = null;
-                            setState(() {});
-                          },
-                          child: SizedBox(
-                            height: 20,
-                            child: Text(
-                              selectedProject!.name!,
-                              style: myTextStyleLargePrimaryColor(context),
-                            ),
-                          ),
-                        ),
-                  Text(fieldMonitorInstruction == null? 'instruction':fieldMonitorInstruction!,
+                  Text(
+                    fieldMonitorInstruction == null
+                        ? 'instruction'
+                        : fieldMonitorInstruction!,
                     style: myTextStyleSmall(context),
                   ),
                   const SizedBox(
@@ -434,15 +483,20 @@ class _SettingsFormState extends State<SettingsForm> {
                       keyboardType: TextInputType.number,
                       validator: (value) {
                         if (value!.isEmpty) {
-                          return maximumMonitoringDistance == null?
-                          'Please enter maximum distance from project in metres': maximumMonitoringDistance!;
+                          return maximumMonitoringDistance == null
+                              ? 'Please enter maximum distance from project in metres'
+                              : maximumMonitoringDistance!;
                         }
                         return null;
                       },
                       decoration: InputDecoration(
-                        hintText: maximumMonitoringDistance == null?
-                            'Enter maximum distance from project in metres': maximumMonitoringDistance!,
-                        label: Text( maximumMonitoringDistance == null?'sentence': maximumMonitoringDistance!,
+                        hintText: maximumMonitoringDistance == null
+                            ? 'Enter maximum distance from project in metres'
+                            : maximumMonitoringDistance!,
+                        label: Text(
+                          maximumMonitoringDistance == null
+                              ? 'sentence'
+                              : maximumMonitoringDistance!,
                           style: myTextStyleSmall(context),
                         ),
                         hintStyle: myTextStyleSmall(context),
@@ -459,14 +513,20 @@ class _SettingsFormState extends State<SettingsForm> {
                       keyboardType: TextInputType.number,
                       validator: (value) {
                         if (value!.isEmpty) {
-                          return maximumVideoLength == null? 'Please enter maximum video length in seconds': maximumVideoLength!;
+                          return maximumVideoLength == null
+                              ? 'Please enter maximum video length in seconds'
+                              : maximumVideoLength!;
                         }
                         return null;
                       },
                       decoration: InputDecoration(
-                        hintText: maximumVideoLength == null? 'Enter maximum video length in seconds': maximumVideoLength!,
+                        hintText: maximumVideoLength == null
+                            ? 'Enter maximum video length in seconds'
+                            : maximumVideoLength!,
                         label: Text(
-                          maximumVideoLength == null?'Maximum Video Length in Seconds': maximumVideoLength!,
+                          maximumVideoLength == null
+                              ? 'Maximum Video Length in Seconds'
+                              : maximumVideoLength!,
                           style: myTextStyleSmall(context),
                         ),
                         hintStyle: myTextStyleSmall(context),
@@ -483,14 +543,20 @@ class _SettingsFormState extends State<SettingsForm> {
                       keyboardType: TextInputType.number,
                       validator: (value) {
                         if (value!.isEmpty) {
-                          return maximumAudioLength == null?'Please enter maximum audio length in minutes': maximumVideoLength!;
+                          return maximumAudioLength == null
+                              ? 'Please enter maximum audio length in minutes'
+                              : maximumVideoLength!;
                         }
                         return null;
                       },
                       decoration: InputDecoration(
-                        hintText: maximumAudioLength == null?'Enter maximum audio length in minutes': maximumAudioLength!,
+                        hintText: maximumAudioLength == null
+                            ? 'Enter maximum audio length in minutes'
+                            : maximumAudioLength!,
                         label: Text(
-                          maximumAudioLength == null?'Maximum Audio Length in Minutes': maximumAudioLength!,
+                          maximumAudioLength == null
+                              ? 'Maximum Audio Length in Minutes'
+                              : maximumAudioLength!,
                           style: myTextStyleSmall(context),
                         ),
                         hintStyle: myTextStyleSmall(context),
@@ -507,15 +573,20 @@ class _SettingsFormState extends State<SettingsForm> {
                       keyboardType: TextInputType.number,
                       validator: (value) {
                         if (value!.isEmpty) {
-                          return activityStreamHours == null?
-                          'Please enter the number of hours your activity stream must show': activityStreamHours!;
+                          return activityStreamHours == null
+                              ? 'Please enter the number of hours your activity stream must show'
+                              : activityStreamHours!;
                         }
                         return null;
                       },
                       decoration: InputDecoration(
-                        hintText: activityStreamHours == null?'Enter activity stream length in hours':activityStreamHours!,
+                        hintText: activityStreamHours == null
+                            ? 'Enter activity stream length in hours'
+                            : activityStreamHours!,
                         label: Text(
-                          activityStreamHours == null?'Activity Stream Audio Length in Hours': activityStreamHours!,
+                          activityStreamHours == null
+                              ? 'Activity Stream Audio Length in Hours'
+                              : activityStreamHours!,
                           style: myTextStyleSmall(context),
                         ),
                         hintStyle: myTextStyleSmall(context),
@@ -532,7 +603,9 @@ class _SettingsFormState extends State<SettingsForm> {
                       keyboardType: TextInputType.number,
                       validator: (value) {
                         if (value!.isEmpty) {
-                          return numberOfDays == null?'Please enter the number of days your dashboard must show':numberOfDays!;
+                          return numberOfDays == null
+                              ? 'Please enter the number of days your dashboard must show'
+                              : numberOfDays!;
                         }
                         return null;
                       },
@@ -568,7 +641,7 @@ class _SettingsFormState extends State<SettingsForm> {
                         onChanged: _handlePhotoSizeValueChange,
                       ),
                       Text(
-                        small == null?'Small':small!,
+                        small == null ? 'Small' : small!,
                         style: myTextStyleSmall(context),
                       ),
                       Radio(
@@ -576,14 +649,14 @@ class _SettingsFormState extends State<SettingsForm> {
                         groupValue: groupValue,
                         onChanged: _handlePhotoSizeValueChange,
                       ),
-                      Text(medium == null?'Medium':medium!,
+                      Text(medium == null ? 'Medium' : medium!,
                           style: myTextStyleSmall(context)),
                       Radio(
                         value: 2,
                         groupValue: groupValue,
                         onChanged: _handlePhotoSizeValueChange,
                       ),
-                      Text(large == null?'Large':large!,
+                      Text(large == null ? 'Large' : large!,
                           style: myTextStyleSmall(context)),
                     ],
                   ),
@@ -594,8 +667,10 @@ class _SettingsFormState extends State<SettingsForm> {
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
                       Flexible(
-                        child: Text(selectLanguage == null?
-                          'Select language ': selectLanguage!,
+                        child: Text(
+                          selectLanguage == null
+                              ? 'Select language '
+                              : selectLanguage!,
                           style: myTextStyleSmall(context),
                         ),
                       ),
@@ -610,11 +685,14 @@ class _SettingsFormState extends State<SettingsForm> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
-                      LocaleChooser(onSelected: (locale) {
-                        pp('✅✅✅ form received locale: $locale - will set state}');
+                      LocaleChooser(
+                        onSelected: (locale) {
+                          pp('✅✅✅ form received locale: $locale - will set state}');
 
-                        _handleLocaleChange(locale);
-                      }, hint: hint == null? 'Select Country': hint!,),
+                          _handleLocaleChange(locale);
+                        },
+                        hint: hint == null ? 'Select Country' : hint!,
+                      ),
                     ],
                   ),
                   const SizedBox(
@@ -641,23 +719,24 @@ class _SettingsFormState extends State<SettingsForm> {
 
   void _handleLocaleChange(Locale locale) async {
     pp('$mm onLocaleChange ... going to ${locale.languageCode}');
-    mTx.initialize(locale: locale.toLanguageTag());
+    mTx.translate('settings',locale.toLanguageTag());
     var settings = await prefsOGx.getSettings();
     if (settings != null) {
       settings.locale = locale.languageCode;
       await prefsOGx.saveSettings(settings);
+      organizationBloc.settingsController.sink.add(settings);
       _getSettings();
       themeBloc.changeToLocale(locale.languageCode);
     }
     setState(() {
       selectedLocale = locale;
     });
-
   }
 }
 
 class LocaleChooser extends StatelessWidget {
-  const LocaleChooser({Key? key, required this.onSelected, required this.hint}) : super(key: key);
+  const LocaleChooser({Key? key, required this.onSelected, required this.hint})
+      : super(key: key);
 
   final Function(Locale) onSelected;
   final String hint;
@@ -665,7 +744,7 @@ class LocaleChooser extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return DropdownButton<Locale>(
-        hint:  Text(hint),
+        hint: Text(hint),
         items: const [
           DropdownMenuItem(value: Locale('en'), child: Text('English')),
           DropdownMenuItem(value: Locale('fr'), child: Text('French')),

@@ -43,7 +43,8 @@ class ActivityListTablet extends StatefulWidget {
       this.user,
       this.project,
       required this.onLocationResponse,
-      required this.onLocationRequest, required this.settings})
+      required this.onLocationRequest,
+      required this.settings})
       : super(key: key);
   final double width;
   final bool thinMode;
@@ -76,30 +77,43 @@ class _ActivityListTabletState extends State<ActivityListTablet>
 
   late StreamSubscription<ActivityModel> subscription;
   late StreamSubscription<SettingsModel> settingsSubscriptionFCM;
+  late StreamSubscription<SettingsModel> settingsSubscription;
+
 
   User? me;
   bool busy = true;
-  final mm = '😎😎😎😎😎😎 ActivityListTablet: ';
+  final mm = '😎😎😎😎😎😎 ActivityListTablet: 😎 ';
 
   @override
   void initState() {
+    pp('$mm ... initState');
     _animationController = AnimationController(
         duration: const Duration(milliseconds: 3000),
         reverseDuration: const Duration(milliseconds: 2000),
         vsync: this);
     super.initState();
     _getData(true);
-    _listenToFCM();
+    _listenToStreams();
+  }
+
+  @override
+  void dispose() {
+    listScrollController.dispose();
+    subscription.cancel();
+    settingsSubscription.cancel();
+    settingsSubscriptionFCM.cancel();
+    super.dispose();
   }
 
   String? title;
-  String?  prefix, suffix, loadingActivities, noActivities, tapToRefresh;
+  String? prefix, suffix, loadingActivities, noActivities, tapToRefresh;
 
   void _getData(bool forceRefresh) async {
     pp('$mm ... getting activity data ... forceRefresh: $forceRefresh');
-    loadingActivities =  await mTx.tx('loadingActivities', widget.settings.locale!);
-    noActivities =  await mTx.tx('noActivities', widget.settings.locale!);
-    tapToRefresh =  await mTx.tx('tapToRefresh', widget.settings.locale!);
+    loadingActivities =
+        await mTx.translate('loadingActivities', widget.settings.locale!);
+    noActivities = await mTx.translate('noActivities', widget.settings.locale!);
+    tapToRefresh = await mTx.translate('tapToRefresh', widget.settings.locale!);
     if (models.isNotEmpty) {
       _animationController.reverse().then((value) {
         setState(() {
@@ -114,19 +128,16 @@ class _ActivityListTabletState extends State<ActivityListTablet>
     pp('$mm ... getting activity data ... forceRefresh: $forceRefresh');
     try {
       me = await prefsOGx.getUser();
-
-
       var hours = 12;
+      hours = widget.settings.activityStreamHours!;
+      var sub = await mTx.translate('activityTitle', widget.settings.locale!);
+      int index = sub.indexOf('\$');
+      prefix = sub.substring(0, index);
+      suffix = sub.substring(index + 6);
+      pp('$mm prefix: $prefix suffix: $suffix');
 
-        hours = widget.settings.activityStreamHours!;
-        var sub = await mTx.tx('activityTitle', widget.settings.locale!);
-        int index = sub.indexOf('\$');
-        prefix = sub.substring(0, index);
-        suffix = sub.substring(index+6);
-        pp('$mm prefix: $prefix suffix: $suffix');
-
-        loadingActivities = await mTx.tx('loadingActivities', widget.settings.locale!);
-
+      loadingActivities =
+          await mTx.translate('loadingActivities', widget.settings.locale!);
 
       pp('$mm ... get Activity (n hours) ... : $hours');
       if (widget.project != null) {
@@ -150,7 +161,8 @@ class _ActivityListTabletState extends State<ActivityListTablet>
             textStyle: myTextStyleSmallBold(context),
             padding: 24,
             duration: const Duration(seconds: 6),
-            message: '$e', context: context);
+            message: '$e',
+            context: context);
       }
     }
     setState(() {
@@ -184,16 +196,24 @@ class _ActivityListTabletState extends State<ActivityListTablet>
     setState(() {});
   }
 
-  void _listenToFCM() async {
-    pp('$mm ... _listenToFCM activityStream ...');
+  void _listenToStreams() async {
+    pp('$mm ... _listenToStreams  ...');
 
     settingsSubscriptionFCM =
-        fcmBloc.settingsStream.listen((SettingsModel event) {
+        fcmBloc.settingsStream.listen((SettingsModel event) async {
+      _getData(false);
+      if (mounted) {
+        pp('$mm settingsSubscriptionFCM: have refreshed!!!!!!!!!!!!!!');
+        setState(() {});
+      }
+    });
+    settingsSubscription =
+        organizationBloc.settingsStream.listen((SettingsModel event) async {
+          pp('$mm settingsSubscription: delivered settings, locale: ${event.locale}');
+          mTx.initialize(locale: event.locale);
+          await Future.delayed(const Duration(milliseconds: 100));
           _getData(false);
-          if (mounted) {
-            pp('$mm activitySubscriptionFCM: DOING NOTHING!!!!!!!!!!!!!!');
-            setState(() {});
-          }
+
         });
 
     subscription = fcmBloc.activityStream.listen((ActivityModel model) {
@@ -252,12 +272,10 @@ class _ActivityListTabletState extends State<ActivityListTablet>
       setState(() {});
     }
   }
-
   void _sortAscending() {
     models.sort((a, b) => a.date!.compareTo(b.date!));
     sortedByDateAscending = true;
   }
-
   void _sortDescending() {
     models.sort((a, b) => b.date!.compareTo(a.date!));
     sortedByDateAscending = false;
@@ -265,6 +283,7 @@ class _ActivityListTabletState extends State<ActivityListTablet>
 
   @override
   Widget build(BuildContext context) {
+    pp('$mm ... build method starting .........................');
     if (busy) {
       return Center(
         child: Card(
@@ -286,8 +305,10 @@ class _ActivityListTabletState extends State<ActivityListTablet>
                   const SizedBox(
                     height: 20,
                   ),
-                  Text(loadingActivities == null?
-                    'Loading activities': loadingActivities!,
+                  Text(
+                    loadingActivities == null
+                        ? 'Loading activities'
+                        : loadingActivities!,
                     style: myTextStyleSmall(context),
                   ),
                 ],
@@ -300,10 +321,11 @@ class _ActivityListTabletState extends State<ActivityListTablet>
     if (models.isEmpty) {
       return Center(
         child: GestureDetector(
-          onTap: (){
+          onTap: () {
             _getData(true);
           },
-          child: SizedBox(height: 200,
+          child: SizedBox(
+            height: 200,
             child: Card(
               shape: getRoundedBorder(radius: 12),
               elevation: 8,
@@ -312,14 +334,20 @@ class _ActivityListTabletState extends State<ActivityListTablet>
                   padding: const EdgeInsets.all(28.0),
                   child: Column(
                     children: [
-                      const SizedBox(height: 32,),
-                      Text(noActivities == null?
-                        'No activities happening yet': noActivities!,
+                      const SizedBox(
+                        height: 32,
+                      ),
+                      Text(
+                        noActivities == null
+                            ? 'No activities happening yet'
+                            : noActivities!,
                         style: myTextStyleSmall(context),
                       ),
-                      const SizedBox(height: 16,),
-                      Text(tapToRefresh == null?
-                        'Tap to refresh': tapToRefresh!,
+                      const SizedBox(
+                        height: 16,
+                      ),
+                      Text(
+                        tapToRefresh == null ? 'Tap to refresh' : tapToRefresh!,
                         style: myTextStyleSmallBold(context),
                       ),
                     ],
@@ -331,6 +359,7 @@ class _ActivityListTabletState extends State<ActivityListTablet>
         ),
       );
     }
+    // pp('$mm ... build method returning widget; thinMode: ${widget.thinMode} .........................');
     return widget.thinMode
         ? SizedBox(
             width: widget.width,
@@ -344,15 +373,17 @@ class _ActivityListTabletState extends State<ActivityListTablet>
                             left: 4.0, top: 12, bottom: 8),
                         child: Padding(
                           padding: const EdgeInsets.only(top: 16.0),
-                          child: prefix == null? const SizedBox():ActivityHeader(
-                            prefix: prefix!,
-                            suffix: suffix!,
-                            onRefreshRequested: () {
-                              _getData(true);
-                            },
-                            hours:  widget.settings.activityStreamHours!,
-                            number: models.length,
-                          ),
+                          child: prefix == null
+                              ? const SizedBox()
+                              : ActivityHeader(
+                                  prefix: prefix!,
+                                  suffix: suffix!,
+                                  onRefreshRequested: () {
+                                    _getData(true);
+                                  },
+                                  hours: widget.settings.activityStreamHours!,
+                                  number: models.length,
+                                ),
                         ),
                       ),
                     ]),
@@ -369,9 +400,9 @@ class _ActivityListTabletState extends State<ActivityListTablet>
                         onTap: () {
                           _handleTappedActivity(act);
                         },
-                        child:  ActivityStreamCard(
+                        child: ActivityStreamCard(
                           settings: widget.settings,
-                          model: act,
+                          activityModel: act,
                           frontPadding: 36,
                           thinMode: widget.thinMode,
                           width: widget.thinMode ? 320 : widget.width,
@@ -393,15 +424,17 @@ class _ActivityListTabletState extends State<ActivityListTablet>
                             left: 12.0, top: 12, bottom: 8),
                         child: Padding(
                           padding: const EdgeInsets.only(top: 16.0),
-                          child: prefix == null? const SizedBox(): ActivityHeader(
-                            prefix: prefix!,
-                            suffix: suffix!,
-                            onRefreshRequested: () {
-                              _getData(true);
-                            },
-                            hours:  widget.settings.activityStreamHours!,
-                            number: models.length,
-                          ),
+                          child: prefix == null
+                              ? const SizedBox()
+                              : ActivityHeader(
+                                  prefix: prefix!,
+                                  suffix: suffix!,
+                                  onRefreshRequested: () {
+                                    _getData(true);
+                                  },
+                                  hours: widget.settings.activityStreamHours!,
+                                  number: models.length,
+                                ),
                         ),
                       ),
                     ]),
@@ -420,7 +453,7 @@ class _ActivityListTabletState extends State<ActivityListTablet>
                         },
                         child: ActivityStreamCard(
                           settings: widget.settings,
-                          model: act,
+                          activityModel: act,
                           frontPadding: 16,
                           thinMode: widget.thinMode,
                           width: widget.width,

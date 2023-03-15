@@ -132,7 +132,7 @@ class ProjectListTabletState extends State<ProjectListTablet>
     user = await prefsOGx.getUser();
     var sett = await prefsOGx.getSettings();
     if (sett != null) {
-      organizationProjects = await mTx.tx('organizationProjects', sett!.locale!);
+      organizationProjects = await mTx.translate('organizationProjects', sett!.locale!);
     }
     if (user != null) {
       pp('$mm user found: ${user!.toJson()}');

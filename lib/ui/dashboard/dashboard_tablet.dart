@@ -123,7 +123,7 @@ class DashboardTabletState extends State<DashboardTablet> with WidgetsBindingObs
     audioSubscriptionFCM.cancel();
     settingsSubscriptionFCM.cancel();
     dataBagSubscription.cancel();
-    killSubscriptionFCM.cancel();
+    // killSubscriptionFCM.cancel();
     userSubscriptionFCM.cancel();
     settingsSubscriptionFCM.cancel();
 
@@ -213,8 +213,8 @@ class DashboardTabletState extends State<DashboardTablet> with WidgetsBindingObs
       settingsModel = await prefsOGx.getSettings();
       if (settingsModel != null) {
         numberOfDays = settingsModel!.numberOfDays!;
-        title = await mTx.tx('dashboard', settingsModel!.locale!);
-        var sub = await mTx.tx('dashboardSubTitle', settingsModel!.locale!);
+        title = await mTx.translate('dashboard', settingsModel!.locale!);
+        var sub = await mTx.translate('dashboardSubTitle', settingsModel!.locale!);
         pp('deciphering this string: 🍎 $sub');
         int index = sub.indexOf('\$');
         prefix = sub.substring(0, index);
@@ -637,7 +637,7 @@ class DashboardTabletState extends State<DashboardTablet> with WidgetsBindingObs
   @override
   Widget build(BuildContext context) {
     final Locale appLocale = Localizations.localeOf(context);
-    pp('$mm build: app locale: $appLocale');
+    pp('$mm build: app Localizations.localeOf 🌎🌎🌎 locale: $appLocale, not the same as the app');
     var size = MediaQuery.of(context).size;
     var ori = MediaQuery.of(context).orientation;
     var bottomHeight = 140.0;
@@ -651,9 +651,6 @@ class DashboardTabletState extends State<DashboardTablet> with WidgetsBindingObs
       extPadding = 120;
     }
 
-    // var b = S.of(context).organizationDashboard;
-    // var c = S.of(context).dashboardSubTitle(33);
-    // pp('$mm - title from arb file? $b sub: $c');
 
     return SafeArea(
         child: Scaffold(

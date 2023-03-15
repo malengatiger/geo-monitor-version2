@@ -82,8 +82,8 @@ class UserListMobileState extends State<UserListMobile>
     try {
       var sett = await prefsOGx.getSettings();
       if (sett != null) {
-        title = await mTx.tx('organizationMembers', sett!.locale!);
-        subTitle = await mTx.tx('administratorsMembers', sett!.locale!);
+        title = await mTx.translate('organizationMembers', sett!.locale!);
+        subTitle = await mTx.translate('administratorsMembers', sett!.locale!);
       }
       user = await prefsOGx.getUser();
       if (user!.userType == UserType.orgAdministrator ||

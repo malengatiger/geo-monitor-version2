@@ -35,6 +35,8 @@ class OrganizationBloc {
       'OrganizationBloc: ';
   final StreamController<DataBag> dataBagController =
       StreamController.broadcast();
+  final StreamController<SettingsModel> settingsController =
+  StreamController.broadcast();
   final StreamController<List<MonitorReport>> _reportController =
   StreamController.broadcast();
   final StreamController<List<User>> userController =
@@ -69,6 +71,8 @@ class OrganizationBloc {
       StreamController.broadcast();
 
   Stream<DataBag> get dataBagStream => dataBagController.stream;
+
+  Stream<SettingsModel> get settingsStream => settingsController.stream;
 
   Stream<List<MonitorReport>> get reportStream => _reportController.stream;
 

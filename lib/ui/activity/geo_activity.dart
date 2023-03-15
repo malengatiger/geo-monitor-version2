@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:geo_monitor/library/api/prefs_og.dart';
+import 'package:geo_monitor/library/bloc/organization_bloc.dart';
 import 'package:geo_monitor/library/data/activity_model.dart';
 import 'package:geo_monitor/library/data/geofence_event.dart';
 import 'package:geo_monitor/library/data/location_response.dart';
@@ -79,6 +80,7 @@ class GeoActivityState extends State<GeoActivity>
   late StreamSubscription<GeofenceEvent> geofenceSubscriptionFCM;
   late StreamSubscription<ActivityModel> activitySubscriptionFCM;
 
+  late StreamSubscription<SettingsModel> settingsSubscription;
 
   ScrollController listScrollController = ScrollController();
 
@@ -98,7 +100,7 @@ class GeoActivityState extends State<GeoActivity>
 
   void _getSettings() async {
     settings = await prefsOGx.getSettings();
-
+    setState(() {});
   }
 
   int count = 0;
@@ -110,6 +112,13 @@ class GeoActivityState extends State<GeoActivity>
       pp('$mm 🍎🍎 _listen to FCM message streams ... 🍎🍎 '
           'geofence stream via geofenceSubscriptionFCM...');
 
+      settingsSubscription =
+          organizationBloc.settingsStream.listen((SettingsModel event) {
+        settings = event;
+        if (mounted) {
+          setState(() {});
+        }
+      });
 
       activitySubscriptionFCM =
           fcmBloc.activityStream.listen((ActivityModel event) {
@@ -125,7 +134,7 @@ class GeoActivityState extends State<GeoActivity>
           fcmBloc.geofenceStream.listen((GeofenceEvent event) async {
         pp('$mm: 🍎geofenceSubscriptionFCM: 🍎 GeofenceEvent: '
             'user ${event.user!.name} arrived: ${event.projectName} ');
-        var arr = await mTx.tx('arrivedAt', settings!.locale!);
+        var arr = await mTx.translate('arrivedAt', settings!.locale!);
         if (event.projectName != null) {
           arrivedAt = arr.replaceAll('\$project', event.projectName!);
           arrivedAt = '$arrivedAt - ${event.user!.name!}';
@@ -154,128 +163,133 @@ class GeoActivityState extends State<GeoActivity>
 
   @override
   Widget build(BuildContext context) {
-
-    return settings == null? const SizedBox(): SizedBox(
-      width: widget.width,
-      child: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: SizedBox(
-          width: widget.width,
-          child: ScreenTypeLayout(
-            mobile: ActivityListMobile(
-              project: widget.project,
-              user: widget.user,
-              onPhotoTapped: (photo) {
-                widget.showPhoto(photo);
-              },
-              onVideoTapped: (video) {
-                widget.showVideo(video);
-              },
-              onAudioTapped: (audio) {
-                widget.showAudio(audio);
-              },
-              onUserTapped: (user) {},
-              onProjectTapped: (project) {},
-              onProjectPositionTapped: (projectPosition) {
-                widget.showProjectPosition(projectPosition);
-              },
-              onPolygonTapped: (projectPolygon) {
-                widget.showProjectPolygon(projectPolygon);
-              },
-              onGeofenceEventTapped: (geofenceEvent) {
-                widget.showGeofenceEvent(geofenceEvent);
-              },
-              onOrgMessage: (orgMessage) {
-                widget.showOrgMessage(orgMessage);
-              },
-              onLocationRequest: (locRequest) {
-                widget.showLocationRequest(locRequest);
-              },
-              onLocationResponse: (locResp) {
-                widget.showLocationResponse(locResp);
-              },
+    return settings == null
+        ? const SizedBox()
+        : SizedBox(
+            width: widget.width,
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: SizedBox(
+                width: widget.width,
+                child: ScreenTypeLayout(
+                  mobile: ActivityListMobile(
+                    project: widget.project,
+                    user: widget.user,
+                    onPhotoTapped: (photo) {
+                      widget.showPhoto(photo);
+                    },
+                    onVideoTapped: (video) {
+                      widget.showVideo(video);
+                    },
+                    onAudioTapped: (audio) {
+                      widget.showAudio(audio);
+                    },
+                    onUserTapped: (user) {},
+                    onProjectTapped: (project) {},
+                    onProjectPositionTapped: (projectPosition) {
+                      widget.showProjectPosition(projectPosition);
+                    },
+                    onPolygonTapped: (projectPolygon) {
+                      widget.showProjectPolygon(projectPolygon);
+                    },
+                    onGeofenceEventTapped: (geofenceEvent) {
+                      widget.showGeofenceEvent(geofenceEvent);
+                    },
+                    onOrgMessage: (orgMessage) {
+                      widget.showOrgMessage(orgMessage);
+                    },
+                    onLocationRequest: (locRequest) {
+                      widget.showLocationRequest(locRequest);
+                    },
+                    onLocationResponse: (locResp) {
+                      widget.showLocationResponse(locResp);
+                    },
+                  ),
+                  tablet: OrientationLayoutBuilder(
+                    portrait: (context) {
+                      return settings == null
+                          ? const SizedBox()
+                          : ActivityListTablet(
+                              settings: settings!,
+                              user: widget.user,
+                              project: widget.project,
+                              width: widget.width,
+                              onPhotoTapped: (photo) {
+                                widget.showPhoto(photo);
+                              },
+                              onVideoTapped: (video) {
+                                widget.showVideo(video);
+                              },
+                              onAudioTapped: (audio) {
+                                widget.showAudio(audio);
+                              },
+                              onLocationRequest: (locRequest) {
+                                widget.showLocationRequest(locRequest);
+                              },
+                              onLocationResponse: (locResp) {
+                                widget.showLocationResponse(locResp);
+                              },
+                              onUserTapped: (user) {},
+                              onProjectTapped: (project) {},
+                              onProjectPositionTapped: (projectPosition) {
+                                widget.showProjectPosition(projectPosition);
+                              },
+                              onPolygonTapped: (projectPolygon) {
+                                widget.showProjectPolygon(projectPolygon);
+                              },
+                              onGeofenceEventTapped: (geofenceEvent) {
+                                widget.showGeofenceEvent(geofenceEvent);
+                              },
+                              onOrgMessage: (orgMessage) {
+                                widget.showOrgMessage(orgMessage);
+                              },
+                              thinMode: widget.thinMode,
+                            );
+                    },
+                    landscape: (context) {
+                      return settings == null
+                          ? const SizedBox()
+                          : ActivityListTablet(
+                              settings: settings!,
+                              width: widget.width,
+                              user: widget.user,
+                              thinMode: widget.thinMode,
+                              project: widget.project,
+                              onPhotoTapped: (photo) {
+                                widget.showPhoto(photo);
+                              },
+                              onVideoTapped: (video) {
+                                widget.showVideo(video);
+                              },
+                              onAudioTapped: (audio) {
+                                widget.showAudio(audio);
+                              },
+                              onUserTapped: (user) {
+                                widget.showUser(user);
+                              },
+                              onProjectTapped: (project) {},
+                              onProjectPositionTapped: (projectPosition) {
+                                widget.showProjectPosition(projectPosition);
+                              },
+                              onPolygonTapped: (projectPolygon) {
+                                widget.showProjectPolygon(projectPolygon);
+                              },
+                              onGeofenceEventTapped: (geofenceEvent) {
+                                widget.showGeofenceEvent(geofenceEvent);
+                              },
+                              onOrgMessage: (orgMessage) {},
+                              onLocationResponse: (locResp) {
+                                widget.showLocationResponse(locResp);
+                              },
+                              onLocationRequest: (locReq) {
+                                widget.showLocationRequest(locReq);
+                              },
+                            );
+                    },
+                  ),
+                ),
+              ),
             ),
-            tablet: OrientationLayoutBuilder(
-              portrait: (context) {
-                return settings == null? const SizedBox(): ActivityListTablet(
-                  settings: settings!,
-                  user: widget.user,
-                  project: widget.project,
-                  width: widget.width,
-                  onPhotoTapped: (photo) {
-                    widget.showPhoto(photo);
-                  },
-                  onVideoTapped: (video) {
-                    widget.showVideo(video);
-                  },
-                  onAudioTapped: (audio) {
-                    widget.showAudio(audio);
-                  },
-                  onLocationRequest: (locRequest) {
-                    widget.showLocationRequest(locRequest);
-                  },
-                  onLocationResponse: (locResp) {
-                    widget.showLocationResponse(locResp);
-                  },
-                  onUserTapped: (user) {},
-                  onProjectTapped: (project) {},
-                  onProjectPositionTapped: (projectPosition) {
-                    widget.showProjectPosition(projectPosition);
-                  },
-                  onPolygonTapped: (projectPolygon) {
-                    widget.showProjectPolygon(projectPolygon);
-                  },
-                  onGeofenceEventTapped: (geofenceEvent) {
-                    widget.showGeofenceEvent(geofenceEvent);
-                  },
-                  onOrgMessage: (orgMessage) {
-                    widget.showOrgMessage(orgMessage);
-                  },
-                  thinMode: widget.thinMode,
-                );
-              },
-              landscape: (context) {
-                return settings == null? const SizedBox(): ActivityListTablet(
-                  settings: settings!,
-                  width: widget.width,
-                  user: widget.user,
-                  thinMode: widget.thinMode,
-                  project: widget.project,
-                  onPhotoTapped: (photo) {
-                    widget.showPhoto(photo);
-                  },
-                  onVideoTapped: (video) {
-                    widget.showVideo(video);
-                  },
-                  onAudioTapped: (audio) {
-                    widget.showAudio(audio);
-                  },
-                  onUserTapped: (user) {
-                    widget.showUser(user);
-                  },
-                  onProjectTapped: (project) {},
-                  onProjectPositionTapped: (projectPosition) {
-                    widget.showProjectPosition(projectPosition);
-                  },
-                  onPolygonTapped: (projectPolygon) {
-                    widget.showProjectPolygon(projectPolygon);
-                  },
-                  onGeofenceEventTapped: (geofenceEvent) {
-                    widget.showGeofenceEvent(geofenceEvent);
-                  },
-                  onOrgMessage: (orgMessage) {},
-                  onLocationResponse: (locResp) {
-                    widget.showLocationResponse(locResp);
-                  },
-                  onLocationRequest: (locReq) {
-                    widget.showLocationRequest(locReq);
-                  },
-                );
-              },
-            ),
-          ),
-        ),
-      ),
-    );
+          );
   }
 }

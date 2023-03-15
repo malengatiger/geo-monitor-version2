@@ -156,8 +156,8 @@ class _UserListTabletState extends State<UserListTablet> {
       user = await prefsOGx.getUser();
       var sett = await prefsOGx.getSettings();
       if (sett != null) {
-        title = await mTx.tx('organizationMembers', sett!.locale!);
-        subTitle = await mTx.tx('administratorsMembers', sett!.locale!);
+        title = await mTx.translate('organizationMembers', sett!.locale!);
+        subTitle = await mTx.translate('administratorsMembers', sett!.locale!);
         setState(() {
 
         });

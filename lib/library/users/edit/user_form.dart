@@ -64,17 +64,17 @@ class _UserFormState extends State<UserForm>
     admin = await prefsOGx.getUser();
     var sett = await prefsOGx.getSettings();
     if (sett != null) {
-      name = await mTx.tx('name', sett.locale!);
-      emailAddress = await mTx.tx('emailAddress', sett.locale!);
-      cellphone = await mTx.tx('cellphone', sett.locale!);
-      male = await mTx.tx('male', sett.locale!);
-      female = await mTx.tx('female', sett.locale!);
-      fieldMonitor = await mTx.tx('fieldMonitor', sett.locale!);
-      administrator = await mTx.tx('administrator', sett.locale!);
-      executive = await mTx.tx('executive', sett.locale!);
-      selectCountry = await mTx.tx('pleaseSelectCountry', sett.locale!);
-      submitMember = await mTx.tx('submitMember', sett.locale!);
-      profilePhoto = await mTx.tx('profilePhoto', sett.locale!);
+      name = await mTx.translate('name', sett.locale!);
+      emailAddress = await mTx.translate('emailAddress', sett.locale!);
+      cellphone = await mTx.translate('cellphone', sett.locale!);
+      male = await mTx.translate('male', sett.locale!);
+      female = await mTx.translate('female', sett.locale!);
+      fieldMonitor = await mTx.translate('fieldMonitor', sett.locale!);
+      administrator = await mTx.translate('administrator', sett.locale!);
+      executive = await mTx.translate('executive', sett.locale!);
+      selectCountry = await mTx.translate('pleaseSelectCountry', sett.locale!);
+      submitMember = await mTx.translate('submitMember', sett.locale!);
+      profilePhoto = await mTx.translate('profilePhoto', sett.locale!);
     }
     setState(() {});
   }

@@ -57,11 +57,11 @@ class UserEditMobileState extends State<UserEditMobile>
     admin = await prefsOGx.getUser();
     var sett = await prefsOGx.getSettings();
     if (sett != null) {
-      hint = await mTx.tx('pleaseSelectCountry', sett.locale!);
-      title = await mTx.tx('members', sett.locale!);
-      newMember = await mTx.tx('newMember', sett.locale!);
-      editMember = await mTx.tx('editMember', sett.locale!);
-      name = await mTx.tx('name', sett.locale!);
+      hint = await mTx.translate('pleaseSelectCountry', sett.locale!);
+      title = await mTx.translate('members', sett.locale!);
+      newMember = await mTx.translate('newMember', sett.locale!);
+      editMember = await mTx.translate('editMember', sett.locale!);
+      name = await mTx.translate('name', sett.locale!);
     }
     setState(() {});
   }

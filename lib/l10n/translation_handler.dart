@@ -25,18 +25,20 @@ class TranslationHandler {
   String? currentLocale;
 
   void initialize({String? locale}) async {
+    localeMap.clear();
     if (locale != null) {
-       await tx('settings', locale);
+       await translate('settings', locale);
        return;
     }
     var sett = await prefsOGx.getSettings();
     if (sett != null) {
-      await tx('settings', sett.locale!);
+      await translate('settings', sett.locale!);
     } else {
-      await tx('settings', 'en');
+      await translate('settings', 'en');
     }
   }
-  Future<String> tx(String key, String locale) async {
+
+  Future<String> translate(String key, String locale) async {
       if (localeMap.isEmpty || currentLocale == null) {
         await _loadFile(locale, localeMap);
       } else {
@@ -53,7 +55,7 @@ class TranslationHandler {
 
 
   _loadFile(String locale,HashMap<String,String> hashMap) async {
-    pp('$mm loading locale strings for $locale');
+    pp('$mm loading locale strings for $locale, will clear current locale strings');
     hashMap.clear();
     var start = DateTime.now();
     var s = await getStringFromAssets(locale);
@@ -69,7 +71,7 @@ class TranslationHandler {
       }
     });
     currentLocale = locale;
-    pp('$mm LOCALE MAP built .....');
+    pp('$mm LOCALE MAP built ..... from file contents: ${s.length} bytes');
     var end = DateTime.now();
     pp('$mm currentLocale $currentLocale '
         'has ${hashMap.length} translation strings; 🔵 '

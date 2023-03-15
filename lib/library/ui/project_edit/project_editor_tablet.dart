@@ -46,8 +46,8 @@ class ProjectEditorTabletState extends State<ProjectEditorTablet>
     admin = await prefsOGx.getUser();
     var sett = await prefsOGx.getSettings();
     if (sett != null) {
-      projectEditor = await mTx.tx('projectEditor', sett.locale!);
-      editProject = await mTx.tx('editProject', sett.locale!);
+      projectEditor = await mTx.translate('projectEditor', sett.locale!);
+      editProject = await mTx.translate('editProject', sett.locale!);
 
       setState(() {
 

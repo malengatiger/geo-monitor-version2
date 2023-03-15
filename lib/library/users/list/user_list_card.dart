@@ -56,13 +56,13 @@ class _UserListCardState extends State<UserListCard> {
   void _setTexts() async {
     var sett = await prefsOGx.getSettings();
     if (sett != null) {
-      callMember = await mTx.tx('callMember', sett.locale!);
-      sendMemberMessage = await mTx.tx('sendMemberMessage', sett.locale!);
-      memberDashboard = await mTx.tx('memberDashboard', sett.locale!);
-      editMember = await mTx.tx('editMember', sett.locale!);
-      requestMemberLocation = await mTx.tx('requestMemberLocation', sett.locale!);
-      fieldMonitorSchedules = await mTx.tx('fieldMonitorSchedules', sett.locale!);
-      removeMember = await mTx.tx('removeMember', sett.locale!);
+      callMember = await mTx.translate('callMember', sett.locale!);
+      sendMemberMessage = await mTx.translate('sendMemberMessage', sett.locale!);
+      memberDashboard = await mTx.translate('memberDashboard', sett.locale!);
+      editMember = await mTx.translate('editMember', sett.locale!);
+      requestMemberLocation = await mTx.translate('requestMemberLocation', sett.locale!);
+      fieldMonitorSchedules = await mTx.translate('fieldMonitorSchedules', sett.locale!);
+      removeMember = await mTx.translate('removeMember', sett.locale!);
       setState(() {
 
       });

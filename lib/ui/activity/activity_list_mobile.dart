@@ -109,7 +109,7 @@ class ActivityListMobileState extends State<ActivityListMobile>
       var hours = 12;
       if (settings != null) {
         hours = settings!.activityStreamHours!;
-        var sub = await mTx.tx('activityTitle', settings!.locale!);
+        var sub = await mTx.translate('activityTitle', settings!.locale!);
         int index = sub.indexOf('\$');
         prefix = sub.substring(0, index);
         suffix = sub.substring(index+6);

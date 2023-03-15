@@ -212,7 +212,7 @@ class DashboardPortraitState extends State<DashboardPortrait>
     if (settings != null) {
       numberOfDays = settings!.numberOfDays!;
     }
-    var sub = await mTx.tx('dashboardSubTitle', settings!.locale!);
+    var sub = await mTx.translate('dashboardSubTitle', settings!.locale!);
     pp(sub);
     subTitle = sub.replaceAll('\$count', '$numberOfDays');
     pp(subTitle);
@@ -222,13 +222,13 @@ class DashboardPortraitState extends State<DashboardPortrait>
 
     if (deviceUser != null) {
       if (deviceUser!.userType == UserType.orgAdministrator) {
-        type = await mTx.tx('administrator', settings!.locale!);
+        type = await mTx.translate('administrator', settings!.locale!);
       }
       if (deviceUser!.userType == UserType.orgExecutive) {
-        type = await mTx.tx('executive', settings!.locale!);
+        type = await mTx.translate('executive', settings!.locale!);
       }
       if (deviceUser!.userType == UserType.fieldMonitor) {
-        type = await mTx.tx('fieldMonitor', settings!.locale!);
+        type = await mTx.translate('fieldMonitor', settings!.locale!);
       }
     } else {
       throw Exception('No user cached on device');

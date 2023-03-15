@@ -57,13 +57,13 @@ class ProjectEditCardState extends State<ProjectEditCard>
     admin = await prefsOGx.getUser();
     var sett = await prefsOGx.getSettings();
     if (sett != null) {
-      projectEditor = await mTx.tx('projectEditor', sett.locale!);
-      projectName = await mTx.tx('projectName', sett.locale!);
-      maximumMonitoringDistance = await mTx.tx('maximumMonitoringDistance', sett.locale!);
-      descriptionOfProject = await mTx.tx('descriptionOfProject', sett.locale!);
-      submitProject = await mTx.tx('submitProject', sett.locale!);
-      addProjectLocations = await mTx.tx('addProjectLocations', sett.locale!);
-      enterProjectName = await mTx.tx('enterProjectName', sett.locale!);
+      projectEditor = await mTx.translate('projectEditor', sett.locale!);
+      projectName = await mTx.translate('projectName', sett.locale!);
+      maximumMonitoringDistance = await mTx.translate('maximumMonitoringDistance', sett.locale!);
+      descriptionOfProject = await mTx.translate('descriptionOfProject', sett.locale!);
+      submitProject = await mTx.translate('submitProject', sett.locale!);
+      addProjectLocations = await mTx.translate('addProjectLocations', sett.locale!);
+      enterProjectName = await mTx.translate('enterProjectName', sett.locale!);
       setState(() {
 
       });
