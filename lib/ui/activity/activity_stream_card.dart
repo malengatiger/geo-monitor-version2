@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:geo_monitor/library/api/prefs_og.dart';
 import 'package:geo_monitor/library/data/activity_model.dart';
+import 'package:geo_monitor/library/data/settings_model.dart';
 import 'package:geo_monitor/library/functions.dart';
 
 import '../../l10n/translation_handler.dart';
@@ -13,13 +13,14 @@ class ActivityStreamCard extends StatefulWidget {
       required this.model,
       required this.frontPadding,
       required this.thinMode,
-      required this.width})
+      required this.width, required this.settings})
       : super(key: key);
 
   final ActivityModel model;
   final double frontPadding;
   final bool thinMode;
   final double width;
+  final SettingsModel settings;
 
   @override
   ActivityStreamCardState createState() => ActivityStreamCardState();
@@ -27,6 +28,7 @@ class ActivityStreamCard extends StatefulWidget {
 
 class ActivityStreamCardState extends State<ActivityStreamCard> {
   String? projectAdded, projectLocationAdded, projectAreaAdded, at,
+      memberLocationResponse, conditionAdded, arrivedAt,
       memberAtProject, memberAddedChanged, requestMemberLocation, settingsChanged;
   @override
   void initState() {
@@ -35,16 +37,22 @@ class ActivityStreamCardState extends State<ActivityStreamCard> {
   }
 
   void _setTexts() async {
-      var sett = await prefsOGx.getSettings();
-      if (sett != null) {
-        projectAdded = await mTx.tx('projectAdded', sett.locale!);
-        projectLocationAdded = await mTx.tx('projectLocationAdded', sett.locale!);
-        projectAreaAdded = await mTx.tx('projectAreaAdded', sett.locale!);
-        memberAtProject = await mTx.tx('memberAtProject', sett.locale!);
-        settingsChanged = await mTx.tx('settingsChanged', sett.locale!);
-        memberAddedChanged = await mTx.tx('memberAddedChanged', sett.locale!);
-        at = await mTx.tx('at', sett.locale!);
-      }
+
+        projectAdded = await mTx.tx('projectAdded', widget.settings.locale!);
+        projectLocationAdded = await mTx.tx('projectLocationAdded', widget.settings.locale!);
+        projectAreaAdded = await mTx.tx('projectAreaAdded', widget.settings.locale!);
+        memberAtProject = await mTx.tx('memberAtProject', widget.settings.locale!);
+        settingsChanged = await mTx.tx('settingsChanged', widget.settings.locale!);
+        memberAddedChanged = await mTx.tx('memberAddedChanged', widget.settings.locale!);
+        at = await mTx.tx('at', widget.settings.locale!);
+        var arr = await mTx.tx('arrivedAt', widget.settings.locale!);
+        if (widget.model.projectName != null) {
+          arrivedAt = arr.replaceAll('\$project', widget.model.projectName!);
+        }
+        conditionAdded = await mTx.tx('conditionAdded', widget.settings.locale!);
+        memberLocationResponse = await mTx.tx('memberLocationResponse', widget.settings.locale!);
+
+
   }
 
   Widget _getUserAdded(Icon icon, String msg) {
@@ -253,8 +261,8 @@ class ActivityStreamCardState extends State<ActivityStreamCard> {
         break;
       case ActivityType.geofenceEventAdded:
         icon = Icon(Icons.person_2, color: Theme.of(context).primaryColor);
-        message = at == null? 'at: ${widget.model.geofenceEvent!.projectName!}':
-        '$at ${widget.model.geofenceEvent!.projectName!}';
+        message = arrivedAt == null? 'at: ${widget.model.geofenceEvent!.projectName!}':
+        '$arrivedAt';
         return _getUserAdded(icon, message);
         break;
       case ActivityType.conditionAdded:
@@ -272,8 +280,9 @@ class ActivityStreamCardState extends State<ActivityStreamCard> {
       case ActivityType.locationResponse:
         icon =
             Icon(Icons.location_history, color: Theme.of(context).primaryColor);
-        message =
-            'Location request responded to by ${widget.model.locationResponse!.userName}';
+        message = memberLocationResponse == null?
+            'Location request responded to by ${widget.model.locationResponse!.userName}':
+        '$memberLocationResponse : ${widget.model.locationResponse!.userName}';
         return _getGeneric(icon, message, 140);
         break;
       case ActivityType.kill:

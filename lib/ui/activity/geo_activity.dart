@@ -1,13 +1,16 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:geo_monitor/library/api/prefs_og.dart';
 import 'package:geo_monitor/library/data/activity_model.dart';
 import 'package:geo_monitor/library/data/geofence_event.dart';
 import 'package:geo_monitor/library/data/location_response.dart';
+import 'package:geo_monitor/library/data/settings_model.dart';
 import 'package:geo_monitor/ui/activity/activity_list_mobile.dart';
 import 'package:responsive_builder/responsive_builder.dart';
 import 'package:universal_platform/universal_platform.dart';
 
+import '../../l10n/translation_handler.dart';
 import '../../library/bloc/fcm_bloc.dart';
 import '../../library/data/audio.dart';
 import '../../library/data/location_request.dart';
@@ -82,12 +85,20 @@ class GeoActivityState extends State<GeoActivity>
   final mm = '❇️❇️❇️❇️❇️ GeoActivityTablet: ';
 
   bool busy = false;
+  SettingsModel? settings;
+  String? arrivedAt;
 
   @override
   void initState() {
     _controller = AnimationController(vsync: this);
     super.initState();
+    _getSettings();
     _listenForFCM();
+  }
+
+  void _getSettings() async {
+    settings = await prefsOGx.getSettings();
+
   }
 
   int count = 0;
@@ -111,12 +122,21 @@ class GeoActivityState extends State<GeoActivity>
       });
 
       geofenceSubscriptionFCM =
-          fcmBloc.geofenceStream.listen((GeofenceEvent event) {
+          fcmBloc.geofenceStream.listen((GeofenceEvent event) async {
         pp('$mm: 🍎geofenceSubscriptionFCM: 🍎 GeofenceEvent: '
             'user ${event.user!.name} arrived: ${event.projectName} ');
+        var arr = await mTx.tx('arrivedAt', settings!.locale!);
+        if (event.projectName != null) {
+          arrivedAt = arr.replaceAll('\$project', event.projectName!);
+          arrivedAt = '$arrivedAt - ${event.user!.name!}';
+        }
         if (mounted) {
           showToast(
-              message: '${event.user!.name!} arrived at ${event.projectName}',
+              duration: const Duration(seconds: 5),
+              padding: 24.0,
+              backgroundColor: Theme.of(context).primaryColor,
+              textStyle: myTextStyleSmallBold(context),
+              message: '$arrivedAt',
               context: context);
           setState(() {});
         }
@@ -134,7 +154,8 @@ class GeoActivityState extends State<GeoActivity>
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
+
+    return settings == null? const SizedBox(): SizedBox(
       width: widget.width,
       child: Padding(
         padding: const EdgeInsets.all(8.0),
@@ -176,7 +197,8 @@ class GeoActivityState extends State<GeoActivity>
             ),
             tablet: OrientationLayoutBuilder(
               portrait: (context) {
-                return ActivityListTablet(
+                return settings == null? const SizedBox(): ActivityListTablet(
+                  settings: settings!,
                   user: widget.user,
                   project: widget.project,
                   width: widget.width,
@@ -213,7 +235,8 @@ class GeoActivityState extends State<GeoActivity>
                 );
               },
               landscape: (context) {
-                return ActivityListTablet(
+                return settings == null? const SizedBox(): ActivityListTablet(
+                  settings: settings!,
                   width: widget.width,
                   user: widget.user,
                   thinMode: widget.thinMode,

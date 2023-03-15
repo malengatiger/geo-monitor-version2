@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:geo_monitor/l10n/my_keys.dart';
+import 'package:geo_monitor/library/api/prefs_og.dart';
 
 import '../library/functions.dart';
 
@@ -23,6 +24,14 @@ class TranslationHandler {
   static const mm = '🌎🔵 mtX: ';
   String? currentLocale;
 
+  void initialize() async {
+    var sett = await prefsOGx.getSettings();
+    if (sett != null) {
+      await tx('settings', sett.locale!);
+    } else {
+      await tx('settings', 'en');
+    }
+  }
   Future<String> tx(String key, String locale) async {
       if (localeMap.isEmpty || currentLocale == null) {
         await _loadFile(locale, localeMap);
@@ -31,8 +40,6 @@ class TranslationHandler {
           await _loadFile(locale, localeMap);
         }
       }
-      pp('$mm translate key: $key from localeMap with '
-          '${localeMap.length} strings');
       final value = localeMap[key];
       if (value == null) {
         return 'UNAVAILABLE KEY: $key';
@@ -58,9 +65,6 @@ class TranslationHandler {
     });
     currentLocale = locale;
     pp('$mm LOCALE MAP built .....');
-    // hashMap.forEach((key, value) {
-    //   pp('$mm $key : 🍎 $value');
-    // });
     var end = DateTime.now();
     pp('$mm currentLocale $currentLocale '
         'has ${hashMap.length} translation strings; 🔵 '

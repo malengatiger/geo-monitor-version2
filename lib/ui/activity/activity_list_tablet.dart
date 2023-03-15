@@ -43,10 +43,11 @@ class ActivityListTablet extends StatefulWidget {
       this.user,
       this.project,
       required this.onLocationResponse,
-      required this.onLocationRequest})
+      required this.onLocationRequest, required this.settings})
       : super(key: key);
   final double width;
   final bool thinMode;
+  final SettingsModel settings;
   final Function(Photo) onPhotoTapped;
   final Function(Video) onVideoTapped;
   final Function(Audio) onAudioTapped;
@@ -71,7 +72,6 @@ class _ActivityListTabletState extends State<ActivityListTablet>
   final ScrollController listScrollController = ScrollController();
   late AnimationController _animationController;
 
-  SettingsModel? settings;
   var models = <ActivityModel>[];
 
   late StreamSubscription<ActivityModel> subscription;
@@ -97,10 +97,9 @@ class _ActivityListTabletState extends State<ActivityListTablet>
 
   void _getData(bool forceRefresh) async {
     pp('$mm ... getting activity data ... forceRefresh: $forceRefresh');
-    settings = await prefsOGx.getSettings();
-    loadingActivities =  await mTx.tx('loadingActivities', settings!.locale!);
-    noActivities =  await mTx.tx('noActivities', settings!.locale!);
-    tapToRefresh =  await mTx.tx('tapToRefresh', settings!.locale!);
+    loadingActivities =  await mTx.tx('loadingActivities', widget.settings.locale!);
+    noActivities =  await mTx.tx('noActivities', widget.settings.locale!);
+    tapToRefresh =  await mTx.tx('tapToRefresh', widget.settings.locale!);
     if (models.isNotEmpty) {
       _animationController.reverse().then((value) {
         setState(() {
@@ -118,17 +117,17 @@ class _ActivityListTabletState extends State<ActivityListTablet>
 
 
       var hours = 12;
-      if (settings != null) {
-        hours = settings!.activityStreamHours!;
-        var sub = await mTx.tx('activityTitle', settings!.locale!);
+
+        hours = widget.settings.activityStreamHours!;
+        var sub = await mTx.tx('activityTitle', widget.settings.locale!);
         int index = sub.indexOf('\$');
         prefix = sub.substring(0, index);
         suffix = sub.substring(index+6);
         pp('$mm prefix: $prefix suffix: $suffix');
 
-        loadingActivities = await mTx.tx('loadingActivities', settings!.locale!);
+        loadingActivities = await mTx.tx('loadingActivities', widget.settings.locale!);
 
-      }
+
       pp('$mm ... get Activity (n hours) ... : $hours');
       if (widget.project != null) {
         pp('$mm ... widget.project != null, should get project data');
@@ -345,9 +344,7 @@ class _ActivityListTabletState extends State<ActivityListTablet>
                             onRefreshRequested: () {
                               _getData(true);
                             },
-                            hours: settings == null
-                                ? 12
-                                : settings!.activityStreamHours!,
+                            hours:  widget.settings.activityStreamHours!,
                             number: models.length,
                           ),
                         ),
@@ -366,7 +363,8 @@ class _ActivityListTabletState extends State<ActivityListTablet>
                         onTap: () {
                           _handleTappedActivity(act);
                         },
-                        child: ActivityStreamCard(
+                        child:  ActivityStreamCard(
+                          settings: widget.settings,
                           model: act,
                           frontPadding: 36,
                           thinMode: widget.thinMode,
@@ -395,9 +393,7 @@ class _ActivityListTabletState extends State<ActivityListTablet>
                             onRefreshRequested: () {
                               _getData(true);
                             },
-                            hours: settings == null
-                                ? 12
-                                : settings!.activityStreamHours!,
+                            hours:  widget.settings.activityStreamHours!,
                             number: models.length,
                           ),
                         ),
@@ -417,6 +413,7 @@ class _ActivityListTabletState extends State<ActivityListTablet>
                           _handleTappedActivity(act);
                         },
                         child: ActivityStreamCard(
+                          settings: widget.settings,
                           model: act,
                           frontPadding: 16,
                           thinMode: widget.thinMode,

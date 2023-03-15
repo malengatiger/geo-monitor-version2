@@ -85,8 +85,8 @@ void main() async {
 
   await Hive.initFlutter(hiveName);
 
-  var test = await mTx.tx('dashboardSubTitle', 'fr');
-  pp('$mx $heartBlue translated members to: $test');
+  mTx.initialize();
+  pp('$mx $heartBlue translation service initialization started!');
 
   await SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,

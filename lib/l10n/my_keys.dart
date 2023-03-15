@@ -12,6 +12,7 @@ class MyKeys {
   }
 
   static _buildMap() {
+    hashMap["weHelpYou"] = "We help you see more!";
     hashMap['november'] = 'november';
     hashMap['projects'] = 'projects';
     hashMap['callMember'] = 'callMember';
