@@ -130,5 +130,12 @@
   "ts": "Tsonga",
   "projectsNotFound": "Projetos não encontrados",
   "newProject": "Novo projeto",
-  "enterProjectName": "Digite o nome do projeto"
+  "enterProjectName": "Digite o nome do projeto",
+  "memberAddedChanged": "Membro alterado ou adicionado",
+  "memberAtProject": "Membro na Projeto",
+  "projectAdded": "Projeto adicionado ou alterado",
+  "projectLocationAdded": "Local do projeto adicionado",
+  "enterDescription": "Insira a descrição",
+  "projectAreaAdded": "Área do projeto adicionada",
+  "settingsChanged": "Configurações alteradas ou adicionadas"
 }

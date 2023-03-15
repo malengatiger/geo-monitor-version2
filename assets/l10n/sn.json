@@ -130,5 +130,12 @@
   "ig": "Lingala",
   "ts": "Tsonga",
   "newProject": "New Project",
-  "enterProjectName": "Pinda Zita reProjekti"
+  "enterProjectName": "Pinda Zita reProjekti",
+  "memberAddedChanged": "Nhengo yakachinjwa kana kuwedzerwa",
+  "memberAtProject": "Nhengo paProjekti",
+  "projectAdded": "Project yakawedzerwa kana kuchinjwa",
+  "projectLocationAdded": "Nzvimbo yeprojekiti yakawedzerwa",
+  "enterDescription": "Pinda Tsanangudzo",
+  "projectAreaAdded": "Project Area yakawedzerwa",
+  "settingsChanged": "Zvirongwa zvakachinjwa kana kuwedzerwa"
 }

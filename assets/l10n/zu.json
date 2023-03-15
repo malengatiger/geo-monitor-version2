@@ -130,5 +130,12 @@
   "loadingActivities": "Ilayisha Idatha Yomsebenzi",
   "projectsNotFound": "Amaphrojekthi Ayitholakali",
   "newProject": "Iphrojekthi Entsha",
-  "enterProjectName": "Faka Igama Lephrojekthi"
+  "enterProjectName": "Faka Igama Lephrojekthi",
+  "memberAddedChanged": "Ilungu lishintshiwe noma lengeziwe",
+  "memberAtProject": "Ilungu kuProjekthi",
+  "projectAdded": "Iphrojekthi ingeziwe noma ishintshiwe",
+  "projectLocationAdded": "Indawo yephrojekthi yengeziwe",
+  "enterDescription": "Faka Incazelo",
+  "projectAreaAdded": "Indawo Yephrojekthi yengeziwe",
+  "settingsChanged": "Izilungiselelo zishintshiwe noma zengeziwe"
 }

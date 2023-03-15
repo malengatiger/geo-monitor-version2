@@ -130,5 +130,12 @@
   "projectsNotFound": "Awọn iṣẹ akanṣe Ko Ri",
   "newProject": "New Project",
   "loadingActivities": "Ikojọpọ Data aṣayan iṣẹ-ṣiṣe",
-  "enterProjectName": "Tẹ orukọ Project sii"
+  "enterProjectName": "Tẹ orukọ Project sii",
+  "memberAddedChanged": "Omo egbe yipada tabi fi kun",
+  "memberAtProject": "Omo egbe ni Project",
+  "projectAdded": "Ise agbese kun tabi yipada",
+  "projectLocationAdded": "Ibi ise agbese kun",
+  "enterDescription": "Tẹ Apejuwe",
+  "projectAreaAdded": "Agbegbe Project kun",
+  "settingsChanged": "Awọn eto yipada tabi ṣafikun"
 }

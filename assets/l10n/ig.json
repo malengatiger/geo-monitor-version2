@@ -138,5 +138,12 @@
   "projectsNotFound": "Achọtaghị oru ngo",
   "newProject": "Ọrụ ọhụrụ",
   "loadingActivities": "Na-ebu data mmemme",
-  "enterProjectName": "Tinye aha oru ngo"
+  "enterProjectName": "Tinye aha oru ngo",
+  "memberAddedChanged": "Onye otu gbanwere ma ọ bụ tinye",
+  "memberAtProject": "Onye otu na Project",
+  "projectAdded": "Agbakwunyere ma ọ bụ gbanwee oru ngo",
+  "projectLocationAdded": "Agbakwunyere ebe ọrụ",
+  "enterDescription": "Tinye nkọwa",
+  "projectAreaAdded": "Mpaghara Project agbakwunyere",
+  "settingsChanged": "Agbanwere ma ọ bụ tinye ntọala"
 }

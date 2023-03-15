@@ -132,5 +132,12 @@
   "loadingActivities": "Cargando datos de actividad",
   "projectsNotFound": "Proyectos no encontrados",
   "newProject": "Nuevo proyecto",
-  "enterProjectName": "Ingrese el nombre del proyecto"
+  "enterProjectName": "Ingrese el nombre del proyecto",
+  "memberAddedChanged": "Miembro cambiado o agregado",
+  "memberAtProject": "Miembro en Proyecto",
+  "projectAdded": "Proyecto añadido o modificado",
+  "projectLocationAdded": "Se agregó la ubicación del proyecto",
+  "enterDescription": "Introduce la descripción",
+  "projectAreaAdded": "Área de proyecto añadida",
+  "settingsChanged": "Configuraciones cambiadas o añadidas"
 }

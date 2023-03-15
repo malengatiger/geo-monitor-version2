@@ -130,5 +130,12 @@
   "ts": "Tsonga",
   "newProject": "Phurojeke Leyintshwa",
   "loadingActivities": "Ku Layicha Data ya Ntirho",
-  "enterProjectName": "Nghenisa Vito ra Phurojeke"
+  "enterProjectName": "Nghenisa Vito ra Phurojeke",
+  "memberAddedChanged": "Xirho xi cinciwile kumbe xi engeteriwile",
+  "memberAtProject": "Xirho eka Phurojeke",
+  "projectAdded": "Phurojeke yi engeteriwile kumbe ku cinciwa",
+  "projectLocationAdded": "Ndhawu ya phurojeke yi engeteriwile",
+  "enterDescription": "Nghenisa Nhlamuselo",
+  "projectAreaAdded": "Ndhawu ya Phurojeke yi engeteriwile",
+  "settingsChanged": "Switirhisiwa swi cinciwile kumbe swi engeteriwile"
 }

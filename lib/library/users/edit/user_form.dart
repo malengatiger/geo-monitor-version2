@@ -4,6 +4,7 @@ import 'package:geo_monitor/library/data/country.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:uuid/uuid.dart';
 
+import '../../../l10n/translation_handler.dart';
 import '../../api/data_api.dart';
 import '../../api/prefs_og.dart';
 import '../../bloc/admin_bloc.dart';
@@ -47,6 +48,10 @@ class _UserFormState extends State<UserForm>
   String? type;
   String? gender;
 
+  String? name,emailAddress, cellphone, male,
+      female, fieldMonitor, administrator, executive;
+
+
   @override
   void initState() {
     _controller = AnimationController(vsync: this);
@@ -57,6 +62,17 @@ class _UserFormState extends State<UserForm>
 
   void _getAdministrator() async {
     admin = await prefsOGx.getUser();
+    var sett = await prefsOGx.getSettings();
+    if (sett != null) {
+      name = await mTx.tx('name', sett.locale!);
+      emailAddress = await mTx.tx('emailAddress', sett.locale!);
+      cellphone = await mTx.tx('cellphone', sett.locale!);
+      male = await mTx.tx('male', sett.locale!);
+      female = await mTx.tx('female', sett.locale!);
+      fieldMonitor = await mTx.tx('fieldMonitor', sett.locale!);
+      administrator = await mTx.tx('administrator', sett.locale!);
+      executive = await mTx.tx('executive', sett.locale!);
+    }
     setState(() {});
   }
 
@@ -69,6 +85,7 @@ class _UserFormState extends State<UserForm>
       _setGenderRadio();
       await _setCountry();
     }
+
   }
 
   Future _setCountry() async {

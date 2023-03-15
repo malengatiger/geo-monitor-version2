@@ -131,6 +131,13 @@
   "ts": "Tsonga",
   "loadingActivities": "Loading Activity Data",
   "newProject": "New Project",
-  "enterProjectName": "Enter Project Name"
+  "enterProjectName": "Enter Project Name",
+  "memberAddedChanged": "Member changed or added",
+  "memberAtProject": "Member at Project",
+  "projectAdded": "Project added or changed",
+  "projectLocationAdded": "Project location added",
+  "enterDescription": "Enter Description",
+  "projectAreaAdded": "Project Area added",
+  "settingsChanged": "Settings changed or added"
 
 }

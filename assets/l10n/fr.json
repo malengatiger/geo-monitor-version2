@@ -132,5 +132,12 @@
   "loadingActivities": "Chargement des données d\u0027activité",
   "projectsNotFound": "Projets introuvables",
   "newProject": "Nouveau projet",
-  "enterProjectName": "Entrez le nom du projet"
+  "enterProjectName": "Entrez le nom du projet",
+  "memberAddedChanged": "Membre modifié ou ajouté",
+  "memberAtProject": "Membre chez Projet",
+  "projectAdded": "Projet ajouté ou modifié",
+  "projectLocationAdded": "Emplacement du projet ajouté",
+  "enterDescription": "Entrez la description",
+  "projectAreaAdded": "Zone de projet ajoutée",
+  "settingsChanged": "Paramètres modifiés ou ajoutés"
 }

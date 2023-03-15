@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:focused_menu/focused_menu.dart';
 import 'package:focused_menu/modals.dart';
+import 'package:geo_monitor/library/api/prefs_og.dart';
 
+import '../../../l10n/translation_handler.dart';
 import '../../data/project.dart';
 import '../../data/user.dart';
 import '../../functions.dart';
 
-class ProjectListCard extends StatelessWidget {
+class ProjectListCard extends StatefulWidget {
   const ProjectListCard(
       {Key? key,
       required this.projects,
@@ -35,27 +37,57 @@ class ProjectListCard extends StatelessWidget {
   final Function(Project) navigateToProjectDirections;
 
   @override
+  State<ProjectListCard> createState() => _ProjectListCardState();
+}
+
+class _ProjectListCardState extends State<ProjectListCard> {
+
+  String? projectDashboard, directionsToProject, photosVideosAudioClips,
+      projectDetails, editProject, projectLocationsMap,
+      media, addLocation, addProjectAreas, addProjectLocationHere;
+  @override
+  void initState() {
+    super.initState();
+    _setText();
+  }
+  void _setText() async {
+    var sett = await prefsOGx.getSettings();
+    if (sett != null) {
+      projectDashboard = await mTx.tx('projectDashboard', sett.locale!);
+      addProjectAreas = await mTx.tx('addProjectAreas', sett.locale!);
+      directionsToProject = await mTx.tx('directionsToProject', sett.locale!);
+      addProjectLocationHere = await mTx.tx('addProjectLocationHere', sett.locale!);
+      projectDetails = await mTx.tx('projectDetails', sett.locale!);
+      editProject = await mTx.tx('editProject', sett.locale!);
+      projectLocationsMap = await mTx.tx('projectLocationsMap', sett.locale!);
+      photosVideosAudioClips = await mTx.tx('photosVideosAudioClips', sett.locale!);
+      setState(() {
+
+      });
+    }
+  }
+  @override
   Widget build(BuildContext context) {
     List<FocusedMenuItem> getPopUpMenuItems(Project project) {
       List<FocusedMenuItem> menuItems = [];
       menuItems.add(
         FocusedMenuItem(
             // backgroundColor: Theme.of(context).primaryColor,
-            title: Text('Project Dashboard',
+            title: Text(projectDashboard == null?'Project Dashboard':projectDashboard!,
                 style: myTextStyleSmallBlack(context)),
             trailingIcon: Icon(
               Icons.dashboard,
               color: Theme.of(context).primaryColor,
             ),
             onPressed: () {
-              navigateToProjectDashboard(project);
+              widget.navigateToProjectDashboard(project);
             }),
       );
       menuItems.add(
         FocusedMenuItem(
             // backgroundColor: Theme.of(context).primaryColor,
-            title: Text(
-              'Project Directions',
+            title: Text(directionsToProject == null?
+              'Project Directions': directionsToProject!,
               style: myTextStyleSmallBlack(context),
             ),
             trailingIcon: Icon(
@@ -63,14 +95,14 @@ class ProjectListCard extends StatelessWidget {
               color: Theme.of(context).primaryColor,
             ),
             onPressed: () {
-              navigateToProjectDirections(project);
+              widget.navigateToProjectDirections(project);
             }),
       );
       menuItems.add(
         FocusedMenuItem(
             // backgroundColor: Theme.of(context).primaryColor,
-            title: Text(
-              'Project Locations Map',
+            title: Text(projectLocationsMap == null?
+              'Project Locations Map': projectLocationsMap!,
               style: myTextStyleSmallBlack(context),
             ),
             trailingIcon: Icon(
@@ -78,14 +110,15 @@ class ProjectListCard extends StatelessWidget {
               color: Theme.of(context).primaryColor,
             ),
             onPressed: () {
-              navigateToProjectMap(project);
+              widget.navigateToProjectMap(project);
             }),
       );
 
       menuItems.add(
         FocusedMenuItem(
             // backgroundColor: Theme.of(context).primaryColor,
-            title: Text('Photos & Video & Audio',
+            title: Text(photosVideosAudioClips == null?
+                'Photos & Video & Audio': photosVideosAudioClips!,
                 style: myTextStyleSmallBlack(context)),
             trailingIcon: Icon(
               Icons.camera,
@@ -93,28 +126,29 @@ class ProjectListCard extends StatelessWidget {
             ),
             onPressed: () {
               pp('...... going to ProjectMedia ...');
-              navigateToProjectMedia(project);
+              widget.navigateToProjectMedia(project);
             }),
       );
 
-      if (user.userType == UserType.orgAdministrator ||
-          user.userType == UserType.orgExecutive) {
+      if (widget.user.userType == UserType.orgAdministrator ||
+          widget.user.userType == UserType.orgExecutive) {
         menuItems.add(FocusedMenuItem(
             // backgroundColor: Theme.of(context).primaryColor,
-            title: Text('Add Project Location Here',
+            title: Text(addProjectLocationHere == null?
+                'Add Project Location Here': addProjectLocationHere!,
                 style: myTextStyleSmallBlack(context)),
             trailingIcon: Icon(
               Icons.location_pin,
               color: Theme.of(context).primaryColor,
             ),
             onPressed: () {
-              navigateToProjectLocation(project);
+              widget.navigateToProjectLocation(project);
             }));
         menuItems.add(
           FocusedMenuItem(
               // backgroundColor: Theme.of(context).primaryColor,
-              title: Text(
-                'Create Project Areas',
+              title: Text(addProjectAreas == null?
+                'Create Project Areas': addProjectAreas!,
                 style: myTextStyleSmallBlack(context),
               ),
               trailingIcon: Icon(
@@ -122,18 +156,20 @@ class ProjectListCard extends StatelessWidget {
                 color: Theme.of(context).primaryColor,
               ),
               onPressed: () {
-                navigateToProjectPolygonMap(project);
+                widget.navigateToProjectPolygonMap(project);
               }),
         );
         menuItems.add(FocusedMenuItem(
             // backgroundColor: Theme.of(context).primaryColor,
-            title: Text('Edit Project', style: myTextStyleSmallBlack(context)),
+            title: Text(editProject == null?
+                'Edit Project': editProject!,
+                style: myTextStyleSmallBlack(context)),
             trailingIcon: Icon(
               Icons.create,
               color: Theme.of(context).primaryColor,
             ),
             onPressed: () {
-              navigateToDetail(project);
+              widget.navigateToDetail(project);
             }));
       }
 
@@ -141,11 +177,11 @@ class ProjectListCard extends StatelessWidget {
     }
 
     return SizedBox(
-      width: width,
+      width: widget.width,
       child: ListView.builder(
-        itemCount: projects.length,
+        itemCount: widget.projects.length,
         itemBuilder: (BuildContext context, int index) {
-          var mProject = projects.elementAt(index);
+          var mProject = widget.projects.elementAt(index);
 
           return FocusedMenuHolder(
             menuOffset: 20,
@@ -157,7 +193,7 @@ class ProjectListCard extends StatelessWidget {
               pp('💛️💛️💛️ not sure what I pressed ...');
             },
             child: Padding(
-              padding: EdgeInsets.symmetric(horizontal: horizontalPadding),
+              padding: EdgeInsets.symmetric(horizontal: widget.horizontalPadding),
               child: Card(
                 elevation: 4,
                 shape: RoundedRectangleBorder(

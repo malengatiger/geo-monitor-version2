@@ -131,7 +131,14 @@
   "ts": "Tsonga",
 
   "newProject": "Morero o Mocha",
-  "enterProjectName": "Kenya Lebitso la Morero"
+  "enterProjectName": "Kenya Lebitso la Morero",
+  "memberAddedChanged": "Setho se fetotsoe kapa se ekelitsoe",
+  "memberAtProject": "Member at Project",
+  "projectAdded": "Morero o kentsoe kapa o fetotsoe",
+  "projectLocationAdded": "Sebaka sa morero se kentsoe",
+  "enterDescription": "Kenya Tlhaloso",
+  "projectAreaAdded": "Sebaka sa Morero se ekelitsoe",
+  "settingsChanged": "Litlhophiso li fetotsoe kapa li kentsoe"
 
 
 }

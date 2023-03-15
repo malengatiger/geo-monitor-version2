@@ -130,5 +130,12 @@
   "ts": "IsiTsonga",
   "newProject": "Iprojekthi entsha",
   "loadingActivities": "Ilayisha iData yoMsebenzi",
-  "enterProjectName": "Ngenisa Igama leProjekthi"
+  "enterProjectName": "Ngenisa Igama leProjekthi",
+  "memberAddedChanged": "Ilungu litshintshiwe okanye longezwe",
+  "memberAtProject": "Ilungu kwiProjekthi",
+  "projectAdded": "Iprojekthi yongezwe okanye itshintshiwe",
+  "projectLocationAdded": "Indawo yeprojekthi yongeziwe",
+  "enterDescription": "Ngenisa iNkcazo",
+  "projectAreaAdded": "Indawo yeProjekthi yongeziwe",
+  "settingsChanged": "Iisetingi zitshintshiwe okanye zongeziwe"
 }

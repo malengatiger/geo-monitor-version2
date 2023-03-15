@@ -130,5 +130,12 @@
   "ts": "Tsonga",
   "loadingActivities": "Inapakia Data ya Shughuli",
   "newProject": "Mradi Mpya",
-  "enterProjectName": "Weka Jina la Mradi"
+  "enterProjectName": "Weka Jina la Mradi",
+  "memberAddedChanged": "Mwanachama alibadilishwa au aliongeza",
+  "memberAtProject": "Mwanachama katika Mradi",
+  "projectAdded": "Mradi umeongezwa au kubadilishwa",
+  "projectLocationAdded": "Eneo la mradi limeongezwa",
+  "enterDescription": "Ingiza Maelezo",
+  "projectAreaAdded": "Eneo la Mradi limeongezwa",
+  "settingsChanged": "Mipangilio imebadilishwa au kuongezwa"
 }

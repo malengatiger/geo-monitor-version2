@@ -2,14 +2,15 @@
 
 import 'dart:collection';
 
-class  MyKeys {
-  static var hashMap = HashMap<String,String>();
+class MyKeys {
+  static var hashMap = HashMap<String, String>();
   static HashMap getKeys() {
     if (hashMap.isEmpty) {
       _buildMap();
     }
     return hashMap;
   }
+
   static _buildMap() {
     hashMap['november'] = 'november';
     hashMap['projects'] = 'projects';
@@ -50,7 +51,8 @@ class  MyKeys {
     hashMap['submitMember'] = 'submitMember';
     hashMap['projectName'] = 'projectName';
     hashMap['projectDashboard'] = 'projectDashboard';
-    hashMap['internetConnectionNotAvailable'] = 'internetConnectionNotAvailable';
+    hashMap['internetConnectionNotAvailable'] =
+        'internetConnectionNotAvailable';
     hashMap['fieldMonitor'] = 'fieldMonitor';
     hashMap['photosVideosAudioClips'] = 'photosVideosAudioClips';
     hashMap['editMember'] = 'editMember';
@@ -127,7 +129,7 @@ class  MyKeys {
     hashMap["maxVideoLength"] = "maxVideoLength";
     hashMap["activityStreamHours"] = "activityStreamHours";
     hashMap["dashboard"] = "dashboard";
-    
+
     //
     hashMap["selectPhotoSize"] = "selectPhotoSize";
     hashMap["fr"] = "fr";
@@ -142,13 +144,22 @@ class  MyKeys {
     hashMap["yo"] = "yo";
     hashMap["ig"] = "ig";
     hashMap['xh'] = 'xh';
+    hashMap['male'] = 'male';
+    hashMap['female'] = 'female';
     hashMap["noActivities"] = "noActivities";
     hashMap["tapToRefresh"] = "tapToRefresh";
     hashMap["loadingActivities"] = "loadingActivities";
 
-    hashMap["projectsNotFound"] ="projectsNotFound";
-    hashMap["newProject"] ="newProject";
+    hashMap["projectsNotFound"] = "projectsNotFound";
+    hashMap["newProject"] = "newProject";
     hashMap["enterProjectName"] = "enterProjectName";
+
+    hashMap["enterDescription"] = "Enter Description";
+    hashMap["settingsChanged"] = "Settings changed or added";
+    hashMap["projectAdded"] = "Project added or changed";
+    hashMap["projectLocationAdded"] = "Project location added";
+    hashMap["projectAreaAdded"] = "Project Area added";
+    hashMap["memberAtProject"] = "Member at Project";
+    hashMap["memberAddedChanged"] = "Member changed or added";
   }
-  
 }

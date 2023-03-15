@@ -2,11 +2,13 @@ import 'package:badges/badges.dart' as bd;
 import 'package:flutter/material.dart';
 import 'package:focused_menu/focused_menu.dart';
 import 'package:focused_menu/modals.dart';
+import 'package:geo_monitor/l10n/translation_handler.dart';
+import 'package:geo_monitor/library/api/prefs_og.dart';
 
 import '../../data/user.dart';
 import '../../functions.dart';
 
-class UserListCard extends StatelessWidget {
+class UserListCard extends StatefulWidget {
   const UserListCard(
       {Key? key,
       required this.users,
@@ -39,48 +41,80 @@ class UserListCard extends StatelessWidget {
   final Function(User) navigateToLocationRequest;
   final Function() badgeTapped;
 
+  @override
+  State<UserListCard> createState() => _UserListCardState();
+}
+
+class _UserListCardState extends State<UserListCard> {
+  String? callMember, sendMemberMessage, memberDashboard,editMember,
+      requestMemberLocation, fieldMonitorSchedules, removeMember;
+  @override
+  void initState() {
+    super.initState();
+    _setTexts();
+  }
+  void _setTexts() async {
+    var sett = await prefsOGx.getSettings();
+    if (sett != null) {
+      callMember = await mTx.tx('callMember', sett.locale!);
+      sendMemberMessage = await mTx.tx('sendMemberMessage', sett.locale!);
+      memberDashboard = await mTx.tx('memberDashboard', sett.locale!);
+      editMember = await mTx.tx('editMember', sett.locale!);
+      requestMemberLocation = await mTx.tx('requestMemberLocation', sett.locale!);
+      fieldMonitorSchedules = await mTx.tx('fieldMonitorSchedules', sett.locale!);
+      removeMember = await mTx.tx('removeMember', sett.locale!);
+      setState(() {
+
+      });
+    }
+  }
   List<FocusedMenuItem> _getMenuItems(User someUser, BuildContext context) {
     List<FocusedMenuItem> list = [];
 
-    if (someUser.userId != deviceUser.userId) {
+    if (someUser.userId != widget.deviceUser.userId) {
       list.add(FocusedMenuItem(
-          title: Text('Call User', style: myTextStyleSmallBlack(context)),
+          title: Text(callMember == null?'Call User': callMember!,
+              style: myTextStyleSmallBlack(context)),
           // backgroundColor: Theme.of(context).primaryColor,
           trailingIcon: Icon(
             Icons.phone,
             color: Theme.of(context).primaryColor,
           ),
           onPressed: () {
-            navigateToPhone(someUser);
+            widget.navigateToPhone(someUser);
           }));
       list.add(FocusedMenuItem(
-          title: Text('Send Message', style: myTextStyleSmallBlack(context)),
+          title: Text(sendMemberMessage == null?
+              'Send Message': sendMemberMessage!,
+              style: myTextStyleSmallBlack(context)),
           // backgroundColor: Theme.of(context).primaryColor,
           trailingIcon: Icon(
             Icons.send,
             color: Theme.of(context).primaryColor,
           ),
           onPressed: () {
-            navigateToMessaging(someUser);
+            widget.navigateToMessaging(someUser);
           }));
     }
 
-    if (deviceUser.userType == UserType.fieldMonitor) {
+    if (widget.deviceUser.userType == UserType.fieldMonitor) {
       // pp('$mm Field monitor cannot edit any other users');
     } else {
       list.add(FocusedMenuItem(
           title:
-              Text('Member Dashboard', style: myTextStyleSmallBlack(context)),
+              Text(memberDashboard == null?
+                  'Member Dashboard': memberDashboard!,
+                  style: myTextStyleSmallBlack(context)),
           trailingIcon: Icon(
             Icons.dashboard,
             color: Theme.of(context).primaryColor,
           ),
           onPressed: () {
-            navigateToUserDashboard(someUser);
+            widget.navigateToUserDashboard(someUser);
           }));
       list.add(FocusedMenuItem(
-          title: Text(
-            'Edit Member',
+          title: Text(editMember == null?
+            'Edit Member': editMember!,
             style: myTextStyleSmallBlack(context),
           ),
           trailingIcon: Icon(
@@ -88,40 +122,44 @@ class UserListCard extends StatelessWidget {
             color: Theme.of(context).primaryColor,
           ),
           onPressed: () {
-            navigateToUserEdit(someUser);
+            widget.navigateToUserEdit(someUser);
           }));
     }
 
-    if (deviceUser.userType == UserType.orgAdministrator ||
-        deviceUser.userType == UserType.orgExecutive) {
+    if (widget.deviceUser.userType == UserType.orgAdministrator ||
+        widget.deviceUser.userType == UserType.orgExecutive) {
       list.add(FocusedMenuItem(
-          title: Text('Request Member Location',
+          title: Text(requestMemberLocation == null?
+              'Request Member Location': requestMemberLocation!,
               style: myTextStyleSmallBlack(context)),
           trailingIcon: Icon(
             Icons.location_on,
             color: Theme.of(context).primaryColor,
           ),
           onPressed: () {
-            navigateToLocationRequest(someUser);
+            widget.navigateToLocationRequest(someUser);
           }));
       list.add(FocusedMenuItem(
-          title: Text('Schedule FieldMonitor',
+          title: Text(fieldMonitorSchedules == null?
+              'Schedule FieldMonitor': fieldMonitorSchedules!,
               style: myTextStyleSmallBlack(context)),
           trailingIcon: Icon(
             Icons.person,
             color: Theme.of(context).primaryColor,
           ),
           onPressed: () {
-            navigateToScheduler(someUser);
+            widget.navigateToScheduler(someUser);
           }));
       list.add(FocusedMenuItem(
-          title: Text('Remove User', style: myTextStyleSmallBlack(context)),
+          title: Text(removeMember == null?
+              'Remove User': removeMember!,
+              style: myTextStyleSmallBlack(context)),
           trailingIcon: Icon(
             Icons.cut,
             color: Theme.of(context).primaryColor,
           ),
           onPressed: () {
-            navigateToKillPage(someUser);
+            widget.navigateToKillPage(someUser);
           }));
     }
     // }
@@ -134,7 +172,7 @@ class UserListCard extends StatelessWidget {
       elevation: 4,
       shape: getRoundedBorder(radius: 16),
       child: Padding(
-        padding: amInLandscape
+        padding: widget.amInLandscape
             ? const EdgeInsets.symmetric(horizontal: 24.0)
             : const EdgeInsets.symmetric(horizontal: 12.0),
         child: Column(
@@ -143,7 +181,7 @@ class UserListCard extends StatelessWidget {
               height: 32,
             ),
             Text(
-              deviceUser.organizationName!,
+              widget.deviceUser.organizationName!,
               style: myTextStyleLargePrimaryColor(context),
             ),
             const SizedBox(
@@ -152,7 +190,7 @@ class UserListCard extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Text(subTitle,
+                Text(widget.subTitle,
                   style: myTextStyleSmall(context),
                 ),
                 const SizedBox(
@@ -161,18 +199,18 @@ class UserListCard extends StatelessWidget {
               ],
             ),
             SizedBox(
-              height: amInLandscape ? 48 : 60,
+              height: widget.amInLandscape ? 48 : 60,
             ),
             Expanded(
               child: InkWell(
                 onTap: () {
-                  badgeTapped();
+                  widget.badgeTapped();
                 },
                 child: bd.Badge(
                   badgeContent: Padding(
                     padding: const EdgeInsets.all(12.0),
                     child: Text(
-                      '${users.length}',
+                      '${widget.users.length}',
                       style: myTextStyleSmall(context),
                     ),
                   ),
@@ -183,9 +221,9 @@ class UserListCard extends StatelessWidget {
                   ),
                   position: bd.BadgePosition.topEnd(top: -24, end: 4),
                   child: ListView.builder(
-                    itemCount: users.length,
+                    itemCount: widget.users.length,
                     itemBuilder: (BuildContext context, int index) {
-                      var mUser = users.elementAt(index);
+                      var mUser = widget.users.elementAt(index);
                       var created = DateTime.parse(mUser.created!);
                       var now = DateTime.now();
                       var ms = now.millisecondsSinceEpoch -
@@ -213,10 +251,10 @@ class UserListCard extends StatelessWidget {
                                   children: [
                                     mUser.thumbnailUrl == null
                                         ? CircleAvatar(
-                                            radius: avatarRadius,
+                                            radius: widget.avatarRadius,
                                           )
                                         : CircleAvatar(
-                                            radius: avatarRadius,
+                                            radius: widget.avatarRadius,
                                             backgroundImage: NetworkImage(
                                                 mUser.thumbnailUrl!),
                                           ),
