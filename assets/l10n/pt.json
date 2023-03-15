@@ -141,5 +141,16 @@
   "enterEmail": "Insira o endereço de e-mail",
   "enterCell": "Digite o número de telefone",
   "enterFullName": "Insira o nome completo",
+  "Mozambique": "Moçambique",
+  "Angola": "Angola",
+  "Namibia": "Namíbia",
+  "Botswana": "Botsuana",
+  "Democratic Republic of Congo": "República Democrática do Congo",
+  "memberLocationResponse": "O membro respondeu à solicitação de localização",
+  "South Africa": "África do Sul",
+  "Zimbabwe": "Zimbábue",
+  "Kenya": "Quênia",
+  "Nigeria": "Nigéria",
+  "conditionAdded": "Condição do projeto adicionada"
 
 }

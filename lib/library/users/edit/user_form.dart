@@ -476,33 +476,51 @@ class _UserFormState extends State<UserForm>
                   const SizedBox(
                     height: 8,
                   ),
-                  Row(
+                  Column(
                     children: <Widget>[
-                      Radio(
-                        value: 0,
-                        groupValue: userType,
-                        onChanged: _handleRadioValueChange,
+                      Row(
+                        children: [
+                          Radio(
+                            value: 0,
+                            groupValue: userType,
+                            onChanged: _handleRadioValueChange,
+                          ),
+                          const SizedBox(width: 8,),
+                          Text(fieldMonitor == null?
+                          'Monitor': fieldMonitor!,
+                            style: myTextStyleSmall(context),
+                          ),
+                        ],
                       ),
-                      Text(fieldMonitor == null?
-                        'Monitor': fieldMonitor!,
-                        style: myTextStyleSmall(context),
+
+                      Row(
+                        children: [
+                          Radio(
+                            value: 1,
+                            groupValue: userType,
+                            onChanged: _handleRadioValueChange,
+                          ),
+                          const SizedBox(width: 8,),
+                          Text(administrator == null?'Admin':administrator!,
+                              style: myTextStyleSmall(context)),
+                        ],
                       ),
-                      Radio(
-                        value: 1,
-                        groupValue: userType,
-                        onChanged: _handleRadioValueChange,
+
+                      Row(
+                        children: [
+                          Radio(
+                            value: 2,
+                            groupValue: userType,
+                            onChanged: _handleRadioValueChange,
+                          ),
+                          const SizedBox(width: 8,),
+                          Text(executive == null?
+                          'Exec': executive!,
+                            style: myTextStyleSmall(context),
+                          ),
+                        ],
                       ),
-                      Text(administrator == null?'Admin':administrator!,
-                          style: myTextStyleSmall(context)),
-                      Radio(
-                        value: 2,
-                        groupValue: userType,
-                        onChanged: _handleRadioValueChange,
-                      ),
-                      Text(executive == null?
-                        'Exec': executive!,
-                        style: myTextStyleSmall(context),
-                      ),
+
                     ],
                   ),
                    SizedBox(

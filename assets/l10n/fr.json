@@ -142,5 +142,16 @@
   "enterCell": "Entrez le numéro de téléphone",
   "enterFullName": "Entrez le nom complet",
   "female": "Femme",
-  "male": "Homme"
+  "male": "Homme",
+  "Mozambique": "Mozambique",
+  "Angola": "Angola",
+  "Namibia": "Namibie",
+  "Botswana": "Bostwana",
+  "Democratic Republic of Congo": "République Démocratique du Congo",
+  "memberLocationResponse": "Le membre a répondu à la demande de localisation",
+  "South Africa": "Afrique du Sud",
+  "Zimbabwe": "Zimbabwe",
+  "Kenya": "Kenya",
+  "Nigeria": "Nigeria",
+  "conditionAdded": "Condition du projet ajoutée"
 }

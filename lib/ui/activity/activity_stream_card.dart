@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:geo_monitor/library/api/prefs_og.dart';
 import 'package:geo_monitor/library/data/activity_model.dart';
 import 'package:geo_monitor/library/functions.dart';
 
+import '../../l10n/translation_handler.dart';
 import '../../library/data/activity_type_enum.dart';
 import 'activity_cards.dart';
 
@@ -24,9 +26,25 @@ class ActivityStreamCard extends StatefulWidget {
 }
 
 class ActivityStreamCardState extends State<ActivityStreamCard> {
+  String? projectAdded, projectLocationAdded, projectAreaAdded, at,
+      memberAtProject, memberAddedChanged, requestMemberLocation, settingsChanged;
   @override
   void initState() {
     super.initState();
+    _setTexts();
+  }
+
+  void _setTexts() async {
+      var sett = await prefsOGx.getSettings();
+      if (sett != null) {
+        projectAdded = await mTx.tx('projectAdded', sett.locale!);
+        projectLocationAdded = await mTx.tx('projectLocationAdded', sett.locale!);
+        projectAreaAdded = await mTx.tx('projectAreaAdded', sett.locale!);
+        memberAtProject = await mTx.tx('memberAtProject', sett.locale!);
+        settingsChanged = await mTx.tx('settingsChanged', sett.locale!);
+        memberAddedChanged = await mTx.tx('memberAddedChanged', sett.locale!);
+        at = await mTx.tx('at', sett.locale!);
+      }
   }
 
   Widget _getUserAdded(Icon icon, String msg) {
@@ -182,11 +200,11 @@ class ActivityStreamCardState extends State<ActivityStreamCard> {
   Widget build(BuildContext context) {
     late Icon icon;
     late String message;
-
     switch (widget.model.activityType!) {
       case ActivityType.projectAdded:
         icon = Icon(Icons.access_time, color: Theme.of(context).primaryColor);
-        message = 'Project added: ${widget.model.projectName}';
+        message = projectAdded == null?'Project added: ${widget.model.projectName}'
+        : '$projectAdded: ${widget.model.projectName}' ;
         return _getGeneric(icon, message, 80.0);
         break;
       case ActivityType.photoAdded:
@@ -212,28 +230,31 @@ class ActivityStreamCardState extends State<ActivityStreamCard> {
         break;
       case ActivityType.userAddedOrModified:
         icon = Icon(Icons.person, color: Theme.of(context).primaryColor);
-        message = 'Added, modified or signed in';
+        message = memberAddedChanged == null?'Added, modified or signed in': memberAddedChanged!;
         return _getUserAdded(icon, message);
         break;
       case ActivityType.positionAdded:
         icon = Icon(Icons.home, color: Theme.of(context).primaryColor);
-        message = 'Location added: ${widget.model.projectName}';
+        message = projectLocationAdded == null?'Location added: ${widget.model.projectName}'
+        : '$projectLocationAdded: ${widget.model.projectName}';
         return _getGeneric(icon, message, 140);
         break;
       case ActivityType.polygonAdded:
         icon =
             Icon(Icons.circle_outlined, color: Theme.of(context).primaryColor);
-        message = 'Area added: ${widget.model.projectName}';
+        message = projectAreaAdded == null?'Area added: ${widget.model.projectName}'
+        : '$projectAreaAdded ${widget.model.projectName}';
         return _getGeneric(icon, message, 100);
         break;
       case ActivityType.settingsChanged:
         icon = Icon(Icons.settings, color: Theme.of(context).primaryColor);
-        message = 'Settings changed or added';
+        message = settingsChanged == null?'Settings changed or added': settingsChanged!;
         return _getGeneric(icon, message, 80);
         break;
       case ActivityType.geofenceEventAdded:
         icon = Icon(Icons.person_2, color: Theme.of(context).primaryColor);
-        message = 'at: ${widget.model.geofenceEvent!.projectName!}';
+        message = at == null? 'at: ${widget.model.geofenceEvent!.projectName!}':
+        '$at ${widget.model.geofenceEvent!.projectName!}';
         return _getUserAdded(icon, message);
         break;
       case ActivityType.conditionAdded:
@@ -243,8 +264,9 @@ class ActivityStreamCardState extends State<ActivityStreamCard> {
         break;
       case ActivityType.locationRequest:
         icon = Icon(Icons.location_on, color: Theme.of(context).primaryColor);
-        message =
-            'Location requested from ${widget.model.locationRequest!.userName}';
+        message = requestMemberLocation == null?
+            'Location requested from ${widget.model.locationRequest!.userName}':
+        '$requestMemberLocation ${widget.model.locationRequest!.userName}';
         return _getGeneric(icon, message, 120);
         break;
       case ActivityType.locationResponse:

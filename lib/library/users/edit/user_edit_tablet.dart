@@ -407,19 +407,19 @@ class UserEditTabletState extends State<UserEditTablet>
                 ),
                 widget.user?.thumbnailUrl == null
                     ? const Positioned(
-                        right: 72,
-                        top: 48,
+                        left: 48,
+                        top: 0,
                         child: CircleAvatar(
-                          radius: 48,
+                          radius: 16,
                           backgroundColor: Colors.teal,
                         ))
                     : Positioned(
-                        right: 72,
-                        top: 48,
+                        left: 20,
+                        top: 0,
                         child: GestureDetector(
                           onTap: _navigateToFullPhoto,
                           child: CircleAvatar(
-                            radius: 86,
+                            radius: 48,
                             backgroundImage:
                                 NetworkImage(widget.user!.thumbnailUrl!),
                           ),

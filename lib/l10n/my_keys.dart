@@ -154,17 +154,29 @@ class MyKeys {
     hashMap["newProject"] = "newProject";
     hashMap["enterProjectName"] = "enterProjectName";
 
-    hashMap["enterDescription"] = "Enter Description";
-    hashMap["settingsChanged"] = "Settings changed or added";
-    hashMap["projectAdded"] = "Project added or changed";
-    hashMap["projectLocationAdded"] = "Project location added";
-    hashMap["projectAreaAdded"] = "Project Area added";
-    hashMap["memberAtProject"] = "Member at Project";
-    hashMap["memberAddedChanged"] = "Member changed or added";
-    hashMap["enterFullName"] ="Enter Full Name";
-    hashMap["enterEmail"] ="Enter Email Address";
-    hashMap["enterCell"] ="Enter Telephone Number";
-    hashMap["submitMember"] ="Submit Member";
-    hashMap["profilePhoto"] ="Create Profile Photo";
+    hashMap["enterDescription"] = "enterDescription";
+    hashMap["settingsChanged"] = "settingsChanged";
+    hashMap["projectAdded"] = "projectAdded";
+    hashMap["projectLocationAdded"] = "projectLocationAdded";
+    hashMap["projectAreaAdded"] = "projectAreaAdded";
+    hashMap["memberAtProject"] = "memberAtProject";
+    hashMap["memberAddedChanged"] = "memberAddedChanged";
+    hashMap["enterFullName"] ="enterFullName";
+    hashMap["enterEmail"] ="enterEmail";
+    hashMap["enterCell"] ="enterCell";
+    hashMap["submitMember"] ="submitMember";
+    hashMap["profilePhoto"] ="profilePhoto";
+    hashMap['memberLocationResponse'] = 'memberLocationResponse';
+    hashMap["South Africa"] = "South Africa";
+    hashMap["Zimbabwe"] = "Zimbabwe";
+    hashMap["Mozambique"] = "Mozambique";
+    hashMap["Namibia"] = "Namibia";
+    hashMap["Botswana"] = "Botswana";
+    hashMap["Kenya"] = "Kenya";
+    hashMap["Nigeria"] = "Nigeria";
+    hashMap["Democratic Republic of Congo"] = "Democratic Republic of Congo";
+    hashMap["Angola"] = "Angola";
+
+    hashMap["conditionAdded"] = "conditionAdded";
   }
 }

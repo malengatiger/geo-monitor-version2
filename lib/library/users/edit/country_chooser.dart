@@ -65,7 +65,7 @@ class CountryChooserState extends State<CountryChooser> {
         : DropdownButton(
             elevation: 4,
             hint: Text(widget.hint,
-              style: myTextStyleMedium(context),
+              style: myTextStyleSmall(context),
             ),
             items: list,
             onChanged: onChanged);
