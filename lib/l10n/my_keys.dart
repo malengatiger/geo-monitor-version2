@@ -12,7 +12,7 @@ class MyKeys {
   }
 
   static _buildMap() {
-    hashMap["weHelpYou"] = "We help you see more!";
+    hashMap["weHelpYou"] = "weHelpYou";
     hashMap['november'] = 'november';
     hashMap['projects'] = 'projects';
     hashMap['callMember'] = 'callMember';
@@ -179,5 +179,11 @@ class MyKeys {
     hashMap["Angola"] = "Angola";
 
     hashMap["conditionAdded"] = "conditionAdded";
+
+    hashMap["stopMessage"] = "stopMessage";
+    hashMap["restartMessage"] =  "restartMessage";
+    hashMap["stop"] =  "stop";
+    hashMap["cancel"] =  "cancel";
+    hashMap["restart"] =  "restart";
   }
 }

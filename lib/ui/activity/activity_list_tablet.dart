@@ -145,7 +145,12 @@ class _ActivityListTabletState extends State<ActivityListTablet>
     } catch (e) {
       pp(e);
       if (mounted) {
-        showToast(message: '$e', context: context);
+        showToast(
+            backgroundColor: Theme.of(context).primaryColor,
+            textStyle: myTextStyleSmallBold(context),
+            padding: 24,
+            duration: const Duration(seconds: 6),
+            message: '$e', context: context);
       }
     }
     setState(() {
@@ -158,6 +163,7 @@ class _ActivityListTabletState extends State<ActivityListTablet>
         organizationId: me!.organizationId!,
         hours: hours,
         forceRefresh: forceRefresh);
+    pp('$mm org activity models found: ${models.length}');
     _sortDescending();
     setState(() {});
   }

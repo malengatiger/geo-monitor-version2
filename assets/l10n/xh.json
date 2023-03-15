@@ -12,7 +12,7 @@
   "executive": "Isigqeba",
   "emailAddress": "Idilesi yemeyile",
   "profilePhoto": "Ifoto yeProfayili",
-  "activityTitle": "Imisebenzi kwiiyure zokugqibela ze-{count}",
+  "activityTitle": "Imisebenzi kwiiyure zokugqibela ze-$count",
   "members": "Amalungu",
   "maximumVideoLength": "UBomi boBude beVidiyo ngemizuzwana",
   "selectProjectIfNecessary": "Khetha iprojekthi kuphela ukuba ezi zicwangciso zezeprojekthi enye, kungenjalo useto lolo mbutho uphela",
@@ -152,5 +152,10 @@
   "Kenya": "Khenya",
   "Nigeria": "Nayijeriya",
   "conditionAdded": "Imeko yeprojekthi yongeziwe",
-  "weHelpYou": "Sikunceda ubone ngakumbi!"
+  "weHelpYou": "Sikunceda ubone ngakumbi!",
+  "cancel": "Rhoxisa",
+  "stopMessage": "Ukuba ulutshintshile ulwimi lwe-app nceda ucofe iqhosha lokumisa kwaye uqalise kwakhona usetyenziso ukusebenzisa ulwimi olutsha. Ukuba uyarhoxisa uya kubona utshintsho kuphela emva kokumisa ngokupheleleyo kwaye uqale",
+  "restartMessage": "Ukuba ulutshintshile ulwimi lwe-app nceda ucofe iqhosha lokuqalisa kwakhona kwaye uqalise kwakhona usetyenziso ukusebenzisa ulwimi olutsha. Ukuba uyarhoxisa uya kubona utshintsho kuphela emva kokumisa ngokupheleleyo kwaye uqale",
+  "stop": "Yeka",
+  "restart": "Phinda Uqalele"
 }

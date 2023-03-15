@@ -153,7 +153,12 @@
   "Kenya": "Kenya",
   "Nigeria": "Nigeria",
   "conditionAdded": "Boemo ba morero bo ekelitsoe",
-  "weHelpYou": "Re u thusa ho bona ho feta!"
+  "weHelpYou": "Re u thusa ho bona ho feta!",
+  "cancel": "Hlakola",
+  "stopMessage": "Haeba o fetotse puo ea sesebelisoa ka kopo, tobetsa konopo ea ho emisa ebe o qala sesebelisoa hape ho sebelisa puo e ncha. Haeba u hlakola u tla bona liphetoho feela ka mor\u0027a ho emisa ka ho feletseng le ho qala",
+  "restartMessage": "Haeba o fetotse puo ea sesebelisoa ka kopo, tobetsa konopo ea ho qala hape ebe o qala sesebelisoa hape ho sebelisa puo e ncha. Haeba u hlakola u tla bona liphetoho feela ka mor\u0027a ho emisa ka ho feletseng le ho qala",
+  "stop": "Ema",
+  "restart": "Qala hape"
 
 
 }

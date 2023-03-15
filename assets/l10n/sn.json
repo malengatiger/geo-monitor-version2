@@ -152,5 +152,10 @@
   "Kenya": "Kenya",
   "Nigeria": "Naijeriya",
   "conditionAdded": "Mamiriro eprojekiti akawedzerwa",
-  "weHelpYou": "Isu tinokubatsira iwe kuona zvimwe!"
+  "weHelpYou": "Isu tinokubatsira iwe kuona zvimwe!",
+  "cancel": "Kanzura",
+  "stopMessage": "Kana wachinja mutauro weapp ndapota tinya bhatani rekumisa wobva watangazve app kuti ushandise mutauro mutsva. Kana ukakanzura unongoona shanduko mushure mekumira kwakazara uye wotanga",
+  "restartMessage": "Kana wachinja mutauro weapp ndapota tinya bhatani rekutanga wobva watangazve app kuti ushandise mutauro mutsva. Kana ukakanzura unongoona shanduko mushure mekumira kwakazara uye wotanga",
+  "stop": "Mira",
+  "restart": "Restart"
 }

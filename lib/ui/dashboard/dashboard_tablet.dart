@@ -161,8 +161,9 @@ class DashboardTabletState extends State<DashboardTablet> with WidgetsBindingObs
       });
 
       settingsSubscriptionFCM = fcmBloc.settingsStream.listen((settings) async {
-        pp('$mm: 🍎🍎 settings arrived with themeIndex: ${settings.themeIndex}... 🍎🍎');
-        Locale newLocale = Locale(settings!.locale!);
+        pp('$mm: 🍎🍎 settings arrived with themeIndex: ${settings.themeIndex}... locale: ${settings.locale} 🍎🍎');
+        Locale newLocale = Locale(settings.locale!);
+        mTx.initialize(locale: settings.locale!);
         final m = LocaleAndTheme(themeIndex: settings!.themeIndex!,
             locale: newLocale);
         themeBloc.themeStreamController.sink.add(m);
@@ -214,10 +215,17 @@ class DashboardTabletState extends State<DashboardTablet> with WidgetsBindingObs
         numberOfDays = settingsModel!.numberOfDays!;
         title = await mTx.tx('dashboard', settingsModel!.locale!);
         var sub = await mTx.tx('dashboardSubTitle', settingsModel!.locale!);
+        pp('deciphering this string: 🍎 $sub');
         int index = sub.indexOf('\$');
         prefix = sub.substring(0, index);
-        suffix = sub.substring(index+6);
-        pp('$mm prefix: $prefix suffix: $suffix');
+        String? suff;
+        try {
+          suff = sub.substring(index + 6);
+          suffix = suff;
+          pp('$mm prefix: $prefix suffix: $suffix');
+        } catch (e) {
+          pp('🔴🔴🔴🔴🔴🔴 $e');
+        }
         dashboardSubTitle = sub.replaceAll('\$count', '$numberOfDays');
 
         setState(() {

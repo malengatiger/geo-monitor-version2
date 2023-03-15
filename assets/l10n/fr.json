@@ -154,5 +154,10 @@
   "Kenya": "Kenya",
   "Nigeria": "Nigeria",
   "conditionAdded": "Condition du projet ajoutée",
-  "weHelpYou": "Nous vous aidons à en voir plus !"
+  "weHelpYou": "Nous vous aidons à en voir plus !",
+  "cancel": "Annuler",
+  "stopMessage": "Si vous avez changé la langue de l\u0027application, appuyez sur le bouton d\u0027arrêt, puis redémarrez l\u0027application pour utiliser la nouvelle langue. Si vous annulez, vous ne verrez les modifications qu\u0027après un arrêt complet et un redémarrage",
+  "restartMessage": "Si vous avez changé la langue de l\u0027application, appuyez sur le bouton de redémarrage, puis redémarrez l\u0027application pour utiliser la nouvelle langue. Si vous annulez, vous ne verrez les modifications qu\u0027après un arrêt complet et un redémarrage",
+  "stop": "Arrêt",
+  "restart": "Redémarrage"
 }

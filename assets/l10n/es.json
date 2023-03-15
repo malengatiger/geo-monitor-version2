@@ -67,7 +67,7 @@
   "addProjectLocationHere": "Agregue la ubicación del proyecto aquí",
   "dashboardSubTitle": "Los datos representan los últimos $recuentos de días",
 
-  "numberOfDaysForDashboardData": "Número de días para los datos del panel {count}",
+  "numberOfDaysForDashboardData": "Número de días para los datos del panel $count",
   "directionsToProject": "Direcciones al Proyecto",
   "welcomeToGeo": "¡Bienvenido a Geo!",
   "endDate": "Fecha final",
@@ -154,6 +154,11 @@
   "Kenya": "Kenia",
   "Nigeria": "Nigeria",
   "conditionAdded": "Condición de proyecto añadida",
-  "weHelpYou": "¡Te ayudamos a ver más!"
+  "weHelpYou": "¡Te ayudamos a ver más!",
+  "cancel": "Cancelar",
+  "stopMessage": "Si ha cambiado el idioma de la aplicación, presione el botón de detener y luego reinicie la aplicación para usar el nuevo idioma. Si cancela, solo verá los cambios después de una parada completa y un inicio",
+  "restartMessage": "Si ha cambiado el idioma de la aplicación, presione el botón de reinicio y luego reinicie la aplicación para usar el nuevo idioma. Si cancela, solo verá los cambios después de una parada completa y un inicio",
+  "stop": "Detener",
+  "restart": "Reanudar"
 
 }

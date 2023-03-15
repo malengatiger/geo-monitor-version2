@@ -12,7 +12,7 @@
   "executive": "Mtendaji",
   "emailAddress": "Barua pepe",
   "profilePhoto": "Picha ya Wasifu",
-  "activityTitle": "Shughuli katika saa {count} zilizopita",
+  "activityTitle": "Shughuli katika saa $count zilizopita",
   "members": "Wanachama",
   "maximumVideoLength": "Upeo wa Urefu wa Video kwa sekunde",
   "selectProjectIfNecessary": "Chagua mradi tu ikiwa mipangilio hii ni ya mradi mmoja, vinginevyo mipangilio ni ya shirika zima",
@@ -64,7 +64,7 @@
   "pleaseSelectCountry": "Tafadhali chagua Nchi",
   "locations": "Maeneo",
   "addProjectLocationHere": "Ongeza Eneo la Mradi Hapa",
-  "dashboardSubTitle": "Data inawakilisha siku {count} zilizopita",
+  "dashboardSubTitle": "Data inawakilisha siku $count zilizopita",
   "numberOfDaysForDashboardData": "Idadi ya siku za data ya Dashibodi",
   "directionsToProject": "Maelekezo kwa Mradi",
   "welcomeToGeo": "Karibu kwenye Geo!",
@@ -152,5 +152,10 @@
   "Kenya": "Kenya",
   "Nigeria": "Nigeria",
   "conditionAdded": "Hali ya mradi imeongezwa",
-  "weHelpYou": "Tunakusaidia kuona zaidi!"
+  "weHelpYou": "Tunakusaidia kuona zaidi!",
+  "cancel": "Ghairi",
+  "stopMessage": "Ikiwa umebadilisha lugha ya programu tafadhali bonyeza kitufe cha kusitisha kisha uanze upya programu ili kutumia lugha mpya. Ukighairi utaona mabadiliko tu baada ya kusimama kabisa na kuanza",
+  "restartMessage": "Ikiwa umebadilisha lugha ya programu tafadhali bonyeza kitufe cha kuwasha upya kisha uwashe upya programu ili kutumia lugha mpya. Ukighairi utaona mabadiliko tu baada ya kusimama kabisa na kuanza",
+  "stop": "Acha",
+  "restart": "Anzisha tena"
 }

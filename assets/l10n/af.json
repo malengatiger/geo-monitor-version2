@@ -67,7 +67,7 @@
   "addProjectLocationHere": "Voeg projekligging hier by",
   "dashboardSubTitle": "Data verteenwoordig die laaste $count dae",
 
-  "numberOfDaysForDashboardData": "Aantal dae vir Dashboard-data ${count}",
+  "numberOfDaysForDashboardData": "Aantal dae vir Dashboard-data $$count",
   "directionsToProject": "Aanwysings na Projek",
   "welcomeToGeo": "Welkom by Geo!",
   "endDate": "Einddatum",
@@ -153,7 +153,12 @@
   "Zimbabwe": "Zimbabwe",
   "Kenya": "Kenia",
   "Nigeria": "Nigerië",
-  "conditionAdded": "Projektoestand bygevoeg"
+  "conditionAdded": "Projektoestand bygevoeg",
+  "cancel": "Kanselleer",
+  "stopMessage": "As jy die taal van die toepassing verander het, druk asseblief die stopknoppie en herbegin dan die toepassing om die nuwe taal te gebruik. As jy kanselleer sal jy eers die veranderinge sien na \u0027n punt en begin",
+  "restartMessage": "As jy die taal van die toepassing verander het, druk asseblief die herbegin-knoppie en herbegin dan die toepassing om die nuwe taal te gebruik. As jy kanselleer sal jy eers die veranderinge sien na \u0027n punt en begin",
+  "stop": "Stop",
+  "restart": "Begin oor"
 
 
 }

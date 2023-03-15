@@ -1,5 +1,5 @@
 {
-  "dashboardSubTitle": "Data represents the last {count} days",
+  "dashboardSubTitle": "Data represents the last $count days",
   "@dashboardSubTitle": {
     "placeholders": {
       "count": {
@@ -7,7 +7,7 @@
         "example":"30"}
     }
   },
-  "activityTitle": "Activities in the last {count} hours",
+  "activityTitle": "Activities in the last $count hours",
   "@activityTitle": {
     "placeholders": {
       "count": {

@@ -30,7 +30,7 @@ class _SettingsFormState extends State<SettingsForm> {
   SettingsModel? settingsModel;
 
   var distController = TextEditingController(text: '500');
-  var videoController = TextEditingController(text: '15');
+  var videoController = TextEditingController(text: '20');
   var audioController = TextEditingController(text: '60');
   var activityController = TextEditingController(text: '24');
   var daysController = TextEditingController(text: '7');
@@ -83,6 +83,24 @@ class _SettingsFormState extends State<SettingsForm> {
 
     });
 
+  }
+  void _checkLocaleChangeAndExit() {
+
+    //if locale changed - display dialog with shutDown button
+    showDialog(
+        context: context,
+        barrierDismissible: true,
+        builder: (_) => const Padding(
+          padding: EdgeInsets.all(16.0),
+          child: Center(
+            child: SizedBox(width: 400, height: 400,
+              child: Text('If you have changed the language of the app please press STOP and then then restart the app to use the new language'),),
+          ),
+        ),
+
+    );
+
+    Navigator.of(context).pop();
   }
 
   // var instruction = S.of(context).fieldMonitorInstruction;
@@ -159,9 +177,9 @@ class _SettingsFormState extends State<SettingsForm> {
       pp('$mm 🔵🔵🔵 writing settings to remote database ... '
           'currentThemeIndex: $currentThemeIndex 🔆🔆🔆 and date: $date} 🔆 stream hours: ${activityController.value.text}');
       var len = int.parse(videoController.value.text);
-      if (len > 60) {
+      if (len > 20) {
         showToast(
-            message: 'The maximum video length should be 60 seconds or less',
+            message: 'The maximum video length should be 20 seconds or less',
             context: context);
         return;
       }
@@ -207,7 +225,7 @@ class _SettingsFormState extends State<SettingsForm> {
           backgroundColor: Theme.of(context).primaryColor,
           message: 'Settings have been saved',
           context: context);
-      Navigator.of(context).pop();
+       _checkLocaleChangeAndExit();
     }
   }
 
@@ -344,13 +362,16 @@ class _SettingsFormState extends State<SettingsForm> {
                             padding: const EdgeInsets.all(8.0),
                             child: SizedBox(
                               height: 32,
-                              width: 200,
+                              width: 240,
                               child: Container(
                                 color: Theme.of(context).primaryColor,
                                 child: Center(
-                                  child: Text(tapForColorScheme == null?
-                                    'Tap Me for Colour Scheme': tapForColorScheme!,
-                                    style: myTextStyleSmall(context),
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: Text(tapForColorScheme == null?
+                                      'Tap Me for Colour Scheme': tapForColorScheme!,
+                                      style: myTextStyleSmall(context),
+                                    ),
                                   ),
                                 ),
                               ),
@@ -591,9 +612,8 @@ class _SettingsFormState extends State<SettingsForm> {
                     children: [
                       LocaleChooser(onSelected: (locale) {
                         pp('✅✅✅ form received locale: $locale - will set state}');
-                        setState(() {
-                          selectedLocale = locale;
-                        });
+
+                        _handleLocaleChange(locale);
                       }, hint: hint == null? 'Select Country': hint!,),
                     ],
                   ),
@@ -617,6 +637,22 @@ class _SettingsFormState extends State<SettingsForm> {
         ),
       ),
     );
+  }
+
+  void _handleLocaleChange(Locale locale) async {
+    pp('$mm onLocaleChange ... going to ${locale.languageCode}');
+    mTx.initialize(locale: locale.toLanguageTag());
+    var settings = await prefsOGx.getSettings();
+    if (settings != null) {
+      settings.locale = locale.languageCode;
+      await prefsOGx.saveSettings(settings);
+      _getSettings();
+      themeBloc.changeToLocale(locale.languageCode);
+    }
+    setState(() {
+      selectedLocale = locale;
+    });
+
   }
 }
 
@@ -642,6 +678,7 @@ class LocaleChooser extends StatelessWidget {
           DropdownMenuItem(value: Locale('ts'), child: Text('Tsonga')),
           DropdownMenuItem(value: Locale('xh'), child: Text('Xhosa')),
           DropdownMenuItem(value: Locale('zu'), child: Text('Zulu')),
+          DropdownMenuItem(value: Locale('yo'), child: Text('Yoruba')),
         ],
         onChanged: onChanged);
   }

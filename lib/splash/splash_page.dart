@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:geo_monitor/library/api/prefs_og.dart';
 
+import '../l10n/translation_handler.dart';
 import '../library/functions.dart';
 
 class SplashWidget extends StatefulWidget {
@@ -18,8 +20,15 @@ class _SplashWidgetState extends State<SplashWidget> {
     _performSetup();
   }
 
+  String? message;
   void _performSetup() async {
+    var sett = await prefsOGx.getSettings();
+    if (sett != null) {
+      message = await mTx.tx('weHelpYou', sett.locale!);
+      setState(() {
 
+      });
+    }
 
   }
 
@@ -44,7 +53,7 @@ class _SplashWidgetState extends State<SplashWidget> {
                     Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: Text(
-                        'GeoMonitor',
+                        'Geo',
                         style: myNumberStyleLarger(context),
                       ),
                     ),
@@ -61,8 +70,8 @@ class _SplashWidgetState extends State<SplashWidget> {
                   const SizedBox(
                     width: 24,
                   ),
-                  Text(
-                    'We help you see more!',
+                  Text(message == null?
+                    'We help you see more!': message!,
                     style: myTextStyleSmall(context),
                   ),
                   const SizedBox(

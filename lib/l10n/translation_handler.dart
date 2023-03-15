@@ -24,7 +24,11 @@ class TranslationHandler {
   static const mm = '🌎🔵 mtX: ';
   String? currentLocale;
 
-  void initialize() async {
+  void initialize({String? locale}) async {
+    if (locale != null) {
+       await tx('settings', locale);
+       return;
+    }
     var sett = await prefsOGx.getSettings();
     if (sett != null) {
       await tx('settings', sett.locale!);
@@ -50,6 +54,7 @@ class TranslationHandler {
 
   _loadFile(String locale,HashMap<String,String> hashMap) async {
     pp('$mm loading locale strings for $locale');
+    hashMap.clear();
     var start = DateTime.now();
     var s = await getStringFromAssets(locale);
     var mJson = jsonDecode(s);

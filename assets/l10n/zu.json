@@ -12,7 +12,7 @@
   "executive": "Isikhulu",
   "emailAddress": "Ikheli le-imeyili",
   "profilePhoto": "Isithombe Sephrofayela",
-  "activityTitle": "Imisebenzi emahoreni wokugcina e-{count}",
+  "activityTitle": "Imisebenzi emahoreni wokugcina e-$count",
   "members": "Amalungu",
   "maximumVideoLength": "Ubude obukhulu bevidiyo ngemizuzwana",
   "selectProjectIfNecessary": "Khetha iphrojekthi kuphela uma lezi zilungiselelo ezephrojekthi eyodwa, ngaphandle kwalokho izilungiselelo ezenhlangano yonke",
@@ -64,7 +64,7 @@
   "pleaseSelectCountry": "Sicela ukhethe Izwe",
   "locations": "Izindawo",
   "addProjectLocationHere": "Engeza Indawo Yephrojekthi Lapha",
-  "dashboardSubTitle": "Idatha imele izinsuku zokugcina ezingu-{count}",
+  "dashboardSubTitle": "Idatha imele izinsuku zokugcina ezingu-$count",
   "numberOfDaysForDashboardData": "Inombolo yezinsuku zedatha yedeshibhodi",
   "directionsToProject": "Izikhombisi-ndlela eziya kuphrojekthi",
   "welcomeToGeo": "Siyakwamukela ku-Geo!",
@@ -152,5 +152,10 @@
   "Kenya": "Kenya",
   "Nigeria": "eNigeria",
   "conditionAdded": "Isimo sephrojekthi sengeziwe",
-  "weHelpYou": "Sikusiza ukuthi ubone okwengeziwe!"
+  "weHelpYou": "Sikusiza ukuthi ubone okwengeziwe!",
+  "cancel": "Khansela",
+  "stopMessage": "Uma ushintshe ulimi lohlelo lokusebenza sicela ucindezele inkinobho yokumisa bese uqala kabusha uhlelo lokusebenza ukuze usebenzise ulimi olusha. Uma ukhansela uzobona izinguquko kuphela ngemva kokuma futhi uqale",
+  "restartMessage": "Uma ushintshe ulimi lohlelo lokusebenza sicela ucindezele inkinobho yokuqalisa kabusha bese uqala kabusha uhlelo lokusebenza ukuze usebenzise ulimi olusha. Uma ukhansela uzobona izinguquko kuphela ngemva kokuma futhi uqale",
+  "stop": "Ima",
+  "restart": "Qala kabusha"
 }

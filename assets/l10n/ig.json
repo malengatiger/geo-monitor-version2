@@ -160,5 +160,10 @@
   "Kenya": "Kenya",
   "Nigeria": "Nigeria",
   "conditionAdded": "Agbakwunyere ọnọdụ oru ngo",
-  "weHelpYou": "Anyị na-enyere gị aka ịhụ ihe ọzọ!"
+  "weHelpYou": "Anyị na-enyere gị aka ịhụ ihe ọzọ!",
+  "cancel": "Kagbuo",
+  "stopMessage": "Ọ bụrụ na ị gbanweela asụsụ nke ngwa, biko pịa bọtịnụ nkwụsị wee malitegharịa ngwa ka iji asụsụ ọhụrụ. Ọ bụrụ na ịkagbu, ị ga-ahụ mgbanwe naanị mgbe nkwụsị zuru oke wee malite",
+  "restartMessage": "Ọ bụrụ na ị gbanweela asụsụ nke ngwa, biko pịa bọtịnụ mmalite wee malitegharịa ngwa ka iji asụsụ ọhụrụ. Ọ bụrụ na ịkagbu, ị ga-ahụ mgbanwe naanị mgbe nkwụsị zuru oke wee malite",
+  "stop": "Kwụsị",
+  "restart": "Malitegharịa ekwentị"
 }

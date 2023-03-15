@@ -27,7 +27,7 @@ import 'library/cache_manager.dart';
 import 'library/emojis.dart';
 
 int themeIndex = 0;
-var locale = const Locale('fr');
+var locale = const Locale('pt');
 SettingsModel? settings;
 late FirebaseApp firebaseApp;
 fb.User? fbAuthedUser;
