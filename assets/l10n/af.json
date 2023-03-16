@@ -163,7 +163,27 @@
   "projectAreas": "Projekgebiede",
   "areas": "Gebiede",
   "de": "Duits",
-  "zh": "Chinese"
+  "zh": "Chinese",
+  "area": "Area $telling",
+  "thankYou": "Dankie!",
+  "noAudioInProject": "Geen oudiosnitte in projek gevind nie",
+  "appInfo": "Toepassing inligting",
+  "whatGeoDo": "Wat doen Geo?",
+  "thankYouMessage": "Dankie dat jy selfs tot hierdie punt gekom het. Jou tyd en moeite word baie waardeer en ons hoop jy geniet jou reise met hierdie toepassing!",
+  "settingSaved": "Instellings is gestoor",
+  "projectMonitoringAreas": "Projekmoniteringsareas",
+  "networkUnavailable": "Netwerk nie beskikbaar nie",
+  "projectLocationsAreas": "Projekliggings en -areas",
+  "organizationLocationsAreas": "Organisasies Liggings en Areas",
+  "infoForManagers": "Inligting vir Bestuurders en Koördineerders",
+  "infoForMonitors": "Inligting vir Bestuurders en Eienaars",
+  "noVideosInProject": "Geen video\u0027s in projek gevind nie",
+  "messageReceived": "Boodskap ontvang",
+  "noPhotosInProject": "Geen foto\u0027s in projek gevind nie",
+  "location": "Ligging $telling",
+  "geoForOrg": "Geo vir organisasies",
+  "geoForManagers": "Geo vir Bestuurders en Koördineerders",
+  "howToStart": "Hoe om te begin"
 
 
 }

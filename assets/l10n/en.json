@@ -163,6 +163,26 @@
   "projectAreas": "Project Areas",
   "areas": "Areas",
   "de": "German",
-  "zh": "Chinese"
+  "zh": "Chinese",
+  "area": "Area $count",
+  "thankYou": "Thank You!",
+  "noAudioInProject": "No audio clips found in project",
+  "appInfo": "App Information",
+  "whatGeoDo": "What does Geo do?",
+  "thankYouMessage": "Thank you for even getting to this point. Your time and effort is much appreciated and we hope you enjoy your journeys with this app!",
+  "settingSaved": "Settings have been saved",
+  "projectMonitoringAreas": "Project Monitoring Areas",
+  "networkUnavailable": "Network Unavailable",
+  "projectLocationsAreas": "Project Locations and Areas",
+  "organizationLocationsAreas": "Organizations Locations and Areas",
+  "infoForManagers": "Information for Mangers and Coordinators",
+  "infoForMonitors": "Information for Executives and Owners",
+  "noVideosInProject": "No videos found in project",
+  "messageReceived": "Message received",
+  "noPhotosInProject": "No photos found in project",
+  "location": "Location $count",
+  "geoForOrg": "Geo for Organizations",
+  "geoForManagers": "Geo for Managers and Coordinators",
+  "howToStart": "How to start"
 
 }

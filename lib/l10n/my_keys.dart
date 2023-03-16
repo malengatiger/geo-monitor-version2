@@ -188,5 +188,26 @@ class MyKeys {
     hashMap["stop"] =  "stop";
     hashMap["cancel"] =  "cancel";
     hashMap["restart"] =  "restart";
+
+    hashMap["projectLocationsAreas"] = "projectLocationsAreas";
+    hashMap["projectMonitoringAreas"] = "projectMonitoringAreas";
+    hashMap["organizationLocationsAreas"] = "organizationLocationsAreas";
+    hashMap["location"] = "location";
+    hashMap["area"] = "area";
+    hashMap["noPhotosInProject"] = "noPhotosInProject";
+    hashMap["noAudioInProject"] = "noAudioInProject";
+    hashMap["noVideosInProject"] = "noVideosInProject";
+    hashMap["settingSaved"] = "settingSaved";
+    hashMap["appInfo"] = "appInfo";
+    hashMap["whatGeoDo"] = "whatGeoDo";
+    hashMap["geoForOrg"] = "geoForOrg";
+    hashMap["geoForManagers"] = "geoForManagers";
+    hashMap["infoForManagers"] = "infoForManagers";
+    hashMap["infoForMonitors"] = "infoForMonitors";
+    hashMap["howToStart"] = "howToStart";
+    hashMap["thankYou"] = "thankYou";
+    hashMap["thankYouMessage"] = "thankYouMessage";
+    hashMap["networkUnavailable"] = "networkUnavailable";
+    hashMap["messageReceived"] = "messageReceived";
   }
 }

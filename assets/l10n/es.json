@@ -163,6 +163,26 @@
   "restart": "Reanudar",
   "projectAreas": "Áreas de Proyecto",
   "de": "Alemán",
-  "zh": "Chino"
+  "zh": "Chino",
+  "area": "Área $recuento",
+  "thankYou": "¡Gracias!",
+  "noAudioInProject": "No se encontraron clips de audio en el proyecto",
+  "appInfo": "Información de la aplicación",
+  "whatGeoDo": "¿Qué hace Geo?",
+  "thankYouMessage": "Gracias por llegar a este punto. ¡Agradecemos mucho su tiempo y esfuerzo y esperamos que disfrute de sus viajes con esta aplicación!",
+  "settingSaved": "Los ajustes se han guardado",
+  "projectMonitoringAreas": "Áreas de Seguimiento del Proyecto",
+  "networkUnavailable": "Red no disponible",
+  "projectLocationsAreas": "Ubicaciones y áreas del proyecto",
+  "organizationLocationsAreas": "Organizaciones Ubicaciones y Áreas",
+  "infoForManagers": "Información para Gerentes y Coordinadores",
+  "infoForMonitors": "Información para Ejecutivos y Dueños",
+  "noVideosInProject": "No se encontraron videos en el proyecto",
+  "messageReceived": "Mensaje recibido",
+  "noPhotosInProject": "No se encontraron fotos en el proyecto",
+  "location": "ubicación $ cuenta",
+  "geoForOrg": "Geo para Organizaciones",
+  "geoForManagers": "Geo para Gerentes y Coordinadores",
+  "howToStart": "Cómo empezar"
 
 }

@@ -161,7 +161,27 @@
   "restart": "Qala hape",
   "projectAreas": "Libaka tsa Morero",
   "de": "Sejeremane",
-  "zh": "Sechaena"
+  "zh": "Sechaena",
+  "area": "Sebaka sa $ palo",
+  "thankYou": "Kea leboha!",
+  "noAudioInProject": "Ha ho li-audio clips tse fumanoeng morerong",
+  "appInfo": "Lintlha tsa App",
+  "whatGeoDo": "Geo o etsa eng?",
+  "thankYouMessage": "Kea leboha le ho fihla ntlheng ena. Nako le boiteko ba hau li ananeloa haholo \u0027me re tšepa hore u tla thabela maeto a hau ka sesebelisoa sena!",
+  "settingSaved": "Litlhophiso li bolokiloe",
+  "projectMonitoringAreas": "Libaka tsa Tlhokomelo ea Morero",
+  "networkUnavailable": "Marang-rang ha a Fumaneha",
+  "projectLocationsAreas": "Libaka tsa Morero le Libaka",
+  "organizationLocationsAreas": "Mekhatlo Libaka le Libaka",
+  "infoForManagers": "Tlhahisoleseding bakeng sa Batsamaisi le Bahokahanyi",
+  "infoForMonitors": "Tlhahisoleseding bakeng sa Batsamaisi le Beng",
+  "noVideosInProject": "Ha ho lifitio tse fumanoeng morerong",
+  "messageReceived": "Molaetsa o amohetse",
+  "noPhotosInProject": "Ha ho linepe tse fumanoeng morerong",
+  "location": "Sebaka sa $count",
+  "geoForOrg": "Geo bakeng sa Mekhatlo",
+  "geoForManagers": "Geo bakeng sa Batsamaisi le Bahokahanyi",
+  "howToStart": "Mokhoa oa ho qala"
 
 
 }
