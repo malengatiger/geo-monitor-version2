@@ -168,6 +168,12 @@ TextStyle myTextStyleMediumPrimaryColor(BuildContext context) {
       fontWeight: FontWeight.normal,
       color: Theme.of(context).primaryColor);
 }
+TextStyle myTextStyleMediumBoldPrimaryColor(BuildContext context) {
+  return GoogleFonts.lato(
+      textStyle: Theme.of(context).textTheme.bodyMedium,
+      fontWeight: FontWeight.w900, fontSize: 16,
+      color: Theme.of(context).primaryColor);
+}
 
 TextStyle myTextStyleMediumBold(BuildContext context) {
   return GoogleFonts.lato(
@@ -765,6 +771,44 @@ pp(dynamic msg) {
 
 getRoundedBorder({required double radius}) {
   return RoundedRectangleBorder(borderRadius: BorderRadius.circular(radius));
+}
+
+String getFmtDate(String date, String locale) {
+  String mLocale = getValidLocale(locale);
+  DateTime now = DateTime.parse(date).toLocal();
+  String mDate = DateFormat.MMMMEEEEd(mLocale).format(now);
+  return mDate;
+}
+
+String getValidLocale(String locale) {
+  switch(locale) {
+    case 'af':
+      return 'en_ZA';
+    case 'en':
+      return 'en_ZA';
+    case 'es':
+      return 'es';
+    case 'pt':
+      return 'pt';
+    case 'fr':
+      return 'fr';
+    case 'st':
+      return 'en_ZA';
+    case 'ts':
+      return 'en_ZA';
+    case 'xh':
+      return 'en_ZA';
+    case 'zu':
+      return 'en_ZA';
+    case 'sn':
+      return 'en_GB';
+    case 'yo':
+      return 'en_ZA';
+    case 'sw':
+      return 'en_GB';
+    default:
+      return 'en';
+  }
 }
 
 String getHourMinuteSecond(Duration duration) {

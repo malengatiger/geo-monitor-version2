@@ -448,7 +448,8 @@ class _ActivityListTabletState extends State<ActivityListTablet>
                         },
                         child: activityStrings == null
                             ? const SizedBox()
-                            : ActivityStreamCard(
+                            : sett == null? const SizedBox(): ActivityStreamCard(
+                                locale: sett!.locale!,
                                 activityStrings: activityStrings!,
                                 activityModel: act,
                                 frontPadding: 36,
@@ -501,7 +502,8 @@ class _ActivityListTabletState extends State<ActivityListTablet>
                         },
                         child: activityStrings == null
                             ? const SizedBox()
-                            : ActivityStreamCard(
+                            : sett == null? const SizedBox():ActivityStreamCard(
+                                locale: sett!.locale!,
                                 activityStrings: activityStrings!,
                                 activityModel: act,
                                 frontPadding: 16,

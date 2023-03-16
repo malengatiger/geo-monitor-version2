@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:geo_monitor/library/data/activity_model.dart';
 import 'package:geo_monitor/library/functions.dart';
@@ -15,7 +14,7 @@ class ActivityStreamCard extends StatefulWidget {
       required this.frontPadding,
       required this.thinMode,
       required this.width,
-      required this.activityStrings})
+      required this.activityStrings, required this.locale})
       : super(key: key);
 
   final ActivityModel activityModel;
@@ -23,13 +22,13 @@ class ActivityStreamCard extends StatefulWidget {
   final bool thinMode;
   final double width;
   final ActivityStrings activityStrings;
+  final String locale;
 
   @override
   ActivityStreamCardState createState() => ActivityStreamCardState();
 }
 
 class ActivityStreamCardState extends State<ActivityStreamCard> {
-
   int count = 0;
 
   static const mm = '🌿🌿🌿🌿🌿🌿 ActivityStreamCard: 🌿 ';
@@ -37,15 +36,14 @@ class ActivityStreamCardState extends State<ActivityStreamCard> {
   @override
   void initState() {
     super.initState();
-
   }
 
   Widget _getUserAdded(Icon icon, String msg) {
     final localDate =
         DateTime.parse(widget.activityModel.date!).toLocal().toIso8601String();
-    final dt = getFormattedDateHourMinuteSecond(
-        date: DateTime.parse(localDate), context: context);
-        return widget.thinMode
+    final dt = getFmtDate(widget.activityModel.date!, widget.locale);
+
+    return widget.thinMode
         ? Card(
             shape: getRoundedBorder(radius: 16),
             child: Padding(
@@ -163,8 +161,8 @@ class ActivityStreamCardState extends State<ActivityStreamCard> {
                       child: Row(
                         children: [
                           Text(
-                            getFormattedDateShortWithTime(
-                                widget.activityModel.date!, context),
+                            getFmtDate(
+                                widget.activityModel.date!, widget.locale),
                             style: myTextStyleTiny(context),
                           )
                         ],
@@ -178,7 +176,6 @@ class ActivityStreamCardState extends State<ActivityStreamCard> {
   }
 
   Widget _getGeneric(Icon icon, String msg, double height) {
-
     return widget.thinMode
         ? ThinCard(
             model: widget.activityModel,
@@ -312,8 +309,8 @@ class ActivityStrings {
       requestMemberLocation,
       settingsChanged;
 
-  ActivityStrings({
-      required this.projectAdded,
+  ActivityStrings(
+      {required this.projectAdded,
       required this.projectLocationAdded,
       required this.projectAreaAdded,
       required this.at,

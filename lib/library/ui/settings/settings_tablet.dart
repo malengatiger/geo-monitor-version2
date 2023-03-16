@@ -10,6 +10,7 @@ import 'package:responsive_builder/responsive_builder.dart';
 
 import '../../../l10n/translation_handler.dart';
 import '../../data/location_response.dart';
+import '../../functions.dart';
 import '../maps/location_response_map.dart';
 
 class SettingsTablet extends StatefulWidget {
@@ -61,10 +62,13 @@ class SettingsTabletState extends State<SettingsTablet>
             children: [
               SizedBox(
                 width: size.width / 2,
-                child: const Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 8),
+                child:  Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8),
                   child: SettingsForm(
-                    padding: 32,
+                    padding: 32, onLocaleChanged: (String locale) {
+                      //todo - set texts
+                    _handleOnLocaleChanged(locale);
+                  },
                   ),
                 ),
               ),
@@ -95,9 +99,12 @@ class SettingsTabletState extends State<SettingsTablet>
           children: [
             SizedBox(
               width: (size.width / 2) + 48,
-              child: const Padding(
-                padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 8),
+              child:  Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8),
                 child: SettingsForm(
+                  onLocaleChanged: (locale){
+                    _handleOnLocaleChanged(locale);
+                  },
                   padding: 20,
                 ),
               ),
@@ -142,4 +149,9 @@ class SettingsTabletState extends State<SettingsTablet>
   showVideo(Video p1) {}
 
   showAudio(Audio p1) {}
+
+  void _handleOnLocaleChanged(String locale) {
+    pp('SettingsForm 😎😎😎😎 _handleOnLocaleChanged: $locale');
+    _getTitles();
+  }
 }

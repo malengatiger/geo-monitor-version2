@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:geo_monitor/library/ui/settings/settings_form.dart';
 
+import '../../../l10n/translation_handler.dart';
 import '../../data/project.dart';
 import '../../data/settings_model.dart';
 import '../../data/user.dart';
@@ -76,7 +77,7 @@ class SettingsMobileState extends State<SettingsMobile>
       appBar: AppBar(
         leading: const SizedBox(),
         title: Text(
-          'GeoMonitor Settings',
+          title == null ? 'Settings' : title!,
           style: myTextStyleLarge(context),
         ),
       ),
@@ -94,7 +95,17 @@ class SettingsMobileState extends State<SettingsMobile>
                     )),
               ),
             )
-          : const SettingsForm(padding: 20),
+          : SettingsForm(
+              onLocaleChanged: (locale) {
+                _handleOnLocaleChanged(locale);
+              },
+              padding: 20),
     ));
+  }
+
+  String? title;
+  void _handleOnLocaleChanged(String locale) async {
+    pp('SettingsForm 😎😎😎😎 _handleOnLocaleChanged: $locale');
+    title = await mTx.translate('settings', locale);
   }
 }
