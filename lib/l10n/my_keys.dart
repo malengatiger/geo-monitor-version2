@@ -146,6 +146,8 @@ class MyKeys {
     hashMap["yo"] = "yo";
     hashMap["ig"] = "ig";
     hashMap['xh'] = 'xh';
+    hashMap['de'] = 'de';
+    hashMap['zh'] = 'zh';
     hashMap['male'] = 'male';
     hashMap['female'] = 'female';
     hashMap["noActivities"] = "noActivities";

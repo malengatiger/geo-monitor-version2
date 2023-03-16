@@ -775,9 +775,18 @@ getRoundedBorder({required double radius}) {
 
 String getFmtDate(String date, String locale) {
   String mLocale = getValidLocale(locale);
+
   DateTime now = DateTime.parse(date).toLocal();
-  String mDate = DateFormat.MMMMEEEEd(mLocale).format(now);
-  return mDate;
+  final format = DateFormat("EEEE dd MMMM yyyy  HH:mm:ss", mLocale);
+  final formatUS = DateFormat("EEEE MMMM dd yyyy  HH:mm:ss", mLocale);
+  if (mLocale.contains('en_US')) {
+    final String result = formatUS.format(now);
+    return result;
+  } else {
+    final String result = format.format(now);
+    return result;
+  }
+
 }
 
 String getValidLocale(String locale) {
@@ -807,7 +816,7 @@ String getValidLocale(String locale) {
     case 'sw':
       return 'en_GB';
     default:
-      return 'en';
+      return 'en_US';
   }
 }
 

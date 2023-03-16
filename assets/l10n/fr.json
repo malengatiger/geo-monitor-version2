@@ -5,7 +5,6 @@
   "addProjectLocations": "Ajouter des emplacements de projet",
   "videos": "Vidéos",
   "administratorsMembers": "Administrateurs et membres",
-  "areas": "Zones",
   "photos": "Photos",
   "april": "Avril",
   "organizationMembers": "Membres de l\u0027organisation",
@@ -162,5 +161,7 @@
   "stop": "Arrêt",
   "restart": "Redémarrage",
   "projectAreas": "Domaines du projet",
-  "areas": "Zones"
+  "areas": "Zones",
+  "de": "Allemand",
+  "zh": "Chinois"
 }

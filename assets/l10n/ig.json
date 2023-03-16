@@ -5,7 +5,6 @@
   "addProjectLocations": "Tinye Ebe Project",
   "videos": "Vidiyo",
   "administratorsMembers": "Ndị nchịkwa \u0026 Ndị otu",
-  "areas": "Mpaghara",
   "photos": "Foto",
   "april": "Eprel",
   "organizationMembers": "Ndị otu nzukọ",
@@ -168,5 +167,7 @@
   "stop": "Kwụsị",
   "restart": "Malitegharịa ekwentị",
   "projectAreas": "Mpaghara oru ngo",
-  "areas": "Mpaghara"
+  "areas": "Mpaghara",
+  "de": "German",
+  "zh": "Chinese"
 }

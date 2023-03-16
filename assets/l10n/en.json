@@ -161,6 +161,8 @@
   "stop": "Stop",
   "restart": "Restart",
   "projectAreas": "Project Areas",
-  "areas": "Areas"
+  "areas": "Areas",
+  "de": "German",
+  "zh": "Chinese"
 
 }

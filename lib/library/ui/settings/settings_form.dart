@@ -672,17 +672,17 @@ class _SettingsFormState extends State<SettingsForm> {
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: [
                         LocaleChooser(
-                          onSelected: (locale) {
-                            _handleLocaleChange(locale);
+                          onSelected: (locale, language) {
+                            _handleLocaleChange(locale, language);
                           },
                           hint: hint == null ? 'Select Language' : hint!,
                         ),
                         const SizedBox(
                           width: 32,
                         ),
-                        selectedLocale == null
+                        translatedLanguage == null
                             ? const Text('No language')
-                            : Text(localeText, style: myTextStyleMediumBoldPrimaryColor(context),),
+                            : Text(translatedLanguage!, style: myTextStyleMediumBoldPrimaryColor(context),),
                       ],
                     ),
                   ),
@@ -707,8 +707,8 @@ class _SettingsFormState extends State<SettingsForm> {
       ),
     );
   }
-
-  void _handleLocaleChange(Locale locale) async {
+  String? translatedLanguage;
+  void _handleLocaleChange(Locale locale, String translatedLanguage) async {
     pp('$mm onLocaleChange ... going to ${locale.languageCode}');
     mTx.translate('settings',locale.toLanguageTag());
     var settings = await prefsOGx.getSettings();
@@ -721,6 +721,7 @@ class _SettingsFormState extends State<SettingsForm> {
     }
     setState(() {
       selectedLocale = locale;
+      this.translatedLanguage = translatedLanguage;
     });
     _setTitles();
     widget.onLocaleChanged(locale.languageCode);
@@ -731,7 +732,7 @@ class LocaleChooser extends StatefulWidget {
   const LocaleChooser({Key? key, required this.onSelected, required this.hint})
       : super(key: key);
 
-  final Function(Locale) onSelected;
+  final Function(Locale, String) onSelected;
   final String hint;
 
   @override
@@ -740,7 +741,7 @@ class LocaleChooser extends StatefulWidget {
 
 class LocaleChooserState extends State<LocaleChooser> {
   String? english, french, portuguese, ingala, sotho, spanish, swahili,
-  tsonga, xhosa, zulu, yoruba;
+  tsonga, xhosa, zulu, yoruba, afrikaans;
 
   @override
   void initState() {
@@ -751,6 +752,7 @@ class LocaleChooserState extends State<LocaleChooser> {
     var sett = await prefsOGx.getSettings();
     if (sett != null) {
       english = await mTx.translate('en', sett.locale!);
+      afrikaans = 'Afrikaans';
       french = await mTx.translate('fr', sett.locale!);
       portuguese = await mTx.translate('pt', sett.locale!);
       ingala = await mTx.translate('ig', sett.locale!);
@@ -772,6 +774,7 @@ class LocaleChooserState extends State<LocaleChooser> {
         hint: Text(widget.hint, style: myTextStyleSmall(context),),
         items:  [
           DropdownMenuItem(value: const Locale('en'), child: Text(english == null? 'English': english!)),
+          DropdownMenuItem(value: const Locale('af'), child: Text(afrikaans == null? 'Afrikaans': afrikaans!)),
           DropdownMenuItem(value: const Locale('fr'), child: Text(french == null? 'French': french!)),
           DropdownMenuItem(value: const Locale('pt'), child: Text(portuguese == null?'Portuguese': portuguese!)),
           DropdownMenuItem(value: const Locale('ig'), child: Text(ingala == null?'Ingala':ingala!)),
@@ -789,9 +792,45 @@ class LocaleChooserState extends State<LocaleChooser> {
   void onChanged(Locale? locale) {
     pp('LocaleChooser 🌀🌀🌀🌀:onChanged: selected locale: '
         '${locale.toString()}');
-    if (locale != null) {
-      widget.onSelected(locale);
+    var language = 'English';
+    switch(locale!.languageCode) {
+      case 'eng':
+        language = english!;
+        break;
+      case 'af':
+        language = afrikaans!;
+        break;
+      case 'fr':
+        language = french!;
+        break;
+      case 'pt':
+        language = portuguese!;
+        break;
+      case 'ig':
+        language = ingala!;
+        break;
+      case 'es':
+        language = spanish!;
+        break;
+      case 'st':
+        language = sotho!;
+        break;
+      case 'sw':
+        language = swahili!;
+        break;
+      case 'xh':
+        language = xhosa!;
+        break;
+      case 'zu':
+        language = zulu!;
+        break;
+      case 'yoruba':
+        language = yoruba!;
+        break;
     }
+
+      widget.onSelected(locale, language);
+
   }
 }
 

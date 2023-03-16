@@ -161,7 +161,9 @@
   "stop": "Stop",
   "restart": "Begin oor",
   "projectAreas": "Projekgebiede",
-  "areas": "Gebiede"
+  "areas": "Gebiede",
+  "de": "Duits",
+  "zh": "Chinese"
 
 
 }
