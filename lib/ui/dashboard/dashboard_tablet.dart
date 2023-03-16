@@ -163,7 +163,7 @@ class DashboardTabletState extends State<DashboardTablet> with WidgetsBindingObs
       settingsSubscriptionFCM = fcmBloc.settingsStream.listen((settings) async {
         pp('$mm: 🍎🍎 settings arrived with themeIndex: ${settings.themeIndex}... locale: ${settings.locale} 🍎🍎');
         Locale newLocale = Locale(settings.locale!);
-        mTx.initialize(locale: settings.locale!);
+        mTx.translate('settings', settings.locale!);
         final m = LocaleAndTheme(themeIndex: settings!.themeIndex!,
             locale: newLocale);
         themeBloc.themeStreamController.sink.add(m);

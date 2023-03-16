@@ -158,6 +158,8 @@
   "stopMessage": "Se você alterou o idioma do aplicativo, pressione o botão Parar e reinicie o aplicativo para usar o novo idioma. Se você cancelar, só verá as alterações após uma parada e início",
   "restartMessage": "Se você alterou o idioma do aplicativo, pressione o botão reiniciar e reinicie o aplicativo para usar o novo idioma. Se você cancelar, só verá as alterações após uma parada e início",
   "stop": "Parar",
-  "restart": "Reiniciar"
+  "restart": "Reiniciar",
+  "projectAreas": "Áreas do Projeto",
+  "areas": "Áreas"
 
 }

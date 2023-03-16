@@ -79,7 +79,7 @@ class _ActivityListTabletState extends State<ActivityListTablet>
   late StreamSubscription<SettingsModel> settingsSubscriptionFCM;
   late StreamSubscription<SettingsModel> settingsSubscription;
 
-
+  ActivityStrings? activityStrings;
   User? me;
   bool busy = true;
   final mm = '😎😎😎😎😎😎 ActivityListTablet: 😎 ';
@@ -92,8 +92,52 @@ class _ActivityListTabletState extends State<ActivityListTablet>
         reverseDuration: const Duration(milliseconds: 2000),
         vsync: this);
     super.initState();
+
+    _setTexts();
     _getData(true);
     _listenToStreams();
+  }
+
+  SettingsModel? sett;
+  Future _setTexts() async {
+    sett = await prefsOGx.getSettings();
+    if (sett != null) {
+      final projectAdded = await mTx.translate('projectAdded', sett!.locale!);
+      final projectLocationAdded =
+          await mTx.translate('projectLocationAdded', sett!.locale!);
+      final projectAreaAdded =
+          await mTx.translate('projectAreaAdded', sett!.locale!);
+      final memberAtProject =
+          await mTx.translate('memberAtProject', sett!.locale!);
+      final settingsChanged =
+          await mTx.translate('settingsChanged', sett!.locale!);
+      final memberAddedChanged =
+          await mTx.translate('memberAddedChanged', sett!.locale!);
+      final at = await mTx.translate('at', sett!.locale!);
+      final arr = await mTx.translate('arrivedAt', sett!.locale!);
+      final arrivedAt = arr.replaceAll('\$project', '');
+      final conditionAdded =
+          await mTx.translate('conditionAdded', sett!.locale!);
+      final memberLocationResponse =
+          await mTx.translate('memberLocationResponse', sett!.locale!);
+      final requestMemberLocation =
+          await mTx.translate('requestMemberLocation', sett!.locale!);
+
+      activityStrings = ActivityStrings(
+          projectAdded: projectAdded,
+          projectLocationAdded: projectLocationAdded,
+          projectAreaAdded: projectAreaAdded,
+          at: at,
+          memberLocationResponse: memberLocationResponse,
+          conditionAdded: conditionAdded,
+          arrivedAt: arrivedAt,
+          memberAtProject: memberAtProject,
+          memberAddedChanged: memberAddedChanged,
+          requestMemberLocation: requestMemberLocation,
+          settingsChanged: settingsChanged);
+
+      setState(() {});
+    }
   }
 
   @override
@@ -209,12 +253,12 @@ class _ActivityListTabletState extends State<ActivityListTablet>
     });
     settingsSubscription =
         organizationBloc.settingsStream.listen((SettingsModel event) async {
-          pp('$mm settingsSubscription: delivered settings, locale: ${event.locale}');
-          mTx.initialize(locale: event.locale);
-          await Future.delayed(const Duration(milliseconds: 100));
-          _getData(false);
-
-        });
+      pp('$mm settingsSubscription: delivered settings, locale: ${event.locale}');
+      await mTx.translate('settings', event.locale!);
+      _setTexts();
+      await Future.delayed(const Duration(milliseconds: 100));
+      _getData(false);
+    });
 
     subscription = fcmBloc.activityStream.listen((ActivityModel model) {
       pp('$mm activityStream delivered activity data ... '
@@ -272,10 +316,12 @@ class _ActivityListTabletState extends State<ActivityListTablet>
       setState(() {});
     }
   }
+
   void _sortAscending() {
     models.sort((a, b) => a.date!.compareTo(b.date!));
     sortedByDateAscending = true;
   }
+
   void _sortDescending() {
     models.sort((a, b) => b.date!.compareTo(a.date!));
     sortedByDateAscending = false;
@@ -400,13 +446,15 @@ class _ActivityListTabletState extends State<ActivityListTablet>
                         onTap: () {
                           _handleTappedActivity(act);
                         },
-                        child: ActivityStreamCard(
-                          settings: widget.settings,
-                          activityModel: act,
-                          frontPadding: 36,
-                          thinMode: widget.thinMode,
-                          width: widget.thinMode ? 320 : widget.width,
-                        ),
+                        child: activityStrings == null
+                            ? const SizedBox()
+                            : ActivityStreamCard(
+                                activityStrings: activityStrings!,
+                                activityModel: act,
+                                frontPadding: 36,
+                                thinMode: widget.thinMode,
+                                width: widget.thinMode ? 320 : widget.width,
+                              ),
                       );
                     }),
               ]),
@@ -451,13 +499,15 @@ class _ActivityListTabletState extends State<ActivityListTablet>
                         onTap: () {
                           _handleTappedActivity(act);
                         },
-                        child: ActivityStreamCard(
-                          settings: widget.settings,
-                          activityModel: act,
-                          frontPadding: 16,
-                          thinMode: widget.thinMode,
-                          width: widget.width,
-                        ),
+                        child: activityStrings == null
+                            ? const SizedBox()
+                            : ActivityStreamCard(
+                                activityStrings: activityStrings!,
+                                activityModel: act,
+                                frontPadding: 16,
+                                thinMode: widget.thinMode,
+                                width: widget.width,
+                              ),
                       );
                     }),
               ]),

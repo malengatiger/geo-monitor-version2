@@ -1,12 +1,8 @@
-import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:geo_monitor/library/bloc/organization_bloc.dart';
 import 'package:geo_monitor/library/data/activity_model.dart';
-import 'package:geo_monitor/library/data/settings_model.dart';
 import 'package:geo_monitor/library/functions.dart';
 
-import '../../l10n/translation_handler.dart';
 import '../../library/data/activity_type_enum.dart';
 import 'activity_cards.dart';
 
@@ -19,70 +15,29 @@ class ActivityStreamCard extends StatefulWidget {
       required this.frontPadding,
       required this.thinMode,
       required this.width,
-      required this.settings})
+      required this.activityStrings})
       : super(key: key);
 
   final ActivityModel activityModel;
   final double frontPadding;
   final bool thinMode;
   final double width;
-  final SettingsModel settings;
+  final ActivityStrings activityStrings;
 
   @override
   ActivityStreamCardState createState() => ActivityStreamCardState();
 }
 
 class ActivityStreamCardState extends State<ActivityStreamCard> {
-  String? projectAdded,
-      projectLocationAdded,
-      projectAreaAdded,
-      at,
-      memberLocationResponse,
-      conditionAdded,
-      arrivedAt,
-      memberAtProject,
-      memberAddedChanged,
-      requestMemberLocation,
-      settingsChanged;
 
   int count = 0;
 
   static const mm = '🌿🌿🌿🌿🌿🌿 ActivityStreamCard: 🌿 ';
-  late StreamSubscription<SettingsModel> settingsSubscription;
 
   @override
   void initState() {
     super.initState();
-    _listen();
-    _setTexts();
-  }
 
-  void _listen() async {
-    settingsSubscription = organizationBloc.settingsStream.listen((event) {
-      pp('\n$mm settingsSubscription delivered settings object, 🍎🍎🍎 will update translations');
-      _setTexts();
-    });
-  }
-
-  void _setTexts() async {
-    projectAdded = await mTx.translate('projectAdded', widget.settings.locale!);
-    projectLocationAdded =
-        await mTx.translate('projectLocationAdded', widget.settings.locale!);
-    projectAreaAdded =
-        await mTx.translate('projectAreaAdded', widget.settings.locale!);
-    memberAtProject = await mTx.translate('memberAtProject', widget.settings.locale!);
-    settingsChanged = await mTx.translate('settingsChanged', widget.settings.locale!);
-    memberAddedChanged =
-        await mTx.translate('memberAddedChanged', widget.settings.locale!);
-    at = await mTx.translate('at', widget.settings.locale!);
-    var arr = await mTx.translate('arrivedAt', widget.settings.locale!);
-    if (widget.activityModel.projectName != null) {
-      arrivedAt =
-          arr.replaceAll('\$project', widget.activityModel.projectName!);
-    }
-    conditionAdded = await mTx.translate('conditionAdded', widget.settings.locale!);
-    memberLocationResponse =
-        await mTx.translate('memberLocationResponse', widget.settings.locale!);
   }
 
   Widget _getUserAdded(Icon icon, String msg) {
@@ -241,16 +196,15 @@ class ActivityStreamCardState extends State<ActivityStreamCard> {
 
   @override
   Widget build(BuildContext context) {
-    count++;
     late Icon icon;
     late String message;
 
     switch (widget.activityModel.activityType!) {
       case ActivityType.projectAdded:
         icon = Icon(Icons.access_time, color: Theme.of(context).primaryColor);
-        message = projectAdded == null
+        message = widget.activityStrings.projectAdded == null
             ? 'Project added: ${widget.activityModel.projectName}'
-            : '$projectAdded: ${widget.activityModel.projectName}';
+            : '${widget.activityStrings.projectAdded}: ${widget.activityModel.projectName}';
         return _getGeneric(icon, message, 80.0);
 
       case ActivityType.photoAdded:
@@ -276,38 +230,38 @@ class ActivityStreamCardState extends State<ActivityStreamCard> {
 
       case ActivityType.userAddedOrModified:
         icon = Icon(Icons.person, color: Theme.of(context).primaryColor);
-        message = memberAddedChanged == null
+        message = widget.activityStrings.memberAddedChanged == null
             ? 'Added, modified or signed in'
-            : memberAddedChanged!;
+            : widget.activityStrings.memberAddedChanged!;
         return _getUserAdded(icon, message);
 
       case ActivityType.positionAdded:
         icon = Icon(Icons.home, color: Theme.of(context).primaryColor);
-        message = projectLocationAdded == null
+        message = widget.activityStrings.projectLocationAdded == null
             ? 'Location added: ${widget.activityModel.projectName}'
-            : '$projectLocationAdded: ${widget.activityModel.projectName}';
+            : '${widget.activityStrings.projectLocationAdded}: ${widget.activityModel.projectName}';
         return _getGeneric(icon, message, 140);
 
       case ActivityType.polygonAdded:
         icon =
             Icon(Icons.circle_outlined, color: Theme.of(context).primaryColor);
-        message = projectAreaAdded == null
+        message = widget.activityStrings.projectAreaAdded == null
             ? 'Area added: ${widget.activityModel.projectName}'
-            : '$projectAreaAdded ${widget.activityModel.projectName}';
+            : '${widget.activityStrings.projectAreaAdded} ${widget.activityModel.projectName}';
         return _getGeneric(icon, message, 100);
 
       case ActivityType.settingsChanged:
         icon = Icon(Icons.settings, color: Theme.of(context).primaryColor);
-        message = settingsChanged == null
+        message = widget.activityStrings.settingsChanged == null
             ? 'Settings changed or added'
-            : settingsChanged!;
+            : widget.activityStrings.settingsChanged!;
         return _getGeneric(icon, message, 80);
 
       case ActivityType.geofenceEventAdded:
         icon = Icon(Icons.person_2, color: Theme.of(context).primaryColor);
-        message = arrivedAt == null
+        message = widget.activityStrings.arrivedAt == null
             ? 'at: ${widget.activityModel.geofenceEvent!.projectName!}'
-            : '$arrivedAt';
+            : '${widget.activityStrings.arrivedAt} - ${widget.activityModel.geofenceEvent?.projectName!}';
         return _getUserAdded(icon, message);
 
       case ActivityType.conditionAdded:
@@ -317,17 +271,17 @@ class ActivityStreamCardState extends State<ActivityStreamCard> {
 
       case ActivityType.locationRequest:
         icon = Icon(Icons.location_on, color: Theme.of(context).primaryColor);
-        message = requestMemberLocation == null
+        message = widget.activityStrings.requestMemberLocation == null
             ? 'Location requested from ${widget.activityModel.locationRequest!.userName}'
-            : '$requestMemberLocation ${widget.activityModel.locationRequest!.userName}';
+            : '${widget.activityStrings.requestMemberLocation} ${widget.activityModel.locationRequest!.userName}';
         return _getGeneric(icon, message, 120);
 
       case ActivityType.locationResponse:
         icon =
             Icon(Icons.location_history, color: Theme.of(context).primaryColor);
-        message = memberLocationResponse == null
+        message = widget.activityStrings.memberLocationResponse == null
             ? 'Location request responded to by ${widget.activityModel.locationResponse!.userName}'
-            : '$memberLocationResponse : ${widget.activityModel.locationResponse!.userName}';
+            : '${widget.activityStrings.memberLocationResponse} : ${widget.activityModel.locationResponse!.userName}';
         return _getGeneric(icon, message, 140);
 
       case ActivityType.kill:
@@ -343,4 +297,31 @@ class ActivityStreamCardState extends State<ActivityStreamCard> {
         );
     }
   }
+}
+
+class ActivityStrings {
+  late String? projectAdded,
+      projectLocationAdded,
+      projectAreaAdded,
+      at,
+      memberLocationResponse,
+      conditionAdded,
+      arrivedAt,
+      memberAtProject,
+      memberAddedChanged,
+      requestMemberLocation,
+      settingsChanged;
+
+  ActivityStrings({
+      required this.projectAdded,
+      required this.projectLocationAdded,
+      required this.projectAreaAdded,
+      required this.at,
+      required this.memberLocationResponse,
+      required this.conditionAdded,
+      required this.arrivedAt,
+      required this.memberAtProject,
+      required this.memberAddedChanged,
+      required this.requestMemberLocation,
+      required this.settingsChanged});
 }

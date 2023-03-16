@@ -158,5 +158,7 @@
   "stopMessage": "Ti o ba ti yi ede app naa pada jọwọ tẹ bọtini iduro naa lẹhinna tun bẹrẹ app naa lati lo ede tuntun naa. Ti o ba fagilee iwọ yoo rii awọn ayipada nikan lẹhin iduro ni kikun ati bẹrẹ",
   "restartMessage": "Ti o ba ti yi ede app naa pada jọwọ tẹ bọtini atunbẹrẹ lẹhinna tun app naa bẹrẹ lati lo ede tuntun naa. Ti o ba fagilee iwọ yoo rii awọn ayipada nikan lẹhin iduro ni kikun ati bẹrẹ",
   "stop": "Duro",
-  "restart": "Tun bẹrẹ"
+  "restart": "Tun bẹrẹ",
+  "projectAreas": "Awọn agbegbe Ise agbese",
+  "areas": "Awọn agbegbe"
 }

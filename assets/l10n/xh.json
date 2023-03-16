@@ -158,5 +158,7 @@
   "stopMessage": "Ukuba ulutshintshile ulwimi lwe-app nceda ucofe iqhosha lokumisa kwaye uqalise kwakhona usetyenziso ukusebenzisa ulwimi olutsha. Ukuba uyarhoxisa uya kubona utshintsho kuphela emva kokumisa ngokupheleleyo kwaye uqale",
   "restartMessage": "Ukuba ulutshintshile ulwimi lwe-app nceda ucofe iqhosha lokuqalisa kwakhona kwaye uqalise kwakhona usetyenziso ukusebenzisa ulwimi olutsha. Ukuba uyarhoxisa uya kubona utshintsho kuphela emva kokumisa ngokupheleleyo kwaye uqale",
   "stop": "Yeka",
-  "restart": "Phinda Uqalele"
+  "restart": "Phinda Uqalele",
+  "projectAreas": "IiNdawo zeProjekthi",
+  "areas": "Iindawo"
 }

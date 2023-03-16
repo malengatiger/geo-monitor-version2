@@ -159,6 +159,8 @@
   "stopMessage": "If you have changed the language of the app please press the stop button and then restart the app to use the new language. If you cancel you will only see the changes after a full stop and start",
   "restartMessage": "If you have changed the language of the app please press the restart button and then restart the app to use the new language. If you cancel you will only see the changes after a full stop and start",
   "stop": "Stop",
-  "restart": "Restart"
+  "restart": "Restart",
+  "projectAreas": "Project Areas",
+  "areas": "Areas"
 
 }

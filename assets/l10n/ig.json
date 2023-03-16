@@ -166,5 +166,7 @@
   "stopMessage": "Ọ bụrụ na ị gbanweela asụsụ nke ngwa, biko pịa bọtịnụ nkwụsị wee malitegharịa ngwa ka iji asụsụ ọhụrụ. Ọ bụrụ na ịkagbu, ị ga-ahụ mgbanwe naanị mgbe nkwụsị zuru oke wee malite",
   "restartMessage": "Ọ bụrụ na ị gbanweela asụsụ nke ngwa, biko pịa bọtịnụ mmalite wee malitegharịa ngwa ka iji asụsụ ọhụrụ. Ọ bụrụ na ịkagbu, ị ga-ahụ mgbanwe naanị mgbe nkwụsị zuru oke wee malite",
   "stop": "Kwụsị",
-  "restart": "Malitegharịa ekwentị"
+  "restart": "Malitegharịa ekwentị",
+  "projectAreas": "Mpaghara oru ngo",
+  "areas": "Mpaghara"
 }

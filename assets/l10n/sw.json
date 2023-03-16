@@ -158,5 +158,7 @@
   "stopMessage": "Ikiwa umebadilisha lugha ya programu tafadhali bonyeza kitufe cha kusitisha kisha uanze upya programu ili kutumia lugha mpya. Ukighairi utaona mabadiliko tu baada ya kusimama kabisa na kuanza",
   "restartMessage": "Ikiwa umebadilisha lugha ya programu tafadhali bonyeza kitufe cha kuwasha upya kisha uwashe upya programu ili kutumia lugha mpya. Ukighairi utaona mabadiliko tu baada ya kusimama kabisa na kuanza",
   "stop": "Acha",
-  "restart": "Anzisha tena"
+  "restart": "Anzisha tena",
+  "projectAreas": "Maeneo ya Mradi",
+  "areas": "Maeneo"
 }

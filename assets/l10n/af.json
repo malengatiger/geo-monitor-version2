@@ -159,7 +159,9 @@
   "stopMessage": "As jy die taal van die toepassing verander het, druk asseblief die stopknoppie en herbegin dan die toepassing om die nuwe taal te gebruik. As jy kanselleer sal jy eers die veranderinge sien na \u0027n punt en begin",
   "restartMessage": "As jy die taal van die toepassing verander het, druk asseblief die herbegin-knoppie en herbegin dan die toepassing om die nuwe taal te gebruik. As jy kanselleer sal jy eers die veranderinge sien na \u0027n punt en begin",
   "stop": "Stop",
-  "restart": "Begin oor"
+  "restart": "Begin oor",
+  "projectAreas": "Projekgebiede",
+  "areas": "Gebiede"
 
 
 }

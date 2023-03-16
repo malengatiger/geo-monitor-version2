@@ -19,7 +19,8 @@ class MyKeys {
     hashMap['addProjectLocations'] = 'addProjectLocations';
     hashMap['videos'] = 'videos';
     hashMap['administratorsMembers'] = 'administratorsMembers';
-    hashMap['areas'] = 'areas';
+    hashMap["projectAreas"] = "projectAreas";
+    hashMap["areas"] = "areas";
     hashMap['photos'] = 'photos';
     hashMap['april'] = 'april';
     hashMap['organizationMembers'] = 'organizationMembers';

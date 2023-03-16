@@ -158,5 +158,7 @@
   "stopMessage": "Kana wachinja mutauro weapp ndapota tinya bhatani rekumisa wobva watangazve app kuti ushandise mutauro mutsva. Kana ukakanzura unongoona shanduko mushure mekumira kwakazara uye wotanga",
   "restartMessage": "Kana wachinja mutauro weapp ndapota tinya bhatani rekutanga wobva watangazve app kuti ushandise mutauro mutsva. Kana ukakanzura unongoona shanduko mushure mekumira kwakazara uye wotanga",
   "stop": "Mira",
-  "restart": "Restart"
+  "restart": "Restart",
+  "projectAreas": "Nzvimbo dzeProjekti",
+  "areas": "Nzvimbo"
 }

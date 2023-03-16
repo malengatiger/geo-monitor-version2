@@ -160,5 +160,7 @@
   "stopMessage": "Si vous avez changé la langue de l\u0027application, appuyez sur le bouton d\u0027arrêt, puis redémarrez l\u0027application pour utiliser la nouvelle langue. Si vous annulez, vous ne verrez les modifications qu\u0027après un arrêt complet et un redémarrage",
   "restartMessage": "Si vous avez changé la langue de l\u0027application, appuyez sur le bouton de redémarrage, puis redémarrez l\u0027application pour utiliser la nouvelle langue. Si vous annulez, vous ne verrez les modifications qu\u0027après un arrêt complet et un redémarrage",
   "stop": "Arrêt",
-  "restart": "Redémarrage"
+  "restart": "Redémarrage",
+  "projectAreas": "Domaines du projet",
+  "areas": "Zones"
 }

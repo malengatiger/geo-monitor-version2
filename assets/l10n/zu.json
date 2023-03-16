@@ -158,5 +158,7 @@
   "stopMessage": "Uma ushintshe ulimi lohlelo lokusebenza sicela ucindezele inkinobho yokumisa bese uqala kabusha uhlelo lokusebenza ukuze usebenzise ulimi olusha. Uma ukhansela uzobona izinguquko kuphela ngemva kokuma futhi uqale",
   "restartMessage": "Uma ushintshe ulimi lohlelo lokusebenza sicela ucindezele inkinobho yokuqalisa kabusha bese uqala kabusha uhlelo lokusebenza ukuze usebenzise ulimi olusha. Uma ukhansela uzobona izinguquko kuphela ngemva kokuma futhi uqale",
   "stop": "Ima",
-  "restart": "Qala kabusha"
+  "restart": "Qala kabusha",
+  "projectAreas": "Izindawo zephrojekthi",
+  "areas": "Izindawo"
 }

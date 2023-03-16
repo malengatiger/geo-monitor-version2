@@ -3,7 +3,6 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:geo_monitor/l10n/my_keys.dart';
-import 'package:geo_monitor/library/api/prefs_og.dart';
 
 import '../library/functions.dart';
 
@@ -24,26 +23,15 @@ class TranslationHandler {
   static const mm = '🌎🔵 mtX: ';
   String? currentLocale;
 
-  void initialize({String? locale}) async {
-    localeMap.clear();
-    if (locale != null) {
-       await translate('settings', locale);
-       return;
-    }
-    var sett = await prefsOGx.getSettings();
-    if (sett != null) {
-      await translate('settings', sett.locale!);
-    } else {
-      await translate('settings', 'en');
-    }
-  }
 
   Future<String> translate(String key, String locale) async {
-      if (localeMap.isEmpty || currentLocale == null) {
-        await _loadFile(locale, localeMap);
+    pp('$mm translate $key using locale: $locale, will clear current locale strings');
+
+    if (localeMap.isEmpty) {
+        await _loadFile(locale);
       } else {
         if (locale != currentLocale) {
-          await _loadFile(locale, localeMap);
+          await _loadFile(locale);
         }
       }
       final value = localeMap[key];
@@ -54,27 +42,29 @@ class TranslationHandler {
   }
 
 
-  _loadFile(String locale,HashMap<String,String> hashMap) async {
-    pp('$mm loading locale strings for $locale, will clear current locale strings');
-    hashMap.clear();
+  _loadFile(String locale) async {
+    pp('$mm loading locale strings for $locale, will clear current locale $currentLocale strings');
+
+    localeMap.clear();
     var start = DateTime.now();
     var s = await getStringFromAssets(locale);
     var mJson = jsonDecode(s);
-    pp(mJson);
-    final map = MyKeys.getKeys();
 
-    map.forEach((key, value) {
+    final translationKeys = MyKeys.getKeys();
+
+    translationKeys.forEach((key, value) {
       try {
-        hashMap[key] = mJson[key];
+        localeMap[key] = mJson[key];
       } catch (e) {
-        pp('$mm $e key: $key');
+        pp('$mm $e key with error: $key');
+        rethrow;
       }
     });
     currentLocale = locale;
     pp('$mm LOCALE MAP built ..... from file contents: ${s.length} bytes');
     var end = DateTime.now();
-    pp('$mm currentLocale $currentLocale '
-        'has ${hashMap.length} translation strings; 🔵 '
+    pp('$mm currentLocale $locale '
+        'has ${localeMap.length} translation strings; 🔵 '
         'time elapsed: ${end.difference(start).inMilliseconds} milliseconds');
   }
 }

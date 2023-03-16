@@ -158,5 +158,7 @@
   "stopMessage": "Loko u cince ririmi ra app hi kombela u tshikilela stop button ivi u sungula app nakambe leswaku u tirhisa ririmi lerintshwa. Loko u khansela u ta vona ntsena ku cinca endzhaku ka ku yima loku heleleke ivi u sungula",
   "restartMessage": "Loko u cince ririmi ra app hi kombela u cinca button yo sungula nakambe ivi u sungula app nakambe leswaku u tirhisa ririmi lerintshwa. Loko u khansela u ta vona ntsena ku cinca endzhaku ka ku yima loku heleleke ivi u sungula",
   "stop": "Yima",
-  "restart": "Sungula nakambe"
+  "restart": "Sungula nakambe",
+  "projectAreas": "Tindhawu ta Phurojeke",
+  "areas": "Tindhawu"
 }

@@ -85,8 +85,10 @@ void main() async {
 
   await Hive.initFlutter(hiveName);
 
-  mTx.initialize();
-  pp('$mx $heartBlue translation service initialization started!');
+  if (settings != null) {
+    mTx.translate('settings', settings!.locale!);
+    pp('$mx $heartBlue translation service initialization started for locale ${settings!.locale!}');
+  }
 
   await SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
