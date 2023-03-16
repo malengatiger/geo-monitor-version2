@@ -181,5 +181,14 @@
   "location": "Mahali $count",
   "geoForOrg": "Geo kwa Mashirika",
   "geoForManagers": "Geo kwa Wasimamizi na Waratibu",
-  "howToStart": "Jinsi ya kuanza"
+  "howToStart": "Jinsi ya kuanza",
+  "uploadAudioClip": "Pakia Klipu ya Sauti",
+  "recordAudioClip": "Rekodi Klipu ya Sauti",
+  "playVideo": "Cheza Video",
+  "playAudioClip": "Cheza Klipu ya Sauti",
+  "recordVideo": "Rekodi Video",
+  "takePicture": "Kuchukua picha",
+  "takePhoto": "Piga picha",
+  "uploadVideo": "Pakia Video",
+  "elapsedTime": "Muda Uliopita"
 }

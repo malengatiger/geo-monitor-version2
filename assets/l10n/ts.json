@@ -181,5 +181,14 @@
   "location": "Ndhawu $count",
   "geoForOrg": "Geo ya Tinhlengeletano",
   "geoForManagers": "Geo ya Vafambisi na Vahlanganisi",
-  "howToStart": "Ndlela yo sungula"
+  "howToStart": "Ndlela yo sungula",
+  "uploadAudioClip": "Layicha Xiphemu xa Audio",
+  "recordAudioClip": "Rekhoda Xiphemu xa Mpfumawulo",
+  "playVideo": "Tlanga Vhidiyo",
+  "playAudioClip": "Tlanga Xiphemu xa Audio",
+  "recordVideo": "Rekhoda Vhidiyo",
+  "takePicture": "Teka Xifaniso",
+  "takePhoto": "Teka Xifaniso",
+  "uploadVideo": "Upload Video",
+  "elapsedTime": "Nkarhi Lowu Hundzeke"
 }

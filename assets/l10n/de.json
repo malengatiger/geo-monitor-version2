@@ -189,5 +189,14 @@
   "location": "Standort $count",
   "geoForOrg": "Geo für Organisationen",
   "geoForManagers": "Geo für Manager und Koordinatoren",
-  "howToStart": "Wie man anfängt"
+  "howToStart": "Wie man anfängt",
+  "uploadAudioClip": "Audioclip hochladen",
+  "recordAudioClip": "Audioclip aufnehmen",
+  "playVideo": "Video abspielen",
+  "playAudioClip": "Audioclip abspielen",
+  "recordVideo": "Ein Video aufnehmen",
+  "takePicture": "Ein Bild machen",
+  "takePhoto": "Foto machen",
+  "uploadVideo": "Video hochladen",
+  "elapsedTime": "Verstrichene Zeit"
 }

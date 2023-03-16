@@ -11,6 +11,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:uuid/uuid.dart';
 
 import '../../../device_location/device_location_bloc.dart';
+import '../../../l10n/translation_handler.dart';
 import '../../api/data_api.dart';
 import '../../api/prefs_og.dart';
 import '../../bloc/project_bloc.dart';
@@ -54,7 +55,36 @@ class ProjectPolygonMapMobileState extends State<ProjectPolygonMapMobile>
   var projectPolygons = <ProjectPolygon>[];
   var projectPositions = <ProjectPosition>[];
 
+  String? title, area, areas;
+
   User? user;
+  @override
+  void initState() {
+    _animationController = AnimationController(
+        value: 0.0,
+        duration: const Duration(milliseconds: 2000),
+        reverseDuration: const Duration(milliseconds: 1500),
+        vsync: this);
+    super.initState();
+    _setTexts();
+    _getData(false);
+  }
+
+  @override
+  void dispose() {
+    _animationController.dispose();
+    super.dispose();
+  }
+
+  void _setTexts() async {
+    var sett = await prefsOGx.getSettings();
+    if (sett != null) {
+      title = await mTx.translate('projectMonitoringAreas', sett.locale!);
+      areas = await mTx.translate('areas', sett.locale!);
+      var x = await mTx.translate('area', sett.locale!);
+      area = x.replaceAll('$count', '');
+    }
+  }
 
   void _getData(bool forceRefresh) async {
     setState(() {
@@ -96,7 +126,10 @@ class ProjectPolygonMapMobileState extends State<ProjectPolygonMapMobile>
       var marker = Marker(
           position: LatLng(pos.position!.coordinates.elementAt(1),
               pos.position!.coordinates.elementAt(0)),
-          markerId: MarkerId(DateTime.now().toIso8601String()));
+          markerId: MarkerId(DateTime.now().toIso8601String()), infoWindow: InfoWindow(
+        title: widget.project.name, snippet: widget.project.description,
+        onTap: _onMarkerTapped,
+      ));
       _positionMarkers.add(marker);
     }
     pp('$mm _addMarkers: 🍏project markers added.: '
@@ -127,23 +160,6 @@ class ProjectPolygonMapMobileState extends State<ProjectPolygonMapMobile>
         '🔵 ${_polygons.length} points in polygon ...');
     _animateCamera(zoom: 12.6, position: projectPolygons.first.positions.first);
     setState(() {});
-  }
-
-  @override
-  void initState() {
-    _animationController = AnimationController(
-        value: 0.0,
-        duration: const Duration(milliseconds: 2000),
-        reverseDuration: const Duration(milliseconds: 1500),
-        vsync: this);
-    super.initState();
-    _getData(false);
-  }
-
-  @override
-  void dispose() {
-    _animationController.dispose();
-    super.dispose();
   }
 
   GoogleMapController? googleMapController;
@@ -188,7 +204,7 @@ class ProjectPolygonMapMobileState extends State<ProjectPolygonMapMobile>
     _myPoints.add(latLng);
     pp('$mm Polygon has collected ${_myPoints.length} ');
     showToast(
-        toastGravity: ToastGravity.TOP,
+        toastGravity: ToastGravity.CENTER_LEFT,
         textStyle: myTextStyleSmall(context),
         backgroundColor: Theme.of(context).primaryColor,
         message: 'Area point no. ${_myPoints.length}',
@@ -273,15 +289,6 @@ class ProjectPolygonMapMobileState extends State<ProjectPolygonMapMobile>
           elevation: 0.0,
           titleSpacing: 10.0,
           centerTitle: true,
-          // leading: InkWell(
-          //   onTap: () {
-          //     Navigator.pop(context);
-          //   },
-          //   child:  Icon(
-          //     Icons.arrow_back_ios,
-          //     color: Theme.of(context).primaryColor,
-          //   ),
-          // ),
           bottom: PreferredSize(
             preferredSize: const Size.fromHeight(120),
             child: Column(
@@ -290,7 +297,7 @@ class ProjectPolygonMapMobileState extends State<ProjectPolygonMapMobile>
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Text(
-                      'Project Monitoring Areas',
+                      title == null ? 'Project Monitoring Areas' : title!,
                       style: myTextStyleLarge(context),
                     ),
                     const SizedBox(
@@ -323,6 +330,8 @@ class ProjectPolygonMapMobileState extends State<ProjectPolygonMapMobile>
                       width: 16,
                     ),
                     ProjectPolygonChooser(
+                      area: area == null? 'Area': area!,
+                        areas: areas == null? 'Areas': areas!,
                         projectPolygons: projectPolygons,
                         onSelected: onSelected),
                     const SizedBox(
@@ -429,14 +438,23 @@ class ProjectPolygonMapMobileState extends State<ProjectPolygonMapMobile>
   onSelected(Position p1) {
     _animateCamera(zoom: 14.6, position: p1);
   }
+
+  void _onMarkerTapped() {
+    pp('$mm marker tapped');
+  }
 }
 
 class ProjectPolygonChooser extends StatelessWidget {
   const ProjectPolygonChooser(
-      {Key? key, required this.projectPolygons, required this.onSelected})
+      {Key? key,
+      required this.projectPolygons,
+      required this.onSelected,
+      required this.area,
+      required this.areas})
       : super(key: key);
   final List<ProjectPolygon> projectPolygons;
   final Function(local.Position) onSelected;
+  final String area, areas;
 
   @override
   Widget build(BuildContext context) {
@@ -456,7 +474,7 @@ class ProjectPolygonChooser extends StatelessWidget {
           child: Row(
             children: [
               Text(
-                'Area No. ',
+                area,
                 style: myTextStyleSmall(context),
               ),
               const SizedBox(
@@ -472,8 +490,7 @@ class ProjectPolygonChooser extends StatelessWidget {
       );
     }
     return DropdownButton(
-        hint: Text(
-          'Areas',
+        hint: Text(areas,
           style: myTextStyleSmall(context),
         ),
         items: menuItems,

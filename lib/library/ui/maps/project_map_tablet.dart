@@ -13,6 +13,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:uuid/uuid.dart';
 
 import '../../../device_location/device_location_bloc.dart';
+import '../../../l10n/translation_handler.dart';
 import '../../api/data_api.dart';
 import '../../data/city.dart';
 import '../../data/photo.dart';
@@ -62,7 +63,7 @@ class ProjectMapTabletState extends State<ProjectMapTablet>
   late StreamSubscription<ProjectPolygon> _polygonStreamSubscription;
   GoogleMapController? googleMapController;
   double _longPressLat = 0.0, _longPressLng = 0.0;
-  String? address;
+  String? address, projectLocationsAreas, locations, location;
 
   @override
   void initState() {
@@ -72,6 +73,7 @@ class ProjectMapTabletState extends State<ProjectMapTablet>
         reverseDuration: const Duration(milliseconds: 1500),
         vsync: this);
     super.initState();
+    _setTexts();
     _getUser();
     _setMarkerIcon();
     _listen();
@@ -158,6 +160,16 @@ class ProjectMapTabletState extends State<ProjectMapTablet>
 
     setState(() {});
   }
+  void _setTexts() async {
+    var sett = await prefsOGx.getSettings();
+    if (sett != null) {
+      projectLocationsAreas = await mTx.translate('projectLocationsAreas', sett!.locale!);
+      var loc = await mTx.translate('location', sett!.locale!);
+      location = loc.replaceAll('\$count', '');
+      locations = await mTx.translate('locations', sett!.locale!);
+    }
+
+  }
 
   Future _refreshData(bool forceRefresh) async {
     setState(() {
@@ -216,8 +228,9 @@ class ProjectMapTabletState extends State<ProjectMapTablet>
         ),
         infoWindow: InfoWindow(
             title: projectPosition.projectName,
-            snippet:
-                'Project Location #$cnt of ${projectPositions.length} Here'),
+            snippet: location == null?
+                'Location #$cnt' :
+        '$location $cnt'),
         onTap: () {
           _onMarkerTapped(projectPosition);
         },
@@ -392,8 +405,8 @@ class ProjectMapTabletState extends State<ProjectMapTablet>
       child: Scaffold(
         key: _key,
         appBar: AppBar(
-          title: Text(
-            'Project Locations & Areas',
+          title: Text(projectLocationsAreas == null?
+            'Project Locations & Areas': projectLocationsAreas!,
             style: myTextStyleLarge(context),
           ),
           actions: [
@@ -426,7 +439,9 @@ class ProjectMapTabletState extends State<ProjectMapTablet>
                     const SizedBox(
                       width: 28,
                     ),
-                    ProjectPositionChooser(
+                    locations == null? const SizedBox(): ProjectPositionChooser(
+                        location: location!,
+                        locations: locations!,
                         projectPositions: projectPositions,
                         projectPolygons: projectPolygons,
                         onSelected: _onSelected),
@@ -721,11 +736,12 @@ class ProjectPositionChooser extends StatelessWidget {
       {Key? key,
       required this.projectPositions,
       required this.projectPolygons,
-      required this.onSelected})
+      required this.onSelected, required this.location, required this.locations})
       : super(key: key);
   final List<ProjectPosition> projectPositions;
   final List<ProjectPolygon> projectPolygons;
   final Function(local.Position) onSelected;
+  final String location, locations;
   @override
   Widget build(BuildContext context) {
     var list = <local.Position>[];
@@ -748,8 +764,7 @@ class ProjectPositionChooser extends StatelessWidget {
           value: pos,
           child: Row(
             children: [
-              Text(
-                'Location No. ',
+              Text(location,
                 style: myTextStyleSmall(context),
               ),
               const SizedBox(
@@ -765,8 +780,7 @@ class ProjectPositionChooser extends StatelessWidget {
       );
     }
     return DropdownButton(
-        hint: Text(
-          'Locations',
+        hint: Text(locations,
           style: myTextStyleSmall(context),
         ),
         items: menuItems,

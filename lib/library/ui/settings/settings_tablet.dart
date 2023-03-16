@@ -76,7 +76,7 @@ class SettingsTabletState extends State<SettingsTablet>
                 width: 24.0,
               ),
               GeoActivity(
-                  width: (size.width / 2) - 80,
+                  width: (size.width / 2) - 60,
                   thinMode: false,
                   showPhoto: showPhoto,
                   showVideo: showVideo,

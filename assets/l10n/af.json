@@ -183,7 +183,16 @@
   "location": "Ligging $telling",
   "geoForOrg": "Geo vir organisasies",
   "geoForManagers": "Geo vir Bestuurders en Koördineerders",
-  "howToStart": "Hoe om te begin"
+  "howToStart": "Hoe om te begin",
+  "uploadAudioClip": "Laai oudiosnit op",
+  "recordAudioClip": "Neem oudiosnit op",
+  "playVideo": "Speel video",
+  "playAudioClip": "Speel oudiosnit",
+  "recordVideo": "Neem video op",
+  "takePicture": "Neem Foto",
+  "takePhoto": "Neem \u0027n foto",
+  "uploadVideo": "Laai video op",
+  "elapsedTime": "Verstreke Tyd"
 
 
 }

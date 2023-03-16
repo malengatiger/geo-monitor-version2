@@ -181,7 +181,17 @@
   "location": "Sebaka sa $count",
   "geoForOrg": "Geo bakeng sa Mekhatlo",
   "geoForManagers": "Geo bakeng sa Batsamaisi le Bahokahanyi",
-  "howToStart": "Mokhoa oa ho qala"
+  "howToStart": "Mokhoa oa ho qala",
+  "uploadAudioClip": "Kenya Audio Clip",
+  "recordAudioClip": "Rekota Audio Clip",
+  "playVideo": "Bapala Video",
+  "playAudioClip": "Bapala Audio Clip",
+  "recordVideo": "Rekota Video",
+  "takePicture": "Nka Setšoantšo",
+  "takePhoto": "Nka Senepe",
+  "uploadVideo": "Kenya Video",
+  "elapsedTime": "Nako e Fetileng",
+
 
 
 }

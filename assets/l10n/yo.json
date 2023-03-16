@@ -182,5 +182,14 @@
   "location": "Ipo $count",
   "geoForOrg": "Geo fun Awọn ile-iṣẹ",
   "geoForManagers": "Geo fun Awọn Alakoso ati Awọn Alakoso",
-  "howToStart": "Bi o ṣe le bẹrẹ"
+  "howToStart": "Bi o ṣe le bẹrẹ",
+  "uploadAudioClip": "Gbe ohun Agekuru",
+  "recordAudioClip": "Gba Agekuru ohun silẹ",
+  "playVideo": "Mu Fidio",
+  "playAudioClip": "Mu Agekuru Ohun ṣiṣẹ",
+  "recordVideo": "Ṣe igbasilẹ fidio",
+  "takePicture": "Ya aworan",
+  "takePhoto": "Ya Fọto",
+  "uploadVideo": "Gbe fidio",
+  "elapsedTime": "Akoko ti o ti kọja"
 }

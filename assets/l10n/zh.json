@@ -188,5 +188,14 @@
   "location": "地点 $count",
   "geoForOrg": "组织地理",
   "geoForManagers": "经理和协调员的地理",
-  "howToStart": "如何开始"
+  "howToStart": "如何开始",
+  "uploadAudioClip": "上传音频片段",
+  "recordAudioClip": "录制音频剪辑",
+  "playVideo": "播放视频",
+  "playAudioClip": "播放音频片段",
+  "recordVideo": "录视频",
+  "takePicture": "拍照片",
+  "takePhoto": "拍照",
+  "uploadVideo": "上传视频",
+  "elapsedTime": "经过时间"
 }

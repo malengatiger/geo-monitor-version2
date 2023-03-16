@@ -181,7 +181,14 @@ TextStyle myTextStyleMediumBold(BuildContext context) {
   return GoogleFonts.lato(
     textStyle: Theme.of(context).textTheme.bodyMedium,
     fontWeight: FontWeight.w900,
-    fontSize: 18.0,
+    fontSize: 14.0,
+  );
+}
+TextStyle myTextStyleMediumBoldGrey(BuildContext context) {
+  return GoogleFonts.lato(
+    textStyle: Theme.of(context).textTheme.bodyMedium,
+    fontWeight: FontWeight.w900, color: Colors.grey.shade800,
+    fontSize: 13.0,
   );
 }
 
@@ -799,7 +806,7 @@ String getFmtDate(String date, String locale) {
 String getValidLocale(String locale) {
   switch (locale) {
     case 'af':
-      return 'en_ZA';
+      return 'af_ZA';
     case 'en':
       return 'en_ZA';
     case 'es':
@@ -815,13 +822,13 @@ String getValidLocale(String locale) {
     case 'xh':
       return 'en_ZA';
     case 'zu':
-      return 'en_ZA';
+      return 'zu_ZA';
     case 'sn':
       return 'en_GB';
     case 'yo':
-      return 'en_ZA';
+      return 'en_NG';
     case 'sw':
-      return 'en_GB';
+      return 'sw_KE';
     case 'de':
       return 'de';
     case 'zh':

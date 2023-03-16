@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:geo_monitor/library/bloc/data_refresher.dart';
 import 'package:geo_monitor/library/bloc/organization_bloc.dart';
 import 'package:geo_monitor/library/data/settings_model.dart';
@@ -110,63 +109,65 @@ class _SettingsFormState extends State<SettingsForm> {
     selectLanguage =
         await mTx.translate('selectLanguage', settingsModel!.locale!);
     hint = await mTx.translate('selectLanguage', settingsModel!.locale!);
+    settingsChanged = await mTx.translate('settingsChanged', settingsModel!.locale!);
+
     translatedLanguage = await mTx.translate(settingsModel!.locale!, settingsModel!.locale!);
 
     setState(() {});
   }
 
-  void _checkLocaleChangeAndExit() async {
-    pp('$mm if locale changed - display dialog with shutDown button');
-    var sett = await prefsOGx.getSettings();
-    String? message, stop;
-    if (sett != null) {
-      message = await mTx.translate('stopMessage', sett.locale!);
-      stop = await mTx.translate('stop', sett.locale!);
-      if (sett.locale == oldSettingsModel!.locale!) {
-        if (mounted) {
-          pp('Pooping out ... will not display dialog');
-          // Navigator.of(context).pop();
-        }
-      } else {
-        if (mounted) {
-          pp('$mm is mounted, so show dialog');
-          showDialog(
-            context: context,
-            barrierDismissible: false,
-            builder: (_) => Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Center(
-                child: SizedBox(
-                  width: 400,
-                  height: 400,
-                  child: Column(
-                    children: [
-                      Text(message == null
-                          ? 'If you have changed the language of the app please press stop'
-                              ' and then then restart the app to use the new language'
-                          : message!),
-                      const SizedBox(
-                        height: 64,
-                      ),
-                      ElevatedButton(
-                          onPressed: () {
-                            SystemChannels.platform
-                                .invokeMethod('SystemNavigator.pop');
-                          },
-                          child: Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Text(stop == null ? 'Stop' : stop!),
-                          )),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-          );
-        }
-      }
-    }
-  }
+  // void _checkLocaleChangeAndExit() async {
+  //   pp('$mm if locale changed - display dialog with shutDown button');
+  //   var sett = await prefsOGx.getSettings();
+  //   String? message, stop;
+  //   if (sett != null) {
+  //     message = await mTx.translate('stopMessage', sett.locale!);
+  //     stop = await mTx.translate('stop', sett.locale!);
+  //     if (sett.locale == oldSettingsModel!.locale!) {
+  //       if (mounted) {
+  //         pp('Pooping out ... will not display dialog');
+  //         // Navigator.of(context).pop();
+  //       }
+  //     } else {
+  //       if (mounted) {
+  //         pp('$mm is mounted, so show dialog');
+  //         showDialog(
+  //           context: context,
+  //           barrierDismissible: false,
+  //           builder: (_) => Padding(
+  //             padding: const EdgeInsets.all(16.0),
+  //             child: Center(
+  //               child: SizedBox(
+  //                 width: 400,
+  //                 height: 400,
+  //                 child: Column(
+  //                   children: [
+  //                     Text(message == null
+  //                         ? 'If you have changed the language of the app please press stop'
+  //                             ' and then then restart the app to use the new language'
+  //                         : message!),
+  //                     const SizedBox(
+  //                       height: 64,
+  //                     ),
+  //                     ElevatedButton(
+  //                         onPressed: () {
+  //                           SystemChannels.platform
+  //                               .invokeMethod('SystemNavigator.pop');
+  //                         },
+  //                         child: Padding(
+  //                           padding: const EdgeInsets.all(8.0),
+  //                           child: Text(stop == null ? 'Stop' : stop!),
+  //                         )),
+  //                   ],
+  //                 ),
+  //               ),
+  //             ),
+  //           ),
+  //         );
+  //       }
+  //     }
+  //   }
+  // }
 
   void onSelected(Project p1) {
     setState(() {
@@ -283,11 +284,11 @@ class _SettingsFormState extends State<SettingsForm> {
     if (mounted) {
       showToast(
           backgroundColor: Theme.of(context).primaryColor,
-          message: 'Settings have been saved',
+          message: settingsChanged == null? 'Settings have been saved':settingsChanged!,
           context: context);
 
-      await Future.delayed(const Duration(milliseconds: 200));
-      _checkLocaleChangeAndExit();
+      await Future.delayed(const Duration(milliseconds: 10));
+      //_checkLocaleChangeAndExit();
     }
   }
 
@@ -343,52 +344,10 @@ class _SettingsFormState extends State<SettingsForm> {
   }
 
   Locale? selectedLocale;
-  String? selectSizePhotos;
+  String? selectSizePhotos, settingsChanged;
 
   @override
   Widget build(BuildContext context) {
-    var localeText = 'English';
-    if (selectedLocale != null) {
-      switch (selectedLocale.toString()) {
-        case 'en':
-          localeText = 'English';
-          break;
-        case 'af':
-          localeText = 'Afrikaans';
-          break;
-        case 'fr':
-          localeText = 'French';
-          break;
-        case 'pt':
-          localeText = 'Portuguese';
-          break;
-        case 'es':
-          localeText = 'Spanish';
-          break;
-        case 'zu':
-          localeText = 'Zulu';
-          break;
-        case 'yo':
-          localeText = 'Yoruba';
-          break;
-        case 'ts':
-          localeText = 'Tsonga';
-          break;
-        case 'xh':
-          localeText = 'Xhosa';
-          break;
-
-        case 'st':
-          localeText = 'Sotho';
-          break;
-        case 'ig':
-          localeText = 'Ingala';
-          break;
-        case 'sw':
-          localeText = 'Swahili';
-          break;
-      }
-    }
 
     return Card(
       elevation: 4,
@@ -423,7 +382,7 @@ class _SettingsFormState extends State<SettingsForm> {
                           child: Padding(
                             padding: const EdgeInsets.all(8.0),
                             child: SizedBox(
-                              height: 32,
+                              height: 48,
                               width: 240,
                               child: Container(
                                 color: Theme.of(context).primaryColor,
@@ -462,13 +421,13 @@ class _SettingsFormState extends State<SettingsForm> {
                           },
                           icon: Icon(
                             Icons.check,
-                            size: 32,
+                            size: 36,
                             color: Theme.of(context).primaryColor,
                           )),
                     ],
                   ),
                   const SizedBox(
-                    height: 12,
+                    height: 24,
                   ),
                   Text(
                     fieldMonitorInstruction == null
@@ -477,7 +436,7 @@ class _SettingsFormState extends State<SettingsForm> {
                     style: myTextStyleSmall(context),
                   ),
                   const SizedBox(
-                    height: 12,
+                    height: 36,
                   ),
                   SizedBox(
                     width: 400,

@@ -209,5 +209,15 @@ class MyKeys {
     hashMap["thankYouMessage"] = "thankYouMessage";
     hashMap["networkUnavailable"] = "networkUnavailable";
     hashMap["messageReceived"] = "messageReceived";
+
+    hashMap["takePicture"] = "takePicture";
+    hashMap["takePhoto"] = "takePhoto";
+    hashMap["elapsedTime"] = "elapsedTime";
+    hashMap["recordAudioClip"] = "recordAudioClip";
+    hashMap["playAudioClip"] = "playAudioClip";
+    hashMap["uploadAudioClip"] = "uploadAudioClip";
+    hashMap["playVideo"] = "playVideo";
+    hashMap["recordVideo"] = "recordVideo";
+    hashMap["uploadVideo"] = "uploadVideo";
   }
 }

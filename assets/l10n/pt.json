@@ -181,6 +181,15 @@
   "location": "Localização $ contagem",
   "geoForOrg": "Geo para Organizações",
   "geoForManagers": "Geo para Gerentes e Coordenadores",
-  "howToStart": "Como começar"
+  "howToStart": "Como começar",
+  "uploadAudioClip": "Carregar Clipe de Áudio",
+  "recordAudioClip": "Gravar Clipe de Áudio",
+  "playVideo": "Reproduzir vídeo",
+  "playAudioClip": "Reproduzir Clipe de Áudio",
+  "recordVideo": "Gravar vídeo",
+  "takePicture": "Tire uma foto",
+  "takePhoto": "Tirar fotos",
+  "uploadVideo": "Envio vídeo",
+  "elapsedTime": "Tempo decorrido"
 
 }

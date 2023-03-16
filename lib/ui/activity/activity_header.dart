@@ -18,7 +18,7 @@ class ActivityHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: [
         TextButton(
           onPressed: () {
@@ -26,7 +26,7 @@ class ActivityHeader extends StatelessWidget {
           },
           child: Row(
             children: [
-              SizedBox(width: 132,
+              SizedBox(width: 140,
                 child: Text(prefix,
                   style: myTextStyleSmall(context),
                 ),

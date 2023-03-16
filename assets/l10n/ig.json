@@ -189,5 +189,14 @@
   "location": "Ebe $count",
   "geoForOrg": "Geo maka ụlọ ọrụ",
   "geoForManagers": "Geo maka ndị njikwa na ndị nhazi",
-  "howToStart": "Otu esi amalite"
+  "howToStart": "Otu esi amalite",
+  "uploadAudioClip": "Bulite clip ọdịyo",
+  "recordAudioClip": "Dekọọ vidiyo ọdịyo",
+  "playVideo": "Kpọọ vidiyo",
+  "playAudioClip": "Kpọọ obere vidiyo",
+  "recordVideo": "Dekọọ vidiyo",
+  "takePicture": "Were foto",
+  "takePhoto": "Were foto",
+  "uploadVideo": "Bulite vidiyo",
+  "elapsedTime": "Oge gafere"
 }

@@ -140,7 +140,7 @@ class WideCard extends StatelessWidget {
                   padding: const EdgeInsets.symmetric(horizontal: 2),
                   child: Text(
                     dt,
-                    style: myNumberStyleMediumPrimaryColor(context),
+                    style: myTextStyleSmallPrimaryColor(context),
                   ),
                 ),
                 Row(

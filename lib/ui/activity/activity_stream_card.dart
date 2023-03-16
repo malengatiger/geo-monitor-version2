@@ -235,7 +235,7 @@ class ActivityStreamCardState extends State<ActivityStreamCard> {
         return _getUserAdded(icon, message);
 
       case ActivityType.positionAdded:
-        icon = Icon(Icons.home, color: Theme.of(context).primaryColor);
+        icon = Icon(Icons.home,  color: Theme.of(context).primaryColor);
         message = widget.activityStrings.projectLocationAdded == null
             ? 'Location added: ${widget.activityModel.projectName}'
             : '${widget.activityStrings.projectLocationAdded}: ${widget.activityModel.projectName}';
@@ -247,7 +247,7 @@ class ActivityStreamCardState extends State<ActivityStreamCard> {
         message = widget.activityStrings.projectAreaAdded == null
             ? 'Area added: ${widget.activityModel.projectName}'
             : '${widget.activityStrings.projectAreaAdded} ${widget.activityModel.projectName}';
-        return _getGeneric(icon, message, 100);
+        return _getGeneric(icon, message, 140);
 
       case ActivityType.settingsChanged:
         icon = Icon(Icons.settings, color: Theme.of(context).primaryColor);

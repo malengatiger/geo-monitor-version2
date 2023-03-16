@@ -108,7 +108,7 @@
   "pleaseSelectLanguage": "Nceda Khetha ulwimi",
   "pleaseActivityStreamHours": "Nceda ngenisa inani leeyure umsebenzi wakho kufuneka ubonise",
   "at": "e",
-  "arrivedAt": "Ifike kwiprojekthi ye-$",
+  "arrivedAt": "Ufike kwiprojekthi ye-$",
   "pleaseEnterDistance": "Nceda ngenisa umgama omde ukusuka kwiprojekthi ngeemitha",
   "leftFrom": "Ukushiya iprojekthi ye-$",
   "maxVideoLength": "UBomi boBude bevidiyo kwiSekhondi",
@@ -181,5 +181,14 @@
   "location": "Indawo $ count",
   "geoForOrg": "Geo for Imibutho",
   "geoForManagers": "I-Geo yaBaphathi kunye nabaNxibelelanisi",
-  "howToStart": "Ukuqala njani"
+  "howToStart": "Ukuqala njani",
+  "uploadAudioClip": "Layisha iKliphu yeAudiyo",
+  "recordAudioClip": "Rekhoda iKliphu yeAudiyo",
+  "playVideo": "Dlala iVidiyo",
+  "playAudioClip": "Dlala iKliphu yeAudiyo",
+  "recordVideo": "Rekhoda iVidiyo",
+  "takePicture": "Thatha uMfanekiso",
+  "takePhoto": "Thatha imifanekiso",
+  "uploadVideo": "Layisha ividiyo",
+  "elapsedTime": "Ixesha eliphelele"
 }

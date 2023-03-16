@@ -183,6 +183,15 @@
   "location": "Location $count",
   "geoForOrg": "Geo for Organizations",
   "geoForManagers": "Geo for Managers and Coordinators",
-  "howToStart": "How to start"
+  "howToStart": "How to start",
+  "uploadAudioClip": "Upload Audio Clip",
+  "recordAudioClip": "Record Audio Clip",
+  "playVideo": "Play Video",
+  "playAudioClip": "Play Audio Clip",
+  "recordVideo": "Record Video",
+  "takePicture": "Take Picture",
+  "takePhoto": "Take Photo",
+  "uploadVideo": "Upload Video",
+  "elapsedTime": "Elapsed Time"
 
 }

@@ -48,6 +48,7 @@ class ProjectEditorTabletState extends State<ProjectEditorTablet>
     if (sett != null) {
       projectEditor = await mTx.translate('projectEditor', sett.locale!);
       editProject = await mTx.translate('editProject', sett.locale!);
+      newProject = await mTx.translate('newProject', sett.locale!);
 
       setState(() {
 

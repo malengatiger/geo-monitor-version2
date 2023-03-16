@@ -257,22 +257,25 @@ class DashboardElement extends StatelessWidget {
         shape: getRoundedBorder(radius: 16),
         child: SizedBox(
           height: height == null ? 260 : height!,
-          child: Center(
-            child: Column(
-              children: [
-                SizedBox(
-                  height: topPadding == null ? 72 : topPadding!,
+          child: Column(
+            children: [
+              SizedBox(
+                height: topPadding == null ? 72 : topPadding!,
+              ),
+              Text('$number', style: textStyle == null ? style : textStyle!),
+              const SizedBox(
+                height: 8,
+              ),
+              Center(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                  child: Text(
+                    title,
+                    style: myTextStyleMediumBoldGrey(context),
+                  ),
                 ),
-                Text('$number', style: textStyle == null ? style : textStyle!),
-                const SizedBox(
-                  height: 8,
-                ),
-                Text(
-                  title,
-                  style: Styles.greyLabelSmall,
-                )
-              ],
-            ),
+              )
+            ],
           ),
         ),
       ),

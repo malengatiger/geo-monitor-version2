@@ -15,7 +15,7 @@
   "submitProject": "Tumira Project",
   "august": "Nyamavhuvhu",
   "fieldMonitorSchedules": "FieldMonitor Zvirongwa",
-  "audioClips": "Sravana Sameeralu Serial 4th Audio Clips",
+  "audioClips": "Sravana Sameeralu",
   "july": "Chikunguru",
   "refreshProjectDashboardData": "Gadzirisa Project Dashboard Data",
   "tapForColorScheme": "Tinya kune Ruvara Scheme",
@@ -55,7 +55,7 @@
   "welcomeToGeo": "Kugamuchirwa kuGeo!",
   "addProjectLocations": "Wedzera Nzvimbo dzeProjekiti",
   "photos": "Photos",
-  "audioPlayer": "Sravana Sameeralu Serial 4th Audio Player",
+  "audioPlayer": "Sravana Sameeralu",
   "emailAddress": "Chikero chetsamba yemumhepo",
   "members": "Members",
   "maximumVideoLength": "Maximum Vhidhiyo Kureba mumasekonzi",
@@ -181,5 +181,14 @@
   "location": "Nzvimbo $count",
   "geoForOrg": "Geo yeMasangano",
   "geoForManagers": "Geo yeMamaneja neVarongi",
-  "howToStart": "Kutanga sei"
+  "howToStart": "Kutanga sei",
+  "uploadAudioClip": "Isa Audio Clip",
+  "recordAudioClip": "Rekodha Audio Clip",
+  "playVideo": "Ridzai Vhidhiyo",
+  "playAudioClip": "Ridza Audio Clip",
+  "recordVideo": "Rekodha Vhidhiyo",
+  "takePicture": "Tora Mufananidzo",
+  "takePhoto": "Tora mufananidzo",
+  "uploadVideo": "Isa Vhidhiyo",
+  "elapsedTime": "Nguva yadarika"
 }

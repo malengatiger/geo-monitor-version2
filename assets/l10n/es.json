@@ -180,9 +180,18 @@
   "noVideosInProject": "No se encontraron videos en el proyecto",
   "messageReceived": "Mensaje recibido",
   "noPhotosInProject": "No se encontraron fotos en el proyecto",
-  "location": "ubicación $ cuenta",
+  "location": "ubicación",
   "geoForOrg": "Geo para Organizaciones",
   "geoForManagers": "Geo para Gerentes y Coordinadores",
-  "howToStart": "Cómo empezar"
+  "howToStart": "Cómo empezar",
+  "uploadAudioClip": "Subir clip de audio",
+  "recordAudioClip": "Grabar clip de audio",
+  "playVideo": "Reproduce el video",
+  "playAudioClip": "Reproducir clip de audio",
+  "recordVideo": "Grabar video",
+  "takePicture": "Tomar la foto",
+  "takePhoto": "Tomar foto",
+  "uploadVideo": "Subir vídeo",
+  "elapsedTime": "Tiempo transcurrido"
 
 }

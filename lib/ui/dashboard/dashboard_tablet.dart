@@ -768,7 +768,7 @@ class DashboardTabletState extends State<DashboardTablet> with WidgetsBindingObs
               return Row(
                 children: [
                   SizedBox(
-                    width: (size.width / 2)+60,
+                    width: (size.width / 2)+20,
                     child: dataBag == null
                         ? const SizedBox()
                         : DashboardGrid(
@@ -809,7 +809,7 @@ class DashboardTabletState extends State<DashboardTablet> with WidgetsBindingObs
                           ),
                   ),
                   GeoActivity(
-                    width: (size.width / 2) - 60,
+                    width: (size.width / 2) - 40,
                     forceRefresh: true,
                     thinMode: true,
                     showPhoto: (photo) {

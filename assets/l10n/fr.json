@@ -183,5 +183,14 @@
   "location": "Lieu $count",
   "geoForOrg": "Géo pour les organisations",
   "geoForManagers": "Géo pour les gestionnaires et les coordonnateurs",
-  "howToStart": "Comment commencer"
+  "howToStart": "Comment commencer",
+  "uploadAudioClip": "Télécharger un extrait audio",
+  "recordAudioClip": "Enregistrer un clip audio",
+  "playVideo": "Lire la vidéo",
+  "playAudioClip": "Lire le clip audio",
+  "recordVideo": "Enregistrer une vidéo",
+  "takePicture": "Prendre une photo",
+  "takePhoto": "Prendre une photo",
+  "uploadVideo": "Télécharger une video",
+  "elapsedTime": "Temps écoulé"
 }
