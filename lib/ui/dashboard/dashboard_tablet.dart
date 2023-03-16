@@ -80,6 +80,9 @@ class DashboardTabletState extends State<DashboardTablet> with WidgetsBindingObs
 
   late StreamSubscription<DataBag> dataBagSubscription;
 
+  late StreamSubscription<SettingsModel> settingsSubscription;
+
+
   late StreamSubscription<String> killSubscriptionFCM;
   var users = <User>[];
   User? user;
@@ -111,7 +114,6 @@ class DashboardTabletState extends State<DashboardTablet> with WidgetsBindingObs
     setState(() {
     });
   }
-
 
   @override
   void dispose() {
@@ -147,14 +149,22 @@ class DashboardTabletState extends State<DashboardTablet> with WidgetsBindingObs
       pp('$mm 🍎 🍎 _listen to FCM message streams ... 🍎 🍎');
       pp('$mm ... _listenToFCM activityStream ...');
 
-      activitySubscriptionFCM =
-          fcmBloc.activityStream.listen((ActivityModel model) {
-        pp('$mm activityStream delivered activity data ... ${model.date!}');
-        _getData(false);
+      settingsSubscription =
+          organizationBloc.settingsStream.listen((SettingsModel settings) async {
+        pp('$mm settingsStream delivered settings ... ${settings.locale!}');
+        await _handleNewSettings(settings);
         if (mounted) {
           setState(() {});
         }
       });
+      activitySubscriptionFCM =
+          fcmBloc.activityStream.listen((ActivityModel model) {
+            pp('$mm activityStream delivered activity data ... ${model.date!}');
+            _getData(false);
+            if (mounted) {
+              setState(() {});
+            }
+          });
       projectSubscriptionFCM =
           fcmBloc.projectStream.listen((Project project) async {
         _getData(false);
@@ -162,13 +172,7 @@ class DashboardTabletState extends State<DashboardTablet> with WidgetsBindingObs
 
       settingsSubscriptionFCM = fcmBloc.settingsStream.listen((settings) async {
         pp('$mm: 🍎🍎 settings arrived with themeIndex: ${settings.themeIndex}... locale: ${settings.locale} 🍎🍎');
-        Locale newLocale = Locale(settings.locale!);
-        mTx.translate('settings', settings.locale!);
-        final m = LocaleAndTheme(themeIndex: settings!.themeIndex!,
-            locale: newLocale);
-        themeBloc.themeStreamController.sink.add(m);
-        settingsModel = settings;
-        _getData(false);
+        await _handleNewSettings(settings);
       });
       userSubscriptionFCM = fcmBloc.userStream.listen((user) async {
         pp('$mm: 🍎 🍎 user arrived... 🍎 🍎');
@@ -200,6 +204,16 @@ class DashboardTabletState extends State<DashboardTablet> with WidgetsBindingObs
     } else {
       pp('App is running on the Web 👿👿👿firebase messaging is OFF 👿👿👿');
     }
+  }
+
+  Future<void> _handleNewSettings(SettingsModel settings) async {
+    Locale newLocale = Locale(settings.locale!);
+    await mTx.translate('settings', settings.locale!);
+    final m = LocaleAndTheme(themeIndex: settings!.themeIndex!,
+        locale: newLocale);
+    themeBloc.themeStreamController.sink.add(m);
+    settingsModel = settings;
+    _getData(false);
   }
 
   String? dashboardSubTitle, prefix, suffix;

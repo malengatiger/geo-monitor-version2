@@ -38,9 +38,9 @@ class ActivityStreamCardState extends State<ActivityStreamCard> {
     super.initState();
   }
 
+
   Widget _getUserAdded(Icon icon, String msg) {
-    final localDate =
-        DateTime.parse(widget.activityModel.date!).toLocal().toIso8601String();
+
     final dt = getFmtDate(widget.activityModel.date!, widget.locale);
 
     return widget.thinMode
@@ -163,7 +163,7 @@ class ActivityStreamCardState extends State<ActivityStreamCard> {
                           Text(
                             getFmtDate(
                                 widget.activityModel.date!, widget.locale),
-                            style: myTextStyleTiny(context),
+                            style: myTextStyleTinyBoldPrimaryColor(context),
                           )
                         ],
                       ),
@@ -179,6 +179,7 @@ class ActivityStreamCardState extends State<ActivityStreamCard> {
     return widget.thinMode
         ? ThinCard(
             model: widget.activityModel,
+            locale: widget.locale,
             width: 428,
             height: height,
             icon: icon,
@@ -186,6 +187,7 @@ class ActivityStreamCardState extends State<ActivityStreamCard> {
         : WideCard(
             model: widget.activityModel,
             width: 600,
+            locale: widget.locale,
             height: height,
             icon: icon,
             message: msg);

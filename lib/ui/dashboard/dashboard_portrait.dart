@@ -80,6 +80,9 @@ class DashboardPortraitState extends State<DashboardPortrait>
   late StreamSubscription<ProjectPolygon> projectPolygonSubscription;
   late StreamSubscription<Project> projectSubscription;
 
+  late StreamSubscription<SettingsModel> settingsSubscription;
+
+
   late StreamSubscription<DataBag> dataBagSubscription;
   //
 
@@ -106,7 +109,7 @@ class DashboardPortraitState extends State<DashboardPortrait>
     super.initState();
     _getData(false);
     _setItems();
-    _listenForDataBag();
+    _listenForData();
     _listenForFCM();
     _getAuthenticationStatus();
     _subscribeToConnectivity();
@@ -114,7 +117,19 @@ class DashboardPortraitState extends State<DashboardPortrait>
     // _startTimer();
   }
 
-  void _listenForDataBag() async {
+  void _listenForData() async {
+    settingsSubscription =
+        organizationBloc.settingsStream.listen((SettingsModel settings) async {
+          pp('$mm settingsStream delivered settings ... ${settings.locale!}');
+          await _handleNewSettings(settings);
+          if (mounted) {
+            setState(() {});
+          }
+        });
+    settingsSubscriptionFCM = fcmBloc.settingsStream.listen((settings) async {
+      pp('$mm: 🍎🍎 settings arrived with themeIndex: ${settings.themeIndex}... locale: ${settings.locale} 🍎🍎');
+      await _handleNewSettings(settings);
+    });
     dataBagSubscription = organizationBloc.dataBagStream.listen((DataBag bag) {
       dataBag = bag;
       pp('$mm dataBagStream delivered a dataBag!! 🍐Yebo! 🍐');
@@ -124,6 +139,15 @@ class DashboardPortraitState extends State<DashboardPortrait>
         });
       }
     });
+  }
+  Future<void> _handleNewSettings(SettingsModel settings) async {
+    Locale newLocale = Locale(settings.locale!);
+    await mTx.translate('settings', settings.locale!);
+    final m = LocaleAndTheme(themeIndex: settings!.themeIndex!,
+        locale: newLocale);
+    themeBloc.themeStreamController.sink.add(m);
+    this.settings = settings;
+    _getData(false);
   }
 
   void _getAuthenticationStatus() async {
@@ -316,11 +340,7 @@ class DashboardPortraitState extends State<DashboardPortrait>
 
       settingsSubscriptionFCM = fcmBloc.settingsStream.listen((settings) async {
         pp('$mm: 🍎🍎 settings arrived with themeIndex: ${settings.themeIndex}... 🍎🍎');
-        Locale newLocale = Locale(settings!.locale!);
-        final m = LocaleAndTheme(themeIndex: settings!.themeIndex!,
-            locale: newLocale);
-        themeBloc.themeStreamController.sink.add(m);
-        _getData(false);
+        _handleNewSettings(settings);
 
       });
       userSubscriptionFCM = fcmBloc.userStream.listen((user) async {

@@ -168,17 +168,20 @@ TextStyle myTextStyleMediumPrimaryColor(BuildContext context) {
       fontWeight: FontWeight.normal,
       color: Theme.of(context).primaryColor);
 }
+
 TextStyle myTextStyleMediumBoldPrimaryColor(BuildContext context) {
   return GoogleFonts.lato(
       textStyle: Theme.of(context).textTheme.bodyMedium,
-      fontWeight: FontWeight.w900, fontSize: 16,
+      fontWeight: FontWeight.w900,
+      fontSize: 16,
       color: Theme.of(context).primaryColor);
 }
 
 TextStyle myTextStyleMediumBold(BuildContext context) {
   return GoogleFonts.lato(
     textStyle: Theme.of(context).textTheme.bodyMedium,
-    fontWeight: FontWeight.w900, fontSize: 18.0,
+    fontWeight: FontWeight.w900,
+    fontSize: 18.0,
   );
 }
 
@@ -662,10 +665,10 @@ Future<File> getImageFileFromAssets(String path) async {
 
   return file;
 }
+
 Future<String> getStringFromAssets(String path) async {
   final stringData = await rootBundle.loadString('assets/l10n/$path.json');
   return stringData;
-
 }
 
 LatLngBounds boundsFromLatLngList(List<LatLng> list) {
@@ -729,9 +732,9 @@ String getDeviceType() {
 }
 
 String getFileSizeString({required int bytes, int decimals = 0}) {
-const suffixes = [" bytes", " KB", " MB", " GB", " TB"];
-var i = (log(bytes) / log(1024)).floor();
-return ((bytes / pow(1024, i)).toStringAsFixed(decimals)) + suffixes[i];
+  const suffixes = [" bytes", " KB", " MB", " GB", " TB"];
+  var i = (log(bytes) / log(1024)).floor();
+  return ((bytes / pow(1024, i)).toStringAsFixed(decimals)) + suffixes[i];
 }
 
 double getFileSizeInMB({required int bytes, int decimals = 0}) {
@@ -740,15 +743,18 @@ double getFileSizeInMB({required int bytes, int decimals = 0}) {
   return size;
 }
 
-Future<Map<String,String>> getStartEndDates() async{
+Future<Map<String, String>> getStartEndDates() async {
   int numberOfDays = 7;
   var settings = await prefsOGx.getSettings();
   if (settings != null) {
     numberOfDays = settings.numberOfDays!;
   }
-  var startDate = DateTime.now().subtract(Duration(days: numberOfDays)).toUtc().toIso8601String();
+  var startDate = DateTime.now()
+      .subtract(Duration(days: numberOfDays))
+      .toUtc()
+      .toIso8601String();
   var endDate = DateTime.now().toUtc().toIso8601String();
-  var map = <String,String>{};
+  var map = <String, String>{};
   map['startDate'] = startDate;
   map['endDate'] = endDate;
 
@@ -774,7 +780,9 @@ getRoundedBorder({required double radius}) {
 }
 
 String getFmtDate(String date, String locale) {
+  initializeDateFormatting();
   String mLocale = getValidLocale(locale);
+  Future.delayed(const Duration(milliseconds: 10));
 
   DateTime now = DateTime.parse(date).toLocal();
   final format = DateFormat("EEEE dd MMMM yyyy  HH:mm:ss", mLocale);
@@ -786,11 +794,10 @@ String getFmtDate(String date, String locale) {
     final String result = format.format(now);
     return result;
   }
-
 }
 
 String getValidLocale(String locale) {
-  switch(locale) {
+  switch (locale) {
     case 'af':
       return 'en_ZA';
     case 'en':
@@ -815,6 +822,10 @@ String getValidLocale(String locale) {
       return 'en_ZA';
     case 'sw':
       return 'en_GB';
+    case 'de':
+      return 'de';
+    case 'zh':
+      return 'zh';
     default:
       return 'en_US';
   }
@@ -1244,7 +1255,8 @@ bool _isWithinPolygon(
   return contains;
 }
 
-const chatGPT2 = 'Geo is a powerful tool to monitor the construction and maintenance of '
+const chatGPT2 =
+    'Geo is a powerful tool to monitor the construction and maintenance of '
     'infrastructure and facilities, especially in areas where youth unemployment is high '
     'and corruption is a problem. With Geo, they can track progress and quality in real-time, '
     'ensure that projects are being completed on time and within budget, and '
@@ -1256,7 +1268,8 @@ const chatGPT2 = 'Geo is a powerful tool to monitor the construction and mainten
     'while also creating opportunities for unemployed youth to participate in monitoring '
     'and contributing to the development of their communities.';
 
-const chatGPTYouth = 'Given the prevalence of smartphones and digital media use among young people, '
+const chatGPTYouth =
+    'Given the prevalence of smartphones and digital media use among young people, '
     'Geo could be a valuable tool for engaging and employing youth in community development projects. '
     'Field worker positions could be specifically targeted towards youth who are comfortable '
     'using smartphones and digital media, and who may have been previously unemployed'
@@ -1266,7 +1279,8 @@ const chatGPTYouth = 'Given the prevalence of smartphones and digital media use 
     'Geo could help to foster a sense of pride and ownership in their communities, '
     'which could lead to increased engagement and participation in the future.';
 
-const chatGPTGov = 'Government agencies and officials can benefit from Geo in several ways. '
+const chatGPTGov =
+    'Government agencies and officials can benefit from Geo in several ways. '
     'First, Geo can help in the efficient and effective management of infrastructure projects '
     'by providing real-time multimedia monitoring and reporting, which can help identify and '
     'address any issues that may arise during the project. Second, Geo can help to combat corruption '
@@ -1277,7 +1291,8 @@ const chatGPTGov = 'Government agencies and officials can benefit from Geo in se
     'they are needed most. Finally, by engaging and '
     'empowering young people in the process of monitoring and reporting on infrastructure projects, Geo can help to build a sense of ownership and responsibility among youth, while also providing them with valuable skills and experience that can help to improve their employment prospects.';
 
-const chatGPTCommunity = 'Community groups can get involved with Geo by using the platform to '
+const chatGPTCommunity =
+    'Community groups can get involved with Geo by using the platform to '
     'monitor and manage their community-based projects, such as community clean-up campaigns, '
     'volunteer initiatives, or fundraising events. The platform can also be used to track the '
     'progress of these projects and ensure that resources are being allocated effectively. '

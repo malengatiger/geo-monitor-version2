@@ -16,7 +16,9 @@ import '../../functions.dart';
 import '../../generic_functions.dart';
 
 class SettingsForm extends StatefulWidget {
-  const SettingsForm({Key? key, required this.padding, required this.onLocaleChanged}) : super(key: key);
+  const SettingsForm(
+      {Key? key, required this.padding, required this.onLocaleChanged})
+      : super(key: key);
   final double padding;
   final Function(String locale) onLocaleChanged;
   @override
@@ -77,14 +79,17 @@ class _SettingsFormState extends State<SettingsForm> {
       small,
       medium,
       large,
+      numberOfDaysForDashboardData,
       selectLanguage,
       hint;
 
   void _setTitles() async {
     fieldMonitorInstruction =
         await mTx.translate('fieldMonitorInstruction', settingsModel!.locale!);
-    maximumMonitoringDistance =
-        await mTx.translate('maximumMonitoringDistance', settingsModel!.locale!);
+    maximumMonitoringDistance = await mTx.translate(
+        'maximumMonitoringDistance', settingsModel!.locale!);
+    numberOfDaysForDashboardData = await mTx.translate(
+        'numberOfDaysForDashboardData', settingsModel!.locale!);
     maximumVideoLength =
         await mTx.translate('maximumVideoLength', settingsModel!.locale!);
     maximumAudioLength =
@@ -92,7 +97,7 @@ class _SettingsFormState extends State<SettingsForm> {
     activityStreamHours =
         await mTx.translate('activityStreamHours', settingsModel!.locale!);
     selectSizePhotos =
-    await mTx.translate('selectSizePhotos', settingsModel!.locale!);
+        await mTx.translate('selectSizePhotos', settingsModel!.locale!);
     pleaseSelectCountry =
         await mTx.translate('pleaseSelectCountry', settingsModel!.locale!);
     tapForColorScheme =
@@ -102,8 +107,10 @@ class _SettingsFormState extends State<SettingsForm> {
     small = await mTx.translate('small', settingsModel!.locale!);
     medium = await mTx.translate('medium', settingsModel!.locale!);
     large = await mTx.translate('large', settingsModel!.locale!);
-    selectLanguage = await mTx.translate('selectLanguage', settingsModel!.locale!);
+    selectLanguage =
+        await mTx.translate('selectLanguage', settingsModel!.locale!);
     hint = await mTx.translate('selectLanguage', settingsModel!.locale!);
+    translatedLanguage = await mTx.translate(settingsModel!.locale!, settingsModel!.locale!);
 
     setState(() {});
   }
@@ -160,11 +167,6 @@ class _SettingsFormState extends State<SettingsForm> {
       }
     }
   }
-
-  // var instruction = S.of(context).fieldMonitorInstruction;
-  // var maxDistance = S.of(context).maximumMonitoringDistance;
-  // pp('$mm instruction: $instruction');
-  // pp('$mm maxDistance: $maxDistance');
 
   void onSelected(Project p1) {
     setState(() {
@@ -307,8 +309,6 @@ class _SettingsFormState extends State<SettingsForm> {
           organizationId: s.organizationId,
           projectId: null,
           userId: null);
-
-
     } catch (e) {
       pp(e);
       if (mounted) {
@@ -480,7 +480,7 @@ class _SettingsFormState extends State<SettingsForm> {
                     height: 12,
                   ),
                   SizedBox(
-                    width: 300,
+                    width: 400,
                     child: TextFormField(
                       controller: distController,
                       keyboardType: TextInputType.number,
@@ -510,7 +510,7 @@ class _SettingsFormState extends State<SettingsForm> {
                     height: 12,
                   ),
                   SizedBox(
-                    width: 300,
+                    width: 400,
                     child: TextFormField(
                       controller: videoController,
                       keyboardType: TextInputType.number,
@@ -540,7 +540,7 @@ class _SettingsFormState extends State<SettingsForm> {
                     height: 12,
                   ),
                   SizedBox(
-                    width: 300,
+                    width: 400,
                     child: TextFormField(
                       controller: audioController,
                       keyboardType: TextInputType.number,
@@ -570,7 +570,7 @@ class _SettingsFormState extends State<SettingsForm> {
                     height: 12,
                   ),
                   SizedBox(
-                    width: 300,
+                    width: 400,
                     child: TextFormField(
                       controller: activityController,
                       keyboardType: TextInputType.number,
@@ -600,7 +600,7 @@ class _SettingsFormState extends State<SettingsForm> {
                     height: 12,
                   ),
                   SizedBox(
-                    width: 300,
+                    width: 400,
                     child: TextFormField(
                       controller: daysController,
                       keyboardType: TextInputType.number,
@@ -615,8 +615,8 @@ class _SettingsFormState extends State<SettingsForm> {
                       decoration: InputDecoration(
                         hintText:
                             'Enter the number of days your dashboard must show',
-                        label: Text(
-                          'Number of Dashboard Days',
+                        label: Text(numberOfDaysForDashboardData == null?
+                          'Number of Dashboard Days': numberOfDaysForDashboardData!,
                           style: myTextStyleSmall(context),
                         ),
                         hintStyle: myTextStyleSmall(context),
@@ -629,8 +629,10 @@ class _SettingsFormState extends State<SettingsForm> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
-                      Text(selectSizePhotos == null?
-                        'Select size of photos': selectSizePhotos!,
+                      Text(
+                        selectSizePhotos == null
+                            ? 'Select size of photos'
+                            : selectSizePhotos!,
                         style: myTextStyleSmall(context),
                       ),
                     ],
@@ -666,8 +668,8 @@ class _SettingsFormState extends State<SettingsForm> {
                   const SizedBox(
                     height: 24,
                   ),
-
-                  SizedBox(width: 400,
+                  SizedBox(
+                    width: 400,
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: [
@@ -682,7 +684,11 @@ class _SettingsFormState extends State<SettingsForm> {
                         ),
                         translatedLanguage == null
                             ? const Text('No language')
-                            : Text(translatedLanguage!, style: myTextStyleMediumBoldPrimaryColor(context),),
+                            : Text(
+                                translatedLanguage!,
+                                style:
+                                    myTextStyleMediumBoldPrimaryColor(context),
+                              ),
                       ],
                     ),
                   ),
@@ -707,10 +713,17 @@ class _SettingsFormState extends State<SettingsForm> {
       ),
     );
   }
+
   String? translatedLanguage;
+  void _setLanguage() async {
+
+    if (settingsModel != null) {
+      translatedLanguage = await mTx.translate(settingsModel!.locale!, settingsModel!.locale!);
+    }
+  }
   void _handleLocaleChange(Locale locale, String translatedLanguage) async {
     pp('$mm onLocaleChange ... going to ${locale.languageCode}');
-    mTx.translate('settings',locale.toLanguageTag());
+    mTx.translate('settings', locale.toLanguageTag());
     var settings = await prefsOGx.getSettings();
     if (settings != null) {
       settings.locale = locale.languageCode;
@@ -740,60 +753,118 @@ class LocaleChooser extends StatefulWidget {
 }
 
 class LocaleChooserState extends State<LocaleChooser> {
-  String? english, french, portuguese, ingala, sotho, spanish, swahili,
-  tsonga, xhosa, zulu, yoruba, afrikaans;
+  String? english,
+      french,
+      portuguese,
+      ingala,
+      sotho,
+      spanish,
+      shona,
+      swahili,
+      tsonga,
+      xhosa,
+      zulu,
+      yoruba,
+      afrikaans,
+      german,
+      chinese;
 
+  SettingsModel? settingsModel;
   @override
   void initState() {
     super.initState();
     setTexts();
   }
-  void setTexts() async {
-    var sett = await prefsOGx.getSettings();
-    if (sett != null) {
-      english = await mTx.translate('en', sett.locale!);
-      afrikaans = 'Afrikaans';
-      french = await mTx.translate('fr', sett.locale!);
-      portuguese = await mTx.translate('pt', sett.locale!);
-      ingala = await mTx.translate('ig', sett.locale!);
-      sotho = await mTx.translate('st', sett.locale!);
-      spanish = await mTx.translate('es', sett.locale!);
-      swahili = await mTx.translate('sw', sett.locale!);
-      tsonga = await mTx.translate('ts', sett.locale!);
-      xhosa = await mTx.translate('xh', sett.locale!);
-      zulu = await mTx.translate('zu', sett.locale!);
-      yoruba = await mTx.translate('yo', sett.locale!);
-      setState(() {
 
-      });
+  Future setTexts() async {
+    settingsModel = await prefsOGx.getSettings();
+    if (settingsModel != null) {
+      english = await mTx.translate('en', settingsModel!.locale!);
+      afrikaans = 'Afrikaans';
+      french = await mTx.translate('fr', settingsModel!.locale!);
+      portuguese = await mTx.translate('pt', settingsModel!.locale!);
+      ingala = await mTx.translate('ig', settingsModel!.locale!);
+      sotho = await mTx.translate('st', settingsModel!.locale!);
+      spanish = await mTx.translate('es', settingsModel!.locale!);
+      swahili = await mTx.translate('sw', settingsModel!.locale!);
+      tsonga = await mTx.translate('ts', settingsModel!.locale!);
+      xhosa = await mTx.translate('xh', settingsModel!.locale!);
+      zulu = await mTx.translate('zu', settingsModel!.locale!);
+      yoruba = await mTx.translate('yo', settingsModel!.locale!);
+
+      german = await mTx.translate('de', settingsModel!.locale!);
+      chinese = await mTx.translate('zh', settingsModel!.locale!);
+      shona = await mTx.translate('sn', settingsModel!.locale!);
+      setState(() {});
     }
   }
+
   @override
   Widget build(BuildContext context) {
     return DropdownButton<Locale>(
-        hint: Text(widget.hint, style: myTextStyleSmall(context),),
-        items:  [
-          DropdownMenuItem(value: const Locale('en'), child: Text(english == null? 'English': english!)),
-          DropdownMenuItem(value: const Locale('af'), child: Text(afrikaans == null? 'Afrikaans': afrikaans!)),
-          DropdownMenuItem(value: const Locale('fr'), child: Text(french == null? 'French': french!)),
-          DropdownMenuItem(value: const Locale('pt'), child: Text(portuguese == null?'Portuguese': portuguese!)),
-          DropdownMenuItem(value: const Locale('ig'), child: Text(ingala == null?'Ingala':ingala!)),
-          DropdownMenuItem(value: const Locale('st'), child: Text(sotho == null? 'Sotho': sotho!)),
-          DropdownMenuItem(value: const Locale('es'), child: Text(spanish == null?'Spanish': spanish!)),
-          DropdownMenuItem(value: const Locale('sw'), child: Text(swahili == null?'Swahili':swahili!)),
-          DropdownMenuItem(value: const Locale('ts'), child: Text(tsonga == null?'Tsonga':tsonga!)),
-          DropdownMenuItem(value: const Locale('xh'), child: Text(xhosa == null?'Xhosa':xhosa!)),
-          DropdownMenuItem(value: const Locale('zu'), child: Text(zulu == null?'Zulu':zulu!)),
-          DropdownMenuItem(value: const Locale('yo'), child: Text(yoruba == null?'Yoruba':yoruba!)),
+        hint: Text(
+          widget.hint,
+          style: myTextStyleSmall(context),
+        ),
+        items: [
+          DropdownMenuItem(
+              value: const Locale('en'),
+              child: Text(english == null ? 'English' : english!)),
+          DropdownMenuItem(
+              value: const Locale('zh'),
+              child: Text(chinese == null ? 'Chinese' : chinese!)),
+          DropdownMenuItem(
+              value: const Locale('af'),
+              child: Text(afrikaans == null ? 'Afrikaans' : afrikaans!)),
+          DropdownMenuItem(
+              value: const Locale('fr'),
+              child: Text(french == null ? 'French' : french!)),
+          DropdownMenuItem(
+              value: const Locale('de'),
+              child: Text(german == null ? 'German' : german!)),
+          DropdownMenuItem(
+              value: const Locale('pt'),
+              child: Text(portuguese == null ? 'Portuguese' : portuguese!)),
+          DropdownMenuItem(
+              value: const Locale('ig'),
+              child: Text(ingala == null ? 'Ingala' : ingala!)),
+          DropdownMenuItem(
+              value: const Locale('st'),
+              child: Text(sotho == null ? 'Sotho' : sotho!)),
+          DropdownMenuItem(
+              value: const Locale('es'),
+              child: Text(spanish == null ? 'Spanish' : spanish!)),
+          DropdownMenuItem(
+              value: const Locale('sn'),
+              child: Text(shona == null ? 'Shona' : shona!)),
+          DropdownMenuItem(
+              value: const Locale('sw'),
+              child: Text(swahili == null ? 'Swahili' : swahili!)),
+          DropdownMenuItem(
+              value: const Locale('ts'),
+              child: Text(tsonga == null ? 'Tsonga' : tsonga!)),
+          DropdownMenuItem(
+              value: const Locale('xh'),
+              child: Text(xhosa == null ? 'Xhosa' : xhosa!)),
+          DropdownMenuItem(
+              value: const Locale('yo'),
+              child: Text(yoruba == null ? 'Yoruba' : yoruba!)),
+          DropdownMenuItem(
+              value: const Locale('zu'),
+              child: Text(zulu == null ? 'Zulu' : zulu!)),
+
         ],
         onChanged: onChanged);
   }
 
-  void onChanged(Locale? locale) {
+  void onChanged(Locale? locale) async {
     pp('LocaleChooser 🌀🌀🌀🌀:onChanged: selected locale: '
         '${locale.toString()}');
+    settingsModel!.locale = locale!.languageCode;
+    await prefsOGx.saveSettings(settingsModel!);
+    organizationBloc.settingsController.sink.add(settingsModel!);
     var language = 'English';
-    switch(locale!.languageCode) {
+    switch (locale!.languageCode) {
       case 'eng':
         language = english!;
         break;
@@ -824,13 +895,18 @@ class LocaleChooserState extends State<LocaleChooser> {
       case 'zu':
         language = zulu!;
         break;
-      case 'yoruba':
+      case 'yo':
         language = yoruba!;
         break;
+      case 'de':
+        language = german!;
+        break;
+      case 'zh':
+        language = chinese!;
+        break;
     }
-
-      widget.onSelected(locale, language);
-
+    await setTexts();
+    widget.onSelected(locale, language);
   }
 }
 

@@ -5,21 +5,27 @@ import '../../library/data/activity_model.dart';
 import '../../library/functions.dart';
 
 class ThinCard extends StatelessWidget {
-  const ThinCard({Key? key, required this.model,
-    required this.icon, required this.message,
-    required this.width, required this.height}) : super(key: key);
+  const ThinCard(
+      {Key? key,
+      required this.model,
+      required this.icon,
+      required this.message,
+      required this.width,
+      required this.height,
+      required this.locale})
+      : super(key: key);
   final ActivityModel model;
   final Icon icon;
   final String message;
   final double width, height;
+  final String locale;
 
   @override
   Widget build(BuildContext context) {
-    final localDate =
-    DateTime.parse(model.date!).toLocal().toIso8601String();
-    final dt = getFormattedDateHourMinuteSecond(
-        date: DateTime.parse(localDate), context: context);
-    return SizedBox(width: width,
+    final localDate = DateTime.parse(model.date!).toLocal().toIso8601String();
+    final dt = getFmtDate(localDate, locale);
+    return SizedBox(
+      width: width,
       child: Card(
         shape: getRoundedBorder(radius: 16),
         child: Padding(
@@ -61,9 +67,15 @@ class ThinCard extends StatelessWidget {
                 const SizedBox(
                   height: 12,
                 ),
-                Row(mainAxisAlignment: MainAxisAlignment.start,
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
                   children: [
-                    model.userName == null? const SizedBox(): UserProfileCard(userName: model.userName!, userThumbUrl: model.userThumbnailUrl,),
+                    model.userName == null
+                        ? const SizedBox()
+                        : UserProfileCard(
+                            userName: model.userName!,
+                            userThumbUrl: model.userThumbnailUrl,
+                          ),
                   ],
                 )
               ],
@@ -76,26 +88,34 @@ class ThinCard extends StatelessWidget {
 }
 
 class WideCard extends StatelessWidget {
-  const WideCard({Key? key, required this.model,
-    required this.icon, required this.message, required this.width, required this.height}) : super(key: key);
+  const WideCard(
+      {Key? key,
+      required this.model,
+      required this.icon,
+      required this.message,
+      required this.width,
+      required this.height,
+      required this.locale})
+      : super(key: key);
   final ActivityModel model;
   final Icon icon;
   final String message;
   final double width, height;
+  final String locale;
 
   @override
   Widget build(BuildContext context) {
-    final localDate =
-    DateTime.parse(model.date!).toLocal().toIso8601String();
-    final dt = getFormattedDateHourMinuteSecond(
-        date: DateTime.parse(localDate), context: context);
-    return SizedBox(width: width,
+    final localDate = DateTime.parse(model.date!).toLocal().toIso8601String();
+    final dt = getFmtDate(localDate, locale);
+
+    return SizedBox(
+      width: width,
       child: Card(
         shape: getRoundedBorder(radius: 16),
         child: Padding(
           padding: const EdgeInsets.all(20.0),
           child: SizedBox(
-            height: height,
+            height: height + 20,
             child: Column(
               children: [
                 Row(
@@ -117,19 +137,20 @@ class WideCard extends StatelessWidget {
                   height: 16,
                 ),
                 Padding(
-                  padding:
-                  const EdgeInsets.symmetric(horizontal: 2),
-                  child: Row(
-                    children: [
-                      Text(dt,
-                        style: myNumberStyleMediumPrimaryColor(context),
-                      )
-                    ],
+                  padding: const EdgeInsets.symmetric(horizontal: 2),
+                  child: Text(
+                    dt,
+                    style: myNumberStyleMediumPrimaryColor(context),
                   ),
                 ),
                 Row(
                   children: [
-                    model.userName == null? const SizedBox(): UserProfileCard(userName: model.userName!, userThumbUrl: model.userThumbnailUrl,),
+                    model.userName == null
+                        ? const SizedBox()
+                        : UserProfileCard(
+                            userName: model.userName!,
+                            userThumbUrl: model.userThumbnailUrl,
+                          ),
                   ],
                 )
               ],

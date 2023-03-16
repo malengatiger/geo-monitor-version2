@@ -1,10 +1,14 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:geo_monitor/library/api/prefs_og.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import '../../l10n/translation_handler.dart';
 import '../../library/bloc/downloader.dart';
+import '../../library/bloc/organization_bloc.dart';
 import '../../library/data/data_bag.dart';
+import '../../library/data/settings_model.dart';
 import '../../library/functions.dart';
 
 class DashboardGrid extends StatefulWidget {
@@ -36,12 +40,21 @@ class _DashboardGridState extends State<DashboardGrid> {
 
   String? projects, members, photos,
       videos, audios, areas, locations, schedules, audioClips;
+  late StreamSubscription<SettingsModel> settingsSubscription;
+
   @override
   void initState() {
     super.initState();
+    _listen();
     _setTitles();
   }
-  void _setTitles() async {
+  @override
+  void dispose() {
+    settingsSubscription.cancel();
+    super.dispose();
+  }
+  Future _setTitles() async {
+
     var sett = await prefsOGx.getSettings();
     projects = await mTx.translate('projects', sett!.locale!);
     members = await mTx.translate('members', sett.locale!);
@@ -54,6 +67,17 @@ class _DashboardGridState extends State<DashboardGrid> {
 
     });
   }
+
+  void _listen() async {
+    settingsSubscription =
+        organizationBloc.settingsStream.listen((SettingsModel settings) async {
+          pp('$mm settingsStream delivered settings ... ${settings.locale!}, will set titles');
+          await _setTitles();
+          if (mounted) {
+            setState(() {});
+          }
+        });
+  }
   @override
   Widget build(BuildContext context) {
     return SizedBox(
@@ -65,7 +89,6 @@ class _DashboardGridState extends State<DashboardGrid> {
           children: [
             GestureDetector(
               onTap: () {
-                pp('$mm widget on tapped: typeProjects $typeProjects ...');
                 widget.onTypeTapped(typeProjects);
               },
               child: DashboardElement(

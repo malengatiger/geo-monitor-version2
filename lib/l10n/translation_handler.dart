@@ -54,7 +54,11 @@ class TranslationHandler {
 
     translationKeys.forEach((key, value) {
       try {
-        localeMap[key] = mJson[key];
+        if (mJson[key] == null) {
+          pp('$mm key error, 🔴🔴 this key not found in json file: $key 🔴🔴');
+        } else {
+          localeMap[key] = mJson[key];
+        }
       } catch (e) {
         pp('$mm $e key with error: $key');
         rethrow;
