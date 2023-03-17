@@ -7,6 +7,7 @@ import 'package:geo_monitor/library/ui/camera/video_handler_two.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:page_transition/page_transition.dart';
 
+import '../../../../l10n/translation_handler.dart';
 import '../../../../ui/audio/audio_handler.dart';
 import '../../../api/prefs_og.dart';
 import '../../../bloc/project_bloc.dart';
@@ -34,6 +35,8 @@ class ProjectMediaListMobile extends StatefulWidget {
 
 class ProjectMediaListMobileState extends State<ProjectMediaListMobile>
     with TickerProviderStateMixin {
+  static const mm = '🔆🔆🔆 MediaListMobile 💜💜 ';
+
   late AnimationController _animationController;
   StreamSubscription<List<Photo>>? photoStreamSubscription;
   StreamSubscription<List<Video>>? videoStreamSubscription;
@@ -44,7 +47,14 @@ class ProjectMediaListMobileState extends State<ProjectMediaListMobile>
 
   var _photos = <Photo>[];
   User? user;
-  static const mm = '🔆🔆🔆 MediaListMobile 💜💜 ';
+  bool _showPhotoDetail = false;
+  Photo? selectedPhoto;
+  Audio? selectedAudio;
+  Video? selectedVideo;
+  AudioPlayer audioPlayer = AudioPlayer();
+  int videoIndex = 0;
+  String? photosText, audioText, videoText, refreshData;
+
 
   @override
   void initState() {
@@ -55,9 +65,20 @@ class ProjectMediaListMobileState extends State<ProjectMediaListMobile>
         vsync: this);
     _tabController = TabController(length: 3, vsync: this);
     super.initState();
-
+    _setTexts();
     _listen();
     _refresh(false);
+  }
+
+  void _setTexts() async {
+    var sett = await prefsOGx.getSettings();
+    if (sett != null) {
+      photosText = await mTx.translate('photos', sett.locale!);
+      audioText = await mTx.translate('audioClips', sett.locale!);
+      videoText = await mTx.translate('videos', sett.locale!);
+      refreshData = await mTx.translate('refreshData', sett.locale!);
+      setState(() {});
+    }
   }
 
   Future<void> _listen() async {
@@ -133,18 +154,14 @@ class ProjectMediaListMobileState extends State<ProjectMediaListMobile>
     });
   }
 
-  bool _showPhotoDetail = false;
-  Photo? selectedPhoto;
-
   @override
   void dispose() {
     _animationController.dispose();
     super.dispose();
   }
 
-  Audio? selectedAudio;
-  Video? selectedVideo;
-  int videoIndex = 0;
+
+
   void _navigateToPlayVideo() {
     pp('... play audio from internets');
     Navigator.push(
@@ -159,7 +176,6 @@ class ProjectMediaListMobileState extends State<ProjectMediaListMobile>
             )));
   }
 
-  AudioPlayer audioPlayer = AudioPlayer();
   void _navigateToPlayAudio() {
     pp('... play audio from internet ....');
     audioPlayer.setUrl(selectedAudio!.url!);
@@ -241,7 +257,6 @@ class ProjectMediaListMobileState extends State<ProjectMediaListMobile>
         actions: [
           IconButton(
               onPressed: () {
-                pp('...... navigate to take photos');
                 _startPhotoMonitoring();
               },
               icon: Icon(
@@ -251,7 +266,6 @@ class ProjectMediaListMobileState extends State<ProjectMediaListMobile>
               )),
           IconButton(
               onPressed: () {
-                pp('...... navigate to make video');
                 _startVideoMonitoring();
               },
               icon: Icon(
@@ -261,7 +275,6 @@ class ProjectMediaListMobileState extends State<ProjectMediaListMobile>
               )),
           IconButton(
               onPressed: () {
-                pp('...... navigate to make audio');
                 _startAudioMonitoring();
               },
               icon: Icon(
@@ -294,36 +307,36 @@ class ProjectMediaListMobileState extends State<ProjectMediaListMobile>
             Card(
                 elevation: 8,
                 shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8.0)),
+                    borderRadius: BorderRadius.circular(4.0)),
                 child: Padding(
                   padding: const EdgeInsets.only(
                       left: 4.0, right: 4.0, top: 4, bottom: 4),
-                  child: Text(
-                    'Photos',
+                  child: Text(photosText == null?
+                    'Photos': photosText!,
                     style: myTextStyleSmall(context),
                   ),
                 )),
             Card(
                 elevation: 8,
                 shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8.0)),
+                    borderRadius: BorderRadius.circular(4.0)),
                 child: Padding(
                   padding: const EdgeInsets.only(
                       left: 4.0, right: 4.0, top: 4, bottom: 4),
-                  child: Text(
-                    'Videos',
+                  child: Text(videoText == null?
+                    'Videos': videoText!,
                     style: myTextStyleSmall(context),
                   ),
                 )),
             Card(
                 elevation: 8,
                 shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8.0)),
+                    borderRadius: BorderRadius.circular(4.0)),
                 child: Padding(
                   padding: const EdgeInsets.only(
                       left: 4.0, right: 4.0, top: 4, bottom: 4),
-                  child: Text(
-                    'Audio',
+                  child: Text(audioText == null?
+                    'Audio': audioText!,
                     style: myTextStyleSmall(context),
                   ),
                 )),
@@ -341,19 +354,19 @@ class ProjectMediaListMobileState extends State<ProjectMediaListMobile>
                       height: 200,
                       width: 200,
                       child: Padding(
-                        padding: const EdgeInsets.all(12.0),
+                        padding:  const EdgeInsets.all(12.0),
                         child: Column(
-                          children: const [
-                            SizedBox(
+                          children:  [
+                            const SizedBox(
                               height: 40,
                             ),
-                            Text('Loading ...'),
-                            SizedBox(
+                            Text(refreshData == null?'Loading ...':refreshData!),
+                            const SizedBox(
                               height: 48,
                             ),
-                            SizedBox(
-                              height: 24,
-                              width: 24,
+                            const SizedBox(
+                              height: 20,
+                              width: 20,
                               child: CircularProgressIndicator(
                                 strokeWidth: 4,
                                 backgroundColor: Colors.pink,

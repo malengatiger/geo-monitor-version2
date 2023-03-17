@@ -7,6 +7,8 @@ import 'package:geo_monitor/library/ui/ratings/rating_adder.dart';
 import 'package:geo_monitor/ui/audio/audio_player_page.dart';
 import 'package:just_audio/just_audio.dart';
 
+import '../../../../l10n/translation_handler.dart';
+import '../../../api/prefs_og.dart';
 import '../../../bloc/project_bloc.dart';
 import '../../../data/audio.dart';
 import '../../../data/project.dart';
@@ -58,12 +60,18 @@ class ProjectAudiosState extends State<ProjectAudios> {
     setState(() {
       loading = true;
     });
+    var sett = await prefsOGx.getSettings();
+    if (sett != null) {
+      durationText = await mTx.translate('duration', sett.locale!);
+    }
     var map = await getStartEndDates();
     final startDate = map['startDate'];
     final endDate = map['endDate'];
     audios = await projectBloc.getProjectAudios(
-        projectId: widget.project.projectId!, forceRefresh: widget.refresh,
-         startDate: startDate!, endDate: endDate!);
+        projectId: widget.project.projectId!,
+        forceRefresh: widget.refresh,
+        startDate: startDate!,
+        endDate: endDate!);
     audios.sort((a, b) => b.created!.compareTo(a.created!));
     setState(() {
       loading = false;
@@ -75,7 +83,7 @@ class ProjectAudiosState extends State<ProjectAudios> {
   final mm = '🍎🍎🍎🍎';
   AudioPlayer audioPlayer = AudioPlayer();
   Duration? duration;
-  String? stringDuration;
+  String? stringDuration, durationText;
   bool _loading = false;
   Duration _currentPosition = const Duration(seconds: 0);
 
@@ -257,7 +265,13 @@ class ProjectAudiosState extends State<ProjectAudios> {
                                         });
                                         _playAudio();
                                       },
-                                      child: AudioCard(audio: audio)),
+                                      child: AudioCard(
+                                        audio: audio,
+                                        durationText: durationText == null
+                                            ? 'Duration'
+                                            : durationText!,
+                                      ),
+                                  ),
                                 ),
                               ],
                             );

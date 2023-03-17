@@ -4,7 +4,9 @@ import 'package:badges/badges.dart' as bd;
 import 'package:flutter/material.dart';
 import 'package:just_audio/just_audio.dart';
 
+import '../../../../l10n/translation_handler.dart';
 import '../../../../ui/audio/audio_player_page.dart';
+import '../../../api/prefs_og.dart';
 import '../../../bloc/user_bloc.dart';
 import '../../../data/audio.dart';
 import '../../../data/user.dart';
@@ -36,7 +38,7 @@ class UserAudiosState extends State<UserAudios> {
   final mm = '🍎🍎🍎🍎';
   AudioPlayer audioPlayer = AudioPlayer();
   Duration? duration;
-  String? stringDuration;
+  String? stringDuration, durationText;
   bool busy = false;
   Duration _currentPosition = const Duration(seconds: 0);
 
@@ -145,6 +147,10 @@ class UserAudiosState extends State<UserAudios> {
     setState(() {
       loading = true;
     });
+    var sett = await prefsOGx.getSettings();
+    if (sett != null) {
+      durationText = await mTx.translate('duration', sett.locale!);
+    }
     audios = await userBloc.getAudios(
         userId: widget.user.userId!, forceRefresh: widget.refresh);
     audios.sort((a, b) => b.created!.compareTo(a.created!));
@@ -211,7 +217,8 @@ class UserAudiosState extends State<UserAudios> {
                                         });
                                         _playAudio();
                                       },
-                                      child: AudioCard(audio: audio)),
+                                      child: AudioCard(audio: audio,
+                                      durationText: durationText == null? 'Duration': durationText!,)),
                                 ),
                               ],
                             );

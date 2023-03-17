@@ -4,8 +4,9 @@ import '../../../data/audio.dart';
 import '../../../functions.dart';
 
 class AudioCard extends StatelessWidget {
-  const AudioCard({Key? key, required this.audio}) : super(key: key);
+  const AudioCard({Key? key, required this.audio, required this.durationText}) : super(key: key);
   final Audio audio;
+  final String durationText;
   @override
   Widget build(BuildContext context) {
     var dt = getFormattedDateShortestWithTime(audio.created!, context);
@@ -71,8 +72,7 @@ class AudioCard extends StatelessWidget {
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Text(
-                    'Duration:',
+                  Text(durationText,
                     style: myTextStyleTiny(context),
                   ),
                   const SizedBox(
