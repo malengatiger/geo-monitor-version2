@@ -13,6 +13,7 @@ import 'package:responsive_builder/responsive_builder.dart';
 import 'package:uuid/uuid.dart';
 
 import '../../../device_location/device_location_bloc.dart';
+import '../../../l10n/translation_handler.dart';
 import '../../api/prefs_og.dart';
 import '../../bloc/photo_for_upload.dart';
 import '../../bloc/project_bloc.dart';
@@ -78,6 +79,12 @@ class PhotoHandlerState extends State<PhotoHandler>
       busy = true;
     });
     try {
+      var sett = await prefsOGx.getSettings();
+      if (sett != null) {
+        takePicture =
+        await mTx.translate('takePicture', sett.locale!);
+
+      }
       pp('$mm .......... getting project positions and polygons');
       user = await prefsOGx.getUser();
       polygons = await projectBloc.getProjectPolygons(
@@ -266,42 +273,8 @@ class PhotoHandlerState extends State<PhotoHandler>
   }
 
   String? totalByteCount, bytesTransferred;
-  String? fileUrl, thumbnailUrl;
+  String? fileUrl, thumbnailUrl, takePicture;
 
-  @override
-  onFileProgress(int totalByteCount, int bytesTransferred) {
-    pp('$mm 🍏file Upload progress: bytesTransferred: ${(bytesTransferred / 1024).toStringAsFixed(1)} KB '
-        'of totalByteCount: ${(totalByteCount / 1024).toStringAsFixed(1)} KB');
-    setState(() {
-      this.totalByteCount =
-          '${(totalByteCount / 1024 / 1024).toStringAsFixed(2)} MB';
-      this.bytesTransferred =
-          '${(bytesTransferred / 1024 / 1024).toStringAsFixed(2)} MB';
-    });
-  }
-
-  @override
-  onFileUploadComplete(String url, int totalByteCount, int bytesTransferred) {
-    pp('$mm 😡 file Upload has been completed 😡 bytesTransferred: ${(bytesTransferred / 1024).toStringAsFixed(1)} KB '
-        'of totalByteCount: ${(totalByteCount / 1024).toStringAsFixed(1)} KB');
-    if (mounted) {
-      setState(() {});
-    }
-  }
-
-  @override
-  onError(String message) {
-    pp('$mm onError fired - $message');
-    if (mounted) {
-      showToast(
-          message: message,
-          textStyle: const TextStyle(color: Colors.white),
-          duration: const Duration(seconds: 3),
-          toastGravity: ToastGravity.TOP,
-          backgroundColor: Colors.pink,
-          context: context);
-    }
-  }
 
   void _navigateToList() {
     Navigator.of(context).pop();
@@ -377,9 +350,9 @@ class PhotoHandlerState extends State<PhotoHandler>
                         ),
                         TextButton(
                             onPressed: _startNextPhoto,
-                            child: const Padding(
-                              padding: EdgeInsets.all(12.0),
-                              child: Text('Take Picture'),
+                            child:  Padding(
+                              padding: const EdgeInsets.all(12.0),
+                              child: Text(takePicture == null?'Take Picture':takePicture!),
                             )),
                       ],
                     ),

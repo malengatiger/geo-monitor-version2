@@ -44,7 +44,7 @@ import 'functions.dart';
 import 'generic_functions.dart';
 
 const stillWorking = 201, doneCaching = 200;
-const String hiveName = 'GeoHive5c';
+const String hiveName = 'GeoHive5d';
 CacheManager cacheManager = CacheManager._instance;
 
 class CacheManager {
@@ -99,9 +99,10 @@ class CacheManager {
     // fileCounter = await prefsOGx.getFileCounter();
     if (forceInitialization != null) {
       if (forceInitialization) {
-        pp('\n\n$mm Setting up Hive');
-        await clearAllBoxes();
+        pp('\n\n$mm Setting up Hive, forceInitialization = $forceInitialization');
+        Hive.initFlutter(hiveName);
         await _doTheInitializationWork();
+        await clearAllBoxes();
         return;
       }
     }
@@ -115,25 +116,32 @@ class CacheManager {
 
   Future clearAllBoxes() async {
     pp('$mm clearing all Hive boxes ....');
-    _assignmentBox?.clear();
-    _registrationBox?.clear();
-    _scheduleBox?.clear();
-    _projectPolygonBox?.clear();
-    _projectBox?.clear();
-    _positionBox?.clear();
-    _userBox?.clear();
-    _geofenceEventBox?.clear();
-    _orgBox?.clear();
-    _photoBox?.clear();
-    _reportBox?.clear();
-    _cityBox?.clear();
-    _settingsBox?.clear();
-    _conditionBox?.clear();
-    _audioBox?.clear();
-    _activityBox?.clear();
-    _ratingBox?.clear();
-    _videoBox?.clear();
-    _locationResponseBox?.clear();
+    await _assignmentBox?.clear();
+    await _registrationBox?.clear();
+    await _scheduleBox?.clear();
+    await _projectPolygonBox?.clear();
+    await _projectBox?.clear();
+    await _positionBox?.clear();
+    await _userBox?.clear();
+    await _geofenceEventBox?.clear();
+    await _orgBox?.clear();
+    await _photoBox?.clear();
+    await _reportBox?.clear();
+    await _cityBox?.clear();
+    await _settingsBox?.clear();
+    await _conditionBox?.clear();
+    await _audioBox?.clear();
+    await _activityBox?.clear();
+    await _ratingBox?.clear();
+    await _videoBox?.clear();
+    await _locationResponseBox?.clear();
+    await _uploadAudioBox?.clear();
+    await _uploadVideoBox?.clear();
+    await _uploadPhotoBox?.clear();
+    await _locationResponseBox?.clear();
+    await _settingsBox?.clear();
+    await _activityBox?.clear();
+
     pp('$mm all Hive boxes cleared 💚💚');
   }
 
@@ -421,6 +429,11 @@ class CacheManager {
     var length = _activityBox?.length;
     _activityBox?.clear();
     pp('$mm $length ActivityModels deleted from local cache: ');
+  }
+  Future deleteProjects() async {
+    var length = _projectBox?.length;
+    await _projectBox?.clear();
+    pp('$mm $length Projects deleted from local cache: ');
   }
 
   Future<List<ActivityModel>> getActivitiesWithinHours(int hours) async {

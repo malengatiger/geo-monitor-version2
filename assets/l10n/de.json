@@ -198,5 +198,17 @@
   "takePicture": "Ein Bild machen",
   "takePhoto": "Foto machen",
   "uploadVideo": "Video hochladen",
-  "elapsedTime": "Verstrichene Zeit"
+  "elapsedTime": "Verstrichene Zeit",
+  "projectAreas2": "Das Projekt hat einen oder mehrere Bereiche",
+  "projectMultipleLocations": "Das Projekt hat mehrere Standorte",
+  "projectLocatedHere": "Projekt befindet sich hier",
+  "refreshData": "Daten vom Server aktualisieren",
+
+  "fileSavedWillUpload": "Die Datei ist gespeichert und wird in Kürze hochgeladen",
+  "problemWithCamera": "Problem mit der Kamera",
+  "gettingCameraReady": "Kamera bereit machen",
+  "locationRequestReceived": "Eine Standortanfrage wurde empfangen",
+  "recordingComplete": "Aufzeichnung abgeschlossen",
+  "recordingLimitReached": "Aufzeichnungslimit erreicht",
+  "locationResponseReceived": "Eine Standortantwort wurde empfangen"
 }

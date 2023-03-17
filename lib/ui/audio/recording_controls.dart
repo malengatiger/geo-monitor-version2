@@ -119,8 +119,9 @@ class RecordingControls extends StatelessWidget {
 }
 
 class TimerCard extends StatelessWidget {
-  const TimerCard({Key? key, required this.seconds}) : super(key: key);
+  const TimerCard({Key? key, required this.seconds, required this.elapsedTime}) : super(key: key);
   final int seconds;
+  final String elapsedTime;
   @override
   Widget build(BuildContext context) {
     int h, m, s;
@@ -140,8 +141,7 @@ class TimerCard extends StatelessWidget {
         padding: const EdgeInsets.all(20.0),
         child: Row(
           children: [
-            Text(
-              'Elapsed Time:',
+            Text(elapsedTime,
               style: myTextStyleSmall(context),
             ),
             const SizedBox(

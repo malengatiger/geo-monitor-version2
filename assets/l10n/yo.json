@@ -191,5 +191,18 @@
   "takePicture": "Ya aworan",
   "takePhoto": "Ya Fọto",
   "uploadVideo": "Gbe fidio",
-  "elapsedTime": "Akoko ti o ti kọja"
+  "elapsedTime": "Akoko ti o ti kọja",
+  "projectAreas2": "Ise agbese ni ọkan tabi diẹ ẹ sii agbegbe",
+  "projectMultipleLocations": "Ise agbese ni awọn ipo pupọ",
+  "projectLocatedHere": "Project ti wa ni be nibi",
+  "refreshData": "Sọ data lati olupin",
+  "duration": "Iye akoko",
+  "fileSavedWillUpload": "Faili ti wa ni ipamọ ati pe yoo gbejade laipẹ",
+  "problemWithCamera": "Isoro pẹlu kamẹra",
+  "gettingCameraReady": "Ngbaradi kamẹra",
+  "locationRequestReceived": "A ti gba ibeere ipo kan",
+  "recordingComplete": "Gbigbasilẹ ti pari",
+  "recordingLimitReached": "Iwọn igbasilẹ ti de",
+  "locationResponseReceived": "Idahun ipo ti gba"
+
 }

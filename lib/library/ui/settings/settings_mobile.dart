@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:geo_monitor/library/ui/settings/settings_form.dart';
+import 'package:geo_monitor/library/ui/settings/settings_form_monitor.dart';
 
 import '../../../l10n/translation_handler.dart';
+import '../../api/prefs_og.dart';
+import '../../cache_manager.dart';
 import '../../data/project.dart';
 import '../../data/settings_model.dart';
 import '../../data/user.dart';
 import '../../functions.dart';
+import '../../generic_functions.dart';
 
 class SettingsMobile extends StatefulWidget {
   const SettingsMobile({Key? key}) : super(key: key);
@@ -38,31 +41,31 @@ class SettingsMobileState extends State<SettingsMobile>
   void initState() {
     _animationController = AnimationController(vsync: this);
     super.initState();
-    // _getOrganizationSettings();
+    _setTexts();
+    _getOrganizationSettings();
   }
 
-  // void _getOrganizationSettings() async {
-  //   pp('🍎🍎 ............. getting user from prefs ...');
-  //   user = await prefsOGx.getUser();
-  //   pp('🍎🍎 user is here, huh? ${user!.toJson()}');
-  //   setState(() {
-  //     busy = true;
-  //   });
-  //   try {
-  //     orgSettings = await cacheManager.getOrganizationSettings();
-  //   } catch (e) {
-  //     pp(e);
-  //     if (mounted) {
-  //       showToast(
-  //           duration: const Duration(seconds: 5),
-  //           message: '$e',
-  //           context: context);
-  //     }
-  //   }
-  //   setState(() {
-  //     busy = false;
-  //   });
-  // }
+  void _getOrganizationSettings() async {
+    pp('🍎🍎 ............. getting user from prefs ...');
+    user = await prefsOGx.getUser();
+    setState(() {
+      busy = true;
+    });
+    try {
+      orgSettings = await cacheManager.getOrganizationSettings();
+    } catch (e) {
+      pp(e);
+      if (mounted) {
+        showToast(
+            duration: const Duration(seconds: 5),
+            message: '$e',
+            context: context);
+      }
+    }
+    setState(() {
+      busy = false;
+    });
+  }
 
   @override
   void dispose() {
@@ -75,7 +78,6 @@ class SettingsMobileState extends State<SettingsMobile>
     return SafeArea(
         child: Scaffold(
       appBar: AppBar(
-        leading: const SizedBox(),
         title: Text(
           title == null ? 'Settings' : title!,
           style: myTextStyleLarge(context),
@@ -95,17 +97,30 @@ class SettingsMobileState extends State<SettingsMobile>
                     )),
               ),
             )
-          : SettingsForm(
-              onLocaleChanged: (locale) {
-                _handleOnLocaleChanged(locale);
-              },
-              padding: 20),
+          : Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16.0),
+            child: SettingsFormMonitor(
+                onLocaleChanged: (locale) {
+                  _handleOnLocaleChanged(locale);
+                },
+                padding: 20),
+          ),
     ));
   }
 
   String? title;
   void _handleOnLocaleChanged(String locale) async {
     pp('SettingsForm 😎😎😎😎 _handleOnLocaleChanged: $locale');
-    title = await mTx.translate('settings', locale);
+    _setTexts();
+
+  }
+  void _setTexts() async {
+    settingsModel = await prefsOGx.getSettings();
+    if (settingsModel != null) {
+      title = await mTx.translate('settings', settingsModel!.locale!);
+    }
+    setState(() {
+
+    });
   }
 }

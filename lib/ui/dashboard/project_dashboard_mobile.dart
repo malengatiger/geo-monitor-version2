@@ -182,6 +182,12 @@ class ProjectDashboardMobileState extends State<ProjectDashboardMobile>
 
             await _getData(false);
           });
+      projectPositionSubscriptionFCM =
+          fcmBloc.projectPositionStream.listen((ProjectPosition pos) async {
+            pp('$mm: 🍎 🍎 position arrived: ${pos.name} ... 🍎 🍎');
+
+            await _getData(false);
+          });
 
 
       settingsSubscriptionFCM = fcmBloc.settingsStream.listen((settings) async {

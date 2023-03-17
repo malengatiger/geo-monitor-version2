@@ -190,5 +190,16 @@
   "takePicture": "Tora Mufananidzo",
   "takePhoto": "Tora mufananidzo",
   "uploadVideo": "Isa Vhidhiyo",
-  "elapsedTime": "Nguva yadarika"
+  "elapsedTime": "Nguva yadarika",
+  "projectAreas2": "Project ine imwe kana dzimwe nzvimbo",
+  "projectMultipleLocations": "Project ine nzvimbo dzakawanda",
+  "projectLocatedHere": "Project iri pano",
+  "refreshData": "Gadzirisa data kubva kuseva",
+  "fileSavedWillUpload": "Faira rakachengetwa uye richaiswa munguva pfupi iri kutevera",
+  "problemWithCamera": "Dambudziko nekamera",
+  "gettingCameraReady": "Kugadzirira kamera",
+  "locationRequestReceived": "Chikumbiro chenzvimbo chatambirwa",
+  "recordingComplete": "Kurekodha kwapera",
+  "recordingLimitReached": "Kurekodha kwasvika",
+  "locationResponseReceived": "Mhinduro yenzvimbo yakagamuchirwa"
 }

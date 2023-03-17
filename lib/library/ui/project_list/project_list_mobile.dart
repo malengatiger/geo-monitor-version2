@@ -13,6 +13,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:map_launcher/map_launcher.dart';
 import 'package:page_transition/page_transition.dart';
 
+import '../../../l10n/translation_handler.dart';
 import '../../api/prefs_og.dart';
 import '../../bloc/admin_bloc.dart';
 import '../../bloc/fcm_bloc.dart';
@@ -61,6 +62,8 @@ class ProjectListMobileState extends State<ProjectListMobile>
   int numberOfDays = 30;
   bool sortedByName = true;
   bool openProjectActions = false;
+  String? organizationProjects, projectsNotFound, refreshData;
+
 
   @override
   void initState() {
@@ -70,11 +73,19 @@ class ProjectListMobileState extends State<ProjectListMobile>
         reverseDuration: const Duration(milliseconds: 2000),
         vsync: this);
     super.initState();
-
+   _setTexts();
     _getUser();
     _listen();
   }
+ void _setTexts() async {
+   var sett = await prefsOGx.getSettings();
+   if (sett != null) {
+     organizationProjects = await mTx.translate('organizationProjects', sett.locale!);
+     projectsNotFound = await mTx.translate('projectsNotFound', sett.locale!);
+     refreshData = await mTx.translate('refreshData', sett.locale!);
 
+   }
+ }
   void _listen() {
     fcmBloc.projectStream.listen((Project project) {
       if (mounted) {
@@ -549,23 +560,23 @@ class ProjectListMobileState extends State<ProjectListMobile>
         refreshProjects(true);
       },
     ));
-    list.add(IconButton(
-      icon: isProjectsByLocation
-          ? Icon(
-              Icons.list,
-              size: 24,
-              color: Theme.of(context).primaryColor,
-            )
-          : Icon(
-              Icons.location_pin,
-              size: 20,
-              color: Theme.of(context).primaryColor,
-            ),
-      onPressed: () {
-        isProjectsByLocation = !isProjectsByLocation;
-        refreshProjects(true);
-      },
-    ));
+    // list.add(IconButton(
+    //   icon: isProjectsByLocation
+    //       ? Icon(
+    //           Icons.list,
+    //           size: 24,
+    //           color: Theme.of(context).primaryColor,
+    //         )
+    //       : Icon(
+    //           Icons.location_pin,
+    //           size: 20,
+    //           color: Theme.of(context).primaryColor,
+    //         ),
+    //   onPressed: () {
+    //     isProjectsByLocation = !isProjectsByLocation;
+    //     refreshProjects(true);
+    //   },
+    // ));
     if (projects.isNotEmpty) {
       list.add(
         IconButton(
@@ -609,7 +620,7 @@ class ProjectListMobileState extends State<ProjectListMobile>
               actions: _getActions(),
               bottom: PreferredSize(
                 preferredSize:
-                    Size.fromHeight(isProjectsByLocation ? 200 : 160),
+                    Size.fromHeight(isProjectsByLocation ? 180 : 120),
                 child: Column(
                   children: [
                     Text(
@@ -618,8 +629,8 @@ class ProjectListMobileState extends State<ProjectListMobile>
                     const SizedBox(
                       height: 16,
                     ),
-                    Text(
-                      'Organization Projects',
+                    Text(organizationProjects == null?
+                      'Organization Projects': organizationProjects!,
                       style: myTextStyleMedium(context),
                     ),
                     const SizedBox(
@@ -706,17 +717,18 @@ class ProjectListMobileState extends State<ProjectListMobile>
                         Text(
                           isProjectsByLocation
                               ? 'Finding Projects within $sliderValue KM'
-                              : 'Finding Organization Projects ...',
+                              : refreshData == null? 'Finding Organization Projects ...': refreshData!,
                           style: myTextStyleMedium(context),
                         ),
                       ],
                     ),
                   )
                 : Padding(
-                    padding: const EdgeInsets.all(12.0),
+                    padding:  const EdgeInsets.all(12.0),
                     child: projects.isEmpty
                         ? Center(
-                            child: Text('Projects Not Found',
+                            child: Text(projectsNotFound == null?
+                                'Projects Not Found': projectsNotFound!,
                                 style: GoogleFonts.lato(
                                     textStyle:
                                         Theme.of(context).textTheme.bodyLarge,

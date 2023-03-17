@@ -13,6 +13,7 @@ import 'package:responsive_builder/responsive_builder.dart';
 import 'package:uuid/uuid.dart';
 
 import '../../../device_location/device_location_bloc.dart';
+import '../../../l10n/translation_handler.dart';
 import '../../bloc/geo_uploader.dart';
 import '../../bloc/video_for_upload.dart';
 import '../../cache_manager.dart';
@@ -52,6 +53,8 @@ class VideoHandlerTwoState extends State<VideoHandlerTwo>
   Duration finalDuration = const Duration(seconds: 0);
   bool _showChoice = false;
 
+  String? title;
+
   @override
   void initState() {
     _controller = AnimationController(vsync: this);
@@ -68,12 +71,15 @@ class VideoHandlerTwoState extends State<VideoHandlerTwo>
       busy = true;
     });
     try {
+      var sett = await prefsOGx.getSettings();
+      if (sett != null) {
+        maxSeconds = sett.maxVideoLengthInSeconds!;
+        title =
+        await mTx.translate('recordVideo', sett.locale!);
+      }
       user = await prefsOGx.getUser();
       cameras = await availableCameras();
-      var settings = await prefsOGx.getSettings();
-      if (settings != null) {
-        maxSeconds = settings.maxVideoLengthInSeconds!;
-      }
+
       pp('$mm video recording limit: $maxSeconds seconds');
       onNewCameraSelected(cameras[0]);
     } catch (e) {
@@ -329,7 +335,9 @@ class VideoHandlerTwoState extends State<VideoHandlerTwo>
     return ScreenTypeLayout(
       mobile: SafeArea(
         child: Scaffold(
-          appBar: AppBar(),
+          appBar: AppBar(
+            title: Text(title == null? 'Record Video': title!),
+          ),
           body: Stack(
             children: [
               _isCameraInitialized

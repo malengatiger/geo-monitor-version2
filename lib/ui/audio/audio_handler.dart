@@ -15,6 +15,7 @@ import 'package:responsive_builder/responsive_builder.dart';
 import 'package:uuid/uuid.dart';
 
 import '../../device_location/device_location_bloc.dart';
+import '../../l10n/translation_handler.dart';
 import '../../library/bloc/audio_for_upload.dart';
 import '../../library/data/position.dart';
 import '../../library/data/project.dart';
@@ -24,7 +25,8 @@ import '../../library/functions.dart';
 import '../../library/generic_functions.dart';
 
 class AudioHandler extends StatefulWidget {
-  const AudioHandler({Key? key, required this.project, required this.onClose}) : super(key: key);
+  const AudioHandler({Key? key, required this.project, required this.onClose})
+      : super(key: key);
 
   final Project project;
   final Function onClose;
@@ -55,7 +57,7 @@ class AudioHandlerState extends State<AudioHandler>
   bool isPaused = false;
   bool isStopped = false;
   String? mTotalByteCount;
-  String? mBytesTransferred;
+  String? mBytesTransferred, title;
   bool fileUploadComplete = false;
 
   late Stream<Uint8List> audioStream;
@@ -63,6 +65,8 @@ class AudioHandlerState extends State<AudioHandler>
   File? _recordedFile;
   int fileSize = 0;
   int seconds = 0;
+  String? fileUploadSize, uploadAudioClip, elapsedTime;
+
 
   @override
   void initState() {
@@ -90,8 +94,15 @@ class AudioHandlerState extends State<AudioHandler>
 
   void _getSettings() async {
     settingsModel = await prefsOGx.getSettings();
-    var m = settingsModel?.maxAudioLengthInMinutes;
-    limitInSeconds = m! * 60;
+    if (settingsModel != null) {
+      var m = settingsModel?.maxAudioLengthInMinutes;
+      limitInSeconds = m! * 60;
+      title = await mTx.translate('recordAudioClip', settingsModel!.locale!);
+      fileUploadSize = await mTx.translate('fileSize', settingsModel!.locale!);
+      uploadAudioClip = await mTx.translate('uploadAudioClip', settingsModel!.locale!);
+      elapsedTime = await mTx.translate('elapsedTime', settingsModel!.locale!);
+    }
+
     setState(() {});
   }
 
@@ -280,62 +291,31 @@ class AudioHandlerState extends State<AudioHandler>
     });
   }
 
-  void _reset(int totalByteCount, int bytesTransferred) {
-    isRecording = false;
-    isPaused = false;
-    isStopped = false;
-    fileUploadComplete = true;
-    _recordedFile = null;
-    seconds = 0;
-    isAudioPlaying = false;
-    totalByteCount = 0;
-    bytesTransferred = 0;
-    mTotalByteCount = null;
-    mBytesTransferred = null;
-    fileSize = 0;
-  }
-
-  Future<void> _test() async {
-    // Catching errors at load time
-    try {
-      await player.setUrl("https://s3.amazonaws.com/404-file.mp3");
-    } on PlayerException catch (e) {
-      pp("Error code: ${e.code}");
-      pp("Error message: ${e.message}");
-    } on PlayerInterruptedException catch (e) {
-      pp("Connection aborted: ${e.message}");
-    } catch (e) {
-      pp('An error occured: $e');
-    }
-// Catching errors during playback (e.g. lost network connection)
-    player.playbackEventStream.listen((event) {},
-        onError: (Object e, StackTrace st) {
-      if (e is PlayerException) {
-        pp('Error code: ${e.code}');
-        pp('Error message: ${e.message}');
-      } else {
-        pp('An error occurred: $e');
-      }
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
     if (user == null) {
       return const Center(
-        child: SizedBox(width: 20, height: 20, child: CircularProgressIndicator(
-          strokeWidth: 4, backgroundColor: Colors.pink,
-        ),),
+        child: SizedBox(
+          width: 20,
+          height: 20,
+          child: CircularProgressIndicator(
+            strokeWidth: 4,
+            backgroundColor: Colors.pink,
+          ),
+        ),
       );
     } else {
       return ScreenTypeLayout(
         mobile: SafeArea(
           child: Scaffold(
             appBar: AppBar(
-              title: const Text('Project Audio'),
+              title: Text(title == null ? 'Record Audio' : title!),
             ),
             body: AudioCardAnyone(
               title: widget.project.name!,
+              elapsedTime: elapsedTime == null? 'Elapsed Time': elapsedTime!,
+              fileUploadSize: fileUploadSize == null? 'File Size': fileUploadSize!,
+              uploadAudioClip: uploadAudioClip == null? 'Upload Audio Clip': uploadAudioClip!,
               user: user!,
               seconds: seconds,
               recorderController: _recorderController,
@@ -351,14 +331,17 @@ class AudioHandlerState extends State<AudioHandler>
               isPlaying: isAudioPlaying,
               isPaused: isPaused,
               recordedFile: _recordedFile,
-              onClose: (){
-               widget.onClose();
-            },
+              onClose: () {
+                widget.onClose();
+              },
             ),
           ),
         ),
         tablet: AudioCardAnyone(
           title: widget.project.name!,
+          elapsedTime: elapsedTime == null? 'Elapsed Time': elapsedTime!,
+          fileUploadSize: fileUploadSize == null? 'File Size': fileUploadSize!,
+          uploadAudioClip: uploadAudioClip == null? 'Upload Audio Clip': uploadAudioClip!,
           user: user!,
           seconds: seconds,
           recorderController: _recorderController,
@@ -374,7 +357,7 @@ class AudioHandlerState extends State<AudioHandler>
           isPaused: isPaused,
           fileSize: fileSize.toDouble(),
           recordedFile: _recordedFile,
-          onClose: (){
+          onClose: () {
             widget.onClose();
           },
         ),
@@ -401,7 +384,8 @@ class AudioCardAnyone extends StatelessWidget {
       required this.onRecord,
       required this.isRecording,
       required this.isPlaying,
-      required this.isPaused, required this.onClose})
+      required this.isPaused,
+      required this.onClose, required this.fileUploadSize, required this.uploadAudioClip, required this.elapsedTime})
       : super(key: key);
 
   final String title;
@@ -413,6 +397,7 @@ class AudioCardAnyone extends StatelessWidget {
   final File? recordedFile;
   final double fileSize;
   final Function onPlay, onPause, onStop, onRecord, onClose;
+  final String fileUploadSize, uploadAudioClip, elapsedTime;
   @override
   Widget build(BuildContext context) {
     return Center(
@@ -425,14 +410,16 @@ class AudioCardAnyone extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 12.0),
             child: Column(
               children: [
-                Row(mainAxisAlignment: MainAxisAlignment.end,
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
                   children: [
-                    IconButton(onPressed: (){
-                      onClose();
-                    }, icon: const Icon(Icons.close)),
+                    IconButton(
+                        onPressed: () {
+                          onClose();
+                        },
+                        icon: const Icon(Icons.close)),
                   ],
                 ),
-
                 Text(
                   title,
                   style: myTextStyleMediumPrimaryColor(context),
@@ -443,17 +430,17 @@ class AudioCardAnyone extends StatelessWidget {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    user!.thumbnailUrl == null
+                    user.thumbnailUrl == null
                         ? const SizedBox()
                         : CircleAvatar(
-                            backgroundImage: NetworkImage(user!.thumbnailUrl!),
+                            backgroundImage: NetworkImage(user.thumbnailUrl!),
                             radius: 20,
                           ),
                     const SizedBox(
                       width: 16,
                     ),
                     Text(
-                      '${user!.name}',
+                      '${user.name}',
                       style: myTextStyleSmall(context),
                     ),
                   ],
@@ -464,7 +451,7 @@ class AudioCardAnyone extends StatelessWidget {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    TimerCard(seconds: seconds),
+                    TimerCard(seconds: seconds, elapsedTime: elapsedTime,),
                   ],
                 ),
                 const SizedBox(
@@ -500,7 +487,7 @@ class AudioCardAnyone extends StatelessWidget {
                 recordedFile == null
                     ? const SizedBox()
                     : SizedBox(
-                        height: 240,
+                        height: 280,
                         child: Padding(
                           padding: const EdgeInsets.all(20.0),
                           child: Card(
@@ -517,8 +504,7 @@ class AudioCardAnyone extends StatelessWidget {
                                 Row(
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
-                                    Text(
-                                      'File upload size',
+                                    Text(fileUploadSize,
                                       style: myTextStyleSmall(context),
                                     ),
                                     const SizedBox(
@@ -550,14 +536,13 @@ class AudioCardAnyone extends StatelessWidget {
                                           onUploadFile();
                                         },
                                         child: SizedBox(
-                                          width: 200.0,
+                                          width: 220.0,
                                           child: Center(
                                             child: Padding(
                                               padding:
-                                                  const EdgeInsets.all(12.0),
-                                              child: Text(
-                                                'Upload Audio Clip',
-                                                style: myTextStyleMediumBold(
+                                                  const EdgeInsets.all(8.0),
+                                              child: Text(uploadAudioClip,
+                                                style: myTextStyleSmallBold(
                                                     context),
                                               ),
                                             ),

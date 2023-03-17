@@ -219,5 +219,21 @@ class MyKeys {
     hashMap["playVideo"] = "playVideo";
     hashMap["recordVideo"] = "recordVideo";
     hashMap["uploadVideo"] = "uploadVideo";
+
+    hashMap["projectAreas2"] = "projectAreas2";
+    hashMap["projectLocatedHere"] = "projectLocatedHere";
+    hashMap["projectMultipleLocations"] = "projectMultipleLocations";
+    hashMap["projectAreas"] = "projectAreas";
+    hashMap["refreshData"] = "refreshData";
+
+    hashMap["gettingCameraReady"] =  "gettingCameraReady";
+    hashMap["recordingComplete"] =  "recordingComplete";
+    hashMap["recordingLimitReached"] =  "recordingLimitReached";
+    hashMap["duration"] =  "duration";
+    hashMap["fileSavedWillUpload"] =  "fileSavedWillUpload";
+    hashMap["problemWithCamera"] =  "problemWithCamera";
+    hashMap["locationRequestReceived"] =  "locationRequestReceived";
+    hashMap["locationResponseReceived"] =  "locationResponseReceived";
+
   }
 }

@@ -197,5 +197,16 @@
   "takePicture": "拍照片",
   "takePhoto": "拍照",
   "uploadVideo": "上传视频",
-  "elapsedTime": "经过时间"
+  "elapsedTime": "经过时间",
+  "projectAreas2": "项目有一个或多个区域",
+  "projectMultipleLocations": "项目有多个位置",
+  "projectLocatedHere": "项目位于此处",
+  "refreshData": "从服务器刷新数据",
+  "fileSavedWillUpload": "文件已保存，稍后会上传",
+  "problemWithCamera": "相机问题",
+  "gettingCameraReady": "准备好相机",
+  "locationRequestReceived": "已收到位置请求",
+  "recordingComplete": "录音完成",
+  "recordingLimitReached": "达到录制限制",
+  "locationResponseReceived": "已收到位置响应"
 }

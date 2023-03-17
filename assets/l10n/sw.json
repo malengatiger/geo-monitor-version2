@@ -190,5 +190,16 @@
   "takePicture": "Kuchukua picha",
   "takePhoto": "Piga picha",
   "uploadVideo": "Pakia Video",
-  "elapsedTime": "Muda Uliopita"
+  "elapsedTime": "Muda Uliopita",
+  "projectAreas2": "Mradi una eneo moja au zaidi",
+  "projectMultipleLocations": "Mradi una maeneo mengi",
+  "projectLocatedHere": "Mradi unapatikana hapa",
+  "refreshData": "Onyesha upya data kutoka kwa seva",
+  "fileSavedWillUpload": "Faili imehifadhiwa na itapakiwa hivi karibuni",
+  "problemWithCamera": "Tatizo na kamera",
+  "gettingCameraReady": "Inatayarisha kamera",
+  "locationRequestReceived": "Ombi la eneo limepokelewa",
+  "recordingComplete": "Kurekodi kumekamilika",
+  "recordingLimitReached": "Kikomo cha kurekodi kimefikiwa",
+  "locationResponseReceived": "Jibu la eneo limepokelewa"
 }

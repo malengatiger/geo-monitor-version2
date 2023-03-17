@@ -190,5 +190,16 @@
   "takePicture": "Teka Xifaniso",
   "takePhoto": "Teka Xifaniso",
   "uploadVideo": "Upload Video",
-  "elapsedTime": "Nkarhi Lowu Hundzeke"
+  "elapsedTime": "Nkarhi Lowu Hundzeke",
+  "projectAreas2": "Phurojeke yi na ndhawu yin’we kumbe ku tlula",
+  "projectMultipleLocations": "Project yi na tindhawu to tala",
+  "projectLocatedHere": "Project yi kumeka laha",
+  "refreshData": "Pfuxeta data ku suka eka sevha",
+  "fileSavedWillUpload": "Fayili yi hlayisiwile naswona yi ta uploadiwa ku nga ri khale",
+  "problemWithCamera": "Xiphiqo xa khamera",
+  "gettingCameraReady": "Ku lunghiselela khamera",
+  "locationRequestReceived": "Xikombelo xa ndhawu xi amukeriwile",
+  "recordingComplete": "Ku rhekhoda ku hetisekile",
+  "recordingLimitReached": "Mpimo wa ku rhekhoda wu fikeleriwile",
+  "locationResponseReceived": "Nhlamulo ya ndhawu yi amukeriwile"
 }

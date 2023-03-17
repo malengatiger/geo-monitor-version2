@@ -649,7 +649,7 @@ class DashboardPortraitState extends State<DashboardPortrait>
           showAdminIcons = true;
           break;
         case UserType.fieldMonitor:
-          showAdminIcons = false;
+          showAdminIcons = true;
           break;
       }
     }

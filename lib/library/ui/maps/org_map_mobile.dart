@@ -5,6 +5,7 @@ import 'package:badges/badges.dart' as bd;
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
+import '../../../l10n/translation_handler.dart';
 import '../../api/prefs_og.dart';
 import '../../bloc/organization_bloc.dart';
 import '../../data/organization.dart';
@@ -31,6 +32,7 @@ class OrganizationMapMobileState extends State<OrganizationMapMobile>
   var random = Random(DateTime.now().millisecondsSinceEpoch);
   final _key = GlobalKey<ScaffoldState>();
   static const defaultZoom = 10.0;
+  String? organizationProjects, locations;
 
   static const CameraPosition _kGooglePlex = CameraPosition(
     target: LatLng(-25.42796133580664, 26.085749655962),
@@ -42,9 +44,10 @@ class OrganizationMapMobileState extends State<OrganizationMapMobile>
   Organization? organization;
   bool loading = false;
   User? user;
-
+  String? projectLocatedHere;
   @override
   void initState() {
+    pp('$mm initState ...................');
     _controller = AnimationController(vsync: this);
     super.initState();
     _getOrganization();
@@ -54,11 +57,19 @@ class OrganizationMapMobileState extends State<OrganizationMapMobile>
     setState(() {
       loading = true;
     });
+    var sett = await prefsOGx.getSettings();
+    if (sett != null) {
+      organizationProjects =
+      await mTx.translate('organizationProjects', sett.locale!);
+      projectLocatedHere =
+      await mTx.translate('projectLocatedHere', sett.locale!);
+    }
     user = await prefsOGx.getUser();
     organization = await organizationBloc.getOrganizationById(
         organizationId: user!.organizationId!);
 
     _refreshProjectPositions(forceRefresh: false);
+
   }
 
   void _refreshProjectPositions({required bool forceRefresh}) async {
@@ -70,9 +81,23 @@ class OrganizationMapMobileState extends State<OrganizationMapMobile>
     final endDate = map['endDate'];
     _projectPositions = await organizationBloc.getProjectPositions(
         organizationId: organization!.organizationId!,
-        forceRefresh: forceRefresh, startDate: startDate!, endDate: endDate!);
+        forceRefresh: forceRefresh,
+        startDate: startDate!,
+        endDate: endDate!);
     _projects = await organizationBloc.getOrganizationProjects(
-        organizationId: organization!.organizationId!, forceRefresh: forceRefresh);
+        organizationId: organization!.organizationId!,
+        forceRefresh: forceRefresh);
+
+    // _projectPositions.sort((a, b) => a.created!.compareTo(b.created!));
+    var list = <ProjectPosition>[];
+    for (var pos in _projectPositions) {
+      if (pos.created == null) {
+        pp('$mm found the offending null-in-create bastard! 🔴🔴 ${pos.toJson()} 🔴🔴');
+      } else {
+        list.add(pos);
+      }
+    }
+    _projectPositions = list;
     _createMarkers();
     setState(() {
       loading = false;
@@ -85,12 +110,12 @@ class OrganizationMapMobileState extends State<OrganizationMapMobile>
     super.dispose();
   }
 
-  final mm = '💜 💜 💜 💜 💜 💜 Organization Map ';
+  final mm = '💜 💜 💜 💜 💜 💜 OrganizationMapMobile ';
   GoogleMapController? googleMapController;
   var latLngs = <LatLng>[];
   LatLngBounds? bounds;
+
   Future<void> _createMarkers() async {
-    pp('$mm OrganizationMapMobile: _addMarkers: ....... 🍎 ${_projectPositions.length}');
     markers.clear();
     latLngs.clear();
     for (var projectPosition in _projectPositions) {
@@ -107,7 +132,9 @@ class OrganizationMapMobileState extends State<OrganizationMapMobile>
         position: latLng,
         infoWindow: InfoWindow(
             title: projectPosition.projectName,
-            snippet: 'Project Located Here'),
+            snippet: projectLocatedHere == null
+                ? 'Project Located Here'
+                : projectLocatedHere!),
         onTap: () {
           _onMarkerTapped(projectPosition);
         },
@@ -126,19 +153,17 @@ class OrganizationMapMobileState extends State<OrganizationMapMobile>
       target: LatLng(
           _projectPositions.elementAt(0).position!.coordinates.elementAt(1),
           _projectPositions.elementAt(0).position!.coordinates.elementAt(0)),
-      zoom: 10.0,
+      zoom: 12.0,
     );
     googleMapController!.animateCamera(CameraUpdate.newCameraPosition(first));
-
   }
+
   Future<void> _animateMap() async {
     if (bounds != null) {
       googleMapController = await _mapController.future;
-      await googleMapController!.animateCamera(
-          CameraUpdate.newLatLngBounds(bounds!, 12));
-      setState(() {
-
-      });
+      await googleMapController!
+          .animateCamera(CameraUpdate.newLatLngBounds(bounds!, 12));
+      setState(() {});
     } else {
       pp('$mm bounds still null .....');
     }
@@ -155,40 +180,65 @@ class OrganizationMapMobileState extends State<OrganizationMapMobile>
         key: _key,
         appBar: AppBar(
           title: Text(
-            'Organization Project Locations',
-            style: myTextStyleSmall(context),
+            organizationProjects == null
+                ? 'Organization Projects'
+                : organizationProjects!,
+            style: myTextStyleMediumBold(context),
           ),
-          bottom: PreferredSize(preferredSize: const Size.fromHeight(48), child: Column(
-            children: [
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 28.0),
-                child: InkWell(
-                  onTap: (){
-                    _refreshProjectPositions(forceRefresh: true);
-                  },
-                  child: bd.Badge(
-                    // badgeColor: Theme.of(context).primaryColor,
-                    position:bd. BadgePosition.topEnd(top: -20,end: 12),
-                    badgeContent: Text('${_projects.length}', style: myTextStyleMedium(context),),
-                    // padding: const EdgeInsets.all(8.0),
-                    child: Row(mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        organization == null? const SizedBox(): Text(organization!.name!, style: myTextStyleLarge(context),),
-                        const SizedBox(width: 28,),
-
-                        loading? const SizedBox(width: 16, height: 16,
-                          child: CircularProgressIndicator(
-                            strokeWidth: 4, backgroundColor: Colors.pink,
-                          ),): const SizedBox(),
-                      ],
-
+          bottom: PreferredSize(
+            preferredSize: const Size.fromHeight(48),
+            child: Column(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 28.0),
+                  child: InkWell(
+                    onTap: () {
+                      _refreshProjectPositions(forceRefresh: true);
+                    },
+                    child: bd.Badge(
+                      // badgeColor: Theme.of(context).primaryColor,
+                      position: bd.BadgePosition.topEnd(top: -20, end: 12),
+                      badgeContent: Text(
+                        '${_projects.length}',
+                        style: myTextStyleMedium(context),
+                      ),
+                      // padding: const EdgeInsets.all(8.0),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          organization == null
+                              ? const SizedBox()
+                              : Expanded(
+                                  child: Text(
+                                    organization!.name!,
+                                    style: myTextStyleMediumBoldPrimaryColor(context),
+                                  ),
+                                ),
+                          const SizedBox(
+                            width: 28,
+                          ),
+                          loading
+                              ? SizedBox(
+                                  width: 16,
+                                  height: 16,
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 4,
+                                    backgroundColor:
+                                        Theme.of(context).primaryColor,
+                                  ),
+                                )
+                              : const SizedBox(),
+                        ],
+                      ),
                     ),
                   ),
                 ),
-              ),
-              const SizedBox(height: 24,),
-            ],
-          ),),
+                const SizedBox(
+                  height: 16,
+                ),
+              ],
+            ),
+          ),
         ),
         body: Stack(
           children: [
@@ -201,11 +251,11 @@ class OrganizationMapMobileState extends State<OrganizationMapMobile>
                   '${_projectPositions.length}',
                   style: myTextStyleSmall(context),
                 ),
-                badgeStyle:  bd.BadgeStyle(
+                badgeStyle: bd.BadgeStyle(
                   badgeColor: Theme.of(context).primaryColor,
-                  elevation: 8, padding: const EdgeInsets.all(8),
+                  elevation: 8,
+                  padding: const EdgeInsets.all(8),
                 ),
-
                 position: bd.BadgePosition.topEnd(top: 8, end: 8),
                 child: GoogleMap(
                   mapType: MapType.hybrid,
@@ -225,7 +275,6 @@ class OrganizationMapMobileState extends State<OrganizationMapMobile>
                 ),
               ),
             ),
-
           ],
         ),
       ),

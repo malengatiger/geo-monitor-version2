@@ -87,7 +87,7 @@ void main() async {
 
   if (settings != null) {
     mTx.translate('settings', settings!.locale!);
-    pp('$mx $heartBlue translation service initialization started for locale ${settings!.locale!}');
+    pp('$mx $heartBlue translation service initialization started for locale👌 ${settings!.locale!}');
   }
 
   await SystemChrome.setPreferredOrientations([
@@ -148,7 +148,7 @@ class GeoApp extends StatelessWidget {
               locale: locale,
               scaffoldMessengerKey: rootScaffoldMessengerKey,
               debugShowCheckedModeBanner: false,
-              title: 'GeoMonitor',
+              title: 'Geo',
               theme: themeBloc.getTheme(themeIndex).darkTheme,
               darkTheme: themeBloc.getTheme(themeIndex).darkTheme,
               themeMode: ThemeMode.dark,
@@ -177,8 +177,8 @@ class GeoAndroidApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Locale myLocale = Localizations.localeOf(context);
-    // pp('$mx 🌀🌀🌀🌀 Current Locale: $myLocale ...');
+    Locale myLocale = Localizations.localeOf(context);
+    pp('$mx 🌀🌀🌀🌀 Current Locale: $myLocale ...');
     return GestureDetector(
       onTap: () {
         pp('$mx 🌀🌀🌀🌀 GeoAndroidApp: Tap detected; should dismiss keyboard ...');

@@ -160,7 +160,7 @@ class ProjectMediaListTabletState extends State<ProjectMediaListTablet>
   @override
   void dispose() {
     _animationController.dispose();
-    killSubscription.cancel();
+    // killSubscription.cancel();
     super.dispose();
   }
 

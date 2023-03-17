@@ -191,6 +191,17 @@
   "takePhoto": "Nka Senepe",
   "uploadVideo": "Kenya Video",
   "elapsedTime": "Nako e Fetileng",
+  "projectAreas2": "Morero o na le sebaka se le seng kapa ho feta",
+  "projectMultipleLocations": "Morero o na le libaka tse ngata",
+  "projectLocatedHere": "Morero o fumaneha mona",
+  "refreshData": "Hlahisa lintlha ho tsoa ho seva",
+  "fileSavedWillUpload": "Faele e bolokiloe \u0027me e tla kenngoa haufinyane",
+  "problemWithCamera": "Bothata ba khamera",
+  "gettingCameraReady": "Ho lokisa khamera",
+  "locationRequestReceived": "Kopo ea sebaka e amohetsoe",
+  "recordingComplete": "Ho rekota ho felile",
+  "recordingLimitReached": "Moeli oa ho rekota o fihletsoe",
+  "locationResponseReceived": "Karabo ea sebaka e amohetsoe"
 
 
 

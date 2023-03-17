@@ -192,6 +192,17 @@
   "takePicture": "Take Picture",
   "takePhoto": "Take Photo",
   "uploadVideo": "Upload Video",
-  "elapsedTime": "Elapsed Time"
+  "elapsedTime": "Elapsed Time",
+  "projectAreas2": "Project has one or more areas",
+  "projectMultipleLocations": "Project has multiple locations",
+  "projectLocatedHere": "Project is located here",
+  "refreshData": "Refresh data from server",
+  "fileSavedWillUpload": "File is saved and will be uploaded soon",
+  "problemWithCamera": "Problem with camera",
+  "gettingCameraReady": "Getting camera ready",
+  "locationRequestReceived": "A location request has been received",
+  "recordingComplete": "Recording complete",
+  "recordingLimitReached": "Recording limit reached",
+  "locationResponseReceived": "A location response has been received"
 
 }

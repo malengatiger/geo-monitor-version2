@@ -198,5 +198,16 @@
   "takePicture": "Were foto",
   "takePhoto": "Were foto",
   "uploadVideo": "Bulite vidiyo",
-  "elapsedTime": "Oge gafere"
+  "elapsedTime": "Oge gafere",
+  "projectAreas2": "Project nwere otu mpaghara ma ọ bụ karịa",
+  "projectMultipleLocations": "Ihe oru ngo nwere otutu ebe",
+  "projectLocatedHere": "Project dị ebe a",
+  "refreshData": "Weghachite data sitere na sava",
+  "fileSavedWillUpload": "A na-echekwa faịlụ ma a ga-ebulite ya n\u0027oge adịghị anya",
+  "problemWithCamera": "Nsogbu na igwefoto",
+  "gettingCameraReady": "Na-akwado igwefoto",
+  "locationRequestReceived": "Anatala arịrịọ ọnọdụ",
+  "recordingComplete": "Ndekọ zuru ezu",
+  "recordingLimitReached": "Eruola oke ndekọ",
+  "locationResponseReceived": "Anatawo nzaghachi ọnọdụ"
 }

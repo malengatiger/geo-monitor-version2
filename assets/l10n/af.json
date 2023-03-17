@@ -192,7 +192,18 @@
   "takePicture": "Neem Foto",
   "takePhoto": "Neem \u0027n foto",
   "uploadVideo": "Laai video op",
-  "elapsedTime": "Verstreke Tyd"
+  "elapsedTime": "Verstreke Tyd",
+  "projectAreas2": "Projek het een of meer areas",
+  "projectMultipleLocations": "Projek het verskeie liggings",
+  "projectLocatedHere": "Projek is hier geleë",
+  "refreshData": "Herlaai data vanaf bediener",
+  "fileSavedWillUpload": "Lêer is gestoor en sal binnekort opgelaai word",
+  "problemWithCamera": "Probleem met kamera",
+  "gettingCameraReady": "Maak kamera gereed",
+  "locationRequestReceived": "\u0027n Liggingversoek is ontvang",
+  "recordingComplete": "Opname voltooi",
+  "recordingLimitReached": "Opnamelimiet bereik",
+  "locationResponseReceived": "\u0027n Liggingsreaksie is ontvang"
 
 
 }

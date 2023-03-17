@@ -190,5 +190,16 @@
   "takePicture": "Thatha uMfanekiso",
   "takePhoto": "Thatha imifanekiso",
   "uploadVideo": "Layisha ividiyo",
-  "elapsedTime": "Ixesha eliphelele"
+  "elapsedTime": "Ixesha eliphelele",
+  "projectAreas2": "Iprojekthi inendawo enye okanye ngaphezulu",
+  "projectMultipleLocations": "Iprojekthi ineendawo ezininzi",
+  "projectLocatedHere": "Iprojekthi ilapha",
+  "refreshData": "Hlaziya idatha kwiseva",
+  "fileSavedWillUpload": "Ifayile igciniwe kwaye iza kulayishwa kungekudala",
+  "problemWithCamera": "Ingxaki ngekhamera",
+  "gettingCameraReady": "Ilungiselela ikhamera",
+  "locationRequestReceived": "Isicelo sendawo sifunyenwe",
+  "recordingComplete": "Ukurekhoda kugqityiwe",
+  "recordingLimitReached": "Umda wokurekhoda ufinyelelwe",
+  "locationResponseReceived": "Impendulo yendawo ifunyenwe"
 }

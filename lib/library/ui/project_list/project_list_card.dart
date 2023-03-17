@@ -73,8 +73,10 @@ class _ProjectListCardState extends State<ProjectListCard> {
       menuItems.add(
         FocusedMenuItem(
             // backgroundColor: Theme.of(context).primaryColor,
-            title: Text(projectDashboard == null?'Project Dashboard':projectDashboard!,
-                style: myTextStyleSmallBlack(context)),
+            title: Expanded(
+              child: Text(projectDashboard == null?'Project Dashboard':projectDashboard!,
+                  style: myTextStyleSmallBlack(context)),
+            ),
             trailingIcon: Icon(
               Icons.dashboard,
               color: Theme.of(context).primaryColor,
@@ -86,9 +88,11 @@ class _ProjectListCardState extends State<ProjectListCard> {
       menuItems.add(
         FocusedMenuItem(
             // backgroundColor: Theme.of(context).primaryColor,
-            title: Text(directionsToProject == null?
-              'Project Directions': directionsToProject!,
-              style: myTextStyleSmallBlack(context),
+            title: Expanded(
+              child: Text(directionsToProject == null?
+                'Project Directions': directionsToProject!,
+                style: myTextStyleSmallBlack(context),
+              ),
             ),
             trailingIcon: Icon(
               Icons.directions,
@@ -101,9 +105,11 @@ class _ProjectListCardState extends State<ProjectListCard> {
       menuItems.add(
         FocusedMenuItem(
             // backgroundColor: Theme.of(context).primaryColor,
-            title: Text(projectLocationsMap == null?
-              'Project Locations Map': projectLocationsMap!,
-              style: myTextStyleSmallBlack(context),
+            title: Expanded(
+              child: Text(projectLocationsMap == null?
+                'Project Locations Map': projectLocationsMap!,
+                style: myTextStyleSmallBlack(context),
+              ),
             ),
             trailingIcon: Icon(
               Icons.map,
@@ -117,15 +123,16 @@ class _ProjectListCardState extends State<ProjectListCard> {
       menuItems.add(
         FocusedMenuItem(
             // backgroundColor: Theme.of(context).primaryColor,
-            title: Text(photosVideosAudioClips == null?
-                'Photos & Video & Audio': photosVideosAudioClips!,
-                style: myTextStyleSmallBlack(context)),
+            title: Expanded(
+              child: Text(photosVideosAudioClips == null?
+                  'Photos & Video & Audio': photosVideosAudioClips!,
+                  style: myTextStyleSmallBlack(context)),
+            ),
             trailingIcon: Icon(
               Icons.camera,
               color: Theme.of(context).primaryColor,
             ),
             onPressed: () {
-              pp('...... going to ProjectMedia ...');
               widget.navigateToProjectMedia(project);
             }),
       );
@@ -134,9 +141,11 @@ class _ProjectListCardState extends State<ProjectListCard> {
           widget.user.userType == UserType.orgExecutive) {
         menuItems.add(FocusedMenuItem(
             // backgroundColor: Theme.of(context).primaryColor,
-            title: Text(addProjectLocationHere == null?
-                'Add Project Location Here': addProjectLocationHere!,
-                style: myTextStyleSmallBlack(context)),
+            title: Expanded(
+              child: Text(addProjectLocationHere == null?
+                  'Add Project Location Here': addProjectLocationHere!,
+                  style: myTextStyleSmallBlack(context)),
+            ),
             trailingIcon: Icon(
               Icons.location_pin,
               color: Theme.of(context).primaryColor,
@@ -147,9 +156,11 @@ class _ProjectListCardState extends State<ProjectListCard> {
         menuItems.add(
           FocusedMenuItem(
               // backgroundColor: Theme.of(context).primaryColor,
-              title: Text(addProjectAreas == null?
-                'Create Project Areas': addProjectAreas!,
-                style: myTextStyleSmallBlack(context),
+              title: Expanded(
+                child: Text(addProjectAreas == null?
+                  'Create Project Areas': addProjectAreas!,
+                  style: myTextStyleSmallBlack(context),
+                ),
               ),
               trailingIcon: Icon(
                 Icons.map,
@@ -161,9 +172,11 @@ class _ProjectListCardState extends State<ProjectListCard> {
         );
         menuItems.add(FocusedMenuItem(
             // backgroundColor: Theme.of(context).primaryColor,
-            title: Text(editProject == null?
-                'Edit Project': editProject!,
-                style: myTextStyleSmallBlack(context)),
+            title: Expanded(
+              child: Text(editProject == null?
+                  'Edit Project': editProject!,
+                  style: myTextStyleSmallBlack(context)),
+            ),
             trailingIcon: Icon(
               Icons.create,
               color: Theme.of(context).primaryColor,
@@ -184,7 +197,7 @@ class _ProjectListCardState extends State<ProjectListCard> {
           var mProject = widget.projects.elementAt(index);
 
           return FocusedMenuHolder(
-            menuOffset: 20,
+            menuOffset: 8,
             duration: const Duration(milliseconds: 300),
             menuItems: getPopUpMenuItems(mProject),
             animateMenuItems: true,
