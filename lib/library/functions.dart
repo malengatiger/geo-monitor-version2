@@ -187,7 +187,7 @@ TextStyle myTextStyleMediumBold(BuildContext context) {
 TextStyle myTextStyleMediumBoldGrey(BuildContext context) {
   return GoogleFonts.lato(
     textStyle: Theme.of(context).textTheme.bodyMedium,
-    fontWeight: FontWeight.w900, color: Colors.grey.shade800,
+    fontWeight: FontWeight.w900, color: Colors.grey.shade600,
     fontSize: 13.0,
   );
 }
