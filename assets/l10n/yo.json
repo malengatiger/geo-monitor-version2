@@ -219,7 +219,13 @@
   "managementPeople": "Awọn alakoso, Awọn alakoso ati Awọn alabojuto",
   "fieldWorkers": "Awọn diigi aaye ati awọn oṣiṣẹ miiran",
   "organizations": "Awọn ajo",
-  "information": "Alaye"
+  "information": "Alaye",
+  "videoToBeUploaded": "Fidio yoo wa ni ikojọpọ laipe",
+  "welcomeAboard": "Kaabo ngbenu Geo!",
+  "audioLimitReached": "Agekuru gbigbasilẹ opin ti awọn iṣẹju $count ti de",
+  "photoToBeUploaded": "Fọto yoo wa ni ikojọpọ laipe",
+  "audioToBeUploaded": "Agekuru ohun yoo wa ni ikojọpọ laipe",
+  "videoLimitReached": "Idiwọn gbigbasilẹ fidio ti $count iṣẹju-aaya ti de"
 
 
 }

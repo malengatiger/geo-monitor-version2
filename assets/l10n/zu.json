@@ -217,6 +217,12 @@
   "managementPeople": "Abaphathi, Abaphathi kanye Nabaphathi",
   "fieldWorkers": "Ama-Field Monitors nabanye abasebenzi",
   "organizations": "Izinhlangano",
-  "information": "Ulwazi"
+  "information": "Ulwazi",
+  "videoToBeUploaded": "Ividiyo izolayishwa maduze",
+  "welcomeAboard": "Siyakwamukela ku-Geo!",
+  "audioLimitReached": "Umkhawulo wokuqopha isiqeshana somsindo wamaminithi angu-$count ufinyelelwe",
+  "photoToBeUploaded": "Isithombe sizolayishwa maduze",
+  "audioToBeUploaded": "Isiqeshana somsindo sizolayishwa maduze",
+  "videoLimitReached": "Umkhawulo wokurekhodwa kwevidiyo wamasekhondi angu-$count ufinyelelwe"
 
 }

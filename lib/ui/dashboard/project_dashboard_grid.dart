@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:geo_monitor/library/bloc/downloader.dart';
+import 'package:geo_monitor/ui/dashboard/project_dashboard_mobile.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:universal_platform/universal_platform.dart';
 
@@ -30,7 +31,7 @@ class ProjectDashboardGrid extends StatefulWidget {
       required this.project,
       required this.showProjectName,
       this.horizontalPadding,
-      required this.crossAxisCount})
+      required this.crossAxisCount, required this.dashboardStrings})
       : super(key: key);
   final Function(int) onTypeTapped;
   final double? totalHeight;
@@ -39,6 +40,7 @@ class ProjectDashboardGrid extends StatefulWidget {
   final Project project;
   final bool showProjectName;
   final int crossAxisCount;
+  final DashboardStrings dashboardStrings;
 
   @override
   State<ProjectDashboardGrid> createState() => _ProjectDashboardGridState();
@@ -46,13 +48,6 @@ class ProjectDashboardGrid extends StatefulWidget {
 
 class _ProjectDashboardGridState extends State<ProjectDashboardGrid>
     with TickerProviderStateMixin {
-  // late AnimationController _projectAnimationController;
-  // late AnimationController _userAnimationController;
-  // late AnimationController _photoAnimationController;
-  // late AnimationController _videoAnimationController;
-  // late AnimationController _positionAnimationController;
-  // late AnimationController _polygonAnimationController;
-  // late AnimationController _audioAnimationController;
 
   late StreamSubscription<List<Project>> projectSubscription;
   late StreamSubscription<List<User>> userSubscription;
@@ -160,37 +155,6 @@ class _ProjectDashboardGridState extends State<ProjectDashboardGrid>
       });
     }
   }
-
-  // void _setAnimationControllers() {
-  //   _projectAnimationController = AnimationController(
-  //       duration: Duration(milliseconds: dur),
-  //       reverseDuration: Duration(milliseconds: dur),
-  //       vsync: this);
-  //   _audioAnimationController = AnimationController(
-  //       duration: Duration(milliseconds: dur),
-  //       reverseDuration: Duration(milliseconds: dur),
-  //       vsync: this);
-  //   _userAnimationController = AnimationController(
-  //       duration: Duration(milliseconds: dur),
-  //       reverseDuration: Duration(milliseconds: dur),
-  //       vsync: this);
-  //   _photoAnimationController = AnimationController(
-  //       duration: Duration(milliseconds: dur),
-  //       reverseDuration: Duration(milliseconds: dur),
-  //       vsync: this);
-  //   _videoAnimationController = AnimationController(
-  //       duration: Duration(milliseconds: dur),
-  //       reverseDuration: Duration(milliseconds: dur),
-  //       vsync: this);
-  //   _polygonAnimationController = AnimationController(
-  //       duration: Duration(milliseconds: dur),
-  //       reverseDuration: Duration(milliseconds: dur),
-  //       vsync: this);
-  //   _positionAnimationController = AnimationController(
-  //       duration: Duration(milliseconds: dur),
-  //       reverseDuration: Duration(milliseconds: dur),
-  //       vsync: this);
-  // }
 
   void _listenToProjectStreams() async {
     projectSubscription = projectBloc.projectStream.listen((event) {
@@ -448,7 +412,7 @@ class _ProjectDashboardGridState extends State<ProjectDashboardGrid>
                         widget.onTypeTapped(typePhotos);
                       },
                       child: DashboardElement(
-                        title: 'Photos',
+                        title: widget.dashboardStrings.photos,
                         number: _photos.length,
                         topPadding: widget.topPadding,
                         textStyle: GoogleFonts.secularOne(
@@ -467,7 +431,7 @@ class _ProjectDashboardGridState extends State<ProjectDashboardGrid>
                         widget.onTypeTapped(typeVideos);
                       },
                       child: DashboardElement(
-                        title: 'Videos',
+                        title: widget.dashboardStrings.videos,
                         topPadding: widget.topPadding,
                         number: _videos.length,
                         onTapped: () {
@@ -477,12 +441,10 @@ class _ProjectDashboardGridState extends State<ProjectDashboardGrid>
                     ),
                     GestureDetector(
                       onTap: () {
-                        pp('$mm widget on tapped: typeAudios $typeAudios ...');
-
                         widget.onTypeTapped(typeAudios);
                       },
                       child: DashboardElement(
-                        title: 'Audio Clips',
+                        title: widget.dashboardStrings.audioClips,
                         topPadding: widget.topPadding,
                         number: _audios.length,
                         textStyle: GoogleFonts.secularOne(
@@ -496,12 +458,10 @@ class _ProjectDashboardGridState extends State<ProjectDashboardGrid>
                     ),
                     GestureDetector(
                       onTap: () {
-                        pp('$mm widget on tapped: typePositions $typePositions ...');
-
                         widget.onTypeTapped(typePositions);
                       },
                       child: DashboardElement(
-                        title: 'Locations',
+                        title: widget.dashboardStrings.locations,
                         topPadding: widget.topPadding,
                         number: _projectPositions.length,
                         onTapped: () {
@@ -511,12 +471,10 @@ class _ProjectDashboardGridState extends State<ProjectDashboardGrid>
                     ),
                     GestureDetector(
                       onTap: () {
-                        pp('$mm widget on tapped: typePolygons $typePolygons ...');
-
                         widget.onTypeTapped(typePolygons);
                       },
                       child: DashboardElement(
-                        title: 'Areas',
+                        title: widget.dashboardStrings.areas,
                         topPadding: widget.topPadding,
                         number: _projectPolygons.length,
                         textStyle: GoogleFonts.secularOne(
@@ -530,12 +488,10 @@ class _ProjectDashboardGridState extends State<ProjectDashboardGrid>
                     ),
                     GestureDetector(
                       onTap: () {
-                        pp('$mm widget on tapped: typeSchedules $typeSchedules ...');
-
                         widget.onTypeTapped(typeSchedules);
                       },
                       child: DashboardElement(
-                        title: 'Schedules',
+                        title: widget.dashboardStrings.schedules,
                         topPadding: widget.topPadding,
                         number: _schedules.length,
                         onTapped: () {

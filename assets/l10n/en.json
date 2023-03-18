@@ -219,5 +219,11 @@
   "managementPeople": "Managers, Administrators and Supervisors",
   "fieldWorkers": "Field Monitors and other workers",
   "organizations": "Organizations",
-  "information": "Information"
+  "information": "Information",
+  "videoToBeUploaded": "Video will be uploaded soon",
+  "welcomeAboard": "Welcome aboard Geo!",
+  "audioLimitReached": "Audio clip recording limit of $count minutes has been reached",
+  "photoToBeUploaded": "Photo will be uploaded soon",
+  "audioToBeUploaded": "Audio clip will be uploaded soon",
+  "videoLimitReached": "Video recording limit of $count seconds has been reached"
 }

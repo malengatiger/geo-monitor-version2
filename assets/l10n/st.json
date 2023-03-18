@@ -217,7 +217,13 @@
   "managementPeople": "Batsamaisi, Batsamaisi le Baokameli",
   "fieldWorkers": "Field Monitors le basebetsi ba bang",
   "organizations": "Mekhatlo",
-  "information": "Boitsebiso"
+  "information": "Boitsebiso",
+  "videoToBeUploaded": "Video e tla kenngoa haufinyane",
+  "welcomeAboard": "Rea u amohela ka har\u0027a Geo!",
+  "audioLimitReached": "Tekanyetso ea ho rekota likoto tsa molumo ea $count metsotso e fihletsoe",
+  "photoToBeUploaded": "Senepe se tla kenngoa haufinyane",
+  "audioToBeUploaded": "Sekotwana sa molumo se tla kenngoa haufinyane",
+  "videoLimitReached": "Tekanyetso ea ho rekota lifitio ea $count metsotsoana e fihletsoe"
 
 
 

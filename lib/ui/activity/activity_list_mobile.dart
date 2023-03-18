@@ -200,20 +200,7 @@ class ActivityListMobileState extends State<ActivityListMobile>
         fcmBloc.geofenceStream.listen((GeofenceEvent event) async {
       pp('$mm: 🍎geofenceSubscriptionFCM: 🍎 GeofenceEvent: '
           'user ${event.user!.name} arrived: ${event.projectName} ');
-      var arr = await mTx.translate('arrivedAt', settings!.locale!);
-      if (event.projectName != null) {
-        var arr1 = arr.replaceAll('\$member', event.user!.name!);
-        var arrivedAt = arr1.replaceAll('\$project', event.projectName!);
-        if (mounted) {
-          showToast(
-              duration: const Duration(seconds: 5),
-              backgroundColor: Theme.of(context).primaryColor,
-              padding: 20,
-              textStyle: myTextStyleMedium(context),
-              message: arrivedAt,
-              context: context);
-        }
-      }
+      await _handleGeofenceEvent(event);
     });
     settingsSubscriptionFCM =
         fcmBloc.settingsStream.listen((SettingsModel event) {
@@ -230,6 +217,23 @@ class ActivityListMobileState extends State<ActivityListMobile>
         setState(() {});
       }
     });
+  }
+
+  Future<void> _handleGeofenceEvent(GeofenceEvent event) async {
+      var arr = await mTx.translate('arrivedAt', settings!.locale!);
+    var arr1 = arr.replaceAll('\$member', event.user!.name!);
+    if (event.projectName != null) {
+      var arrivedAt = arr1.replaceAll('\$project', event.projectName!);
+      if (mounted) {
+        showToast(
+            duration: const Duration(seconds: 5),
+            backgroundColor: Theme.of(context).primaryColor,
+            padding: 20,
+            textStyle: myTextStyleMedium(context),
+            message: arrivedAt,
+            context: context);
+      }
+    }
   }
 
   bool isActivityValid(ActivityModel m) {

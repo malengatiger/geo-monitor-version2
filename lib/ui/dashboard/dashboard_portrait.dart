@@ -312,6 +312,28 @@ class DashboardPortraitState extends State<DashboardPortrait>
     pp('$mm _getUserData: data bag returned ...');
   }
 
+  Future<void> _handleGeofenceEvent(GeofenceEvent event) async {
+    var settings = await prefsOGx.getSettings();
+    if (settings != null) {
+      var arr = await mTx.translate('arrivedAt', settings!.locale!);
+      var arr1 = arr.replaceAll('\$member', event.user!.name!);
+      if (event.projectName != null) {
+        var arrivedAt = arr1.replaceAll('\$project', event.projectName!);
+        if (mounted) {
+          showToast(
+              duration: const Duration(seconds: 5),
+              backgroundColor: Theme
+                  .of(context)
+                  .primaryColor,
+              padding: 20,
+              textStyle: myTextStyleMedium(context),
+              message: arrivedAt,
+              context: context);
+        }
+      }
+    }
+  }
+
   void _listenForFCM() async {
     var android = UniversalPlatform.isAndroid;
     var ios = UniversalPlatform.isIOS;
@@ -321,19 +343,7 @@ class DashboardPortraitState extends State<DashboardPortrait>
           fcmBloc.geofenceStream.listen((GeofenceEvent event) async {
             pp('$mm: 🍎geofenceSubscriptionFCM: 🍎 GeofenceEvent: '
                 'user ${event.user!.name} arrived: ${event.projectName} ');
-            var arr = await mTx.translate('arrivedAt', settings!.locale!);
-            if (event.projectName != null) {
-              var arr1 = arr.replaceAll('\$member', event.user!.name!);
-              var arrivedAt = arr1.replaceAll('\$project', event.projectName!);
-              if (mounted) {
-                showToast(
-                    duration: const Duration(seconds: 5),
-                    backgroundColor: Theme.of(context).primaryColor,
-                    padding: 20,
-                    textStyle: myTextStyleMedium(context),
-                    message: arrivedAt, context: context);
-              }
-            }
+            _handleGeofenceEvent(event);
           });
       projectSubscriptionFCM =
           fcmBloc.projectStream.listen((Project project) async {

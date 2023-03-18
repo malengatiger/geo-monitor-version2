@@ -108,7 +108,7 @@
   "pleaseSelectLanguage": "Tafadhali Chagua Lugha",
   "pleaseActivityStreamHours": "Tafadhali weka idadi ya saa ambazo mtiririko wako wa shughuli lazima uonyeshe",
   "at": "katika",
-  "arrivedAt": "Iliwasili katika mradi wa $",
+  "arrivedAt": "Iliwasili katika mradi wa $project",
   "pleaseEnterDistance": "Tafadhali weka umbali wa juu zaidi kutoka kwa mradi kwa mita",
   "leftFrom": "Unaondoka kwenye mradi wa $",
   "maxVideoLength": "Upeo wa Urefu wa Video kwa Sekunde",
@@ -217,6 +217,12 @@
   "managementPeople": "Wasimamizi, Wasimamizi na Wasimamizi",
   "fieldWorkers": "Wachunguzi wa shamba na wafanyikazi wengine",
   "organizations": "Mashirika",
-  "information": "Habari"
+  "information": "Habari",
+  "videoToBeUploaded": "Video itapakiwa hivi karibuni",
+  "welcomeAboard": "Karibu ndani ya Geo!",
+  "audioLimitReached": "Kikomo cha kurekodi klipu ya sauti cha dakika $count kimefikiwa",
+  "photoToBeUploaded": "Picha itapakiwa hivi karibuni",
+  "audioToBeUploaded": "Klipu ya sauti itapakiwa hivi karibuni",
+  "videoLimitReached": "Kikomo cha kurekodi video cha sekunde $count kimefikiwa"
 
 }

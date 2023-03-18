@@ -21,6 +21,23 @@ class RecordingControls extends StatelessWidget {
   final bool isRecording;
   final bool isPaused;
   final bool isStopped;
+
+  void _onPlayTapped() {
+    onPlay();
+  }
+
+  void _onPlayStopped() {
+    onStop();
+  }
+
+  void _onPlayPaused() {
+    onPause();
+  }
+
+  void _onRecord() {
+    onRecord();
+  }
+
   @override
   Widget build(BuildContext context) {
     var showRecord = true;
@@ -101,21 +118,7 @@ class RecordingControls extends StatelessWidget {
     );
   }
 
-  void _onPlayTapped() {
-    onPlay();
-  }
 
-  void _onPlayStopped() {
-    onStop();
-  }
-
-  void _onPlayPaused() {
-    onPause();
-  }
-
-  void _onRecord() {
-    onRecord();
-  }
 }
 
 class TimerCard extends StatelessWidget {

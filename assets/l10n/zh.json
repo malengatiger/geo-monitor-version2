@@ -224,6 +224,12 @@
   "managementPeople": "经理、行政人员和主管",
   "fieldWorkers": "现场监督员和其他工人",
   "organizations": "组织",
-  "information": "信息"
+  "information": "信息",
+  "videoToBeUploaded": "视频会尽快上传",
+  "welcomeAboard": "欢迎加入 Geo！",
+  "audioLimitReached": "已达到 $count 分钟的音频剪辑录制限制",
+  "photoToBeUploaded": "照片将很快上传",
+  "audioToBeUploaded": "音频剪辑将很快上传",
+  "videoLimitReached": "已达到 $count 秒的视频录制限制"
 
 }

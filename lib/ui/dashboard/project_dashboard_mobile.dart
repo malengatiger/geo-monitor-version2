@@ -7,18 +7,18 @@ import 'package:geo_monitor/library/data/settings_model.dart';
 import 'package:geo_monitor/library/ui/maps/project_map_mobile.dart';
 import 'package:geo_monitor/library/ui/media/list/project_media_list_mobile.dart';
 import 'package:geo_monitor/ui/activity/geo_activity_mobile.dart';
+import 'package:geo_monitor/ui/dashboard/project_dashboard_grid.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:universal_platform/universal_platform.dart';
 
+import '../../l10n/translation_handler.dart';
 import '../../library/api/prefs_og.dart';
 import '../../library/bloc/connection_check.dart';
 import '../../library/bloc/fcm_bloc.dart';
 import '../../library/bloc/project_bloc.dart';
 import '../../library/bloc/theme_bloc.dart';
 import '../../library/data/audio.dart';
-import '../../library/data/data_bag.dart';
-import '../../library/data/field_monitor_schedule.dart';
 import '../../library/data/photo.dart';
 import '../../library/data/project.dart';
 import '../../library/data/project_polygon.dart';
@@ -58,17 +58,13 @@ class ProjectDashboardMobileState extends State<ProjectDashboardMobile>
 
   var busy = false;
 
-  var _photos = <Photo>[];
-  var _videos = <Video>[];
-  var _projectPositions = <ProjectPosition>[];
-  var _projectPolygons = <ProjectPolygon>[];
-  var _schedules = <FieldMonitorSchedule>[];
-  var _audios = <Audio>[];
   User? user;
+  DashboardStrings? dashboardStrings;
 
   static const mm = '🔆🔆🔆🔆🔆🔆🔆🔆 ProjectDashboardMobile: 🔆🔆';
   bool networkAvailable = false;
   final dur = 600;
+  String? title;
 
   @override
   void initState() {
@@ -78,12 +74,21 @@ class ProjectDashboardMobileState extends State<ProjectDashboardMobile>
         vsync: this);
 
     super.initState();
+    _setTexts();
     _listenForFCM();
 
     if (widget.user != null) {
       _getData(true);
     } else {
       _getData(false);
+    }
+  }
+
+  void _setTexts() async {
+    var sett = await prefsOGx.getSettings();
+    if (sett != null) {
+      dashboardStrings = await DashboardStrings.getTranslated();
+      title = await mTx.translate('projectDashboard', sett!.locale!);
     }
   }
 
@@ -138,7 +143,7 @@ class ProjectDashboardMobileState extends State<ProjectDashboardMobile>
           forceRefresh: forceRefresh,
           startDate: startDate!,
           endDate: endDate!);
-      await _extractData(bag);
+      // await _extractData(bag);
       setState(() {});
     } catch (e) {
       pp('$mm $e - will show snackbar ..');
@@ -151,18 +156,18 @@ class ProjectDashboardMobileState extends State<ProjectDashboardMobile>
     });
   }
 
-  Future _extractData(DataBag bag) async {
-    pp('$mm ............ Extracting org data from bag');
-    _projectPositions = bag.projectPositions!;
-    _projectPolygons = bag.projectPolygons!;
-    _photos = bag.photos!;
-    _videos = bag.videos!;
-    _schedules = bag.fieldMonitorSchedules!;
-    _audios = bag.audios!;
-
-    pp('$mm ..... setting state after extracting org data from bag');
-    setState(() {});
-  }
+  // Future _extractData(DataBag bag) async {
+  //   pp('$mm ............ Extracting org data from bag');
+  //   _projectPositions = bag.projectPositions!;
+  //   _projectPolygons = bag.projectPolygons!;
+  //   _photos = bag.photos!;
+  //   _videos = bag.videos!;
+  //   _schedules = bag.fieldMonitorSchedules!;
+  //   _audios = bag.audios!;
+  //
+  //   pp('$mm ..... setting state after extracting org data from bag');
+  //   setState(() {});
+  // }
 
   void _listenForFCM() async {
     var android = UniversalPlatform.isAndroid;
@@ -178,23 +183,22 @@ class ProjectDashboardMobileState extends State<ProjectDashboardMobile>
       });
       projectPolygonSubscriptionFCM =
           fcmBloc.projectPolygonStream.listen((ProjectPolygon polygon) async {
-            pp('$mm: 🍎 🍎 polygon arrived: ${polygon.name} ... 🍎 🍎');
+        pp('$mm: 🍎 🍎 polygon arrived: ${polygon.name} ... 🍎 🍎');
 
-            await _getData(false);
-          });
+        await _getData(false);
+      });
       projectPositionSubscriptionFCM =
           fcmBloc.projectPositionStream.listen((ProjectPosition pos) async {
-            pp('$mm: 🍎 🍎 position arrived: ${pos.name} ... 🍎 🍎');
+        pp('$mm: 🍎 🍎 position arrived: ${pos.name} ... 🍎 🍎');
 
-            await _getData(false);
-          });
-
+        await _getData(false);
+      });
 
       settingsSubscriptionFCM = fcmBloc.settingsStream.listen((settings) async {
         pp('$mm: 🍎🍎 settings arrived with themeIndex: ${settings.themeIndex}... 🍎🍎');
         Locale newLocale = Locale(settings!.locale!);
-        final m = LocaleAndTheme(themeIndex: settings!.themeIndex!,
-            locale: newLocale);
+        final m = LocaleAndTheme(
+            themeIndex: settings!.themeIndex!, locale: newLocale);
         themeBloc.themeStreamController.sink.add(m);
         if (mounted) {
           setState(() {});
@@ -271,8 +275,8 @@ class ProjectDashboardMobileState extends State<ProjectDashboardMobile>
     return SafeArea(
       child: Scaffold(
         appBar: AppBar(
-          title: const Text(
-            'Project Dashboard',
+          title:  Text(title == null?
+            'Project Dashboard': title!,
           ),
           actions: [
             IconButton(
@@ -344,170 +348,19 @@ class ProjectDashboardMobileState extends State<ProjectDashboardMobile>
               )
             : Stack(
                 children: [
-                  Padding(
-                    padding: const EdgeInsets.all(12.0),
-                    child: GridView.count(
-                      crossAxisCount: 2,
-                      children: [
-                        GestureDetector(
-                          onTap: () {
-                            _navigateToProjectMedia(widget.project);
-                          },
-                          child: Card(
-                            elevation: 8,
-                            shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(16.0)),
-                            child: Column(
-                              children: [
-                                const SizedBox(
-                                  height: 60,
-                                ),
-                                Text('${_photos.length}', style: style),
-                                const SizedBox(
-                                  height: 8,
-                                ),
-                                Text(
-                                  'Photos',
-                                  style: Styles.greyLabelSmall,
-                                )
-                              ],
-                            ),
-                          ),
-                        ),
-                        GestureDetector(
-                          onTap: () {
-                            _navigateToProjectMedia(widget.project);
-                          },
-                          child: Card(
-                            elevation: 8,
-                            shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(16.0)),
-                            child: Column(
-                              children: [
-                                const SizedBox(
-                                  height: 60,
-                                ),
-                                Text('${_videos.length}', style: style),
-                                const SizedBox(
-                                  height: 8,
-                                ),
-                                Text(
-                                  'Videos',
-                                  style: Styles.greyLabelSmall,
-                                )
-                              ],
-                            ),
-                          ),
-                        ),
-                        GestureDetector(
-                          onTap: () {
-                            _navigateToProjectMedia(widget.project);
-                          },
-                          child: Card(
-                            elevation: 8,
-                            shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(16.0)),
-                            child: Column(
-                              children: [
-                                const SizedBox(
-                                  height: 60,
-                                ),
-                                Text('${_audios.length}', style: style),
-                                const SizedBox(
-                                  height: 8,
-                                ),
-                                Text(
-                                  'Audio Clips',
-                                  style: Styles.greyLabelSmall,
-                                )
-                              ],
-                            ),
-                          ),
-                        ),
-                        GestureDetector(
-                          onTap: () {
-                            _navigateToProjectMap(widget.project);
-                          },
-                          child: Card(
-                            elevation: 8,
-                            shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(16.0)),
-                            child: Column(
-                              children: [
-                                const SizedBox(
-                                  height: 60,
-                                ),
-                                Text('${_projectPolygons.length}',
-                                    style: style),
-                                const SizedBox(
-                                  height: 8,
-                                ),
-                                Text(
-                                  'Areas',
-                                  style: Styles.greyLabelSmall,
-                                )
-                              ],
-                            ),
-                          ),
-                        ),
-                        GestureDetector(
-                          onTap: () {
-                            _navigateToProjectMap(widget.project);
-                          },
-                          child: Card(
-                            elevation: 8,
-                            shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(16.0)),
-                            child: Column(
-                              children: [
-                                const SizedBox(
-                                  height: 60,
-                                ),
-                                Text('${_projectPositions.length}',
-                                    style: style),
-                                const SizedBox(
-                                  height: 8,
-                                ),
-                                Text(
-                                  'Locations',
-                                  style: Styles.greyLabelSmall,
-                                )
-                              ],
-                            ),
-                          ),
-                        ),
-                        GestureDetector(
-                          onTap: () {
-                            //todo - navigate to schedules
-                          },
-                          child: Card(
-                            elevation: 8,
-                            shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(16.0)),
-                            child: Column(
-                              children: [
-                                const SizedBox(
-                                  height: 60,
-                                ),
-                                Text('${_schedules.length}', style: style),
-                                const SizedBox(
-                                  height: 8,
-                                ),
-                                Text(
-                                  'Schedules',
-                                  style: Styles.greyLabelSmall,
-                                )
-                              ],
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
+                  dashboardStrings == null? const SizedBox():ProjectDashboardGrid(onTypeTapped: onTypeTapped,
+                      dashboardStrings: dashboardStrings!,
+                      project: widget.project,
+                      showProjectName: true,
+                      crossAxisCount: 2)
                 ],
               ),
       ),
     );
+  }
+
+  onTypeTapped(int p1) {
+    //todo - implement types tapped
   }
 }
 
@@ -548,3 +401,48 @@ void showKillDialog({required String message, required BuildContext context}) {
 }
 
 final mm = '${E.heartRed}${E.heartRed}${E.heartRed}${E.heartRed} Dashboard: ';
+
+class DashboardStrings {
+  late String projects,
+      members,
+      photos,
+      videos,
+      areas,
+      locations,
+      schedules,
+      audioClips;
+
+  DashboardStrings(
+      {required this.projects,
+      required this.members,
+      required this.photos,
+      required this.videos,
+      required this.areas,
+      required this.locations,
+      required this.schedules,
+      required this.audioClips});
+
+  static Future<DashboardStrings> getTranslated() async {
+    var sett = await prefsOGx.getSettings();
+    var projects = await mTx.translate('projects', sett!.locale!);
+    var members = await mTx.translate('members', sett.locale!);
+    var photos = await mTx.translate('photos', sett.locale!);
+    var audioClips = await mTx.translate('audioClips', sett.locale!);
+    var locations = await mTx.translate('locations', sett.locale!);
+    var areas = await mTx.translate('areas', sett.locale!);
+    var schedules = await mTx.translate('schedules', sett.locale!);
+    var videos = await mTx.translate('videos', sett.locale!);
+
+    var m = DashboardStrings(
+        projects: projects,
+        members: members,
+        photos: photos,
+        videos: videos,
+        areas: areas,
+        locations: locations,
+        schedules: schedules,
+        audioClips: audioClips);
+
+    return m;
+  }
+}

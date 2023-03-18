@@ -219,7 +219,13 @@
   "managementPeople": "Bestuurders, administrateurs en toesighouers",
   "fieldWorkers": "Veldmonitors en ander werkers",
   "organizations": "Organisasies",
-  "information": "Inligting"
+  "information": "Inligting",
+  "videoToBeUploaded": "Video sal binnekort opgelaai word",
+  "welcomeAboard": "Welkom aan boord van Geo!",
+  "audioLimitReached": "Oudiosnit-opnamelimiet van $count minute is bereik",
+  "photoToBeUploaded": "Foto sal binnekort opgelaai word",
+  "audioToBeUploaded": "Oudiosnit sal binnekort opgelaai word",
+  "videoLimitReached": "Video-opnamelimiet van $count sekondes is bereik"
 
 
 

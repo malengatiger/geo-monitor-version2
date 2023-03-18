@@ -89,7 +89,7 @@ class IntroPageState extends State<IntroPage>
                           },
                           child: Text(
                             widget.title,
-                            style: myTextStyleLarge(context),
+                            style: myTextStyleLargerPrimaryColor(context),
                           ),
                         ),
                         const SizedBox(

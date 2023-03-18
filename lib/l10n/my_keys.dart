@@ -165,11 +165,11 @@ class MyKeys {
     hashMap["projectAreaAdded"] = "projectAreaAdded";
     hashMap["memberAtProject"] = "memberAtProject";
     hashMap["memberAddedChanged"] = "memberAddedChanged";
-    hashMap["enterFullName"] ="enterFullName";
-    hashMap["enterEmail"] ="enterEmail";
-    hashMap["enterCell"] ="enterCell";
-    hashMap["submitMember"] ="submitMember";
-    hashMap["profilePhoto"] ="profilePhoto";
+    hashMap["enterFullName"] = "enterFullName";
+    hashMap["enterEmail"] = "enterEmail";
+    hashMap["enterCell"] = "enterCell";
+    hashMap["submitMember"] = "submitMember";
+    hashMap["profilePhoto"] = "profilePhoto";
     hashMap['memberLocationResponse'] = 'memberLocationResponse';
     hashMap["South Africa"] = "South Africa";
     hashMap["Zimbabwe"] = "Zimbabwe";
@@ -184,10 +184,10 @@ class MyKeys {
     hashMap["conditionAdded"] = "conditionAdded";
 
     hashMap["stopMessage"] = "stopMessage";
-    hashMap["restartMessage"] =  "restartMessage";
-    hashMap["stop"] =  "stop";
-    hashMap["cancel"] =  "cancel";
-    hashMap["restart"] =  "restart";
+    hashMap["restartMessage"] = "restartMessage";
+    hashMap["stop"] = "stop";
+    hashMap["cancel"] = "cancel";
+    hashMap["restart"] = "restart";
 
     hashMap["projectLocationsAreas"] = "projectLocationsAreas";
     hashMap["projectMonitoringAreas"] = "projectMonitoringAreas";
@@ -226,36 +226,42 @@ class MyKeys {
     hashMap["projectAreas"] = "projectAreas";
     hashMap["refreshData"] = "refreshData";
 
-    hashMap["gettingCameraReady"] =  "gettingCameraReady";
-    hashMap["recordingComplete"] =  "recordingComplete";
-    hashMap["recordingLimitReached"] =  "recordingLimitReached";
-    hashMap["duration"] =  "duration";
-    hashMap["fileSavedWillUpload"] =  "fileSavedWillUpload";
-    hashMap["problemWithCamera"] =  "problemWithCamera";
-    hashMap["locationRequestReceived"] =  "locationRequestReceived";
-    hashMap["locationResponseReceived"] =  "locationResponseReceived";
+    hashMap["gettingCameraReady"] = "gettingCameraReady";
+    hashMap["recordingComplete"] = "recordingComplete";
+    hashMap["recordingLimitReached"] = "recordingLimitReached";
+    hashMap["duration"] = "duration";
+    hashMap["fileSavedWillUpload"] = "fileSavedWillUpload";
+    hashMap["problemWithCamera"] = "problemWithCamera";
+    hashMap["locationRequestReceived"] = "locationRequestReceived";
+    hashMap["locationResponseReceived"] = "locationResponseReceived";
 
-    hashMap["memberArrivedAtProject"] =  "memberArrivedAtProject";
-    hashMap["memberLeftProject"] =  "memberLeftProject";
-    hashMap["organizationActivity"] =  "organizationActivity";
+    hashMap["memberArrivedAtProject"] = "memberArrivedAtProject";
+    hashMap["memberLeftProject"] = "memberLeftProject";
+    hashMap["organizationActivity"] = "organizationActivity";
 
-    hashMap["memberActivity"] =  "memberActivity";
-    hashMap["projectActivity"] =  "projectActivity";
+    hashMap["memberActivity"] = "memberActivity";
+    hashMap["projectActivity"] = "projectActivity";
 
     hashMap["infrastructure"] = "infrastructure";
     hashMap["govt"] = "govt";
     hashMap["youth"] = "youth";
     hashMap["community"] = "community";
 
-    hashMap["managementPeople"] =  "managementPeople";
-    hashMap["fieldWorkers"] =  "fieldWorkers";
-    hashMap["executives"] =  "executives";
-    hashMap["organizations"] =  "organizations";
-    hashMap["information"] =  "information";
-    hashMap["government"] =  "government";
-    hashMap["thankYou"] =  "thankYou";
-    hashMap["communityTitle"] =  "communityTitle";
-    hashMap["thankYouMessage"] =  "thankYouMessage";
+    hashMap["managementPeople"] = "managementPeople";
+    hashMap["fieldWorkers"] = "fieldWorkers";
+    hashMap["executives"] = "executives";
+    hashMap["organizations"] = "organizations";
+    hashMap["information"] = "information";
+    hashMap["government"] = "government";
+    hashMap["thankYou"] = "thankYou";
+    hashMap["communityTitle"] = "communityTitle";
+    hashMap["thankYouMessage"] = "thankYouMessage";
 
+    hashMap["videoToBeUploaded"] = "videoToBeUploaded";
+    hashMap["photoToBeUploaded"] = "photoToBeUploaded";
+    hashMap["audioToBeUploaded"] = "audioToBeUploaded";
+    hashMap["videoLimitReached"] = "videoLimitReached";
+    hashMap["audioLimitReached"] = "audioLimitReached";
+    hashMap["welcomeAboard"] = "welcomeAboard";
   }
 }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:geo_monitor/ui/dashboard/project_dashboard_mobile.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import '../../library/bloc/downloader.dart';
@@ -18,7 +19,7 @@ class UserDashboardGrid extends StatelessWidget {
       this.elementPadding,
       this.leftPadding,
       required this.gridPadding,
-      required this.crossAxisCount, required this.width});
+      required this.crossAxisCount, required this.width, required this.dashboardStrings});
 
   final Function(int) onTypeTapped;
   final double? totalHeight;
@@ -30,6 +31,7 @@ class UserDashboardGrid extends StatelessWidget {
   final double gridPadding;
   final double width;
   final int crossAxisCount;
+  final DashboardStrings dashboardStrings;
 
   final mm = '🔵🔵🔵🔵 UserDashboardGrid:  🍎 ';
 
@@ -71,11 +73,10 @@ class UserDashboardGrid extends StatelessWidget {
                   children: [
                     GestureDetector(
                       onTap: () {
-                        pp('$mm widget on tapped: typeProjects $typeProjects ...');
                         onTypeTapped(typeProjects);
                       },
                       child: DashboardElement(
-                        title: 'Projects',
+                        title: dashboardStrings.projects,
                         topPadding: elementPadding,
                         number: dataBag.projects!.length,
                         onTapped: () {
@@ -85,12 +86,10 @@ class UserDashboardGrid extends StatelessWidget {
                     ),
                     GestureDetector(
                       onTap: () {
-                        pp('$mm widget on tapped: typePhotos $typePhotos ...');
-
                         onTypeTapped(typePhotos);
                       },
                       child: DashboardElement(
-                        title: 'Photos',
+                        title: dashboardStrings.photos,
                         number: dataBag.photos!.length,
                         topPadding: elementPadding,
                         textStyle: GoogleFonts.secularOne(
@@ -104,12 +103,10 @@ class UserDashboardGrid extends StatelessWidget {
                     ),
                     GestureDetector(
                       onTap: () {
-                        pp('$mm widget on tapped: typeVideos $typeVideos ...');
-
                         onTypeTapped(typeVideos);
                       },
                       child: DashboardElement(
-                        title: 'Videos',
+                        title: dashboardStrings.videos,
                         topPadding: elementPadding,
                         number: dataBag.videos!.length,
                         onTapped: () {
@@ -119,12 +116,10 @@ class UserDashboardGrid extends StatelessWidget {
                     ),
                     GestureDetector(
                       onTap: () {
-                        pp('$mm widget on tapped: typeAudios $typeAudios ...');
-
                         onTypeTapped(typeAudios);
                       },
                       child: DashboardElement(
-                        title: 'Audio Clips',
+                        title: dashboardStrings.audioClips,
                         topPadding: elementPadding,
                         number: dataBag.audios!.length,
                         textStyle: GoogleFonts.secularOne(
@@ -138,12 +133,10 @@ class UserDashboardGrid extends StatelessWidget {
                     ),
                     GestureDetector(
                       onTap: () {
-                        pp('$mm widget on tapped: typeSchedules $typeSchedules ...');
-
                         onTypeTapped(typeSchedules);
                       },
                       child: DashboardElement(
-                        title: 'Schedules',
+                        title: dashboardStrings.schedules,
                         topPadding: elementPadding,
                         number: dataBag.fieldMonitorSchedules!.length,
                         onTapped: () {

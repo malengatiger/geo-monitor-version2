@@ -110,7 +110,7 @@
   "at": "e",
   "arrivedAt": "Ufike kwiprojekthi ye-$",
   "pleaseEnterDistance": "Nceda ngenisa umgama omde ukusuka kwiprojekthi ngeemitha",
-  "leftFrom": "Ukushiya iprojekthi ye-$",
+  "leftFrom": "Ukushiya iprojekthi ye-$project",
   "maxVideoLength": "UBomi boBude bevidiyo kwiSekhondi",
   "activityStreamHours": "Ngenisa inani leeyure ekufuneka ziboniswe ngumjelo wakho womsebenzi",
   "dashboard": "Dashboard",
@@ -217,6 +217,12 @@
   "managementPeople": "Abaphathi, Abalawuli kunye naBaphathi",
   "fieldWorkers": "Iimonitha zentsimi kunye nabanye abasebenzi",
   "organizations": "Imibutho",
-  "information": "Ulwazi"
+  "information": "Ulwazi",
+  "videoToBeUploaded": "Ividiyo iza kulayishwa kungekudala",
+  "welcomeAboard": "Wamkelekile kwi-Geo!",
+  "audioLimitReached": "Umda wokurekhodwa kwekliphu yeaudiyo ye-$count imizuzu ifikelelwe",
+  "photoToBeUploaded": "Ifoto iya kufakwa kungekudala",
+  "audioToBeUploaded": "Ikliphu yeaudio iza kulayishwa kungekudala",
+  "videoLimitReached": "Umda wokurekhodwa kwevidiyo ye-$count seconds ufinyelelwe"
 
 }

@@ -8,6 +8,7 @@ import 'package:geo_monitor/library/ui/maps/project_polygon_map_mobile.dart';
 import 'package:geo_monitor/library/ui/media/list/project_media_list_tablet.dart';
 import 'package:geo_monitor/ui/dashboard/photo_card.dart';
 import 'package:geo_monitor/ui/dashboard/project_dashboard_grid.dart';
+import 'package:geo_monitor/ui/dashboard/project_dashboard_mobile.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:responsive_builder/responsive_builder.dart';
 import 'package:universal_platform/universal_platform.dart';
@@ -74,14 +75,22 @@ class ProjectDashboardTabletState extends State<ProjectDashboardTablet>
 
   User? deviceUser;
   DataBag? dataBag;
+  DashboardStrings? dashboardStrings;
   @override
   void initState() {
     _gridViewAnimationController = AnimationController(vsync: this);
     super.initState();
+    _setTexts();
     _listenForFCM();
     _getData(false);
   }
 
+  void _setTexts() async {
+    var sett = await prefsOGx.getSettings();
+    if (sett != null) {
+      dashboardStrings = await DashboardStrings.getTranslated();
+    }
+  }
   var type = '';
   void _getData(bool forceRefresh) async {
     pp('$mm ............................................Refreshing data ....');
@@ -374,7 +383,8 @@ class ProjectDashboardTabletState extends State<ProjectDashboardTablet>
                   width: (width / 2),
                   // height: 500,
                   child: Center(
-                    child: ProjectDashboardGrid(
+                    child: dashboardStrings == null? const SizedBox():ProjectDashboardGrid(
+                        dashboardStrings: dashboardStrings!,
                         crossAxisCount: 3,
                         topPadding: 32,
                         showProjectName: true,
@@ -426,7 +436,8 @@ class ProjectDashboardTabletState extends State<ProjectDashboardTablet>
                 SizedBox(
                   width: (width / 2) + 80,
                   child: Center(
-                    child: ProjectDashboardGrid(
+                    child: dashboardStrings == null? const SizedBox():ProjectDashboardGrid(
+                        dashboardStrings: dashboardStrings!,
                         crossAxisCount: 2,
                         topPadding: 80,
                         showProjectName: true,

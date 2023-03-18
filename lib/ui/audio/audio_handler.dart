@@ -560,9 +560,7 @@ class AudioCardAnyone extends StatelessWidget {
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 40.0),
                   child: RecordingControls(
-                      onPlay: () {
-                        onPlay();
-                      },
+                      onPlay: onPlay,
                       onPause: onPause,
                       onStop: onStop,
                       onRecord: onRecord,

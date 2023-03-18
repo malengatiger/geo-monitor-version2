@@ -260,9 +260,16 @@ class OrganizationBloc {
       pp('$mm getOrganizationProjectPositions found ${projectPositions.length} positions from remote database ');
       await cacheManager.addProjectPositions(positions: projectPositions);
     }
-    projPositionsController.sink.add(projectPositions);
-    pp('$mm getOrganizationProjectPositions found: 💜 ${projectPositions.length} projectPositions from local or remote db ');
-    return projectPositions;
+    var list = <ProjectPosition>[];
+    for (var pos in projectPositions) {
+      if (pos.created != null) {
+        list.add(pos);
+      }
+    }
+    projPositionsController.sink.add(list);
+    pp('$mm getOrganizationProjectPositions found: 💜 ${list.length} projectPositions from local or remote db ');
+
+    return list;
   }
 
   Future<List<ProjectPolygon>> getProjectPolygons(

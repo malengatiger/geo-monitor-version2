@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:geo_monitor/library/data/country.dart';
+import 'package:geo_monitor/library/users/edit/user_edit_mobile.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:uuid/uuid.dart';
 
-import '../../../l10n/translation_handler.dart';
 import '../../api/data_api.dart';
 import '../../api/prefs_og.dart';
 import '../../bloc/admin_bloc.dart';
@@ -22,7 +22,8 @@ class UserForm extends StatefulWidget {
   const UserForm({
     Key? key,
     this.user,
-    required this.width, required this.internalPadding,
+    required this.width,
+    required this.internalPadding,
   }) : super(key: key);
 
   final ar.User? user;
@@ -48,9 +49,7 @@ class _UserFormState extends State<UserForm>
   String? type;
   String? gender;
 
-  String? name,emailAddress, cellphone, male, submitMember, profilePhoto,
-      female, fieldMonitor, administrator, executive, selectCountry;
-
+  UserFormStrings? userFormStrings;
 
   @override
   void initState() {
@@ -64,17 +63,7 @@ class _UserFormState extends State<UserForm>
     admin = await prefsOGx.getUser();
     var sett = await prefsOGx.getSettings();
     if (sett != null) {
-      name = await mTx.translate('name', sett.locale!);
-      emailAddress = await mTx.translate('emailAddress', sett.locale!);
-      cellphone = await mTx.translate('cellphone', sett.locale!);
-      male = await mTx.translate('male', sett.locale!);
-      female = await mTx.translate('female', sett.locale!);
-      fieldMonitor = await mTx.translate('fieldMonitor', sett.locale!);
-      administrator = await mTx.translate('administrator', sett.locale!);
-      executive = await mTx.translate('executive', sett.locale!);
-      selectCountry = await mTx.translate('pleaseSelectCountry', sett.locale!);
-      submitMember = await mTx.translate('submitMember', sett.locale!);
-      profilePhoto = await mTx.translate('profilePhoto', sett.locale!);
+      userFormStrings = await UserFormStrings.getTranslated();
     }
     setState(() {});
   }
@@ -88,7 +77,6 @@ class _UserFormState extends State<UserForm>
       _setGenderRadio();
       await _setCountry();
     }
-
   }
 
   Future _setCountry() async {
@@ -341,8 +329,8 @@ class _UserFormState extends State<UserForm>
     var spaceToTop = 0.0;
     var ori = MediaQuery.of(context).orientation;
     if (ori.name == 'portrait') {
-      spaceToButtons = 60;
-      spaceToTop = 48;
+      spaceToButtons = 48;
+      spaceToTop = 24;
     } else {
       spaceToButtons = 24;
       spaceToTop = 16;
@@ -352,225 +340,233 @@ class _UserFormState extends State<UserForm>
       child: Card(
         shape: getRoundedBorder(radius: 16),
         child: Padding(
-          padding:  EdgeInsets.all(widget.internalPadding),
-          child: Form(
-            key: _formKey,
-            child: SingleChildScrollView(
-              child: Column(
-                children: [
-                  const SizedBox(
-                    height: 8,
-                  ),
-                  Row(
-                    children: [
-                      CountryChooser(onSelected: (c) {
-                        setState(() {
-                          country = c;
-                        });
-                      }, hint: selectCountry == null? 'Please select country': selectCountry!,),
-                      const SizedBox(
-                        width: 12,
-                      ),
-                      country == null
-                          ? const SizedBox()
-                          : Text(
-                              '${country!.name}',
-                              style: myTextStyleMedium(context),
+          padding: EdgeInsets.all(widget.internalPadding),
+          child: userFormStrings == null
+              ? const SizedBox()
+              : Form(
+                  key: _formKey,
+                  child: SingleChildScrollView(
+                    child: Column(
+                      children: [
+                        const SizedBox(
+                          height: 8,
+                        ),
+                        CountryChooser(
+                          onSelected: (c) {
+                            setState(() {
+                              country = c;
+                            });
+                          },
+                          hint: userFormStrings!.selectCountry,
+                        ),
+                        Row(mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+
+                            const SizedBox(
+                              width: 12,
                             ),
-                    ],
-                  ),
-                   SizedBox(
-                    height: spaceToTop,
-                  ),
-                  TextFormField(
-                    controller: nameController,
-                    keyboardType: TextInputType.text,
-                    style: myTextStyleSmall(context),
-                    decoration: InputDecoration(
-                        icon: Icon(
-                          Icons.person,
-                          size: 18,
-                          color: Theme.of(context).primaryColor,
+                            country == null
+                                ? const SizedBox()
+                                : Text(
+                                    '${country!.name}',
+                                    style: myTextStyleMedium(context),
+                                  ),
+                          ],
                         ),
-                        labelText: name == null?'Name':name!,
-                        hintStyle: myTextStyleSmall(context),
-                        hintText: 'Enter Full Name'),
-                    validator: (value) {
-                      if (value!.isEmpty) {
-                        return 'Please enter full name';
-                      }
-                      return null;
-                    },
-                  ),
-                  const SizedBox(
-                    height: 4,
-                  ),
-                  TextFormField(
-                    controller: emailController,
-                    keyboardType: TextInputType.emailAddress,
-                    style: myTextStyleSmall(context),
-                    decoration: InputDecoration(
-                        icon: Icon(
-                          Icons.email_outlined,
-                          size: 18,
-                          color: Theme.of(context).primaryColor,
+                        SizedBox(
+                          height: spaceToTop,
                         ),
-                        labelText: emailAddress == null? 'Email Address': emailAddress!,
-                        hintStyle: myTextStyleSmall(context),
-                        hintText: 'Enter Email Address'),
-                    validator: (value) {
-                      if (value!.isEmpty) {
-                        return 'Please enter email address';
-                      }
-                      return null;
-                    },
-                  ),
-                  const SizedBox(
-                    height: 4,
-                  ),
-                  TextFormField(
-                    controller: cellphoneController,
-                    keyboardType: TextInputType.phone,
-                    style: myTextStyleSmall(context),
-                    decoration: InputDecoration(
-                        icon: Icon(
-                          Icons.phone,
-                          size: 18,
-                          color: Theme.of(context).primaryColor,
+                        TextFormField(
+                          controller: nameController,
+                          keyboardType: TextInputType.text,
+                          style: myTextStyleSmall(context),
+                          decoration: InputDecoration(
+                              icon: Icon(
+                                Icons.person,
+                                size: 18,
+                                color: Theme.of(context).primaryColor,
+                              ),
+                              labelText: userFormStrings!.userName,
+                              hintStyle: myTextStyleSmall(context),
+                              hintText: userFormStrings!.enterFullName),
+                          validator: (value) {
+                            if (value!.isEmpty) {
+                              return userFormStrings!.enterFullName;
+                            }
+                            return null;
+                          },
                         ),
-                        labelText: cellphone == null? 'Cellphone': cellphone!,
-                        hintStyle: myTextStyleSmall(context),
-                        hintText: 'Cellphone'),
-                    validator: (value) {
-                      if (value!.isEmpty) {
-                        return 'Please enter cellphone number';
-                      }
-                      return null;
-                    },
-                  ),
-                   SizedBox(
-                    height: spaceToButtons,
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: <Widget>[
-                      Radio(
-                        value: 0,
-                        groupValue: genderType,
-                        onChanged: _handleGenderValueChange,
-                      ),
-                      Text(male == null?
-                        'Male': male!,
-                        style: myTextStyleSmall(context),
-                      ),
-                      Radio(
-                        value: 1,
-                        groupValue: genderType,
-                        onChanged: _handleGenderValueChange,
-                      ),
-                      Text(female == null?
-                          'Female': female!,
-                          style: myTextStyleSmall(context)),
-                    ],
-                  ),
-                  const SizedBox(
-                    height: 8,
-                  ),
-                  Column(
-                    children: <Widget>[
-                      Row(
-                        children: [
-                          Radio(
-                            value: 0,
-                            groupValue: userType,
-                            onChanged: _handleRadioValueChange,
-                          ),
-                          const SizedBox(width: 8,),
-                          Text(fieldMonitor == null?
-                          'Monitor': fieldMonitor!,
-                            style: myTextStyleSmall(context),
-                          ),
-                        ],
-                      ),
-
-                      Row(
-                        children: [
-                          Radio(
-                            value: 1,
-                            groupValue: userType,
-                            onChanged: _handleRadioValueChange,
-                          ),
-                          const SizedBox(width: 8,),
-                          Text(administrator == null?'Admin':administrator!,
-                              style: myTextStyleSmall(context)),
-                        ],
-                      ),
-
-                      Row(
-                        children: [
-                          Radio(
-                            value: 2,
-                            groupValue: userType,
-                            onChanged: _handleRadioValueChange,
-                          ),
-                          const SizedBox(width: 8,),
-                          Text(executive == null?
-                          'Exec': executive!,
-                            style: myTextStyleSmall(context),
-                          ),
-                        ],
-                      ),
-
-                    ],
-                  ),
-                   SizedBox(
-                    height: spaceToButtons,
-                  ),
-                  isBusy
-                      ? const SizedBox(
-                          width: 20,
-                          height: 20,
-                          child: CircularProgressIndicator(
-                            strokeWidth: 8,
-                            backgroundColor: Colors.black,
-                          ),
-                        )
-                      : SizedBox(
+                        const SizedBox(
+                          height: 4,
+                        ),
+                        TextFormField(
+                          controller: emailController,
+                          keyboardType: TextInputType.emailAddress,
+                          style: myTextStyleSmall(context),
+                          decoration: InputDecoration(
+                              icon: Icon(
+                                Icons.email_outlined,
+                                size: 18,
+                                color: Theme.of(context).primaryColor,
+                              ),
+                              labelText: userFormStrings!.emailAddress,
+                              hintStyle: myTextStyleSmall(context),
+                              hintText: userFormStrings!.enterEmail),
+                          validator: (value) {
+                            if (value!.isEmpty) {
+                              return userFormStrings!.enterEmail;
+                            }
+                            return null;
+                          },
+                        ),
+                        const SizedBox(
+                          height: 4,
+                        ),
+                        TextFormField(
+                          controller: cellphoneController,
+                          keyboardType: TextInputType.phone,
+                          style: myTextStyleSmall(context),
+                          decoration: InputDecoration(
+                              icon: Icon(
+                                Icons.phone,
+                                size: 18,
+                                color: Theme.of(context).primaryColor,
+                              ),
+                              labelText: userFormStrings!.cellphone,
+                              hintStyle: myTextStyleSmall(context),
+                              hintText: userFormStrings!.enterCell),
+                          validator: (value) {
+                            if (value!.isEmpty) {
+                              return userFormStrings!.enterCell;
+                            }
+                            return null;
+                          },
+                        ),
+                        SizedBox(
+                          height: spaceToButtons,
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: <Widget>[
+                            Radio(
+                              value: 0,
+                              groupValue: genderType,
+                              onChanged: _handleGenderValueChange,
+                            ),
+                            Text(
+                              userFormStrings!.male,
+                              style: myTextStyleSmall(context),
+                            ),
+                            Radio(
+                              value: 1,
+                              groupValue: genderType,
+                              onChanged: _handleGenderValueChange,
+                            ),
+                            Text(userFormStrings!.female,
+                                style: myTextStyleSmall(context)),
+                          ],
+                        ),
+                        const SizedBox(
+                          height: 8,
+                        ),
+                        Column(
+                          children: <Widget>[
+                            Row(
+                              children: [
+                                Radio(
+                                  value: 0,
+                                  groupValue: userType,
+                                  onChanged: _handleRadioValueChange,
+                                ),
+                                const SizedBox(
+                                  width: 8,
+                                ),
+                                Text(
+                                  userFormStrings!.fieldMonitor,
+                                  style: myTextStyleSmall(context),
+                                ),
+                              ],
+                            ),
+                            Row(
+                              children: [
+                                Radio(
+                                  value: 1,
+                                  groupValue: userType,
+                                  onChanged: _handleRadioValueChange,
+                                ),
+                                const SizedBox(
+                                  width: 8,
+                                ),
+                                Text(userFormStrings!.administrator,
+                                    style: myTextStyleSmall(context)),
+                              ],
+                            ),
+                            Row(
+                              children: [
+                                Radio(
+                                  value: 2,
+                                  groupValue: userType,
+                                  onChanged: _handleRadioValueChange,
+                                ),
+                                const SizedBox(
+                                  width: 8,
+                                ),
+                                Text(
+                                  userFormStrings!.executive,
+                                  style: myTextStyleSmall(context),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                        SizedBox(
+                          height: spaceToButtons,
+                        ),
+                        isBusy
+                            ? const SizedBox(
+                                width: 20,
+                                height: 20,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 8,
+                                  backgroundColor: Colors.black,
+                                ),
+                              )
+                            : SizedBox(
+                                width: 200,
+                                child: ElevatedButton(
+                                  onPressed: _submit,
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(12.0),
+                                    child: Text(
+                                      userFormStrings!.submitMember,
+                                      style: myTextStyleSmall(context),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                        const SizedBox(
+                          height: 16,
+                        ),
+                        SizedBox(
                           width: 200,
                           child: ElevatedButton(
-                            onPressed: _submit,
+                            onPressed: _navigateToAvatarBuilder,
                             child: Padding(
                               padding: const EdgeInsets.all(12.0),
-                              child: Text(submitMember == null?
-                                'Submit Member': submitMember!,
+                              child: Text(
+                                userFormStrings!.profilePhoto,
                                 style: myTextStyleSmall(context),
                               ),
                             ),
                           ),
                         ),
-                  const SizedBox(
-                    height: 16,
-                  ),
-                  SizedBox(
-                    width: 200,
-                    child: ElevatedButton(
-                      onPressed: _navigateToAvatarBuilder,
-                      child: Padding(
-                        padding: const EdgeInsets.all(12.0),
-                        child: Text(profilePhoto == null?
-                          'Profile Photo': profilePhoto!,
-                          style: myTextStyleSmall(context),
+                        const SizedBox(
+                          height: 8,
                         ),
-                      ),
+                      ],
                     ),
                   ),
-                  const SizedBox(
-                    height: 8,
-                  ),
-                ],
-              ),
-            ),
-          ),
+                ),
         ),
       ),
     );

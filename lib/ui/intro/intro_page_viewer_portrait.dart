@@ -35,9 +35,18 @@ class IntroPageViewerPortraitState extends State<IntroPageViewerPortrait>
   fb.FirebaseAuth firebaseAuth = fb.FirebaseAuth.instance;
   ur.User? user;
 
-  String? organizations, managementPeople, fieldWorkers, executives,
-      information,thankYou,thankYouMessage, infrastructure,
-      govt, youth, community, registerOrganization;
+  String? organizations,
+      managementPeople,
+      fieldWorkers,
+      executives,
+      information,
+      thankYou,
+      thankYouMessage,
+      infrastructure,
+      govt,
+      youth,
+      community,
+      registerOrganization;
 
   final mm =
       '${E.pear}${E.pear}${E.pear}${E.pear} IntroPageViewerPortrait: ${E.pear} ';
@@ -54,7 +63,7 @@ class IntroPageViewerPortraitState extends State<IntroPageViewerPortrait>
     var sett = await prefsOGx.getSettings();
     late String locale;
     if (sett == null) {
-        locale = 'en';
+      locale = 'en';
     } else {
       locale = sett.locale!;
     }
@@ -71,9 +80,7 @@ class IntroPageViewerPortraitState extends State<IntroPageViewerPortrait>
     youth = await mTx.translate('youth', locale);
     community = await mTx.translate('community', locale);
     registerOrganization = await mTx.translate('registerOrganization', locale);
-    setState(() {
-
-    });
+    setState(() {});
   }
 
   void _getAuthenticationStatus() async {
@@ -215,8 +222,8 @@ class IntroPageViewerPortraitState extends State<IntroPageViewerPortrait>
     return SafeArea(
         child: Scaffold(
       appBar: AppBar(
-        title: Text(information == null?
-          'Geo Information':information!,
+        title: Text(
+          information == null ? 'Geo Information' : information!,
           style: myTextStyleLarge(context),
         ),
         bottom: PreferredSize(
@@ -234,8 +241,9 @@ class IntroPageViewerPortraitState extends State<IntroPageViewerPortrait>
                           onPressed: onSignIn, child: const Text('Sign In')),
                       TextButton(
                           onPressed: onRegistration,
-                          child: Text(registerOrganization == null?
-                              'Register Organization': registerOrganization!)),
+                          child: Text(registerOrganization == null
+                              ? 'Register Organization'
+                              : registerOrganization!)),
                     ],
                   ),
                 ),
@@ -246,33 +254,32 @@ class IntroPageViewerPortraitState extends State<IntroPageViewerPortrait>
           PageView(
             controller: _pageController,
             onPageChanged: _onPageChanged,
-            children:  [
-               IntroPage(
+            children: [
+              IntroPage(
                 title: 'Geo',
                 assetPath: 'assets/intro/pic2.jpg',
-                text: infrastructure == null?lorem:infrastructure!,
+                text: infrastructure == null ? lorem : infrastructure!,
               ),
               IntroPage(
-                title: organizations == null?'Organizations':organizations!,
+                title: organizations == null ? 'Organizations' : organizations!,
                 assetPath: 'assets/intro/pic5.jpg',
-                text: youth == null? lorem: youth!,
+                text: youth == null ? lorem : youth!,
               ),
               IntroPage(
-                title: managementPeople == null?'People':managementPeople!,
+                title: managementPeople == null ? 'People' : managementPeople!,
                 assetPath: 'assets/intro/pic1.jpg',
-                text: community == null?lorem:community!,
+                text: community == null ? lorem : community!,
               ),
               IntroPage(
-                title: fieldWorkers == null? 'Field Monitors': fieldWorkers!,
+                title: fieldWorkers == null ? 'Field Monitors' : fieldWorkers!,
                 assetPath: 'assets/intro/pic5.jpg',
                 text: lorem,
               ),
               IntroPage(
-                title: thankYou == null?'Thank You':thankYou!,
+                title: thankYou == null ? 'Thank You' : thankYou!,
                 assetPath: 'assets/intro/pic3.webp',
-                text: thankYouMessage == null? lorem: thankYouMessage!,
+                text: thankYouMessage == null ? lorem : thankYouMessage!,
               ),
-
             ],
           ),
           Positioned(
@@ -286,7 +293,7 @@ class IntroPageViewerPortraitState extends State<IntroPageViewerPortrait>
                 color: Colors.black12,
                 shape: getRoundedBorder(radius: 8),
                 child: DotsIndicator(
-                  dotsCount: 7,
+                  dotsCount: 5,
                   position: currentIndexPage,
                   decorator: const DotsDecorator(
                     colors: [
@@ -295,17 +302,15 @@ class IntroPageViewerPortraitState extends State<IntroPageViewerPortrait>
                       Colors.grey,
                       Colors.grey,
                       Colors.grey,
-                      Colors.grey,
-                      Colors.grey,
+
                     ], // Inactive dot colors
                     activeColors: [
-                      Colors.red,
+                      Colors.pink,
                       Colors.blue,
                       Colors.teal,
                       Colors.indigo,
-                      Colors.green,
-                      Colors.pink,
-                      Colors.deepOrangeAccent,
+                      Colors.deepOrange,
+
                     ], // Àctive dot colors
                   ),
                 ),

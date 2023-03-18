@@ -13,6 +13,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:uuid/uuid.dart';
 
 import '../../../device_location/device_location_bloc.dart';
+import '../../../l10n/translation_handler.dart';
 import '../../api/data_api.dart';
 import '../../data/city.dart';
 import '../../data/photo.dart';
@@ -63,6 +64,7 @@ class ProjectMapMobileState extends State<ProjectMapMobile>
   late StreamSubscription<ProjectPolygon> _polygonStreamSubscription;
   double _latitude = 0.0, _longitude = 0.0;
   double? currentLat, currentLng;
+  String? title, locations, location;
 
   @override
   void initState() {
@@ -72,11 +74,20 @@ class ProjectMapMobileState extends State<ProjectMapMobile>
         reverseDuration: const Duration(milliseconds: 1500),
         vsync: this);
     super.initState();
+    _setTexts();
     _getUser();
     _setMarkerIcon();
     _listen();
   }
 
+  void _setTexts() async {
+    var settings = await prefsOGx.getSettings();
+    if (settings != null) {
+      title = await mTx.translate('projectLocationsMap', settings!.locale!);
+      locations = await mTx.translate('locations', settings!.locale!);
+      location = await mTx.translate('location', settings!.locale!);
+    }
+  }
   void _listen() async {
     _positionStreamSubscription =
         fcmBloc.projectPositionStream.listen((event) async {
@@ -393,8 +404,8 @@ class ProjectMapMobileState extends State<ProjectMapMobile>
         key: _key,
         appBar: AppBar(
           centerTitle: true,
-          title: Text(
-            'Project Locations & Areas',
+          title: Text(title == null?
+            'Project Locations & Areas':title!,
             style: myTextStyleLarge(context),
           ),
           actions: [
@@ -427,7 +438,9 @@ class ProjectMapMobileState extends State<ProjectMapMobile>
                     const SizedBox(
                       width: 28,
                     ),
-                    ProjectPositionChooser(
+                    locations == null? const SizedBox(): ProjectPositionChooser(
+                        location: location!,
+                        locations: locations!,
                         projectPositions: projectPositions,
                         projectPolygons: projectPolygons,
                         onSelected: _onSelected),
@@ -704,23 +717,21 @@ class ProjectPositionChooser extends StatelessWidget {
       {Key? key,
       required this.projectPositions,
       required this.projectPolygons,
-      required this.onSelected})
+      required this.onSelected, required this.location, required this.locations})
       : super(key: key);
   final List<ProjectPosition> projectPositions;
   final List<ProjectPolygon> projectPolygons;
   final Function(local.Position) onSelected;
+  final String location, locations;
   @override
   Widget build(BuildContext context) {
     var list = <local.Position>[];
-    // projectPositions.sort((a,b) => a.created!.compareTo(b.created!));
+    projectPositions.sort((a,b) => a.created!.compareTo(b.created!));
     for (var value in projectPositions) {
       list.add(value.position!);
     }
     for (var value in projectPolygons) {
       list.add(value.positions.first);
-      // for (var element in value.positions) {
-      //
-      // }
     }
     var cnt = 0;
     var menuItems = <DropdownMenuItem>[];
@@ -731,8 +742,7 @@ class ProjectPositionChooser extends StatelessWidget {
           value: pos,
           child: Row(
             children: [
-              Text(
-                'Location No. ',
+              Text(location,
                 style: myTextStyleSmall(context),
               ),
               const SizedBox(
@@ -748,8 +758,7 @@ class ProjectPositionChooser extends StatelessWidget {
       );
     }
     return DropdownButton(
-        hint: Text(
-          'Locations',
+        hint: Text(locations,
           style: myTextStyleSmall(context),
         ),
         items: menuItems,

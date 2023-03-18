@@ -11,6 +11,7 @@ import 'package:geo_monitor/library/users/full_user_photo.dart';
 import 'package:geo_monitor/ui/activity/geo_activity.dart';
 import 'package:geo_monitor/ui/audio/audio_player_page.dart';
 import 'package:geo_monitor/ui/dashboard/photo_card.dart';
+import 'package:geo_monitor/ui/dashboard/project_dashboard_mobile.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:responsive_builder/responsive_builder.dart';
 import 'package:universal_platform/universal_platform.dart';
@@ -78,6 +79,7 @@ class UserDashboardState extends State<UserDashboard>
   bool _showVideo = false;
   bool _showAudio = false;
 
+  DashboardStrings? dashboardStrings;
   @override
   void initState() {
     _gridViewAnimationController = AnimationController(
@@ -85,6 +87,7 @@ class UserDashboardState extends State<UserDashboard>
         reverseDuration: Duration(milliseconds: dur),
         vsync: this);
     super.initState();
+    _setTexts();
     _setItems();
     _subscribeToGeofenceStream();
     _startTimer();
@@ -92,6 +95,12 @@ class UserDashboardState extends State<UserDashboard>
     _listenForFCM();
   }
 
+  void _setTexts() async {
+    var sett = await prefsOGx.getSettings();
+    if (sett != null) {
+      dashboardStrings = await DashboardStrings.getTranslated();
+    }
+  }
   void _getData(bool forceRefresh) async {
     if (mounted) {
       setState(() {
@@ -466,8 +475,9 @@ class UserDashboardState extends State<UserDashboard>
                 dataBag == null
                     ? const SizedBox()
                     : ScreenTypeLayout(
-                        mobile: UserDashboardGrid(
+                        mobile: dashboardStrings == null? const SizedBox(): UserDashboardGrid(
                           user: widget.user,
+                          dashboardStrings: dashboardStrings!,
                           dataBag: dataBag!,
                           width: width,
                           topPadding: 40,
@@ -494,8 +504,9 @@ class UserDashboardState extends State<UserDashboard>
                                 Padding(
                                   padding: const EdgeInsets.symmetric(
                                       horizontal: 8.0),
-                                  child: UserDashboardGrid(
+                                  child: dashboardStrings == null? const SizedBox(): UserDashboardGrid(
                                       user: widget.user,
+                                      dashboardStrings: dashboardStrings!,
                                       dataBag: dataBag!,
                                       width: (width / 2),
                                       topPadding: 40,
@@ -542,8 +553,9 @@ class UserDashboardState extends State<UserDashboard>
                           landscape: (context) {
                             return Row(
                               children: [
-                                UserDashboardGrid(
+                                dashboardStrings == null? const SizedBox(): UserDashboardGrid(
                                     user: widget.user,
+                                    dashboardStrings: dashboardStrings!,
                                     dataBag: dataBag!,
                                     width: (width / 2),
                                     topPadding: 28,

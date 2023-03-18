@@ -96,18 +96,36 @@ class GeoActivityMobileState extends State<GeoActivityMobile>
           fcmBloc.geofenceStream.listen((GeofenceEvent event) async {
         pp('$mm: 🍎geofenceSubscriptionFCM: 🍎 GeofenceEvent: '
             'user ${event.user!.name} arrived: ${event.projectName} ');
-        if (mounted) {
-          showToast(
-              message: arrivedAt == null? 'Arrived at':
-                  '$arrivedAt - ${event.user!.name!} - ${event.projectName}',
-              context: context);
-          setState(() {});
-        }
+        _handleGeofenceEvent(event);
+
       });
     } else {
       pp('App is running on the Web 👿👿👿firebase messaging is OFF 👿👿👿');
     }
   }
+
+  Future<void> _handleGeofenceEvent(GeofenceEvent event) async {
+    var settings = await prefsOGx.getSettings();
+    if (settings != null) {
+      var arr = await mTx.translate('arrivedAt', settings!.locale!);
+      var arr1 = arr.replaceAll('\$member', event.user!.name!);
+      if (event.projectName != null) {
+        var arrivedAt = arr1.replaceAll('\$project', event.projectName!);
+        if (mounted) {
+          showToast(
+              duration: const Duration(seconds: 5),
+              backgroundColor: Theme
+                  .of(context)
+                  .primaryColor,
+              padding: 20,
+              textStyle: myTextStyleMedium(context),
+              message: arrivedAt,
+              context: context);
+        }
+      }
+    }
+  }
+
 
   @override
   void dispose() {

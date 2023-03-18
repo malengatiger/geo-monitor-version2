@@ -14,6 +14,7 @@ import 'package:path_provider/path_provider.dart';
 
 import '../auth/app_auth.dart';
 import '../cache_manager.dart';
+import '../data/country.dart';
 import '../data/data_bag.dart';
 import '../data/project.dart';
 import '../data/user.dart';
@@ -86,12 +87,13 @@ class DataRefresher {
     pp('$xx Done with org data, refreshing projects and users');
     var projects = await _startProjectsRefresh(organizationId: organizationId!);
     var users = await _startUsersRefresh(organizationId: organizationId);
+    var countries = await _startCountryRefresh();
     bag!.projects = projects;
     bag.users = users;
 
     organizationBloc.dataBagController.sink.add(bag);
 
-    pp('\n$xx Done with refresh of projects and users');
+    pp('\n$xx Done with refresh of projects and users; countries: ${countries.length}');
     return bag;
   }
 
@@ -112,7 +114,7 @@ class DataRefresher {
   Future<List<Project>> _startProjectsRefresh(
       {required String organizationId}) async {
     pp('\n$xx .......  _startProjectRefresh in an isolate ...');
-    var list = await Isolate.run(() async => await getProjects(
+    var list = await Isolate.run(() async => await getAllOrganizationProjects(
           token: token,
           mUrl: url,
           organizationId: organizationId,
@@ -133,6 +135,19 @@ class DataRefresher {
         ));
     pp('$xz users found: ${list.length}');
     await cacheManager.addUsers(users: list);
+
+    return list;
+  }
+  Future<List<Country>> _startCountryRefresh() async {
+    pp('\n$xx .......  _startCountryRefresh in an isolate ...');
+    var list = await Isolate.run(() async => await getCountries(
+      token: token,
+      mUrl: url,
+    ));
+    pp('$xz countries found: ${list.length}');
+    for (var element in list) {
+      await cacheManager.addCountry(country: element);
+    }
 
     return list;
   }
@@ -438,7 +453,7 @@ Future<DataBag?> getUserDataZippedFile(
   return bag;
 }
 
-Future<List<Project>> getProjects(
+Future<List<Project>> getAllOrganizationProjects(
     {required String organizationId,
     required String mUrl,
     required String token}) async {
@@ -462,10 +477,10 @@ Future<List<Project>> getProjects(
           headers: headers,
         )
         .timeout(const Duration(seconds: 120));
-    pp('$xz getProjects: RESPONSE: .... : 💙 statusCode: 👌👌👌 '
+    pp('$xz getAllOrganizationProjects: RESPONSE: .... : 💙 statusCode: 👌👌👌 '
         '${httpResponse.statusCode} 👌👌👌  for $mUrl');
     var end = DateTime.now();
-    pp('$xz getProjects: elapsed time: ${end.difference(start).inSeconds} seconds');
+    pp('$xz getAllOrganizationProjects: elapsed time: ${end.difference(start).inSeconds} seconds');
     if (httpResponse.statusCode == 200) {
       List mList = jsonDecode(httpResponse.body);
       for (var value in mList) {
@@ -524,6 +539,52 @@ Future<List<User>> getUsers(
     }
   } catch (e) {
     pp('$xz Problem getting users: $e');
+  }
+
+  return [];
+}
+
+Future<List<Country>> getCountries(
+    {
+      required String mUrl,
+      required String token}) async {
+  final client = http.Client();
+  var start = DateTime.now();
+
+  var list = <Country>[];
+  Map<String, String> headers = {
+    'Content-type': 'application/json',
+    'Accept': '*/*',
+    'Content-Encoding': 'application/json',
+    'Authorization': 'Bearer $token'
+  };
+  try {
+    mUrl = '${mUrl}getCountries';
+    var uri =
+    Uri.parse(mUrl);
+
+    http.Response httpResponse = await client
+        .get(
+      uri,
+      headers: headers,
+    )
+        .timeout(const Duration(seconds: 120));
+    pp('$xz getCountries: RESPONSE: .... : 💙 statusCode: 👌👌👌 '
+        '${httpResponse.statusCode} 👌👌👌  for $mUrl');
+    var end = DateTime.now();
+    pp('$xz getCountries: elapsed time: ${end.difference(start).inSeconds} seconds');
+    if (httpResponse.statusCode == 200) {
+      List mList = jsonDecode(httpResponse.body);
+      for (var value in mList) {
+        list.add(Country.fromJson(value));
+      }
+      return list;
+    } else {
+      pp('$xz getCountries: Bad status; ${httpResponse.statusCode} ${httpResponse.body}');
+      return [];
+    }
+  } catch (e) {
+    pp('$xz Problem getting countries: $e');
   }
 
   return [];

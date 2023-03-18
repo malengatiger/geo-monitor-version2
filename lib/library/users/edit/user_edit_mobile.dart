@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:geo_monitor/library/cache_manager.dart';
+import 'package:geo_monitor/library/users/edit/user_form.dart';
 import 'package:geo_monitor/library/users/full_user_photo.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:uuid/uuid.dart';
@@ -16,7 +17,6 @@ import '../../data/user.dart';
 import '../../functions.dart';
 import '../../generic_functions.dart';
 import '../avatar_editor.dart';
-import 'country_chooser.dart';
 
 class UserEditMobile extends StatefulWidget {
   final ar.User? user;
@@ -43,20 +43,35 @@ class UserEditMobileState extends State<UserEditMobile>
   String? type;
   String? gender;
   String? name, hint, title, newMember, editMember;
+  String? countryName,
+      userName,
+      cellphone,
+      male,
+      female,
+      monitor,
+      executive,
+      administrator;
 
+  UserFormStrings? userFormStrings;
 
   @override
   void initState() {
     _controller = AnimationController(vsync: this);
     super.initState();
+    _setTexts();
     _setup();
     _getAdministrator();
   }
 
   void _getAdministrator() async {
     admin = await prefsOGx.getUser();
+    setState(() {});
+  }
+
+  void _setTexts() async {
     var sett = await prefsOGx.getSettings();
     if (sett != null) {
+      userFormStrings = await UserFormStrings.getTranslated();
       hint = await mTx.translate('pleaseSelectCountry', sett.locale!);
       title = await mTx.translate('members', sett.locale!);
       newMember = await mTx.translate('newMember', sett.locale!);
@@ -323,21 +338,27 @@ class UserEditMobileState extends State<UserEditMobile>
 
   @override
   Widget build(BuildContext context) {
+    var width = MediaQuery.of(context).size.width;
+    var deviceType = getDeviceType();
     return SafeArea(
       child: Scaffold(
         key: _key,
         appBar: AppBar(
-          title:  Text(title == null?
-            'User Editor': title!,
+          title: Text(
+            title == null ? 'User Editor' : title!,
           ),
           bottom: PreferredSize(
-            preferredSize: const Size.fromHeight(100),
+            preferredSize: const Size.fromHeight(60),
             child: Column(
               children: [
                 Text(
                   widget.user == null
-                      ? newMember == null?'New Member': newMember!
-                      : editMember == null? 'Edit Member': editMember!,
+                      ? newMember == null
+                          ? 'New Member'
+                          : newMember!
+                      : editMember == null
+                          ? 'Edit Member'
+                          : editMember!,
                   style: myTextStyleSmall(context),
                 ),
                 admin == null
@@ -347,7 +368,7 @@ class UserEditMobileState extends State<UserEditMobile>
                       ),
                 Text(
                   admin == null ? '' : admin!.organizationName!,
-                  style: myTextStyleLarge(context),
+                  style: myTextStyleMediumBold(context),
                 ),
                 const SizedBox(
                   height: 20,
@@ -366,201 +387,10 @@ class UserEditMobileState extends State<UserEditMobile>
                 child: Padding(
                   padding: const EdgeInsets.all(12.0),
                   child: SingleChildScrollView(
-                    child: Form(
-                      key: _formKey,
-                      child: Column(
-                        children: [
-                          const SizedBox(
-                            height: 16,
-                          ),
-                          Row(
-                            children: [
-                              CountryChooser(onSelected: (c) {
-                                setState(() {
-                                  country = c;
-                                });
-                              }, hint: hint == null? 'Please select country': hint!,),
-                              const SizedBox(
-                                width: 12,
-                              ),
-                              country == null
-                                  ? const SizedBox()
-                                  : Text(
-                                      '${country!.name}',
-                                      style: myTextStyleMedium(context),
-                                    ),
-                            ],
-                          ),
-                          const SizedBox(
-                            height: 16,
-                          ),
-                          TextFormField(
-                            controller: nameController,
-                            keyboardType: TextInputType.text,
-                            style: myTextStyleSmall(context),
-                            decoration: InputDecoration(
-                                icon: Icon(
-                                  Icons.person,
-                                  size: 18,
-                                  color: Theme.of(context).primaryColor,
-                                ),
-                                labelText: name == null? 'Name': name!,
-                                hintStyle: myTextStyleSmall(context),
-                                hintText: 'Enter Full Name'),
-                            validator: (value) {
-                              if (value!.isEmpty) {
-                                return 'Please enter full name';
-                              }
-                              return null;
-                            },
-                          ),
-                          const SizedBox(
-                            height: 4,
-                          ),
-                          TextFormField(
-                            controller: emailController,
-                            keyboardType: TextInputType.emailAddress,
-                            style: myTextStyleSmall(context),
-                            decoration: InputDecoration(
-                                icon: Icon(
-                                  Icons.email_outlined,
-                                  size: 18,
-                                  color: Theme.of(context).primaryColor,
-                                ),
-                                labelText: 'Email Address',
-                                hintStyle: myTextStyleSmall(context),
-                                hintText: 'Enter Email Address'),
-                            validator: (value) {
-                              if (value!.isEmpty) {
-                                return 'Please enter email address';
-                              }
-                              return null;
-                            },
-                          ),
-                          const SizedBox(
-                            height: 4,
-                          ),
-                          TextFormField(
-                            controller: cellphoneController,
-                            keyboardType: TextInputType.phone,
-                            style: myTextStyleSmall(context),
-                            decoration: InputDecoration(
-                                icon: Icon(
-                                  Icons.phone,
-                                  size: 18,
-                                  color: Theme.of(context).primaryColor,
-                                ),
-                                labelText: 'Cellphone',
-                                hintStyle: myTextStyleSmall(context),
-                                hintText: 'Cellphone'),
-                            validator: (value) {
-                              if (value!.isEmpty) {
-                                return 'Please enter cellphone number';
-                              }
-                              return null;
-                            },
-                          ),
-                          const SizedBox(
-                            height: 16,
-                          ),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            children: <Widget>[
-                              Radio(
-                                value: 0,
-                                groupValue: genderType,
-                                onChanged: _handleGenderValueChange,
-                              ),
-                              Text(
-                                'Male',
-                                style: myTextStyleSmall(context),
-                              ),
-                              Radio(
-                                value: 1,
-                                groupValue: genderType,
-                                onChanged: _handleGenderValueChange,
-                              ),
-                              Text('Female', style: myTextStyleSmall(context)),
-                            ],
-                          ),
-                          const SizedBox(
-                            height: 16,
-                          ),
-                          Row(
-                            children: <Widget>[
-                              Radio(
-                                value: 0,
-                                groupValue: userType,
-                                onChanged: _handleRadioValueChange,
-                              ),
-                              Text(
-                                'Monitor',
-                                style: myTextStyleSmall(context),
-                              ),
-                              Radio(
-                                value: 1,
-                                groupValue: userType,
-                                onChanged: _handleRadioValueChange,
-                              ),
-                              Text('Admin', style: myTextStyleSmall(context)),
-                              Radio(
-                                value: 2,
-                                groupValue: userType,
-                                onChanged: _handleRadioValueChange,
-                              ),
-                              Text(
-                                'Exec',
-                                style: myTextStyleSmall(context),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(
-                            height: 16,
-                          ),
-                          isBusy
-                              ? const SizedBox(
-                                  width: 48,
-                                  height: 48,
-                                  child: CircularProgressIndicator(
-                                    strokeWidth: 8,
-                                    backgroundColor: Colors.black,
-                                  ),
-                                )
-                              : SizedBox(
-                                  width: 200,
-                                  child: ElevatedButton(
-                                    onPressed: _submit,
-                                    child: Padding(
-                                      padding: const EdgeInsets.all(12.0),
-                                      child: Text(
-                                        'Submit User',
-                                        style: myTextStyleSmall(context),
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                          const SizedBox(
-                            height: 24,
-                          ),
-                          SizedBox(
-                            width: 200,
-                            child: ElevatedButton(
-                              onPressed: _navigateToAvatarBuilder,
-                              child: Padding(
-                                padding: const EdgeInsets.all(12.0),
-                                child: Text(
-                                  'Create Avatar',
-                                  style: myTextStyleSmall(context),
-                                ),
-                              ),
-                            ),
-                          ),
-                          const SizedBox(
-                            height: 40,
-                          ),
-                        ],
-                      ),
-                    ),
+                    child: UserForm(
+                        user: widget.user,
+                        width: width,
+                        internalPadding: 20.0),
                   ),
                 ),
               ),
@@ -573,12 +403,12 @@ class UserEditMobileState extends State<UserEditMobile>
                       radius: 24,
                     ))
                 : Positioned(
-                    right: 2,
+                    right: 20,
                     top: 0,
                     child: GestureDetector(
                       onTap: _navigateToFullPhoto,
                       child: CircleAvatar(
-                        radius: 40,
+                        radius: deviceType == 'phone'?24:40,
                         backgroundImage:
                             NetworkImage(widget.user!.thumbnailUrl!),
                       ),
@@ -588,6 +418,75 @@ class UserEditMobileState extends State<UserEditMobile>
       ),
     );
   }
+}
 
+class UserFormStrings {
+  late String emailAddress,
+      selectCountry,
+      userName,
+      cellphone,
+      male,
+      female,
+      fieldMonitor,
+      executive,
+      administrator,
+      submitMember,
+      enterFullName,
+      enterEmail,
+      enterCell,
+      profilePhoto;
 
+  UserFormStrings(
+      {required this.userName,
+      required this.cellphone,
+      required this.male,
+      required this.selectCountry,
+      required this.emailAddress,
+      required this.female,
+      required this.fieldMonitor,
+      required this.executive,
+      required this.administrator,
+      required this.enterCell,
+      required this.enterEmail,
+      required this.enterFullName,
+      required this.submitMember,
+      required this.profilePhoto});
+
+  static Future<UserFormStrings?> getTranslated() async {
+    var sett = await prefsOGx.getSettings();
+    if (sett != null) {
+      var userName = await mTx.translate('name', sett.locale!);
+      var cellphone = await mTx.translate('cellphone', sett.locale!);
+      var male = await mTx.translate('male', sett.locale!);
+      var female = await mTx.translate('female', sett.locale!);
+      var fieldMonitor = await mTx.translate('fieldMonitor', sett.locale!);
+      var executive = await mTx.translate('executive', sett.locale!);
+      var administrator = await mTx.translate('administrator', sett.locale!);
+      var submitUser = await mTx.translate('submitMember', sett.locale!);
+      var profilePhoto = await mTx.translate('profilePhoto', sett.locale!);
+      var enterCell = await mTx.translate('enterCell', sett.locale!);
+      var enterEmail = await mTx.translate('enterEmail', sett.locale!);
+      var enterFullName = await mTx.translate('enterFullName', sett.locale!);
+      var selectCountry = await mTx.translate('pleaseSelectCountry', sett.locale!);
+      var emailAddress = await mTx.translate('emailAddress', sett.locale!);
+
+      var m = UserFormStrings(
+          selectCountry: selectCountry,
+          emailAddress: emailAddress,
+          enterCell: enterCell,
+          enterEmail: enterEmail,
+          enterFullName: enterFullName,
+          userName: userName,
+          cellphone: cellphone,
+          male: male,
+          female: female,
+          fieldMonitor: fieldMonitor,
+          executive: executive,
+          administrator: administrator,
+          submitMember: submitUser,
+          profilePhoto: profilePhoto);
+      return m;
+    }
+    return null;
+  }
 }

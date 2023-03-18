@@ -217,5 +217,11 @@
   "managementPeople": "Vafambisi, Vafambisi na Valanguteri",
   "fieldWorkers": "Valanguteri va le Nsin’wini na vatirhi van’wana",
   "organizations": "Tinhlengeletano",
-  "information": "Marungula"
+  "information": "Marungula",
+  "videoToBeUploaded": "Video yi ta uploadiwa ku nga ri khale",
+  "welcomeAboard": "Mi amukeriwile eka xikepe xa Geo!",
+  "audioLimitReached": "Mpimo wa ku rhekhoda ka audio clip wa $count minutes wu fikeleriwile",
+  "photoToBeUploaded": "Xifaniso xi ta uploadiwa ku nga ri khale",
+  "audioToBeUploaded": "Audio clip yi ta uploadiwa ku nga ri khale",
+  "videoLimitReached": "Mpimo wa ku rhekhoda vhidiyo wa $count seconds wu fikeleriwile"
 }

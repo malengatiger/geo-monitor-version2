@@ -217,7 +217,13 @@
   "managementPeople": "Gerentes, Administradores e Supervisores",
   "fieldWorkers": "Monitores de campo e outros trabalhadores",
   "organizations": "Organizações",
-  "information": "Informação"
+  "information": "Informação",
+  "videoToBeUploaded": "O vídeo será carregado em breve",
+  "welcomeAboard": "Bem-vindo a bordo do Geo!",
+  "audioLimitReached": "O limite de gravação de clipe de áudio de $count minutos foi atingido",
+  "photoToBeUploaded": "A foto será carregada em breve",
+  "audioToBeUploaded": "O clipe de áudio será carregado em breve",
+  "videoLimitReached": "O limite de gravação de vídeo de $count segundos foi atingido"
 
 
 

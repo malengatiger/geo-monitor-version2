@@ -88,7 +88,7 @@ class OrganizationMapMobileState extends State<OrganizationMapMobile>
         organizationId: organization!.organizationId!,
         forceRefresh: forceRefresh);
 
-    // _projectPositions.sort((a, b) => a.created!.compareTo(b.created!));
+    _projectPositions.sort((a, b) => a.created!.compareTo(b.created!));
     var list = <ProjectPosition>[];
     for (var pos in _projectPositions) {
       if (pos.created == null) {
@@ -98,7 +98,6 @@ class OrganizationMapMobileState extends State<OrganizationMapMobile>
       }
     }
     _projectPositions = list;
-    _createMarkers();
     setState(() {
       loading = false;
     });
@@ -143,11 +142,6 @@ class OrganizationMapMobileState extends State<OrganizationMapMobile>
     }
     bounds = boundsFromLatLngList(latLngs);
     pp(' bounds: ${bounds!.toJson()}  🍎');
-    // try {
-    //   _animateMap();
-    // } catch (e) {
-    //   pp('$mm $e ');
-    // }
 
     final CameraPosition first = CameraPosition(
       target: LatLng(

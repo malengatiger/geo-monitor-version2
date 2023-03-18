@@ -134,24 +134,31 @@ class GeoActivityState extends State<GeoActivity>
           fcmBloc.geofenceStream.listen((GeofenceEvent event) async {
         pp('$mm: 🍎geofenceSubscriptionFCM: 🍎 GeofenceEvent: '
             'user ${event.user!.name} arrived: ${event.projectName} ');
-        var arr = await mTx.translate('arrivedAt', settings!.locale!);
-        if (event.projectName != null) {
-          arrivedAt = arr.replaceAll('\$project', event.projectName!);
-          arrivedAt = '$arrivedAt - ${event.user!.name!}';
-        }
-        if (mounted) {
-          showToast(
-              duration: const Duration(seconds: 5),
-              padding: 24.0,
-              backgroundColor: Theme.of(context).primaryColor,
-              textStyle: myTextStyleSmallBold(context),
-              message: '$arrivedAt',
-              context: context);
-          setState(() {});
-        }
+       _handleGeofenceEvent(event);
       });
     } else {
       pp('App is running on the Web 👿👿👿firebase messaging is OFF 👿👿👿');
+    }
+  }
+  Future<void> _handleGeofenceEvent(GeofenceEvent event) async {
+    var settings = await prefsOGx.getSettings();
+    if (settings != null) {
+      var arr = await mTx.translate('arrivedAt', settings!.locale!);
+      var arr1 = arr.replaceAll('\$member', event.user!.name!);
+      if (event.projectName != null) {
+        var arrivedAt = arr1.replaceAll('\$project', event.projectName!);
+        if (mounted) {
+          showToast(
+              duration: const Duration(seconds: 5),
+              backgroundColor: Theme
+                  .of(context)
+                  .primaryColor,
+              padding: 20,
+              textStyle: myTextStyleMedium(context),
+              message: arrivedAt,
+              context: context);
+        }
+      }
     }
   }
 

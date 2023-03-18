@@ -225,6 +225,12 @@
   "managementPeople": "Ndị nchịkwa, ndị nchịkwa na ndị nlekọta",
   "fieldWorkers": "Field Monitors na ndị ọrụ ndị ọzọ",
   "organizations": "Ụlọ ọrụ",
-  "information": "Ozi"
+  "information": "Ozi",
+  "videoToBeUploaded": "A ga-ebugo vidiyo n\u0027oge adịghị anya",
+  "welcomeAboard": "Nnọọ n\u0027ime Geo!",
+  "audioLimitReached": "Eruola oke ndekọ obere vidiyo nke nkeji $count",
+  "photoToBeUploaded": "A ga-ebugo foto n\u0027oge adịghị anya",
+  "audioToBeUploaded": "A ga-ebugo obere vidiyo n\u0027oge adịghị anya",
+  "videoLimitReached": "Eruola oke ndekọ vidiyo nke $count sekọnd"
 
 }

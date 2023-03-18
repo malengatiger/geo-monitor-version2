@@ -217,6 +217,12 @@
   "managementPeople": "Mamaneja, Vatariri uye Vatariri",
   "fieldWorkers": "Field Monitors nevamwe vashandi",
   "organizations": "Masangano",
-  "information": "Information"
+  "information": "Information",
+  "videoToBeUploaded": "Vhidhiyo ichaiswa munguva pfupi iri kutevera",
+  "welcomeAboard": "Tikugashirei mukati Geo!",
+  "audioLimitReached": "Audio clip yekurekodha inogumira ye$count minutes yasvikwa",
+  "photoToBeUploaded": "Mufananidzo uchaiswa munguva pfupi iri kutevera",
+  "audioToBeUploaded": "Audio clip ichaiswa munguva pfupi iri kutevera",
+  "videoLimitReached": "Vhidhiyo yekurekodha miganhu ye$count seconds yasvikwa"
 
 }
