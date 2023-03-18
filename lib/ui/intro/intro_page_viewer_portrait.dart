@@ -8,6 +8,7 @@ import 'package:geo_monitor/ui/auth/auth_signin_main.dart';
 import 'package:geo_monitor/ui/dashboard/dashboard_main.dart';
 import 'package:page_transition/page_transition.dart';
 
+import '../../l10n/translation_handler.dart';
 import '../../library/api/prefs_og.dart';
 import '../../library/cache_manager.dart';
 import '../../library/data/user.dart' as ur;
@@ -34,6 +35,10 @@ class IntroPageViewerPortraitState extends State<IntroPageViewerPortrait>
   fb.FirebaseAuth firebaseAuth = fb.FirebaseAuth.instance;
   ur.User? user;
 
+  String? organizations, people, fieldWorkers, executives,
+      information,thankYou,thankYouMessage, infrastructure,
+      govt, youth, community, registerOrganization;
+
   final mm =
       '${E.pear}${E.pear}${E.pear}${E.pear} IntroPageViewerPortrait: ${E.pear} ';
 
@@ -41,7 +46,34 @@ class IntroPageViewerPortraitState extends State<IntroPageViewerPortrait>
   void initState() {
     _animationController = AnimationController(vsync: this);
     super.initState();
+    _setTexts();
     _getAuthenticationStatus();
+  }
+
+  void _setTexts() async {
+    var sett = await prefsOGx.getSettings();
+    late String locale;
+    if (sett == null) {
+        locale = 'en';
+    } else {
+      locale = sett.locale!;
+    }
+    organizations = await mTx.translate('organizations', locale);
+    people = await mTx.translate('people', locale);
+    fieldWorkers = await mTx.translate('fieldWorkers', locale);
+    executives = await mTx.translate('executives', locale);
+    information = await mTx.translate('information', locale);
+    thankYou = await mTx.translate('thankYou', locale);
+    thankYouMessage = await mTx.translate('thankYouMessage', locale);
+
+    infrastructure = await mTx.translate('infrastructure', locale);
+    govt = await mTx.translate('govt', locale);
+    youth = await mTx.translate('youth', locale);
+    community = await mTx.translate('community', locale);
+    registerOrganization = await mTx.translate('registerOrganization', locale);
+    setState(() {
+
+    });
   }
 
   void _getAuthenticationStatus() async {
@@ -183,8 +215,8 @@ class IntroPageViewerPortraitState extends State<IntroPageViewerPortrait>
     return SafeArea(
         child: Scaffold(
       appBar: AppBar(
-        title: Text(
-          'Geo Information',
+        title: Text(information == null?
+          'Geo Information':information!,
           style: myTextStyleLarge(context),
         ),
         bottom: PreferredSize(
@@ -202,7 +234,8 @@ class IntroPageViewerPortraitState extends State<IntroPageViewerPortrait>
                           onPressed: onSignIn, child: const Text('Sign In')),
                       TextButton(
                           onPressed: onRegistration,
-                          child: const Text('Register Organization')),
+                          child: Text(registerOrganization == null?
+                              'Register Organization': registerOrganization!)),
                     ],
                   ),
                 ),
@@ -213,43 +246,33 @@ class IntroPageViewerPortraitState extends State<IntroPageViewerPortrait>
           PageView(
             controller: _pageController,
             onPageChanged: _onPageChanged,
-            children: const [
-              IntroPage(
-                title: 'GeoMonitor',
+            children:  [
+               IntroPage(
+                title: 'Geo',
                 assetPath: 'assets/intro/pic2.jpg',
-                text: lorem,
+                text: infrastructure == null?lorem:infrastructure!,
               ),
               IntroPage(
-                title: 'Organizations',
+                title: organizations == null?'Organizations':organizations!,
                 assetPath: 'assets/intro/pic5.jpg',
-                text: lorem,
+                text: youth == null? lorem: youth!,
               ),
               IntroPage(
-                title: 'Administrators',
+                title: people == null?'People':people!,
                 assetPath: 'assets/intro/pic1.jpg',
-                text: lorem,
+                text: community == null?lorem:community!,
               ),
               IntroPage(
-                title: 'Field Monitors',
+                title: fieldWorkers == null? 'Field Monitors': fieldWorkers!,
                 assetPath: 'assets/intro/pic5.jpg',
                 text: lorem,
               ),
               IntroPage(
-                title: 'Executives',
+                title: thankYou == null?'Thank You':thankYou!,
                 assetPath: 'assets/intro/pic3.webp',
-                text: lorem,
+                text: thankYouMessage == null? lorem: thankYouMessage!,
               ),
-              IntroPage(
-                title: 'How To',
-                assetPath: 'assets/intro/pic4.jpg',
-                text: lorem,
-              ),
-              IntroPage(
-                title: 'Thank You!',
-                assetPath: 'assets/intro/thanks.webp',
-                text:
-                    'Thank you for even getting to this point. Your time and effort is much appreciated and we hope you enjoy your journeys with this app!',
-              ),
+
             ],
           ),
           Positioned(

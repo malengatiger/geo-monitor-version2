@@ -247,5 +247,15 @@ class MyKeys {
     hashMap["youth"] = "youth";
     hashMap["community"] = "community";
 
+    hashMap["managementPeople"] =  "managementPeople";
+    hashMap["fieldWorkers"] =  "fieldWorkers";
+    hashMap["executives"] =  "executives";
+    hashMap["organizations"] =  "organizations";
+    hashMap["information"] =  "information";
+    hashMap["government"] =  "government";
+    hashMap["thankYou"] =  "thankYou";
+    hashMap["communityTitle"] =  "communityTitle";
+    hashMap["thankYouMessage"] =  "thankYouMessage";
+
   }
 }
