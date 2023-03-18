@@ -6,7 +6,7 @@ import 'package:geo_monitor/library/bloc/organization_bloc.dart';
 import 'package:geo_monitor/library/data/location_request.dart';
 import 'package:geo_monitor/library/data/location_response.dart';
 import 'package:geo_monitor/ui/activity/activity_header.dart';
-import 'package:geo_monitor/ui/activity/activity_stream_card_mobile.dart';
+import 'package:geo_monitor/ui/activity/activity_stream_card.dart';
 
 import '../../l10n/translation_handler.dart';
 import '../../library/api/prefs_og.dart';
@@ -71,12 +71,13 @@ class ActivityListMobileState extends State<ActivityListMobile>
   late AnimationController _animationController;
   late StreamSubscription<ActivityModel> subscription;
   late StreamSubscription<SettingsModel> settingsSubscriptionFCM;
+  late StreamSubscription<GeofenceEvent> geofenceSubscriptionFCM;
 
   static const userActive = 0, projectActive = 1, orgActive = 2;
   late int activeType;
   User? user;
   bool busy = true;
-  String? prefix, suffix;
+  String? prefix, suffix, name, title, loadingActivities;
   final mm = '😎😎😎😎😎😎 ActivityListMobile: ';
 
   @override
@@ -86,8 +87,46 @@ class ActivityListMobileState extends State<ActivityListMobile>
         reverseDuration: const Duration(milliseconds: 1000),
         vsync: this);
     super.initState();
+    _setTexts();
     _getData(true);
     _listenToFCM();
+  }
+
+  @override
+  void dispose() {
+    geofenceSubscriptionFCM.cancel();
+    settingsSubscriptionFCM.cancel();
+    subscription.cancel();
+    super.dispose();
+  }
+
+  String? locale;
+  ActivityStrings? activityStrings;
+  void _setTexts() async {
+    user = await prefsOGx.getUser();
+    settings = await prefsOGx.getSettings();
+    if (settings != null) {
+      locale = settings!.locale;
+      if (widget.project != null) {
+        title = await mTx.translate('projectActivity', settings!.locale!);
+        name = widget.project!.name!;
+      } else if (widget.user != null) {
+        title = await mTx.translate('memberActivity', settings!.locale!);
+        name = widget.user!.name;
+      } else {
+        title = await mTx.translate('organizationActivity', settings!.locale!);
+        name = user!.organizationName;
+      }
+      activityStrings = await ActivityStrings.getTranslated();
+      loadingActivities =
+          await mTx.translate('loadingActivities', settings!.locale!);
+
+      var sub = await mTx.translate('activityTitle', settings!.locale!);
+      int index = sub.indexOf('\$');
+      prefix = sub.substring(0, index);
+      suffix = sub.substring(index + 6);
+      setState(() {});
+    }
   }
 
   void _getData(bool forceRefresh) async {
@@ -109,11 +148,6 @@ class ActivityListMobileState extends State<ActivityListMobile>
       var hours = 12;
       if (settings != null) {
         hours = settings!.activityStreamHours!;
-        var sub = await mTx.translate('activityTitle', settings!.locale!);
-        int index = sub.indexOf('\$');
-        prefix = sub.substring(0, index);
-        suffix = sub.substring(index+6);
-        pp('$mm prefix: $prefix suffix: $suffix');
       }
       pp('$mm ... get Activity (n hours) ... : $hours');
       if (widget.project != null) {
@@ -162,18 +196,33 @@ class ActivityListMobileState extends State<ActivityListMobile>
   void _listenToFCM() async {
     pp('$mm ... _listenToFCM activityStream ...');
 
+    geofenceSubscriptionFCM =
+        fcmBloc.geofenceStream.listen((GeofenceEvent event) async {
+      pp('$mm: 🍎geofenceSubscriptionFCM: 🍎 GeofenceEvent: '
+          'user ${event.user!.name} arrived: ${event.projectName} ');
+      var arr = await mTx.translate('arrivedAt', settings!.locale!);
+      if (event.projectName != null) {
+        var arr1 = arr.replaceAll('\$member', event.user!.name!);
+        var arrivedAt = arr1.replaceAll('\$project', event.projectName!);
+        if (mounted) {
+          showToast(
+              duration: const Duration(seconds: 5),
+              backgroundColor: Theme.of(context).primaryColor,
+              padding: 20,
+              textStyle: myTextStyleMedium(context),
+              message: arrivedAt,
+              context: context);
+        }
+      }
+    });
     settingsSubscriptionFCM =
         fcmBloc.settingsStream.listen((SettingsModel event) {
       _getData(false);
-      if (mounted) {
-        pp('$mm activitySubscriptionFCM: DOING NOTHING!!!!!!!!!!!!!!');
-        setState(() {});
-      }
     });
 
     subscription = fcmBloc.activityStream.listen((ActivityModel model) {
       pp('$mm activityStream delivered activity data ... ${model.date!}');
-
+      _getData(false);
       if (isActivityValid(model)) {
         models.insert(0, model);
       }
@@ -248,7 +297,9 @@ class ActivityListMobileState extends State<ActivityListMobile>
                       height: 20,
                     ),
                     Text(
-                      'Loading activities ...',
+                      loadingActivities == null
+                          ? 'Loading activities ...'
+                          : loadingActivities!,
                       style: myTextStyleSmall(context),
                     ),
                   ],
@@ -263,7 +314,7 @@ class ActivityListMobileState extends State<ActivityListMobile>
       return Scaffold(
         appBar: AppBar(
           centerTitle: true,
-          title: const Text('Activity Stream'),
+          title: Text(title == null ? 'Org Activity' : title!),
         ),
         body: Center(
           child: InkWell(
@@ -285,29 +336,13 @@ class ActivityListMobileState extends State<ActivityListMobile>
         ),
       );
     }
-    var title = 'Activity';
-    var name = '';
-    switch (activeType) {
-      case orgActive:
-        title = 'Organization Activity';
-        name = '';
-        break;
-      case userActive:
-        title = 'Member Activity';
-        name = widget.user!.name!;
-        break;
-      case projectActive:
-        title = 'Project Activity';
-        name = widget.project!.name!;
-        break;
-      default:
-        break;
-    }
-
     return SafeArea(
         child: Scaffold(
       appBar: AppBar(
-        title: Text(title),
+        title: Text(
+          title == null ? 'Activity' : title!,
+          style: myTextStyleMediumBold(context),
+        ),
         actions: [
           IconButton(
               onPressed: () {
@@ -326,7 +361,7 @@ class ActivityListMobileState extends State<ActivityListMobile>
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Text(
-                      name,
+                      name == null ? 'Name' : name!,
                       style: myTextStyleLargePrimaryColor(context),
                     ),
                   ],
@@ -345,15 +380,19 @@ class ActivityListMobileState extends State<ActivityListMobile>
             },
             child: Padding(
               padding: const EdgeInsets.all(8.0),
-              child: prefix == null? const SizedBox():ActivityHeader(
-                prefix: prefix!,
-                suffix: suffix!,
-                onRefreshRequested: () {
-                  _getData(true);
-                },
-                hours: settings == null ? 12 : settings!.activityStreamHours!,
-                number: models.length,
-              ),
+              child: prefix == null
+                  ? const SizedBox()
+                  : ActivityHeader(
+                      prefix: prefix!,
+                      suffix: suffix!,
+                      onRefreshRequested: () {
+                        _getData(true);
+                      },
+                      hours: settings == null
+                          ? 12
+                          : settings!.activityStreamHours!,
+                      number: models.length,
+                    ),
             ),
           ),
           const SizedBox(
@@ -371,12 +410,15 @@ class ActivityListMobileState extends State<ActivityListMobile>
                         onTap: () {
                           _handleTappedActivity(act);
                         },
-                        child: ActivityStreamCardMobile(
-                          model: act,
-                          frontPadding: 36,
-                          thinMode: false,
-                          width: width,
-                        ));
+                        child: activityStrings == null
+                            ? const SizedBox()
+                            : locale == null? const SizedBox():ActivityStreamCard(
+                                activityStrings: activityStrings!,
+                                activityModel: act,
+                                frontPadding: 36,
+                                thinMode: false,
+                                width: width, locale: locale!,
+                              ));
                   }),
             ),
           ),

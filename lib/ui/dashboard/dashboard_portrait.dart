@@ -34,7 +34,6 @@ import '../../library/data/user.dart';
 import '../../library/data/video.dart';
 import '../../library/emojis.dart';
 import '../../library/functions.dart';
-import '../../library/geofence/geofencer_two.dart';
 import '../../library/ui/maps/project_map_mobile.dart';
 import '../../library/ui/media/list/project_media_list_mobile.dart';
 import '../../library/ui/media/user_media_list/user_media_list_mobile.dart';
@@ -67,6 +66,7 @@ class DashboardPortraitState extends State<DashboardPortrait>
   late StreamSubscription<ProjectPosition> projectPositionSubscriptionFCM;
   late StreamSubscription<ProjectPolygon> projectPolygonSubscriptionFCM;
   late StreamSubscription<Project> projectSubscriptionFCM;
+  late StreamSubscription<GeofenceEvent> geofenceSubscriptionFCM;
   late StreamSubscription<User> userSubscriptionFCM;
   late StreamSubscription<SettingsModel> settingsSubscriptionFCM;
   late StreamSubscription<String> killSubscriptionFCM;
@@ -98,6 +98,7 @@ class DashboardPortraitState extends State<DashboardPortrait>
   int instruction = stayOnList;
   var items = <BottomNavigationBarItem>[];
   SettingsModel? settings;
+  String? title;
 
   int numberOfDays = 7;
   @override
@@ -113,7 +114,6 @@ class DashboardPortraitState extends State<DashboardPortrait>
     _listenForFCM();
     _getAuthenticationStatus();
     _subscribeToConnectivity();
-    _subscribeToGeofenceStream();
     // _startTimer();
   }
 
@@ -176,18 +176,6 @@ class DashboardPortraitState extends State<DashboardPortrait>
     pp('$mm Are we connected? answer: $isConnected');
   }
 
-  void _subscribeToGeofenceStream() async {
-    geofenceSubscription =
-        theGreatGeofencer.geofenceEventStream.listen((event) {
-      pp('\n$mm geofenceEvent delivered by geofenceStream: ${event.projectName} ...');
-      if (mounted) {
-        showToast(
-            message: '${event.user!.name} at ${event.projectName}',
-            context: context);
-      }
-    });
-  }
-
   @override
   void dispose() {
     _gridViewAnimationController.dispose();
@@ -236,8 +224,8 @@ class DashboardPortraitState extends State<DashboardPortrait>
     if (settings != null) {
       numberOfDays = settings!.numberOfDays!;
     }
+    title = await mTx.translate('dashboard', settings!.locale!);
     var sub = await mTx.translate('dashboardSubTitle', settings!.locale!);
-    pp(sub);
     subTitle = sub.replaceAll('\$count', '$numberOfDays');
     pp(subTitle);
     setState(() {
@@ -329,6 +317,24 @@ class DashboardPortraitState extends State<DashboardPortrait>
     var ios = UniversalPlatform.isIOS;
     if (android || ios) {
       pp('$mm 🍎 🍎 _listen to FCM message streams ... 🍎 🍎');
+      geofenceSubscriptionFCM =
+          fcmBloc.geofenceStream.listen((GeofenceEvent event) async {
+            pp('$mm: 🍎geofenceSubscriptionFCM: 🍎 GeofenceEvent: '
+                'user ${event.user!.name} arrived: ${event.projectName} ');
+            var arr = await mTx.translate('arrivedAt', settings!.locale!);
+            if (event.projectName != null) {
+              var arr1 = arr.replaceAll('\$member', event.user!.name!);
+              var arrivedAt = arr1.replaceAll('\$project', event.projectName!);
+              if (mounted) {
+                showToast(
+                    duration: const Duration(seconds: 5),
+                    backgroundColor: Theme.of(context).primaryColor,
+                    padding: 20,
+                    textStyle: myTextStyleMedium(context),
+                    message: arrivedAt, context: context);
+              }
+            }
+          });
       projectSubscriptionFCM =
           fcmBloc.projectStream.listen((Project project) async {
         await _getData(false);
@@ -383,24 +389,6 @@ class DashboardPortraitState extends State<DashboardPortrait>
       });
     } else {
       pp('App is running on the Web 👿👿👿firebase messaging is OFF 👿👿👿');
-    }
-  }
-
-  void _handleBottomNav(int value) {
-    switch (value) {
-      case 0:
-        pp('$mm 🔆🔆🔆 Navigate to UserMediaList');
-        _navigateToUserMediaList();
-        break;
-
-      case 1:
-        pp('$mm 🔆🔆🔆 Navigate to MessageSender');
-        _navigateToMessageSender();
-        break;
-      case 2:
-        pp('$mm 🔆🔆🔆 Navigate to Weather');
-        _navigateToDailyForecast();
-        break;
     }
   }
 
@@ -490,7 +478,7 @@ class DashboardPortraitState extends State<DashboardPortrait>
       Navigator.push(
           context,
           PageTransition(
-              type: PageTransitionType.rotate,
+              type: PageTransitionType.fade,
               alignment: Alignment.center,
               duration: const Duration(seconds: 1),
               child: const SettingsMain()));
@@ -505,12 +493,11 @@ class DashboardPortraitState extends State<DashboardPortrait>
 
   void _navigateToActivity() {
     pp('$mm .................. _navigateToActivity ....');
-    final width = MediaQuery.of(context).size.width;
     if (mounted) {
       Navigator.push(
           context,
           PageTransition(
-              type: PageTransitionType.rotate,
+              type: PageTransitionType.fade,
               alignment: Alignment.center,
               duration: const Duration(seconds: 1),
               child: GeoActivityMobile(
@@ -657,7 +644,7 @@ class DashboardPortraitState extends State<DashboardPortrait>
       child: Scaffold(
         key: _key,
         appBar: AppBar(
-          title: const Text('Dashboard'),
+          // title:  Text(title == null? 'Dashboard': title!),
           actions: [
             IconButton(
                 icon: Icon(
@@ -702,7 +689,10 @@ class DashboardPortraitState extends State<DashboardPortrait>
             child: Padding(
               padding: const EdgeInsets.all(8.0),
               child: Column(
+
                 children: [
+                  Text(title == null? 'Dashboard': title!, style: myTextStyleSmall(context),),
+                  const SizedBox(height: 8,),
                   deviceUser == null
                       ? const SizedBox()
                       : Row(
@@ -711,7 +701,7 @@ class DashboardPortraitState extends State<DashboardPortrait>
                             Flexible(
                               child: Text(
                                 deviceUser!.organizationName!,
-                                style: myTextStyleLarge(context),
+                                style: myTextStyleMediumBold(context),
                               ),
                             ),
                           ],

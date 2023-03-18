@@ -1,11 +1,13 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:geo_monitor/library/api/prefs_og.dart';
 import 'package:geo_monitor/library/cache_manager.dart';
 import 'package:geo_monitor/library/data/activity_model.dart';
 import 'package:geo_monitor/library/data/geofence_event.dart';
 import 'package:geo_monitor/library/data/location_response.dart';
 import 'package:geo_monitor/library/data/org_message.dart';
+import 'package:geo_monitor/library/data/settings_model.dart';
 import 'package:geo_monitor/library/ui/camera/video_player_mobile.dart';
 import 'package:geo_monitor/library/ui/maps/location_response_map.dart';
 import 'package:geo_monitor/ui/activity/activity_list_mobile.dart';
@@ -14,6 +16,7 @@ import 'package:geo_monitor/ui/dashboard/user_dashboard.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:universal_platform/universal_platform.dart';
 
+import '../../l10n/translation_handler.dart';
 import '../../library/bloc/fcm_bloc.dart';
 import '../../library/data/audio.dart';
 import '../../library/data/photo.dart';
@@ -62,12 +65,22 @@ class GeoActivityMobileState extends State<GeoActivityMobile>
   final mm = '❇️❇️❇️❇️❇️ GeoActivityMobile: ';
 
   bool busy = false;
+  SettingsModel? settingsModel;
+  String? arrivedAt;
 
   @override
   void initState() {
     _controller = AnimationController(vsync: this);
     super.initState();
+    _setTexts();
     _listenForFCM();
+  }
+
+  void _setTexts() async {
+    settingsModel = await prefsOGx.getSettings();
+    if (settingsModel != null) {
+      arrivedAt = await mTx.translate('arrivedAt', settingsModel!.locale!);
+    }
   }
 
   int count = 0;
@@ -80,12 +93,13 @@ class GeoActivityMobileState extends State<GeoActivityMobile>
           'geofence stream via geofenceSubscriptionFCM...');
 
       geofenceSubscriptionFCM =
-          fcmBloc.geofenceStream.listen((GeofenceEvent event) {
+          fcmBloc.geofenceStream.listen((GeofenceEvent event) async {
         pp('$mm: 🍎geofenceSubscriptionFCM: 🍎 GeofenceEvent: '
             'user ${event.user!.name} arrived: ${event.projectName} ');
         if (mounted) {
           showToast(
-              message: '${event.user!.name!} arrived at ${event.projectName}',
+              message: arrivedAt == null? 'Arrived at':
+                  '$arrivedAt - ${event.user!.name!} - ${event.projectName}',
               context: context);
           setState(() {});
         }
@@ -263,7 +277,6 @@ class GeoActivityMobileState extends State<GeoActivityMobile>
 
   @override
   Widget build(BuildContext context) {
-    final width = MediaQuery.of(context).size.width;
     return SafeArea(
       child: ActivityListMobile(
         user: widget.user,

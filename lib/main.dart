@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:io';
 
 import 'package:animated_splash_screen/animated_splash_screen.dart';
 import 'package:easy_localization/easy_localization.dart';
@@ -95,29 +94,7 @@ void main() async {
     DeviceOrientation.portraitDown,
   ]);
 
-  final android = Platform.isAndroid;
-  if (android) {
-     runApp(EasyLocalization(
-         path: 'assets/l10n',
-         supportedLocales: const [
-           Locale('en'),
-           Locale('af'),
-           Locale('es'),
-           Locale('fr'),
-           Locale('ig'),
-           Locale('pt'),
-           Locale('sn'),
-           Locale('st'),
-           Locale('sw'),
-           Locale('ts'),
-           Locale('xh'),
-           Locale('yo'),
-           Locale('zu'),
-         ],
-         child: const GeoAndroidApp()));
-  } else {
-    runApp(const GeoApp());
-  }
+  runApp(const GeoApp());
 }
 class GeoApp extends StatelessWidget {
   const GeoApp({super.key});

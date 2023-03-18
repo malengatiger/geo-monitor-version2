@@ -235,5 +235,17 @@ class MyKeys {
     hashMap["locationRequestReceived"] =  "locationRequestReceived";
     hashMap["locationResponseReceived"] =  "locationResponseReceived";
 
+    hashMap["memberArrivedAtProject"] =  "memberArrivedAtProject";
+    hashMap["memberLeftProject"] =  "memberLeftProject";
+    hashMap["organizationActivity"] =  "organizationActivity";
+
+    hashMap["memberActivity"] =  "memberActivity";
+    hashMap["projectActivity"] =  "projectActivity";
+
+    hashMap["infrastructure"] = "infrastructure";
+    hashMap["govt"] = "govt";
+    hashMap["youth"] = "youth";
+    hashMap["community"] = "community";
+
   }
 }

@@ -109,9 +109,11 @@ class _SettingsFormState extends State<SettingsForm> {
     selectLanguage =
         await mTx.translate('selectLanguage', settingsModel!.locale!);
     hint = await mTx.translate('selectLanguage', settingsModel!.locale!);
-    settingsChanged = await mTx.translate('settingsChanged', settingsModel!.locale!);
+    settingsChanged =
+        await mTx.translate('settingsChanged', settingsModel!.locale!);
 
-    translatedLanguage = await mTx.translate(settingsModel!.locale!, settingsModel!.locale!);
+    translatedLanguage =
+        await mTx.translate(settingsModel!.locale!, settingsModel!.locale!);
 
     setState(() {});
   }
@@ -284,7 +286,9 @@ class _SettingsFormState extends State<SettingsForm> {
     if (mounted) {
       showToast(
           backgroundColor: Theme.of(context).primaryColor,
-          message: settingsChanged == null? 'Settings have been saved':settingsChanged!,
+          message: settingsChanged == null
+              ? 'Settings have been saved'
+              : settingsChanged!,
           context: context);
 
       await Future.delayed(const Duration(milliseconds: 10));
@@ -348,7 +352,6 @@ class _SettingsFormState extends State<SettingsForm> {
 
   @override
   Widget build(BuildContext context) {
-
     return Card(
       elevation: 4,
       shape: getRoundedBorder(radius: 16),
@@ -574,8 +577,10 @@ class _SettingsFormState extends State<SettingsForm> {
                       decoration: InputDecoration(
                         hintText:
                             'Enter the number of days your dashboard must show',
-                        label: Text(numberOfDaysForDashboardData == null?
-                          'Number of Dashboard Days': numberOfDaysForDashboardData!,
+                        label: Text(
+                          numberOfDaysForDashboardData == null
+                              ? 'Number of Dashboard Days'
+                              : numberOfDaysForDashboardData!,
                           style: myTextStyleSmall(context),
                         ),
                         hintStyle: myTextStyleSmall(context),
@@ -675,11 +680,12 @@ class _SettingsFormState extends State<SettingsForm> {
 
   String? translatedLanguage;
   void _setLanguage() async {
-
     if (settingsModel != null) {
-      translatedLanguage = await mTx.translate(settingsModel!.locale!, settingsModel!.locale!);
+      translatedLanguage =
+          await mTx.translate(settingsModel!.locale!, settingsModel!.locale!);
     }
   }
+
   void _handleLocaleChange(Locale locale, String translatedLanguage) async {
     pp('$mm onLocaleChange ... going to ${locale.languageCode}');
     mTx.translate('settings', locale.toLanguageTag());
@@ -767,51 +773,66 @@ class LocaleChooserState extends State<LocaleChooser> {
         ),
         items: [
           DropdownMenuItem(
-              value: const Locale('en'),
-              child: Text(english == null ? 'English' : english!)),
+            value: const Locale('en'),
+            child: Text(english == null ? 'English' : english!,
+                style: myTextStyleSmall(context)),
+          ),
           DropdownMenuItem(
               value: const Locale('zh'),
-              child: Text(chinese == null ? 'Chinese' : chinese!)),
+              child: Text(chinese == null ? 'Chinese' : chinese!,
+                  style: myTextStyleSmall(context))),
           DropdownMenuItem(
               value: const Locale('af'),
-              child: Text(afrikaans == null ? 'Afrikaans' : afrikaans!)),
+              child: Text(afrikaans == null ? 'Afrikaans' : afrikaans!,
+                  style: myTextStyleSmall(context))),
           DropdownMenuItem(
               value: const Locale('fr'),
-              child: Text(french == null ? 'French' : french!)),
+              child: Text(french == null ? 'French' : french!,
+                  style: myTextStyleSmall(context))),
           DropdownMenuItem(
               value: const Locale('de'),
-              child: Text(german == null ? 'German' : german!)),
+              child: Text(german == null ? 'German' : german!,
+                  style: myTextStyleSmall(context))),
           DropdownMenuItem(
               value: const Locale('pt'),
-              child: Text(portuguese == null ? 'Portuguese' : portuguese!)),
+              child: Text(portuguese == null ? 'Portuguese' : portuguese!,
+                  style: myTextStyleSmall(context))),
           DropdownMenuItem(
               value: const Locale('ig'),
-              child: Text(ingala == null ? 'Ingala' : ingala!)),
+              child: Text(ingala == null ? 'Ingala' : ingala!,
+                  style: myTextStyleSmall(context))),
           DropdownMenuItem(
               value: const Locale('st'),
-              child: Text(sotho == null ? 'Sotho' : sotho!)),
+              child: Text(sotho == null ? 'Sotho' : sotho!,
+                  style: myTextStyleSmall(context))),
           DropdownMenuItem(
               value: const Locale('es'),
-              child: Text(spanish == null ? 'Spanish' : spanish!)),
+              child: Text(spanish == null ? 'Spanish' : spanish!,
+                  style: myTextStyleSmall(context))),
           DropdownMenuItem(
               value: const Locale('sn'),
-              child: Text(shona == null ? 'Shona' : shona!)),
+              child: Text(shona == null ? 'Shona' : shona!,
+                  style: myTextStyleSmall(context))),
           DropdownMenuItem(
               value: const Locale('sw'),
-              child: Text(swahili == null ? 'Swahili' : swahili!)),
+              child: Text(swahili == null ? 'Swahili' : swahili!,
+                  style: myTextStyleSmall(context))),
           DropdownMenuItem(
               value: const Locale('ts'),
-              child: Text(tsonga == null ? 'Tsonga' : tsonga!)),
+              child: Text(tsonga == null ? 'Tsonga' : tsonga!,
+                  style: myTextStyleSmall(context))),
           DropdownMenuItem(
               value: const Locale('xh'),
-              child: Text(xhosa == null ? 'Xhosa' : xhosa!)),
+              child: Text(xhosa == null ? 'Xhosa' : xhosa!,
+                  style: myTextStyleSmall(context))),
           DropdownMenuItem(
               value: const Locale('yo'),
-              child: Text(yoruba == null ? 'Yoruba' : yoruba!)),
+              child: Text(yoruba == null ? 'Yoruba' : yoruba!,
+                  style: myTextStyleSmall(context))),
           DropdownMenuItem(
               value: const Locale('zu'),
-              child: Text(zulu == null ? 'Zulu' : zulu!)),
-
+              child: Text(zulu == null ? 'Zulu' : zulu!,
+                  style: myTextStyleSmall(context))),
         ],
         onChanged: onChanged);
   }

@@ -1167,7 +1167,7 @@ const lorem =
     'The multimedia information collected can also be used for training and review purposes, allowing for '
     'continuous improvement and optimization of field operations. Overall, building multimedia timelines '
     'can provide valuable insights and information for managers and executives to make informed decisions and improve '
-    'the overall efficiency of field operations.\n\nYes, there are many use cases for monitoring and managing initiatives '
+    'the overall efficiency of field operations.\n\nThere are many use cases for monitoring and managing initiatives '
     'using mobile devices and cloud platforms. The combination of mobile devices and cloud-based solutions can greatly improve '
     'the efficiency and effectiveness of various initiatives, including infrastructure building projects, events, conferences, '
     'school facilities, and ongoing activities of all types. By using mobile devices, field workers can collect and share multimedia information in real-time, '
@@ -1296,7 +1296,9 @@ const chatGPTGov =
     'Third, Geo can provide valuable insights into the needs and priorities of communities, '
     'which can help government agencies to better target their resources and efforts to where '
     'they are needed most. Finally, by engaging and '
-    'empowering young people in the process of monitoring and reporting on infrastructure projects, Geo can help to build a sense of ownership and responsibility among youth, while also providing them with valuable skills and experience that can help to improve their employment prospects.';
+    'empowering young people in the process of monitoring and reporting on infrastructure projects, '
+    'Geo can help to build a sense of ownership and responsibility among youth, while also providing them '
+    'with valuable skills and experience that can help to improve their employment prospects.';
 
 const chatGPTCommunity =
     'Community groups can get involved with Geo by using the platform to '
