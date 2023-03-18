@@ -35,7 +35,7 @@ class IntroPageViewerPortraitState extends State<IntroPageViewerPortrait>
   fb.FirebaseAuth firebaseAuth = fb.FirebaseAuth.instance;
   ur.User? user;
 
-  String? organizations, people, fieldWorkers, executives,
+  String? organizations, managementPeople, fieldWorkers, executives,
       information,thankYou,thankYouMessage, infrastructure,
       govt, youth, community, registerOrganization;
 
@@ -59,7 +59,7 @@ class IntroPageViewerPortraitState extends State<IntroPageViewerPortrait>
       locale = sett.locale!;
     }
     organizations = await mTx.translate('organizations', locale);
-    people = await mTx.translate('people', locale);
+    managementPeople = await mTx.translate('managementPeople', locale);
     fieldWorkers = await mTx.translate('fieldWorkers', locale);
     executives = await mTx.translate('executives', locale);
     information = await mTx.translate('information', locale);
@@ -258,7 +258,7 @@ class IntroPageViewerPortraitState extends State<IntroPageViewerPortrait>
                 text: youth == null? lorem: youth!,
               ),
               IntroPage(
-                title: people == null?'People':people!,
+                title: managementPeople == null?'People':managementPeople!,
                 assetPath: 'assets/intro/pic1.jpg',
                 text: community == null?lorem:community!,
               ),
