@@ -7,7 +7,7 @@ import 'package:geo_monitor/library/ui/camera/photo_handler.dart';
 import 'package:geo_monitor/library/ui/camera/video_handler_two.dart';
 import 'package:geo_monitor/library/ui/media/list/project_audios_page.dart';
 import 'package:geo_monitor/library/ui/media/list/project_photos_page.dart';
-import 'package:geo_monitor/library/ui/media/list/project_videos_tablet.dart';
+import 'package:geo_monitor/library/ui/media/list/project_videos_page.dart';
 import 'package:geo_monitor/ui/audio/audio_handler.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:page_transition/page_transition.dart';
@@ -372,7 +372,7 @@ class ProjectMediaListTabletState extends State<ProjectMediaListTablet>
                         _animationController.forward();
                       },
                     ),
-                    ProjectVideosTablet(
+                    ProjectVideosPage(
                       project: widget.project,
                       refresh: false,
                       onVideoTapped: (Video video, int index) {
