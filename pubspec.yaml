@@ -125,6 +125,8 @@ dependencies:
   easy_localization: ^3.0.2-dev.5
   easy_localization_loader: ^1.0.1+1
   shared_preferences: ^2.0.18
+  music_visualizer: ^1.0.2
+  audioplayers: ^3.0.1
 
 
 

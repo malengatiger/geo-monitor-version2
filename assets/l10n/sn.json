@@ -234,6 +234,9 @@
   "serverProblem": "Sevha haisi kuwanikwa panguva ino. Ndapota edza zvakare gare gare.",
   "createMembers": "Ndapota gadzirai nhengo itsva musangano renyu",
   "createProject": "Ndapota gadzira chirongwa chitsva",
-  "checkNetworkSettings": "Ndokumbira utarise marongero etiweki yemudziyo wako"
+  "checkNetworkSettings": "Ndokumbira utarise marongero etiweki yemudziyo wako",
+  "waitingToRecordAudio": "Yakamirira kurekodha clip",
+  "waitingToRecordVideo": "Yakamirira kurekodha vhidhiyo",
+
 
 }

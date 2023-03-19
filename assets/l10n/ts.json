@@ -234,5 +234,7 @@
   "serverProblem": "Sevha a yi kumeki eka nkarhi lowu. Hi kombela u ringeta nakambe endzhaku.",
   "createMembers": "Hi kombela u tumbuluxa swirho leswintshwa eka nhlangano wa n’wina",
   "createProject": "Hi kombela u endla phurojeke leyintshwa",
-  "checkNetworkSettings": "Hi kombela u kambela swiyimiso swa netiweke ya xitirhisiwa xa wena"
+  "checkNetworkSettings": "Hi kombela u kambela swiyimiso swa netiweke ya xitirhisiwa xa wena",
+  "waitingToRecordAudio": "Ku yimela ku rhekhoda audio clip",
+  "waitingToRecordVideo": "Ku rindzela ku rhekhoda vhidiyo"
 }

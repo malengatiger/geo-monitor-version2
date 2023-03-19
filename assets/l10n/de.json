@@ -243,7 +243,10 @@
   "serverProblem": "Der Server ist derzeit nicht verfügbar. Bitte versuchen Sie es später erneut.",
   "createMembers": "Bitte erstellen Sie neue Mitglieder in Ihrer Organisation",
   "createProject": "Bitte erstellen Sie ein neues Projekt",
-  "checkNetworkSettings": "Bitte überprüfen Sie die Netzwerkeinstellungen Ihres Geräts"
+  "checkNetworkSettings": "Bitte überprüfen Sie die Netzwerkeinstellungen Ihres Geräts",
+  "waitingToRecordAudio": "Warten auf Aufnahme des Audioclips",
+  "waitingToRecordVideo": "Warten auf Videoaufnahme",
+
 
 
 }

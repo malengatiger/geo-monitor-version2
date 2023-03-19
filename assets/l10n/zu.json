@@ -234,6 +234,8 @@
   "serverProblem": "Iseva ayitholakali ngalesi sikhathi. Sicela uzame futhi emuva kwesikhathi.",
   "createMembers": "Sicela udale amalungu amasha enhlanganweni yakho",
   "createProject": "Sicela udale iphrojekthi entsha",
-  "checkNetworkSettings": "Sicela uhlole izilungiselelo zenethiwekhi yedivayisi yakho"
+  "checkNetworkSettings": "Sicela uhlole izilungiselelo zenethiwekhi yedivayisi yakho",
+  "waitingToRecordAudio": "Ilinde ukurekhoda isiqeshana somsindo",
+  "waitingToRecordVideo": "Ilinde ukurekhoda ividiyo"
 
 }

@@ -277,5 +277,8 @@ class MyKeys {
     hashMap["createMembers"] =  "createMembers";
     hashMap["portraitMode"] = "portraitMode";
 
+    hashMap["waitingToRecordAudio"] = "waitingToRecordAudio";
+    hashMap["waitingToRecordVideo"] = "waitingToRecordVideo";
+
   }
 }

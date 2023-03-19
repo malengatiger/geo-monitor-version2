@@ -231,6 +231,14 @@
   "serverProblem": "Le serveur n\u0027est pas disponible pour le moment. Veuillez réessayer plus tard.",
   "createMembers": "Veuillez créer de nouveaux membres dans votre organisation",
   "createProject": "Veuillez créer un nouveau projet",
-  "checkNetworkSettings": "Veuillez vérifier les paramètres réseau de votre appareil"
+  "checkNetworkSettings": "Veuillez vérifier les paramètres réseau de votre appareil",
+  "videoToBeUploaded": "La vidéo sera bientôt téléchargée",
+  "welcomeAboard": "Bienvenue à bord de Géo !",
+  "audioLimitReached": "La limite d\u0027enregistrement de clips audio de $count minutes a été atteinte",
+  "photoToBeUploaded": "La photo sera téléchargée bientôt",
+  "audioToBeUploaded": "Le clip audio sera bientôt téléchargé",
+  "videoLimitReached": "La limite d\u0027enregistrement vidéo de $count secondes a été atteinte",
+  "waitingToRecordAudio": "En attente d\u0027enregistrement d\u0027un clip audio",
+  "waitingToRecordVideo": "En attente d\u0027enregistrement vidéo"
 
 }

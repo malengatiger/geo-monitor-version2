@@ -20,41 +20,37 @@ class PhotoGrid extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final height = MediaQuery.of(context).size.height;
-    return Column(
-      children: [
-        Expanded(
-            child: bd.Badge(
-          position: bd.BadgePosition.topEnd(top: 4, end: 12),
-          badgeStyle: const bd.BadgeStyle(
-            badgeColor: Colors.indigo,
-            elevation: 8,
-            padding: EdgeInsets.all(8),
-          ),
-          badgeContent: Text(
-            '${photos.length}',
-            style: myTextStyleTiny(context),
-          ),
-          child: GridView.builder(
-              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisSpacing: 1,
-                  crossAxisCount: crossAxisCount,
-                  mainAxisSpacing: 1),
-              itemCount: photos.length,
-              itemBuilder: (context, index) {
-                var photo = photos.elementAt(index);
+    return Expanded(
+        child: bd.Badge(
+      position: bd.BadgePosition.topEnd(top: 4, end: 12),
+      badgeStyle: const bd.BadgeStyle(
+        badgeColor: Colors.indigo,
+        elevation: 8,
+        padding: EdgeInsets.all(8),
+      ),
+      badgeContent: Text(
+        '${photos.length}',
+        style: myTextStyleTiny(context),
+      ),
+      child: GridView.builder(
+          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisSpacing: 1,
+              crossAxisCount: crossAxisCount,
+              mainAxisSpacing: 1),
+          itemCount: photos.length,
+          itemBuilder: (context, index) {
+            var photo = photos.elementAt(index);
 
-                return GestureDetector(
-                  onTap: () {
-                    onPhotoTapped(photo);
-                  },
-                  child: PhotoCover(
-                    photo: photo,
-                  ),
-                );
-              }),
-        )),
-      ],
-    );
+            return GestureDetector(
+              onTap: () {
+                onPhotoTapped(photo);
+              },
+              child: PhotoCover(
+                photo: photo,
+              ),
+            );
+          }),
+    ));
     ;
   }
 }

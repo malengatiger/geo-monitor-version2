@@ -237,7 +237,9 @@
   "serverProblem": "El servidor no está disponible en este momento. Por favor, inténtelo de nuevo más tarde.",
   "createMembers": "Por favor cree nuevos miembros en su organización",
   "createProject": "Por favor crea un nuevo proyecto",
-  "checkNetworkSettings": "Verifique la configuración de red de su dispositivo"
+  "checkNetworkSettings": "Verifique la configuración de red de su dispositivo",
+  "waitingToRecordAudio": "Esperando para grabar un clip de audio",
+  "waitingToRecordVideo": "Esperando para grabar video"
 
 
 

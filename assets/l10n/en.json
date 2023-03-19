@@ -236,5 +236,7 @@
   "serverProblem": "The server is not available at this time. Please try again later.",
   "createMembers": "Please create new members in your organization",
   "createProject": "Please create a new project",
-  "checkNetworkSettings": "Please check your device network settings"
+  "checkNetworkSettings": "Please check your device network settings",
+  "waitingToRecordAudio": "Waiting to record audio clip",
+  "waitingToRecordVideo": "Waiting to record video"
 }

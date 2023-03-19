@@ -236,7 +236,10 @@
   "serverProblem": "Olupin naa ko si ni akoko yii. Jọwọ gbiyanju lẹẹkansi nigbamii.",
   "createMembers": "Jọwọ ṣẹda titun omo egbe ninu rẹ ètò",
   "createProject": "Jọwọ ṣẹda titun ise agbese",
-  "checkNetworkSettings": "Jọwọ ṣayẹwo awọn eto nẹtiwọki ẹrọ rẹ"
+  "checkNetworkSettings": "Jọwọ ṣayẹwo awọn eto nẹtiwọki ẹrọ rẹ",
+  "waitingToRecordAudio": "Nduro lati gba agekuru ohun silẹ",
+  "waitingToRecordVideo": "Nduro lati gba fidio silẹ",
+
 
 
 }

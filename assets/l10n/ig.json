@@ -242,6 +242,8 @@
   "serverProblem": "Ihe nkesa adịghị n\u0027oge a. Biko nwaa ọzọ ma emechaa.",
   "createMembers": "Biko mepụta ndị otu ọhụrụ na nzukọ gị",
   "createProject": "Biko mepụta ọrụ ọhụrụ",
-  "checkNetworkSettings": "Biko lelee ntọala netwọk ngwaọrụ gị"
+  "checkNetworkSettings": "Biko lelee ntọala netwọk ngwaọrụ gị",
+  "waitingToRecordAudio": "Na-eche ka ịdekọ obere vidiyo",
+  "waitingToRecordVideo": "Na-eche ka ịdekọ vidiyo"
 
 }

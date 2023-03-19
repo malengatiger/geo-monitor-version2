@@ -5,11 +5,11 @@ import 'package:flutter/material.dart';
 import 'package:geo_monitor/library/ui/camera/chewie_video_player.dart';
 import 'package:geo_monitor/library/ui/camera/video_handler_two.dart';
 import 'package:geo_monitor/library/ui/media/list/project_audios_page.dart';
+import 'package:geo_monitor/ui/audio/audio_recorder.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:page_transition/page_transition.dart';
 
 import '../../../../l10n/translation_handler.dart';
-import '../../../../ui/audio/audio_handler.dart';
 import '../../../api/prefs_og.dart';
 import '../../../bloc/project_bloc.dart';
 import '../../../data/audio.dart';
@@ -236,8 +236,9 @@ class ProjectMediaListMobileState extends State<ProjectMediaListMobile>
             type: PageTransitionType.fade,
             alignment: Alignment.topLeft,
             duration: const Duration(seconds: 1),
-            child: AudioHandler(
-              project: widget.project, onClose: (){
+            child: AudioRecorder(
+              project: widget.project, onStop: (someString){
+                pp(' on recorder on stop: $someString');
                 Navigator.of(context).pop();
             },
             )));

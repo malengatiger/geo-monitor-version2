@@ -129,7 +129,9 @@ class GeoApp extends StatelessWidget {
               theme: themeBloc.getTheme(themeIndex).darkTheme,
               darkTheme: themeBloc.getTheme(themeIndex).darkTheme,
               themeMode: ThemeMode.dark,
-              // home: const VideoHandlerTwo(),
+              // home:  AudioRecorder(onStop: (String path) {
+              //   pp('$mx audio recorder just stopped');
+              // },),
               home: AnimatedSplashScreen(
                 duration: 2000,
                 splash: const SplashWidget(),

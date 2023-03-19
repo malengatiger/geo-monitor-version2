@@ -43,7 +43,7 @@ class AudioHandlerState extends State<AudioHandler>
   final _audioRecorder = Record();
   StreamSubscription<RecordState>? _recordSub;
   StreamSubscription<Amplitude>? _amplitudeSub;
-  final wv.RecorderController _recorderController = wv.RecorderController(); //
+  final wv.RecorderController _recorderController = wv.RecorderController();
   late StreamSubscription<String> killSubscription;
 
   AudioPlayer player = AudioPlayer();
@@ -65,7 +65,10 @@ class AudioHandlerState extends State<AudioHandler>
   File? _recordedFile;
   int fileSize = 0;
   int seconds = 0;
-  String? fileUploadSize, uploadAudioClipText, elapsedTime;
+  String? fileUploadSize,
+      uploadAudioClipText,
+      locationNotAvailable,
+      elapsedTime;
 
   @override
   void initState() {
@@ -101,6 +104,8 @@ class AudioHandlerState extends State<AudioHandler>
       uploadAudioClipText =
           await mTx.translate('uploadAudioClip', settingsModel!.locale!);
       elapsedTime = await mTx.translate('elapsedTime', settingsModel!.locale!);
+      locationNotAvailable =
+          await mTx.translate('locationNotAvailable', settingsModel!.locale!);
     }
 
     setState(() {});
@@ -135,6 +140,8 @@ class AudioHandlerState extends State<AudioHandler>
 
   SettingsModel? settingsModel;
   int limitInSeconds = 60;
+  File? myLocalFile;
+
   _onRecord() async {
     pp('$mm start recording ...');
 
@@ -143,14 +150,15 @@ class AudioHandlerState extends State<AudioHandler>
         _recordedFile = null;
         mTotalByteCount = null;
         mBytesTransferred = null;
+        _showWaveForms = true;
       });
       final Directory directory = await getApplicationDocumentsDirectory();
-      final File mFile = File(
+      myLocalFile = File(
           '${directory.path}/audio_${DateTime.now().millisecondsSinceEpoch}.mp4');
 
       _recorderController.refresh();
       if (await _recorderController.checkPermission()) {
-        await _recorderController.record(path: mFile.path);
+        await _recorderController.record(path: myLocalFile!.path);
         _startTimer();
         _recorderController.addListener(() {
           if (_recorderController.recorderState.name == 'recording') {
@@ -199,7 +207,6 @@ class AudioHandlerState extends State<AudioHandler>
       return;
     }
     pp('$mm ......... start playing ...');
-
     player.setFilePath(_recordedFile!.path);
     await player.play();
   }
@@ -220,13 +227,47 @@ class AudioHandlerState extends State<AudioHandler>
     if (_timer != null) {
       _timer?.cancel();
     }
+    setState(() {
+      isPaused = false;
+      isRecording = false;
+      isStopped = true;
+      _showWaveForms = false;
+    });
     try {
-      final path = await _recorderController.stop();
+      await Future.delayed(const Duration(milliseconds: 2));
+      pp('$mm Check out myLocalFile: 🌎🌎🌎 path: ${myLocalFile!.path}');
+      if (myLocalFile != null) {
+        if (myLocalFile!.existsSync()) {
+          pp('$mm Check out myLocalFile: 🌎🌎🌎 size: ${await myLocalFile!.length()}');
+        }
+      }
+      String? path;
+      try {
+         path = await _recorderController.stop();
+      } catch (e) {
+        pp('$mm Bad stop! _recorderController stop all fucked! $e');
+        if (myLocalFile != null) {
+          if (myLocalFile!.existsSync()) {
+            pp('$mm Check out myLocalFile: 🌎🌎🌎 size: ${await myLocalFile!.length()}');
+          }
+        }
+      }
+
+
       if (path != null) {
         _recordedFile = File(path);
         fileSize = (await _recordedFile?.length())!;
         pp('$mm _waveController stopped : 🍎🍎🍎 path: $path');
         pp('$mm _waveController stopped : 🍎🍎🍎 size: $fileSize bytes');
+      } else {
+        if (myLocalFile!.existsSync()) {
+          _recordedFile = myLocalFile;
+          fileSize = (await _recordedFile?.length())!;
+        }
+        pp('$mm RecorderController failed to produce a file. 😡😡 WTF?');
+        if (mounted) {
+          showToast(message: 'Recorded file missing', context: context);
+        }
       }
     } catch (e) {
       pp('$mm problem with stop ... falling down: $e');
@@ -241,6 +282,7 @@ class AudioHandlerState extends State<AudioHandler>
       isPaused = false;
       isRecording = false;
       isStopped = true;
+      _showWaveForms = false;
     });
   }
 
@@ -258,6 +300,20 @@ class AudioHandlerState extends State<AudioHandler>
       if (loc != null) {
         position =
             Position(coordinates: [loc.longitude, loc.latitude], type: 'Point');
+      } else {
+        if (mounted) {
+          showToast(message: 'Device Location unavailable', context: context);
+          return;
+        }
+      }
+      pp('$mm about to create audioForUpload .... ');
+      if (user == null) {
+        pp('$mm user is null, WTF!!');
+        return;
+      }
+      if (_recordedFile == null) {
+        pp('$mm _recordedFile is null, WTF!!');
+        return;
       }
       AudioPlayer audioPlayer = AudioPlayer();
       var dur = await audioPlayer.setFilePath(_recordedFile!.path);
@@ -277,10 +333,8 @@ class AudioHandlerState extends State<AudioHandler>
 
       await cacheManager.addAudioForUpload(audio: audioForUpload);
       geoUploader.manageMediaUploads();
-
-      _recordedFile = null;
     } catch (e) {
-      pp(e);
+      pp("something amiss here: ${e.toString()}");
       if (mounted) {
         ScaffoldMessenger.of(context)
             .showSnackBar(SnackBar(content: Text('$e')));
@@ -292,6 +346,7 @@ class AudioHandlerState extends State<AudioHandler>
     });
   }
 
+  bool _showWaveForms = false;
   @override
   Widget build(BuildContext context) {
     if (user == null) {
@@ -312,50 +367,113 @@ class AudioHandlerState extends State<AudioHandler>
             appBar: AppBar(
               title: Text(title == null ? 'Record Audio' : title!),
             ),
-            body: AudioCardAnyone(
+            body: Stack(
+              children: [
+                AudioCardAnyone(
+                  projectName: widget.project.name!,
+                  elapsedTime: elapsedTime == null ? 'Elapsed Time' : elapsedTime!,
+                  fileUploadSize:
+                  fileUploadSize == null ? 'File Size' : fileUploadSize!,
+                  uploadAudioClipText: uploadAudioClipText == null
+                      ? 'Upload Audio Clip'
+                      : uploadAudioClipText!,
+                  user: user!,
+                  seconds: seconds,
+                  onUploadFile: _uploadFile,
+                  fileSize: fileSize.toDouble(),
+                  onPlay: _onPlay,
+                  onPause: _onPause,
+                  onRecord: _onRecord,
+                  onStop: _onStop,
+                  recordedFile: _recordedFile,
+                  onClose: () {
+                    widget.onClose();
+                  },
+                ),
+                _showWaveForms
+                    ? Positioned(bottom: 160, left: 12, right: 12,
+                      child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Card(
+                      shape: getRoundedBorder(radius: 12),
+                      elevation: 8,
+                      child: Padding(
+                        padding: const EdgeInsets.all(12.0),
+                        child: wv.AudioWaveforms(
+                          size: const Size(300.0, 80.0),
+                          recorderController: _recorderController,
+                          enableGesture: true,
+                          waveStyle: wv.WaveStyle(
+                            waveColor: Theme.of(context).primaryColor,
+                            durationStyle: myTextStyleSmall(context),
+                            showDurationLabel: true,
+                            waveThickness: 6.0,
+                            spacing: 8.0,
+                            showBottom: true,
+                            extendWaveform: true,
+                            showMiddleLine: true,
+                          ),
+                        ),
+                      ),
+                  ),
+                ),
+                    )
+                    : const SizedBox(),
+              ],
+            ),
+          ),
+        ),
+        tablet: Stack(
+          children: [
+            AudioCardAnyone(
               projectName: widget.project.name!,
               elapsedTime: elapsedTime == null ? 'Elapsed Time' : elapsedTime!,
               fileUploadSize:
-                  fileUploadSize == null ? 'File Size' : fileUploadSize!,
+              fileUploadSize == null ? 'File Size' : fileUploadSize!,
               uploadAudioClipText: uploadAudioClipText == null
                   ? 'Upload Audio Clip'
                   : uploadAudioClipText!,
               user: user!,
               seconds: seconds,
-              recorderController: _recorderController,
               onUploadFile: _uploadFile,
-              fileSize: fileSize.toDouble(),
               onPlay: _onPlay,
               onPause: _onPause,
               onRecord: _onRecord,
               onStop: _onStop,
+              fileSize: fileSize.toDouble(),
               recordedFile: _recordedFile,
               onClose: () {
                 widget.onClose();
               },
             ),
-          ),
-        ),
-        tablet: AudioCardAnyone(
-          projectName: widget.project.name!,
-          elapsedTime: elapsedTime == null ? 'Elapsed Time' : elapsedTime!,
-          fileUploadSize:
-              fileUploadSize == null ? 'File Size' : fileUploadSize!,
-          uploadAudioClipText:
-              uploadAudioClipText == null ? 'Upload Audio Clip' : uploadAudioClipText!,
-          user: user!,
-          seconds: seconds,
-          recorderController: _recorderController,
-          onUploadFile: _uploadFile,
-          onPlay: _onPlay,
-          onPause: _onPause,
-          onRecord: _onRecord,
-          onStop: _onStop,
-          fileSize: fileSize.toDouble(),
-          recordedFile: _recordedFile,
-          onClose: () {
-            widget.onClose();
-          },
+            _showWaveForms
+                ? Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Card(
+                shape: getRoundedBorder(radius: 12),
+                elevation: 8,
+                child: Padding(
+                  padding: const EdgeInsets.all(12.0),
+                  child: wv.AudioWaveforms(
+                    size: const Size(300.0, 80.0),
+                    recorderController: _recorderController,
+                    enableGesture: true,
+                    waveStyle: wv.WaveStyle(
+                      waveColor: Theme.of(context).primaryColor,
+                      durationStyle: myTextStyleSmall(context),
+                      showDurationLabel: true,
+                      waveThickness: 6.0,
+                      spacing: 8.0,
+                      showBottom: false,
+                      extendWaveform: true,
+                      showMiddleLine: true,
+                    ),
+                  ),
+                ),
+              ),
+            )
+                : const SizedBox(),
+          ],
         ),
       );
     }
@@ -368,7 +486,6 @@ class AudioCardAnyone extends StatefulWidget {
       required this.projectName,
       required this.user,
       required this.seconds,
-      required this.recorderController,
       required this.onUploadFile,
       this.recordedFile,
       required this.fileSize,
@@ -385,7 +502,6 @@ class AudioCardAnyone extends StatefulWidget {
   final String projectName;
   final User user;
   final int seconds;
-  final wv.RecorderController recorderController;
   final Function onUploadFile;
   final File? recordedFile;
   final double fileSize;
@@ -402,7 +518,8 @@ class _AudioCardAnyoneState extends State<AudioCardAnyone> {
       isRecording = false,
       isPlaying = false,
       isPaused = false,
-      showUpload = false, showWave = false;
+      showUpload = false,
+      showWave = false;
 
   @override
   void initState() {
@@ -416,6 +533,7 @@ class _AudioCardAnyoneState extends State<AudioCardAnyone> {
     });
     widget.onPause();
   }
+
   void _onPlay() {
     setState(() {
       showUpload = false;
@@ -423,6 +541,7 @@ class _AudioCardAnyoneState extends State<AudioCardAnyone> {
     });
     widget.onPlay();
   }
+
   void _onStop() {
     setState(() {
       showUpload = true;
@@ -430,6 +549,7 @@ class _AudioCardAnyoneState extends State<AudioCardAnyone> {
     });
     widget.onStop();
   }
+
   void _onRecord() {
     setState(() {
       showUpload = false;
@@ -508,32 +628,7 @@ class _AudioCardAnyoneState extends State<AudioCardAnyone> {
                 const SizedBox(
                   height: 24,
                 ),
-                showWave
-                    ? Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Card(
-                          shape: getRoundedBorder(radius: 12),
-                          elevation: 8,
-                          child: Padding(
-                            padding: const EdgeInsets.all(12.0),
-                            child: wv.AudioWaveforms(
-                              size: const Size(300.0, 80.0),
-                              recorderController: widget.recorderController,
-                              enableGesture: true,
-                              waveStyle: wv.WaveStyle(
-                                waveColor: Theme.of(context).primaryColor,
-                                durationStyle: myTextStyleSmall(context),
-                                showDurationLabel: true,
-                                waveThickness: 6.0,
-                                spacing: 8.0,
-                                showBottom: false,
-                                extendWaveform: true,
-                                showMiddleLine: true,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ):const SizedBox(),
+
                 showUpload
                     ? SizedBox(
                         height: 280,

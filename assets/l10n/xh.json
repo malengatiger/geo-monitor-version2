@@ -234,6 +234,9 @@
   "serverProblem": "Iseva ayifumaneki ngeli xesha. Nceda uzame kwakhona mva.",
   "createMembers": "Nceda wenze amalungu amatsha kumbutho wakho",
   "createProject": "Nceda wenze iprojekthi entsha",
-  "checkNetworkSettings": "Nceda ujonge iisetingi zenethiwekhi yesixhobo sakho"
+  "checkNetworkSettings": "Nceda ujonge iisetingi zenethiwekhi yesixhobo sakho",
+  "waitingToRecordAudio": "Ilinde ukurekhoda ikliphu yeaudiyo",
+  "waitingToRecordVideo": "Ilinde ukurekhoda ividiyo",
+
 
 }

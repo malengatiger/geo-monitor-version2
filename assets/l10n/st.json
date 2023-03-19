@@ -234,7 +234,10 @@
   "serverProblem": "Seva ha e fumanehe hajoale. Ka kopo, leka hape hamorao.",
   "createMembers": "Ka kopo, theha litho tse ncha mokhatlong oa hau",
   "createProject": "Ka kopo, theha morero o mocha",
-  "checkNetworkSettings": "Ka kopo, sheba litlhophiso tsa marang-rang a sesebelisoa sa hau"
+  "checkNetworkSettings": "Ka kopo, sheba litlhophiso tsa marang-rang a sesebelisoa sa hau",
+  "waitingToRecordAudio": "E emetse ho rekota sekotwana sa audio",
+  "waitingToRecordVideo": "E emetse ho rekota video",
+
 
 
 

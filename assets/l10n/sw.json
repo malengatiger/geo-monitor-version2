@@ -234,6 +234,9 @@
   "serverProblem": "Seva haipatikani kwa wakati huu. Tafadhali jaribu tena baadae.",
   "createMembers": "Tafadhali unda wanachama wapya katika shirika lako",
   "createProject": "Tafadhali unda mradi mpya",
-  "checkNetworkSettings": "Tafadhali angalia mipangilio ya mtandao wa kifaa chako"
+  "checkNetworkSettings": "Tafadhali angalia mipangilio ya mtandao wa kifaa chako",
+  "waitingToRecordAudio": "Inasubiri kurekodi klipu ya sauti",
+  "waitingToRecordVideo": "Inasubiri kurekodi video"
+
 
 }
