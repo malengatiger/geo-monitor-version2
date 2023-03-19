@@ -235,6 +235,13 @@
   "videosNotFoundInProject": "Achọghị vidiyo na project $project",
   "audiosNotFoundInProject": "Achọghị obere vidiyo na project $project",
   "photosNotFoundInProject": "Ahụghị foto na project $project",
-  "projectsNotFoundInOrg": "Achọghị ọrụ na nhazi"
+  "projectsNotFoundInOrg": "Achọghị ọrụ na nhazi",
+  "networkProblem": "Enwere nsogbu netwọk nwere ike ime n\u0027oge a. Biko nwaa ọzọ ma emechaa.",
+  "portraitMode": "A na-atụ aro ka ị were foto na vidiyo gị n\u0027ụdị eserese. Ọ na-arụ ọrụ nke ọma karịa ọnọdụ ihu ala",
+  "createOrg": "Biko mepụta nhazi ọhụrụ",
+  "serverProblem": "Ihe nkesa adịghị n\u0027oge a. Biko nwaa ọzọ ma emechaa.",
+  "createMembers": "Biko mepụta ndị otu ọhụrụ na nzukọ gị",
+  "createProject": "Biko mepụta ọrụ ọhụrụ",
+  "checkNetworkSettings": "Biko lelee ntọala netwọk ngwaọrụ gị"
 
 }

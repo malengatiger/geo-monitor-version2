@@ -799,12 +799,13 @@ class DataAPI {
     }
   }
 
-  static Future<List<Photo>> findPhotosByProject(String projectId) async {
+  static Future<List<Photo>> getProjectPhotos({required String projectId,
+    required String startDate, required String endDate}) async {
     String? mURL = await getUrl();
 
     try {
       var result =
-          await _sendHttpGET('${mURL!}getProjectPhotos?projectId=$projectId');
+          await _sendHttpGET('${mURL!}getProjectPhotos?projectId=$projectId&startDate=$startDate&endDate=$endDate');
       List<Photo> list = [];
       result.forEach((m) {
         list.add(Photo.fromJson(m));

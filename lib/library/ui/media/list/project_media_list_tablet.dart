@@ -6,7 +6,7 @@ import 'package:geo_monitor/library/ui/camera/chewie_video_player.dart';
 import 'package:geo_monitor/library/ui/camera/photo_handler.dart';
 import 'package:geo_monitor/library/ui/camera/video_handler_two.dart';
 import 'package:geo_monitor/library/ui/media/list/project_audios_tablet.dart';
-import 'package:geo_monitor/library/ui/media/list/project_photos_tablet.dart';
+import 'package:geo_monitor/library/ui/media/list/project_photos_page.dart';
 import 'package:geo_monitor/library/ui/media/list/project_videos_tablet.dart';
 import 'package:geo_monitor/ui/audio/audio_handler.dart';
 import 'package:just_audio/just_audio.dart';
@@ -360,7 +360,7 @@ class ProjectMediaListTabletState extends State<ProjectMediaListTablet>
               : TabBarView(
                   controller: _tabController,
                   children: [
-                    ProjectPhotosTablet(
+                    ProjectPhotosPage(
                       project: widget.project,
                       refresh: false,
                       onPhotoTapped: (Photo photo) {

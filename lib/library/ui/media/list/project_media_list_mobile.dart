@@ -4,6 +4,7 @@ import 'package:animations/animations.dart';
 import 'package:flutter/material.dart';
 import 'package:geo_monitor/library/ui/camera/chewie_video_player.dart';
 import 'package:geo_monitor/library/ui/camera/video_handler_two.dart';
+import 'package:geo_monitor/library/ui/media/list/project_audios_page.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:page_transition/page_transition.dart';
 
@@ -20,9 +21,8 @@ import '../../../functions.dart';
 import '../../camera/photo_handler.dart';
 import '../full_photo/full_photo_mobile.dart';
 import 'photo_details.dart';
-import 'project_audios_mobile.dart';
-import 'project_photos_mobile.dart';
-import 'project_videos_mobile.dart';
+import 'project_photos_page.dart';
+import 'project_videos_page.dart';
 
 class ProjectMediaListMobile extends StatefulWidget {
   final Project project;
@@ -249,11 +249,6 @@ class ProjectMediaListMobileState extends State<ProjectMediaListMobile>
     return SafeArea(
         child: Scaffold(
       appBar: AppBar(
-        // leading: IconButton(
-        //     onPressed: () {
-        //       Navigator.of(context).pop();
-        //     },
-        //     icon: const Icon(Icons.arrow_back_ios)),
         actions: [
           IconButton(
               onPressed: () {
@@ -381,7 +376,7 @@ class ProjectMediaListMobileState extends State<ProjectMediaListMobile>
               : TabBarView(
                   controller: _tabController,
                   children: [
-                    ProjectPhotosMobile(
+                    ProjectPhotosPage(
                       project: widget.project,
                       refresh: false,
                       onPhotoTapped: (Photo photo) {
@@ -393,7 +388,7 @@ class ProjectMediaListMobileState extends State<ProjectMediaListMobile>
                         _animationController.forward();
                       },
                     ),
-                    ProjectVideosMobile(
+                    ProjectVideosPage(
                       project: widget.project,
                       refresh: false,
                       onVideoTapped: (Video video, int index) {
@@ -405,7 +400,7 @@ class ProjectMediaListMobileState extends State<ProjectMediaListMobile>
                         _navigateToPlayVideo();
                       },
                     ),
-                    ProjectAudios(
+                    ProjectAudiosPage(
                       project: widget.project,
                       refresh: false,
                       onAudioTapped: (Audio audio) {

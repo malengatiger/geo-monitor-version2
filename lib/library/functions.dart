@@ -781,6 +781,19 @@ pp(dynamic msg) {
     }
   }
 }
+bool checkIfDateWithinRange(
+    {required String date,
+      required String startDate,
+      required String endDate}) {
+  final userDate = DateTime.parse(date);
+  final sDate = DateTime.parse(startDate);
+  final eDate = DateTime.parse(endDate);
+  if (userDate.millisecondsSinceEpoch >= sDate.millisecondsSinceEpoch &&
+      userDate.millisecondsSinceEpoch <= eDate.millisecondsSinceEpoch) {
+    return true;
+  }
+  return false;
+}
 
 getRoundedBorder({required double radius}) {
   return RoundedRectangleBorder(borderRadius: BorderRadius.circular(radius));

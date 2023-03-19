@@ -227,6 +227,13 @@
   "videosNotFoundInProject": "Mavhidhiyo haana kuwanikwa mupurojekiti $project",
   "audiosNotFoundInProject": "Zvikamu zvekuteerera hazvina kuwanikwa mupurojekiti $project",
   "photosNotFoundInProject": "Mifananidzo haina kuwanikwa muprojekti $project",
-  "projectsNotFoundInOrg": "Zvirongwa hazviwanikwe muSangano"
+  "projectsNotFoundInOrg": "Zvirongwa hazviwanikwe muSangano",
+  "networkProblem": "Pane pangangoita dambudziko retiweki panguva ino. Ndapota edza zvakare gare gare.",
+  "portraitMode": "Zvinokurudzirwa kuti utore mafoto ako nemavhidhiyo mune portrait mode. Inoshanda zvirinani pane landscape mode",
+  "createOrg": "Ndapota gadzira sangano idzva",
+  "serverProblem": "Sevha haisi kuwanikwa panguva ino. Ndapota edza zvakare gare gare.",
+  "createMembers": "Ndapota gadzirai nhengo itsva musangano renyu",
+  "createProject": "Ndapota gadzira chirongwa chitsva",
+  "checkNetworkSettings": "Ndokumbira utarise marongero etiweki yemudziyo wako"
 
 }

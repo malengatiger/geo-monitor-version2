@@ -224,6 +224,13 @@
   "videosNotFoundInProject": "Vidéos introuvables dans le projet $project",
   "audiosNotFoundInProject": "Clips audio introuvables dans le projet $project",
   "photosNotFoundInProject": "Photos introuvables dans le projet $project",
-  "projectsNotFoundInOrg": "Projets introuvables dans l\u0027organisation"
+  "projectsNotFoundInOrg": "Projets introuvables dans l\u0027organisation",
+  "networkProblem": "Il y a un problème de réseau possible en ce moment. Veuillez réessayer plus tard.",
+  "portraitMode": "Il est recommandé de prendre vos photos et vidéos en mode portrait. Cela fonctionne beaucoup mieux que le mode paysage",
+  "createOrg": "Veuillez créer une nouvelle organisation",
+  "serverProblem": "Le serveur n\u0027est pas disponible pour le moment. Veuillez réessayer plus tard.",
+  "createMembers": "Veuillez créer de nouveaux membres dans votre organisation",
+  "createProject": "Veuillez créer un nouveau projet",
+  "checkNetworkSettings": "Veuillez vérifier les paramètres réseau de votre appareil"
 
 }

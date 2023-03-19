@@ -1120,7 +1120,8 @@ class CacheManager {
     return mList;
   }
 
-  Future<List<Photo>> getProjectPhotos(String projectId) async {
+  Future<List<Photo>> getProjectPhotos({required String projectId,
+    required String startDate, required String endDate}) async {
     var keys = _photoBox?.keys;
     List<Photo> mList = [];
     if (keys != null) {
@@ -1128,7 +1129,11 @@ class CacheManager {
         var m = _photoBox!.get(key);
         if (m != null) {
           if (m.projectId == projectId) {
-            mList.add(m);
+            var ok = checkIfDateWithinRange(date: m.created!,
+                startDate: startDate, endDate: endDate );
+            if (ok) {
+              mList.add(m);
+            }
           }
         }
       }
@@ -1156,7 +1161,8 @@ class CacheManager {
     return mList;
   }
 
-  Future<List<Video>> getProjectVideos(String projectId) async {
+  Future<List<Video>> getProjectVideos({required String projectId,
+    required String startDate, required String endDate}) async {
     var keys = _videoBox?.keys;
     List<Video> mList = [];
     if (keys != null) {
@@ -1164,7 +1170,11 @@ class CacheManager {
         var m = _videoBox!.get(key);
         if (m != null) {
           if (m.projectId == projectId) {
-            mList.add(m);
+            final ok = checkIfDateWithinRange(date: m.created!,
+                startDate: startDate, endDate: endDate);
+            if (ok) {
+              mList.add(m);
+            }
           }
         }
       }
@@ -1224,7 +1234,8 @@ class CacheManager {
     return audio;
   }
 
-  Future<List<Audio>> getProjectAudios(String projectId) async {
+  Future<List<Audio>> getProjectAudios({required String projectId,
+    required String startDate, required String endDate}) async {
     var keys = _audioBox?.keys;
     List<Audio> mList = [];
     if (keys != null) {
@@ -1232,7 +1243,11 @@ class CacheManager {
         var m = _audioBox!.get(key);
         if (m != null) {
           if (m.projectId == projectId) {
-            mList.add(m);
+            final ok = checkIfDateWithinRange(date: m.created!,
+                startDate: startDate, endDate: endDate);
+            if (ok) {
+              mList.add(m);
+            }
           }
         }
       }

@@ -229,7 +229,14 @@
   "videosNotFoundInProject": "Awọn fidio ko rii ni iṣẹ akanṣe $project",
   "audiosNotFoundInProject": "Awọn agekuru ohun ko ri ni iṣẹ akanṣe $project",
   "photosNotFoundInProject": "Awọn fọto ko rii ni iṣẹ akanṣe $project",
-  "projectsNotFoundInOrg": "A ko ri awọn iṣẹ akanṣe ni Ajo"
+  "projectsNotFoundInOrg": "A ko ri awọn iṣẹ akanṣe ni Ajo",
+  "networkProblem": "Iṣoro nẹtiwọọki ṣee ṣe ni akoko yii. Jọwọ gbiyanju lẹẹkansi nigbamii.",
+  "portraitMode": "A gba ọ niyanju pe ki o ya awọn aworan ati awọn fidio ni ipo aworan. O ṣiṣẹ dara julọ ju ipo ala-ilẹ lọ",
+  "createOrg": "Jọwọ ṣẹda titun agbari",
+  "serverProblem": "Olupin naa ko si ni akoko yii. Jọwọ gbiyanju lẹẹkansi nigbamii.",
+  "createMembers": "Jọwọ ṣẹda titun omo egbe ninu rẹ ètò",
+  "createProject": "Jọwọ ṣẹda titun ise agbese",
+  "checkNetworkSettings": "Jọwọ ṣayẹwo awọn eto nẹtiwọki ẹrọ rẹ"
 
 
 }

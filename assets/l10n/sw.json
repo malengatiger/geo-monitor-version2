@@ -227,6 +227,13 @@
   "videosNotFoundInProject": "Video hazipatikani katika mradi wa $project",
   "audiosNotFoundInProject": "Klipu za sauti hazipatikani katika mradi wa $project",
   "photosNotFoundInProject": "Picha hazipatikani katika mradi wa $project",
-  "projectsNotFoundInOrg": "Miradi haipatikani katika Shirika"
+  "projectsNotFoundInOrg": "Miradi haipatikani katika Shirika",
+  "networkProblem": "Kuna uwezekano wa tatizo la mtandao kwa wakati huu. Tafadhali jaribu tena baadae.",
+  "portraitMode": "Inapendekezwa kwamba upige picha na video zako katika hali ya picha. Inafanya kazi bora zaidi kuliko hali ya mazingira",
+  "createOrg": "Tafadhali fungua shirika jipya",
+  "serverProblem": "Seva haipatikani kwa wakati huu. Tafadhali jaribu tena baadae.",
+  "createMembers": "Tafadhali unda wanachama wapya katika shirika lako",
+  "createProject": "Tafadhali unda mradi mpya",
+  "checkNetworkSettings": "Tafadhali angalia mipangilio ya mtandao wa kifaa chako"
 
 }

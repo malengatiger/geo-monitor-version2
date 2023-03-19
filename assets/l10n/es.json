@@ -230,7 +230,14 @@
   "videosNotFoundInProject": "Videos no encontrados en proyecto $proyecto",
   "audiosNotFoundInProject": "Clips de audio no encontrados en el proyecto $proyecto",
   "photosNotFoundInProject": "Fotos no encontradas en proyecto $proyecto",
-  "projectsNotFoundInOrg": "Proyectos no encontrados en Organización"
+  "projectsNotFoundInOrg": "Proyectos no encontrados en Organización",
+  "networkProblem": "Existe un posible problema de red en este momento. Por favor, inténtelo de nuevo más tarde.",
+  "portraitMode": "Se recomienda que tome sus fotos y videos en modo retrato. Funciona mucho mejor que el modo horizontal.",
+  "createOrg": "Por favor crea una nueva organización",
+  "serverProblem": "El servidor no está disponible en este momento. Por favor, inténtelo de nuevo más tarde.",
+  "createMembers": "Por favor cree nuevos miembros en su organización",
+  "createProject": "Por favor crea un nuevo proyecto",
+  "checkNetworkSettings": "Verifique la configuración de red de su dispositivo"
 
 
 

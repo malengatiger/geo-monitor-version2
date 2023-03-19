@@ -227,5 +227,12 @@
   "videosNotFoundInProject": "Tivhidiyo a ti kumeki eka project $project",
   "audiosNotFoundInProject": "Swiphemu swa mpfumawulo a swi kumeki eka phurojeke ya $project",
   "photosNotFoundInProject": "Swifaniso a swi kumeki eka project $project",
-  "projectsNotFoundInOrg": "Tiphurojeke leti nga kumekiki eka Nhlangano"
+  "projectsNotFoundInOrg": "Tiphurojeke leti nga kumekiki eka Nhlangano",
+  "networkProblem": "Kuna xiphiqo lexi nga vaka kona xa network eka nkarhi lowu. Hi kombela u ringeta nakambe endzhaku.",
+  "portraitMode": "Swi bumabumeriwa leswaku u teka swifaniso ni tivhidiyo ta wena hi ndlela ya xifaniso. Yi tirha ku antswa swinene ku tlula landscape mode",
+  "createOrg": "Hi kombela u tumbuluxa nhlangano lowuntshwa",
+  "serverProblem": "Sevha a yi kumeki eka nkarhi lowu. Hi kombela u ringeta nakambe endzhaku.",
+  "createMembers": "Hi kombela u tumbuluxa swirho leswintshwa eka nhlangano wa n’wina",
+  "createProject": "Hi kombela u endla phurojeke leyintshwa",
+  "checkNetworkSettings": "Hi kombela u kambela swiyimiso swa netiweke ya xitirhisiwa xa wena"
 }

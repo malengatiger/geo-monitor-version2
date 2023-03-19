@@ -234,6 +234,13 @@
   "videosNotFoundInProject": "在项目 $project 中找不到视频",
   "audiosNotFoundInProject": "在项目 $project 中找不到音频剪辑",
   "photosNotFoundInProject": "在项目 $project 中找不到照片",
-  "projectsNotFoundInOrg": "在组织中找不到项目"
+  "projectsNotFoundInOrg": "在组织中找不到项目",
+  "networkProblem": "此时可能存在网络问题。请稍后再试。",
+  "portraitMode": "建议您以纵向模式拍摄照片和视频。它比横向模式好得多",
+  "createOrg": "请创建新组织",
+  "serverProblem": "服务器此时不可用。请稍后再试。",
+  "createMembers": "请在您的组织中创建新成员",
+  "createProject": "请创建一个新项目",
+  "checkNetworkSettings": "请检查您的设备网络设置"
 
 }

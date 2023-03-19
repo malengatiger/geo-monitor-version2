@@ -227,6 +227,13 @@
   "videosNotFoundInProject": "Amavidiyo awatholakali kuphrojekthi ye-$project",
   "audiosNotFoundInProject": "Iziqeshana zomsindo azitholakali kuphrojekthi ye-$project",
   "photosNotFoundInProject": "Izithombe azitholakali kuphrojekthi ye-$project",
-  "projectsNotFoundInOrg": "Amaphrojekthi awatholakali kokuthi Inhlangano"
+  "projectsNotFoundInOrg": "Amaphrojekthi awatholakali kokuthi Inhlangano",
+  "networkProblem": "Kungase kube nenkinga yenethiwekhi ngalesi sikhathi. Sicela uzame futhi emuva kwesikhathi.",
+  "portraitMode": "Kunconywa ukuthi uthathe izithombe namavidiyo akho ngemodi yokuma ngobude. Isebenza kangcono kakhulu kunemodi ye-landscape",
+  "createOrg": "Sicela udale inhlangano entsha",
+  "serverProblem": "Iseva ayitholakali ngalesi sikhathi. Sicela uzame futhi emuva kwesikhathi.",
+  "createMembers": "Sicela udale amalungu amasha enhlanganweni yakho",
+  "createProject": "Sicela udale iphrojekthi entsha",
+  "checkNetworkSettings": "Sicela uhlole izilungiselelo zenethiwekhi yedivayisi yakho"
 
 }

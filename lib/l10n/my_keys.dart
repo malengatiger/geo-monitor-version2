@@ -268,5 +268,14 @@ class MyKeys {
     hashMap["photosNotFoundInProject"] = "photosNotFoundInProject";
     hashMap["audiosNotFoundInProject"] = "audiosNotFoundInProject";
     hashMap["projectsNotFoundInOrg"] = "projectsNotFoundInOrg";
+
+    hashMap["networkProblem"] =  "networkProblem";
+    hashMap["serverProblem"] =  "serverProblem";
+    hashMap["createProject"] =  "createProject";
+    hashMap["createOrg"] =  "createOrg";
+    hashMap["checkNetworkSettings"] =  "checkNetworkSettings";
+    hashMap["createMembers"] =  "createMembers";
+    hashMap["portraitMode"] = "portraitMode";
+
   }
 }

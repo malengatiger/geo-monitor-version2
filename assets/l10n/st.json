@@ -227,7 +227,14 @@
   "videosNotFoundInProject": "Lifitio ha li fumanehe morerong oa $project",
   "audiosNotFoundInProject": "Likotwana tsa molumo ha li fumanehe morerong oa $project",
   "photosNotFoundInProject": "Linepe ha li fumanehe morerong oa $project",
-  "projectsNotFoundInOrg": "Merero ha e fumanehe Mokhatlong"
+  "projectsNotFoundInOrg": "Merero ha e fumanehe Mokhatlong",
+  "networkProblem": "Ho na le bothata ba marang-rang nakong ena. Ka kopo, leka hape hamorao.",
+  "portraitMode": "Ho khothaletsoa hore u nke linepe le livideo tsa hau ka mokhoa oa portrait. E sebetsa hantle haholo ho feta mokhoa oa landscape",
+  "createOrg": "Ka kopo theha mokhatlo o mocha",
+  "serverProblem": "Seva ha e fumanehe hajoale. Ka kopo, leka hape hamorao.",
+  "createMembers": "Ka kopo, theha litho tse ncha mokhatlong oa hau",
+  "createProject": "Ka kopo, theha morero o mocha",
+  "checkNetworkSettings": "Ka kopo, sheba litlhophiso tsa marang-rang a sesebelisoa sa hau"
 
 
 

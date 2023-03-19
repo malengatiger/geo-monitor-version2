@@ -230,7 +230,15 @@
   "videosNotFoundInProject": "Video\u0027s nie in projek $project gevind nie",
   "audiosNotFoundInProject": "Oudiosnitte nie in projek $project gevind nie",
   "photosNotFoundInProject": "Foto\u0027s nie in projek $project gevind nie",
-  "projectsNotFoundInOrg": "Projekte nie in Organisasie gevind nie"
+  "projectsNotFoundInOrg": "Projekte nie in Organisasie gevind nie",
+
+  "networkProblem": "Daar is tans \u0027n moontlike netwerkprobleem. Probeer asseblief weer later.",
+  "portraitMode": "Dit word aanbeveel dat jy jou foto\u0027s en video\u0027s in portretmodus neem. Dit werk baie beter as landskapmodus",
+  "createOrg": "Skep asseblief nuwe organisasie",
+  "serverProblem": "Die bediener is nie tans beskikbaar nie. Probeer asseblief weer later.",
+  "createMembers": "Skep asseblief nuwe lede in jou organisasie",
+  "createProject": "Skep asseblief \u0027n nuwe projek",
+  "checkNetworkSettings": "Gaan asseblief jou toestel se netwerkinstellings na"
 
 
 

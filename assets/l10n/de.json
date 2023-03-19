@@ -236,7 +236,14 @@
   "videosNotFoundInProject": "Videos in Projekt $project nicht gefunden",
   "audiosNotFoundInProject": "Audioclips in Projekt $project nicht gefunden",
   "photosNotFoundInProject": "Fotos in Projekt $project nicht gefunden",
-  "projectsNotFoundInOrg": "Projekte nicht in Organisation gefunden"
+  "projectsNotFoundInOrg": "Projekte nicht in Organisation gefunden",
+  "networkProblem": "Derzeit liegt möglicherweise ein Netzwerkproblem vor. Bitte versuchen Sie es später erneut.",
+  "portraitMode": "Es wird empfohlen, Ihre Bilder und Videos im Hochformat aufzunehmen. Es funktioniert viel besser als das Querformat",
+  "createOrg": "Bitte erstellen Sie eine neue Organisation",
+  "serverProblem": "Der Server ist derzeit nicht verfügbar. Bitte versuchen Sie es später erneut.",
+  "createMembers": "Bitte erstellen Sie neue Mitglieder in Ihrer Organisation",
+  "createProject": "Bitte erstellen Sie ein neues Projekt",
+  "checkNetworkSettings": "Bitte überprüfen Sie die Netzwerkeinstellungen Ihres Geräts"
 
 
 }

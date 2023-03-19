@@ -255,8 +255,10 @@ class _ProjectDashboardGridState extends State<ProjectDashboardGrid>
       photoSubscriptionFCM = fcmBloc.photoStream.listen((user) async {
         pp('$mm: 🍎 🍎 photoSubscriptionFCM photo arrived... 🍎 🍎');
         if (mounted) {
+          final map = await getStartEndDates();
           _photos = await projectBloc.getPhotos(
-              projectId: widget.project.projectId!, forceRefresh: false);
+              projectId: widget.project.projectId!, forceRefresh: false,
+          startDate: map['startDate']!, endDate: map['endDate']!);
           setState(() {});
         }
       });

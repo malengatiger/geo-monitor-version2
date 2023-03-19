@@ -1,7 +1,5 @@
 import 'dart:async';
 
-import 'package:geo_monitor/library/bloc/organization_bloc.dart';
-import 'package:geo_monitor/library/bloc/zip_bloc.dart';
 import 'package:geo_monitor/library/data/activity_model.dart';
 import 'package:geo_monitor/library/data/settings_model.dart';
 
@@ -34,7 +32,7 @@ class ProjectBloc {
   final mm = '💛️💛️💛️💛️💛️💛️ '
       'ProjectBloc';
   final StreamController<DataBag> dataBagController =
-  StreamController.broadcast();
+      StreamController.broadcast();
   final StreamController<List<MonitorReport>> _reportController =
       StreamController.broadcast();
   final StreamController<List<User>> _userController =
@@ -131,12 +129,16 @@ class ProjectBloc {
 
   //
   Future<List<ProjectPosition>> getProjectPositions(
-      {required String projectId, required bool forceRefresh,required String startDate, required String endDate}) async {
+      {required String projectId,
+      required bool forceRefresh,
+      required String startDate,
+      required String endDate}) async {
     var projectPositions = await cacheManager.getProjectPositions(projectId);
     pp('$mm getProjectPositions found ${projectPositions.length} positions in local cache ');
 
     if (projectPositions.isEmpty || forceRefresh) {
-      projectPositions = await DataAPI.getProjectPositions(projectId,startDate,endDate);
+      projectPositions =
+          await DataAPI.getProjectPositions(projectId, startDate, endDate);
       pp('$mm getProjectPositions found ${projectPositions.length} positions from remote database ');
       await cacheManager.addProjectPositions(positions: projectPositions);
     }
@@ -155,7 +157,8 @@ class ProjectBloc {
       var map = await getStartEndDates();
       final startDate = map['startDate'];
       final endDate = map['endDate'];
-      projectPolygons = await DataAPI.getProjectPolygons(projectId,startDate!,endDate!);
+      projectPolygons =
+          await DataAPI.getProjectPolygons(projectId, startDate!, endDate!);
       pp('$mm getProjectPolygons found ${projectPolygons.length} polygons from remote database ');
       await cacheManager.addProjectPolygons(polygons: projectPolygons);
     }
@@ -165,14 +168,18 @@ class ProjectBloc {
   }
 
   Future<List<Photo>> getPhotos(
-      {required String projectId, required bool forceRefresh}) async {
-    List<Photo> photos = await cacheManager.getProjectPhotos(projectId);
+      {required String projectId,
+      required bool forceRefresh,
+      required String startDate,
+      required String endDate}) async {
+    List<Photo> photos = await cacheManager.getProjectPhotos(
+        projectId: projectId, startDate: startDate, endDate: endDate);
     if (photos.isEmpty || forceRefresh) {
-      photos = await DataAPI.findPhotosByProject(projectId);
+      photos = await DataAPI.getProjectPhotos(
+          projectId: projectId, startDate: startDate, endDate: endDate);
       await cacheManager.addPhotos(photos: photos);
     }
     photos.sort((a, b) => b.created!.compareTo(a.created!));
-
     _projectPhotoController.sink.add(photos);
     pp('$mm getPhotos found: 💜 ${photos.length} photos ');
 
@@ -210,11 +217,15 @@ class ProjectBloc {
   }
 
   Future<List<Video>> getProjectVideos(
-      {required String projectId, required bool forceRefresh,required String startDate, required String endDate}) async {
-    List<Video> videos = await cacheManager.getProjectVideos(projectId);
+      {required String projectId,
+      required bool forceRefresh,
+      required String startDate,
+      required String endDate}) async {
+    List<Video> videos = await cacheManager.getProjectVideos(
+        projectId: projectId, startDate: startDate, endDate: endDate);
 
     if (videos.isEmpty || forceRefresh) {
-      videos = await DataAPI.getProjectVideos(projectId,startDate,endDate);
+      videos = await DataAPI.getProjectVideos(projectId, startDate, endDate);
     }
     videos.sort((a, b) => b.created!.compareTo(a.created!));
     _projectVideoController.sink.add(videos);
@@ -224,11 +235,16 @@ class ProjectBloc {
   }
 
   Future<List<Audio>> getProjectAudios(
-      {required String projectId, required bool forceRefresh,required String startDate, required String endDate}) async {
-    List<Audio> audios = await cacheManager.getProjectAudios(projectId);
+      {required String projectId,
+      required bool forceRefresh,
+      required String startDate,
+      required String endDate}) async {
+
+    List<Audio> audios = await cacheManager.getProjectAudios(
+        projectId: projectId, startDate: startDate, endDate: endDate);
 
     if (audios.isEmpty || forceRefresh) {
-      audios = await DataAPI.getProjectAudios(projectId,startDate,endDate);
+      audios = await DataAPI.getProjectAudios(projectId, startDate, endDate);
     }
     audios.sort((a, b) => b.created!.compareTo(a.created!));
 
@@ -239,13 +255,16 @@ class ProjectBloc {
   }
 
   Future<DataBag> getProjectData(
-      {required String projectId, required bool forceRefresh, required String startDate, required String endDate}) async {
+      {required String projectId,
+      required bool forceRefresh,
+      required String startDate,
+      required String endDate}) async {
     final sDate = DateTime.parse(startDate);
     final eDate = DateTime.parse(endDate);
     final numberOfDays = eDate.difference(sDate).inDays;
-    List<Video> videos = await cacheManager.getProjectVideos(projectId);
-    List<Audio> audios = await cacheManager.getProjectAudios(projectId);
-    List<Photo> photos = await cacheManager.getProjectPhotos(projectId);
+    List<Video> videos = await cacheManager.getProjectVideos(projectId: projectId, startDate: startDate, endDate: endDate);
+    List<Audio> audios = await cacheManager.getProjectAudios(projectId: projectId, startDate: startDate, endDate: endDate);
+    List<Photo> photos = await cacheManager.getProjectPhotos(projectId: projectId, startDate: startDate, endDate: endDate);
     List<ProjectPosition> positions =
         await cacheManager.getProjectPositions(projectId);
     List<ProjectPolygon> polygons =
@@ -264,47 +283,50 @@ class ProjectBloc {
         users: [],
         projectPolygons: polygons,
         settings: settings);
-    pp('$mm filter bag by the dates ....');
-    printDataBag(dataBag);
-    var mBag = filterBagContentsByDate(bag: dataBag,  startDate: startDate, endDate: endDate);
-    pp('$mm filtered bag ..');
-    dataBagController.sink.add(mBag);
-    printDataBag(mBag);
+
+    dataBagController.sink.add(dataBag);
     if (videos.isEmpty || photos.isEmpty || audios.isEmpty || forceRefresh) {
-      dataBag = await dataRefresher.manageRefresh(numberOfDays: numberOfDays,
-          organizationId: null, projectId: projectId, userId: null);
+      dataBag = await dataRefresher.manageRefresh(
+          numberOfDays: numberOfDays,
+          organizationId: null,
+          projectId: projectId,
+          userId: null);
       dataBagController.sink.add(dataBag!);
     }
 
-    pp('$mm getProjectData found: 💜 ${mBag.videos!.length} videos ');
-    pp('$mm getProjectData found: 💜 ${mBag.photos!.length} photos ');
-    pp('$mm getProjectData found: 💜 ${mBag.audios!.length} audios ');
-    pp('$mm getProjectData found: 💜 ${mBag.projectPositions!.length} positions ');
-    pp('$mm getProjectData found: 💜 ${mBag.projectPolygons!.length} polygons ');
-    pp('$mm getProjectData found: 💜 ${mBag.settings!.length} settings ');
+    pp('$mm getProjectData found: 💜 ${dataBag.videos!.length} videos ');
+    pp('$mm getProjectData found: 💜 ${dataBag.photos!.length} photos ');
+    pp('$mm getProjectData found: 💜 ${dataBag.audios!.length} audios ');
+    pp('$mm getProjectData found: 💜 ${dataBag.projectPositions!.length} positions ');
+    pp('$mm getProjectData found: 💜 ${dataBag.projectPolygons!.length} polygons ');
+    pp('$mm getProjectData found: 💜 ${dataBag.settings!.length} settings ');
 
-    return mBag;
+    return dataBag;
   }
 
   Future<DataBag> refreshProjectData(
-      {required String projectId, required bool forceRefresh,required String startDate, required String endDate}) async {
+      {required String projectId,
+      required bool forceRefresh,
+      required String startDate,
+      required String endDate}) async {
     pp('$mm refreshing project data ... photos, videos and schedules '
         '... forceRefresh: $forceRefresh');
-    var bag = await _loadBag(projectId);
+    var bag = await _loadBag(projectId: projectId, startDate: startDate, endDate: endDate);
 
     if (forceRefresh) {
-      bag = await DataAPI.getProjectData(projectId,startDate,endDate);
+      bag = await DataAPI.getProjectData(projectId, startDate, endDate);
     }
     _putBagContentsToStreams(bag);
     return bag;
   }
 
-  Future<DataBag> _loadBag(String projectId) async {
+  Future<DataBag> _loadBag({required String projectId,
+    required String startDate, required String endDate}) async {
     var positions = await cacheManager.getProjectPositions(projectId);
     var polygons = await cacheManager.getProjectPolygons(projectId: projectId);
-    var photos = await cacheManager.getProjectPhotos(projectId);
-    var videos = await cacheManager.getProjectVideos(projectId);
-    var audios = await cacheManager.getProjectAudios(projectId);
+    var photos = await cacheManager.getProjectPhotos(projectId: projectId, startDate: startDate, endDate: endDate);
+    var videos = await cacheManager.getProjectVideos(projectId: projectId, startDate: startDate, endDate: endDate);
+    var audios = await cacheManager.getProjectAudios(projectId: projectId, startDate: startDate, endDate: endDate);
     var schedules = await cacheManager.getProjectMonitorSchedules(projectId);
 
     var bag = DataBag(

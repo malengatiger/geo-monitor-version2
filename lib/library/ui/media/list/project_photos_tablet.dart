@@ -62,8 +62,10 @@ class ProjectPhotosTabletState extends State<ProjectPhotosTablet>
       loading = true;
     });
     try {
+      final map = await getStartEndDates();
       photos = await projectBloc.getPhotos(
-          projectId: widget.project.projectId!, forceRefresh: forceRefresh);
+          projectId: widget.project.projectId!, forceRefresh: forceRefresh,
+          startDate: map['startDate']!, endDate: map['endDate']!);
       photos.sort((a, b) => b.created!.compareTo(a.created!));
     } catch (e) {
       pp(e);
