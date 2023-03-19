@@ -125,30 +125,14 @@ class ProjectVideosPageState extends State<ProjectVideosPage> {
             )),
       );
     }
-      return ScreenTypeLayout(mobile: Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Text(
-              '${widget.project.name}',
-              style: myTextStyleMediumBold(context),
-            ),
-          ),
-          Expanded(
-            child: Column(
-              children: [
-                Text('${widget.project.name}', style: myTextStyleTiny(context),),
-                VideoGrid(
-                    videos: videos,
-                    crossAxisCount: 2,
-                    onVideoTapped: (video, index) {
-                      widget.onVideoTapped(video, index);
-                    },
-                    itemWidth: 300),
-              ],
-            ),
-          ),
-        ],
+      return ScreenTypeLayout(mobile: Scaffold(
+        body: VideoGrid(
+            videos: videos,
+            crossAxisCount: 2,
+            onVideoTapped: (video, index) {
+              widget.onVideoTapped(video, index);
+            },
+            itemWidth: 300),
       ),
       tablet: OrientationLayoutBuilder(landscape: (context) {
         return VideoGrid(

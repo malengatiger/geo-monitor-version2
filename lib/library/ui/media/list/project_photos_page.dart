@@ -139,10 +139,7 @@ class ProjectPhotosPageState extends State<ProjectPhotosPage>
           Expanded(
             child: Column(
               children: [
-                Text(
-                  '${widget.project.name}',
-                  style: myTextStyleTiny(context),
-                ),
+
                 PhotoGrid(
                     photos: photos,
                     crossAxisCount: 2,

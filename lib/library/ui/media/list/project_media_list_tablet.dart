@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:geo_monitor/library/ui/camera/chewie_video_player.dart';
 import 'package:geo_monitor/library/ui/camera/photo_handler.dart';
 import 'package:geo_monitor/library/ui/camera/video_handler_two.dart';
-import 'package:geo_monitor/library/ui/media/list/project_audios_tablet.dart';
+import 'package:geo_monitor/library/ui/media/list/project_audios_page.dart';
 import 'package:geo_monitor/library/ui/media/list/project_photos_page.dart';
 import 'package:geo_monitor/library/ui/media/list/project_videos_tablet.dart';
 import 'package:geo_monitor/ui/audio/audio_handler.dart';
@@ -386,7 +386,7 @@ class ProjectMediaListTabletState extends State<ProjectMediaListTablet>
                     ),
                     Padding(
                       padding: const EdgeInsets.all(16.0),
-                      child: ProjectAudiosTablet(
+                      child: ProjectAudiosPage(
                         project: widget.project,
                         refresh: false,
                         onAudioTapped: (Audio audio) {
