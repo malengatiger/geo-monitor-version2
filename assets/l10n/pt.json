@@ -223,7 +223,11 @@
   "audioLimitReached": "O limite de gravação de clipe de áudio de $count minutos foi atingido",
   "photoToBeUploaded": "A foto será carregada em breve",
   "audioToBeUploaded": "O clipe de áudio será carregado em breve",
-  "videoLimitReached": "O limite de gravação de vídeo de $count segundos foi atingido"
+  "videoLimitReached": "O limite de gravação de vídeo de $count segundos foi atingido",
+  "videosNotFoundInProject": "Vídeos não encontrados no projeto $project",
+  "audiosNotFoundInProject": "Clipes de áudio não encontrados no projeto $project",
+  "photosNotFoundInProject": "Fotos não encontradas no projeto $project",
+  "projectsNotFoundInOrg": "Projetos não encontrados na organização"
 
 
 

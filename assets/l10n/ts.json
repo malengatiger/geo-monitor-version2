@@ -223,5 +223,9 @@
   "audioLimitReached": "Mpimo wa ku rhekhoda ka audio clip wa $count minutes wu fikeleriwile",
   "photoToBeUploaded": "Xifaniso xi ta uploadiwa ku nga ri khale",
   "audioToBeUploaded": "Audio clip yi ta uploadiwa ku nga ri khale",
-  "videoLimitReached": "Mpimo wa ku rhekhoda vhidiyo wa $count seconds wu fikeleriwile"
+  "videoLimitReached": "Mpimo wa ku rhekhoda vhidiyo wa $count seconds wu fikeleriwile",
+  "videosNotFoundInProject": "Tivhidiyo a ti kumeki eka project $project",
+  "audiosNotFoundInProject": "Swiphemu swa mpfumawulo a swi kumeki eka phurojeke ya $project",
+  "photosNotFoundInProject": "Swifaniso a swi kumeki eka project $project",
+  "projectsNotFoundInOrg": "Tiphurojeke leti nga kumekiki eka Nhlangano"
 }

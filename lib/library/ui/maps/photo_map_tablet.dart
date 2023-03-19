@@ -131,7 +131,7 @@ class PhotoMapState extends State<PhotoMap>
     String formattedDate =
         DateFormat.yMMMEd().format(DateTime.parse(widget.photo.created!));
     var time = TimeOfDay.fromDateTime(DateTime.parse(widget.photo.created!));
-    var deviceType = getDeviceType();
+    var deviceType = getThisDeviceType();
     return SafeArea(
       child: Scaffold(
         key: _key,

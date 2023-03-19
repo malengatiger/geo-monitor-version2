@@ -3,110 +3,110 @@ import 'package:google_fonts/google_fonts.dart';
 
 import '../../library/functions.dart';
 
-class RecordingControls extends StatelessWidget {
-  const RecordingControls(
-      {Key? key,
-      required this.onPlay,
-      required this.onPause,
-      required this.onStop,
-      required this.onRecord,
-      required this.isRecording,
-      required this.isPaused,
-      required this.isStopped})
-      : super(key: key);
+class RecordingControls extends StatefulWidget {
+  const RecordingControls({
+    Key? key,
+    required this.onPlay,
+    required this.onPause,
+    required this.onStop,
+    required this.onRecord,
+  }) : super(key: key);
+
   final Function onPlay;
   final Function onPause;
   final Function onStop;
   final Function onRecord;
-  final bool isRecording;
-  final bool isPaused;
-  final bool isStopped;
 
-  void _onPlayTapped() {
-    onPlay();
+  @override
+  State<RecordingControls> createState() => _RecordingControlsState();
+}
+
+class _RecordingControlsState extends State<RecordingControls> {
+  var showRecord = true;
+  var showPlay = false;
+  var showStop = false;
+  var showPause = false;
+
+  @override
+  void initState() {
+    super.initState();
   }
 
-  void _onPlayStopped() {
-    onStop();
+  void _onPlay() {
+    setState(() {
+      showRecord = false;
+      showStop = true;
+      showPause = true;
+      showPlay = false;
+    });
+    widget.onPlay();
   }
 
-  void _onPlayPaused() {
-    onPause();
+  void _onStopped() {
+    setState(() {
+      showRecord = true;
+      showStop = false;
+      showPause = false;
+      showPlay = true;
+    });
+    widget.onStop();
+  }
+
+  void _onPaused() {
+    setState(() {
+      showRecord = true;
+      showStop = false;
+      showPause = false;
+      showPlay = true;
+    });
+    widget.onPause();
   }
 
   void _onRecord() {
-    onRecord();
+    setState(() {
+      showRecord = false;
+      showStop = true;
+      showPause = true;
+      showPlay = false;
+    });
+    widget.onRecord();
   }
 
   @override
   Widget build(BuildContext context) {
-    var showRecord = true;
-    var showPlay = false;
-    var showStop = false;
-    var showPause = false;
-    //pp('🍎 isRecording: $isRecording 🍎isPaused: $isPaused 🍎isStopped: $isStopped');
-    if (!isRecording && !isPaused && !isStopped) {
-      pp('🍎 all flags are false; should show the recording icon only');
-      showRecord = true;
-      showStop = false;
-      showPlay = false;
-      showPause = false;
-    } else {
-      if (isRecording) {
-        showStop = true;
-        showPause = true;
-        showRecord = false;
-      } else if (isStopped) {
-        showStop = true;
-        showRecord = true;
-        showPlay = true;
-      } else if (isPaused) {
-        showStop = true;
-        showRecord = true;
-        showPlay = false;
-      }
-    }
-
     return Card(
       elevation: 4,
       shape: getRoundedBorder(radius: 12),
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 8.0),
-        child: Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
-            // const SizedBox(
-            //   width: 4,
-            // ),
+
             showRecord
                 ? IconButton(
                     onPressed: _onRecord,
                     icon:
                         Icon(Icons.mic, color: Theme.of(context).primaryColor))
                 : const SizedBox(),
-            // const SizedBox(
-            //   width: 28,
-            // ),
+
             showPlay
                 ? IconButton(
-                    onPressed: _onPlayTapped,
+                    onPressed: _onPlay,
                     icon: Icon(Icons.play_arrow,
                         color: Theme.of(context).primaryColor))
                 : const SizedBox(),
-            // const SizedBox(
-            //   width: 28,
-            // ),
+
             showPause
                 ? IconButton(
-                    onPressed: _onPlayPaused,
+                    onPressed: _onPaused,
                     icon: Icon(Icons.pause,
                         color: Theme.of(context).primaryColor))
                 : const SizedBox(),
-            // const SizedBox(
-            //   width: 28,
-            // ),
+
             showStop
                 ? IconButton(
-                    onPressed: _onPlayStopped,
+                    onPressed: _onStopped,
                     icon: Icon(
                       Icons.stop,
                       color: Theme.of(context).primaryColor,
@@ -117,12 +117,11 @@ class RecordingControls extends StatelessWidget {
       ),
     );
   }
-
-
 }
 
 class TimerCard extends StatelessWidget {
-  const TimerCard({Key? key, required this.seconds, required this.elapsedTime}) : super(key: key);
+  const TimerCard({Key? key, required this.seconds, required this.elapsedTime})
+      : super(key: key);
   final int seconds;
   final String elapsedTime;
   @override
@@ -144,7 +143,8 @@ class TimerCard extends StatelessWidget {
         padding: const EdgeInsets.all(20.0),
         child: Row(
           children: [
-            Text(elapsedTime,
+            Text(
+              elapsedTime,
               style: myTextStyleSmall(context),
             ),
             const SizedBox(

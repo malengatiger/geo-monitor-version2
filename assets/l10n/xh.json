@@ -223,6 +223,10 @@
   "audioLimitReached": "Umda wokurekhodwa kwekliphu yeaudiyo ye-$count imizuzu ifikelelwe",
   "photoToBeUploaded": "Ifoto iya kufakwa kungekudala",
   "audioToBeUploaded": "Ikliphu yeaudio iza kulayishwa kungekudala",
-  "videoLimitReached": "Umda wokurekhodwa kwevidiyo ye-$count seconds ufinyelelwe"
+  "videoLimitReached": "Umda wokurekhodwa kwevidiyo ye-$count seconds ufinyelelwe",
+  "videosNotFoundInProject": "Iividiyo azifunyanwanga kwiprojekthi yeprojekthi ye-$",
+  "audiosNotFoundInProject": "Iikliphu zeaudio azifunyanwanga kwiprojekthi ye-$project",
+  "photosNotFoundInProject": "Iifoto azifunyanwanga kwiprojekthi yeprojekthi ye-$",
+  "projectsNotFoundInOrg": "Iiprojekthi azifumaneki kuMbutho"
 
 }

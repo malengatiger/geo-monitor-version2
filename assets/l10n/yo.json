@@ -225,7 +225,11 @@
   "audioLimitReached": "Agekuru gbigbasilẹ opin ti awọn iṣẹju $count ti de",
   "photoToBeUploaded": "Fọto yoo wa ni ikojọpọ laipe",
   "audioToBeUploaded": "Agekuru ohun yoo wa ni ikojọpọ laipe",
-  "videoLimitReached": "Idiwọn gbigbasilẹ fidio ti $count iṣẹju-aaya ti de"
+  "videoLimitReached": "Idiwọn gbigbasilẹ fidio ti $count iṣẹju-aaya ti de",
+  "videosNotFoundInProject": "Awọn fidio ko rii ni iṣẹ akanṣe $project",
+  "audiosNotFoundInProject": "Awọn agekuru ohun ko ri ni iṣẹ akanṣe $project",
+  "photosNotFoundInProject": "Awọn fọto ko rii ni iṣẹ akanṣe $project",
+  "projectsNotFoundInOrg": "A ko ri awọn iṣẹ akanṣe ni Ajo"
 
 
 }

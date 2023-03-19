@@ -220,6 +220,10 @@
   "managementPeople": "Gestionnaires, administrateurs et superviseurs",
   "fieldWorkers": "Moniteurs de terrain et autres travailleurs",
   "organizations": "Organisations",
-  "information": "Information"
+  "information": "Information",
+  "videosNotFoundInProject": "Vidéos introuvables dans le projet $project",
+  "audiosNotFoundInProject": "Clips audio introuvables dans le projet $project",
+  "photosNotFoundInProject": "Photos introuvables dans le projet $project",
+  "projectsNotFoundInOrg": "Projets introuvables dans l\u0027organisation"
 
 }

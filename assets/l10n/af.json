@@ -225,7 +225,12 @@
   "audioLimitReached": "Oudiosnit-opnamelimiet van $count minute is bereik",
   "photoToBeUploaded": "Foto sal binnekort opgelaai word",
   "audioToBeUploaded": "Oudiosnit sal binnekort opgelaai word",
-  "videoLimitReached": "Video-opnamelimiet van $count sekondes is bereik"
+  "videoLimitReached": "Video-opnamelimiet van $count sekondes is bereik",
+
+  "videosNotFoundInProject": "Video\u0027s nie in projek $project gevind nie",
+  "audiosNotFoundInProject": "Oudiosnitte nie in projek $project gevind nie",
+  "photosNotFoundInProject": "Foto\u0027s nie in projek $project gevind nie",
+  "projectsNotFoundInOrg": "Projekte nie in Organisasie gevind nie"
 
 
 

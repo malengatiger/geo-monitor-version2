@@ -230,6 +230,10 @@
   "audioLimitReached": "已达到 $count 分钟的音频剪辑录制限制",
   "photoToBeUploaded": "照片将很快上传",
   "audioToBeUploaded": "音频剪辑将很快上传",
-  "videoLimitReached": "已达到 $count 秒的视频录制限制"
+  "videoLimitReached": "已达到 $count 秒的视频录制限制",
+  "videosNotFoundInProject": "在项目 $project 中找不到视频",
+  "audiosNotFoundInProject": "在项目 $project 中找不到音频剪辑",
+  "photosNotFoundInProject": "在项目 $project 中找不到照片",
+  "projectsNotFoundInOrg": "在组织中找不到项目"
 
 }

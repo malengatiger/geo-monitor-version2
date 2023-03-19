@@ -141,7 +141,7 @@ class GeofenceMapTabletState extends State<GeofenceMapTablet>
         showPicture = true;
       }
     }
-    var deviceType = getDeviceType();
+    var deviceType = getThisDeviceType();
     return SafeArea(
       child: Scaffold(
         key: _key,

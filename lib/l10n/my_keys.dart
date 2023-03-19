@@ -263,5 +263,10 @@ class MyKeys {
     hashMap["videoLimitReached"] = "videoLimitReached";
     hashMap["audioLimitReached"] = "audioLimitReached";
     hashMap["welcomeAboard"] = "welcomeAboard";
+
+    hashMap["videosNotFoundInProject"] = "videosNotFoundInProject";
+    hashMap["photosNotFoundInProject"] = "photosNotFoundInProject";
+    hashMap["audiosNotFoundInProject"] = "audiosNotFoundInProject";
+    hashMap["projectsNotFoundInOrg"] = "projectsNotFoundInOrg";
   }
 }

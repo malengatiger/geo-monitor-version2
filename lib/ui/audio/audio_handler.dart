@@ -65,8 +65,7 @@ class AudioHandlerState extends State<AudioHandler>
   File? _recordedFile;
   int fileSize = 0;
   int seconds = 0;
-  String? fileUploadSize, uploadAudioClip, elapsedTime;
-
+  String? fileUploadSize, uploadAudioClipText, elapsedTime;
 
   @override
   void initState() {
@@ -99,7 +98,8 @@ class AudioHandlerState extends State<AudioHandler>
       limitInSeconds = m! * 60;
       title = await mTx.translate('recordAudioClip', settingsModel!.locale!);
       fileUploadSize = await mTx.translate('fileSize', settingsModel!.locale!);
-      uploadAudioClip = await mTx.translate('uploadAudioClip', settingsModel!.locale!);
+      uploadAudioClipText =
+          await mTx.translate('uploadAudioClip', settingsModel!.locale!);
       elapsedTime = await mTx.translate('elapsedTime', settingsModel!.locale!);
     }
 
@@ -216,8 +216,10 @@ class AudioHandlerState extends State<AudioHandler>
   }
 
   _onStop() async {
-    pp('$mm ........... stop recording NOW! ...');
-    _timer?.cancel();
+    pp('\n\n$mm ........... stop recording NOW! ...\n\n');
+    if (_timer != null) {
+      _timer?.cancel();
+    }
     try {
       final path = await _recorderController.stop();
       if (path != null) {
@@ -233,9 +235,8 @@ class AudioHandlerState extends State<AudioHandler>
           message: 'Recording is a little bit off ...',
           context: context);
     }
-    if (_timer != null) {
-      _timer?.cancel();
-    }
+
+    pp('$mm stopped; setting isStopped to TRUE .......');
     setState(() {
       isPaused = false;
       isRecording = false;
@@ -312,24 +313,22 @@ class AudioHandlerState extends State<AudioHandler>
               title: Text(title == null ? 'Record Audio' : title!),
             ),
             body: AudioCardAnyone(
-              title: widget.project.name!,
-              elapsedTime: elapsedTime == null? 'Elapsed Time': elapsedTime!,
-              fileUploadSize: fileUploadSize == null? 'File Size': fileUploadSize!,
-              uploadAudioClip: uploadAudioClip == null? 'Upload Audio Clip': uploadAudioClip!,
+              projectName: widget.project.name!,
+              elapsedTime: elapsedTime == null ? 'Elapsed Time' : elapsedTime!,
+              fileUploadSize:
+                  fileUploadSize == null ? 'File Size' : fileUploadSize!,
+              uploadAudioClipText: uploadAudioClipText == null
+                  ? 'Upload Audio Clip'
+                  : uploadAudioClipText!,
               user: user!,
               seconds: seconds,
               recorderController: _recorderController,
-              isUploading: isUploading,
               onUploadFile: _uploadFile,
               fileSize: fileSize.toDouble(),
               onPlay: _onPlay,
               onPause: _onPause,
               onRecord: _onRecord,
               onStop: _onStop,
-              isStopped: isStopped,
-              isRecording: isRecording,
-              isPlaying: isAudioPlaying,
-              isPaused: isPaused,
               recordedFile: _recordedFile,
               onClose: () {
                 widget.onClose();
@@ -338,23 +337,20 @@ class AudioHandlerState extends State<AudioHandler>
           ),
         ),
         tablet: AudioCardAnyone(
-          title: widget.project.name!,
-          elapsedTime: elapsedTime == null? 'Elapsed Time': elapsedTime!,
-          fileUploadSize: fileUploadSize == null? 'File Size': fileUploadSize!,
-          uploadAudioClip: uploadAudioClip == null? 'Upload Audio Clip': uploadAudioClip!,
+          projectName: widget.project.name!,
+          elapsedTime: elapsedTime == null ? 'Elapsed Time' : elapsedTime!,
+          fileUploadSize:
+              fileUploadSize == null ? 'File Size' : fileUploadSize!,
+          uploadAudioClipText:
+              uploadAudioClipText == null ? 'Upload Audio Clip' : uploadAudioClipText!,
           user: user!,
           seconds: seconds,
           recorderController: _recorderController,
-          isStopped: isStopped,
           onUploadFile: _uploadFile,
-          isUploading: isUploading,
           onPlay: _onPlay,
           onPause: _onPause,
           onRecord: _onRecord,
           onStop: _onStop,
-          isRecording: isRecording,
-          isPlaying: isAudioPlaying,
-          isPaused: isPaused,
           fileSize: fileSize.toDouble(),
           recordedFile: _recordedFile,
           onClose: () {
@@ -366,40 +362,86 @@ class AudioHandlerState extends State<AudioHandler>
   }
 }
 
-class AudioCardAnyone extends StatelessWidget {
+class AudioCardAnyone extends StatefulWidget {
   const AudioCardAnyone(
       {Key? key,
-      required this.title,
+      required this.projectName,
       required this.user,
       required this.seconds,
       required this.recorderController,
-      required this.isStopped,
       required this.onUploadFile,
       this.recordedFile,
-      required this.isUploading,
       required this.fileSize,
       required this.onPlay,
       required this.onPause,
       required this.onStop,
       required this.onRecord,
-      required this.isRecording,
-      required this.isPlaying,
-      required this.isPaused,
-      required this.onClose, required this.fileUploadSize, required this.uploadAudioClip, required this.elapsedTime})
+      required this.onClose,
+      required this.fileUploadSize,
+      required this.uploadAudioClipText,
+      required this.elapsedTime})
       : super(key: key);
 
-  final String title;
+  final String projectName;
   final User user;
   final int seconds;
   final wv.RecorderController recorderController;
-  final bool isStopped, isUploading, isRecording, isPlaying, isPaused;
   final Function onUploadFile;
   final File? recordedFile;
   final double fileSize;
   final Function onPlay, onPause, onStop, onRecord, onClose;
-  final String fileUploadSize, uploadAudioClip, elapsedTime;
+  final String fileUploadSize, uploadAudioClipText, elapsedTime;
+
+  @override
+  State<AudioCardAnyone> createState() => _AudioCardAnyoneState();
+}
+
+class _AudioCardAnyoneState extends State<AudioCardAnyone> {
+  bool isStopped = false,
+      isUploading = false,
+      isRecording = false,
+      isPlaying = false,
+      isPaused = false,
+      showUpload = false, showWave = false;
+
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  void _onPause() {
+    setState(() {
+      showUpload = false;
+      showWave = false;
+    });
+    widget.onPause();
+  }
+  void _onPlay() {
+    setState(() {
+      showUpload = false;
+      showWave = false;
+    });
+    widget.onPlay();
+  }
+  void _onStop() {
+    setState(() {
+      showUpload = true;
+      showWave = false;
+    });
+    widget.onStop();
+  }
+  void _onRecord() {
+    setState(() {
+      showUpload = false;
+      showWave = true;
+    });
+    widget.onRecord();
+  }
+
   @override
   Widget build(BuildContext context) {
+    var deviceType = getThisDeviceType();
+
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(8.0),
@@ -410,18 +452,23 @@ class AudioCardAnyone extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 12.0),
             child: Column(
               children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    IconButton(
-                        onPressed: () {
-                          onClose();
-                        },
-                        icon: const Icon(Icons.close)),
-                  ],
+                deviceType == 'phone'
+                    ? const SizedBox()
+                    : Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          IconButton(
+                              onPressed: () {
+                                widget.onClose();
+                              },
+                              icon: const Icon(Icons.close)),
+                        ],
+                      ),
+                const SizedBox(
+                  height: 20,
                 ),
                 Text(
-                  title,
+                  widget.projectName,
                   style: myTextStyleMediumPrimaryColor(context),
                 ),
                 const SizedBox(
@@ -430,17 +477,18 @@ class AudioCardAnyone extends StatelessWidget {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    user.thumbnailUrl == null
+                    widget.user.thumbnailUrl == null
                         ? const SizedBox()
                         : CircleAvatar(
-                            backgroundImage: NetworkImage(user.thumbnailUrl!),
+                            backgroundImage:
+                                NetworkImage(widget.user.thumbnailUrl!),
                             radius: 20,
                           ),
                     const SizedBox(
                       width: 16,
                     ),
                     Text(
-                      '${user.name}',
+                      '${widget.user.name}',
                       style: myTextStyleSmall(context),
                     ),
                   ],
@@ -451,15 +499,17 @@ class AudioCardAnyone extends StatelessWidget {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    TimerCard(seconds: seconds, elapsedTime: elapsedTime,),
+                    TimerCard(
+                      seconds: widget.seconds,
+                      elapsedTime: widget.elapsedTime,
+                    ),
                   ],
                 ),
                 const SizedBox(
                   height: 24,
                 ),
-                isStopped
-                    ? const SizedBox()
-                    : Padding(
+                showWave
+                    ? Padding(
                         padding: const EdgeInsets.all(8.0),
                         child: Card(
                           shape: getRoundedBorder(radius: 12),
@@ -468,7 +518,7 @@ class AudioCardAnyone extends StatelessWidget {
                             padding: const EdgeInsets.all(12.0),
                             child: wv.AudioWaveforms(
                               size: const Size(300.0, 80.0),
-                              recorderController: recorderController,
+                              recorderController: widget.recorderController,
                               enableGesture: true,
                               waveStyle: wv.WaveStyle(
                                 waveColor: Theme.of(context).primaryColor,
@@ -483,10 +533,9 @@ class AudioCardAnyone extends StatelessWidget {
                             ),
                           ),
                         ),
-                      ),
-                recordedFile == null
-                    ? const SizedBox()
-                    : SizedBox(
+                      ):const SizedBox(),
+                showUpload
+                    ? SizedBox(
                         height: 280,
                         child: Padding(
                           padding: const EdgeInsets.all(20.0),
@@ -504,13 +553,14 @@ class AudioCardAnyone extends StatelessWidget {
                                 Row(
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
-                                    Text(fileUploadSize,
+                                    Text(
+                                      widget.fileUploadSize,
                                       style: myTextStyleSmall(context),
                                     ),
                                     const SizedBox(
                                       width: 8,
                                     ),
-                                    Text((fileSize / 1024 / 1024)
+                                    Text((widget.fileSize / 1024 / 1024)
                                         .toStringAsFixed(2)),
                                     const SizedBox(
                                       width: 8,
@@ -533,7 +583,7 @@ class AudioCardAnyone extends StatelessWidget {
                                       )
                                     : ElevatedButton(
                                         onPressed: () {
-                                          onUploadFile();
+                                          widget.onUploadFile();
                                         },
                                         child: SizedBox(
                                           width: 220.0,
@@ -541,7 +591,8 @@ class AudioCardAnyone extends StatelessWidget {
                                             child: Padding(
                                               padding:
                                                   const EdgeInsets.all(8.0),
-                                              child: Text(uploadAudioClip,
+                                              child: Text(
+                                                widget.uploadAudioClipText,
                                                 style: myTextStyleSmallBold(
                                                     context),
                                               ),
@@ -552,21 +603,19 @@ class AudioCardAnyone extends StatelessWidget {
                               ],
                             ),
                           ),
-                        ),
-                      ),
+                        ))
+                    : const SizedBox(),
                 const SizedBox(
                   height: 16,
                 ),
                 Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 40.0),
+                  padding: const EdgeInsets.symmetric(horizontal: 32.0),
                   child: RecordingControls(
-                      onPlay: onPlay,
-                      onPause: onPause,
-                      onStop: onStop,
-                      onRecord: onRecord,
-                      isRecording: isRecording,
-                      isPaused: isPaused,
-                      isStopped: isStopped),
+                    onPlay: _onPlay,
+                    onPause: _onPause,
+                    onStop: _onStop,
+                    onRecord: _onRecord,
+                  ),
                 ),
                 const SizedBox(
                   height: 16,

@@ -223,6 +223,10 @@
   "audioLimitReached": "Umkhawulo wokuqopha isiqeshana somsindo wamaminithi angu-$count ufinyelelwe",
   "photoToBeUploaded": "Isithombe sizolayishwa maduze",
   "audioToBeUploaded": "Isiqeshana somsindo sizolayishwa maduze",
-  "videoLimitReached": "Umkhawulo wokurekhodwa kwevidiyo wamasekhondi angu-$count ufinyelelwe"
+  "videoLimitReached": "Umkhawulo wokurekhodwa kwevidiyo wamasekhondi angu-$count ufinyelelwe",
+  "videosNotFoundInProject": "Amavidiyo awatholakali kuphrojekthi ye-$project",
+  "audiosNotFoundInProject": "Iziqeshana zomsindo azitholakali kuphrojekthi ye-$project",
+  "photosNotFoundInProject": "Izithombe azitholakali kuphrojekthi ye-$project",
+  "projectsNotFoundInOrg": "Amaphrojekthi awatholakali kokuthi Inhlangano"
 
 }

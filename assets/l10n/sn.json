@@ -223,6 +223,10 @@
   "audioLimitReached": "Audio clip yekurekodha inogumira ye$count minutes yasvikwa",
   "photoToBeUploaded": "Mufananidzo uchaiswa munguva pfupi iri kutevera",
   "audioToBeUploaded": "Audio clip ichaiswa munguva pfupi iri kutevera",
-  "videoLimitReached": "Vhidhiyo yekurekodha miganhu ye$count seconds yasvikwa"
+  "videoLimitReached": "Vhidhiyo yekurekodha miganhu ye$count seconds yasvikwa",
+  "videosNotFoundInProject": "Mavhidhiyo haana kuwanikwa mupurojekiti $project",
+  "audiosNotFoundInProject": "Zvikamu zvekuteerera hazvina kuwanikwa mupurojekiti $project",
+  "photosNotFoundInProject": "Mifananidzo haina kuwanikwa muprojekti $project",
+  "projectsNotFoundInOrg": "Zvirongwa hazviwanikwe muSangano"
 
 }

@@ -223,6 +223,10 @@
   "audioLimitReached": "Kikomo cha kurekodi klipu ya sauti cha dakika $count kimefikiwa",
   "photoToBeUploaded": "Picha itapakiwa hivi karibuni",
   "audioToBeUploaded": "Klipu ya sauti itapakiwa hivi karibuni",
-  "videoLimitReached": "Kikomo cha kurekodi video cha sekunde $count kimefikiwa"
+  "videoLimitReached": "Kikomo cha kurekodi video cha sekunde $count kimefikiwa",
+  "videosNotFoundInProject": "Video hazipatikani katika mradi wa $project",
+  "audiosNotFoundInProject": "Klipu za sauti hazipatikani katika mradi wa $project",
+  "photosNotFoundInProject": "Picha hazipatikani katika mradi wa $project",
+  "projectsNotFoundInOrg": "Miradi haipatikani katika Shirika"
 
 }

@@ -231,6 +231,10 @@
   "audioLimitReached": "Eruola oke ndekọ obere vidiyo nke nkeji $count",
   "photoToBeUploaded": "A ga-ebugo foto n\u0027oge adịghị anya",
   "audioToBeUploaded": "A ga-ebugo obere vidiyo n\u0027oge adịghị anya",
-  "videoLimitReached": "Eruola oke ndekọ vidiyo nke $count sekọnd"
+  "videoLimitReached": "Eruola oke ndekọ vidiyo nke $count sekọnd",
+  "videosNotFoundInProject": "Achọghị vidiyo na project $project",
+  "audiosNotFoundInProject": "Achọghị obere vidiyo na project $project",
+  "photosNotFoundInProject": "Ahụghị foto na project $project",
+  "projectsNotFoundInOrg": "Achọghị ọrụ na nhazi"
 
 }

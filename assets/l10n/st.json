@@ -223,7 +223,11 @@
   "audioLimitReached": "Tekanyetso ea ho rekota likoto tsa molumo ea $count metsotso e fihletsoe",
   "photoToBeUploaded": "Senepe se tla kenngoa haufinyane",
   "audioToBeUploaded": "Sekotwana sa molumo se tla kenngoa haufinyane",
-  "videoLimitReached": "Tekanyetso ea ho rekota lifitio ea $count metsotsoana e fihletsoe"
+  "videoLimitReached": "Tekanyetso ea ho rekota lifitio ea $count metsotsoana e fihletsoe",
+  "videosNotFoundInProject": "Lifitio ha li fumanehe morerong oa $project",
+  "audiosNotFoundInProject": "Likotwana tsa molumo ha li fumanehe morerong oa $project",
+  "photosNotFoundInProject": "Linepe ha li fumanehe morerong oa $project",
+  "projectsNotFoundInOrg": "Merero ha e fumanehe Mokhatlong"
 
 
 

@@ -146,7 +146,7 @@ class LocationResponseMapState extends State<LocationResponseMap>
     var date = DateTime.parse(widget.locationResponse.date!)
         .toLocal()
         .toIso8601String();
-    var deviceType = getDeviceType();
+    var deviceType = getThisDeviceType();
     return SafeArea(
       child: Scaffold(
         key: _key,

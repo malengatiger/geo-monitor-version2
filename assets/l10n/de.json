@@ -232,7 +232,11 @@
   "audioLimitReached": "Das Audioclip-Aufnahmelimit von $count Minuten wurde erreicht",
   "photoToBeUploaded": "Foto wird bald hochgeladen",
   "audioToBeUploaded": "Audioclip wird bald hochgeladen",
-  "videoLimitReached": "Das Videoaufzeichnungslimit von $count Sekunden wurde erreicht"
+  "videoLimitReached": "Das Videoaufzeichnungslimit von $count Sekunden wurde erreicht",
+  "videosNotFoundInProject": "Videos in Projekt $project nicht gefunden",
+  "audiosNotFoundInProject": "Audioclips in Projekt $project nicht gefunden",
+  "photosNotFoundInProject": "Fotos in Projekt $project nicht gefunden",
+  "projectsNotFoundInOrg": "Projekte nicht in Organisation gefunden"
 
 
 }

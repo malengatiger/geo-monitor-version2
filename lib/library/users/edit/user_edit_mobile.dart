@@ -339,7 +339,7 @@ class UserEditMobileState extends State<UserEditMobile>
   @override
   Widget build(BuildContext context) {
     var width = MediaQuery.of(context).size.width;
-    var deviceType = getDeviceType();
+    var deviceType = getThisDeviceType();
     return SafeArea(
       child: Scaffold(
         key: _key,
