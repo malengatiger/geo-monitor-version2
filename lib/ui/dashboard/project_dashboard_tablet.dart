@@ -38,7 +38,7 @@ import '../../library/ui/maps/location_response_map.dart';
 import '../../library/ui/maps/photo_map_tablet.dart';
 import '../../library/ui/maps/project_map_main.dart';
 import '../activity/geo_activity.dart';
-import '../audio/audio_player_page.dart';
+import '../audio/audio_player_card.dart';
 
 class ProjectDashboardTablet extends StatefulWidget {
   const ProjectDashboardTablet({Key? key, required this.project})

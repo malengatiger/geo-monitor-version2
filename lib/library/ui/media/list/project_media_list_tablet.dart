@@ -4,11 +4,11 @@ import 'package:animations/animations.dart';
 import 'package:flutter/material.dart';
 import 'package:geo_monitor/library/ui/camera/chewie_video_player.dart';
 import 'package:geo_monitor/library/ui/camera/photo_handler.dart';
-import 'package:geo_monitor/library/ui/camera/video_handler_two.dart';
+import 'package:geo_monitor/library/ui/camera/video_recorder.dart';
 import 'package:geo_monitor/library/ui/media/list/project_audios_page.dart';
 import 'package:geo_monitor/library/ui/media/list/project_photos_page.dart';
 import 'package:geo_monitor/library/ui/media/list/project_videos_page.dart';
-import 'package:geo_monitor/ui/audio/audio_handler.dart';
+import 'package:geo_monitor/ui/audio/audio_recorder.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:responsive_builder/responsive_builder.dart';
@@ -198,7 +198,7 @@ class ProjectMediaListTabletState extends State<ProjectMediaListTablet>
   }
 
 
-  bool _showAudioHandler = false;
+  bool _showAudioRecorder = false;
   bool _showVideoHandler = false;
   bool _showPhotoHandler = false;
   Audio? audio;
@@ -232,7 +232,7 @@ class ProjectMediaListTabletState extends State<ProjectMediaListTablet>
                 setState(() {
                   _showPhotoHandler = true;
                   _showVideoHandler = false;
-                  _showAudioHandler = false;
+                  _showAudioRecorder = false;
                 });
               },
               icon: Icon(
@@ -246,7 +246,7 @@ class ProjectMediaListTabletState extends State<ProjectMediaListTablet>
                 setState(() {
                   _showPhotoHandler = false;
                   _showVideoHandler = true;
-                  _showAudioHandler = false;
+                  _showAudioRecorder = false;
                 });
               },
               icon: Icon(
@@ -262,7 +262,7 @@ class ProjectMediaListTabletState extends State<ProjectMediaListTablet>
                 setState(() {
                   _showPhotoHandler = false;
                   _showVideoHandler = false;
-                  _showAudioHandler = true;
+                  _showAudioRecorder = true;
                 });
               },
               icon: Icon(
@@ -494,7 +494,7 @@ class ProjectMediaListTabletState extends State<ProjectMediaListTablet>
                   left: padding,
                   right: padding,
                   top: 12,
-                  child: VideoHandlerTwo(
+                  child: VideoRecorder(
                     project: widget.project,
                     onClose: () {
                       setState(() {
@@ -504,26 +504,44 @@ class ProjectMediaListTabletState extends State<ProjectMediaListTablet>
                   ),
                 )
               : const SizedBox(),
-          _showAudioHandler
+          _showAudioRecorder
               ? Positioned(
                   left: padding,
                   right: padding,
                   top: top,
-                  child: Card(
-                    elevation: 8,
-                    shape: getRoundedBorder(radius: 16),
-                    child: SizedBox(
-                      width: 600,
-                      child: AudioHandler(
-                        project: widget.project,
-                        onClose: () {
-                          setState(() {
-                            _showAudioHandler = false;
-                          });
-                        },
+                  child: OrientationLayoutBuilder(portrait: (_){
+                    return SizedBox(height: 600, width: 600,
+                      child: Card(
+                        elevation: 8,
+                        shape: getRoundedBorder(radius: 16),
+                        child: SizedBox(
+                          width: 600,
+                          child: AudioRecorder(onCloseRequested: (){
+                            pp('On stop requested');
+                            setState(() {
+                              _showAudioRecorder = false;
+                            });
+                          }, project: widget.project),
+                        ),
                       ),
-                    ),
-                  ),
+                    );
+                  }, landscape: (_){
+                    return SizedBox(height: 600, width: 600,
+                      child: Card(
+                        elevation: 8,
+                        shape: getRoundedBorder(radius: 16),
+                        child: SizedBox(
+                          width: 600,
+                          child: AudioRecorder(onCloseRequested: (){
+                            pp('On stop requested');
+                            setState(() {
+                              _showAudioRecorder = false;
+                            });
+                          }, project: widget.project),
+                        ),
+                      ),
+                    );
+                  },) ,
                 )
               : const SizedBox(),
         ],
@@ -535,3 +553,4 @@ class ProjectMediaListTabletState extends State<ProjectMediaListTablet>
 
   onPhotoRatingRequested(Photo p1) {}
 }
+

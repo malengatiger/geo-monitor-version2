@@ -239,7 +239,9 @@
   "createProject": "Por favor crea un nuevo proyecto",
   "checkNetworkSettings": "Verifique la configuración de red de su dispositivo",
   "waitingToRecordAudio": "Esperando para grabar un clip de audio",
-  "waitingToRecordVideo": "Esperando para grabar video"
+  "waitingToRecordVideo": "Esperando para grabar video",
+  "createdAt": "Fecha de creacion",
+  "createdBy": "Creado por"
 
 
 

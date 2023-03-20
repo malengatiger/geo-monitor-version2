@@ -236,7 +236,9 @@
   "createProject": "Tafadhali unda mradi mpya",
   "checkNetworkSettings": "Tafadhali angalia mipangilio ya mtandao wa kifaa chako",
   "waitingToRecordAudio": "Inasubiri kurekodi klipu ya sauti",
-  "waitingToRecordVideo": "Inasubiri kurekodi video"
+  "waitingToRecordVideo": "Inasubiri kurekodi video",
+  "createdAt": "Tarehe iliyoundwa",
+  "createdBy": "Imetengenezwa na"
 
 
 }

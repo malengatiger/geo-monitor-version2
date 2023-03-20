@@ -240,7 +240,9 @@
   "createProject": "Skep asseblief \u0027n nuwe projek",
   "checkNetworkSettings": "Gaan asseblief jou toestel se netwerkinstellings na",
   "waitingToRecordAudio": "Wag om oudiosnit op te neem",
-  "waitingToRecordVideo": "Wag om video op te neem"
+  "waitingToRecordVideo": "Wag om video op te neem",
+  "createdAt": "Datum geskep",
+  "createdBy": "Gemaak deur"
 
 
 

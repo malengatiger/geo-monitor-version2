@@ -46,7 +46,7 @@ import '../../library/ui/project_list/project_chooser.dart';
 import '../../library/ui/project_list/project_list_main.dart';
 import '../../library/users/full_user_photo.dart';
 import '../../library/users/list/user_list_main.dart';
-import '../audio/audio_player_page.dart';
+import '../audio/audio_player_card.dart';
 
 class DashboardTablet extends StatefulWidget {
   const DashboardTablet({Key? key, required this.user}) : super(key: key);

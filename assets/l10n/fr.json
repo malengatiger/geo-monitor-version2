@@ -239,6 +239,8 @@
   "audioToBeUploaded": "Le clip audio sera bientôt téléchargé",
   "videoLimitReached": "La limite d\u0027enregistrement vidéo de $count secondes a été atteinte",
   "waitingToRecordAudio": "En attente d\u0027enregistrement d\u0027un clip audio",
-  "waitingToRecordVideo": "En attente d\u0027enregistrement vidéo"
+  "waitingToRecordVideo": "En attente d\u0027enregistrement vidéo",
+  "createdAt": "Date créée",
+  "createdBy": "Créé par"
 
 }

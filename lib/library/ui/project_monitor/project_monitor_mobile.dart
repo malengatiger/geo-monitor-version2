@@ -1,12 +1,12 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:geo_monitor/library/ui/camera/video_handler_two.dart';
-import 'package:geo_monitor/ui/audio/audio_handler.dart';
+import 'package:geo_monitor/library/ui/camera/video_recorder.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:map_launcher/map_launcher.dart';
 import 'package:page_transition/page_transition.dart';
 
+import '../../../ui/audio/audio_recorder.dart';
 import '../../bloc/project_bloc.dart';
 import '../../data/position.dart';
 import '../../data/project.dart';
@@ -321,7 +321,7 @@ class ProjectMonitorMobileState extends State<ProjectMonitorMobile>
             type: PageTransitionType.scale,
             alignment: Alignment.topLeft,
             duration: const Duration(seconds: 1),
-            child: VideoHandlerTwo(
+            child: VideoRecorder(
               project: widget.project,
               projectPosition: null, onClose: (){
                 Navigator.of(context).pop();
@@ -338,11 +338,11 @@ class ProjectMonitorMobileState extends State<ProjectMonitorMobile>
             type: PageTransitionType.scale,
             alignment: Alignment.topLeft,
             duration: const Duration(seconds: 1),
-            child: AudioHandler(
-              project: widget.project, onClose: (){
-                Navigator.of(context).pop();
-            },
-            )));
+            child: AudioRecorder(onCloseRequested: (){
+              pp('On stop requested');
+              Navigator.of(context).pop();
+            }, project: widget.project),
+        ));
   }
 
   _showError() {

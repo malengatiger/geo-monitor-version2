@@ -19,13 +19,18 @@ import '../../bloc/video_for_upload.dart';
 import '../../cache_manager.dart';
 import '../../data/position.dart';
 import '../../data/project_position.dart';
+import '../../data/settings_model.dart';
 import '../../functions.dart';
 import '../../generic_functions.dart';
 
 List<CameraDescription> cameras = [];
 
-class VideoHandlerTwo extends StatefulWidget {
-  const VideoHandlerTwo({Key? key, required this.project, this.projectPosition, required this.onClose})
+class VideoRecorder extends StatefulWidget {
+  const VideoRecorder(
+      {Key? key,
+      required this.project,
+      this.projectPosition,
+      required this.onClose})
       : super(key: key);
 
   final Project project;
@@ -33,10 +38,10 @@ class VideoHandlerTwo extends StatefulWidget {
   final Function onClose;
 
   @override
-  VideoHandlerTwoState createState() => VideoHandlerTwoState();
+  VideoRecorderState createState() => VideoRecorderState();
 }
 
-class VideoHandlerTwoState extends State<VideoHandlerTwo>
+class VideoRecorderState extends State<VideoRecorder>
     with SingleTickerProviderStateMixin, WidgetsBindingObserver {
   late AnimationController _controller;
   static const mm = '🍏🍏🍏🍏🍏🍏 VideoHandlerTwo: ';
@@ -54,6 +59,18 @@ class VideoHandlerTwoState extends State<VideoHandlerTwo>
   bool _showChoice = false;
 
   String? title;
+  String? fileUploadSize,
+      uploadAudioClipText,
+      locationNotAvailable,
+      elapsedTime,
+      fileSizeText,
+      videoToBeUploaded,
+      getCameraReady,
+      recordingComplete,
+      durationText,
+      waitingToRecordVideo;
+  SettingsModel? settingsModel;
+  int limitInSeconds = 0;
 
   @override
   void initState() {
@@ -62,7 +79,38 @@ class VideoHandlerTwoState extends State<VideoHandlerTwo>
     super.initState();
     // Hide the status bar
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
+    _getUser();
     _getData();
+  }
+
+  void _getUser() async {
+    user = await prefsOGx.getUser();
+    settingsModel = await prefsOGx.getSettings();
+    if (settingsModel != null) {
+      var m = settingsModel?.maxAudioLengthInMinutes;
+      limitInSeconds = m! * 60;
+      recordingComplete =
+          await mTx.translate('recordingComplete', settingsModel!.locale!);
+      elapsedTime = await mTx.translate('elapsedTime', settingsModel!.locale!);
+
+      fileUploadSize = await mTx.translate('fileSize', settingsModel!.locale!);
+      uploadAudioClipText =
+          await mTx.translate('uploadAudioClip', settingsModel!.locale!);
+      elapsedTime = await mTx.translate('elapsedTime', settingsModel!.locale!);
+      locationNotAvailable =
+          await mTx.translate('locationNotAvailable', settingsModel!.locale!);
+
+      waitingToRecordVideo =
+          await mTx.translate('waitingToRecordVideo', settingsModel!.locale!);
+      videoToBeUploaded =
+          await mTx.translate('videoToBeUploaded', settingsModel!.locale!);
+      maxSeconds = settingsModel!.maxVideoLengthInSeconds!;
+      title = await mTx.translate('recordVideo', settingsModel!.locale!);
+      durationText = await mTx.translate('duration', settingsModel!.locale!);
+      fileSizeText = await mTx.translate('fileSize', settingsModel!.locale!);
+    }
+
+    setState(() {});
   }
 
   int maxSeconds = 10;
@@ -71,12 +119,6 @@ class VideoHandlerTwoState extends State<VideoHandlerTwo>
       busy = true;
     });
     try {
-      var sett = await prefsOGx.getSettings();
-      if (sett != null) {
-        maxSeconds = sett.maxVideoLengthInSeconds!;
-        title =
-        await mTx.translate('recordVideo', sett.locale!);
-      }
       user = await prefsOGx.getUser();
       cameras = await availableCameras();
 
@@ -181,7 +223,7 @@ class VideoHandlerTwoState extends State<VideoHandlerTwo>
   Future<void> startVideoRecording() async {
     pp('$mm .... startVideoRecording ...');
     final CameraController cameraController = _cameraController;
-    if (_cameraController!.value.isRecordingVideo) {
+    if (_cameraController.value.isRecordingVideo) {
       pp('$mm A recording has already started, do nothing.');
       return;
     }
@@ -194,7 +236,7 @@ class VideoHandlerTwoState extends State<VideoHandlerTwo>
       });
       duration == const Duration(seconds: 0);
       startTimer();
-      await cameraController!.startVideoRecording();
+      await cameraController.startVideoRecording();
     } on CameraException catch (e) {
       pp('Error starting to record video: $e');
     }
@@ -262,8 +304,7 @@ class VideoHandlerTwoState extends State<VideoHandlerTwo>
       position =
           Position(type: 'Point', coordinates: [loc.longitude, loc.latitude]);
     }
-    // var bytes = await videoFile.readAsBytes();
-    // var tBytes = await thumbnailFile.readAsBytes();
+
     var videoForUpload = VideoForUpload(
         userName: user!.name,
         userThumbnailUrl: user!.thumbnailUrl,
@@ -290,7 +331,9 @@ class VideoHandlerTwoState extends State<VideoHandlerTwo>
           textStyle: myTextStyleMediumBold(context),
           toastGravity: ToastGravity.TOP,
           backgroundColor: Theme.of(context).primaryColor,
-          message: 'Video will be uploaded soon!',
+          message: videoToBeUploaded == null
+              ? 'Video will be uploaded soon!'
+              : videoToBeUploaded!,
           context: context);
     }
   }
@@ -327,16 +370,16 @@ class VideoHandlerTwoState extends State<VideoHandlerTwo>
   Widget build(BuildContext context) {
     final ori = MediaQuery.of(context).orientation;
     var pad = 200.0;
-    var bottomPad = 48.0;
+    var bottomPad = 12.0;
     if (ori.name == 'portrait') {
       pad = 100.0;
-      bottomPad = 60.0;
+      bottomPad = 12.0;
     }
     return ScreenTypeLayout(
       mobile: SafeArea(
         child: Scaffold(
           appBar: AppBar(
-            title: Text(title == null? 'Record Video': title!),
+            title: Text(title == null ? 'Record Video' : title!),
           ),
           body: Stack(
             children: [
@@ -355,7 +398,9 @@ class VideoHandlerTwoState extends State<VideoHandlerTwo>
                                   height: 40,
                                 ),
                                 Text(
-                                  'Recording complete',
+                                  recordingComplete == null
+                                      ? 'Recording complete'
+                                      : recordingComplete!,
                                   style: myTextStyleLarge(context),
                                 ),
                                 const SizedBox(
@@ -364,7 +409,9 @@ class VideoHandlerTwoState extends State<VideoHandlerTwo>
                                 Row(
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
-                                    const Text('File Size'),
+                                    Text(fileSizeText == null
+                                        ? 'File Size'
+                                        : fileSizeText!),
                                     const SizedBox(
                                       width: 12,
                                     ),
@@ -381,7 +428,9 @@ class VideoHandlerTwoState extends State<VideoHandlerTwo>
                                 Row(
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
-                                    const Text('Duration'),
+                                    Text(durationText == null
+                                        ? 'Duration'
+                                        : durationText!),
                                     const SizedBox(
                                       width: 12,
                                     ),
@@ -393,9 +442,9 @@ class VideoHandlerTwoState extends State<VideoHandlerTwo>
                                   ],
                                 ),
                                 const SizedBox(
-                                  height: 32,
+                                  height: 16,
                                 ),
-                                ChoiceCard(
+                                VideoRecorderControls(
                                     onUpload: onUpload,
                                     onPlay: onPlay,
                                     onCancel: onCancel),
@@ -411,7 +460,9 @@ class VideoHandlerTwoState extends State<VideoHandlerTwo>
                         child: Padding(
                           padding: const EdgeInsets.all(20.0),
                           child: Text(
-                            'Getting camera ready',
+                            waitingToRecordVideo == null
+                                ? 'Getting camera ready'
+                                : waitingToRecordVideo!,
                             style: myTextStyleMediumBold(context),
                           ),
                         ),
@@ -433,7 +484,7 @@ class VideoHandlerTwoState extends State<VideoHandlerTwo>
                     ),
                   )),
               Positioned(
-                  bottom: -8,
+                  bottom: -20,
                   right: pad,
                   left: pad,
                   child: VideoControls(
@@ -456,7 +507,9 @@ class VideoHandlerTwoState extends State<VideoHandlerTwo>
       tablet: Card(
         elevation: 8,
         shape: getRoundedBorder(radius: 16),
-        child: SizedBox(width: 600, height: 600,
+        child: SizedBox(
+          width: 600,
+          height: 600,
           child: Stack(
             children: [
               _isCameraInitialized
@@ -470,11 +523,14 @@ class VideoHandlerTwoState extends State<VideoHandlerTwo>
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.center,
                               children: [
+
                                 const SizedBox(
                                   height: 40,
                                 ),
                                 Text(
-                                  'Recording complete',
+                                  recordingComplete == null
+                                      ? 'Recording complete'
+                                      : recordingComplete!,
                                   style: myTextStyleLarge(context),
                                 ),
                                 const SizedBox(
@@ -483,14 +539,14 @@ class VideoHandlerTwoState extends State<VideoHandlerTwo>
                                 Row(
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
-                                    const Text('File Size'),
+                                    Text(fileSize),
                                     const SizedBox(
                                       width: 12,
                                     ),
                                     Text(
                                       fileSize,
-                                      style:
-                                          myNumberStyleLargePrimaryColor(context),
+                                      style: myNumberStyleLargePrimaryColor(
+                                          context),
                                     ),
                                   ],
                                 ),
@@ -500,39 +556,45 @@ class VideoHandlerTwoState extends State<VideoHandlerTwo>
                                 Row(
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
-                                    const Text('Duration'),
+                                    Text(durationText == null
+                                        ? 'Duration'
+                                        : durationText!),
                                     const SizedBox(
                                       width: 12,
                                     ),
                                     Text(
                                       getHourMinuteSecond(finalDuration),
-                                      style:
-                                          myNumberStyleLargePrimaryColor(context),
+                                      style: myNumberStyleLargePrimaryColor(
+                                          context),
                                     ),
                                   ],
                                 ),
                                 const SizedBox(
                                   height: 32,
                                 ),
-                                ChoiceCard(
+                                VideoRecorderControls(
                                     onUpload: onUpload,
                                     onPlay: onPlay,
                                     onCancel: onCancel),
                               ],
                             ),
                           ))
-                      : SizedBox(width: 400, height: 600,
-                        child: AspectRatio(
+                      : SizedBox(
+                          width: _cameraController.value.previewSize?.width,
+                          height: _cameraController.value.previewSize?.height,
+                          child: AspectRatio(
                             aspectRatio: _cameraController.value.aspectRatio,
                             child: _cameraController.buildPreview(),
                           ),
-                      )
+                        )
                   : Center(
                       child: Card(
                         child: Padding(
                           padding: const EdgeInsets.all(20.0),
                           child: Text(
-                            'Getting camera ready',
+                            waitingToRecordVideo == null
+                                ? 'Getting camera ready'
+                                : waitingToRecordVideo!,
                             style: myTextStyleMediumBold(context),
                           ),
                         ),
@@ -546,10 +608,20 @@ class VideoHandlerTwoState extends State<VideoHandlerTwo>
                     color: Colors.black12,
                     elevation: 8,
                     child: Padding(
-                      padding: const EdgeInsets.all(12.0),
-                      child: Text(
-                        getHourMinuteSecond(duration),
-                        style: myTextStyleMediumPrimaryColor(context),
+                      padding: const EdgeInsets.all(4.0),
+                      child: Row(mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          Text(
+                            getHourMinuteSecond(duration),
+                            style: myNumberStyleMedium(context),
+                          ),
+                          const SizedBox(width: 20,),
+                          IconButton(
+                              onPressed: () {
+                                widget.onClose();
+                              },
+                              icon: const Icon(Icons.close)),
+                        ],
                       ),
                     ),
                   )),
@@ -557,7 +629,7 @@ class VideoHandlerTwoState extends State<VideoHandlerTwo>
                   bottom: bottomPad,
                   right: pad,
                   left: pad,
-                  child: SizedBox(width: 600,
+                  child: SizedBox(
                     child: VideoControls(
                       onRecord: onRecord,
                       onPlay: onPlay,
@@ -589,8 +661,8 @@ class VideoHandlerTwoState extends State<VideoHandlerTwo>
   }
 }
 
-class ChoiceCard extends StatelessWidget {
-  const ChoiceCard(
+class VideoRecorderControls extends StatelessWidget {
+  const VideoRecorderControls(
       {Key? key,
       required this.onUpload,
       required this.onPlay,

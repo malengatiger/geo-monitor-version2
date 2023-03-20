@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:just_audio/just_audio.dart';
 
 import '../../../../l10n/translation_handler.dart';
-import '../../../../ui/audio/audio_player_page.dart';
+import '../../../../ui/audio/audio_player_card.dart';
 import '../../../api/prefs_og.dart';
 import '../../../bloc/user_bloc.dart';
 import '../../../data/audio.dart';
@@ -235,7 +235,11 @@ class UserAudiosState extends State<UserAudios> {
                       bottom: 80,
                       child: AudioPlayerCard(
                           audio: _selectedAudio!,
-                          onCloseRequested: onCloseRequested))
+                          onCloseRequested: (){
+                            setState(() {
+                              _showAudioPlayer = false;
+                            });
+                          }))
                   : const SizedBox(),
             ],
           );

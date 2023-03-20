@@ -7,7 +7,7 @@ import 'package:geo_monitor/library/data/settings_model.dart';
 import 'package:geo_monitor/library/generic_functions.dart';
 import 'package:geo_monitor/library/ui/media/list/project_videos_page.dart';
 import 'package:geo_monitor/library/ui/ratings/rating_adder.dart';
-import 'package:geo_monitor/ui/audio/audio_player_page.dart';
+import 'package:geo_monitor/ui/audio/audio_player_card.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:responsive_builder/responsive_builder.dart';
 
@@ -322,7 +322,11 @@ class ProjectAudiosPageState extends State<ProjectAudiosPage> {
             bottom: 80,
             child: AudioPlayerCard(
                 audio: _selectedAudio!,
-                onCloseRequested: onCloseRequested))
+                onCloseRequested: (){
+                  setState(() {
+                    _showAudioPlayer = false;
+                  });
+                }))
             : const SizedBox(),
       ],
     ), tablet: Stack(

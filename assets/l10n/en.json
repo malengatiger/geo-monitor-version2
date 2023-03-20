@@ -238,5 +238,7 @@
   "createProject": "Please create a new project",
   "checkNetworkSettings": "Please check your device network settings",
   "waitingToRecordAudio": "Waiting to record audio clip",
-  "waitingToRecordVideo": "Waiting to record video"
+  "waitingToRecordVideo": "Waiting to record video",
+  "createdAt": "Date created",
+  "createdBy": "Created by "
 }

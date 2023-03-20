@@ -7,13 +7,13 @@ import 'package:focused_menu/modals.dart';
 import 'package:geo_monitor/library/cache_manager.dart';
 import 'package:geo_monitor/library/ui/maps/project_map_mobile.dart';
 import 'package:geo_monitor/library/ui/project_list/project_list_card.dart';
-import 'package:geo_monitor/ui/audio/audio_handler.dart';
 import 'package:geo_monitor/ui/dashboard/project_dashboard_mobile.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:map_launcher/map_launcher.dart';
 import 'package:page_transition/page_transition.dart';
 
 import '../../../l10n/translation_handler.dart';
+import '../../../ui/audio/audio_recorder.dart';
 import '../../api/prefs_og.dart';
 import '../../bloc/admin_bloc.dart';
 import '../../bloc/fcm_bloc.dart';
@@ -285,9 +285,12 @@ class ProjectListMobileState extends State<ProjectListMobile>
             type: PageTransitionType.scale,
             alignment: Alignment.topLeft,
             duration: const Duration(milliseconds: 1500),
-            child: AudioHandler(project: p, onClose: (){
+            child: AudioRecorder(onCloseRequested: (){
+              pp('On stop requested');
               Navigator.of(context).pop();
-            },)));
+            }, project: p),
+        ),
+    );
   }
 
   Future<void> _navigateToOrgMap() async {

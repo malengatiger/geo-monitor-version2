@@ -20,8 +20,7 @@ class PhotoGrid extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final height = MediaQuery.of(context).size.height;
-    return Expanded(
-        child: bd.Badge(
+    return bd.Badge(
       position: bd.BadgePosition.topEnd(top: 4, end: 12),
       badgeStyle: const bd.BadgeStyle(
         badgeColor: Colors.indigo,
@@ -50,7 +49,7 @@ class PhotoGrid extends StatelessWidget {
               ),
             );
           }),
-    ));
+    );
     ;
   }
 }

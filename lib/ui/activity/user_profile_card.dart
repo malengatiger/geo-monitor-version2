@@ -7,19 +7,22 @@ class UserProfileCard extends StatelessWidget {
       this.padding,
       this.width,
       this.avatarRadius,
-      this.textStyle, required this.userName, this.userThumbUrl})
+      this.textStyle, required this.userName, this.userThumbUrl,  this.elevation})
       : super(key: key);
 
   final String userName;
   final String? userThumbUrl;
   final double? padding, width, avatarRadius;
   final TextStyle? textStyle;
+  final double? elevation;
 
   @override
   Widget build(BuildContext context) {
     return SizedBox(
       width: width ?? 240,
       child: Card(
+        elevation: elevation?? 8.0,
+        shape: getRoundedBorder(radius: 16),
         child: Padding(
           padding: EdgeInsets.all(padding ?? 8),
           child: Row(

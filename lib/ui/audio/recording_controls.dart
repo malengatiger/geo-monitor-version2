@@ -120,21 +120,25 @@ class _RecordingControlsState extends State<RecordingControls> {
 }
 
 class TimerCard extends StatelessWidget {
-  const TimerCard({Key? key, required this.seconds, required this.elapsedTime})
+  const TimerCard({Key? key, required this.seconds, required this.elapsedTime,
+    required this.fontSize})
       : super(key: key);
   final int seconds;
   final String elapsedTime;
+  final double fontSize;
   @override
   Widget build(BuildContext context) {
-    int h, m, s;
-    h = seconds ~/ 3600;
-    m = ((seconds - h * 3600)) ~/ 60;
-    s = seconds - (h * 3600) - (m * 60);
-    String hourLeft = h.toString().length < 2 ? "0$h" : h.toString();
-    String minuteLeft = m.toString().length < 2 ? "0$m" : m.toString();
-    String secondsLeft = s.toString().length < 2 ? "0$s" : s.toString();
-
-    String result = "$hourLeft:$minuteLeft:$secondsLeft";
+    // int h, m, s;
+    // h = seconds ~/ 3600;
+    // m = ((seconds - h * 3600)) ~/ 60;
+    // s = seconds - (h * 3600) - (m * 60);
+    // String hourLeft = h.toString().length < 2 ? "0$h" : h.toString();
+    // String minuteLeft = m.toString().length < 2 ? "0$m" : m.toString();
+    // String secondsLeft = s.toString().length < 2 ? "0$s" : s.toString();
+    //
+    // String result = "$hourLeft:$minuteLeft:$secondsLeft";
+    final dur = Duration(seconds: seconds);
+    var result = getHourMinuteSecond(dur);
 
     return Card(
       elevation: 8,
@@ -155,7 +159,7 @@ class TimerCard extends StatelessWidget {
               style: GoogleFonts.secularOne(
                   textStyle: Theme.of(context).textTheme.bodyLarge,
                   fontWeight: FontWeight.w900,
-                  fontSize: 28,
+                  fontSize: fontSize,
                   color: Theme.of(context).primaryColor),
             ),
           ],

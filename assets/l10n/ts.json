@@ -236,5 +236,7 @@
   "createProject": "Hi kombela u endla phurojeke leyintshwa",
   "checkNetworkSettings": "Hi kombela u kambela swiyimiso swa netiweke ya xitirhisiwa xa wena",
   "waitingToRecordAudio": "Ku yimela ku rhekhoda audio clip",
-  "waitingToRecordVideo": "Ku rindzela ku rhekhoda vhidiyo"
+  "waitingToRecordVideo": "Ku rindzela ku rhekhoda vhidiyo",
+  "createdAt": "Siku leri tumbuluxiweke",
+  "createdBy": "Xi tumbuluxiwile hi"
 }

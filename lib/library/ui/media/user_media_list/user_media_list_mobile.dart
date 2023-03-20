@@ -4,7 +4,7 @@ import 'package:animations/animations.dart';
 import 'package:flutter/material.dart';
 import 'package:geo_monitor/library/bloc/fcm_bloc.dart';
 import 'package:geo_monitor/library/ui/media/list/user_audios.dart';
-import 'package:geo_monitor/ui/audio/audio_player_page.dart';
+import 'package:geo_monitor/ui/audio/audio_player_card.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:page_transition/page_transition.dart';
 
@@ -375,6 +375,7 @@ class UserMediaListMobileState extends State<UserMediaListMobile>
               audio: selectedAudio!,
               onCloseRequested: () {
                 pp('$mm onCloseRequested ....');
+                Navigator.of(context).pop();
               },
             )));
   }
@@ -395,11 +396,6 @@ class UserMediaListMobileState extends State<UserMediaListMobile>
     });
   }
 
-  @override
-  onMediaSelected(mediaBag) {
-    // TODO: implement onMediaSelected
-    throw UnimplementedError();
-  }
 }
 
 class ProjectChooserOriginal extends StatefulWidget {

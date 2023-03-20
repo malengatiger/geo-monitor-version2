@@ -14,12 +14,12 @@ import 'package:geo_monitor/library/ui/media/list/project_media_main.dart';
 import 'package:geo_monitor/library/ui/project_list/project_list_card.dart';
 import 'package:geo_monitor/library/ui/project_list/project_list_mobile.dart';
 import 'package:geo_monitor/ui/activity/geo_activity.dart';
-import 'package:geo_monitor/ui/audio/audio_handler.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:map_launcher/map_launcher.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:responsive_builder/responsive_builder.dart';
 
+import '../../../ui/audio/audio_recorder.dart';
 import '../../../ui/dashboard/project_dashboard_main.dart';
 import '../../api/prefs_og.dart';
 import '../../bloc/admin_bloc.dart';
@@ -66,7 +66,7 @@ class ProjectListTabletState extends State<ProjectListTablet>
   final _key = GlobalKey<ScaffoldState>();
   bool _showPositionChooser = false;
   double sliderValue = 3.0;
-  String? organizationProjects;
+  String? organizationProjects, projectsNotFound;
 
   @override
   void initState() {
@@ -133,6 +133,8 @@ class ProjectListTabletState extends State<ProjectListTablet>
     var sett = await prefsOGx.getSettings();
     if (sett != null) {
       organizationProjects = await mTx.translate('organizationProjects', sett!.locale!);
+      projectsNotFound = await mTx.translate('projectsNotFound', sett!.locale!);
+
     }
     if (user != null) {
       pp('$mm user found: ${user!.toJson()}');
@@ -289,12 +291,12 @@ class ProjectListTabletState extends State<ProjectListTablet>
             type: PageTransitionType.scale,
             alignment: Alignment.topLeft,
             duration: const Duration(milliseconds: 1500),
-            child: AudioHandler(
-              project: p,
-              onClose: () {
-                Navigator.of(context).pop();
-              },
-            )));
+            child:  AudioRecorder(onCloseRequested: (){
+              pp('On stop requested');
+              Navigator.of(context).pop();
+            }, project: p),
+        ),
+    );
   }
 
   Future<void> _navigateToOrgMap() async {
@@ -722,10 +724,10 @@ class ProjectListTabletState extends State<ProjectListTablet>
                     ),
                   )
                 : Padding(
-                    padding: const EdgeInsets.all(12.0),
+                    padding:  EdgeInsets.all(12.0),
                     child: projects.isEmpty
                         ? Center(
-                            child: Text('Projects Not Found',
+                            child: Text(projectsNotFound == null?'Projects Not Found': projectsNotFound!,
                                 style: GoogleFonts.lato(
                                     textStyle:
                                         Theme.of(context).textTheme.bodyLarge,

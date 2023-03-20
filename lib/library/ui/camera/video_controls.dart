@@ -26,64 +26,29 @@ class VideoControls extends StatelessWidget {
   final bool isRecording;
   @override
   Widget build(BuildContext context) {
-    // var showPlay = false;
-    // var showStop = false;
-    // var showPause = false;
-    // var showRecord = false;
-    // var width = 320.0;
-    // if (!isPlaying && !isPaused && !isStopped) {
-    //   showStop = true;
-    //   showRecord = true;
-    //   showPause = false;
-    //   showPlay = false;
-    //   width = 420;
-    // } else {
-    //   if (isPlaying) {
-    //     showStop = true;
-    //     showPause = true;
-    //     showPlay = false;
-    //     showRecord = false;
-    //     width = 320;
-    //   } else if (isStopped) {
-    //     showStop = false;
-    //     showPlay = true;
-    //     showPause = false;
-    //     showRecord = false;
-    //     width = 320;
-    //   } else if (isPaused) {
-    //     showStop = true;
-    //     showPlay = true;
-    //     showPause = false;
-    //     showRecord = false;
-    //     width = 320;
-    //   }
-    // }
-    // pp('This is the width fucking up: $width');
-    return SizedBox(width: 100,
-      child: Card(
-        elevation: 8,
-        shape: getRoundedBorder(radius: 12),
+
+    return Card(
+      shape: getRoundedBorder(radius: 16),
+      elevation: 8,
+      color: Colors.black38,
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
             IconButton(
                 onPressed: _onRecordTapped,
-                icon: Icon(Icons.videocam,
+                icon: Icon(Icons.videocam, size: 40,
                     color: Theme.of(context).primaryColor)),
-
-            // IconButton(
-            //     onPressed: _onPlayTapped,
-            //     icon: Icon(Icons.play_arrow,
-            //         color: Theme.of(context).primaryColor)),
 
             IconButton(
                 onPressed: _onPlayPaused,
-                icon: Icon(Icons.pause, color: Theme.of(context).primaryColor)),
+                icon: Icon(Icons.pause, size: 40,color: Theme.of(context).primaryColor)),
 
             IconButton(
                 onPressed: _onPlayStopped,
                 icon: Icon(
-                  Icons.stop,
+                  Icons.stop, size: 40,
                   color: Theme.of(context).primaryColor,
                 )),
 

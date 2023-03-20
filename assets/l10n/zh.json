@@ -243,6 +243,8 @@
   "createProject": "请创建一个新项目",
   "checkNetworkSettings": "请检查您的设备网络设置",
   "waitingToRecordAudio": "等待录制音频剪辑",
-  "waitingToRecordVideo": "等待录制视频"
+  "waitingToRecordVideo": "等待录制视频",
+  "createdAt": "创建日期",
+  "createdBy": "由...制作"
 
 }

@@ -236,6 +236,8 @@
   "createProject": "Sicela udale iphrojekthi entsha",
   "checkNetworkSettings": "Sicela uhlole izilungiselelo zenethiwekhi yedivayisi yakho",
   "waitingToRecordAudio": "Ilinde ukurekhoda isiqeshana somsindo",
-  "waitingToRecordVideo": "Ilinde ukurekhoda ividiyo"
+  "waitingToRecordVideo": "Ilinde ukurekhoda ividiyo",
+  "createdAt": "Idethi eyakhiwe",
+  "createdBy": "Idalwe ngu"
 
 }

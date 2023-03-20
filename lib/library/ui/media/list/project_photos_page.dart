@@ -126,6 +126,7 @@ class ProjectPhotosPageState extends State<ProjectPhotosPage>
             )),
       );
     }
+    final width = MediaQuery.of(context).size.width;
     return ScreenTypeLayout(
       mobile: Column(
         children: [
@@ -137,18 +138,13 @@ class ProjectPhotosPageState extends State<ProjectPhotosPage>
             ),
           ),
           Expanded(
-            child: Column(
-              children: [
-
-                PhotoGrid(
-                    photos: photos,
-                    crossAxisCount: 2,
-                    onPhotoTapped: (photo) {
-                      widget.onPhotoTapped(photo);
-                    },
-                    badgeColor: Colors.pink),
-              ],
-            ),
+            child: PhotoGrid(
+                photos: photos,
+                crossAxisCount: 2,
+                onPhotoTapped: (photo) {
+                  widget.onPhotoTapped(photo);
+                },
+                badgeColor: Colors.pink),
           ),
         ],
       ),
