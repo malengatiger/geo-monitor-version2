@@ -283,5 +283,13 @@ class MyKeys {
     hashMap["createdAt"] = "createdAt";
     hashMap["createdBy"] = "createdBy";
 
-  }
+    hashMap["addAudioRating"] =  "Add Audio Rating";
+    hashMap["addVideoRating"] =  "Add Video Rating";
+    hashMap["addPhotoRating"] =  "Add Photo Rating";
+    hashMap["audioRatings"] =  "Audio Clip Ratings";
+    hashMap["videoRatings"] =  "Video Ratings";
+    hashMap["photoRatings"] =  "Photo Ratings";
+    hashMap["errorRecording"] = "errorRecording";
+
+    }
 }

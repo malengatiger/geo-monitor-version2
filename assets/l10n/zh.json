@@ -245,6 +245,13 @@
   "waitingToRecordAudio": "等待录制音频剪辑",
   "waitingToRecordVideo": "等待录制视频",
   "createdAt": "创建日期",
-  "createdBy": "由...制作"
+  "createdBy": "由...制作",
+  "videoRatings": "视频评级",
+  "addAudioRating": "添加音频评级",
+  "audioRatings": "音频剪辑评级",
+  "photoRatings": "照片评级",
+  "addPhotoRating": "添加照片评级",
+  "errorRecording": "录制过程中遇到错误",
+  "addVideoRating": "添加视频评级"
 
 }

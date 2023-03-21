@@ -247,7 +247,7 @@ class RatingCard extends StatelessWidget {
         elevation: elevation,
         shape: getRoundedBorder(radius: 16),
         child: Padding(
-          padding: const EdgeInsets.all(12.0),
+          padding: const EdgeInsets.all(8.0),
           child: Column(
             children: [
               SizedBox(
@@ -258,7 +258,7 @@ class RatingCard extends StatelessWidget {
                 style: myTextStyleMediumBold(context),
               ),
               const SizedBox(
-                height: 48,
+                height: 28,
               ),
               Text(
                 title,
@@ -272,7 +272,7 @@ class RatingCard extends StatelessWidget {
                 style: myTextStyleSmall(context),
               ),
               const SizedBox(
-                height: 48,
+                height: 28,
               ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -286,16 +286,16 @@ class RatingCard extends StatelessWidget {
                   ),
                   userThumbnailUrl == null
                       ? const CircleAvatar(
-                          radius: 24,
+                          radius: 20,
                         )
                       : CircleAvatar(
                           backgroundImage: NetworkImage(userThumbnailUrl!),
-                          radius: 24,
+                          radius: 20,
                         )
                 ],
               ),
               const SizedBox(
-                height: 72,
+                height: 48,
               ),
               RatingBar.builder(
                 initialRating: 1,
@@ -320,7 +320,7 @@ class RatingCard extends StatelessWidget {
                 },
               ),
               const SizedBox(
-                height: 24,
+                height: 12,
               ),
             ],
           ),

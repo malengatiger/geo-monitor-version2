@@ -238,7 +238,14 @@
   "waitingToRecordAudio": "Yakamirira kurekodha clip",
   "waitingToRecordVideo": "Yakamirira kurekodha vhidhiyo",
   "createdAt": "Zuva rakagadzirwa",
-  "createdBy": "Gadzirwa na"
+  "createdBy": "Gadzirwa na",
+  "videoRatings": "Video Ratings",
+  "addAudioRating": "Wedzera Audio Rating",
+  "audioRatings": "Audio Clip Ratings",
+  "photoRatings": "Photo Ratings",
+  "addPhotoRating": "Add Photo Rating",
+  "errorRecording": "Kukanganisa kwakaitika panguva yekurekodha",
+  "addVideoRating": "Wedzera Vhidhiyo Rating"
 
 
 }

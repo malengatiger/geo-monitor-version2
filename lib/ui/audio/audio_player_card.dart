@@ -6,7 +6,6 @@ import 'package:geo_monitor/library/cache_manager.dart';
 import 'package:geo_monitor/library/functions.dart';
 import 'package:geo_monitor/ui/activity/user_profile_card.dart';
 import 'package:geo_monitor/ui/audio/player_controls.dart';
-import 'package:geo_monitor/ui/audio/seek_bar.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:siri_wave/siri_wave.dart';
 
@@ -37,7 +36,7 @@ class AudioPlayerCard extends StatefulWidget {
 class AudioPlayerCardState extends State<AudioPlayerCard>
     with SingleTickerProviderStateMixin {
   late AnimationController _animationController;
-  final mm = '🎽🎽🎽🎽🎽🎽🎽🎽 AudioPlayerPage: ';
+  final mm = '🎽🎽🎽🎽🎽🎽🎽🎽 AudioPlayerCard: 🎽🎽';
   AudioPlayer audioPlayer = AudioPlayer();
 
   final controller = SiriWaveController();
@@ -88,6 +87,24 @@ class AudioPlayerCardState extends State<AudioPlayerCard>
     user = await cacheManager.getUserById(widget.audio.userId!);
     await audioPlayer.setUrl(widget.audio.url!);
     duration = audioPlayer.duration;
+    audioPlayer.playerStateStream.listen((PlayerState playerState) {
+      pp('$mm playerStateStream playerState.processingState.name: ${playerState.processingState.name}');
+          switch(playerState.processingState) {
+            case ProcessingState.completed:
+              setState(() {
+                isPlaying = false;
+              });
+              break;
+            case ProcessingState.idle:
+              break;
+            case ProcessingState.loading:
+              break;
+            case ProcessingState.buffering:
+              break;
+            case ProcessingState.ready:
+              break;
+          }
+    });
     audioPlayer.positionStream.listen((Duration position) {
       if (mounted) {
         setState(() {
@@ -98,9 +115,10 @@ class AudioPlayerCardState extends State<AudioPlayerCard>
     audioPlayer.playbackEventStream.listen((PlaybackEvent event) {
       _checkPlaybackProcessingState(event);
     });
+
     //set controls flags
     setState(() {
-      isPlaying = false;
+      isPlaying = true;
       isPaused = false;
       isStopped = false;
       _showWave = false;
@@ -275,18 +293,19 @@ class AudioPlayerCardState extends State<AudioPlayerCard>
                   children: [
                     isLoading
                         ? SizedBox(
-                            width: 100,
+                            width: 160,
                             child: Card(
                               shape: getRoundedBorder(radius: 16),
+                              elevation: 4,
                               child: const Padding(
-                                padding: EdgeInsets.all(24.0),
+                                padding: EdgeInsets.all(16.0),
                                 child: Center(
                                   child: SizedBox(
-                                    height: 14,
-                                    width: 14,
+                                    height: 16,
+                                    width: 16,
                                     child: CircularProgressIndicator(
                                       strokeWidth: 4,
-                                      backgroundColor: Colors.teal,
+                                      backgroundColor: Colors.pink,
                                     ),
                                   ),
                                 ),
@@ -332,28 +351,15 @@ class AudioPlayerCardState extends State<AudioPlayerCard>
                             padding: 8,
                             userThumbUrl: user!.thumbnailUrl),
                     const SizedBox(
-                      height: 60,
+                      height: 48,
                     ),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: [
-                        Text(createdAt == null?
-                          'Created at:': createdAt!,
-                          style: myTextStyleSmall(context),
-                        ),
-                        const SizedBox(
-                          width: 12,
-                        ),
-                        Text(
-                          dt,
-                          style: myNumberStyleMedium(context),
-                        ),
-                        const SizedBox(
-                          width: 12,
-                        ),
-                        Text(
-                          getFormattedDate(widget.audio.created!),
-                          style: myTextStyleTiny(context),
+
+                        settingsModel == null? const SizedBox(): Text(
+                          getFmtDate(widget.audio.created!, settingsModel!.locale!),
+                          style: myTextStyleMediumPrimaryColor(context),
                         )
                       ],
                     ),
@@ -371,32 +377,7 @@ class AudioPlayerCardState extends State<AudioPlayerCard>
                               const SizedBox(
                                 width: 12,
                               ),
-                              const SizedBox(
-                                width: 8,
-                              ),
-                              updatePosition == null
-                                  ? const SizedBox()
-                                  : Text(
-                                      getHourMinuteSecond(updatePosition!),
-                                      style: myNumberStyleMediumPrimaryColor(
-                                          context),
-                                    ),
-                              updatePosition == null
-                                  ? const SizedBox()
-                                  : const SizedBox(
-                                      width: 12,
-                                    ),
-                              updatePosition == null
-                                  ? const SizedBox()
-                                  : Text(
-                                      'of',
-                                      style: myTextStyleSmall(context),
-                                    ),
-                              updatePosition == null
-                                  ? const SizedBox()
-                                  : const SizedBox(
-                                      width: 12,
-                                    ),
+
                               Text(
                                 getHourMinuteSecond(duration!),
                                 style: myNumberStyleMedium(context),
@@ -406,12 +387,12 @@ class AudioPlayerCardState extends State<AudioPlayerCard>
                     const SizedBox(
                       height: 8,
                     ),
-                    _showWave
+                    isPlaying
                         ? Card(
                             color: Theme.of(context).dialogBackgroundColor,
                             shape: getRoundedBorder(radius: 16),
                             child: SizedBox(
-                              height: 60,
+                              height: 48,
                               child: SiriWave(
                                   options: SiriWaveOptions(
                                       backgroundColor:
@@ -422,16 +403,12 @@ class AudioPlayerCardState extends State<AudioPlayerCard>
                     const SizedBox(
                       height: 8,
                     ),
-                    _showControls
-                        ? isPlaying
-                            ? SeekBar(duration: duration!, seekTo: seekTo)
-                            : const SizedBox()
-                        : const SizedBox(),
+
                     const SizedBox(
                       height: 16,
                     ),
                     _showControls
-                        ? PlayerControls(
+                        ? AudioPlayerControls(
                             onPlay: _onPlay,
                             onPause: _onPause,
                             onStop: _onStop,
@@ -604,16 +581,12 @@ class AudioPlayerCardState extends State<AudioPlayerCard>
                     const SizedBox(
                       height: 8,
                     ),
-                    _showControls
-                        ? isPlaying
-                            ? SeekBar(duration: duration!, seekTo: seekTo)
-                            : const SizedBox()
-                        : const SizedBox(),
+
                     const SizedBox(
                       height: 16,
                     ),
                     _showControls
-                        ? PlayerControls(
+                        ? AudioPlayerControls(
                             onPlay: _onPlay,
                             onPause: _onPause,
                             onStop: _onStop,

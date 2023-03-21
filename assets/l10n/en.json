@@ -240,5 +240,12 @@
   "waitingToRecordAudio": "Waiting to record audio clip",
   "waitingToRecordVideo": "Waiting to record video",
   "createdAt": "Date created",
-  "createdBy": "Created by "
+  "createdBy": "Created by ",
+  "videoRatings": "Video Ratings",
+  "addAudioRating": "Add Audio Rating",
+  "audioRatings": "Audio Clip Ratings",
+  "photoRatings": "Photo Ratings",
+  "addPhotoRating": "Add Photo Rating",
+  "errorRecording": "Error encountered during recording",
+  "addVideoRating": "Add Video Rating"
 }

@@ -247,7 +247,14 @@
   "waitingToRecordAudio": "Warten auf Aufnahme des Audioclips",
   "waitingToRecordVideo": "Warten auf Videoaufnahme",
   "createdAt": "Datum erstellt",
-  "createdBy": "Erstellt von"
+  "createdBy": "Erstellt von",
+  "videoRatings": "Videobewertungen",
+  "addAudioRating": "Audiobewertung hinzufügen",
+  "audioRatings": "Audioclip-Bewertungen",
+  "photoRatings": "Fotobewertungen",
+  "addPhotoRating": "Fotobewertung hinzufügen",
+  "errorRecording": "Fehler während der Aufnahme aufgetreten",
+  "addVideoRating": "Videobewertung hinzufügen"
 
 
 

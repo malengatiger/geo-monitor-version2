@@ -238,7 +238,14 @@
   "waitingToRecordAudio": "Inasubiri kurekodi klipu ya sauti",
   "waitingToRecordVideo": "Inasubiri kurekodi video",
   "createdAt": "Tarehe iliyoundwa",
-  "createdBy": "Imetengenezwa na"
+  "createdBy": "Imetengenezwa na",
+  "videoRatings": "Ukadiriaji wa Video",
+  "addAudioRating": "Ongeza Ukadiriaji wa Sauti",
+  "audioRatings": "Ukadiriaji wa Klipu ya Sauti",
+  "photoRatings": "Ukadiriaji wa Picha",
+  "addPhotoRating": "Ongeza Ukadiriaji wa Picha",
+  "errorRecording": "Hitilafu iliyotokea wakati wa kurekodi",
+  "addVideoRating": "Ongeza Ukadiriaji wa Video"
 
 
 }

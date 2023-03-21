@@ -240,7 +240,15 @@
   "waitingToRecordAudio": "Nduro lati gba agekuru ohun silẹ",
   "waitingToRecordVideo": "Nduro lati gba fidio silẹ",
   "createdAt": "Ọjọ ti a ṣẹda",
-  "createdBy": "Ti ṣẹda nipasẹ"
+  "createdBy": "Ti ṣẹda nipasẹ",
+  "videoRatings": "Video-wonsi",
+  "addAudioRating": "Fi Audio Rating",
+  "audioRatings": "Audio Agekuru-wonsi",
+  "photoRatings": "Fọto-wonsi",
+  "addPhotoRating": "Fi Photo Rating",
+  "errorRecording": "Aṣiṣe pade lakoko gbigbasilẹ",
+  "addVideoRating": "Fi Fidio Rating",
+
 
 
 

@@ -241,6 +241,13 @@
   "waitingToRecordAudio": "En attente d\u0027enregistrement d\u0027un clip audio",
   "waitingToRecordVideo": "En attente d\u0027enregistrement vidéo",
   "createdAt": "Date créée",
-  "createdBy": "Créé par"
+  "createdBy": "Créé par",
+  "videoRatings": "Classements vidéo",
+  "addAudioRating": "Ajouter une note audio",
+  "audioRatings": "Classements des clips audio",
+  "photoRatings": "Évaluations des photos",
+  "addPhotoRating": "Ajouter une note de photo",
+  "errorRecording": "Erreur rencontrée lors de l\u0027enregistrement",
+  "addVideoRating": "Ajouter une note vidéo"
 
 }

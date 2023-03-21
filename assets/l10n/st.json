@@ -238,7 +238,14 @@
   "waitingToRecordAudio": "E emetse ho rekota sekotwana sa audio",
   "waitingToRecordVideo": "E emetse ho rekota video",
   "createdAt": "Letsatsi le entsoeng",
-  "createdBy": "E entsoe ke"
+  "createdBy": "E entsoe ke",
+  "videoRatings": "Lintlha tsa Video",
+  "addAudioRating": "Kenya Audio Rating",
+  "audioRatings": "Litekanyetso tsa Sekotwana sa Molaetsa",
+  "photoRatings": "Lintlha tsa lifoto",
+  "addPhotoRating": "Kenya Lintlha tsa Lifoto",
+  "errorRecording": "Ho hlahile phoso nakong ea ho rekota",
+  "addVideoRating": "Kenya Lintlha tsa Video"
 
 
 

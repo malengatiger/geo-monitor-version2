@@ -238,5 +238,12 @@
   "waitingToRecordAudio": "Ku yimela ku rhekhoda audio clip",
   "waitingToRecordVideo": "Ku rindzela ku rhekhoda vhidiyo",
   "createdAt": "Siku leri tumbuluxiweke",
-  "createdBy": "Xi tumbuluxiwile hi"
+  "createdBy": "Xi tumbuluxiwile hi",
+  "videoRatings": "Swiringanyeto swa Vhidiyo",
+  "addAudioRating": "Engetelani Xiringanyeto xa Mpfumawulo",
+  "audioRatings": "Swiringanyeto swa Xiphemu xa Audio",
+  "photoRatings": "Swiringanyeto swa Swifaniso",
+  "addPhotoRating": "Engetelani Xiringanyeto xa Swifaniso",
+  "errorRecording": "Xihoxo lexi hlanganeke hi nkarhi wa ku rhekhoda",
+  "addVideoRating": "Engetelani Xiringanyeto xa Vhidiyo"
 }

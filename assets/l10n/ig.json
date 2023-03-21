@@ -246,6 +246,13 @@
   "waitingToRecordAudio": "Na-eche ka ịdekọ obere vidiyo",
   "waitingToRecordVideo": "Na-eche ka ịdekọ vidiyo",
   "createdAt": "Ụbọchị emepụtara",
-  "createdBy": "Emepụtara ya"
+  "createdBy": "Emepụtara ya",
+  "videoRatings": "Ogo vidiyo",
+  "addAudioRating": "Tinye ogo ọdịyo",
+  "audioRatings": "Ogo clip ọdịyo",
+  "photoRatings": "Ogo foto",
+  "addPhotoRating": "Tinye ogo foto",
+  "errorRecording": "Enwetara mperi n\u0027oge ndekọ",
+  "addVideoRating": "Tinye ogo vidiyo"
 
 }

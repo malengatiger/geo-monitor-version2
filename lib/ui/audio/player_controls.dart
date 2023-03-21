@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 
 import '../../library/functions.dart';
 
-class PlayerControls extends StatelessWidget {
-  const PlayerControls(
+class AudioPlayerControls extends StatelessWidget {
+  const AudioPlayerControls(
       {Key? key,
       required this.onPlay,
       required this.onPause,
@@ -18,6 +18,7 @@ class PlayerControls extends StatelessWidget {
   final bool isPlaying;
   final bool isPaused;
   final bool isStopped;
+
   @override
   Widget build(BuildContext context) {
     var showPlay = false;

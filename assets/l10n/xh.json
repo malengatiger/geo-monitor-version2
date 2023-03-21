@@ -238,7 +238,14 @@
   "waitingToRecordAudio": "Ilinde ukurekhoda ikliphu yeaudiyo",
   "waitingToRecordVideo": "Ilinde ukurekhoda ividiyo",
   "createdAt": "Umhla wokwenziwa",
-  "createdBy": "Yenziwe ngu"
+  "createdBy": "Yenziwe ngu",
+  "videoRatings": "Iireyithingi zevidiyo",
+  "addAudioRating": "Yongeza ukukala komsindo",
+  "audioRatings": "Imilinganiselo yeKliphu yomsindo",
+  "photoRatings": "Iireyithingi zeefoto",
+  "addPhotoRating": "Yongeza uKhathazo lweFoto",
+  "errorRecording": "Kufunyenwe impazamo ngexesha loshicilelo",
+  "addVideoRating": "Yongeza uKalo lweVidiyo"
 
 
 }

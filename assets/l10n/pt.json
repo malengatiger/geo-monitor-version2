@@ -238,7 +238,14 @@
   "waitingToRecordAudio": "Aguardando para gravar o clipe de áudio",
   "waitingToRecordVideo": "Esperando para gravar o vídeo",
   "createdAt": "Data Criada",
-  "createdBy": "Criado por"
+  "createdBy": "Criado por",
+  "videoRatings": "Classificações de vídeo",
+  "addAudioRating": "Adicionar classificação de áudio",
+  "audioRatings": "Classificações de clipes de áudio",
+  "photoRatings": "Classificações de fotos",
+  "addPhotoRating": "Adicionar avaliação de foto",
+  "errorRecording": "Erro encontrado durante a gravação",
+  "addVideoRating": "Adicionar classificação de vídeo"
 
 
 

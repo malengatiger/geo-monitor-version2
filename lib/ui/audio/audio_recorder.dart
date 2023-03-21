@@ -120,7 +120,7 @@ class _AudioRecorderState extends State<AudioRecorder> {
         var directory = await getApplicationDocumentsDirectory();
         pp('$mx _start: 🔆🔆🔆 directory: ${directory.path}');
         File audioFile = File(
-            '${directory.path}/zip${DateTime.now().millisecondsSinceEpoch}.mp4a');
+            '${directory.path}/zip${DateTime.now().millisecondsSinceEpoch}.mp4');
 
         await _audioRecorder.start(path: audioFile.path);
         pp('$mx _audioRecorder has started ...');

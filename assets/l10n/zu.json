@@ -238,6 +238,13 @@
   "waitingToRecordAudio": "Ilinde ukurekhoda isiqeshana somsindo",
   "waitingToRecordVideo": "Ilinde ukurekhoda ividiyo",
   "createdAt": "Idethi eyakhiwe",
-  "createdBy": "Idalwe ngu"
+  "createdBy": "Idalwe ngu",
+  "videoRatings": "Izilinganiso Zevidiyo",
+  "addAudioRating": "Engeza Isilinganiselwa Somsindo",
+  "audioRatings": "Izilinganiso Zesiqeshana Somsindo",
+  "photoRatings": "Izilinganiso Zesithombe",
+  "addPhotoRating": "Engeza Isilinganiselwa Sesithombe",
+  "errorRecording": "Kuvele iphutha ngesikhathi sokurekhoda",
+  "addVideoRating": "Engeza Isilinganiselwa Sevidiyo"
 
 }

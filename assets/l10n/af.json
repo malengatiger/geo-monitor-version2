@@ -242,7 +242,14 @@
   "waitingToRecordAudio": "Wag om oudiosnit op te neem",
   "waitingToRecordVideo": "Wag om video op te neem",
   "createdAt": "Datum geskep",
-  "createdBy": "Gemaak deur"
+  "createdBy": "Gemaak deur",
+  "videoRatings": "Video-graderings",
+  "addAudioRating": "Voeg oudiogradering by",
+  "audioRatings": "Oudiosnitgraderings",
+  "photoRatings": "Foto Graderings",
+  "addPhotoRating": "Voeg fotogradering by",
+  "errorRecording": "Fout tydens opname ondervind",
+  "addVideoRating": "Voeg videogradering by"
 
 
 
