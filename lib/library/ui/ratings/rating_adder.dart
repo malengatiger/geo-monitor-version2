@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:geo_monitor/l10n/translation_handler.dart';
 import 'package:responsive_builder/responsive_builder.dart';
 import 'package:uuid/uuid.dart';
 
@@ -46,11 +47,32 @@ class RatingAdderState extends State<RatingAdder>
   bool busy = false;
   final mm = '🌀🌀🌀🌀Rating Adder, snake? : ';
   User? user;
+  String? addAudioRating,addVideoRating,
+      addPhotoRating, date;
   @override
   void initState() {
     _animationController = AnimationController(vsync: this);
     super.initState();
     _checkMedia();
+    _setTexts();
+  }
+
+  void _setTexts() async {
+    var sett = await prefsOGx.getSettings();
+    if (sett != null) {
+      addAudioRating = await mTx.translate('addAudioRating', sett.locale!);
+      addVideoRating = await mTx.translate('addVideoRating', sett.locale!);
+      addPhotoRating = await mTx.translate('addPhotoRating', sett.locale!);
+      if (widget.video != null) {
+        date = getFmtDate(widget.video!.created!, sett.locale!);
+      }
+      if (widget.audio != null) {
+        date = getFmtDate(widget.audio!.created!, sett.locale!);
+      }
+      if (widget.photo != null) {
+        date = getFmtDate(widget.photo!.created!, sett.locale!);
+      }
+    }
   }
 
   Future _getUser() async {
@@ -151,24 +173,20 @@ class RatingAdderState extends State<RatingAdder>
 
   @override
   Widget build(BuildContext context) {
-    var date = '';
     var title = '';
     var projectName = '', userName = '';
     if (widget.photo != null) {
-      title = 'Rate Photo';
-      date = getFormattedDateLongWithTime(widget.photo!.created!, context);
+      title = addPhotoRating == null?'Rate Photo':addPhotoRating!;
       projectName = widget.photo!.projectName!;
       userName = widget.photo!.userName!;
     }
     if (widget.video != null) {
-      title = 'Rate Video';
-      date = getFormattedDateLongWithTime(widget.video!.created!, context);
+      title = addVideoRating == null?'Rate Video':addVideoRating!;
       projectName = widget.video!.projectName!;
       userName = widget.video!.userName!;
     }
     if (widget.audio != null) {
-      title = 'Rate Audio';
-      date = getFormattedDateLongWithTime(widget.audio!.created!, context);
+      title = addAudioRating == null? 'Rate Audio':addAudioRating!;
       projectName = widget.audio!.projectName!;
       userName = widget.audio!.userName!;
     }
@@ -181,7 +199,7 @@ class RatingAdderState extends State<RatingAdder>
             height: 360,
             padding: 24,
             projectName: projectName,
-            date: date,
+            date: date == null?'':date!,
             title: title,
             onRatingSelected: _sendRating,
             userName: userName,
@@ -193,7 +211,7 @@ class RatingAdderState extends State<RatingAdder>
             height: 460,
             padding: 24,
             projectName: projectName,
-            date: date,
+            date: date == null?'':date!,
             title: title,
             onRatingSelected: _sendRating,
             userName: userName,

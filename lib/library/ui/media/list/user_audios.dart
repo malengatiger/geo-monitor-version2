@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:just_audio/just_audio.dart';
 
 import '../../../../l10n/translation_handler.dart';
-import '../../../../ui/audio/audio_player_card.dart';
+import '../../../../ui/audio/audio_player_og.dart';
 import '../../../api/prefs_og.dart';
 import '../../../bloc/user_bloc.dart';
 import '../../../data/audio.dart';
@@ -35,7 +35,7 @@ class UserAudiosState extends State<UserAudios> {
   bool loading = false;
   bool _showAudioPlayer = false;
   Audio? _selectedAudio;
-  final mm = '🍎🍎🍎🍎';
+  final mm = '🍎🍎🍎🍎UserAudios: 🎽🎽';
   AudioPlayer audioPlayer = AudioPlayer();
   Duration? duration;
   String? stringDuration, durationText;
@@ -233,7 +233,7 @@ class UserAudiosState extends State<UserAudios> {
                       left: 20,
                       right: 20,
                       bottom: 80,
-                      child: AudioPlayerCard(
+                      child: AudioPlayerOG(
                           audio: _selectedAudio!,
                           onCloseRequested: (){
                             setState(() {

@@ -16,6 +16,7 @@ import 'package:geo_monitor/library/ui/media/list/project_media_main.dart';
 import 'package:geo_monitor/library/ui/ratings/rating_adder.dart';
 import 'package:geo_monitor/library/ui/settings/settings_main.dart';
 import 'package:geo_monitor/ui/activity/geo_activity.dart';
+import 'package:geo_monitor/ui/audio/audio_player_og.dart';
 import 'package:geo_monitor/ui/charts/summary_chart.dart';
 import 'package:geo_monitor/ui/dashboard/dashboard_grid.dart';
 import 'package:geo_monitor/ui/dashboard/photo_card.dart';
@@ -46,7 +47,6 @@ import '../../library/ui/project_list/project_chooser.dart';
 import '../../library/ui/project_list/project_list_main.dart';
 import '../../library/users/full_user_photo.dart';
 import '../../library/users/list/user_list_main.dart';
-import '../audio/audio_player_card.dart';
 
 class DashboardTablet extends StatefulWidget {
   const DashboardTablet({Key? key, required this.user}) : super(key: key);
@@ -1000,7 +1000,7 @@ class DashboardTabletState extends State<DashboardTablet> with WidgetsBindingObs
                   left: padding,
                   right: padding,
                   top: 12,
-                  child: AudioPlayerCard(
+                  child: AudioPlayerOG(
                     audio: audio!,
                     onCloseRequested: () {
                       if (mounted) {

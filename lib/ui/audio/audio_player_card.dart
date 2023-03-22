@@ -1,9 +1,11 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:geo_monitor/library/api/prefs_og.dart';
 import 'package:geo_monitor/library/cache_manager.dart';
 import 'package:geo_monitor/library/functions.dart';
+import 'package:geo_monitor/library/generic_functions.dart';
 import 'package:geo_monitor/ui/activity/user_profile_card.dart';
 import 'package:geo_monitor/ui/audio/player_controls.dart';
 import 'package:just_audio/just_audio.dart';
@@ -51,9 +53,9 @@ class AudioPlayerCardState extends State<AudioPlayerCard>
   bool busy = false;
 
   User? user;
-  String? createdAt, durationText;
+  String? createdAt, durationText, errorRecording;
   SettingsModel? settingsModel;
-
+  // AudioDevice audioDevice;
 
   @override
   void initState() {
@@ -71,12 +73,11 @@ class AudioPlayerCardState extends State<AudioPlayerCard>
     if (settingsModel != null) {
       createdAt = await mTx.translate('createdAt', settingsModel!.locale!);
       durationText = await mTx.translate('duration', settingsModel!.locale!);
+      errorRecording =
+          await mTx.translate('errorRecording', settingsModel!.locale!);
     }
-    setState(() {
-
-    });
+    setState(() {});
   }
-
 
   Duration? updatePosition;
 
@@ -85,25 +86,73 @@ class AudioPlayerCardState extends State<AudioPlayerCard>
       isLoading = true;
     });
     user = await cacheManager.getUserById(widget.audio.userId!);
+
+    try {
+      await _setAudioPlayer();
+    } on PlayerException catch (e) {
+      pp("$mm Error code: ${e.code}");
+      pp("$mm Error message: ${e.message}");
+      _handleError(e);
+    } on PlayerInterruptedException catch (e) {
+      pp("$mm Connection aborted: ${e.message}");
+      _handleError(e);
+    } catch (e) {
+      pp('$mm An error occurred: $e');
+      _handleError(e);
+    }
+
+    //set controls flags
+    setState(() {
+      isPlaying = true;
+      isPaused = false;
+      isStopped = false;
+      _showWave = false;
+    });
+
+    pp('$mm _setInitialState completed, waiting for command, Boss! ');
+  }
+
+  void _handleError(e) {
+    pp('$mm .............. big time ERROR $e');
+    if (mounted) {
+      setState(() {
+        isLoading = false;
+        isPlaying = false;
+        isPaused = false;
+        isStopped = false;
+        _showWave = false;
+      });
+      showToast(
+          padding: 20,
+          textStyle: myTextStyleMedium(context),
+          backgroundColor: Theme.of(context).primaryColor,
+          toastGravity: ToastGravity.TOP,
+          duration: const Duration(seconds: 5),
+          message: errorRecording!,
+          context: context);
+    }
+  }
+
+  Future<void> _setAudioPlayer() async {
     await audioPlayer.setUrl(widget.audio.url!);
     duration = audioPlayer.duration;
     audioPlayer.playerStateStream.listen((PlayerState playerState) {
       pp('$mm playerStateStream playerState.processingState.name: ${playerState.processingState.name}');
-          switch(playerState.processingState) {
-            case ProcessingState.completed:
-              setState(() {
-                isPlaying = false;
-              });
-              break;
-            case ProcessingState.idle:
-              break;
-            case ProcessingState.loading:
-              break;
-            case ProcessingState.buffering:
-              break;
-            case ProcessingState.ready:
-              break;
-          }
+      switch (playerState.processingState) {
+        case ProcessingState.completed:
+          setState(() {
+            isPlaying = false;
+          });
+          break;
+        case ProcessingState.idle:
+          break;
+        case ProcessingState.loading:
+          break;
+        case ProcessingState.buffering:
+          break;
+        case ProcessingState.ready:
+          break;
+      }
     });
     audioPlayer.positionStream.listen((Duration position) {
       if (mounted) {
@@ -115,18 +164,6 @@ class AudioPlayerCardState extends State<AudioPlayerCard>
     audioPlayer.playbackEventStream.listen((PlaybackEvent event) {
       _checkPlaybackProcessingState(event);
     });
-
-    //set controls flags
-    setState(() {
-      isPlaying = true;
-      isPaused = false;
-      isStopped = false;
-      _showWave = false;
-    });
-    pp('$mm _setInitialState completed, duration of audio is '
-        '${duration!.inSeconds} seconds, 🍎 audio says : ${widget.audio.durationInSeconds} ');
-
-    pp('$mm _setInitialState completed, waiting for command, Boss! ');
   }
 
   void _checkPlaybackProcessingState(PlaybackEvent event) {
@@ -173,9 +210,15 @@ class AudioPlayerCardState extends State<AudioPlayerCard>
   }
 
   void _onPlay() async {
-    pp('$mm audioPlayer starting play ...');
+    pp('$mm audioPlayer starting play ...${widget.audio.url!}');
     try {
       //start play
+      /*
+      final String code = "data:audio/wav;base64," + json.decode(response.body)["base64"];
+       final player = AudioPlayer();
+       player.setUrl(code);
+       await player.play();
+       */
       if (!isPaused || isStopped) {
         await audioPlayer.setUrl(widget.audio.url!);
       }
@@ -191,10 +234,13 @@ class AudioPlayerCardState extends State<AudioPlayerCard>
     } on PlayerException catch (e) {
       pp("$mm Error code: ${e.code}");
       pp("$mm Error message: ${e.message}");
+      _handleError(e);
     } on PlayerInterruptedException catch (e) {
       pp("$mm Connection aborted: ${e.message}");
+      _handleError(e);
     } catch (e) {
       pp('$mm An error occurred: $e');
+      _handleError(e);
     }
   }
 
@@ -210,9 +256,10 @@ class AudioPlayerCardState extends State<AudioPlayerCard>
     });
   }
 
-  void _onStop() {
+  Future<void> _onStop() async {
     pp('\n\n$mm  audioPlayer onStop ... stop the fucker!');
-    audioPlayer.stop();
+    await audioPlayer.stop();
+    pp('\n\n$mm  audioPlayer onStop ... stop the fucker!');
     updatePosition = const Duration(milliseconds: 0);
     setState(() {
       isStopped = true;
@@ -221,7 +268,7 @@ class AudioPlayerCardState extends State<AudioPlayerCard>
       _showWave = false;
     });
 
-   // Navigator.of(context).pop();
+    // Navigator.of(context).pop();
   }
 
   void _onFavorite() async {
@@ -356,11 +403,13 @@ class AudioPlayerCardState extends State<AudioPlayerCard>
                     Row(
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: [
-
-                        settingsModel == null? const SizedBox(): Text(
-                          getFmtDate(widget.audio.created!, settingsModel!.locale!),
-                          style: myTextStyleMediumPrimaryColor(context),
-                        )
+                        settingsModel == null
+                            ? const SizedBox()
+                            : Text(
+                                getFmtDate(widget.audio.created!,
+                                    settingsModel!.locale!),
+                                style: myTextStyleMediumPrimaryColor(context),
+                              )
                       ],
                     ),
                     const SizedBox(
@@ -370,14 +419,15 @@ class AudioPlayerCardState extends State<AudioPlayerCard>
                         ? const SizedBox()
                         : Row(
                             children: [
-                              Text(durationText == null?
-                                'Duration:': durationText!,
+                              Text(
+                                durationText == null
+                                    ? 'Duration:'
+                                    : durationText!,
                                 style: myTextStyleSmall(context),
                               ),
                               const SizedBox(
                                 width: 12,
                               ),
-
                               Text(
                                 getHourMinuteSecond(duration!),
                                 style: myNumberStyleMedium(context),
@@ -403,7 +453,6 @@ class AudioPlayerCardState extends State<AudioPlayerCard>
                     const SizedBox(
                       height: 8,
                     ),
-
                     const SizedBox(
                       height: 16,
                     ),
@@ -496,8 +545,8 @@ class AudioPlayerCardState extends State<AudioPlayerCard>
                     Row(
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: [
-                        Text(createdAt == null?
-                          'Created at:': createdAt!,
+                        Text(
+                          createdAt == null ? 'Created at:' : createdAt!,
                           style: myTextStyleSmall(context),
                         ),
                         const SizedBox(
@@ -523,8 +572,10 @@ class AudioPlayerCardState extends State<AudioPlayerCard>
                         ? const SizedBox()
                         : Row(
                             children: [
-                              Text(durationText == null?
-                                'Duration:': durationText!,
+                              Text(
+                                durationText == null
+                                    ? 'Duration:'
+                                    : durationText!,
                                 style: myTextStyleSmall(context),
                               ),
                               const SizedBox(
@@ -581,7 +632,6 @@ class AudioPlayerCardState extends State<AudioPlayerCard>
                     const SizedBox(
                       height: 8,
                     ),
-
                     const SizedBox(
                       height: 16,
                     ),

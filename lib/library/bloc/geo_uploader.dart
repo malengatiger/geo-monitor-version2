@@ -278,7 +278,7 @@ class GeoUploader {
       var mJson = json.encode(audioForUploading.toJson());
 
       var audio = await Isolate.run(() async => await uploadAudioFile(
-          objectName: 'audio${DateTime.now().millisecondsSinceEpoch}.mp4',
+          objectName: 'audio${DateTime.now().millisecondsSinceEpoch}.mp3',
           url: url!,
           token: token!,
           height: height,

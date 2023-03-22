@@ -4,7 +4,7 @@ import 'package:animations/animations.dart';
 import 'package:flutter/material.dart';
 import 'package:geo_monitor/library/bloc/fcm_bloc.dart';
 import 'package:geo_monitor/library/ui/media/list/user_audios.dart';
-import 'package:geo_monitor/ui/audio/audio_player_card.dart';
+import 'package:geo_monitor/ui/audio/audio_player_og.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:page_transition/page_transition.dart';
 
@@ -371,7 +371,7 @@ class UserMediaListMobileState extends State<UserMediaListMobile>
             type: PageTransitionType.leftToRightWithFade,
             alignment: Alignment.topLeft,
             duration: const Duration(milliseconds: 1000),
-            child: AudioPlayerCard(
+            child: AudioPlayerOG(
               audio: selectedAudio!,
               onCloseRequested: () {
                 pp('$mm onCloseRequested ....');

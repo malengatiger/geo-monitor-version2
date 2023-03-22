@@ -260,7 +260,7 @@ TextStyle myNumberStyleLargest(BuildContext context) {
   return GoogleFonts.secularOne(
       textStyle: Theme.of(context).textTheme.headlineLarge,
       fontWeight: FontWeight.w900,
-      fontSize: 48);
+      fontSize: 36);
 }
 
 class Styles {

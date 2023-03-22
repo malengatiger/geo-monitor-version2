@@ -6,6 +6,7 @@ import 'package:geo_monitor/library/data/activity_model.dart';
 import 'package:geo_monitor/library/ui/maps/project_map_mobile.dart';
 import 'package:geo_monitor/library/ui/maps/project_polygon_map_mobile.dart';
 import 'package:geo_monitor/library/ui/media/list/project_media_list_tablet.dart';
+import 'package:geo_monitor/ui/audio/audio_player_og.dart';
 import 'package:geo_monitor/ui/dashboard/photo_card.dart';
 import 'package:geo_monitor/ui/dashboard/project_dashboard_grid.dart';
 import 'package:geo_monitor/ui/dashboard/project_dashboard_mobile.dart';
@@ -38,7 +39,6 @@ import '../../library/ui/maps/location_response_map.dart';
 import '../../library/ui/maps/photo_map_tablet.dart';
 import '../../library/ui/maps/project_map_main.dart';
 import '../activity/geo_activity.dart';
-import '../audio/audio_player_card.dart';
 
 class ProjectDashboardTablet extends StatefulWidget {
   const ProjectDashboardTablet({Key? key, required this.project})
@@ -538,7 +538,7 @@ class ProjectDashboardTabletState extends State<ProjectDashboardTablet>
                   left: 100,
                   right: 100,
                   top: 160,
-                  child: AudioPlayerCard(
+                  child: AudioPlayerOG(
                     audio: audio!,
                     onCloseRequested: () {
                       if (mounted) {
