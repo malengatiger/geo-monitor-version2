@@ -266,6 +266,7 @@ class AudioRecorderState extends State<AudioRecorder> {
             child: durationText == null
                 ? const SizedBox()
                 : AudioRecorderCard(
+                    user: user!,
                     recordState: _recordState,
                     start: _start,
                     stop: _stop,
@@ -282,7 +283,9 @@ class AudioRecorderState extends State<AudioRecorder> {
                     uploadFile: _uploadFile,
                     padding: 60,
                     iconSize: 56,
-                    uploadAudioClipText: uploadAudioClipText!),
+                    uploadAudioClipText: uploadAudioClipText!,
+                    close: widget.onCloseRequested,
+                  ),
           ),
         ),
       ),
@@ -290,10 +293,12 @@ class AudioRecorderState extends State<AudioRecorder> {
           ? const SizedBox()
           : AudioRecorderCard(
               recordState: _recordState,
+              user: user!,
               start: _start,
               stop: _stop,
               pause: _pause,
               resume: _resume,
+              close: widget.onCloseRequested,
               showWaveForm: showWaveForm,
               projectName: widget.project.name!,
               durationText: durationText!,
@@ -303,8 +308,8 @@ class AudioRecorderState extends State<AudioRecorder> {
               fileSize: fileSize,
               readyForUpload: _readyForUpload,
               uploadFile: _uploadFile,
-              padding: 48,
-              iconSize: 64,
+              padding: 28,
+              iconSize: 48,
               uploadAudioClipText: uploadAudioClipText!),
     );
   }
@@ -329,11 +334,14 @@ class AudioRecorderCard extends StatelessWidget {
       required this.uploadAudioClipText,
       this.timerCardHeight,
       required this.padding,
-      this.iconSize, required this.showWaveForm})
+      this.iconSize,
+      required this.showWaveForm,
+      required this.user,
+      required this.close})
       : super(key: key);
 
   final RecordState recordState;
-  final Function start, stop, pause, resume, uploadFile;
+  final Function start, stop, pause, resume, uploadFile, close;
   final String projectName,
       durationText,
       uploadAudioClipText,
@@ -344,6 +352,7 @@ class AudioRecorderCard extends StatelessWidget {
   final double? timerCardHeight, iconSize;
   final double padding;
   final bool showWaveForm;
+  final User user;
 
   Widget _buildRecordStopControl(BuildContext context) {
     late Icon icon;
@@ -411,7 +420,7 @@ class AudioRecorderCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-
+    var deviceType = getThisDeviceType();
     return Card(
       shape: getRoundedBorder(radius: 16),
       elevation: 8,
@@ -427,6 +436,18 @@ class AudioRecorderCard extends StatelessWidget {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
+                    deviceType == 'phone'
+                        ? const SizedBox()
+                        : Row(
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children: [
+                              IconButton(
+                                  onPressed: () {
+                                    close();
+                                  },
+                                  icon: const Icon(Icons.close)),
+                            ],
+                          ),
                     Text(
                       projectName,
                       style: myTextStyleLargePrimaryColor(context),
@@ -434,31 +455,35 @@ class AudioRecorderCard extends StatelessWidget {
                     SizedBox(
                       height: padding,
                     ),
-                    user == null
-                        ? const SizedBox()
-                        : UserProfileCard(
-                            userName: user!.name!,
-                            userThumbUrl: user!.thumbnailUrl,
-                            avatarRadius: 20.0,
-                            padding: 12.0,
-                            elevation: 4.0,
-                          ),
+                    UserProfileCard(
+                      userName: user.name!,
+                      userThumbUrl: user.thumbnailUrl,
+                      avatarRadius: 20.0,
+                      padding: 12.0,
+                      elevation: 4.0,
+                    ),
                     SizedBox(
                       height: padding,
                     ),
                     SizedBox(
                       height: timerCardHeight == null ? 120 : timerCardHeight!,
-                      child:  showWaveForm? TimerCard(
-                        fontSize: 28,
-                        seconds: seconds,
-                        elapsedTime: elapsedTimeText,
-                      ) : const SizedBox(),
+                      child: showWaveForm
+                          ? TimerCard(
+                              fontSize: 28,
+                              seconds: seconds,
+                              elapsedTime: elapsedTimeText,
+                            )
+                          : const SizedBox(),
                     ),
                     SizedBox(
                       height: padding,
                     ),
-                    showWaveForm? SiriCard() : const SizedBox(),
-                    showWaveForm? const SizedBox(height: 24,): const SizedBox(),
+                    showWaveForm ? SiriCard() : const SizedBox(),
+                    showWaveForm
+                        ? const SizedBox(
+                            height: 24,
+                          )
+                        : const SizedBox(),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [

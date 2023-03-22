@@ -253,6 +253,8 @@
   "photoRatings": "Ogo foto",
   "addPhotoRating": "Tinye ogo foto",
   "errorRecording": "Enwetara mperi n\u0027oge ndekọ",
-  "addVideoRating": "Tinye ogo vidiyo"
+  "addVideoRating": "Tinye ogo vidiyo",
+  "memberLeft": "Otu onye ahapụla $project ahụ",
+  "memberArrived": "Otu onye abanyela ma ọ bụ banye na $project"
 
 }

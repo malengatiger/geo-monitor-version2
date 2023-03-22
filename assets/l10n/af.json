@@ -249,7 +249,9 @@
   "photoRatings": "Foto Graderings",
   "addPhotoRating": "Voeg fotogradering by",
   "errorRecording": "Fout tydens opname ondervind",
-  "addVideoRating": "Voeg videogradering by"
+  "addVideoRating": "Voeg videogradering by",
+  "memberLeft": "\u0027n Lid het die $projek verlaat",
+  "memberArrived": "\u0027n Lid het by $project aangekom of aangemeld"
 
 
 

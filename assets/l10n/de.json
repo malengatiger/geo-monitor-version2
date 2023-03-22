@@ -254,7 +254,9 @@
   "photoRatings": "Fotobewertungen",
   "addPhotoRating": "Fotobewertung hinzufügen",
   "errorRecording": "Fehler während der Aufnahme aufgetreten",
-  "addVideoRating": "Videobewertung hinzufügen"
+  "addVideoRating": "Videobewertung hinzufügen",
+  "memberLeft": "Ein Mitglied hat das $project verlassen",
+  "memberArrived": "Ein Mitglied ist angekommen oder hat sich bei $project angemeldet"
 
 
 

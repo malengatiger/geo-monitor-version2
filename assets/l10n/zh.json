@@ -252,6 +252,8 @@
   "photoRatings": "照片评级",
   "addPhotoRating": "添加照片评级",
   "errorRecording": "录制过程中遇到错误",
-  "addVideoRating": "添加视频评级"
+  "addVideoRating": "添加视频评级",
+  "memberLeft": "一位成员离开了 $project",
+  "memberArrived": "会员已到达或登录 $project"
 
 }

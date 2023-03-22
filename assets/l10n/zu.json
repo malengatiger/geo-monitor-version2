@@ -245,6 +245,8 @@
   "photoRatings": "Izilinganiso Zesithombe",
   "addPhotoRating": "Engeza Isilinganiselwa Sesithombe",
   "errorRecording": "Kuvele iphutha ngesikhathi sokurekhoda",
-  "addVideoRating": "Engeza Isilinganiselwa Sevidiyo"
+  "addVideoRating": "Engeza Isilinganiselwa Sevidiyo",
+  "memberLeft": "Ilungu lishiye iphrojekthi ye-$project",
+  "memberArrived": "Ilungu selifikile noma lingene ngemvume e-$project"
 
 }

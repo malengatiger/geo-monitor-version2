@@ -175,6 +175,8 @@ class ProjectAudiosPageState extends State<ProjectAudiosPage> {
       );
     }
     final width = MediaQuery.of(context).size.width;
+    final ori = MediaQuery.of(context).orientation;
+
     return ScreenTypeLayout(
       mobile: Stack(
         children: [
@@ -219,28 +221,12 @@ class ProjectAudiosPageState extends State<ProjectAudiosPage> {
                 crossAxisCount: 4);
           }),
           _showAudioPlayer
-              ? OrientationLayoutBuilder(landscape: (context) {
-                  return Positioned(
-                      top: 60,
-                      left: 300,
-                      right: 300,
-                      bottom: 60,
-                      child: SizedBox(
-                        width: width / 2,
-                        child: AudioPlayerOG(
-                            audio: _selectedAudio!,
-                            onCloseRequested: () {
-                              setState(() {
-                                _showAudioPlayer = false;
-                              });
-                            }),
-                      ));
-                }, portrait: (context) {
-                  return Positioned(
-                      top: 200,
+              ? ori.name == 'portrait'
+                  ? Positioned(
+                      top: 120,
                       left: 160,
                       right: 160,
-                      bottom: 200,
+                      bottom: 120,
                       child: SizedBox(
                         width: width / 2,
                         child: AudioPlayerOG(
@@ -250,9 +236,24 @@ class ProjectAudiosPageState extends State<ProjectAudiosPage> {
                                 _showAudioPlayer = false;
                               });
                             }),
-                      ));
-                })
-              : const SizedBox(),
+                      ))
+                  : Positioned(
+                      top: 0,
+                      left: 300,
+                      right: 300,
+                      bottom: 0,
+                      child: SizedBox(
+                        width: width / 2,
+                        child: AudioPlayerOG(
+                            audio: _selectedAudio!,
+                            onCloseRequested: () {
+                              setState(() {
+                                _showAudioPlayer = false;
+                              });
+                            }),
+                      ),
+                    )
+              :  const SizedBox(),
         ],
       ),
     );

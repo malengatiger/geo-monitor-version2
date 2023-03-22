@@ -38,7 +38,7 @@ class AudioPlayerOGState extends State<AudioPlayerOG> {
   Duration? duration;
   User? user;
   String? createdAt,
-      durationText,
+      elapsedTimeText,
       errorRecording,
       playAudioClip,
       loadingActivities;
@@ -73,7 +73,7 @@ class AudioPlayerOGState extends State<AudioPlayerOG> {
       loadingActivities =
       await mTx.translate('loadingActivities', settingsModel!.locale!);
       createdAt = await mTx.translate('createdAt', settingsModel!.locale!);
-      durationText = await mTx.translate('duration', settingsModel!.locale!);
+      elapsedTimeText = await mTx.translate('elapsedTime', settingsModel!.locale!);
       playAudioClip =
           await mTx.translate('playAudioClip', settingsModel!.locale!);
       errorRecording =
@@ -167,7 +167,6 @@ class AudioPlayerOGState extends State<AudioPlayerOG> {
     pp('$mm ... stop playing; like NOW!!!');
     try {
       await player.stop();
-      widget.onCloseRequested();
       setState(() {
         isPlaying = false;
         isPaused = false;
@@ -175,10 +174,13 @@ class AudioPlayerOGState extends State<AudioPlayerOG> {
         _showWave = true;
         isLoading = false;
       });
-
+      final deviceType = getThisDeviceType();
       if (mounted) {
-        Navigator.of(context).pop();
+        if (deviceType == 'phone') {
+          Navigator.of(context).pop();
+        }
       }
+      widget.onCloseRequested();
     } catch (e) {
       pp('$mm player ERROR: $e');
     }
@@ -233,16 +235,9 @@ class AudioPlayerOGState extends State<AudioPlayerOG> {
 
   @override
   Widget build(BuildContext context) {
-    final localDate =
-        DateTime.parse(widget.audio.created!).toLocal().toIso8601String();
-    final dt = getFormattedDateHourMinuteSecond(
-        date: DateTime.parse(localDate), context: context);
-    final height = MediaQuery.of(context).size.height;
     var width = MediaQuery.of(context).size.width;
     var ori = MediaQuery.of(context).orientation;
-    var delta = 400;
     if (ori.name == 'landscape') {
-      delta = 200;
     }
     var deviceType = getThisDeviceType();
     if (widget.width != null) {
@@ -276,7 +271,7 @@ class AudioPlayerOGState extends State<AudioPlayerOG> {
                               projectName: widget.audio.projectName!,
                               settingsModel: settingsModel!,
                               duration: duration!,
-                              durationText: durationText!,
+                              durationText: elapsedTimeText!,
                               audio: widget.audio,
                               isPlaying: isPlaying,
                               isPaused: isPaused,
@@ -293,11 +288,11 @@ class AudioPlayerOGState extends State<AudioPlayerOG> {
                     onRatingRequested: _onFavorite,
                     onStopRequested: _stop,
                     user: user!,
-                    padding: 60,
+                    padding: 48,
                     projectName: widget.audio.projectName!,
                     settingsModel: settingsModel!,
                     duration: duration!,
-                    durationText: durationText!,
+                    durationText: elapsedTimeText!,
                     audio: widget.audio,
                     isPlaying: isPlaying,
                     isPaused: isPaused,
@@ -435,7 +430,7 @@ class AudioPlayerWidget extends StatelessWidget {
                   ),
                   Text(
                     getHourMinuteSecond(duration!),
-                    style: myNumberStyleLargest(context),
+                    style: myNumberStyleLarger(context),
                   ),
                 ],
               ),

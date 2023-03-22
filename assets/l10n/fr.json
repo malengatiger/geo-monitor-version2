@@ -248,6 +248,8 @@
   "photoRatings": "Évaluations des photos",
   "addPhotoRating": "Ajouter une note de photo",
   "errorRecording": "Erreur rencontrée lors de l\u0027enregistrement",
-  "addVideoRating": "Ajouter une note vidéo"
+  "addVideoRating": "Ajouter une note vidéo",
+  "memberLeft": "Un membre a quitté le $project",
+  "memberArrived": "Un membre est arrivé ou s\u0027est connecté à $project"
 
 }

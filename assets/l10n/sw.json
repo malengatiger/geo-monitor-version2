@@ -245,7 +245,9 @@
   "photoRatings": "Ukadiriaji wa Picha",
   "addPhotoRating": "Ongeza Ukadiriaji wa Picha",
   "errorRecording": "Hitilafu iliyotokea wakati wa kurekodi",
-  "addVideoRating": "Ongeza Ukadiriaji wa Video"
+  "addVideoRating": "Ongeza Ukadiriaji wa Video",
+  "memberLeft": "Mwanachama ameondoka kwenye mradi wa $project",
+  "memberArrived": "Mwanachama amefika au ameingia katika $project"
 
 
 }

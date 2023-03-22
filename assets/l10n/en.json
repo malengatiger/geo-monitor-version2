@@ -247,5 +247,7 @@
   "photoRatings": "Photo Ratings",
   "addPhotoRating": "Add Photo Rating",
   "errorRecording": "Error encountered during recording",
-  "addVideoRating": "Add Video Rating"
+  "addVideoRating": "Add Video Rating",
+  "memberLeft": "A Member has left the $project",
+  "memberArrived": "A Member has arrived or signed in at $project"
 }

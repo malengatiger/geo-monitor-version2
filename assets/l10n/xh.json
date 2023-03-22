@@ -245,7 +245,9 @@
   "photoRatings": "Iireyithingi zeefoto",
   "addPhotoRating": "Yongeza uKhathazo lweFoto",
   "errorRecording": "Kufunyenwe impazamo ngexesha loshicilelo",
-  "addVideoRating": "Yongeza uKalo lweVidiyo"
+  "addVideoRating": "Yongeza uKalo lweVidiyo",
+  "memberLeft": "Ilungu lishiye iprojekthi ye-$project",
+  "memberArrived": "ILungu lifikile okanye lisayine kwiprojekthi ye-$project"
 
 
 }

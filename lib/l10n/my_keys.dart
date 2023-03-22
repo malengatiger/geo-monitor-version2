@@ -291,5 +291,8 @@ class MyKeys {
     hashMap["photoRatings"] =  "Photo Ratings";
     hashMap["errorRecording"] = "errorRecording";
 
+    hashMap["memberArrived"] = "memberArrived";
+    hashMap["memberLeft"] = "memberLeft";
+
     }
 }

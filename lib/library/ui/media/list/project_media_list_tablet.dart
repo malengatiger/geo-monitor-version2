@@ -9,7 +9,6 @@ import 'package:geo_monitor/library/ui/media/list/project_audios_page.dart';
 import 'package:geo_monitor/library/ui/media/list/project_photos_page.dart';
 import 'package:geo_monitor/library/ui/media/list/project_videos_page.dart';
 import 'package:geo_monitor/ui/audio/audio_recorder.dart';
-import 'package:just_audio/just_audio.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:responsive_builder/responsive_builder.dart';
 
@@ -53,7 +52,6 @@ class ProjectMediaListTabletState extends State<ProjectMediaListTablet>
   Audio? selectedAudio;
   Video? selectedVideo;
   int videoIndex = 0;
-  AudioPlayer audioPlayer = AudioPlayer();
 
   String? photosText, audioText, videoText;
 
@@ -178,11 +176,6 @@ class ProjectMediaListTabletState extends State<ProjectMediaListTablet>
             )));
   }
 
-  void _navigateToPlayAudio() {
-    pp('... play audio from internet ....');
-    audioPlayer.setUrl(selectedAudio!.url!);
-    audioPlayer.play();
-  }
 
   void _navigateToFullPhoto() {
     pp('... about to navigate after waiting 100 ms');
@@ -394,7 +387,6 @@ class ProjectMediaListTabletState extends State<ProjectMediaListTablet>
                           setState(() {
                             selectedAudio = audio;
                           });
-                          _navigateToPlayAudio();
                         },
                       ),
                     ),

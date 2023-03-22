@@ -245,7 +245,9 @@
   "photoRatings": "Lintlha tsa lifoto",
   "addPhotoRating": "Kenya Lintlha tsa Lifoto",
   "errorRecording": "Ho hlahile phoso nakong ea ho rekota",
-  "addVideoRating": "Kenya Lintlha tsa Video"
+  "addVideoRating": "Kenya Lintlha tsa Video",
+  "memberLeft": "Setho se tlohile morerong oa $project",
+  "memberArrived": "Setho se fihlile kapa se saenetse ho $project"
 
 
 

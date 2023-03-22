@@ -245,5 +245,7 @@
   "photoRatings": "Swiringanyeto swa Swifaniso",
   "addPhotoRating": "Engetelani Xiringanyeto xa Swifaniso",
   "errorRecording": "Xihoxo lexi hlanganeke hi nkarhi wa ku rhekhoda",
-  "addVideoRating": "Engetelani Xiringanyeto xa Vhidiyo"
+  "addVideoRating": "Engetelani Xiringanyeto xa Vhidiyo",
+  "memberLeft": "Xirho xi sukile eka $project",
+  "memberArrived": "Xirho xi fikile kutani xi sayinile eka $project"
 }

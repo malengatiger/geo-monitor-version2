@@ -128,15 +128,7 @@ class TimerCard extends StatelessWidget {
   final double fontSize;
   @override
   Widget build(BuildContext context) {
-    // int h, m, s;
-    // h = seconds ~/ 3600;
-    // m = ((seconds - h * 3600)) ~/ 60;
-    // s = seconds - (h * 3600) - (m * 60);
-    // String hourLeft = h.toString().length < 2 ? "0$h" : h.toString();
-    // String minuteLeft = m.toString().length < 2 ? "0$m" : m.toString();
-    // String secondsLeft = s.toString().length < 2 ? "0$s" : s.toString();
-    //
-    // String result = "$hourLeft:$minuteLeft:$secondsLeft";
+
     final dur = Duration(seconds: seconds);
     var result = getHourMinuteSecond(dur);
 
@@ -145,7 +137,7 @@ class TimerCard extends StatelessWidget {
       shape: getRoundedBorder(radius: 12),
       child: Padding(
         padding: const EdgeInsets.all(20.0),
-        child: Row(
+        child: Row(mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Text(
               elapsedTime,

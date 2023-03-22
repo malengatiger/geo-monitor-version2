@@ -248,7 +248,9 @@
   "photoRatings": "Calificaciones de fotos",
   "addPhotoRating": "Agregar calificación de foto",
   "errorRecording": "Error encontrado durante la grabación",
-  "addVideoRating": "Agregar calificación de video"
+  "addVideoRating": "Agregar calificación de video",
+  "memberLeft": "Un miembro ha abandonado el $project",
+  "memberArrived": "Un miembro ha llegado o se ha registrado en $project"
 
 
 
