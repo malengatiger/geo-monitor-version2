@@ -179,37 +179,23 @@ class ProjectAudiosPageState extends State<ProjectAudiosPage> {
       mobile: Stack(
         children: [
           AudioGrid(
-              audios: audios,
-              onAudioTapped: (audio, index) {
-                _selectedAudio = audio;
-                setState(() {
-                });
-                _navigateToAudioPlayer();
-              },
-              itemWidth: 260,
-              crossAxisCount: 2),
-          // _showAudioPlayer
-          //     ? Positioned(
-          //         top: 60,
-          //         left: 20,
-          //         right: 20,
-          //         bottom: 60,
-          //         child: AudioPlayerOG(
-          //             audio: _selectedAudio!,
-          //             onCloseRequested: () {
-          //               pp('\n$mm onCloseRequested, set _showAudioPlayer = false');
-          //               setState(() {
-          //                 _showAudioPlayer = false;
-          //               });
-          //             }),
-          //       )
-          //     : const SizedBox(),
+            audios: audios,
+            onAudioTapped: (audio, index) {
+              _selectedAudio = audio;
+              setState(() {});
+              _navigateToAudioPlayer();
+            },
+            itemWidth: 260,
+            crossAxisCount: 2,
+            durationText: durationText!,
+          ),
         ],
       ),
       tablet: Stack(
         children: [
           OrientationLayoutBuilder(landscape: (context) {
             return AudioGrid(
+                durationText: durationText!,
                 audios: audios,
                 onAudioTapped: (audio, index) {
                   setState(() {
@@ -221,6 +207,7 @@ class ProjectAudiosPageState extends State<ProjectAudiosPage> {
                 crossAxisCount: 5);
           }, portrait: (context) {
             return AudioGrid(
+                durationText: durationText!,
                 audios: audios,
                 onAudioTapped: (audio, index) {
                   setState(() {

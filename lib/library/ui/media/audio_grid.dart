@@ -10,12 +10,13 @@ class AudioGrid extends StatelessWidget {
       required this.audios,
       required this.onAudioTapped,
       required this.itemWidth,
-      required this.crossAxisCount})
+      required this.crossAxisCount, required this.durationText})
       : super(key: key);
   final List<Audio> audios;
   final Function(Audio, int) onAudioTapped;
   final double itemWidth;
   final int crossAxisCount;
+  final String durationText;
 
   @override
   Widget build(BuildContext context) {
@@ -88,7 +89,7 @@ class AudioGrid extends StatelessWidget {
                                     height: 16,
                                   ),
                                   Row(
-                                    mainAxisAlignment: MainAxisAlignment.start,
+                                    mainAxisAlignment: MainAxisAlignment.center,
                                     children: [
                                       Flexible(
                                           child: Text(
@@ -101,10 +102,9 @@ class AudioGrid extends StatelessWidget {
                                     height: 8,
                                   ),
                                   Row(
-                                    mainAxisAlignment: MainAxisAlignment.start,
+                                    mainAxisAlignment: MainAxisAlignment.center,
                                     children: [
-                                      Text(
-                                        'Duration:',
+                                      Text(durationText,
                                         style: myTextStyleTiny(context),
                                       ),
                                       const SizedBox(

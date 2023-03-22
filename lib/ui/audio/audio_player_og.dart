@@ -129,34 +129,6 @@ class AudioPlayerOGState extends State<AudioPlayerOG> {
     }
   }
 
-  void _options() {
-    final iosOptions = AVAudioSessionOptions.values.map(
-      (option) {
-        final options = audioContext.iOS.options.toList();
-        return Container();
-      },
-    ).toList();
-  }
-
-  void _updateConfig(AudioContextConfig newConfig) {
-    setState(() {
-      audioContextConfig = newConfig;
-      audioContext = audioContextConfig.build();
-    });
-  }
-
-  void _updateAudioContextAndroid(AudioContextAndroid contextAndroid) {
-    setState(() {
-      audioContext = audioContext.copy(android: contextAndroid);
-    });
-  }
-
-  void _updateAudioContextIOS(AudioContextIOS contextIOS) {
-    setState(() {
-      audioContext = audioContext.copy(iOS: contextIOS);
-    });
-  }
-
   void _play() async {
     pp('$mm ... start playing this sucker! ${widget.audio.url}');
     pp('$mm ... audio durationInSeconds: ${widget.audio.durationInSeconds} seconds');
