@@ -114,7 +114,7 @@ class _ActivityListTabletState extends State<ActivityListTablet>
       final memberAddedChanged =
           await mTx.translate('memberAddedChanged', sett!.locale!);
       final at = await mTx.translate('at', sett!.locale!);
-      final arr = await mTx.translate('arrivedAt', sett!.locale!);
+      final arr = await mTx.translate('memberArrived', sett!.locale!);
       final arrivedAt = arr.replaceAll('\$project', '');
       final conditionAdded =
           await mTx.translate('conditionAdded', sett!.locale!);

@@ -220,13 +220,12 @@ class ActivityListMobileState extends State<ActivityListMobile>
   }
 
   Future<void> _handleGeofenceEvent(GeofenceEvent event) async {
-      var arr = await mTx.translate('arrivedAt', settings!.locale!);
-    var arr1 = arr.replaceAll('\$member', event.user!.name!);
+      final arr = await mTx.translate('memberArrived', settings!.locale!);
     if (event.projectName != null) {
-      var arrivedAt = arr1.replaceAll('\$project', event.projectName!);
+      var arrivedAt = arr.replaceAll('\$project', event.projectName!);
       if (mounted) {
         showToast(
-            duration: const Duration(seconds: 5),
+            duration: const Duration(seconds: 6),
             backgroundColor: Theme.of(context).primaryColor,
             padding: 20,
             textStyle: myTextStyleMedium(context),

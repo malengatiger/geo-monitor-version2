@@ -143,10 +143,9 @@ class GeoActivityState extends State<GeoActivity>
   Future<void> _handleGeofenceEvent(GeofenceEvent event) async {
     var settings = await prefsOGx.getSettings();
     if (settings != null) {
-      var arr = await mTx.translate('arrivedAt', settings!.locale!);
-      var arr1 = arr.replaceAll('\$member', event.user!.name!);
+      final arr = await mTx.translate('memberArrived', settings!.locale!);
       if (event.projectName != null) {
-        var arrivedAt = arr1.replaceAll('\$project', event.projectName!);
+        var arrivedAt = arr.replaceAll('\$project', event.projectName!);
         if (mounted) {
           showToast(
               duration: const Duration(seconds: 5),
