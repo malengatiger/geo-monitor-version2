@@ -1,5 +1,8 @@
+import 'dart:async';
+
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
+import 'package:geo_monitor/library/bloc/fcm_bloc.dart';
 import 'package:geo_monitor/library/cache_manager.dart';
 import 'package:geo_monitor/library/data/audio.dart';
 import 'package:geo_monitor/library/ui/media/list/project_videos_page.dart';
@@ -57,12 +60,24 @@ class AudioPlayerOGState extends State<AudioPlayerOG> {
 
   /// Set config for each platform individually
   AudioContext audioContext = const AudioContext();
+  late StreamSubscription<SettingsModel> settingsSubscriptionFCM;
+
 
   @override
   void initState() {
     super.initState();
     _init();
+    _listen();
     _setTexts();
+  }
+
+  void _listen() async {
+    settingsSubscriptionFCM = fcmBloc.settingsStream.listen((event) {
+      settingsModel = event;
+      if (mounted) {
+        _setTexts();
+      }
+    });
   }
 
   void _setTexts() async {

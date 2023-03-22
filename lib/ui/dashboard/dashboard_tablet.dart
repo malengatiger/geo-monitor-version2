@@ -59,14 +59,6 @@ class DashboardTablet extends StatefulWidget {
 
 class DashboardTabletState extends State<DashboardTablet> with WidgetsBindingObserver {
   final mm = '🍎🍎🍎🍎 DashboardTablet: 🔵 ';
-  // late StreamSubscription<List<Project>> projectSubscription;
-  // late StreamSubscription<List<User>> userSubscription;
-  // late StreamSubscription<List<Photo>> photoSubscription;
-  // late StreamSubscription<List<Video>> videoSubscription;
-  // late StreamSubscription<List<Audio>> audioSubscription;
-  // late StreamSubscription<List<ProjectPosition>> projectPositionSubscription;
-  // late StreamSubscription<List<ProjectPolygon>> projectPolygonSubscription;
-  // late StreamSubscription<List<FieldMonitorSchedule>> schedulesSubscription;
 
   late StreamSubscription<Photo> photoSubscriptionFCM;
   late StreamSubscription<Video> videoSubscriptionFCM;
@@ -97,6 +89,7 @@ class DashboardTabletState extends State<DashboardTablet> with WidgetsBindingObs
   void initState() {
     WidgetsBinding.instance.addObserver(this);
     super.initState();
+    _setTexts();
     _listenForDataBag();
     _listenForFCM();
     _getData(false);
@@ -213,39 +206,46 @@ class DashboardTabletState extends State<DashboardTablet> with WidgetsBindingObs
         locale: newLocale);
     themeBloc.themeStreamController.sink.add(m);
     settingsModel = settings;
-    _getData(false);
+    if (mounted) {
+      await _setTexts();
+      _getData(false);
+    }
+
   }
 
   String? dashboardSubTitle, prefix, suffix;
   Row? subtitleRow;
+
+  Future _setTexts() async {
+    settingsModel = await prefsOGx.getSettings();
+    if (settingsModel != null) {
+      numberOfDays = settingsModel!.numberOfDays!;
+      title = await mTx.translate('dashboard', settingsModel!.locale!);
+      var sub = await mTx.translate('dashboardSubTitle', settingsModel!.locale!);
+      pp('deciphering this string: 🍎 $sub');
+      int index = sub.indexOf('\$');
+      prefix = sub.substring(0, index);
+      String? suff;
+      try {
+        suff = sub.substring(index + 6);
+        suffix = suff;
+        pp('$mm prefix: $prefix suffix: $suffix');
+      } catch (e) {
+        pp('🔴🔴🔴🔴🔴🔴 $e');
+      }
+      dashboardSubTitle = sub.replaceAll('\$count', '$numberOfDays');
+
+      setState(() {
+
+      });
+    }
+  }
   void _getData(bool forceRefresh) async {
     setState(() {
       busy = true;
     });
     try {
       user = await prefsOGx.getUser();
-      settingsModel = await prefsOGx.getSettings();
-      if (settingsModel != null) {
-        numberOfDays = settingsModel!.numberOfDays!;
-        title = await mTx.translate('dashboard', settingsModel!.locale!);
-        var sub = await mTx.translate('dashboardSubTitle', settingsModel!.locale!);
-        pp('deciphering this string: 🍎 $sub');
-        int index = sub.indexOf('\$');
-        prefix = sub.substring(0, index);
-        String? suff;
-        try {
-          suff = sub.substring(index + 6);
-          suffix = suff;
-          pp('$mm prefix: $prefix suffix: $suffix');
-        } catch (e) {
-          pp('🔴🔴🔴🔴🔴🔴 $e');
-        }
-        dashboardSubTitle = sub.replaceAll('\$count', '$numberOfDays');
-
-        setState(() {
-
-        });
-      }
       var map = await getStartEndDates();
       final startDate = map['startDate'];
       final endDate = map['endDate'];

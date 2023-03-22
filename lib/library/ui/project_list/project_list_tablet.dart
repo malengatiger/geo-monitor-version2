@@ -32,6 +32,7 @@ import '../../data/position.dart';
 import '../../data/project.dart';
 import '../../data/project_polygon.dart';
 import '../../data/project_position.dart';
+import '../../data/settings_model.dart';
 import '../../data/user.dart' as mon;
 import '../../data/user.dart';
 import '../../functions.dart';
@@ -66,7 +67,9 @@ class ProjectListTabletState extends State<ProjectListTablet>
   final _key = GlobalKey<ScaffoldState>();
   bool _showPositionChooser = false;
   double sliderValue = 3.0;
-  String? organizationProjects, projectsNotFound;
+  String? organizationProjects, projectsNotFound, refreshData;
+  late StreamSubscription<SettingsModel> settingsSubscriptionFCM;
+
 
   @override
   void initState() {
@@ -80,7 +83,24 @@ class ProjectListTabletState extends State<ProjectListTablet>
     _listen();
   }
 
+  Future _setTexts() async {
+    var sett = await prefsOGx.getSettings();
+    if (sett != null) {
+      organizationProjects =
+      await mTx.translate('organizationProjects', sett.locale!);
+      projectsNotFound = await mTx.translate('projectsNotFound', sett.locale!);
+      refreshData = await mTx.translate('refreshData', sett.locale!);
+    }
+
+  }
+
   void _listen() {
+    settingsSubscriptionFCM = fcmBloc.settingsStream.listen((event) async {
+      if (mounted) {
+        await _setTexts();
+        _getData();
+      }
+    });
     fcmBloc.projectStream.listen((Project project) {
       if (mounted) {
         AppSnackbar.showSnackbar(
@@ -130,12 +150,7 @@ class ProjectListTabletState extends State<ProjectListTablet>
       isBusy = true;
     });
     user = await prefsOGx.getUser();
-    var sett = await prefsOGx.getSettings();
-    if (sett != null) {
-      organizationProjects = await mTx.translate('organizationProjects', sett!.locale!);
-      projectsNotFound = await mTx.translate('projectsNotFound', sett!.locale!);
 
-    }
     if (user != null) {
       pp('$mm user found: ${user!.toJson()}');
       _setUserType();

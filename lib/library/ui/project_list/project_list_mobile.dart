@@ -23,10 +23,10 @@ import '../../data/position.dart';
 import '../../data/project.dart';
 import '../../data/project_polygon.dart';
 import '../../data/project_position.dart';
+import '../../data/settings_model.dart';
 import '../../data/user.dart';
 import '../../data/user.dart' as mon;
 import '../../functions.dart';
-import '../../snack.dart';
 import '../maps/org_map_mobile.dart';
 import '../maps/project_map_main.dart';
 import '../maps/project_polygon_map_mobile.dart';
@@ -59,11 +59,12 @@ class ProjectListMobileState extends State<ProjectListMobile>
   var userTypeLabel = 'Unknown User Type';
   final mm = '🔵🔵🔵🔵 ProjectListMobile:  ';
   late StreamSubscription<String> killSubscription;
+  late StreamSubscription<SettingsModel> settingsSubscriptionFCM;
+
   int numberOfDays = 30;
   bool sortedByName = true;
   bool openProjectActions = false;
   String? organizationProjects, projectsNotFound, refreshData;
-
 
   @override
   void initState() {
@@ -73,27 +74,31 @@ class ProjectListMobileState extends State<ProjectListMobile>
         reverseDuration: const Duration(milliseconds: 2000),
         vsync: this);
     super.initState();
-   _setTexts();
+    _setTexts();
     _getUser();
     _listen();
   }
- void _setTexts() async {
-   var sett = await prefsOGx.getSettings();
-   if (sett != null) {
-     organizationProjects = await mTx.translate('organizationProjects', sett.locale!);
-     projectsNotFound = await mTx.translate('projectsNotFound', sett.locale!);
-     refreshData = await mTx.translate('refreshData', sett.locale!);
 
-   }
- }
+  Future _setTexts() async {
+    var sett = await prefsOGx.getSettings();
+    if (sett != null) {
+      organizationProjects =
+          await mTx.translate('organizationProjects', sett.locale!);
+      projectsNotFound = await mTx.translate('projectsNotFound', sett.locale!);
+      refreshData = await mTx.translate('refreshData', sett.locale!);
+    }
+  }
+
   void _listen() {
+    settingsSubscriptionFCM = fcmBloc.settingsStream.listen((event) async {
+      if (mounted) {
+        await _setTexts();
+        _getData(false);
+      }
+    });
     fcmBloc.projectStream.listen((Project project) {
       if (mounted) {
-        AppSnackbar.showSnackbar(
-            scaffoldKey: _key,
-            message: 'Project added: ${project.name}',
-            textColor: Colors.white,
-            backgroundColor: Theme.of(context).primaryColor);
+        _getData(false);
       }
     });
     adminBloc.projectStream.listen((List<Project> list) {
@@ -142,7 +147,7 @@ class ProjectListMobileState extends State<ProjectListMobile>
     if (user != null) {
       pp('$mm user found: ${user!.name!}');
       _setUserType();
-      await refreshProjects(false);
+      await _getData(false);
     } else {
       pp('$mm user NOT found!!! 🥏 🥏 🥏');
 
@@ -186,7 +191,7 @@ class ProjectListMobileState extends State<ProjectListMobile>
     super.dispose();
   }
 
-  Future refreshProjects(bool forceRefresh) async {
+  Future _getData(bool forceRefresh) async {
     pp('$mm 🥏 🥏 🥏 .................... refresh projects: forceRefresh: $forceRefresh');
     if (mounted) {
       setState(() {
@@ -242,7 +247,9 @@ class ProjectListMobileState extends State<ProjectListMobile>
             type: PageTransitionType.scale,
             alignment: Alignment.topLeft,
             duration: const Duration(milliseconds: 1500),
-            child: ProjectMapMobile(project: p,)));
+            child: ProjectMapMobile(
+              project: p,
+            )));
   }
 
   void _navigateToMonitorStart(Project p) {
@@ -280,16 +287,18 @@ class ProjectListMobileState extends State<ProjectListMobile>
   void _navigateToProjectAudio(Project p) {
     if (user!.userType == UserType.fieldMonitor) {}
     Navigator.push(
-        context,
-        PageTransition(
-            type: PageTransitionType.scale,
-            alignment: Alignment.topLeft,
-            duration: const Duration(milliseconds: 1500),
-            child: AudioRecorder(onCloseRequested: (){
+      context,
+      PageTransition(
+        type: PageTransitionType.scale,
+        alignment: Alignment.topLeft,
+        duration: const Duration(milliseconds: 1500),
+        child: AudioRecorder(
+            onCloseRequested: () {
               pp('On stop requested');
               Navigator.of(context).pop();
-            }, project: p),
-        ),
+            },
+            project: p),
+      ),
     );
   }
 
@@ -397,7 +406,10 @@ class ProjectListMobileState extends State<ProjectListMobile>
       final startDate = map['startDate'];
       final endDate = map['endDate'];
       positions = await projectBloc.getProjectPositions(
-          projectId: project.projectId!, forceRefresh: false, startDate: startDate!, endDate: endDate!);
+          projectId: project.projectId!,
+          forceRefresh: false,
+          startDate: startDate!,
+          endDate: endDate!);
       polygons = await projectBloc.getProjectPolygons(
           projectId: project.projectId!, forceRefresh: false);
       if (positions.length == 1 && polygons.isEmpty) {
@@ -483,7 +495,8 @@ class ProjectListMobileState extends State<ProjectListMobile>
     menuItems.add(
       FocusedMenuItem(
           backgroundColor: Theme.of(context).primaryColor,
-          title: Text('Create Audio Clip', style: myTextStyleSmallBlack(context)),
+          title:
+              Text('Create Audio Clip', style: myTextStyleSmallBlack(context)),
           trailingIcon: Icon(
             Icons.camera,
             color: Theme.of(context).primaryColor,
@@ -560,7 +573,7 @@ class ProjectListMobileState extends State<ProjectListMobile>
         color: Theme.of(context).primaryColor,
       ),
       onPressed: () {
-        refreshProjects(true);
+        _getData(true);
       },
     ));
     // list.add(IconButton(
@@ -632,8 +645,10 @@ class ProjectListMobileState extends State<ProjectListMobile>
                     const SizedBox(
                       height: 16,
                     ),
-                    Text(organizationProjects == null?
-                      'Organization Projects': organizationProjects!,
+                    Text(
+                      organizationProjects == null
+                          ? 'Organization Projects'
+                          : organizationProjects!,
                       style: myTextStyleMedium(context),
                     ),
                     const SizedBox(
@@ -720,18 +735,22 @@ class ProjectListMobileState extends State<ProjectListMobile>
                         Text(
                           isProjectsByLocation
                               ? 'Finding Projects within $sliderValue KM'
-                              : refreshData == null? 'Finding Organization Projects ...': refreshData!,
+                              : refreshData == null
+                                  ? 'Finding Organization Projects ...'
+                                  : refreshData!,
                           style: myTextStyleMedium(context),
                         ),
                       ],
                     ),
                   )
                 : Padding(
-                    padding:  const EdgeInsets.all(12.0),
+                    padding: const EdgeInsets.all(12.0),
                     child: projects.isEmpty
                         ? Center(
-                            child: Text(projectsNotFound == null?
-                                'Projects Not Found': projectsNotFound!,
+                            child: Text(
+                                projectsNotFound == null
+                                    ? 'Projects Not Found'
+                                    : projectsNotFound!,
                                 style: GoogleFonts.lato(
                                     textStyle:
                                         Theme.of(context).textTheme.bodyLarge,
@@ -756,28 +775,36 @@ class ProjectListMobileState extends State<ProjectListMobile>
                                           style: myNumberStyleSmall(context)),
                                     ),
                                     child: ProjectListCard(
-                                        projects: projects,
-                                        width: width,
-                                        horizontalPadding: 12,
-                                        navigateToDetail: _navigateToDetail,
-                                        navigateToProjectLocation:
-                                            _navigateToProjectLocation,
-                                        navigateToProjectMedia:
-                                            _navigateToProjectMedia,
-                                        navigateToProjectMap:
-                                            _navigateToProjectMap,
-                                        navigateToProjectPolygonMap:
-                                            _navigateToProjectPolygonMap,
-                                        navigateToProjectDashboard:
-                                            _navigateToProjectDashboard,
-                                        user: user!, navigateToProjectDirections: (project ) async {
-                                          var poss = await cacheManager.getProjectPositions(project.projectId!);
-                                          if (poss.isNotEmpty) {
-                                            _navigateToDirections(
-                                                latitude: poss.first.position!.coordinates[1],
-                                                longitude: poss.first.position!.coordinates[0],);
-                                          }
-                                    },),
+                                      projects: projects,
+                                      width: width,
+                                      horizontalPadding: 12,
+                                      navigateToDetail: _navigateToDetail,
+                                      navigateToProjectLocation:
+                                          _navigateToProjectLocation,
+                                      navigateToProjectMedia:
+                                          _navigateToProjectMedia,
+                                      navigateToProjectMap:
+                                          _navigateToProjectMap,
+                                      navigateToProjectPolygonMap:
+                                          _navigateToProjectPolygonMap,
+                                      navigateToProjectDashboard:
+                                          _navigateToProjectDashboard,
+                                      user: user!,
+                                      navigateToProjectDirections:
+                                          (project) async {
+                                        var poss = await cacheManager
+                                            .getProjectPositions(
+                                                project.projectId!);
+                                        if (poss.isNotEmpty) {
+                                          _navigateToDirections(
+                                            latitude: poss
+                                                .first.position!.coordinates[1],
+                                            longitude: poss
+                                                .first.position!.coordinates[0],
+                                          );
+                                        }
+                                      },
+                                    ),
                                   )),
                               _showPositionChooser
                                   ? Positioned(
@@ -810,6 +837,6 @@ class ProjectListMobileState extends State<ProjectListMobile>
       sliderValue = value;
     });
 
-    refreshProjects(true);
+    _getData(true);
   }
 }

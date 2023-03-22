@@ -18,6 +18,7 @@ import '../../bloc/fcm_bloc.dart';
 import '../../bloc/location_request_handler.dart';
 import '../../data/audio.dart';
 import '../../data/location_response.dart';
+import '../../data/settings_model.dart';
 import '../../data/user.dart';
 import '../../functions.dart';
 import '../../generic_functions.dart';
@@ -43,18 +44,26 @@ class _UserListTabletState extends State<UserListTablet> {
   @override
   void initState() {
     super.initState();
+    _setTexts();
     _getData(false);
     _listen();
   }
 
   late StreamSubscription<User> _streamSubscription;
   late StreamSubscription<LocationResponse> _locationResponseSubscription;
+  late StreamSubscription<SettingsModel> settingsSubscriptionFCM;
 
   LocationResponse? locationResponse;
 
   String? title;
 
   void _listen() {
+    settingsSubscriptionFCM = fcmBloc.settingsStream.listen((event) async {
+      if (mounted) {
+        await _setTexts();
+        _getData(false);
+      }
+    });
     _streamSubscription = fcmBloc.userStream.listen((User user) {
       pp('$mm new user just arrived: ${user.toJson()}');
       if (mounted) {
@@ -148,20 +157,23 @@ class _UserListTabletState extends State<UserListTablet> {
 
   final mm = '🔵🔵🔵🔵🔵🔵 UserListTabletLandscape: ';
   String? subTitle;
+  Future _setTexts() async {
+    var sett = await prefsOGx.getSettings();
+    if (sett != null) {
+      title = await mTx.translate('organizationMembers', sett!.locale!);
+      subTitle = await mTx.translate('administratorsMembers', sett!.locale!);
+      setState(() {
+
+      });
+    }
+  }
   void _getData(bool forceRefresh) async {
     setState(() {
       busy = true;
     });
     try {
       user = await prefsOGx.getUser();
-      var sett = await prefsOGx.getSettings();
-      if (sett != null) {
-        title = await mTx.translate('organizationMembers', sett!.locale!);
-        subTitle = await mTx.translate('administratorsMembers', sett!.locale!);
-        setState(() {
 
-        });
-      }
       users = await organizationBloc.getUsers(
           organizationId: user!.organizationId!, forceRefresh: forceRefresh);
       p('$mm data refreshed, users: ${users.length}');

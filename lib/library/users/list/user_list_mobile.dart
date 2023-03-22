@@ -15,6 +15,7 @@ import '../../api/prefs_og.dart';
 import '../../bloc/fcm_bloc.dart';
 import '../../bloc/location_request_handler.dart';
 import '../../bloc/organization_bloc.dart';
+import '../../data/settings_model.dart';
 import '../../data/user.dart';
 import '../../emojis.dart';
 import '../../functions.dart';
@@ -52,14 +53,23 @@ class UserListMobileState extends State<UserListMobile>
         reverseDuration: const Duration(milliseconds: 2000),
         vsync: this);
     super.initState();
+    _setTexts();
     _getData(false);
     _listen();
   }
 
   late StreamSubscription<User> _streamSubscription;
+  late StreamSubscription<SettingsModel> settingsSubscriptionFCM;
+
   late StreamSubscription<LocationResponse> _locationResponseSubscription;
 
   void _listen() {
+    settingsSubscriptionFCM = fcmBloc.settingsStream.listen((event) async {
+      if (mounted) {
+        await _setTexts();
+        _getData(false);
+      }
+    });
     _streamSubscription = fcmBloc.userStream.listen((User user) {
       pp('$mm new user just arrived: ${user.toJson()}');
       if (mounted) {
@@ -72,19 +82,23 @@ class UserListMobileState extends State<UserListMobile>
         navigateToLocationResponse(response);
       }
     });
+
   }
 
   String? subTitle, title;
+  Future _setTexts() async {
+    var sett = await prefsOGx.getSettings();
+    if (sett != null) {
+      title = await mTx.translate('organizationMembers', sett!.locale!);
+      subTitle = await mTx.translate('administratorsMembers', sett!.locale!);
+    }
+  }
   Future _getData(bool forceRefresh) async {
     setState(() {
       busy = true;
     });
     try {
-      var sett = await prefsOGx.getSettings();
-      if (sett != null) {
-        title = await mTx.translate('organizationMembers', sett!.locale!);
-        subTitle = await mTx.translate('administratorsMembers', sett!.locale!);
-      }
+
       user = await prefsOGx.getUser();
       if (user!.userType == UserType.orgAdministrator ||
           user!.userType == UserType.orgExecutive) {

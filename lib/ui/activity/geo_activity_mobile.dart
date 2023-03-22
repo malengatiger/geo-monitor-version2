@@ -18,6 +18,7 @@ import 'package:universal_platform/universal_platform.dart';
 
 import '../../l10n/translation_handler.dart';
 import '../../library/bloc/fcm_bloc.dart';
+import '../../library/bloc/theme_bloc.dart';
 import '../../library/data/audio.dart';
 import '../../library/data/photo.dart';
 import '../../library/data/project.dart';
@@ -56,7 +57,7 @@ class GeoActivityMobileState extends State<GeoActivityMobile>
   late StreamSubscription<ProjectPosition> projectPositionSubscriptionFCM;
   late StreamSubscription<ProjectPolygon> projectPolygonSubscriptionFCM;
   late StreamSubscription<Project> projectSubscriptionFCM;
-  late StreamSubscription<User> userSubscriptionFCM;
+  late StreamSubscription<SettingsModel> settingsSubscriptionFCM;
   late StreamSubscription<GeofenceEvent> geofenceSubscriptionFCM;
   late StreamSubscription<ActivityModel> activitySubscriptionFCM;
 
@@ -76,7 +77,7 @@ class GeoActivityMobileState extends State<GeoActivityMobile>
     _listenForFCM();
   }
 
-  void _setTexts() async {
+  Future _setTexts() async {
     settingsModel = await prefsOGx.getSettings();
     if (settingsModel != null) {
       arrivedAt = await mTx.translate('memberArrived', settingsModel!.locale!);
@@ -99,8 +100,25 @@ class GeoActivityMobileState extends State<GeoActivityMobile>
         _handleGeofenceEvent(event);
 
       });
+      settingsSubscriptionFCM =
+          fcmBloc.settingsStream.listen((event) {
+            _handleNewSettings(event);
+          });
     } else {
       pp('App is running on the Web 👿👿👿firebase messaging is OFF 👿👿👿');
+    }
+  }
+  Future<void> _handleNewSettings(SettingsModel settings) async {
+    Locale newLocale = Locale(settings.locale!);
+    await _setTexts();
+    final m = LocaleAndTheme(themeIndex: settings!.themeIndex!,
+        locale: newLocale);
+    themeBloc.themeStreamController.sink.add(m);
+    settingsModel = settings;
+    if (mounted) {
+      setState(() {
+
+      });
     }
   }
 

@@ -108,6 +108,7 @@ class DashboardPortraitState extends State<DashboardPortrait>
         reverseDuration: Duration(milliseconds: dur),
         vsync: this);
     super.initState();
+    _setTexts();
     _getData(false);
     _setItems();
     _listenForData();
@@ -140,13 +141,19 @@ class DashboardPortraitState extends State<DashboardPortrait>
       }
     });
   }
+
   Future<void> _handleNewSettings(SettingsModel settings) async {
     Locale newLocale = Locale(settings.locale!);
-    await mTx.translate('settings', settings.locale!);
+    await _setTexts();
     final m = LocaleAndTheme(themeIndex: settings!.themeIndex!,
         locale: newLocale);
     themeBloc.themeStreamController.sink.add(m);
     this.settings = settings;
+    if (mounted) {
+      setState(() {
+
+      });
+    }
     _getData(false);
   }
 
@@ -217,9 +224,7 @@ class DashboardPortraitState extends State<DashboardPortrait>
 
   var subTitle = 'Data is for ';
 
-  Future _getData(bool forceRefresh) async {
-    pp('$mm ............................................ Refreshing dashboard data ....');
-    deviceUser = await prefsOGx.getUser();
+  Future _setTexts() async {
     settings = await prefsOGx.getSettings();
     if (settings != null) {
       numberOfDays = settings!.numberOfDays!;
@@ -231,6 +236,11 @@ class DashboardPortraitState extends State<DashboardPortrait>
     setState(() {
 
     });
+  }
+  Future _getData(bool forceRefresh) async {
+    pp('$mm ............................................ Refreshing dashboard data ....');
+    deviceUser = await prefsOGx.getUser();
+
 
     if (deviceUser != null) {
       if (deviceUser!.userType == UserType.orgAdministrator) {

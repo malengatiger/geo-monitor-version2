@@ -102,7 +102,7 @@ class ActivityListMobileState extends State<ActivityListMobile>
 
   String? locale;
   ActivityStrings? activityStrings;
-  void _setTexts() async {
+  Future _setTexts() async {
     user = await prefsOGx.getUser();
     settings = await prefsOGx.getSettings();
     if (settings != null) {
@@ -129,7 +129,7 @@ class ActivityListMobileState extends State<ActivityListMobile>
     }
   }
 
-  void _getData(bool forceRefresh) async {
+  Future _getData(bool forceRefresh) async {
     pp('$mm ... getting activity data ... forceRefresh: $forceRefresh');
     if (models.isNotEmpty) {
       _animationController.reverse().then((value) {
@@ -202,9 +202,13 @@ class ActivityListMobileState extends State<ActivityListMobile>
           'user ${event.user!.name} arrived: ${event.projectName} ');
       await _handleGeofenceEvent(event);
     });
+
     settingsSubscriptionFCM =
-        fcmBloc.settingsStream.listen((SettingsModel event) {
-      _getData(false);
+        fcmBloc.settingsStream.listen((SettingsModel event) async {
+      if (mounted) {
+        await _setTexts();
+        _getData(false);
+      }
     });
 
     subscription = fcmBloc.activityStream.listen((ActivityModel model) {
@@ -220,7 +224,7 @@ class ActivityListMobileState extends State<ActivityListMobile>
   }
 
   Future<void> _handleGeofenceEvent(GeofenceEvent event) async {
-      final arr = await mTx.translate('memberArrived', settings!.locale!);
+    final arr = await mTx.translate('memberArrived', settings!.locale!);
     if (event.projectName != null) {
       var arrivedAt = arr.replaceAll('\$project', event.projectName!);
       if (mounted) {
@@ -415,13 +419,16 @@ class ActivityListMobileState extends State<ActivityListMobile>
                         },
                         child: activityStrings == null
                             ? const SizedBox()
-                            : locale == null? const SizedBox():ActivityStreamCard(
-                                activityStrings: activityStrings!,
-                                activityModel: act,
-                                frontPadding: 36,
-                                thinMode: false,
-                                width: width, locale: locale!,
-                              ));
+                            : locale == null
+                                ? const SizedBox()
+                                : ActivityStreamCard(
+                                    activityStrings: activityStrings!,
+                                    activityModel: act,
+                                    frontPadding: 36,
+                                    thinMode: false,
+                                    width: width,
+                                    locale: locale!,
+                                  ));
                   }),
             ),
           ),

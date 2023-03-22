@@ -20,6 +20,7 @@ import 'package:uuid/uuid.dart';
 import '../../device_location/device_location_bloc.dart';
 import '../../l10n/translation_handler.dart';
 import '../../library/bloc/audio_for_upload.dart';
+import '../../library/bloc/fcm_bloc.dart';
 import '../../library/bloc/geo_uploader.dart';
 import '../../library/cache_manager.dart';
 import '../../library/data/position.dart';
@@ -44,6 +45,8 @@ class AudioRecorderState extends State<AudioRecorder> {
   StreamSubscription<RecordState>? _recordSub;
   RecordState _recordState = RecordState.stop;
   StreamSubscription<Amplitude>? _amplitudeSub;
+  late StreamSubscription<SettingsModel> settingsSubscriptionFCM;
+
   Amplitude? _amplitude;
   static const mx = '🍐🍐🍐 AudioRecorder 🍐🍐🍐: ';
   User? user;
@@ -66,6 +69,7 @@ class AudioRecorderState extends State<AudioRecorder> {
     });
 
     super.initState();
+    _listenToSettingsStream();
     _setTexts();
   }
 
@@ -81,7 +85,7 @@ class AudioRecorderState extends State<AudioRecorder> {
   int fileSize = 0;
   bool showWaveForm = false;
 
-  void _setTexts() async {
+  Future _setTexts() async {
     user = await prefsOGx.getUser();
     settingsModel = await prefsOGx.getSettings();
     if (settingsModel != null) {
@@ -104,6 +108,13 @@ class AudioRecorderState extends State<AudioRecorder> {
     }
 
     setState(() {});
+  }
+  void _listenToSettingsStream() async {
+    settingsSubscriptionFCM = fcmBloc.settingsStream.listen((event) async {
+      if (mounted) {
+        await _setTexts();
+      }
+    });
   }
 
   Future<void> _start() async {
@@ -173,6 +184,7 @@ class AudioRecorderState extends State<AudioRecorder> {
     _recordSub?.cancel();
     _amplitudeSub?.cancel();
     _audioRecorder.dispose();
+    settingsSubscriptionFCM.cancel();
     super.dispose();
   }
 

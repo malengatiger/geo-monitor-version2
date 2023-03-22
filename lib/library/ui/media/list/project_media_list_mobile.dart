@@ -11,10 +11,12 @@ import 'package:page_transition/page_transition.dart';
 
 import '../../../../l10n/translation_handler.dart';
 import '../../../api/prefs_og.dart';
+import '../../../bloc/fcm_bloc.dart';
 import '../../../bloc/project_bloc.dart';
 import '../../../data/audio.dart';
 import '../../../data/photo.dart';
 import '../../../data/project.dart';
+import '../../../data/settings_model.dart';
 import '../../../data/user.dart';
 import '../../../data/video.dart';
 import '../../../functions.dart';
@@ -38,14 +40,19 @@ class ProjectMediaListMobileState extends State<ProjectMediaListMobile>
   static const mm = '🔆🔆🔆 MediaListMobile 💜💜 ';
 
   late AnimationController _animationController;
-  StreamSubscription<List<Photo>>? photoStreamSubscription;
-  StreamSubscription<List<Video>>? videoStreamSubscription;
-  StreamSubscription<Photo>? newPhotoStreamSubscription;
+  late StreamSubscription<List<Photo>> photoStreamSubscription;
+  late StreamSubscription<List<Video>> videoStreamSubscription;
+  late StreamSubscription<List<Audio>> audioStreamSubscription;
+
+  late StreamSubscription<SettingsModel> settingsSubscriptionFCM;
+
 
   String? latest, earliest;
   late TabController _tabController;
 
   var _photos = <Photo>[];
+  var _videos = <Video>[];
+  var _audios = <Audio>[];
   User? user;
   bool _showPhotoDetail = false;
   Photo? selectedPhoto;
@@ -67,10 +74,10 @@ class ProjectMediaListMobileState extends State<ProjectMediaListMobile>
     super.initState();
     _setTexts();
     _listen();
-    _refresh(false);
+    _getData(false);
   }
 
-  void _setTexts() async {
+  Future _setTexts() async {
     var sett = await prefsOGx.getSettings();
     if (sett != null) {
       photosText = await mTx.translate('photos', sett.locale!);
@@ -85,7 +92,7 @@ class ProjectMediaListMobileState extends State<ProjectMediaListMobile>
     user ??= await prefsOGx.getUser();
 
     _listenToProjectStreams();
-    _listenToPhotoStream();
+    _listenToSettingsStream();
   }
 
   void _listenToProjectStreams() async {
@@ -104,7 +111,20 @@ class ProjectMediaListMobileState extends State<ProjectMediaListMobile>
 
     videoStreamSubscription = projectBloc.videoStream.listen((value) {
       pp('$mm Videos received from projectVideoStream: 🏈 ${value.length}');
+      _videos = value;
       if (mounted) {
+        _animationController.forward();
+        _getData(false);
+        setState(() {});
+      } else {
+        pp(' 😡😡😡 what the fuck? this thing is not mounted  😡😡😡');
+      }
+    });
+    audioStreamSubscription = projectBloc.audioStream.listen((value) {
+      pp('$mm Videos received from projectAudioStream: 🏈 ${value.length}');
+      _audios = value;
+      if (mounted) {
+        _getData(false);
         _animationController.forward();
         setState(() {});
       } else {
@@ -113,19 +133,17 @@ class ProjectMediaListMobileState extends State<ProjectMediaListMobile>
     });
   }
 
-  void _listenToPhotoStream() async {
-    // newPhotoStreamSubscription = cloudStorageBloc.photoStream.listen((mPhoto) {
-    //   pp('${E.blueDot}${E.blueDot} '
-    //       'New photo arrived from newPhotoStreamSubscription: ${mPhoto.toJson()} ${E.blueDot}');
-    //   _photos.add(mPhoto);
-    //   if (mounted) {
-    //     setState(() {});
-    //   }
-    // // });
+  void _listenToSettingsStream() async {
+    settingsSubscriptionFCM = fcmBloc.settingsStream.listen((event) async {
+      if (mounted) {
+        await _setTexts();
+        _getData(false);
+      }
+    });
   }
 
-  Future<void> _refresh(bool forceRefresh) async {
-    pp('$mm _MediaListMobileState: .......... _refresh ...forceRefresh: $forceRefresh');
+  Future<void> _getData(bool forceRefresh) async {
+    pp('$mm: .......... _getData ...forceRefresh: $forceRefresh');
     setState(() {
       busy = true;
     });
@@ -139,6 +157,8 @@ class ProjectMediaListMobileState extends State<ProjectMediaListMobile>
           forceRefresh: forceRefresh, startDate: startDate!, endDate: endDate!);
       pp('$mm bag has arrived safely! Yeah!! photos: ${bag.photos!.length} videos: ${bag.videos!.length}');
       _photos = bag.photos!;
+      _videos = bag.videos!;
+      _audios = bag.audios!;
       setState(() {});
       _animationController.forward();
     } catch (e) {
@@ -157,10 +177,12 @@ class ProjectMediaListMobileState extends State<ProjectMediaListMobile>
   @override
   void dispose() {
     _animationController.dispose();
+    settingsSubscriptionFCM.cancel();
+    photoStreamSubscription.cancel();
+    videoStreamSubscription.cancel();
+    audioStreamSubscription.cancel();
     super.dispose();
   }
-
-
 
   void _navigateToPlayVideo() {
     pp('... play audio from internets');
@@ -280,7 +302,7 @@ class ProjectMediaListMobileState extends State<ProjectMediaListMobile>
               )),
           IconButton(
               onPressed: () {
-                _refresh(true);
+                _getData(true);
               },
               icon: Icon(
                 Icons.refresh,

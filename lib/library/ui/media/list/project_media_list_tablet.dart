@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:animations/animations.dart';
 import 'package:flutter/material.dart';
+import 'package:geo_monitor/library/bloc/fcm_bloc.dart';
 import 'package:geo_monitor/library/ui/camera/chewie_video_player.dart';
 import 'package:geo_monitor/library/ui/camera/photo_handler.dart';
 import 'package:geo_monitor/library/ui/camera/video_recorder.dart';
@@ -18,6 +19,7 @@ import '../../../bloc/project_bloc.dart';
 import '../../../data/audio.dart';
 import '../../../data/photo.dart';
 import '../../../data/project.dart';
+import '../../../data/settings_model.dart';
 import '../../../data/user.dart';
 import '../../../data/video.dart';
 import '../../../functions.dart';
@@ -39,6 +41,8 @@ class ProjectMediaListTabletState extends State<ProjectMediaListTablet>
   StreamSubscription<List<Photo>>? photoStreamSubscription;
   StreamSubscription<List<Video>>? videoStreamSubscription;
   StreamSubscription<Photo>? newPhotoStreamSubscription;
+  late StreamSubscription<SettingsModel> settingsSubscriptionFCM;
+
 
   String? latest, earliest;
   late TabController _tabController;
@@ -69,7 +73,7 @@ class ProjectMediaListTabletState extends State<ProjectMediaListTablet>
     _getData(false);
   }
 
-  void _setTexts() async {
+  Future _setTexts() async {
     var sett = await prefsOGx.getSettings();
     if (sett != null) {
       photosText = await mTx.translate('photos', sett.locale!);
@@ -84,6 +88,7 @@ class ProjectMediaListTabletState extends State<ProjectMediaListTablet>
 
     _listenToProjectStreams();
     _listenToPhotoStream();
+    _listenToSettingsStream();
   }
 
   void _listenToProjectStreams() async {
@@ -121,6 +126,15 @@ class ProjectMediaListTabletState extends State<ProjectMediaListTablet>
     //     setState(() {});
     //   }
     // });
+  }
+
+  void _listenToSettingsStream() async {
+    settingsSubscriptionFCM = fcmBloc.settingsStream.listen((event) async {
+      if (mounted) {
+        await _setTexts();
+        _getData(false);
+      }
+    });
   }
 
   Future<void> _getData(bool forceRefresh) async {
