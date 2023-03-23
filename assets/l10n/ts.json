@@ -247,5 +247,10 @@
   "errorRecording": "Xihoxo lexi hlanganeke hi nkarhi wa ku rhekhoda",
   "addVideoRating": "Engetelani Xiringanyeto xa Vhidiyo",
   "memberLeft": "Xirho xi sukile eka $project",
-  "memberArrived": "Xirho xi fikile kutani xi sayinile eka $project"
+  "memberArrived": "Xirho xi fikile kutani xi sayinile eka $project",
+  "monitorSchedules": "Tixedulu ta Mulanguteri wa Nsimu",
+  "checkSettings": "Hi kombela u kambela WIFI ya xitirhisiwa xa wena ni swiyimiso swa netiweke",
+  "createNewProject": "Hi kombela u endla phurojeke leyintshwa ku sungula ntirho",
+  "addNewMembers": "Hi kombela u tsarisa swirho leswintshwa eka nhlangano wa n’wina",
+  "serverNotAvailable": "Server a yi kumeki eka nkarhi lowu. Hi kombela u ringeta nakambe endzhaku"
 }

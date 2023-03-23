@@ -247,7 +247,12 @@
   "errorRecording": "Kukanganisa kwakaitika panguva yekurekodha",
   "addVideoRating": "Wedzera Vhidhiyo Rating",
   "memberLeft": "Nhengo yasiya $project",
-  "memberArrived": "Nhengo yasvika kana kusaina pa $project"
+  "memberArrived": "Nhengo yasvika kana kusaina pa $project",
+  "monitorSchedules": "Munda Monitor Mapurogiramu",
+  "checkSettings": "Ndokumbira utarise mudziyo wako WIFI uye netiweki marongero",
+  "createNewProject": "Ndapota gadzirai chirongwa chitsva kuti basa ritange",
+  "addNewMembers": "Ndapota nyoresai nhengo itsva dzesangano renyu",
+  "serverNotAvailable": "Sevha haisi kuwanikwa panguva ino. Ndapota edza zvakare gare gare"
 
 
 }

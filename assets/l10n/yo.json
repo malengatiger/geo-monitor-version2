@@ -249,7 +249,12 @@
   "errorRecording": "Aṣiṣe pade lakoko gbigbasilẹ",
   "addVideoRating": "Fi Fidio Rating",
   "memberLeft": "Omo egbe kan ti kuro ni ise agbese $project",
-  "memberArrived": "Omo egbe kan ti de tabi wole ni $project"
+  "memberArrived": "Omo egbe kan ti de tabi wole ni $project",
+  "monitorSchedules": "Field Monitor Awọn iṣeto",
+  "checkSettings": "Jọwọ ṣayẹwo ẹrọ rẹ WIFI ati awọn eto nẹtiwọki",
+  "createNewProject": "Jọwọ ṣẹda iṣẹ akanṣe tuntun lati bẹrẹ iṣẹ",
+  "addNewMembers": "Jọwọ forukọsilẹ titun omo egbe fun nyin ètò",
+  "serverNotAvailable": "Olupin ko si ni akoko yii. Jọwọ gbiyanju lẹẹkansi nigbamii"
 
 
 

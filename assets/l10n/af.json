@@ -251,7 +251,12 @@
   "errorRecording": "Fout tydens opname ondervind",
   "addVideoRating": "Voeg videogradering by",
   "memberLeft": "\u0027n Lid het die $projek verlaat",
-  "memberArrived": "\u0027n Lid het by $project aangekom of aangemeld"
+  "memberArrived": "\u0027n Lid het by $project aangekom of aangemeld",
+  "monitorSchedules": "Veldmonitorskedules",
+  "checkSettings": "Gaan asseblief jou toestel se WIFI en netwerkinstellings na",
+  "createNewProject": "Skep asseblief \u0027n nuwe projek om werk te begin",
+  "addNewMembers": "Registreer asseblief nuwe lede vir jou organisasie",
+  "serverNotAvailable": "Bediener is nie tans beskikbaar nie. Probeer asseblief weer later"
 
 
 

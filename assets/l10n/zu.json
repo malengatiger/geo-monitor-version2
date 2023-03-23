@@ -247,6 +247,11 @@
   "errorRecording": "Kuvele iphutha ngesikhathi sokurekhoda",
   "addVideoRating": "Engeza Isilinganiselwa Sevidiyo",
   "memberLeft": "Ilungu lishiye iphrojekthi ye-$project",
-  "memberArrived": "Ilungu selifikile noma lingene ngemvume e-$project"
+  "memberArrived": "Ilungu selifikile noma lingene ngemvume e-$project",
+  "monitorSchedules": "Field Monitor Amashejuli",
+  "checkSettings": "Sicela uhlole i-WIFI yedivayisi yakho kanye nezilungiselelo zenethiwekhi",
+  "createNewProject": "Sicela udale iphrojekthi entsha ukuze uqalise umsebenzi",
+  "addNewMembers": "Sicela ubhalise amalungu amasha enhlangano yakho",
+  "serverNotAvailable": "Iseva ayitholakali ngalesi sikhathi. Sicela uzame futhi emuva kwesikhathi"
 
 }

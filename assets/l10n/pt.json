@@ -247,7 +247,12 @@
   "errorRecording": "Erro encontrado durante a gravação",
   "addVideoRating": "Adicionar classificação de vídeo",
   "memberLeft": "Um membro deixou o $project",
-  "memberArrived": "Um membro chegou ou entrou em $project"
+  "memberArrived": "Um membro chegou ou entrou em $project",
+  "monitorSchedules": "Cronogramas de monitoramento de campo",
+  "checkSettings": "Verifique as configurações de Wi-Fi e rede do seu dispositivo",
+  "createNewProject": "Crie um novo projeto para começar o trabalho",
+  "addNewMembers": "Registre novos membros para sua organização",
+  "serverNotAvailable": "O servidor não está disponível no momento. Por favor, tente novamente mais tarde"
 
 
 

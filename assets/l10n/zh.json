@@ -254,6 +254,11 @@
   "errorRecording": "录制过程中遇到错误",
   "addVideoRating": "添加视频评级",
   "memberLeft": "一位成员离开了 $project",
-  "memberArrived": "会员已到达或登录 $project"
+  "memberArrived": "会员已到达或登录 $project",
+  "monitorSchedules": "现场监控时间表",
+  "checkSettings": "请检查您的设备 WIFI 和网络设置",
+  "createNewProject": "请创建一个新项目以开始工作",
+  "addNewMembers": "请为您的组织注册新成员",
+  "serverNotAvailable": "服务器此时不可用。请稍后再试"
 
 }

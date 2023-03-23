@@ -247,7 +247,12 @@
   "errorRecording": "Hitilafu iliyotokea wakati wa kurekodi",
   "addVideoRating": "Ongeza Ukadiriaji wa Video",
   "memberLeft": "Mwanachama ameondoka kwenye mradi wa $project",
-  "memberArrived": "Mwanachama amefika au ameingia katika $project"
+  "memberArrived": "Mwanachama amefika au ameingia katika $project",
+  "monitorSchedules": "Ratiba za Ufuatiliaji wa Uga",
+  "checkSettings": "Tafadhali angalia WIFI ya kifaa chako na mipangilio ya mtandao",
+  "createNewProject": "Tafadhali fungua mradi mpya ili uanze kazi",
+  "addNewMembers": "Tafadhali sajili wanachama wapya wa shirika lako",
+  "serverNotAvailable": "Seva haipatikani kwa wakati huu. Tafadhali jaribu tena baadae"
 
 
 }

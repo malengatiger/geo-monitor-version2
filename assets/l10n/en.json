@@ -249,5 +249,11 @@
   "errorRecording": "Error encountered during recording",
   "addVideoRating": "Add Video Rating",
   "memberLeft": "A Member has left the $project",
-  "memberArrived": "A Member has arrived or signed in at $project"
+  "memberArrived": "A Member has arrived or signed in at $project",
+  "monitorSchedules": "Field Monitor Schedules",
+  "checkSettings": "Please check your device WIFI and network settings",
+  "schedules": "Schedules",
+  "createNewProject": "Please create a new project to get work started",
+  "addNewMembers": "Please register new members for your organization",
+  "serverNotAvailable": "Server is not available at this time. Please try again later"
 }

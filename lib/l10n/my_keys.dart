@@ -294,5 +294,12 @@ class MyKeys {
     hashMap["memberArrived"] = "memberArrived";
     hashMap["memberLeft"] = "memberLeft";
 
+    hashMap["schedules"] = "Schedules";
+    hashMap["monitorSchedules"] = "monitorSchedules";
+    hashMap["serverNotAvailable"] = "serverNotAvailable";
+    hashMap["checkSettings"] = "checkSettings";
+    hashMap["createNewProject"] = "createNewProject";
+    hashMap["addNewMembers"] = "addNewMembers";
+
     }
 }

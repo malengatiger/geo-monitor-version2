@@ -247,7 +247,12 @@
   "errorRecording": "Ho hlahile phoso nakong ea ho rekota",
   "addVideoRating": "Kenya Lintlha tsa Video",
   "memberLeft": "Setho se tlohile morerong oa $project",
-  "memberArrived": "Setho se fihlile kapa se saenetse ho $project"
+  "memberArrived": "Setho se fihlile kapa se saenetse ho $project",
+  "monitorSchedules": "Mananeo a Tekolo ea Tšimo",
+  "checkSettings": "Ka kopo, sheba WIFI ea sesebelisoa sa hau le litlhophiso tsa marang-rang",
+  "createNewProject": "Ka kopo, theha projeke e ncha ho qala mosebetsi",
+  "addNewMembers": "Ka kopo ngolisa litho tse ncha tsa mokhatlo oa hau",
+  "serverNotAvailable": "Seva ha e fumanehe hajoale. Ka kopo, leka hape hamorao"
 
 
 

@@ -255,6 +255,11 @@
   "errorRecording": "Enwetara mperi n\u0027oge ndekọ",
   "addVideoRating": "Tinye ogo vidiyo",
   "memberLeft": "Otu onye ahapụla $project ahụ",
-  "memberArrived": "Otu onye abanyela ma ọ bụ banye na $project"
+  "memberArrived": "Otu onye abanyela ma ọ bụ banye na $project",
+  "monitorSchedules": "Usoro nleba anya ubi",
+  "checkSettings": "Biko lelee ngwaọrụ gị WIFI na ntọala netwọkụ",
+  "createNewProject": "Biko mepụta ọrụ ọhụrụ iji malite ọrụ",
+  "addNewMembers": "Biko debanye aha ndị otu ọhụrụ maka nzukọ gị",
+  "serverNotAvailable": "Ihe nkesa adịghị n\u0027oge a. Biko nwaa ọzọ ma emechaa"
 
 }

@@ -250,6 +250,11 @@
   "errorRecording": "Erreur rencontrée lors de l\u0027enregistrement",
   "addVideoRating": "Ajouter une note vidéo",
   "memberLeft": "Un membre a quitté le $project",
-  "memberArrived": "Un membre est arrivé ou s\u0027est connecté à $project"
+  "memberArrived": "Un membre est arrivé ou s\u0027est connecté à $project",
+  "monitorSchedules": "Horaires des moniteurs de terrain",
+  "checkSettings": "Veuillez vérifier les paramètres Wi-Fi et réseau de votre appareil",
+  "createNewProject": "Veuillez créer un nouveau projet pour commencer le travail",
+  "addNewMembers": "Veuillez enregistrer de nouveaux membres pour votre organisation",
+  "serverNotAvailable": "Le serveur n\u0027est pas disponible pour le moment. Veuillez réessayer plus tard"
 
 }
