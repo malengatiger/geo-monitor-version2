@@ -122,6 +122,6 @@
 		<true/>
 	</dict>
 	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
-	<string></string>
+	<string>Your location is requested by your manager or supervisor via notifications in the background</string>
 </dict>
 </plist>
