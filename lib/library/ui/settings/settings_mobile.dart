@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:geo_monitor/library/ui/settings/settings_form.dart';
 import 'package:geo_monitor/library/ui/settings/settings_form_monitor.dart';
 
 import '../../../l10n/translation_handler.dart';
@@ -45,6 +46,25 @@ class SettingsMobileState extends State<SettingsMobile>
     _getOrganizationSettings();
   }
 
+  String? title;
+  bool showMonitorForm = false;
+  void _handleOnLocaleChanged(String locale) async {
+    pp('SettingsForm 😎😎😎😎 _handleOnLocaleChanged: $locale');
+    _setTexts();
+  }
+
+  void _setTexts() async {
+    settingsModel = await prefsOGx.getSettings();
+    if (settingsModel != null) {
+      title = await mTx.translate('settings', settingsModel!.locale!);
+    }
+    user = await prefsOGx.getUser();
+    if (user!.userType! == UserType.fieldMonitor) {
+      showMonitorForm = true;
+    }
+    setState(() {});
+  }
+
   void _getOrganizationSettings() async {
     pp('🍎🍎 ............. getting user from prefs ...');
     user = await prefsOGx.getUser();
@@ -82,7 +102,10 @@ class SettingsMobileState extends State<SettingsMobile>
           title == null ? 'Settings' : title!,
           style: myTextStyleLarge(context),
         ),
-        bottom: const PreferredSize(preferredSize: Size.fromHeight(100), child: SizedBox(),),
+        bottom:  PreferredSize(
+          preferredSize: Size.fromHeight(showMonitorForm? 100: 8),
+          child: const SizedBox(),
+        ),
       ),
       body: busy
           ? const Center(
@@ -99,29 +122,20 @@ class SettingsMobileState extends State<SettingsMobile>
               ),
             )
           : Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0),
-            child: SettingsFormMonitor(
-                onLocaleChanged: (locale) {
-                  _handleOnLocaleChanged(locale);
-                },
-                padding: 20),
-          ),
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              child: showMonitorForm
+                  ? SettingsFormMonitor(
+                      onLocaleChanged: (locale) {
+                        _handleOnLocaleChanged(locale);
+                      },
+                      padding: 20)
+                  : SettingsForm(
+                      padding: 8,
+                      onLocaleChanged: (String locale) {
+                        _handleOnLocaleChanged(locale);
+                      },
+                    ),
+            ),
     ));
-  }
-
-  String? title;
-  void _handleOnLocaleChanged(String locale) async {
-    pp('SettingsForm 😎😎😎😎 _handleOnLocaleChanged: $locale');
-    _setTexts();
-
-  }
-  void _setTexts() async {
-    settingsModel = await prefsOGx.getSettings();
-    if (settingsModel != null) {
-      title = await mTx.translate('settings', settingsModel!.locale!);
-    }
-    setState(() {
-
-    });
   }
 }

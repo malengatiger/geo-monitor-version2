@@ -381,7 +381,7 @@ class SettingsFormState extends State<SettingsForm> {
       children: [
         Card(
           elevation: 4,
-          shape: getRoundedBorder(radius: 16),
+          shape: getRoundedBorder(radius: 8),
           child: Padding(
             padding: const EdgeInsets.all(8.0),
             child: SingleChildScrollView(
@@ -392,7 +392,7 @@ class SettingsFormState extends State<SettingsForm> {
                   child: Column(
                     children: [
                       Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        mainAxisAlignment: MainAxisAlignment.start,
                         children: [
                           GestureDetector(
                             onTap: () {
@@ -408,7 +408,7 @@ class SettingsFormState extends State<SettingsForm> {
                                 padding: const EdgeInsets.all(8.0),
                                 child: SizedBox(
                                   height: 48,
-                                  width: 240,
+                                  width: 220,
                                   child: Container(
                                     color: Theme.of(context).primaryColor,
                                     child: Center(
@@ -438,7 +438,7 @@ class SettingsFormState extends State<SettingsForm> {
                                 )
                               : const SizedBox(),
                           const SizedBox(
-                            width: 24,
+                            width: 2,
                           ),
                           IconButton(
                               onPressed: () {
@@ -446,7 +446,7 @@ class SettingsFormState extends State<SettingsForm> {
                               },
                               icon: Icon(
                                 Icons.check,
-                                size: 36,
+                                size: 28,
                                 color: Theme.of(context).primaryColor,
                               )),
                         ],

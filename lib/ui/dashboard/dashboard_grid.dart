@@ -1,15 +1,14 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:geo_monitor/library/api/prefs_og.dart';
-import 'package:google_fonts/google_fonts.dart';
+import 'package:geo_monitor/library/bloc/fcm_bloc.dart';
+import 'package:geo_monitor/ui/dashboard/project_dashboard_mobile.dart';
 
-import '../../l10n/translation_handler.dart';
 import '../../library/bloc/downloader.dart';
-import '../../library/bloc/organization_bloc.dart';
 import '../../library/data/data_bag.dart';
 import '../../library/data/settings_model.dart';
 import '../../library/functions.dart';
+import 'dashboard_element.dart';
 
 class DashboardGrid extends StatefulWidget {
   final Function(int) onTypeTapped;
@@ -36,33 +35,38 @@ class DashboardGrid extends StatefulWidget {
 }
 
 class _DashboardGridState extends State<DashboardGrid> {
-  final mm = '🔵🔵🔵🔵 DashboardGrid:  🍎 ';
+  final mm = '🔵🔵🔵🔵DashboardGrid:  🍎 ';
 
-  String? projects, members, photos,
-      videos, audios, areas, locations, schedules, audioClips;
+  // String? projects, members, photos,
+  //     videos, audios, areas, locations, schedules, audioClips;
   late StreamSubscription<SettingsModel> settingsSubscription;
+  SettingsModel? settingsModel;
+  DashboardStrings? dashboardStrings;
 
   @override
   void initState() {
     super.initState();
     _listen();
-    _setTitles();
+    _setTexts();
   }
   @override
   void dispose() {
     settingsSubscription.cancel();
     super.dispose();
   }
-  Future _setTitles() async {
 
-    var sett = await prefsOGx.getSettings();
-    projects = await mTx.translate('projects', sett!.locale!);
-    members = await mTx.translate('members', sett.locale!);
-    photos = await mTx.translate('photos', sett.locale!);
-    audioClips = await mTx.translate('audioClips', sett.locale!);
-    locations = await mTx.translate('locations', sett.locale!);
-    areas = await mTx.translate('areas', sett.locale!);
-    schedules = await mTx.translate('schedules', sett.locale!);
+  Future _setTexts() async {
+
+    dashboardStrings = await DashboardStrings.getTranslated();
+    // settingsModel = await prefsOGx.getSettings();
+    // projects = await mTx.translate('projects', settingsModel!.locale!);
+    // members = await mTx.translate('members', settingsModel!.locale!);
+    // areas = await mTx.translate('areas', settingsModel!.locale!);
+    // schedules = await mTx.translate('schedules', settingsModel!.locale!);
+    // videos = await mTx.translate('videos', settingsModel!.locale!);
+    // audioClips = await mTx.translate('audioClips', settingsModel!.locale!);
+    // locations = await mTx.translate('locations', settingsModel!.locale!);
+
     setState(() {
 
     });
@@ -70,9 +74,10 @@ class _DashboardGridState extends State<DashboardGrid> {
 
   void _listen() async {
     settingsSubscription =
-        organizationBloc.settingsStream.listen((SettingsModel settings) async {
+        fcmBloc.settingsStream.listen((SettingsModel settings) async {
           pp('$mm settingsStream delivered settings ... ${settings.locale!}, will set titles');
-          await _setTitles();
+          settingsModel = settings;
+          await _setTexts();
           if (mounted) {
             setState(() {});
           }
@@ -84,7 +89,7 @@ class _DashboardGridState extends State<DashboardGrid> {
       // height: totalHeight == null ? 1000 : totalHeight!,
       child: Padding(
         padding: EdgeInsets.all(widget.gridPadding),
-        child: GridView.count(
+        child: dashboardStrings == null? const SizedBox(): GridView.count(
           crossAxisCount: widget.crossAxisCount,
           children: [
             GestureDetector(
@@ -92,7 +97,7 @@ class _DashboardGridState extends State<DashboardGrid> {
                 widget.onTypeTapped(typeProjects);
               },
               child: DashboardElement(
-                title: projects == null? 'Projects':projects!,
+                title: dashboardStrings!.projects,
                 topPadding: widget.elementPadding,
                 number: widget.dataBag.projects!.length,
                 onTapped: () {
@@ -107,7 +112,7 @@ class _DashboardGridState extends State<DashboardGrid> {
                 widget.onTypeTapped(typeUsers);
               },
               child: DashboardElement(
-                title: members == null? 'Members': members!,
+                title: dashboardStrings!.members,
                 number: widget.dataBag.users!.length,
                 topPadding: widget.elementPadding,
                 onTapped: () {
@@ -117,18 +122,13 @@ class _DashboardGridState extends State<DashboardGrid> {
             ),
             GestureDetector(
               onTap: () {
-                pp('$mm widget on tapped: typePhotos $typePhotos ...');
-
                 widget.onTypeTapped(typePhotos);
               },
               child: DashboardElement(
-                title: photos == null?'Photos':photos!,
+                title: dashboardStrings!.photos,
                 number: widget.dataBag.photos!.length,
                 topPadding: widget.elementPadding,
-                textStyle: GoogleFonts.secularOne(
-                    textStyle: Theme.of(context).textTheme.titleLarge,
-                    fontWeight: FontWeight.w900,
-                    color: Theme.of(context).primaryColor),
+                textStyle: myNumberStyleLargePrimaryColor(context),
                 onTapped: () {
                   widget.onTypeTapped(typePhotos);
                 },
@@ -136,18 +136,13 @@ class _DashboardGridState extends State<DashboardGrid> {
             ),
             GestureDetector(
               onTap: () {
-                pp('$mm widget on tapped: typeVideos $typeVideos ...');
-
                 widget.onTypeTapped(typeVideos);
               },
               child: DashboardElement(
-                title: videos == null? 'Videos':videos!,
+                title: dashboardStrings!.videos,
                 topPadding: widget.elementPadding,
                 number: widget.dataBag.videos!.length,
-                textStyle: GoogleFonts.secularOne(
-                    textStyle: Theme.of(context).textTheme.titleLarge,
-                    fontWeight: FontWeight.w900,
-                    color: Theme.of(context).primaryColor),
+                textStyle: myNumberStyleLargePrimaryColor(context),
                 onTapped: () {
                   widget.onTypeTapped(typeVideos);
                 },
@@ -155,18 +150,13 @@ class _DashboardGridState extends State<DashboardGrid> {
             ),
             GestureDetector(
               onTap: () {
-                pp('$mm widget on tapped: typeAudios $typeAudios ...');
-
                 widget.onTypeTapped(typeAudios);
               },
               child: DashboardElement(
-                title: audioClips == null? 'Audio Clips': audioClips!,
+                title: dashboardStrings!.audioClips,
                 topPadding: widget.elementPadding,
                 number: widget.dataBag.audios!.length,
-                textStyle: GoogleFonts.secularOne(
-                    textStyle: Theme.of(context).textTheme.titleLarge,
-                    fontWeight: FontWeight.w900,
-                    color: Theme.of(context).primaryColor),
+                textStyle: myNumberStyleLargePrimaryColor(context),
                 onTapped: () {
                   widget.onTypeTapped(typeAudios);
                 },
@@ -174,12 +164,10 @@ class _DashboardGridState extends State<DashboardGrid> {
             ),
             GestureDetector(
               onTap: () {
-                pp('$mm widget on tapped: typePositions $typePositions ...');
-
                 widget.onTypeTapped(typePositions);
               },
               child: DashboardElement(
-                title: locations == null? 'Locations': locations!,
+                title: dashboardStrings!.locations,
                 topPadding: widget.elementPadding,
                 number: widget.dataBag.projectPositions!.length,
                 onTapped: () {
@@ -189,12 +177,10 @@ class _DashboardGridState extends State<DashboardGrid> {
             ),
             GestureDetector(
               onTap: () {
-                pp('$mm widget on tapped: typePolygons $typePolygons ...');
-
                 widget.onTypeTapped(typePolygons);
               },
               child: DashboardElement(
-                title: areas == null? 'Areas': areas!,
+                title: dashboardStrings!.areas,
                 topPadding: widget.elementPadding,
                 number: widget.dataBag.projectPolygons!.length,
 
@@ -205,12 +191,10 @@ class _DashboardGridState extends State<DashboardGrid> {
             ),
             GestureDetector(
               onTap: () {
-                pp('$mm widget on tapped: typeSchedules $typeSchedules ...');
-
                 widget.onTypeTapped(typeSchedules);
               },
               child: DashboardElement(
-                title: schedules == null?'Schedules':schedules!,
+                title: dashboardStrings!.schedules,
                 topPadding: widget.elementPadding,
                 number: widget.dataBag.fieldMonitorSchedules!.length,
                 onTapped: () {
@@ -225,69 +209,4 @@ class _DashboardGridState extends State<DashboardGrid> {
   }
 }
 
-class DashboardElement extends StatelessWidget {
-  const DashboardElement(
-      {Key? key,
-      required this.number,
-      required this.title,
-      this.height,
-      this.topPadding,
-      this.textStyle,
-      this.labelTitleStyle,
-      required this.onTapped})
-      : super(key: key);
-  final int number;
-  final String title;
-  final double? height, topPadding;
-  final TextStyle? textStyle, labelTitleStyle;
-  final Function() onTapped;
 
-  @override
-  Widget build(BuildContext context) {
-
-    var style = GoogleFonts.secularOne(
-        textStyle: Theme.of(context).textTheme.titleLarge,
-        fontWeight: FontWeight.w900);
-
-    return GestureDetector(
-      onTap: () {
-        onTapped();
-      },
-      child: Card(
-        shape: getRoundedBorder(radius: 16),
-        child: SizedBox(
-          height: height == null ? 260 : height!,
-          child: Column(
-            children: [
-              SizedBox(
-                height: topPadding == null ? 72 : topPadding!,
-              ),
-              Text('$number', style: textStyle == null ? style : textStyle!),
-              const SizedBox(
-                height: 8,
-              ),
-              Center(
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                  child: Text(
-                    title,
-                    style: myTextStyleMediumBoldGrey(context),
-                  ),
-                ),
-              )
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class Life extends StatelessWidget {
-  const Life({Key? key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return const Placeholder();
-  }
-}

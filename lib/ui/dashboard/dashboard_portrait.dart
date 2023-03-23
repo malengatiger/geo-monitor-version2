@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:geo_monitor/l10n/translation_handler.dart';
 import 'package:geo_monitor/library/generic_functions.dart';
-import 'package:geo_monitor/library/ui/project_list/project_list_main.dart';
 import 'package:geo_monitor/library/ui/settings/settings_main.dart';
 import 'package:geo_monitor/library/users/full_user_photo.dart';
 import 'package:geo_monitor/ui/activity/geo_activity_mobile.dart';
@@ -37,7 +36,6 @@ import '../../library/functions.dart';
 import '../../library/ui/maps/project_map_mobile.dart';
 import '../../library/ui/media/list/project_media_list_mobile.dart';
 import '../../library/ui/media/user_media_list/user_media_list_mobile.dart';
-import '../../library/ui/project_list/project_chooser.dart';
 import '../../library/ui/project_list/project_list_mobile.dart';
 import '../../library/ui/weather/daily_forecast_page.dart';
 import '../../library/users/list/user_list_main.dart';
@@ -115,7 +113,6 @@ class DashboardPortraitState extends State<DashboardPortrait>
     _listenForFCM();
     _getAuthenticationStatus();
     _subscribeToConnectivity();
-    // _startTimer();
   }
 
   void _listenForData() async {
@@ -237,6 +234,7 @@ class DashboardPortraitState extends State<DashboardPortrait>
 
     });
   }
+
   Future _getData(bool forceRefresh) async {
     pp('$mm ............................................ Refreshing dashboard data ....');
     deviceUser = await prefsOGx.getUser();
@@ -412,16 +410,7 @@ class DashboardPortraitState extends State<DashboardPortrait>
   }
 
   void _navigateToProjectList() {
-    if (selectedProject != null) {
-      Navigator.push(
-          context,
-          PageTransition(
-              type: PageTransitionType.scale,
-              alignment: Alignment.topLeft,
-              duration: const Duration(seconds: 1),
-              child: const ProjectListMain()));
-      selectedProject = null;
-    } else {
+
       Navigator.push(
           context,
           PageTransition(
@@ -431,7 +420,7 @@ class DashboardPortraitState extends State<DashboardPortrait>
               child: ProjectListMobile(
                 instruction: instruction,
               )));
-    }
+
   }
 
   void _navigateToMessageSender() {
@@ -577,71 +566,6 @@ class DashboardPortraitState extends State<DashboardPortrait>
       typePolygons = 4,
       typeSchedules = 5;
 
-  void _showProjectDialog(int destination) {
-    late String title;
-    switch (destination) {
-      case typePhoto:
-        title = 'Photos';
-        break;
-      case typeVideo:
-        title = 'Videos';
-        break;
-      case typeAudio:
-        title = 'Audio';
-        break;
-      case typePositions:
-        title = 'Map';
-        break;
-      case typePolygons:
-        title = 'Map';
-        break;
-    }
-
-    showDialog(
-        context: context,
-        barrierDismissible: true,
-        builder: (_) => Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Center(
-                child: Container(
-                  color: Colors.black12,
-                  child: ProjectChooser(
-                      title: title,
-                      height: 500,
-                      width: 400,
-                      onSelected: (p1) {
-                        Navigator.of(context).pop();
-                        _onProjectSelected(p1, destination);
-                      },
-                      onClose: () {
-                        Navigator.pop(context);
-                      }),
-                ),
-              ),
-            ));
-  }
-
-  _onProjectSelected(Project p1, int destination) {
-    switch (destination) {
-      case typeVideo:
-        _navigateToProjectMedia(p1);
-        break;
-      case typeAudio:
-        _navigateToProjectMedia(p1);
-        break;
-      case typePhoto:
-        _navigateToProjectMedia(p1);
-        break;
-      case typePositions:
-        _navigateToProjectMap(p1);
-        break;
-      case typePolygons:
-        _navigateToProjectMap(p1);
-        break;
-    }
-  }
-
-  Project? selectedProject;
 
   @override
   Widget build(BuildContext context) {

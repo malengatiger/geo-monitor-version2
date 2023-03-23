@@ -243,7 +243,7 @@ TextStyle myNumberStyleLarge(BuildContext context) {
 
 TextStyle myNumberStyleLargePrimaryColor(BuildContext context) {
   return GoogleFonts.secularOne(
-      textStyle: Theme.of(context).textTheme.bodyLarge,
+      textStyle: Theme.of(context).textTheme.titleLarge,
       color: Theme.of(context).primaryColor,
       fontWeight: FontWeight.w900,
       fontSize: 24);
@@ -261,6 +261,12 @@ TextStyle myNumberStyleLargest(BuildContext context) {
       textStyle: Theme.of(context).textTheme.headlineLarge,
       fontWeight: FontWeight.w900,
       fontSize: 36);
+}
+
+TextStyle myNumberStyleBig(BuildContext context) {
+  return GoogleFonts.secularOne(
+      textStyle: Theme.of(context).textTheme.titleLarge,
+      fontWeight: FontWeight.w900);
 }
 
 class Styles {

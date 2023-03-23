@@ -6,7 +6,7 @@ import '../../library/bloc/downloader.dart';
 import '../../library/data/data_bag.dart';
 import '../../library/data/user.dart';
 import '../../library/functions.dart';
-import 'dashboard_grid.dart';
+import 'dashboard_element.dart';
 
 class UserDashboardGrid extends StatelessWidget {
   const UserDashboardGrid(
