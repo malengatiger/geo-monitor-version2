@@ -29,3 +29,29 @@ https://stackoverflow.com/questions/65921257/flutter-display-log-in-release-mode
 Android phones
 +27 72 212 6971 - Redmi
 +27 71 441 4396 - Samsung
+
+
+//... from plist
+<key>CFBundleLocalizations</key>
+	<array>
+		<string>en</string>
+		<string>fr</string>
+		<string>es</string>
+		<string>pt</string>
+		<string>sw</string>
+		<string>sn</string>
+		<string>st</string>
+		<string>ts</string>
+		<string>ig</string>
+		<string>xh</string>
+		<string>zu</string>
+		<string>yo</string>
+		<string>af</string>
+		<string>zh_CN</string>
+	</array>
+
+	<key>NSAppTransportSecurity</key>
+    	<dict>
+    		<key>NSAllowsArbitraryLoads</key>
+    		<true/>
+    	</dict>

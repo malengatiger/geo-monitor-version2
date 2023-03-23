@@ -43,7 +43,6 @@ import '../../library/generic_functions.dart';
 import '../../library/ui/maps/location_response_map.dart';
 import '../../library/ui/maps/photo_map_tablet.dart';
 import '../../library/ui/maps/project_map_main.dart';
-import '../../library/ui/project_list/project_chooser.dart';
 import '../../library/ui/project_list/project_list_main.dart';
 import '../../library/users/full_user_photo.dart';
 import '../../library/users/list/user_list_main.dart';
@@ -411,75 +410,6 @@ class DashboardTabletState extends State<DashboardTablet> with WidgetsBindingObs
     //         alignment: Alignment.topLeft,
     //         duration: const Duration(seconds: 1),
     //         child: const DailyForecastPage()));
-  }
-
-  void _showProjectDialog(int destination) {
-    pp('$mm _showProjectDialog ...');
-
-    late String title;
-    switch (destination) {
-      case typePhotos:
-        title = 'Photos';
-        break;
-      case typeVideos:
-        title = 'Videos';
-        break;
-      case typeAudios:
-        title = 'Audio';
-        break;
-      case typePositions:
-        title = 'Map';
-        break;
-      case typePolygons:
-        title = 'Map';
-        break;
-      case typeSchedules:
-        title = 'Schedules';
-        break;
-    }
-
-    showDialog(
-        context: context,
-        barrierDismissible: true,
-        builder: (_) => Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Center(
-                child: Container(
-                  color: Colors.black12,
-                  child: ProjectChooser(
-                      title: title,
-                      height: 500,
-                      width: 500,
-                      onSelected: (p1) {
-                        Navigator.of(context).pop();
-                        _onProjectSelected(p1, destination);
-                      },
-                      onClose: () {
-                        Navigator.pop(context);
-                      }),
-                ),
-              ),
-            ));
-  }
-
-  _onProjectSelected(Project p1, int destination) {
-    switch (destination) {
-      case typeVideos:
-        _navigateToProjectMedia(p1);
-        break;
-      case typeAudios:
-        _navigateToProjectMedia(p1);
-        break;
-      case typePhotos:
-        _navigateToProjectMedia(p1);
-        break;
-      case typePositions:
-        _navigateToProjectMap(p1);
-        break;
-      case typePolygons:
-        _navigateToProjectMap(p1);
-        break;
-    }
   }
 
   onMapRequested(Photo p1) {

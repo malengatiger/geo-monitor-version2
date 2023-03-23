@@ -1,3 +1,4 @@
+import 'package:flex_color_scheme/flex_color_scheme.dart';
 import 'package:flutter/material.dart';
 import 'package:geo_monitor/library/bloc/data_refresher.dart';
 import 'package:geo_monitor/library/bloc/organization_bloc.dart';
@@ -26,7 +27,7 @@ class SettingsForm extends StatefulWidget {
 
 class _SettingsFormState extends State<SettingsForm> {
   final _formKey = GlobalKey<FormState>();
-  final mm = '🥨🥨🥨🥨🥨SettingsForm: ';
+  final mm = '🥨🥨🥨🥨🥨 SettingsForm: ';
   User? user;
   var orgSettings = <SettingsModel>[];
   Project? selectedProject;
@@ -349,332 +350,349 @@ class _SettingsFormState extends State<SettingsForm> {
 
   Locale? selectedLocale;
   String? selectSizePhotos, settingsChanged;
+  bool showColorPicker = false;
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      elevation: 4,
-      shape: getRoundedBorder(radius: 16),
-      child: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: SingleChildScrollView(
-          child: Form(
-            key: _formKey,
-            child: Padding(
-              padding: EdgeInsets.all(widget.padding),
-              child: Column(
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+    return Stack(
+      children: [
+        Card(
+          elevation: 4,
+          shape: getRoundedBorder(radius: 16),
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: SingleChildScrollView(
+              child: Form(
+                key: _formKey,
+                child: Padding(
+                  padding: EdgeInsets.all(widget.padding),
+                  child: Column(
                     children: [
-                      GestureDetector(
-                        onTap: () {
-                          currentThemeIndex++;
-                          if (currentThemeIndex >= themeBloc.getThemeCount()) {
-                            currentThemeIndex = 0;
-                          }
-                          themeBloc.changeToTheme(currentThemeIndex);
-                          if (settingsModel != null) {
-                            settingsModel!.themeIndex = currentThemeIndex;
-                          }
-                          setState(() {});
-                        },
-                        child: Card(
-                          elevation: 8,
-                          shape: getRoundedBorder(radius: 8),
-                          child: Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: SizedBox(
-                              height: 48,
-                              width: 240,
-                              child: Container(
-                                color: Theme.of(context).primaryColor,
-                                child: Center(
-                                  child: Padding(
-                                    padding: const EdgeInsets.all(8.0),
-                                    child: Text(
-                                      tapForColorScheme == null
-                                          ? 'Tap Me for Colour Scheme'
-                                          : tapForColorScheme!,
-                                      style: myTextStyleSmall(context),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          GestureDetector(
+                            onTap: () {
+                              pp('$mm tapped color picker button ... set showColorPicker to true');
+                              setState(() {
+                                showColorPicker = true;
+                              });
+                            },
+                            child: Card(
+                              elevation: 8,
+                              shape: getRoundedBorder(radius: 8),
+                              child: Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: SizedBox(
+                                  height: 48,
+                                  width: 240,
+                                  child: Container(
+                                    color: Theme.of(context).primaryColor,
+                                    child: Center(
+                                      child: Padding(
+                                        padding: const EdgeInsets.all(8.0),
+                                        child: Text(
+                                          tapForColorScheme == null
+                                              ? 'Tap Me for Colour Scheme'
+                                              : tapForColorScheme!,
+                                          style: myTextStyleSmall(context),
+                                        ),
+                                      ),
                                     ),
                                   ),
                                 ),
                               ),
                             ),
                           ),
+                          busyWritingToDB
+                              ? const SizedBox(
+                            width: 16,
+                            height: 16,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 4,
+                              backgroundColor: Colors.pink,
+                            ),
+                          )
+                              : const SizedBox(),
+                          const SizedBox(
+                            width: 24,
+                          ),
+                          IconButton(
+                              onPressed: () {
+                                _writeSettingsToDatabase();
+                              },
+                              icon: Icon(
+                                Icons.check,
+                                size: 36,
+                                color: Theme.of(context).primaryColor,
+                              )),
+                        ],
+                      ),
+                      const SizedBox(
+                        height: 24,
+                      ),
+                      Text(
+                        fieldMonitorInstruction == null
+                            ? 'instruction'
+                            : fieldMonitorInstruction!,
+                        style: myTextStyleSmall(context),
+                      ),
+                      const SizedBox(
+                        height: 36,
+                      ),
+                      SizedBox(
+                        width: 400,
+                        child: TextFormField(
+                          controller: distController,
+                          keyboardType: TextInputType.number,
+                          validator: (value) {
+                            if (value!.isEmpty) {
+                              return maximumMonitoringDistance == null
+                                  ? 'Please enter maximum distance from project in metres'
+                                  : maximumMonitoringDistance!;
+                            }
+                            return null;
+                          },
+                          decoration: InputDecoration(
+                            hintText: maximumMonitoringDistance == null
+                                ? 'Enter maximum distance from project in metres'
+                                : maximumMonitoringDistance!,
+                            label: Text(
+                              maximumMonitoringDistance == null
+                                  ? 'sentence'
+                                  : maximumMonitoringDistance!,
+                              style: myTextStyleSmall(context),
+                            ),
+                            hintStyle: myTextStyleSmall(context),
+                          ),
                         ),
+                      ),
+                      const SizedBox(
+                        height: 12,
+                      ),
+                      SizedBox(
+                        width: 400,
+                        child: TextFormField(
+                          controller: videoController,
+                          keyboardType: TextInputType.number,
+                          validator: (value) {
+                            if (value!.isEmpty) {
+                              return maximumVideoLength == null
+                                  ? 'Please enter maximum video length in seconds'
+                                  : maximumVideoLength!;
+                            }
+                            return null;
+                          },
+                          decoration: InputDecoration(
+                            hintText: maximumVideoLength == null
+                                ? 'Enter maximum video length in seconds'
+                                : maximumVideoLength!,
+                            label: Text(
+                              maximumVideoLength == null
+                                  ? 'Maximum Video Length in Seconds'
+                                  : maximumVideoLength!,
+                              style: myTextStyleSmall(context),
+                            ),
+                            hintStyle: myTextStyleSmall(context),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(
+                        height: 12,
+                      ),
+                      SizedBox(
+                        width: 400,
+                        child: TextFormField(
+                          controller: audioController,
+                          keyboardType: TextInputType.number,
+                          validator: (value) {
+                            if (value!.isEmpty) {
+                              return maximumAudioLength == null
+                                  ? 'Please enter maximum audio length in minutes'
+                                  : maximumVideoLength!;
+                            }
+                            return null;
+                          },
+                          decoration: InputDecoration(
+                            hintText: maximumAudioLength == null
+                                ? 'Enter maximum audio length in minutes'
+                                : maximumAudioLength!,
+                            label: Text(
+                              maximumAudioLength == null
+                                  ? 'Maximum Audio Length in Minutes'
+                                  : maximumAudioLength!,
+                              style: myTextStyleSmall(context),
+                            ),
+                            hintStyle: myTextStyleSmall(context),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(
+                        height: 12,
+                      ),
+                      SizedBox(
+                        width: 400,
+                        child: TextFormField(
+                          controller: activityController,
+                          keyboardType: TextInputType.number,
+                          validator: (value) {
+                            if (value!.isEmpty) {
+                              return activityStreamHours == null
+                                  ? 'Please enter the number of hours your activity stream must show'
+                                  : activityStreamHours!;
+                            }
+                            return null;
+                          },
+                          decoration: InputDecoration(
+                            hintText: activityStreamHours == null
+                                ? 'Enter activity stream length in hours'
+                                : activityStreamHours!,
+                            label: Text(
+                              activityStreamHours == null
+                                  ? 'Activity Stream Audio Length in Hours'
+                                  : activityStreamHours!,
+                              style: myTextStyleSmall(context),
+                            ),
+                            hintStyle: myTextStyleSmall(context),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(
+                        height: 12,
+                      ),
+                      SizedBox(
+                        width: 400,
+                        child: TextFormField(
+                          controller: daysController,
+                          keyboardType: TextInputType.number,
+                          validator: (value) {
+                            if (value!.isEmpty) {
+                              return numberOfDays == null
+                                  ? 'Please enter the number of days your dashboard must show'
+                                  : numberOfDays!;
+                            }
+                            return null;
+                          },
+                          decoration: InputDecoration(
+                            hintText:
+                            'Enter the number of days your dashboard must show',
+                            label: Text(
+                              numberOfDaysForDashboardData == null
+                                  ? 'Number of Dashboard Days'
+                                  : numberOfDaysForDashboardData!,
+                              style: myTextStyleSmall(context),
+                            ),
+                            hintStyle: myTextStyleSmall(context),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(
+                        height: 24,
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          Text(
+                            selectSizePhotos == null
+                                ? 'Select size of photos'
+                                : selectSizePhotos!,
+                            style: myTextStyleSmall(context),
+                          ),
+                        ],
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: <Widget>[
+                          Radio(
+                            value: 0,
+                            groupValue: groupValue,
+                            onChanged: _handlePhotoSizeValueChange,
+                          ),
+                          Text(
+                            small == null ? 'Small' : small!,
+                            style: myTextStyleTiny(context),
+                          ),
+                          Radio(
+                            value: 1,
+                            groupValue: groupValue,
+                            onChanged: _handlePhotoSizeValueChange,
+                          ),
+                          Text(medium == null ? 'Medium' : medium!,
+                              style: myTextStyleTiny(context)),
+                          Radio(
+                            value: 2,
+                            groupValue: groupValue,
+                            onChanged: _handlePhotoSizeValueChange,
+                          ),
+                          Text(large == null ? 'Large' : large!,
+                              style: myTextStyleTiny(context)),
+                        ],
+                      ),
+                      const SizedBox(
+                        height: 24,
+                      ),
+                      SizedBox(
+                        width: 400,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            LocaleChooser(
+                              onSelected: (locale, language) {
+                                _handleLocaleChange(locale, language);
+                              },
+                              hint: hint == null ? 'Select Language' : hint!,
+                            ),
+                            const SizedBox(
+                              width: 32,
+                            ),
+                            translatedLanguage == null
+                                ? const Text('No language')
+                                : Text(
+                              translatedLanguage!,
+                              style:
+                              myTextStyleMediumBoldPrimaryColor(context),
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(
+                        height: 24,
                       ),
                       busyWritingToDB
                           ? const SizedBox(
-                              width: 16,
-                              height: 16,
-                              child: CircularProgressIndicator(
-                                strokeWidth: 4,
-                                backgroundColor: Colors.pink,
-                              ),
-                            )
+                        height: 20,
+                        width: 20,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 4,
+                          backgroundColor: Colors.pink,
+                        ),
+                      )
                           : const SizedBox(),
-                      const SizedBox(
-                        width: 24,
-                      ),
-                      IconButton(
-                          onPressed: () {
-                            _writeSettingsToDatabase();
-                          },
-                          icon: Icon(
-                            Icons.check,
-                            size: 36,
-                            color: Theme.of(context).primaryColor,
-                          )),
                     ],
                   ),
-                  const SizedBox(
-                    height: 24,
-                  ),
-                  Text(
-                    fieldMonitorInstruction == null
-                        ? 'instruction'
-                        : fieldMonitorInstruction!,
-                    style: myTextStyleSmall(context),
-                  ),
-                  const SizedBox(
-                    height: 36,
-                  ),
-                  SizedBox(
-                    width: 400,
-                    child: TextFormField(
-                      controller: distController,
-                      keyboardType: TextInputType.number,
-                      validator: (value) {
-                        if (value!.isEmpty) {
-                          return maximumMonitoringDistance == null
-                              ? 'Please enter maximum distance from project in metres'
-                              : maximumMonitoringDistance!;
-                        }
-                        return null;
-                      },
-                      decoration: InputDecoration(
-                        hintText: maximumMonitoringDistance == null
-                            ? 'Enter maximum distance from project in metres'
-                            : maximumMonitoringDistance!,
-                        label: Text(
-                          maximumMonitoringDistance == null
-                              ? 'sentence'
-                              : maximumMonitoringDistance!,
-                          style: myTextStyleSmall(context),
-                        ),
-                        hintStyle: myTextStyleSmall(context),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(
-                    height: 12,
-                  ),
-                  SizedBox(
-                    width: 400,
-                    child: TextFormField(
-                      controller: videoController,
-                      keyboardType: TextInputType.number,
-                      validator: (value) {
-                        if (value!.isEmpty) {
-                          return maximumVideoLength == null
-                              ? 'Please enter maximum video length in seconds'
-                              : maximumVideoLength!;
-                        }
-                        return null;
-                      },
-                      decoration: InputDecoration(
-                        hintText: maximumVideoLength == null
-                            ? 'Enter maximum video length in seconds'
-                            : maximumVideoLength!,
-                        label: Text(
-                          maximumVideoLength == null
-                              ? 'Maximum Video Length in Seconds'
-                              : maximumVideoLength!,
-                          style: myTextStyleSmall(context),
-                        ),
-                        hintStyle: myTextStyleSmall(context),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(
-                    height: 12,
-                  ),
-                  SizedBox(
-                    width: 400,
-                    child: TextFormField(
-                      controller: audioController,
-                      keyboardType: TextInputType.number,
-                      validator: (value) {
-                        if (value!.isEmpty) {
-                          return maximumAudioLength == null
-                              ? 'Please enter maximum audio length in minutes'
-                              : maximumVideoLength!;
-                        }
-                        return null;
-                      },
-                      decoration: InputDecoration(
-                        hintText: maximumAudioLength == null
-                            ? 'Enter maximum audio length in minutes'
-                            : maximumAudioLength!,
-                        label: Text(
-                          maximumAudioLength == null
-                              ? 'Maximum Audio Length in Minutes'
-                              : maximumAudioLength!,
-                          style: myTextStyleSmall(context),
-                        ),
-                        hintStyle: myTextStyleSmall(context),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(
-                    height: 12,
-                  ),
-                  SizedBox(
-                    width: 400,
-                    child: TextFormField(
-                      controller: activityController,
-                      keyboardType: TextInputType.number,
-                      validator: (value) {
-                        if (value!.isEmpty) {
-                          return activityStreamHours == null
-                              ? 'Please enter the number of hours your activity stream must show'
-                              : activityStreamHours!;
-                        }
-                        return null;
-                      },
-                      decoration: InputDecoration(
-                        hintText: activityStreamHours == null
-                            ? 'Enter activity stream length in hours'
-                            : activityStreamHours!,
-                        label: Text(
-                          activityStreamHours == null
-                              ? 'Activity Stream Audio Length in Hours'
-                              : activityStreamHours!,
-                          style: myTextStyleSmall(context),
-                        ),
-                        hintStyle: myTextStyleSmall(context),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(
-                    height: 12,
-                  ),
-                  SizedBox(
-                    width: 400,
-                    child: TextFormField(
-                      controller: daysController,
-                      keyboardType: TextInputType.number,
-                      validator: (value) {
-                        if (value!.isEmpty) {
-                          return numberOfDays == null
-                              ? 'Please enter the number of days your dashboard must show'
-                              : numberOfDays!;
-                        }
-                        return null;
-                      },
-                      decoration: InputDecoration(
-                        hintText:
-                            'Enter the number of days your dashboard must show',
-                        label: Text(
-                          numberOfDaysForDashboardData == null
-                              ? 'Number of Dashboard Days'
-                              : numberOfDaysForDashboardData!,
-                          style: myTextStyleSmall(context),
-                        ),
-                        hintStyle: myTextStyleSmall(context),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(
-                    height: 24,
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-                      Text(
-                        selectSizePhotos == null
-                            ? 'Select size of photos'
-                            : selectSizePhotos!,
-                        style: myTextStyleSmall(context),
-                      ),
-                    ],
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: <Widget>[
-                      Radio(
-                        value: 0,
-                        groupValue: groupValue,
-                        onChanged: _handlePhotoSizeValueChange,
-                      ),
-                      Text(
-                        small == null ? 'Small' : small!,
-                        style: myTextStyleTiny(context),
-                      ),
-                      Radio(
-                        value: 1,
-                        groupValue: groupValue,
-                        onChanged: _handlePhotoSizeValueChange,
-                      ),
-                      Text(medium == null ? 'Medium' : medium!,
-                          style: myTextStyleTiny(context)),
-                      Radio(
-                        value: 2,
-                        groupValue: groupValue,
-                        onChanged: _handlePhotoSizeValueChange,
-                      ),
-                      Text(large == null ? 'Large' : large!,
-                          style: myTextStyleTiny(context)),
-                    ],
-                  ),
-                  const SizedBox(
-                    height: 24,
-                  ),
-                  SizedBox(
-                    width: 400,
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
-                        LocaleChooser(
-                          onSelected: (locale, language) {
-                            _handleLocaleChange(locale, language);
-                          },
-                          hint: hint == null ? 'Select Language' : hint!,
-                        ),
-                        const SizedBox(
-                          width: 32,
-                        ),
-                        translatedLanguage == null
-                            ? const Text('No language')
-                            : Text(
-                                translatedLanguage!,
-                                style:
-                                    myTextStyleMediumBoldPrimaryColor(context),
-                              ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(
-                    height: 24,
-                  ),
-                  busyWritingToDB
-                      ? const SizedBox(
-                          height: 20,
-                          width: 20,
-                          child: CircularProgressIndicator(
-                            strokeWidth: 4,
-                            backgroundColor: Colors.pink,
-                          ),
-                        )
-                      : const SizedBox(),
-                ],
+                ),
               ),
             ),
           ),
         ),
-      ),
+        showColorPicker? Positioned(
+          top: 24, left: 20, right: 20,
+          child: SizedBox(width: 240, height: 360,
+            child: ColorSchemePicker(onColorScheme: (index) async {
+              currentThemeIndex = index;
+              themeBloc.changeToTheme(currentThemeIndex);
+              if (settingsModel != null) {
+                settingsModel!.themeIndex = currentThemeIndex;
+                prefsOGx.saveSettings(settingsModel!);
+              }
+              await Future.delayed(const Duration(milliseconds: 500));
+              setState(() {
+                showColorPicker = false;
+              });
+            }, crossAxisCount: 6, itemWidth: 60, elevation: 16,),
+          ),
+        ): const SizedBox(),
+      ],
     );
   }
 
@@ -706,6 +724,7 @@ class _SettingsFormState extends State<SettingsForm> {
   }
 }
 
+///select supported locale
 class LocaleChooser extends StatefulWidget {
   const LocaleChooser({Key? key, required this.onSelected, required this.hint})
       : super(key: key);
@@ -928,4 +947,176 @@ class GeoPlaceHolder extends StatelessWidget {
       ),
     );
   }
+}
+
+class ColorSchemePicker extends StatelessWidget {
+  const ColorSchemePicker(
+      {Key? key,
+      required this.onColorScheme,
+      required this.crossAxisCount,
+      required this.itemWidth, required this.elevation})
+      : super(key: key);
+
+  final Function(int) onColorScheme;
+  final int crossAxisCount;
+  final double itemWidth, elevation;
+
+  @override
+  Widget build(BuildContext context) {
+    var colors = <ColorBag>[
+      ColorBag(
+        color: FlexColor.redWineDarkPrimary,
+        index: 0,
+      ),
+      ColorBag(
+        color: FlexColor.barossaDarkPrimary,
+        index: 1,
+      ),
+      ColorBag(
+        color: FlexColor.greenDarkPrimary,
+        index: 2,
+      ),
+      ColorBag(
+        color: FlexColor.mallardGreenDarkPrimary,
+        index: 3,
+      ),
+      ColorBag(
+        color: FlexColor.mandyRedDarkPrimary,
+        index: 4,
+      ),
+      ColorBag(
+        color: FlexColor.redDarkPrimary,
+        index: 5,
+      ),
+      ColorBag(
+        color: FlexColor.blueDarkPrimary,
+        index: 6,
+      ),
+      ColorBag(
+        color: FlexColor.mangoDarkPrimary,
+        index: 7,
+      ),
+      ColorBag(
+        color: FlexColor.indigoDarkPrimary,
+        index: 8,
+      ),
+      ColorBag(
+        color: FlexColor.deepBlueDarkPrimary,
+        index: 9,
+      ),
+      ColorBag(
+        color: FlexColor.hippieBlueDarkPrimary,
+        index: 10,
+      ),
+      ColorBag(
+        color: FlexColor.deepPurpleDarkPrimary,
+        index: 11,
+      ),
+      ColorBag(
+        color: FlexColor.espressoDarkPrimary,
+        index: 12,
+      ),
+      ColorBag(
+        color: FlexColor.barossaDarkPrimary,
+        index: 13,
+      ),
+      ColorBag(
+        color: FlexColor.bigStoneDarkPrimary,
+        index: 14,
+      ),
+      ColorBag(
+        color: FlexColor.damaskDarkPrimary,
+        index: 15,
+      ),
+      ColorBag(
+        color: FlexColor.purpleBrownDarkPrimary,
+        index: 16,
+      ),
+      ColorBag(
+        color: FlexColor.wasabiDarkPrimary,
+        index: 17,
+      ),
+      ColorBag(
+        color: FlexColor.rosewoodDarkPrimary,
+        index: 18,
+      ),
+      ColorBag(
+        color: FlexColor.sanJuanBlueDarkPrimary,
+        index: 19,
+      ),
+      ColorBag(
+        color: FlexColor.amberDarkPrimary,
+        index: 20,
+      ),
+      ColorBag(
+        color: FlexColor.dellGenoaGreenDarkPrimary,
+        index: 21,
+      ),
+      ColorBag(
+        color: FlexColor.goldDarkPrimary,
+        index: 22,
+      ),
+
+      ColorBag(
+        color: FlexColor.blueWhaleDarkPrimary,
+        index: 23,
+      ),
+
+      ColorBag(
+        color: FlexColor.ebonyClayDarkPrimary,
+        index: 24,
+      ),
+      ColorBag(
+        color: FlexColor.moneyDarkPrimary,
+        index: 25,
+      ),
+      ColorBag(
+        color: FlexColor.aquaBlueDarkPrimary,
+        index: 26,
+      ),
+    ];
+
+    var itemElevation = 0.0;
+    return SizedBox(width: 400, height: 400,
+      child: Card(
+          shape: getRoundedBorder(radius: 16),
+          elevation: elevation,
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: GridView.builder(
+                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisSpacing: 1,
+                    crossAxisCount: crossAxisCount,
+                    mainAxisSpacing: 1),
+                itemCount: colors.length,
+                itemBuilder: (context, index) {
+                  var colorBag = colors.elementAt(index);
+                  return SizedBox(
+                    width: itemWidth, height: itemWidth,
+                    child: GestureDetector(
+                      onTap: () {
+                        onColorScheme(colorBag.index);
+                        itemElevation = 8.0;
+                      },
+                      child: Card(
+                        elevation: itemElevation,
+                        child: Container(
+                          width: itemWidth,
+                          height: itemWidth,
+                          color: colorBag.color,
+                        ),
+                      ),
+                    ),
+                  );
+                }),
+          )),
+    );
+  }
+}
+
+class ColorBag {
+  late Color color;
+  late int index;
+
+  ColorBag({required this.color, required this.index});
 }

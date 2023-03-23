@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:animated_splash_screen/animated_splash_screen.dart';
-import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_auth/firebase_auth.dart' as fb;
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
@@ -52,17 +51,6 @@ void main() async {
   }
   pp('$mx main: locale set up ...');
   await GetStorage.init(cacheName);
-
-  // final prefs = await SharedPreferences.getInstance();
-  // pp('$mx main: SharedPreferences.getInstance: $prefs ');
-  //
-  try {
-    await EasyLocalization.ensureInitialized();
-    pp('$mx ..... EasyLocalization.ensureInitialized OK!');
-  } catch (e) {
-    pp('$mx EasyLocalization.ensureInitialized failed: $e');
-  }
-
 
   /// check user auth status
   if (fbAuthedUser == null) {
@@ -151,58 +139,6 @@ class GeoApp extends StatelessWidget {
   }
 }
 
-class GeoAndroidApp extends StatelessWidget {
-  const GeoAndroidApp({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    Locale myLocale = Localizations.localeOf(context);
-    pp('$mx 🌀🌀🌀🌀 Current Locale: $myLocale ...');
-    return GestureDetector(
-      onTap: () {
-        pp('$mx 🌀🌀🌀🌀 GeoAndroidApp: Tap detected; should dismiss keyboard ...');
-        FocusManager.instance.primaryFocus?.unfocus();
-      },
-      child: StreamBuilder<LocaleAndTheme>(
-          stream: themeBloc.localeAndThemeStream,
-          builder: (_, snapshot) {
-            if (snapshot.hasData) {
-              pp('${E.check}${E.check}${E.check}${E.check}${E.check} '
-                  'main: theme index has changed to ${snapshot.data!.themeIndex}'
-                  '  and locale is ${snapshot.data!.locale.toString()}');
-              themeIndex = snapshot.data!.themeIndex;
-              locale = snapshot.data!.locale;
-              pp('${E.check}${E.check}${E.check} AndroidApp main: locale object received from stream: $locale');
-            }
-            return MaterialApp(
-              localizationsDelegates: context.localizationDelegates,
-              supportedLocales: context.supportedLocales,
-              locale: locale,
-              scaffoldMessengerKey: rootScaffoldMessengerKey,
-              debugShowCheckedModeBanner: false,
-              title: 'Geo',
-              theme: themeBloc.getTheme(themeIndex).darkTheme,
-              darkTheme: themeBloc.getTheme(themeIndex).darkTheme,
-              themeMode: ThemeMode.dark,
-              // home: const VideoHandlerTwo(),
-              home: AnimatedSplashScreen(
-                duration: 2000,
-                splash: const SplashWidget(),
-                animationDuration: const Duration(milliseconds: 2000),
-                curve: Curves.easeInCirc,
-                splashIconSize: 160.0,
-                nextScreen: fbAuthedUser == null
-                    ? const IntroMain()
-                    : const DashboardMain(),
-                splashTransition: SplashTransition.fadeTransition,
-                pageTransitionType: PageTransitionType.leftToRight,
-                backgroundColor: Colors.pink.shade900,
-              ),
-            );
-          }),
-    );
-  }
-}
 
 late StreamSubscription killSubscriptionFCM;
 

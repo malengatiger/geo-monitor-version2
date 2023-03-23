@@ -210,7 +210,7 @@ class _DashboardGridState extends State<DashboardGrid> {
                 widget.onTypeTapped(typeSchedules);
               },
               child: DashboardElement(
-                title: 'Schedules',
+                title: schedules == null?'Schedules':schedules!,
                 topPadding: widget.elementPadding,
                 number: widget.dataBag.fieldMonitorSchedules!.length,
                 onTapped: () {

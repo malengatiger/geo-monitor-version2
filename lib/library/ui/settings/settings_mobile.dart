@@ -82,6 +82,7 @@ class SettingsMobileState extends State<SettingsMobile>
           title == null ? 'Settings' : title!,
           style: myTextStyleLarge(context),
         ),
+        bottom: const PreferredSize(preferredSize: Size.fromHeight(100), child: SizedBox(),),
       ),
       body: busy
           ? const Center(

@@ -86,7 +86,7 @@ dependencies:
   isolate_handler: ^1.0.2
   flutter_email_sender: ^5.2.0
   file_picker: ^5.2.5
-  open_filex: ^4.3.2
+#  open_filex: ^4.3.2
   mime: ^1.0.4
   url_launcher: ^6.1.10
   archive: ^3.3.6
@@ -98,12 +98,12 @@ dependencies:
   fl_chart: ^0.61.0
   flutter_background_service: ^2.4.6
   device_info_plus:
-  flutter_isolate: ^2.0.4
+#  flutter_isolate: ^2.0.4
 #  intl_translation: ^0.18.0
-  easy_localization: ^3.0.2-dev.5
-  easy_localization_loader: ^1.0.1+1
+#  easy_localization: ^3.0.2-dev.5
+#  easy_localization_loader: ^1.0.1+1
   shared_preferences: ^2.0.20
-  music_visualizer: ^1.0.2
+#  music_visualizer: ^1.0.2
   audioplayers: ^3.0.1
 
 

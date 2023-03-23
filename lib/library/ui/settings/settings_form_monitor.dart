@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:geo_monitor/library/bloc/organization_bloc.dart';
 import 'package:geo_monitor/library/data/settings_model.dart';
+import 'package:geo_monitor/library/ui/settings/settings_form.dart';
 import 'package:uuid/uuid.dart';
 
 import '../../../l10n/translation_handler.dart';
@@ -16,13 +17,14 @@ class SettingsFormMonitor extends StatefulWidget {
       : super(key: key);
   final double padding;
   final Function(String locale) onLocaleChanged;
+
   @override
   State<SettingsFormMonitor> createState() => SettingsFormMonitorState();
 }
 
 class SettingsFormMonitorState extends State<SettingsFormMonitor> {
   final _formKey = GlobalKey<FormState>();
-  final mm = '🥨🥨🥨🥨🥨SettingsFormMonitor: ';
+  final mm = '🥨🥨🥨🥨🥨 SettingsFormMonitor: ';
   User? user;
   var orgSettings = <SettingsModel>[];
   Project? selectedProject;
@@ -167,229 +169,244 @@ class SettingsFormMonitorState extends State<SettingsFormMonitor> {
 
   Locale? selectedLocale;
   String? selectSizePhotos, settingsChanged;
+  bool showColorPicker = false;
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      elevation: 4,
-      shape: getRoundedBorder(radius: 16),
-      child: Padding(
-        padding: const EdgeInsets.all(4.0),
-        child: SingleChildScrollView(
-          child: Form(
-            key: _formKey,
-            child: Padding(
-              padding: EdgeInsets.all(widget.padding),
-              child: Column(
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+    return Stack(
+      children: [
+        Card(
+          elevation: 4,
+          shape: getRoundedBorder(radius: 16),
+          child: Padding(
+            padding: const EdgeInsets.all(4.0),
+            child: SingleChildScrollView(
+              child: Form(
+                key: _formKey,
+                child: Padding(
+                  padding: EdgeInsets.all(widget.padding),
+                  child: Column(
                     children: [
-                      GestureDetector(
-                        onTap: () {
-                          currentThemeIndex++;
-                          if (currentThemeIndex >= themeBloc.getThemeCount()) {
-                            currentThemeIndex = 0;
-                          }
-                          themeBloc.changeToTheme(currentThemeIndex);
-                          if (settingsModel != null) {
-                            settingsModel!.themeIndex = currentThemeIndex;
-                          }
-                          setState(() {});
-                        },
-                        child: Card(
-                          elevation: 8,
-                          shape: getRoundedBorder(radius: 8),
-                          child: Padding(
-                            padding: const EdgeInsets.all(4.0),
-                            child: SizedBox(
-                              height: 48,
-                              width: 240,
-                              child: Container(
-                                color: Theme.of(context).primaryColor,
-                                child: Center(
-                                  child: Padding(
-                                    padding: const EdgeInsets.all(8.0),
-                                    child: Text(
-                                      tapForColorScheme == null
-                                          ? 'Tap Me for Colour Scheme'
-                                          : tapForColorScheme!,
-                                      style: myTextStyleSmall(context),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          GestureDetector(
+                            onTap: () {
+                              setState(() {
+                                showColorPicker = true;
+                              });
+                            },
+                            child: Card(
+                              elevation: 8,
+                              shape: getRoundedBorder(radius: 8),
+                              child: Padding(
+                                padding: const EdgeInsets.all(4.0),
+                                child: SizedBox(
+                                  height: 48,
+                                  width: 240,
+                                  child: Container(
+                                    color: Theme.of(context).primaryColor,
+                                    child: Center(
+                                      child: Padding(
+                                        padding: const EdgeInsets.all(8.0),
+                                        child: Text(
+                                          tapForColorScheme == null
+                                              ? 'Tap Me for Colour Scheme'
+                                              : tapForColorScheme!,
+                                          style: myTextStyleSmall(context),
+                                        ),
+                                      ),
                                     ),
                                   ),
                                 ),
                               ),
                             ),
                           ),
+                          busyWritingToDB
+                              ? const SizedBox(
+                            width: 16,
+                            height: 16,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 4,
+                              backgroundColor: Colors.pink,
+                            ),
+                          )
+                              : const SizedBox(),
+                          const SizedBox(
+                            width: 8,
+                          ),
+
+                        ],
+                      ),
+                      const SizedBox(
+                        height: 48,
+                      ),
+                      Text(
+                        fieldMonitorInstruction == null
+                            ? 'instruction'
+                            : fieldMonitorInstruction!,
+                        style: myTextStyleSmall(context),
+                      ),
+                      const SizedBox(
+                        height: 48,
+                      ),
+                      SizedBox(
+                        width: 400,
+                        child: Row(
+                          children: [
+                            SizedBox(
+                              width: 48,
+                              child: Text(settingsModel == null
+                                  ? '0'
+                                  : '${settingsModel!.distanceFromProject!}', style: myNumberStyleMediumPrimaryColor(context),),
+                            ),
+                            Expanded(
+                              child: Text(maximumMonitoringDistance == null
+                                  ? ''
+                                  : maximumMonitoringDistance!, style: myTextStyleSmall(context),),
+                            ),
+                          ],
                         ),
                       ),
-                      busyWritingToDB
-                          ? const SizedBox(
-                              width: 16,
-                              height: 16,
-                              child: CircularProgressIndicator(
-                                strokeWidth: 4,
-                                backgroundColor: Colors.pink,
-                              ),
-                            )
-                          : const SizedBox(),
                       const SizedBox(
-                        width: 8,
+                        height: 12,
+                      ),
+                      SizedBox(
+                        width: 400,
+                        child: Row(
+                          children: [
+                            SizedBox(
+                              width: 48,
+                              child: Text(settingsModel == null
+                                  ? '0'
+                                  : '${settingsModel!.maxVideoLengthInSeconds!}',style: myNumberStyleMediumPrimaryColor(context),),
+                            ),
+                            Expanded(
+                              child: Text(maximumVideoLength == null
+                                  ? ''
+                                  : maximumVideoLength!, style: myTextStyleSmall(context),),
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(
+                        height: 12,
+                      ),
+                      SizedBox(
+                        width: 400,
+                        child: Row(
+                          children: [
+                            SizedBox(
+                              width: 48,
+                              child: Text(settingsModel == null
+                                  ? '0'
+                                  : '${settingsModel!.maxAudioLengthInMinutes!}', style: myNumberStyleMediumPrimaryColor(context),),
+                            ),
+                            Expanded(
+                              child: Text(maximumAudioLength == null
+                                  ? ''
+                                  : maximumAudioLength!, style: myTextStyleSmall(context),),
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(
+                        height: 12,
+                      ),
+                      SizedBox(
+                        width: 400,
+                        child: Row(
+                          children: [
+                            SizedBox(
+                              width: 48,
+                              child: Text(settingsModel == null
+                                  ? '0'
+                                  : '${settingsModel!.activityStreamHours!}',style: myNumberStyleMediumPrimaryColor(context),),
+                            ),
+                            Expanded(
+                              child: Text(activityStreamHours == null
+                                  ? ''
+                                  : activityStreamHours!,style: myTextStyleSmall(context),),
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(
+                        height: 12,
+                      ),
+                      SizedBox(
+                        width: 400,
+                        child: Row(
+                          children: [
+                            SizedBox(
+                              width: 48,
+                              child: Text(settingsModel == null
+                                  ? '0'
+                                  : '${settingsModel!.numberOfDays!}',style: myNumberStyleMediumPrimaryColor(context),),
+                            ),
+                            Expanded(
+                              child: Text(numberOfDaysForDashboardData == null
+                                  ? ''
+                                  : numberOfDaysForDashboardData!, style: myTextStyleSmall(context),),
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(
+                        height: 60,
+                      ),
+                      SizedBox(
+                        width: 400,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            LocaleChooser(
+                              onSelected: (locale, language) {
+                                _handleLocaleChange(locale, language);
+                              },
+                              hint: hint == null ? 'Select Language' : hint!,
+                            ),
+                            const SizedBox(
+                              width: 32,
+                            ),
+                            translatedLanguage == null
+                                ? const Text('No language')
+                                : Text(
+                              translatedLanguage!,
+                              style:
+                              myTextStyleMediumBoldPrimaryColor(context),
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(
+                        height: 24,
                       ),
 
                     ],
                   ),
-                  const SizedBox(
-                    height: 48,
-                  ),
-                  Text(
-                    fieldMonitorInstruction == null
-                        ? 'instruction'
-                        : fieldMonitorInstruction!,
-                    style: myTextStyleSmall(context),
-                  ),
-                  const SizedBox(
-                    height: 48,
-                  ),
-                  SizedBox(
-                    width: 400,
-                    child: Row(
-                      children: [
-                        SizedBox(
-                          width: 48,
-                          child: Text(settingsModel == null
-                              ? '0'
-                              : '${settingsModel!.distanceFromProject!}', style: myNumberStyleMediumPrimaryColor(context),),
-                        ),
-                        Expanded(
-                          child: Text(maximumMonitoringDistance == null
-                              ? ''
-                              : maximumMonitoringDistance!, style: myTextStyleSmall(context),),
-                        ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(
-                    height: 12,
-                  ),
-                  SizedBox(
-                    width: 400,
-                    child: Row(
-                      children: [
-                        SizedBox(
-                          width: 48,
-                          child: Text(settingsModel == null
-                              ? '0'
-                              : '${settingsModel!.maxVideoLengthInSeconds!}',style: myNumberStyleMediumPrimaryColor(context),),
-                        ),
-                        Expanded(
-                          child: Text(maximumVideoLength == null
-                              ? ''
-                              : maximumVideoLength!, style: myTextStyleSmall(context),),
-                        ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(
-                    height: 12,
-                  ),
-                  SizedBox(
-                    width: 400,
-                    child: Row(
-                      children: [
-                        SizedBox(
-                          width: 48,
-                          child: Text(settingsModel == null
-                              ? '0'
-                              : '${settingsModel!.maxAudioLengthInMinutes!}', style: myNumberStyleMediumPrimaryColor(context),),
-                        ),
-                        Expanded(
-                          child: Text(maximumAudioLength == null
-                              ? ''
-                              : maximumAudioLength!, style: myTextStyleSmall(context),),
-                        ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(
-                    height: 12,
-                  ),
-                  SizedBox(
-                    width: 400,
-                    child: Row(
-                      children: [
-                        SizedBox(
-                          width: 48,
-                          child: Text(settingsModel == null
-                              ? '0'
-                              : '${settingsModel!.activityStreamHours!}',style: myNumberStyleMediumPrimaryColor(context),),
-                        ),
-                        Expanded(
-                          child: Text(activityStreamHours == null
-                              ? ''
-                              : activityStreamHours!,style: myTextStyleSmall(context),),
-                        ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(
-                    height: 12,
-                  ),
-                  SizedBox(
-                    width: 400,
-                    child: Row(
-                      children: [
-                        SizedBox(
-                          width: 48,
-                          child: Text(settingsModel == null
-                              ? '0'
-                              : '${settingsModel!.numberOfDays!}',style: myNumberStyleMediumPrimaryColor(context),),
-                        ),
-                        Expanded(
-                          child: Text(numberOfDaysForDashboardData == null
-                              ? ''
-                              : numberOfDaysForDashboardData!, style: myTextStyleSmall(context),),
-                        ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(
-                    height: 60,
-                  ),
-                  SizedBox(
-                    width: 400,
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
-                        LocaleChooser(
-                          onSelected: (locale, language) {
-                            _handleLocaleChange(locale, language);
-                          },
-                          hint: hint == null ? 'Select Language' : hint!,
-                        ),
-                        const SizedBox(
-                          width: 32,
-                        ),
-                        translatedLanguage == null
-                            ? const Text('No language')
-                            : Text(
-                                translatedLanguage!,
-                                style:
-                                    myTextStyleMediumBoldPrimaryColor(context),
-                              ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(
-                    height: 24,
-                  ),
-
-                ],
+                ),
               ),
             ),
           ),
         ),
-      ),
+        showColorPicker? Positioned(
+          top: 20, left: 12, right: 12,
+          child: SizedBox(height: 300,
+            child: ColorSchemePicker(onColorScheme: (index) {
+              currentThemeIndex = index;
+              themeBloc.changeToTheme(currentThemeIndex);
+              if (settingsModel != null) {
+                settingsModel!.themeIndex = currentThemeIndex;
+                prefsOGx.saveSettings(settingsModel!);
+              }
+              setState(() {
+                showColorPicker = false;
+              });
+            }, crossAxisCount: 6, itemWidth: 28, elevation: 16,),
+          ),
+        ): const SizedBox(),
+      ],
     );
   }
 
@@ -422,210 +439,3 @@ class SettingsFormMonitorState extends State<SettingsFormMonitor> {
   }
 }
 
-class LocaleChooser extends StatefulWidget {
-  const LocaleChooser({Key? key, required this.onSelected, required this.hint})
-      : super(key: key);
-
-  final Function(Locale, String) onSelected;
-  final String hint;
-
-  @override
-  State<LocaleChooser> createState() => LocaleChooserState();
-}
-
-class LocaleChooserState extends State<LocaleChooser> {
-  String? english,
-      french,
-      portuguese,
-      ingala,
-      sotho,
-      spanish,
-      shona,
-      swahili,
-      tsonga,
-      xhosa,
-      zulu,
-      yoruba,
-      afrikaans,
-      german,
-      chinese;
-
-  SettingsModel? settingsModel;
-  @override
-  void initState() {
-    super.initState();
-    setTexts();
-  }
-
-  Future setTexts() async {
-    settingsModel = await prefsOGx.getSettings();
-    if (settingsModel != null) {
-      english = await mTx.translate('en', settingsModel!.locale!);
-      afrikaans = 'Afrikaans';
-      french = await mTx.translate('fr', settingsModel!.locale!);
-      portuguese = await mTx.translate('pt', settingsModel!.locale!);
-      ingala = await mTx.translate('ig', settingsModel!.locale!);
-      sotho = await mTx.translate('st', settingsModel!.locale!);
-      spanish = await mTx.translate('es', settingsModel!.locale!);
-      swahili = await mTx.translate('sw', settingsModel!.locale!);
-      tsonga = await mTx.translate('ts', settingsModel!.locale!);
-      xhosa = await mTx.translate('xh', settingsModel!.locale!);
-      zulu = await mTx.translate('zu', settingsModel!.locale!);
-      yoruba = await mTx.translate('yo', settingsModel!.locale!);
-
-      german = await mTx.translate('de', settingsModel!.locale!);
-      chinese = await mTx.translate('zh', settingsModel!.locale!);
-      shona = await mTx.translate('sn', settingsModel!.locale!);
-      setState(() {});
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return DropdownButton<Locale>(
-        hint: Text(
-          widget.hint,
-          style: myTextStyleSmall(context),
-        ),
-        items: [
-          DropdownMenuItem(
-              value: const Locale('en'),
-              child: Text(english == null ? 'English' : english!)),
-          DropdownMenuItem(
-              value: const Locale('zh'),
-              child: Text(chinese == null ? 'Chinese' : chinese!)),
-          DropdownMenuItem(
-              value: const Locale('af'),
-              child: Text(afrikaans == null ? 'Afrikaans' : afrikaans!)),
-          DropdownMenuItem(
-              value: const Locale('fr'),
-              child: Text(french == null ? 'French' : french!)),
-          DropdownMenuItem(
-              value: const Locale('de'),
-              child: Text(german == null ? 'German' : german!)),
-          DropdownMenuItem(
-              value: const Locale('pt'),
-              child: Text(portuguese == null ? 'Portuguese' : portuguese!)),
-          DropdownMenuItem(
-              value: const Locale('ig'),
-              child: Text(ingala == null ? 'Ingala' : ingala!)),
-          DropdownMenuItem(
-              value: const Locale('st'),
-              child: Text(sotho == null ? 'Sotho' : sotho!)),
-          DropdownMenuItem(
-              value: const Locale('es'),
-              child: Text(spanish == null ? 'Spanish' : spanish!)),
-          DropdownMenuItem(
-              value: const Locale('sn'),
-              child: Text(shona == null ? 'Shona' : shona!)),
-          DropdownMenuItem(
-              value: const Locale('sw'),
-              child: Text(swahili == null ? 'Swahili' : swahili!)),
-          DropdownMenuItem(
-              value: const Locale('ts'),
-              child: Text(tsonga == null ? 'Tsonga' : tsonga!)),
-          DropdownMenuItem(
-              value: const Locale('xh'),
-              child: Text(xhosa == null ? 'Xhosa' : xhosa!)),
-          DropdownMenuItem(
-              value: const Locale('yo'),
-              child: Text(yoruba == null ? 'Yoruba' : yoruba!)),
-          DropdownMenuItem(
-              value: const Locale('zu'),
-              child: Text(zulu == null ? 'Zulu' : zulu!)),
-        ],
-        onChanged: onChanged);
-  }
-
-  void onChanged(Locale? locale) async {
-    pp('LocaleChooser 🌀🌀🌀🌀:onChanged: selected locale: '
-        '${locale.toString()}');
-    settingsModel!.locale = locale!.languageCode;
-    await prefsOGx.saveSettings(settingsModel!);
-    organizationBloc.settingsController.sink.add(settingsModel!);
-    var language = 'English';
-    switch (locale!.languageCode) {
-      case 'eng':
-        language = english!;
-        break;
-      case 'af':
-        language = afrikaans!;
-        break;
-      case 'fr':
-        language = french!;
-        break;
-      case 'pt':
-        language = portuguese!;
-        break;
-      case 'ig':
-        language = ingala!;
-        break;
-      case 'es':
-        language = spanish!;
-        break;
-      case 'st':
-        language = sotho!;
-        break;
-      case 'sw':
-        language = swahili!;
-        break;
-      case 'xh':
-        language = xhosa!;
-        break;
-      case 'zu':
-        language = zulu!;
-        break;
-      case 'yo':
-        language = yoruba!;
-        break;
-      case 'de':
-        language = german!;
-        break;
-      case 'zh':
-        language = chinese!;
-        break;
-    }
-    await setTexts();
-    widget.onSelected(locale, language);
-  }
-}
-
-class GeoPlaceHolder extends StatelessWidget {
-  const GeoPlaceHolder({Key? key, required this.width}) : super(key: key);
-  final double width;
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: width,
-      color: Theme.of(context).primaryColor,
-      child: Center(
-        child: Card(
-          elevation: 4,
-          shape: getRoundedBorder(radius: 16),
-          child: SizedBox(
-            height: 140,
-            width: 300,
-            child: Column(
-              children: [
-                const SizedBox(
-                  height: 28,
-                ),
-                Text(
-                  'Geo PlaceHolder',
-                  style: myNumberStyleLarge(context),
-                ),
-                const SizedBox(
-                  height: 24,
-                ),
-                Text(
-                  'Geo content coming soon!',
-                  style: myTextStyleMedium(context),
-                )
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-}

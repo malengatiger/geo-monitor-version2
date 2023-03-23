@@ -212,18 +212,6 @@ class SchemeUtil {
         darkTheme: FlexThemeData.dark(scheme: FlexScheme.sanJuanBlue)));
 
     _themeBags.add(ThemeBag(
-        lightTheme: FlexThemeData.light(scheme: FlexScheme.material),
-        darkTheme: FlexThemeData.dark(scheme: FlexScheme.material)));
-
-    _themeBags.add(ThemeBag(
-        lightTheme: FlexThemeData.light(scheme: FlexScheme.mandyRed),
-        darkTheme: FlexThemeData.dark(scheme: FlexScheme.mandyRed)));
-
-    _themeBags.add(ThemeBag(
-        lightTheme: FlexThemeData.light(scheme: FlexScheme.mango),
-        darkTheme: FlexThemeData.dark(scheme: FlexScheme.mango)));
-
-    _themeBags.add(ThemeBag(
         lightTheme: FlexThemeData.light(scheme: FlexScheme.amber),
         darkTheme: FlexThemeData.dark(scheme: FlexScheme.amber)));
 
@@ -234,24 +222,11 @@ class SchemeUtil {
     _themeBags.add(ThemeBag(
         lightTheme: FlexThemeData.light(scheme: FlexScheme.gold),
         darkTheme: FlexThemeData.dark(scheme: FlexScheme.gold)));
-    _themeBags.add(ThemeBag(
-        lightTheme: FlexThemeData.light(scheme: FlexScheme.blue),
-        darkTheme: FlexThemeData.dark(scheme: FlexScheme.blue)));
-
-    _themeBags.add(ThemeBag(
-        lightTheme: FlexThemeData.light(scheme: FlexScheme.red),
-        darkTheme: FlexThemeData.dark(scheme: FlexScheme.red)));
-    _themeBags.add(ThemeBag(
-        lightTheme: FlexThemeData.light(scheme: FlexScheme.green),
-        darkTheme: FlexThemeData.dark(scheme: FlexScheme.green)));
 
     _themeBags.add(ThemeBag(
         lightTheme: FlexThemeData.light(scheme: FlexScheme.blueWhale),
         darkTheme: FlexThemeData.dark(scheme: FlexScheme.blueWhale)));
 
-    _themeBags.add(ThemeBag(
-        lightTheme: FlexThemeData.light(scheme: FlexScheme.purpleBrown),
-        darkTheme: FlexThemeData.dark(scheme: FlexScheme.purpleBrown)));
 
     _themeBags.add(ThemeBag(
         lightTheme: FlexThemeData.light(scheme: FlexScheme.ebonyClay),
@@ -264,19 +239,6 @@ class SchemeUtil {
     _themeBags.add(ThemeBag(
         lightTheme: FlexThemeData.light(scheme: FlexScheme.aquaBlue),
         darkTheme: FlexThemeData.dark(scheme: FlexScheme.aquaBlue)));
-
-    _themeBags.add(ThemeBag(
-        lightTheme: FlexThemeData.light(scheme: FlexScheme.blumineBlue),
-        darkTheme: FlexThemeData.dark(scheme: FlexScheme.blumineBlue)));
-    _themeBags.add(ThemeBag(
-        lightTheme: FlexThemeData.light(scheme: FlexScheme.barossa),
-        darkTheme: FlexThemeData.dark(scheme: FlexScheme.barossa)));
-    _themeBags.add(ThemeBag(
-        lightTheme: FlexThemeData.light(scheme: FlexScheme.green),
-        darkTheme: FlexThemeData.dark(scheme: FlexScheme.green)));
-    _themeBags.add(ThemeBag(
-        lightTheme: FlexThemeData.light(scheme: FlexScheme.ebonyClay),
-        darkTheme: FlexThemeData.dark(scheme: FlexScheme.ebonyClay)));
   }
 }
 
