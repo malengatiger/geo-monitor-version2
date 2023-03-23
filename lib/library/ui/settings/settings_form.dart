@@ -35,7 +35,7 @@ class SettingsFormState extends State<SettingsForm> {
   SettingsModel? oldSettingsModel;
 
   var distController = TextEditingController(text: '500');
-  var videoController = TextEditingController(text: '30');
+  var videoController = TextEditingController(text: '120');
   var audioController = TextEditingController(text: '20');
   var activityController = TextEditingController(text: '24');
   var daysController = TextEditingController(text: '14');
@@ -64,7 +64,7 @@ class SettingsFormState extends State<SettingsForm> {
     }
     pp('$mm 🍎🍎 user is here, huh? 🌎 ${user!.name!}');
     _setExistingSettings();
-    _setTitles();
+    _setTexts();
   }
 
   String? fieldMonitorInstruction,
@@ -79,11 +79,20 @@ class SettingsFormState extends State<SettingsForm> {
       small,
       medium,
       large,
+      maxAudioLessThan,
+      maxVideoLessThan,
       numberOfDaysForDashboardData,
       selectLanguage,
       hint;
 
-  void _setTitles() async {
+  void _setTexts() async {
+    final m1 =
+        await mTx.translate('maxVideoLessThan', settingsModel!.locale!);
+    maxVideoLessThan = m1.replaceAll('\$count', '120');
+
+    final m2 =
+        await mTx.translate('maxAudioLessThan', settingsModel!.locale!);
+    maxAudioLessThan = m2.replaceAll('\$count', '30');
     fieldMonitorInstruction =
         await mTx.translate('fieldMonitorInstruction', settingsModel!.locale!);
     maximumMonitoringDistance = await mTx.translate(
@@ -189,15 +198,15 @@ class SettingsFormState extends State<SettingsForm> {
     settingsModel ??= SettingsModel(
         distanceFromProject: 500,
         photoSize: 1,
-        maxVideoLengthInSeconds: 20,
-        maxAudioLengthInMinutes: 30,
+        maxVideoLengthInSeconds: 120,
+        maxAudioLengthInMinutes: 20,
         themeIndex: 0,
         settingsId: const Uuid().v4(),
         created: DateTime.now().toUtc().toIso8601String(),
         organizationId: user!.organizationId!,
         projectId: null,
         activityStreamHours: 24,
-        numberOfDays: 7,
+        numberOfDays: 14,
         locale: 'en');
 
     currentThemeIndex = settingsModel!.themeIndex!;
@@ -241,21 +250,35 @@ class SettingsFormState extends State<SettingsForm> {
       pp('$mm 🔵🔵🔵 writing settings to remote database ... '
           'currentThemeIndex: $currentThemeIndex 🔆🔆🔆 and date: $date} 🔆 stream hours: ${activityController.value.text}');
       var len = int.parse(videoController.value.text);
-      if (len > 20) {
+      if (len > 120) {
         showToast(
-            message: 'The maximum video length should be 20 seconds or less',
+            padding: 16,
+            textStyle: myTextStyleMedium(context),
+            backgroundColor: Theme.of(context).primaryColor,
+            message: maxVideoLessThan == null
+                ? 'The maximum video length should be 120 seconds or less'
+                : maxVideoLessThan!,
             context: context);
         return;
       }
-      if (len < 5) {
+      var len2 = int.parse(audioController.value.text);
+      if (len2 > 30) {
         showToast(
-            message:
-                'The minimum video length should not be less than 5 seconds',
+            padding: 16,
+            textStyle: myTextStyleMedium(context),
+            backgroundColor: Theme.of(context).primaryColor,
+            message: maxAudioLessThan == null
+                ? 'The maximum audio clip length should be 30 minutes or less'
+                : maxAudioLessThan!,
             context: context);
         return;
       }
       if (selectedLocale == null) {
-        showToast(message: 'Please select language', context: context);
+        showToast(
+            message: selectLanguage == null
+                ? 'Please select language'
+                : selectLanguage!,
+            context: context);
         return;
       }
       settingsModel = SettingsModel(
@@ -406,13 +429,13 @@ class SettingsFormState extends State<SettingsForm> {
                           ),
                           busyWritingToDB
                               ? const SizedBox(
-                            width: 16,
-                            height: 16,
-                            child: CircularProgressIndicator(
-                              strokeWidth: 4,
-                              backgroundColor: Colors.pink,
-                            ),
-                          )
+                                  width: 16,
+                                  height: 16,
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 4,
+                                    backgroundColor: Colors.pink,
+                                  ),
+                                )
                               : const SizedBox(),
                           const SizedBox(
                             width: 24,
@@ -575,7 +598,7 @@ class SettingsFormState extends State<SettingsForm> {
                           },
                           decoration: InputDecoration(
                             hintText:
-                            'Enter the number of days your dashboard must show',
+                                'Enter the number of days your dashboard must show',
                             label: Text(
                               numberOfDaysForDashboardData == null
                                   ? 'Number of Dashboard Days'
@@ -651,10 +674,10 @@ class SettingsFormState extends State<SettingsForm> {
                             translatedLanguage == null
                                 ? const Text('No language')
                                 : Text(
-                              translatedLanguage!,
-                              style:
-                              myTextStyleMediumBoldPrimaryColor(context),
-                            ),
+                                    translatedLanguage!,
+                                    style: myTextStyleMediumBoldPrimaryColor(
+                                        context),
+                                  ),
                           ],
                         ),
                       ),
@@ -663,13 +686,13 @@ class SettingsFormState extends State<SettingsForm> {
                       ),
                       busyWritingToDB
                           ? const SizedBox(
-                        height: 20,
-                        width: 20,
-                        child: CircularProgressIndicator(
-                          strokeWidth: 4,
-                          backgroundColor: Colors.pink,
-                        ),
-                      )
+                              height: 20,
+                              width: 20,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 4,
+                                backgroundColor: Colors.pink,
+                              ),
+                            )
                           : const SizedBox(),
                     ],
                   ),
@@ -678,23 +701,34 @@ class SettingsFormState extends State<SettingsForm> {
             ),
           ),
         ),
-        showColorPicker? Positioned(
-          top: 24, left: 20, right: 20,
-          child: SizedBox(width: 240, height: 360,
-            child: ColorSchemePicker(onColorScheme: (index) async {
-              currentThemeIndex = index;
-              themeBloc.changeToTheme(currentThemeIndex);
-              if (settingsModel != null) {
-                settingsModel!.themeIndex = currentThemeIndex;
-                prefsOGx.saveSettings(settingsModel!);
-              }
-              await Future.delayed(const Duration(milliseconds: 500));
-              setState(() {
-                showColorPicker = false;
-              });
-            }, crossAxisCount: 6, itemWidth: 60, elevation: 16,),
-          ),
-        ): const SizedBox(),
+        showColorPicker
+            ? Positioned(
+                top: 24,
+                left: 20,
+                right: 20,
+                child: SizedBox(
+                  width: 240,
+                  height: 360,
+                  child: ColorSchemePicker(
+                    onColorScheme: (index) async {
+                      currentThemeIndex = index;
+                      themeBloc.changeToTheme(currentThemeIndex);
+                      if (settingsModel != null) {
+                        settingsModel!.themeIndex = currentThemeIndex;
+                        prefsOGx.saveSettings(settingsModel!);
+                      }
+                      await Future.delayed(const Duration(milliseconds: 500));
+                      setState(() {
+                        showColorPicker = false;
+                      });
+                    },
+                    crossAxisCount: 6,
+                    itemWidth: 60,
+                    elevation: 16,
+                  ),
+                ),
+              )
+            : const SizedBox(),
       ],
     );
   }
@@ -722,7 +756,7 @@ class SettingsFormState extends State<SettingsForm> {
       selectedLocale = locale;
       this.translatedLanguage = translatedLanguage;
     });
-    _setTitles();
+    _setTexts();
     widget.onLocaleChanged(locale.languageCode);
   }
 }
@@ -957,7 +991,8 @@ class ColorSchemePicker extends StatelessWidget {
       {Key? key,
       required this.onColorScheme,
       required this.crossAxisCount,
-      required this.itemWidth, required this.elevation})
+      required this.itemWidth,
+      required this.elevation})
       : super(key: key);
 
   final Function(int) onColorScheme;
@@ -1059,12 +1094,10 @@ class ColorSchemePicker extends StatelessWidget {
         color: FlexColor.goldDarkPrimary,
         index: 22,
       ),
-
       ColorBag(
         color: FlexColor.blueWhaleDarkPrimary,
         index: 23,
       ),
-
       ColorBag(
         color: FlexColor.ebonyClayDarkPrimary,
         index: 24,
@@ -1080,7 +1113,9 @@ class ColorSchemePicker extends StatelessWidget {
     ];
 
     var itemElevation = 0.0;
-    return SizedBox(width: 400, height: 400,
+    return SizedBox(
+      width: 400,
+      height: 400,
       child: Card(
           shape: getRoundedBorder(radius: 16),
           elevation: elevation,
@@ -1095,7 +1130,8 @@ class ColorSchemePicker extends StatelessWidget {
                 itemBuilder: (context, index) {
                   var colorBag = colors.elementAt(index);
                   return SizedBox(
-                    width: itemWidth, height: itemWidth,
+                    width: itemWidth,
+                    height: itemWidth,
                     child: GestureDetector(
                       onTap: () {
                         onColorScheme(colorBag.index);

@@ -55,7 +55,7 @@ class SettingsFormMonitorState extends State<SettingsFormMonitor> {
     }
     pp('$mm 🍎🍎 user is here, huh? 🌎 ${user!.name!}');
     _setExistingSettings();
-    _setTitles();
+    _setTexts();
   }
 
   String? fieldMonitorInstruction,
@@ -69,15 +69,19 @@ class SettingsFormMonitorState extends State<SettingsFormMonitor> {
       settings,
       small,
       medium,
-      large,
+      large, maxVideoLessThan,maxAudioLessThan,
       numberOfDaysForDashboardData,
       selectLanguage,
       title,
       hint;
 
-  void _setTitles() async {
+  void _setTexts() async {
     title =
         await mTx.translate('settings', settingsModel!.locale!);
+    maxVideoLessThan =
+    await mTx.translate('maxVideoLessThan', settingsModel!.locale!);
+    maxAudioLessThan =
+    await mTx.translate('maxAudioLessThan', settingsModel!.locale!);
     fieldMonitorInstruction =
     await mTx.translate('fieldMonitorInstruction', settingsModel!.locale!);
     maximumMonitoringDistance = await mTx.translate(
@@ -433,7 +437,7 @@ class SettingsFormMonitorState extends State<SettingsFormMonitor> {
       selectedLocale = locale;
       this.translatedLanguage = translatedLanguage;
     });
-    _setTitles();
+    _setTexts();
 
     widget.onLocaleChanged(locale.languageCode);
   }
