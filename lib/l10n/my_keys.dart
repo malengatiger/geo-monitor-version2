@@ -301,5 +301,9 @@ class MyKeys {
     hashMap["createNewProject"] = "createNewProject";
     hashMap["addNewMembers"] = "addNewMembers";
 
-    }
+    hashMap["maxVideoLessThan"] =  "maxVideoLessThan";
+    hashMap["maxAudioLessThan"] =  "maxAudioLessThan";
+
+
+  }
 }

@@ -448,14 +448,16 @@ class _ActivityListTabletState extends State<ActivityListTablet>
                         },
                         child: activityStrings == null
                             ? const SizedBox()
-                            : sett == null? const SizedBox(): ActivityStreamCard(
-                                locale: sett!.locale!,
-                                activityStrings: activityStrings!,
-                                activityModel: act,
-                                frontPadding: 36,
-                                thinMode: widget.thinMode,
-                                width: widget.thinMode ? 320 : widget.width,
-                              ),
+                            : sett == null
+                                ? const SizedBox()
+                                : ActivityStreamCard(
+                                    locale: sett!.locale!,
+                                    activityStrings: activityStrings!,
+                                    activityModel: act,
+                                    frontPadding: 36,
+                                    thinMode: widget.thinMode,
+                                    width: widget.thinMode ? 320 : widget.width,
+                                  ),
                       );
                     }),
               ]),
@@ -502,14 +504,16 @@ class _ActivityListTabletState extends State<ActivityListTablet>
                         },
                         child: activityStrings == null
                             ? const SizedBox()
-                            : sett == null? const SizedBox():ActivityStreamCard(
-                                locale: sett!.locale!,
-                                activityStrings: activityStrings!,
-                                activityModel: act,
-                                frontPadding: 16,
-                                thinMode: widget.thinMode,
-                                width: widget.width,
-                              ),
+                            : sett == null
+                                ? const SizedBox()
+                                : ActivityStreamCard(
+                                    locale: sett!.locale!,
+                                    activityStrings: activityStrings!,
+                                    activityModel: act,
+                                    frontPadding: 16,
+                                    thinMode: widget.thinMode,
+                                    width: widget.width,
+                                  ),
                       );
                     }),
               ]),

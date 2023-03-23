@@ -252,7 +252,9 @@
   "checkSettings": "Tafadhali angalia WIFI ya kifaa chako na mipangilio ya mtandao",
   "createNewProject": "Tafadhali fungua mradi mpya ili uanze kazi",
   "addNewMembers": "Tafadhali sajili wanachama wapya wa shirika lako",
-  "serverNotAvailable": "Seva haipatikani kwa wakati huu. Tafadhali jaribu tena baadae"
+  "serverNotAvailable": "Seva haipatikani kwa wakati huu. Tafadhali jaribu tena baadae",
+  "maxAudioLessThan": "Urefu wa juu zaidi wa klipu ya sauti unapaswa kuwa chini ya dakika $count",
+  "maxVideoLessThan": "Urefu wa juu zaidi wa video unapaswa kuwa chini ya sekunde $count"
 
 
 }

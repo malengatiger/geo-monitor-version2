@@ -252,7 +252,9 @@
   "checkSettings": "Nceda ujonge isixhobo sakho se-WIFI kunye nesetingi zenethiwekhi",
   "createNewProject": "Nceda wenze iprojekthi entsha ukuze uqalise umsebenzi",
   "addNewMembers": "Nceda ubhalise amalungu amatsha kumbutho wakho",
-  "serverNotAvailable": "Iseva ayifumaneki ngeli xesha. Nceda uzame kwakhona mva"
+  "serverNotAvailable": "Iseva ayifumaneki ngeli xesha. Nceda uzame kwakhona mva",
+  "maxAudioLessThan": "Obona bude bekliphu yeaudio kufuneka bube ngaphantsi kwe $count imizuzu",
+  "maxVideoLessThan": "Obona bude bevidiyo buphezulu kufuneka bube ngaphantsi kwe-$count seconds",
 
 
 }

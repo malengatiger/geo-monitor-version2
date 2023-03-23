@@ -252,7 +252,9 @@
   "checkSettings": "Ndokumbira utarise mudziyo wako WIFI uye netiweki marongero",
   "createNewProject": "Ndapota gadzirai chirongwa chitsva kuti basa ritange",
   "addNewMembers": "Ndapota nyoresai nhengo itsva dzesangano renyu",
-  "serverNotAvailable": "Sevha haisi kuwanikwa panguva ino. Ndapota edza zvakare gare gare"
+  "serverNotAvailable": "Sevha haisi kuwanikwa panguva ino. Ndapota edza zvakare gare gare",
+  "maxAudioLessThan": "Hurefu hwe clip yeaudio hunofanirwa kunge huri pasi pe$count maminetsi",
+  "maxVideoLessThan": "Hurefu hwevhidhiyo hunofanirwa kunge huri pasi pe$count seconds"
 
 
 }

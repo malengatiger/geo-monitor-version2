@@ -252,6 +252,8 @@
   "checkSettings": "Sicela uhlole i-WIFI yedivayisi yakho kanye nezilungiselelo zenethiwekhi",
   "createNewProject": "Sicela udale iphrojekthi entsha ukuze uqalise umsebenzi",
   "addNewMembers": "Sicela ubhalise amalungu amasha enhlangano yakho",
-  "serverNotAvailable": "Iseva ayitholakali ngalesi sikhathi. Sicela uzame futhi emuva kwesikhathi"
+  "serverNotAvailable": "Iseva ayitholakali ngalesi sikhathi. Sicela uzame futhi emuva kwesikhathi",
+  "maxAudioLessThan": "Ubukhulu bobude besiqeshana somsindo kufanele bube ngaphansi kwamaminithi angu-$count",
+  "maxVideoLessThan": "Ubude bevidiyo obukhulu kufanele bube ngaphansi kwamasekhondi angu-$count"
 
 }

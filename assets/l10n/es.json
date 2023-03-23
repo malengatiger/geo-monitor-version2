@@ -255,7 +255,9 @@
   "checkSettings": "Verifique la configuración de red y WIFI de su dispositivo",
   "createNewProject": "Cree un nuevo proyecto para comenzar a trabajar",
   "addNewMembers": "Registre nuevos miembros para su organización",
-  "serverNotAvailable": "El servidor no está disponible en este momento. Por favor, inténtelo de nuevo más tarde"
+  "serverNotAvailable": "El servidor no está disponible en este momento. Por favor, inténtelo de nuevo más tarde",
+  "maxAudioLessThan": "La duración máxima del clip de audio debe ser inferior a $count minutos",
+  "maxVideoLessThan": "La duración máxima del video debe ser inferior a $count segundos"
 
 
 

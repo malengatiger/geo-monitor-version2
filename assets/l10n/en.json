@@ -252,8 +252,9 @@
   "memberArrived": "A Member has arrived or signed in at $project",
   "monitorSchedules": "Field Monitor Schedules",
   "checkSettings": "Please check your device WIFI and network settings",
-  "schedules": "Schedules",
   "createNewProject": "Please create a new project to get work started",
   "addNewMembers": "Please register new members for your organization",
-  "serverNotAvailable": "Server is not available at this time. Please try again later"
+  "serverNotAvailable": "Server is not available at this time. Please try again later",
+  "maxAudioLessThan": "The maximum audio clip length should be less than $count minutes",
+  "maxVideoLessThan": "The maximum video length should be less than $count seconds"
 }

@@ -254,7 +254,9 @@
   "checkSettings": "Jọwọ ṣayẹwo ẹrọ rẹ WIFI ati awọn eto nẹtiwọki",
   "createNewProject": "Jọwọ ṣẹda iṣẹ akanṣe tuntun lati bẹrẹ iṣẹ",
   "addNewMembers": "Jọwọ forukọsilẹ titun omo egbe fun nyin ètò",
-  "serverNotAvailable": "Olupin ko si ni akoko yii. Jọwọ gbiyanju lẹẹkansi nigbamii"
+  "serverNotAvailable": "Olupin ko si ni akoko yii. Jọwọ gbiyanju lẹẹkansi nigbamii",
+  "maxAudioLessThan": "Gigun agekuru ohun ti o pọju yẹ ki o kere ju awọn iṣẹju $ ka",
+  "maxVideoLessThan": "Gigun fidio ti o pọ julọ yẹ ki o kere ju awọn iṣẹju-aaya $ ka"
 
 
 

@@ -6,7 +6,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:geo_monitor/library/api/prefs_og.dart';
+import 'package:geo_monitor/library/bloc/cloud_storage_bloc.dart';
+import 'package:geo_monitor/library/data/audio.dart';
 import 'package:geo_monitor/library/data/project.dart';
+import 'package:geo_monitor/library/data/video.dart';
 import 'package:geo_monitor/library/ui/camera/video_controls.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:responsive_builder/responsive_builder.dart';
@@ -14,6 +17,7 @@ import 'package:uuid/uuid.dart';
 
 import '../../../device_location/device_location_bloc.dart';
 import '../../../l10n/translation_handler.dart';
+import '../../bloc/fcm_bloc.dart';
 import '../../bloc/geo_uploader.dart';
 import '../../bloc/video_for_upload.dart';
 import '../../cache_manager.dart';
@@ -42,7 +46,8 @@ class VideoRecorder extends StatefulWidget {
 }
 
 class VideoRecorderState extends State<VideoRecorder>
-    with SingleTickerProviderStateMixin, WidgetsBindingObserver {
+    with SingleTickerProviderStateMixin, WidgetsBindingObserver
+    implements StorageBlocListener {
   late AnimationController _controller;
   static const mm = '🍏🍏🍏🍏🍏🍏 VideoHandlerTwo: ';
 
@@ -68,9 +73,11 @@ class VideoRecorderState extends State<VideoRecorder>
       getCameraReady,
       recordingComplete,
       durationText,
+      recordingLimitReached,
       waitingToRecordVideo;
   SettingsModel? settingsModel;
   int limitInSeconds = 0;
+  late StreamSubscription<SettingsModel> settingsSubscription;
 
   @override
   void initState() {
@@ -79,12 +86,13 @@ class VideoRecorderState extends State<VideoRecorder>
     super.initState();
     // Hide the status bar
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
+    _listen();
+    _setTexts();
     _getUser();
-    _getData();
+    _getCameras();
   }
 
-  void _getUser() async {
-    user = await prefsOGx.getUser();
+  Future _setTexts() async {
     settingsModel = await prefsOGx.getSettings();
     if (settingsModel != null) {
       var m = settingsModel?.maxAudioLengthInMinutes;
@@ -102,6 +110,8 @@ class VideoRecorderState extends State<VideoRecorder>
 
       waitingToRecordVideo =
           await mTx.translate('waitingToRecordVideo', settingsModel!.locale!);
+      recordingLimitReached =
+          await mTx.translate('recordingLimitReached', settingsModel!.locale!);
       videoToBeUploaded =
           await mTx.translate('videoToBeUploaded', settingsModel!.locale!);
       maxSeconds = settingsModel!.maxVideoLengthInSeconds!;
@@ -113,8 +123,20 @@ class VideoRecorderState extends State<VideoRecorder>
     setState(() {});
   }
 
+  void _getUser() async {
+    user = await prefsOGx.getUser();
+  }
+
+  void _listen() async {
+    settingsSubscription = fcmBloc.settingsStream.listen((event) async {
+      if (mounted) {
+        await _setTexts();
+      }
+    });
+  }
+
   int maxSeconds = 10;
-  void _getData() async {
+  void _getCameras() async {
     setState(() {
       busy = true;
     });
@@ -214,7 +236,15 @@ class VideoRecorderState extends State<VideoRecorder>
       if (timer.tick > maxSeconds) {
         pp('$mm video recording limit reached ... will stop!');
         stopVideoRecording();
-        showToast(message: 'Recording limit reached', context: context);
+        showToast(
+            duration: const Duration(seconds: 6),
+            padding: 20.0,
+            toastGravity: ToastGravity.TOP,
+            textStyle: myTextStyleMedium(context),
+            message: recordingLimitReached == null
+                ? 'Recording limit reached'
+                : recordingLimitReached!,
+            context: context);
       }
       setState(() {});
     });
@@ -323,7 +353,12 @@ class VideoRecorderState extends State<VideoRecorder>
         thumbnailBytes: null);
 
     await cacheManager.addVideoForUpload(video: videoForUpload);
-    geoUploader.manageMediaUploads();
+    if (finalDuration.inSeconds < 21) {
+      geoUploader.manageMediaUploads();
+    } else {
+      cloudStorageBloc.uploadVideo(
+          listener: this, videoForUpload: videoForUpload);
+    }
     if (mounted) {
       showToast(
           duration: const Duration(seconds: 3),
@@ -523,7 +558,6 @@ class VideoRecorderState extends State<VideoRecorder>
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.center,
                               children: [
-
                                 const SizedBox(
                                   height: 40,
                                 ),
@@ -609,13 +643,16 @@ class VideoRecorderState extends State<VideoRecorder>
                     elevation: 8,
                     child: Padding(
                       padding: const EdgeInsets.all(4.0),
-                      child: Row(mainAxisAlignment: MainAxisAlignment.end,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
                         children: [
                           Text(
                             getHourMinuteSecond(duration),
                             style: myNumberStyleMedium(context),
                           ),
-                          const SizedBox(width: 20,),
+                          const SizedBox(
+                            width: 20,
+                          ),
                           IconButton(
                               onPressed: () {
                                 widget.onClose();
@@ -658,6 +695,40 @@ class VideoRecorderState extends State<VideoRecorder>
 
   void onCancel() {
     pp('$mm onCancel tapped');
+  }
+
+  Audio? audio;
+  @override
+  onAudioReady(Audio audio) {
+    pp('$mm audio is ready ');
+    this.audio = audio;
+    setState(() {
+
+    });
+  }
+
+  @override
+  onError(String message) {
+    pp('$mm message');
+  }
+
+  @override
+  onFileProgress(int totalByteCount, int bytesTransferred) {
+    pp('$mm bytesTransferred $bytesTransferred of $totalByteCount bytes');
+  }
+
+  @override
+  onFileUploadComplete(String url, int totalByteCount, int bytesTransferred) {
+    pp('$mm onFileUploadComplete, bytesTransferred: $bytesTransferred');
+    pp('$mm url: $url');
+  }
+  Video? video;
+  @override
+  onVideoReady(Video video) {
+    pp('$mm video is ready: ${video.toJson()} ');
+    setState(() {
+      this.video = video;
+    });
   }
 }
 

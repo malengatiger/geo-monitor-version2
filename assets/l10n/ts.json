@@ -252,5 +252,7 @@
   "checkSettings": "Hi kombela u kambela WIFI ya xitirhisiwa xa wena ni swiyimiso swa netiweke",
   "createNewProject": "Hi kombela u endla phurojeke leyintshwa ku sungula ntirho",
   "addNewMembers": "Hi kombela u tsarisa swirho leswintshwa eka nhlangano wa n’wina",
-  "serverNotAvailable": "Server a yi kumeki eka nkarhi lowu. Hi kombela u ringeta nakambe endzhaku"
+  "serverNotAvailable": "Server a yi kumeki eka nkarhi lowu. Hi kombela u ringeta nakambe endzhaku",
+  "maxAudioLessThan": "Ku leha lokukulu ka xiphemu xa mpfumawulo ku fanele ku va ehansi ka $count minutes",
+  "maxVideoLessThan": "Ku leha lokukulu ka vhidiyo ku fanele ku va ehansi ka $count seconds"
 }

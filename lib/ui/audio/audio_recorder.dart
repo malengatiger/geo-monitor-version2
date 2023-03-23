@@ -5,6 +5,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:geo_monitor/library/api/prefs_og.dart';
+import 'package:geo_monitor/library/bloc/cloud_storage_bloc.dart';
 import 'package:geo_monitor/library/data/project.dart';
 import 'package:geo_monitor/library/data/settings_model.dart';
 import 'package:geo_monitor/library/functions.dart';
@@ -23,8 +24,10 @@ import '../../library/bloc/audio_for_upload.dart';
 import '../../library/bloc/fcm_bloc.dart';
 import '../../library/bloc/geo_uploader.dart';
 import '../../library/cache_manager.dart';
+import '../../library/data/audio.dart';
 import '../../library/data/position.dart';
 import '../../library/data/user.dart';
+import '../../library/data/video.dart';
 import '../../library/generic_functions.dart';
 
 class AudioRecorder extends StatefulWidget {
@@ -38,7 +41,8 @@ class AudioRecorder extends StatefulWidget {
   State<AudioRecorder> createState() => AudioRecorderState();
 }
 
-class AudioRecorderState extends State<AudioRecorder> {
+class AudioRecorderState extends State<AudioRecorder>
+    implements StorageBlocListener {
   int _recordDuration = 0;
   Timer? _timer;
   final _audioRecorder = Record();
@@ -48,14 +52,14 @@ class AudioRecorderState extends State<AudioRecorder> {
   late StreamSubscription<SettingsModel> settingsSubscriptionFCM;
 
   Amplitude? _amplitude;
-  static const mx = '🍐🍐🍐 AudioRecorder 🍐🍐🍐: ';
+  static const mm = '🍐🍐🍐 AudioRecorder 🍐🍐🍐: ';
   User? user;
   SettingsModel? settingsModel;
   @override
   void initState() {
     _recordSub =
         _audioRecorder.onStateChanged().listen((RecordState recordState) {
-      pp('$mx onStateChanged; record state: $recordState');
+      pp('$mm onStateChanged; record state: $recordState');
       setState(() => _recordState = recordState);
     });
 
@@ -109,6 +113,7 @@ class AudioRecorderState extends State<AudioRecorder> {
 
     setState(() {});
   }
+
   void _listenToSettingsStream() async {
     settingsSubscriptionFCM = fcmBloc.settingsStream.listen((event) async {
       if (mounted) {
@@ -129,16 +134,16 @@ class AudioRecorderState extends State<AudioRecorder> {
           AudioEncoder.aacLc,
         );
         if (kDebugMode) {
-          pp('$mx AudioEncoder.aacLc: ${AudioEncoder.aacLc.name} supported: $isSupported');
+          pp('$mm AudioEncoder.aacLc: ${AudioEncoder.aacLc.name} supported: $isSupported');
         }
 
         var directory = await getApplicationDocumentsDirectory();
-        pp('$mx _start: 🔆🔆🔆 directory: ${directory.path}');
+        pp('$mm _start: 🔆🔆🔆 directory: ${directory.path}');
         File audioFile = File(
             '${directory.path}/audio${DateTime.now().millisecondsSinceEpoch}.m4a');
 
         await _audioRecorder.start(path: audioFile.path);
-        pp('$mx _audioRecorder has started ...');
+        pp('$mm _audioRecorder has started ...');
         _startTimer();
       }
     } catch (e) {
@@ -153,12 +158,12 @@ class AudioRecorderState extends State<AudioRecorder> {
     _timer?.cancel();
 
     final path = await _audioRecorder.stop();
-    pp('$mx onStop: file path: $path');
+    pp('$mm onStop: file path: $path');
 
     if (path != null) {
       fileToUpload = File(path);
       var length = await fileToUpload?.length();
-      pp('$mx onStop: file length: 🍎🍎🍎 $length bytes, ready for upload');
+      pp('$mm onStop: file length: 🍎🍎🍎 $length bytes, ready for upload');
       fileSize = length!;
 
       setState(() {
@@ -202,7 +207,7 @@ class AudioRecorderState extends State<AudioRecorder> {
   bool _readyForUpload = false;
 
   Future<void> _uploadFile() async {
-    pp('\n\n$mx Start file upload .....................');
+    pp('\n\n$mm Start file upload .....................');
     setState(() {
       _readyForUpload = false;
     });
@@ -227,9 +232,9 @@ class AudioRecorderState extends State<AudioRecorder> {
           return;
         }
       }
-      pp('$mx about to create audioForUpload ....${fileToUpload!.path} ');
+      pp('$mm about to create audioForUpload ....${fileToUpload!.path} ');
       if (user == null) {
-        pp('$mx user is null, WTF!!');
+        pp('$mm user is null, WTF!!');
         return;
       }
 
@@ -247,7 +252,13 @@ class AudioRecorderState extends State<AudioRecorder> {
           date: DateTime.now().toUtc().toIso8601String());
 
       await cacheManager.addAudioForUpload(audio: audioForUpload);
-      geoUploader.manageMediaUploads();
+      const secs = 4 * 60;
+      if (_recordDuration < secs) {
+        geoUploader.manageMediaUploads();
+      } else {
+        cloudStorageBloc.uploadAudio(
+            listener: this, audioForUpload: audioForUpload);
+      }
     } catch (e) {
       pp("something amiss here: ${e.toString()}");
       if (mounted) {
@@ -324,6 +335,39 @@ class AudioRecorderState extends State<AudioRecorder> {
               iconSize: 48,
               uploadAudioClipText: uploadAudioClipText!),
     );
+  }
+
+  Audio? audio;
+  @override
+  onAudioReady(Audio audio) {
+    pp('$mm audio is ready : ${audio.toJson()}');
+    this.audio = audio;
+    setState(() {});
+  }
+
+  @override
+  onError(String message) {
+    pp('$mm message');
+  }
+
+  @override
+  onFileProgress(int totalByteCount, int bytesTransferred) {
+    pp('$mm bytesTransferred $bytesTransferred of $totalByteCount bytes');
+  }
+
+  @override
+  onFileUploadComplete(String url, int totalByteCount, int bytesTransferred) {
+    pp('$mm onFileUploadComplete, bytesTransferred: $bytesTransferred');
+    pp('$mm url: $url');
+  }
+
+  Video? video;
+  @override
+  onVideoReady(Video video) {
+    pp('$mm video is ready ');
+    setState(() {
+      this.video = video;
+    });
   }
 }
 

@@ -260,6 +260,8 @@
   "checkSettings": "Biko lelee ngwaọrụ gị WIFI na ntọala netwọkụ",
   "createNewProject": "Biko mepụta ọrụ ọhụrụ iji malite ọrụ",
   "addNewMembers": "Biko debanye aha ndị otu ọhụrụ maka nzukọ gị",
-  "serverNotAvailable": "Ihe nkesa adịghị n\u0027oge a. Biko nwaa ọzọ ma emechaa"
+  "serverNotAvailable": "Ihe nkesa adịghị n\u0027oge a. Biko nwaa ọzọ ma emechaa",
+  "maxAudioLessThan": "Ogologo obere mkpachị ọdịyo kwesịrị ịbụ ihe na-erughị nkeji $count",
+  "maxVideoLessThan": "Ogologo vidiyo kachasị kwesịrị ịbụ ihe na-erughị $count sekọnd"
 
 }

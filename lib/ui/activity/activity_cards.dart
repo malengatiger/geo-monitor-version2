@@ -50,7 +50,7 @@ class ThinCard extends StatelessWidget {
                   height: 12,
                 ),
                 Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.start,
                   children: [
                     icon,
                     const SizedBox(

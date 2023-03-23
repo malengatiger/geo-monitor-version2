@@ -22,10 +22,10 @@ class SettingsForm extends StatefulWidget {
   final double padding;
   final Function(String locale) onLocaleChanged;
   @override
-  State<SettingsForm> createState() => _SettingsFormState();
+  State<SettingsForm> createState() => SettingsFormState();
 }
 
-class _SettingsFormState extends State<SettingsForm> {
+class SettingsFormState extends State<SettingsForm> {
   final _formKey = GlobalKey<FormState>();
   final mm = '🥨🥨🥨🥨🥨 SettingsForm: ';
   User? user;
@@ -35,10 +35,10 @@ class _SettingsFormState extends State<SettingsForm> {
   SettingsModel? oldSettingsModel;
 
   var distController = TextEditingController(text: '500');
-  var videoController = TextEditingController(text: '20');
-  var audioController = TextEditingController(text: '60');
+  var videoController = TextEditingController(text: '30');
+  var audioController = TextEditingController(text: '20');
   var activityController = TextEditingController(text: '24');
-  var daysController = TextEditingController(text: '7');
+  var daysController = TextEditingController(text: '14');
 
   int photoSize = 0;
   int currentThemeIndex = 0;
@@ -606,6 +606,7 @@ class _SettingsFormState extends State<SettingsForm> {
                           Radio(
                             value: 0,
                             groupValue: groupValue,
+                            activeColor: Theme.of(context).primaryColor,
                             onChanged: _handlePhotoSizeValueChange,
                           ),
                           Text(
@@ -615,6 +616,7 @@ class _SettingsFormState extends State<SettingsForm> {
                           Radio(
                             value: 1,
                             groupValue: groupValue,
+                            activeColor: Theme.of(context).primaryColor,
                             onChanged: _handlePhotoSizeValueChange,
                           ),
                           Text(medium == null ? 'Medium' : medium!,
@@ -622,6 +624,7 @@ class _SettingsFormState extends State<SettingsForm> {
                           Radio(
                             value: 2,
                             groupValue: groupValue,
+                            activeColor: Theme.of(context).primaryColor,
                             onChanged: _handlePhotoSizeValueChange,
                           ),
                           Text(large == null ? 'Large' : large!,
