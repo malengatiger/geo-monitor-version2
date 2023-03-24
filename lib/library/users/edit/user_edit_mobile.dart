@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:geo_monitor/library/cache_manager.dart';
@@ -10,8 +12,10 @@ import '../../../l10n/translation_handler.dart';
 import '../../api/data_api.dart';
 import '../../api/prefs_og.dart';
 import '../../bloc/admin_bloc.dart';
+import '../../bloc/fcm_bloc.dart';
 import '../../bloc/organization_bloc.dart';
 import '../../data/country.dart';
+import '../../data/settings_model.dart';
 import '../../data/user.dart' as ar;
 import '../../data/user.dart';
 import '../../functions.dart';
@@ -53,11 +57,14 @@ class UserEditMobileState extends State<UserEditMobile>
       administrator;
 
   UserFormStrings? userFormStrings;
+  late StreamSubscription<SettingsModel> settingsSubscription;
+
 
   @override
   void initState() {
     _controller = AnimationController(vsync: this);
     super.initState();
+    _listen();
     _setTexts();
     _setup();
     _getAdministrator();
@@ -80,6 +87,17 @@ class UserEditMobileState extends State<UserEditMobile>
     }
     setState(() {});
   }
+  void _listen() async {
+    settingsSubscription = fcmBloc.settingsStream.listen((event) async {
+      if (country != null) {
+        countryName = await mTx.translate(country!.name!, event.locale!);
+      }
+      if (mounted) {
+        _setTexts();
+      }
+    });
+  }
+
 
   Future<void> _setup() async {
     if (widget.user != null) {
@@ -348,7 +366,7 @@ class UserEditMobileState extends State<UserEditMobile>
             title == null ? 'User Editor' : title!,
           ),
           bottom: PreferredSize(
-            preferredSize: const Size.fromHeight(60),
+            preferredSize: const Size.fromHeight(40),
             child: Column(
               children: [
                 Text(
@@ -371,7 +389,7 @@ class UserEditMobileState extends State<UserEditMobile>
                   style: myTextStyleMediumBold(context),
                 ),
                 const SizedBox(
-                  height: 20,
+                  height: 8,
                 )
               ],
             ),
@@ -385,12 +403,12 @@ class UserEditMobileState extends State<UserEditMobile>
                 elevation: 4,
                 shape: getRoundedBorder(radius: 16),
                 child: Padding(
-                  padding: const EdgeInsets.all(12.0),
+                  padding: const EdgeInsets.all(8.0),
                   child: SingleChildScrollView(
                     child: UserForm(
                         user: widget.user,
                         width: width,
-                        internalPadding: 20.0),
+                        internalPadding: 8.0),
                   ),
                 ),
               ),

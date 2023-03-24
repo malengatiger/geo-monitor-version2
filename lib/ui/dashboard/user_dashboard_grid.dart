@@ -109,6 +109,10 @@ class UserDashboardGrid extends StatelessWidget {
                         title: dashboardStrings.videos,
                         topPadding: elementPadding,
                         number: dataBag.videos!.length,
+                        textStyle: GoogleFonts.secularOne(
+                            textStyle: Theme.of(context).textTheme.titleLarge,
+                            fontWeight: FontWeight.w900,
+                            color: Theme.of(context).primaryColor),
                         onTapped: () {
                           onTypeTapped(typeVideos);
                         },

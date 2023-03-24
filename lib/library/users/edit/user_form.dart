@@ -1,10 +1,16 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:geo_monitor/library/bloc/fcm_bloc.dart';
 import 'package:geo_monitor/library/data/country.dart';
+import 'package:geo_monitor/library/data/settings_model.dart';
 import 'package:geo_monitor/library/users/edit/user_edit_mobile.dart';
+import 'package:geo_monitor/main.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:uuid/uuid.dart';
 
+import '../../../l10n/translation_handler.dart';
 import '../../api/data_api.dart';
 import '../../api/prefs_og.dart';
 import '../../bloc/admin_bloc.dart';
@@ -30,10 +36,10 @@ class UserForm extends StatefulWidget {
   final double width, internalPadding;
 
   @override
-  State<UserForm> createState() => _UserFormState();
+  State<UserForm> createState() => UserFormState();
 }
 
-class _UserFormState extends State<UserForm>
+class UserFormState extends State<UserForm>
     with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   var nameController = TextEditingController();
@@ -47,22 +53,25 @@ class _UserFormState extends State<UserForm>
   int userType = -1;
   int genderType = -1;
   String? type;
-  String? gender;
+  String? gender, countryName;
 
   UserFormStrings? userFormStrings;
+  SettingsModel? settingsModel;
+  late StreamSubscription<SettingsModel> settingsSubscription;
 
   @override
   void initState() {
     _controller = AnimationController(vsync: this);
     super.initState();
+    _listen();
     _setup();
-    _getAdministrator();
+    _setTexts();
   }
 
-  void _getAdministrator() async {
+  void _setTexts() async {
     admin = await prefsOGx.getUser();
-    var sett = await prefsOGx.getSettings();
-    if (sett != null) {
+    settingsModel = await prefsOGx.getSettings();
+    if (settingsModel != null) {
       userFormStrings = await UserFormStrings.getTranslated();
     }
     setState(() {});
@@ -83,8 +92,10 @@ class _UserFormState extends State<UserForm>
     if (widget.user != null) {
       if (widget.user!.countryId != null) {
         var countries = await cacheManager.getCountries();
+        var sett = await prefsOGx.getSettings();
         for (var value in countries) {
           if (widget.user!.countryId == value.countryId) {
+            countryName = await mTx.translate(value.name!, sett!.locale!);
             country = value;
           }
         }
@@ -92,9 +103,21 @@ class _UserFormState extends State<UserForm>
     }
   }
 
+  void _listen() async {
+    settingsSubscription = fcmBloc.settingsStream.listen((event) async {
+      if (country != null) {
+        countryName = await mTx.translate(country!.name!, event.locale!);
+      }
+      if (mounted) {
+        _setTexts();
+      }
+    });
+  }
+
   @override
   void dispose() {
     _controller.dispose();
+    settingsSubscription.cancel();
     super.dispose();
   }
 
@@ -329,7 +352,7 @@ class _UserFormState extends State<UserForm>
     var spaceToTop = 0.0;
     var ori = MediaQuery.of(context).orientation;
     if (ori.name == 'portrait') {
-      spaceToButtons = 48;
+      spaceToButtons = 28;
       spaceToTop = 24;
     } else {
       spaceToButtons = 24;
@@ -352,23 +375,28 @@ class _UserFormState extends State<UserForm>
                           height: 8,
                         ),
                         CountryChooser(
-                          onSelected: (c) {
-                            setState(() {
+                          onSelected: (c) async {
+                            countryName = await mTx.translate(
+                                c.name!, settings!.locale!);
+                            setState(()  {
                               country = c;
+
                             });
                           },
                           hint: userFormStrings!.selectCountry,
                         ),
-                        Row(mainAxisAlignment: MainAxisAlignment.center,
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-
                             const SizedBox(
                               width: 12,
                             ),
                             country == null
                                 ? const SizedBox()
                                 : Text(
-                                    '${country!.name}',
+                                    countryName == null
+                                        ? country!.name!
+                                        : countryName!,
                                     style: myTextStyleMedium(context),
                                   ),
                           ],
@@ -451,6 +479,7 @@ class _UserFormState extends State<UserForm>
                             Radio(
                               value: 0,
                               groupValue: genderType,
+                              activeColor: Theme.of(context).primaryColor,
                               onChanged: _handleGenderValueChange,
                             ),
                             Text(
@@ -460,6 +489,7 @@ class _UserFormState extends State<UserForm>
                             Radio(
                               value: 1,
                               groupValue: genderType,
+                              activeColor: Theme.of(context).primaryColor,
                               onChanged: _handleGenderValueChange,
                             ),
                             Text(userFormStrings!.female,
@@ -476,6 +506,7 @@ class _UserFormState extends State<UserForm>
                                 Radio(
                                   value: 0,
                                   groupValue: userType,
+                                  activeColor: Theme.of(context).primaryColor,
                                   onChanged: _handleRadioValueChange,
                                 ),
                                 const SizedBox(
@@ -492,6 +523,7 @@ class _UserFormState extends State<UserForm>
                                 Radio(
                                   value: 1,
                                   groupValue: userType,
+                                  activeColor: Theme.of(context).primaryColor,
                                   onChanged: _handleRadioValueChange,
                                 ),
                                 const SizedBox(
@@ -506,6 +538,7 @@ class _UserFormState extends State<UserForm>
                                 Radio(
                                   value: 2,
                                   groupValue: userType,
+                                  activeColor: Theme.of(context).primaryColor,
                                   onChanged: _handleRadioValueChange,
                                 ),
                                 const SizedBox(

@@ -16,6 +16,7 @@ import 'package:page_transition/page_transition.dart';
 import 'package:responsive_builder/responsive_builder.dart';
 import 'package:universal_platform/universal_platform.dart';
 
+import '../../l10n/translation_handler.dart';
 import '../../library/api/prefs_og.dart';
 import '../../library/bloc/fcm_bloc.dart';
 import '../../library/bloc/theme_bloc.dart';
@@ -80,6 +81,7 @@ class UserDashboardState extends State<UserDashboard>
   bool _showAudio = false;
 
   DashboardStrings? dashboardStrings;
+  String? memberDashboard;
   @override
   void initState() {
     _gridViewAnimationController = AnimationController(
@@ -95,12 +97,19 @@ class UserDashboardState extends State<UserDashboard>
     _listenForFCM();
   }
 
-  void _setTexts() async {
+  Future _setTexts() async {
     var sett = await prefsOGx.getSettings();
     if (sett != null) {
+      memberDashboard = await mTx.translate('memberDashboard', sett!.locale!);
       dashboardStrings = await DashboardStrings.getTranslated();
     }
+    if (mounted) {
+      setState(() {
+
+      });
+    }
   }
+
   void _getData(bool forceRefresh) async {
     if (mounted) {
       setState(() {
@@ -195,6 +204,7 @@ class UserDashboardState extends State<UserDashboard>
         final m = LocaleAndTheme(themeIndex: settings!.themeIndex!,
             locale: newLocale);
         themeBloc.themeStreamController.sink.add(m);
+        await _setTexts();
         if (mounted) {
           setState(() {});
         }
@@ -431,7 +441,9 @@ class UserDashboardState extends State<UserDashboard>
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
-        title: const Text('Member Dashboard'),
+        title:  Text(
+            memberDashboard == null?
+            'Member Dashboard': memberDashboard!),
         actions: [
           IconButton(
               icon: Icon(
