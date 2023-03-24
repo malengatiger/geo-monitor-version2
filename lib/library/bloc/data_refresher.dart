@@ -84,16 +84,21 @@ class DataRefresher {
       throw Exception('Upload Exception: $e');
     }
 
-    pp('$xx Done with org data, refreshing projects and users');
-    var projects = await _startProjectsRefresh(organizationId: organizationId!);
-    var users = await _startUsersRefresh(organizationId: organizationId);
-    var countries = await _startCountryRefresh();
-    bag!.projects = projects;
-    bag.users = users;
+    pp('$xx Done with org data, refreshing projects and users if needed ...');
+    final doRefresh = await prefsOGx.shouldRefreshBePerformed();
+    if (doRefresh) {
+      var projects =
+          await _startProjectsRefresh(organizationId: organizationId!);
+      var users = await _startUsersRefresh(organizationId: organizationId);
+      var countries = await _startCountryRefresh();
+      bag!.projects = projects;
+      bag.users = users;
+      organizationBloc.dataBagController.sink.add(bag);
+      await prefsOGx.setDateRefreshed(DateTime.now().toIso8601String());
+      pp('$xx Done with refresh of projects: ${projects.length} '
+          'and users: ${users.length} countries: ${countries.length}');
+    }
 
-    organizationBloc.dataBagController.sink.add(bag);
-
-    pp('$xx Done with refresh of projects and users; countries: ${countries.length}');
     return bag;
   }
 
@@ -138,12 +143,13 @@ class DataRefresher {
 
     return list;
   }
+
   Future<List<Country>> _startCountryRefresh() async {
     pp('$xx .......  _startCountryRefresh in an isolate ...');
     var list = await Isolate.run(() async => await getCountries(
-      token: token,
-      mUrl: url,
-    ));
+          token: token,
+          mUrl: url,
+        ));
     pp('$xz countries found: ${list.length}');
     for (var element in list) {
       await cacheManager.addCountry(country: element);
@@ -514,8 +520,7 @@ Future<List<User>> getUsers(
   };
   try {
     mUrl = '${mUrl}getAllOrganizationUsers?organizationId=$organizationId';
-    var uri =
-        Uri.parse(mUrl);
+    var uri = Uri.parse(mUrl);
 
     http.Response httpResponse = await client
         .get(
@@ -545,9 +550,7 @@ Future<List<User>> getUsers(
 }
 
 Future<List<Country>> getCountries(
-    {
-      required String mUrl,
-      required String token}) async {
+    {required String mUrl, required String token}) async {
   final client = http.Client();
   var start = DateTime.now();
 
@@ -560,14 +563,13 @@ Future<List<Country>> getCountries(
   };
   try {
     mUrl = '${mUrl}getCountries';
-    var uri =
-    Uri.parse(mUrl);
+    var uri = Uri.parse(mUrl);
 
     http.Response httpResponse = await client
         .get(
-      uri,
-      headers: headers,
-    )
+          uri,
+          headers: headers,
+        )
         .timeout(const Duration(seconds: 120));
     pp('$xz getCountries: RESPONSE: .... : 💙 statusCode: 👌👌👌 '
         '${httpResponse.statusCode} 👌👌👌  for $mUrl');
@@ -687,7 +689,7 @@ Future<http.Response> _sendRequestToBackend(String mUrl, String token) async {
         pp(msg);
         throw HttpException(msg);
       } else {
-        pp('$xz status is 200, Return the httpResponse: ${httpResponse.contentLength} bytes');
+        pp('$xz status is 200,  🍎 Return the httpResponse: ${httpResponse.contentLength} bytes  🍎');
       }
       return httpResponse;
     } catch (e) {

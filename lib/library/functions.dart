@@ -827,7 +827,7 @@ String getValidLocale(String locale) {
     case 'af':
       return 'af_ZA';
     case 'en':
-      return 'en_ZA';
+      return 'en';
     case 'es':
       return 'es';
     case 'pt':

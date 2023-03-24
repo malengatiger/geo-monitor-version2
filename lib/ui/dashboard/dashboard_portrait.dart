@@ -219,7 +219,7 @@ class DashboardPortraitState extends State<DashboardPortrait>
         label: 'Weather'));
   }
 
-  var subTitle = 'Data is for ';
+  var subTitle = '';
 
   Future _setTexts() async {
     settings = await prefsOGx.getSettings();

@@ -255,5 +255,6 @@
   "serverNotAvailable": "Server a yi kumeki eka nkarhi lowu. Hi kombela u ringeta nakambe endzhaku",
   "maxAudioLessThan": "Ku leha lokukulu ka xiphemu xa mpfumawulo ku fanele ku va ehansi ka $count minutes",
   "maxVideoLessThan": "Ku leha lokukulu ka vhidiyo ku fanele ku va ehansi ka $count seconds",
-  "initializing": "Ku sungula database ya xitirhisiwa xa wena na switirhisiwa swin’wana. Hi kombela mi rindza tisekoni ti nga ri tingani."
+  "initializing": "Ku sungula database ya xitirhisiwa xa wena na switirhisiwa swin’wana. Hi kombela mi rindza tisekoni ti nga ri tingani.",
+  "af": "Afrikaans"
 }

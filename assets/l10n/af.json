@@ -259,8 +259,9 @@
   "serverNotAvailable": "Bediener is nie tans beskikbaar nie. Probeer asseblief weer later",
   "maxAudioLessThan": "Die maksimum klanksnitlengte moet minder as $telling minute wees",
   "maxVideoLessThan": "Die maksimum videolengte moet minder as $count sekondes wees",
-  "initializing": "Inisialiseer jou toesteldatabasis en ander hulpbronne. Wag asseblief vir \u0027n paar sekondes."
+  "initializing": "Inisialiseer jou toesteldatabasis en ander hulpbronne. Wag asseblief vir \u0027n paar sekondes.",
 
+  "af": "Afrikaans"
 
 
 

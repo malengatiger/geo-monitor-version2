@@ -262,6 +262,7 @@
   "serverNotAvailable": "服务器此时不可用。请稍后再试",
   "maxAudioLessThan": "最大音频剪辑长度应小于 $count 分钟",
   "maxVideoLessThan": "最大视频长度应小于 $count 秒",
-  "initializing": "初始化您的设备数据库和其他资源。请稍等几秒钟。"
+  "initializing": "初始化您的设备数据库和其他资源。请稍等几秒钟。",
+  "sn": "绍纳语"
 
 }

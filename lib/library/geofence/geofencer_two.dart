@@ -88,26 +88,26 @@ class TheGreatGeofencer {
         .toIso8601String();
     var endDate = DateTime.now().toUtc().toIso8601String();
 
-    var mList = <ProjectPosition>[];
+    var mList = await organizationBloc.getProjectPositions(
+        organizationId: _user!.organizationId!,
+        forceRefresh: false,
+        startDate: startDate,
+        endDate: endDate);
     try {
-      var loc = await locationBloc.getLocation();
-      mList = await _findProjectPositionsByLocation(
-          organizationId: _user!.organizationId!,
-          latitude: loc!.latitude!,
-          longitude: loc!.longitude!,
-          radiusInKM: radiusInKM ?? 5);
-      pp('$xx buildGeofences .... project positions found by location: ${mList.length} ');
+      if (mList.isEmpty || mList.length > 98) {
+        var loc = await locationBloc.getLocation();
+        mList = await _findProjectPositionsByLocation(
+            organizationId: _user!.organizationId!,
+            latitude: loc!.latitude!,
+            longitude: loc!.longitude!,
+            radiusInKM: radiusInKM ?? 5);
+        pp('$xx buildGeofences .... project positions found by location: ${mList
+            .length} ');
+      }
     } catch (e) {
       pp(e);
     }
 
-    if (mList.isEmpty) {
-      mList = await organizationBloc.getProjectPositions(
-          organizationId: _user!.organizationId!,
-          forceRefresh: false,
-          startDate: startDate,
-          endDate: endDate);
-    }
     int cnt = 0;
     for (var pos in mList) {
       await addGeofence(projectPosition: pos);

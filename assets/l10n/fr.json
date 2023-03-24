@@ -258,6 +258,7 @@
   "serverNotAvailable": "Le serveur n\u0027est pas disponible pour le moment. Veuillez réessayer plus tard",
   "maxAudioLessThan": "La durée maximale du clip audio doit être inférieure à $count minutes",
   "maxVideoLessThan": "La durée maximale de la vidéo doit être inférieure à $count secondes",
-  "initializing": "Initialisation de la base de données de votre appareil et d\u0027autres ressources. Veuillez patienter quelques secondes."
+  "initializing": "Initialisation de la base de données de votre appareil et d\u0027autres ressources. Veuillez patienter quelques secondes.",
+  "af": "Africain"
 
 }

@@ -255,7 +255,8 @@
   "serverNotAvailable": "Seva haipatikani kwa wakati huu. Tafadhali jaribu tena baadae",
   "maxAudioLessThan": "Urefu wa juu zaidi wa klipu ya sauti unapaswa kuwa chini ya dakika $count",
   "maxVideoLessThan": "Urefu wa juu zaidi wa video unapaswa kuwa chini ya sekunde $count",
-  "initializing": "Kuanzisha hifadhidata ya kifaa chako na rasilimali zingine. Tafadhali subiri kwa sekunde chache."
+  "initializing": "Kuanzisha hifadhidata ya kifaa chako na rasilimali zingine. Tafadhali subiri kwa sekunde chache.",
+  "af": "Afrikaans"
 
 
 }

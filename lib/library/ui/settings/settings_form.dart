@@ -777,7 +777,7 @@ class LocaleChooserState extends State<LocaleChooser> {
   String? english,
       french,
       portuguese,
-      ingala,
+      lingala,
       sotho,
       spanish,
       shona,
@@ -801,10 +801,10 @@ class LocaleChooserState extends State<LocaleChooser> {
     settingsModel = await prefsOGx.getSettings();
     if (settingsModel != null) {
       english = await mTx.translate('en', settingsModel!.locale!);
-      afrikaans = 'Afrikaans';
+      afrikaans = await mTx.translate('af', settingsModel!.locale!);
       french = await mTx.translate('fr', settingsModel!.locale!);
       portuguese = await mTx.translate('pt', settingsModel!.locale!);
-      ingala = await mTx.translate('ig', settingsModel!.locale!);
+      lingala = await mTx.translate('ig', settingsModel!.locale!);
       sotho = await mTx.translate('st', settingsModel!.locale!);
       spanish = await mTx.translate('es', settingsModel!.locale!);
       swahili = await mTx.translate('sw', settingsModel!.locale!);
@@ -855,7 +855,7 @@ class LocaleChooserState extends State<LocaleChooser> {
                   style: myTextStyleSmall(context))),
           DropdownMenuItem(
               value: const Locale('ig'),
-              child: Text(ingala == null ? 'Ingala' : ingala!,
+              child: Text(lingala == null ? 'Lingala' : lingala!,
                   style: myTextStyleSmall(context))),
           DropdownMenuItem(
               value: const Locale('st'),
@@ -914,7 +914,7 @@ class LocaleChooserState extends State<LocaleChooser> {
         language = portuguese!;
         break;
       case 'ig':
-        language = ingala!;
+        language = lingala!;
         break;
       case 'es':
         language = spanish!;

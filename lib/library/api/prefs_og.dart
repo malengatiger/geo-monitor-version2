@@ -17,31 +17,32 @@ class PrefsOGx {
   final box = GetStorage(cacheName);
 
   Future setDateRefreshed(String date) async {
-    await box.write('refreshData', true);
+    await box.write('dateRefreshed', date);
     pp("$mm setDateRefreshed SET to $date");
     return null;
   }
-  Future<bool> shouldRefreshBePerformed() async {
-    var refreshDate = await getDateRefreshed();
+  bool shouldRefreshBePerformed() {
+    var refreshDate = _getDateRefreshed();
     final rDate = DateTime.parse(refreshDate);
     final now = DateTime.now();
     final delta = now.difference(rDate).inHours;
-    if (delta >= 24) {
+    if (delta >= 12) {
       return true;
+    } else {
+      return false;
     }
-    return false;
-
   }
-  Future<String> getDateRefreshed() async {
+  String _getDateRefreshed()  {
     pp('$mm ......... getting getDateRefreshed from cache! ...');
-    String? date =  box.read('refreshData');
+    String? date =  box.read('dateRefreshed');
     if (date == null) {
-      pp('$mm DateRefreshed flag does not exist in Prefs, '
+      pp('$mm Date Refreshed does not exist in Prefs, '
           'create date from a year ago, just for kicks! 🍎🍎🍎!');
-      date = DateTime.now().subtract(const Duration(days: 365)).toIso8601String();
+      date = DateTime.now().subtract(const Duration(days: 365))
+          .toIso8601String();
       return date;
     } else {
-      pp("$mm FCMSubscription flag: 🧩 🧩 🧩 🧩 🧩 retrieved .. $date 🔴🔴");
+      pp("$mm _getDateRefreshed: 🧩 🧩 🧩 🧩 🧩 date .. $date 🔴🔴");
       return date;
     }
   }

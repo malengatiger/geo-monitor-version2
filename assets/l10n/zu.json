@@ -255,7 +255,8 @@
   "serverNotAvailable": "Iseva ayitholakali ngalesi sikhathi. Sicela uzame futhi emuva kwesikhathi",
   "maxAudioLessThan": "Ubukhulu bobude besiqeshana somsindo kufanele bube ngaphansi kwamaminithi angu-$count",
   "maxVideoLessThan": "Ubude bevidiyo obukhulu kufanele bube ngaphansi kwamasekhondi angu-$count",
-  "initializing": "Ukuqalisa isizindalwazi sedivayisi yakho nezinye izinsiza. Sicela ulinde imizuzwana embalwa."
+  "initializing": "Ukuqalisa isizindalwazi sedivayisi yakho nezinye izinsiza. Sicela ulinde imizuzwana embalwa.",
+  "af": "Afrikaans"
 
 
 }
