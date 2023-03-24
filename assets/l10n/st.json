@@ -254,7 +254,8 @@
   "addNewMembers": "Ka kopo ngolisa litho tse ncha tsa mokhatlo oa hau",
   "serverNotAvailable": "Seva ha e fumanehe hajoale. Ka kopo, leka hape hamorao",
   "maxAudioLessThan": "Bolelele ba sekotwana sa molumo bo lokela ho ba ka tlase ho $count metsotso",
-  "maxVideoLessThan": "Bolelele ba video bo lokela ho ba tlase ho $count metsotsoana"
+  "maxVideoLessThan": "Bolelele ba video bo lokela ho ba tlase ho $count metsotsoana",
+  "initializing": "Ho qala database ea sesebelisoa sa hau le lisebelisoa tse ling. Ke kopa o eme metsotsoana e seng mekae."
 
 
 

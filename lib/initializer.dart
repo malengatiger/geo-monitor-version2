@@ -26,12 +26,11 @@ class Initializer {
     if (settings != null) {
       themeIndex = settings.themeIndex!;
       Locale newLocale = Locale(settings!.locale!);
-      final m = LocaleAndTheme(themeIndex: settings!.themeIndex!,
+      final m = LocaleAndTheme(themeIndex: settings.themeIndex!,
           locale: newLocale);
       themeBloc.themeStreamController.sink.add(m);
+      pp('$mx THEME: themeIndex up top is: $themeIndex locale: ${settings!.locale}');
     }
-
-    pp('$mx THEME: themeIndex up top is: $themeIndex ');
 
     await cacheManager.initialize(forceInitialization: false);
 

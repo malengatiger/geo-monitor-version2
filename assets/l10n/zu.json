@@ -254,6 +254,8 @@
   "addNewMembers": "Sicela ubhalise amalungu amasha enhlangano yakho",
   "serverNotAvailable": "Iseva ayitholakali ngalesi sikhathi. Sicela uzame futhi emuva kwesikhathi",
   "maxAudioLessThan": "Ubukhulu bobude besiqeshana somsindo kufanele bube ngaphansi kwamaminithi angu-$count",
-  "maxVideoLessThan": "Ubude bevidiyo obukhulu kufanele bube ngaphansi kwamasekhondi angu-$count"
+  "maxVideoLessThan": "Ubude bevidiyo obukhulu kufanele bube ngaphansi kwamasekhondi angu-$count",
+  "initializing": "Ukuqalisa isizindalwazi sedivayisi yakho nezinye izinsiza. Sicela ulinde imizuzwana embalwa."
+
 
 }

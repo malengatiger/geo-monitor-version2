@@ -159,6 +159,7 @@ class OrganizationBloc {
       required bool forceRefresh,
       required String startDate,
       required String endDate}) async {
+
     pp('$mm getOrganizationData ... photos, videos and schedules'
         ' ... forceRefresh: $forceRefresh');
 
@@ -178,7 +179,6 @@ class OrganizationBloc {
       bag.users = users;
       printDataBag(bag!);
       return bag;
-
     } else {
       bag = await cacheManager.getOrganizationData(organizationId: organizationId);
       if (bag.isEmpty()) {
@@ -366,7 +366,7 @@ class OrganizationBloc {
       projController.sink.add(projects);
       pp('💜💜💜💜 OrgBloc: OrganizationProjects found: 💜 ${projects.length} projects ; organizationId: $organizationId💜');
       for (var project in projects) {
-        pp('💜💜 Org PROJECT: ${project.name} 🍏 ${project.organizationName}  🍏 ${project.organizationId}');
+        // pp('💜💜 Org PROJECT: ${project.name} 🍏 ${project.organizationName}  🍏 ${project.organizationId}');
       }
     } catch (e) {
       pp('$mm $e');
@@ -459,37 +459,6 @@ DataBag filterBagContentsByDate(
     required String startDate,
     required String endDate}) {
 
-  pp('💜💜💜💜💜 filterBagContentsByDate ... ');
-  // final users = <User>[];
-  // bag.users?.forEach((user) {
-  //   if (checkDate(
-  //       date: user!.created!, startDate: startDate, endDate: endDate)) {
-  //     users.add(user);
-  //   }
-  // });
-  // final projects = <Project>[];
-  // bag.projects?.forEach((p) {
-  //   if (checkDate(date: p.created!, startDate: startDate, endDate: endDate)) {
-  //     projects.add(p);
-  //   }
-  // });
-  // final positions = <ProjectPosition>[];
-  // bag.projectPositions?.forEach((p) {
-  //   if (p.created != null) {
-  //     //pp('🍎🍎🍎🍎 check created for null:  ${p.toJson()}');
-  //     if (checkDate(date: p.created!, startDate: startDate, endDate: endDate)) {
-  //       positions.add(p);
-  //     }
-  //   } else {
-  //     pp('Created is null! 🍎🍎🍎 what de fuck?');
-  //   }
-  // });
-  // final polygons = <ProjectPolygon>[];
-  // bag.projectPolygons?.forEach((p) {
-  //   if (checkDate(date: p.created!, startDate: startDate, endDate: endDate)) {
-  //     polygons.add(p);
-  //   }
-  // });
   final photos = <Photo>[];
   bag.photos?.forEach((p) {
     if (checkDate(date: p.created!, startDate: startDate, endDate: endDate)) {
@@ -509,10 +478,6 @@ DataBag filterBagContentsByDate(
     }
   });
 
-  // bag.users = users;
-  // bag.projects = projects;
-  // bag.projectPositions = positions;
-  // bag.projectPolygons = polygons;
   bag.photos = photos;
   bag.videos = videos;
   bag.audios = audios;

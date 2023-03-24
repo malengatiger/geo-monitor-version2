@@ -255,6 +255,7 @@
   "serverNotAvailable": "Iseva ayifumaneki ngeli xesha. Nceda uzame kwakhona mva",
   "maxAudioLessThan": "Obona bude bekliphu yeaudio kufuneka bube ngaphantsi kwe $count imizuzu",
   "maxVideoLessThan": "Obona bude bevidiyo buphezulu kufuneka bube ngaphantsi kwe-$count seconds",
+  "initializing": "Ukuqalisa idatabase yesixhobo sakho kunye nezinye izixhobo. Nceda ulinde imizuzwana embalwa."
 
 
 }

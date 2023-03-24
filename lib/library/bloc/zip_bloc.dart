@@ -119,9 +119,6 @@ class ZipBloc {
     pp('$xz http GET call:  🔆 🔆 🔆 calling : 💙  $mUrl  💙');
     var start = DateTime.now();
     var token = await AppAuth.getAuthToken();
-    if (token != null) {
-      pp('$xz http GET call: 😡😡😡 Firebase Auth Token: 💙️ Token is GOOD! 💙 ');
-    }
 
     headers['Authorization'] = 'Bearer $token';
 

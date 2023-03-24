@@ -68,7 +68,7 @@ class TheGreatGeofencer {
         longitude: longitude,
         radiusInKM: radiusInKM);
     // var mList = await cacheManager.getOrganizationProjectPositions(organizationId: organizationId);
-    pp('\n$mm _getProjectPositionsByLocation: found ${mList.length}\n');
+    pp('$mm _getProjectPositionsByLocation: found ${mList.length}\n');
     return mList;
   }
 
@@ -131,7 +131,7 @@ class TheGreatGeofencer {
     });
 
     try {
-      pp('\n$xx  🔶🔶🔶🔶🔶🔶 Starting GeofenceService ...... 🔶🔶🔶🔶🔶🔶 ');
+      pp('$xx  🔶🔶🔶🔶🔶🔶 Starting GeofenceService ...... 🔶🔶🔶🔶🔶🔶 ');
       await geofenceService.start().onError((error, stackTrace) => {
             pp('\n\n\n$mm $reds GeofenceService failed to start, onError: 🔴 $error 🔴 \n\n\n')
             //todo - navigate user to system settings - explain why activity permission required

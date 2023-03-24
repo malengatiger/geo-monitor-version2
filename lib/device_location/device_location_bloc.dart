@@ -6,7 +6,7 @@ import '../library/functions.dart';
 final DeviceLocationBloc locationBloc = DeviceLocationBloc();
 
 class DeviceLocationBloc {
-  final mm = '🍐🍐🍐🍐🍐🍐 DeviceLocationBloc: ';
+  final mm = '🍐🍐🍐🍐🍐🍐🍐 DeviceLocationBloc: ';
 
   PermissionStatus? _permissionGranted;
   Location location = Location();

@@ -231,10 +231,10 @@ Future _callPost(String mUrl, Map? bag, String token) async {
       pp('👿👿👿 ._callWebAPIPost: 🔆 statusCode: 👿👿👿 ${resp.statusCode} 🔆🔆🔆 for $mUrl');
       pp(resp.body);
       throw Exception(
-          '🚨 🚨 Status Code 🚨 ${resp.statusCode} 🚨 ${resp.body}');
+          '🚨🚨 Status Code 🚨 ${resp.statusCode} 🚨 ${resp.body}');
     }
     var end = DateTime.now();
-    pp('$xx http POST call: 🔆 elapsed time: ${end.difference(start).inSeconds} seconds 🔆 \n\n');
+    pp('$xx http POST call: 🔆 elapsed time: ${end.difference(start).inSeconds} seconds 🔆');
     try {
       var mJson = json.decode(resp.body);
       return mJson;
@@ -320,7 +320,7 @@ Future<String?> getSignedUploadUrl(
         ' ${resp.statusCode} 👌👌👌 💙 for $finalUrl');
     var end = DateTime.now();
     pp('$xx getSignedUploadUrl call: 🔆 elapsed time for http: '
-        '${end.difference(start).inSeconds} seconds 🔆 \n\n');
+        '${end.difference(start).inSeconds} seconds 🔆');
     if (resp.statusCode != 200) {
       var msg = '😡 😡 The response is not 200; it is ${resp.statusCode}, '
           'NOT GOOD, throwing up !! 🥪 🥙 🌮  😡 ${resp.body}';

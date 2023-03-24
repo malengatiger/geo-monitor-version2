@@ -93,7 +93,7 @@ class DataRefresher {
 
     organizationBloc.dataBagController.sink.add(bag);
 
-    pp('\n$xx Done with refresh of projects and users; countries: ${countries.length}');
+    pp('$xx Done with refresh of projects and users; countries: ${countries.length}');
     return bag;
   }
 
@@ -113,7 +113,7 @@ class DataRefresher {
 
   Future<List<Project>> _startProjectsRefresh(
       {required String organizationId}) async {
-    pp('\n$xx .......  _startProjectRefresh in an isolate ...');
+    pp('$xx .......  _startProjectRefresh in an isolate ...');
     var list = await Isolate.run(() async => await getAllOrganizationProjects(
           token: token,
           mUrl: url,
@@ -127,7 +127,7 @@ class DataRefresher {
 
   Future<List<User>> _startUsersRefresh(
       {required String organizationId}) async {
-    pp('\n$xx .......  _startUsersRefresh in an isolate ...');
+    pp('$xx .......  _startUsersRefresh in an isolate ...');
     var list = await Isolate.run(() async => await getUsers(
           token: token,
           mUrl: url,
@@ -139,7 +139,7 @@ class DataRefresher {
     return list;
   }
   Future<List<Country>> _startCountryRefresh() async {
-    pp('\n$xx .......  _startCountryRefresh in an isolate ...');
+    pp('$xx .......  _startCountryRefresh in an isolate ...');
     var list = await Isolate.run(() async => await getCountries(
       token: token,
       mUrl: url,
@@ -154,7 +154,7 @@ class DataRefresher {
 
   Future<DataBag?> _startOrganizationDataRefresh(
       {required String organizationId, required String directoryPath}) async {
-    pp('\n$xx .......  startOrganizationRefresh in an isolate ...');
+    pp('$xx .......  startOrganizationRefresh in an isolate ...');
     DataBag? bag;
     try {
       bag = await Isolate.run(() async =>
@@ -166,7 +166,7 @@ class DataRefresher {
               endDate: endDate,
               url: url));
 
-      pp('\n$xx startOrganizationRefresh: isolate function completed, dataBag delivered; '
+      pp('$xx startOrganizationRefresh: isolate function completed, dataBag delivered; '
           'will be cached and sent to streams ...');
       if (bag != null) {
         _sendOrganizationDataToStreams(bag);
@@ -186,7 +186,7 @@ class DataRefresher {
 
   Future<DataBag?> _startProjectRefresh(
       {required String projectId, required String directoryPath}) async {
-    pp('\n$xx .......  startProjectRefresh in an isolate ...');
+    pp('$xx .......  startProjectRefresh in an isolate ...');
     await _setUp();
     DataBag? bag;
     try {
@@ -197,7 +197,7 @@ class DataRefresher {
           startDate: startDate,
           endDate: endDate,
           url: url));
-      pp('\n$xx startProjectRefresh: isolate function completed, dataBag delivered; '
+      pp('$xx startProjectRefresh: isolate function completed, dataBag delivered; '
           'will be cached and sent to streams ...');
       if (bag != null) {
         _sendProjectDataToStreams(bag);
@@ -215,7 +215,7 @@ class DataRefresher {
 
   Future<DataBag?> _startUserDataRefresh(
       {required String userId, required String directoryPath}) async {
-    pp('\n$xx .......  startUserRefresh in an isolate ...');
+    pp('$xx .......  startUserRefresh in an isolate ...');
     await _setUp();
     DataBag? bag;
     try {
@@ -226,7 +226,7 @@ class DataRefresher {
           startDate: startDate,
           endDate: endDate,
           url: url));
-      pp('\n$xx startUserRefresh: isolate function completed, dataBag delivered; '
+      pp('$xx startUserRefresh: isolate function completed, dataBag delivered; '
           'will be cached and sent to streams ...');
       if (bag != null) {
         _sendUserDataToStreams(bag);
@@ -269,21 +269,21 @@ class DataRefresher {
 
   void _sendOrganizationDataToStreams(DataBag bag) {
     organizationBloc.dataBagController.sink.add(bag);
-    pp('\n$xx Organization Data sent to dataBagStream  ...');
+    pp('$xx Organization Data sent to dataBagStream  ...');
   }
 
   void _sendProjectDataToStreams(DataBag bag) {
     projectBloc.dataBagController.sink.add(bag);
-    pp('\n$xx Project Data sent to dataBagStream  ...');
+    pp('$xx Project Data sent to dataBagStream  ...');
   }
 
   void _sendUserDataToStreams(DataBag bag) {
     userBloc.dataBagController.sink.add(bag);
-    pp('\n$xx User Data sent to dataBagStream  ...');
+    pp('$xx User Data sent to dataBagStream  ...');
   }
 
   Future<void> _cacheTheData(DataBag? bag) async {
-    pp('\n$xx zipped Data returned from server, adding to Hive cache ...');
+    pp('$xx zipped Data returned from server, adding to Hive cache ...');
     final start = DateTime.now();
     await cacheManager.addProjects(projects: bag!.projects!);
     await cacheManager.addProjectPolygons(polygons: bag.projectPolygons!);
@@ -304,7 +304,7 @@ class DataRefresher {
     }
     final end = DateTime.now();
 
-    pp('\n$xx Org Data saved in Hive cache ... 🍎 '
+    pp('$xx Org Data saved in Hive cache ... 🍎 '
         '${end.difference(start).inSeconds} seconds elapsed');
   }
 }
@@ -419,7 +419,7 @@ Future<DataBag?> getProjectDataZippedFile({
   required String url,
   required String directoryPath,
 }) async {
-  pp('\n\n$xz getProjectDataZippedFile  🔆🔆🔆 projectId : 💙  $projectId  💙');
+  pp('$xz getProjectDataZippedFile  🔆🔆🔆 projectId : 💙  $projectId  💙');
   final start = DateTime.now();
   ;
   var mUrl =
@@ -440,7 +440,7 @@ Future<DataBag?> getUserDataZippedFile(
     required String token,
     required String url,
     required String directoryPath}) async {
-  pp('\n\n$xz getUserDataZippedFile  🔆🔆🔆 orgId : 💙  $userId  💙');
+  pp('$xz getUserDataZippedFile  🔆🔆🔆 orgId : 💙  $userId  💙');
   final start = DateTime.now();
   var mUrl =
       '${url}getUserDataZippedFile?userId=$userId&startDate=$startDate&endDate=$endDate';
@@ -677,8 +677,8 @@ Future<http.Response> _sendRequestToBackend(String mUrl, String token) async {
       pp('$xz _sendRequestToBackend: RESPONSE: .... : 💙 statusCode: 👌👌👌 '
           '${httpResponse.statusCode} 👌👌👌  for $mUrl');
       var end = DateTime.now();
-      pp('$xz _sendRequestToBackend: 🔆 elapsed time for http: '
-          '${end.difference(start).inSeconds} seconds 🔆 \n\n');
+      pp('$xz _sendRequestToBackend: RESPONSE: 🔆 elapsed time for backend http request: '
+          '${end.difference(start).inSeconds} seconds 🔆');
 
       if (httpResponse.statusCode != 200) {
         var msg =

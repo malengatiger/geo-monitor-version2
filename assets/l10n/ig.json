@@ -262,6 +262,7 @@
   "addNewMembers": "Biko debanye aha ndị otu ọhụrụ maka nzukọ gị",
   "serverNotAvailable": "Ihe nkesa adịghị n\u0027oge a. Biko nwaa ọzọ ma emechaa",
   "maxAudioLessThan": "Ogologo obere mkpachị ọdịyo kwesịrị ịbụ ihe na-erughị nkeji $count",
-  "maxVideoLessThan": "Ogologo vidiyo kachasị kwesịrị ịbụ ihe na-erughị $count sekọnd"
+  "maxVideoLessThan": "Ogologo vidiyo kachasị kwesịrị ịbụ ihe na-erughị $count sekọnd",
+  "initializing": "Ịmalite nchekwa data ngwaọrụ gị na akụrụngwa ndị ọzọ. Biko chere maka sekọnd ole na ole."
 
 }

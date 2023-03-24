@@ -303,7 +303,7 @@ class MyKeys {
 
     hashMap["maxVideoLessThan"] =  "maxVideoLessThan";
     hashMap["maxAudioLessThan"] =  "maxAudioLessThan";
-
+    hashMap["initializing"] = "initializing";
 
   }
 }

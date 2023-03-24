@@ -239,7 +239,6 @@ class DashboardPortraitState extends State<DashboardPortrait>
     pp('$mm ............................................ Refreshing dashboard data ....');
     deviceUser = await prefsOGx.getUser();
 
-
     if (deviceUser != null) {
       if (deviceUser!.userType == UserType.orgAdministrator) {
         type = await mTx.translate('administrator', settings!.locale!);
@@ -257,6 +256,7 @@ class DashboardPortraitState extends State<DashboardPortrait>
     setState(() {
       busy = true;
     });
+
     await _doTheWork(forceRefresh);
 
     _gridViewAnimationController.forward();
@@ -273,6 +273,7 @@ class DashboardPortraitState extends State<DashboardPortrait>
     } else {
       await _getOrganizationData(deviceUser!.organizationId!, forceRefresh);
     }
+
     _gridViewAnimationController.forward();
     setState(() {
       busy = false;

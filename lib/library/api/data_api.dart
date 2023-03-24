@@ -67,18 +67,18 @@ class DataAPI {
       throw Exception('Internet connection not available');
     }
     if (url == null) {
-      pp('$mm 🐤🐤🐤🐤 Getting url via .env settings: ${url ?? 'NO URL YET'}');
+      pp('$xz 🐤🐤🐤🐤 Getting url via .env settings: ${url ?? 'NO URL YET'}');
       String? status = dot.dotenv.env['CURRENT_STATUS'];
-      pp('$mm 🐤🐤🐤🐤 DataAPI: getUrl: Status from .env: $status');
+      pp('$xz 🐤🐤🐤🐤 DataAPI: getUrl: Status from .env: $status');
       if (status == 'dev') {
         isDevelopmentStatus = true;
         url = dot.dotenv.env['DEV_URL'];
-        pp('$mm Status of the app is  DEVELOPMENT 🌎 🌎 🌎 $url');
+        pp('$xz Status of the app is  DEVELOPMENT 🌎 🌎 🌎 $url');
         return url!;
       } else {
         isDevelopmentStatus = false;
         url = dot.dotenv.env['PROD_URL'];
-        pp('$mm Status of the app is PRODUCTION 🌎 🌎 🌎 $url');
+        pp('$xz Status of the app is PRODUCTION 🌎 🌎 🌎 $url');
         return url!;
       }
     } else {
@@ -109,7 +109,7 @@ class DataAPI {
     try {
       var result = await _callWebAPIPost('${mURL!}addSettings', bag);
       var s = SettingsModel.fromJson(result);
-      pp('$mm settings from db: ${s.toJson()}');
+      pp('$xz settings from db: ${s.toJson()}');
       await cacheManager.addSettings(settings: s);
       return s;
     } catch (e) {
@@ -194,10 +194,10 @@ class DataAPI {
     try {
       result = await _sendHttpGET('${mURL!}testUploadPhoto');
 
-      pp('$mm 🌿🌿🌿 testUploadPhoto returned: 🌿 $result');
+      pp('$xz 🌿🌿🌿 testUploadPhoto returned: 🌿 $result');
       return result["url"];
     } catch (e) {
-      pp('$mm 🌿🌿🌿 testUploadPhoto returned with error below: 🌿 $result');
+      pp('$xz 🌿🌿🌿 testUploadPhoto returned with error below: 🌿 $result');
       pp(e);
       rethrow;
     }
@@ -283,7 +283,7 @@ class DataAPI {
         organizationBloc.activityController.sink.add(mList);
       }
 
-      pp('$mm 🌿 🌿 🌿 getOrganizationActivity returned: 🌿 ${mList.length}');
+      pp('$xz 🌿 🌿 🌿 getOrganizationActivity returned: 🌿 ${mList.length}');
       return mList;
     } catch (e) {
       pp(e);
@@ -303,7 +303,7 @@ class DataAPI {
         mList.add(ProjectSummary.fromJson(element));
       }
 
-      pp('$mm 🌿 🌿 🌿 getOrganization Summaries returned: 🌿 ${mList.length}');
+      pp('$xz 🌿 🌿 🌿 getOrganization Summaries returned: 🌿 ${mList.length}');
       return mList;
     } catch (e) {
       pp(e);
@@ -322,7 +322,7 @@ class DataAPI {
         mList.add(ProjectSummary.fromJson(element));
       }
 
-      pp('$mm 🌿 🌿 🌿 Daily Project Summaries returned: 🌿 ${mList.length}');
+      pp('$xz 🌿 🌿 🌿 Daily Project Summaries returned: 🌿 ${mList.length}');
       return mList;
     } catch (e) {
       pp(e);
@@ -348,7 +348,7 @@ class DataAPI {
         projectBloc.activityController.sink.add(mList);
       }
 
-      pp('$mm 🌿 🌿 🌿 getProjectActivity returned: 🌿 ${mList.length}');
+      pp('$xz 🌿 🌿 🌿 getProjectActivity returned: 🌿 ${mList.length}');
       return mList;
     } catch (e) {
       pp(e);
@@ -374,7 +374,7 @@ class DataAPI {
         userBloc.activityController.sink.add(mList);
       }
 
-      pp('$mm 🌿 🌿 🌿 getProjectActivity returned: 🌿 ${mList.length}');
+      pp('$xz 🌿 🌿 🌿 getProjectActivity returned: 🌿 ${mList.length}');
       return mList;
     } catch (e) {
       pp(e);
@@ -422,7 +422,7 @@ class DataAPI {
     try {
       var result = await _sendHttpGET('${mURL!}deleteAuthUser?userId=$userId');
       var res = result['result'];
-      pp('$mm 🌿 🌿 🌿 deleteAuthUser returned: 🌿 $result');
+      pp('$xz 🌿 🌿 🌿 deleteAuthUser returned: 🌿 $result');
       return res;
     } catch (e) {
       pp(e);
@@ -448,7 +448,7 @@ class DataAPI {
       OrganizationRegistrationBag orgBag) async {
     String? mURL = await getUrl();
     Map bag = orgBag.toJson();
-    pp('$mm️ OrganizationRegistrationBag about to be sent to backend: check name: ☕️ $bag');
+    pp('$xz️ OrganizationRegistrationBag about to be sent to backend: check name: ☕️ $bag');
     try {
       var result = await _callWebAPIPost('${mURL!}registerOrganization', bag);
       var u = OrganizationRegistrationBag.fromJson(result);
@@ -462,7 +462,7 @@ class DataAPI {
       await cacheManager.addProjectPosition(
           projectPosition: u.projectPosition!);
 
-      pp('$mm️ Organization registered! 😡😡 RegistrationBag arrived from backend server and cached in Hive; org:: ☕️ ${u.organization!.name!}');
+      pp('$xz️ Organization registered! 😡😡 RegistrationBag arrived from backend server and cached in Hive; org:: ☕️ ${u.organization!.name!}');
 
       return u;
     } catch (e) {
@@ -474,13 +474,12 @@ class DataAPI {
   static Future<User> createUser(User user) async {
     String? mURL = await getUrl();
     Map bag = user.toJson();
-    pp('$mm️ User about to be sent to backend: check name: ☕️ $bag');
     try {
       var result = await _callWebAPIPost('${mURL!}createUser', bag);
       var u = User.fromJson(result);
       await cacheManager.addUser(user: u);
 
-      pp('$mm️ User creation complete: user: ☕️ ${u.toJson()}');
+      pp('$xz️ User creation complete: user: ☕️ ${u.toJson()}');
 
       return u;
     } catch (e) {
@@ -502,7 +501,7 @@ class DataAPI {
   }
 
   static Future<int> updateAuthedUser(User user) async {
-    pp('\n$mm updateAuthedUser started for ${user.name!}');
+    pp('\n$xz updateAuthedUser started for ${user.name!}');
     String? mURL = await getUrl();
     Map bag = user.toJson();
     try {
@@ -606,7 +605,7 @@ class DataAPI {
       result.forEach((m) {
         list.add(ProjectPosition.fromJson(m));
       });
-      pp('$mm org project positions found .... ${list.length}');
+      pp('$xz org project positions found .... ${list.length}');
       await cacheManager.addProjectPositions(positions: list);
       return list;
     } catch (e) {
@@ -626,7 +625,7 @@ class DataAPI {
       result.forEach((m) {
         list.add(ProjectPosition.fromJson(m));
       });
-      pp('$mm org project positions found .... ${list.length}');
+      pp('$xz org project positions found .... ${list.length}');
       await cacheManager.addProjectPositions(positions: list);
       return list;
     } catch (e) {
@@ -645,7 +644,7 @@ class DataAPI {
       result.forEach((m) {
         list.add(ProjectPolygon.fromJson(m));
       });
-      pp('$mm org project positions found .... ${list.length}');
+      pp('$xz org project positions found .... ${list.length}');
       await cacheManager.addProjectPolygons(polygons: list);
       return list;
     } catch (e) {
@@ -664,7 +663,7 @@ class DataAPI {
       result.forEach((m) {
         list.add(ProjectPolygon.fromJson(m));
       });
-      pp('$mm org project positions found .... ${list.length}');
+      pp('$xz org project positions found .... ${list.length}');
       await cacheManager.addProjectPolygons(polygons: list);
       return list;
     } catch (e) {
@@ -684,7 +683,7 @@ class DataAPI {
       final bag = LocationRequest.fromJson(result);
       return bag;
     } catch (e) {
-      pp('$mm sendLocationRequest: $e');
+      pp('$xz sendLocationRequest: $e');
       rethrow;
     }
   }
@@ -951,13 +950,13 @@ class DataAPI {
     var url = '$mURL$cmd';
     try {
       List result = await _sendHttpGET(url);
-      pp('$mm findUsersByOrganization: 🍏 found: ${result.length} users');
+      pp('$xz findUsersByOrganization: 🍏 found: ${result.length} users');
       List<User> list = [];
       for (var m in result) {
         list.add(User.fromJson(m));
       }
       await cacheManager.addUsers(users: list);
-      pp('$mm findUsersByOrganization: 🍏 returning objects for: ${list.length} users');
+      pp('$xz findUsersByOrganization: 🍏 returning objects for: ${list.length} users');
       return list;
     } catch (e) {
       pp(e);
@@ -965,21 +964,20 @@ class DataAPI {
     }
   }
 
-  static const mm = '🍏🍏🍏 DataAPI: ';
+  //static const mm = '🍏🍏🍏 DataAPI: ';
   static Future<List<Project>> findProjectsByOrganization(
       String organizationId) async {
-    pp('$mm findProjectsByOrganization: 🍏 id: $organizationId');
     String? mURL = await getUrl();
     var cmd = 'findProjectsByOrganization';
     var url = '$mURL$cmd?organizationId=$organizationId';
     try {
       List result = await _sendHttpGET(url);
-      pp('$mm findProjectsByOrganization: 🍏 result: ${result.length} projects');
+      pp('$xz findProjectsByOrganization: 🍏 result: ${result.length} projects');
       List<Project> list = [];
       for (var m in result) {
         list.add(Project.fromJson(m));
       }
-      pp('$mm ${list.length} project objects built .... about to cache in local mongo');
+      // pp('$xz ${list.length} project objects built .... about to cache in local mongo');
       await cacheManager.addProjects(projects: list);
       return list;
     } catch (e) {
@@ -991,13 +989,13 @@ class DataAPI {
 
   static Future<Organization?> findOrganizationById(
       String organizationId) async {
-    pp('$mm findOrganizationById: 🍏 id: $organizationId');
+    pp('$xz findOrganizationById: 🍏 id: $organizationId');
     String? mURL = await getUrl();
     var cmd = 'findOrganizationById';
     var url = '$mURL$cmd?organizationId=$organizationId';
     try {
       var result = await _sendHttpGET(url);
-      pp('$mm findOrganizationById: 🍏 result: $result ');
+      pp('$xz findOrganizationById: 🍏 result: $result ');
       Organization? org = Organization.fromJson(result);
       await cacheManager.addOrganization(organization: org);
       return org;
@@ -1010,13 +1008,13 @@ class DataAPI {
 
   static Future<List<Photo>> getOrganizationPhotos(
       String organizationId, String startDate, String endDate) async {
-    pp('$mm getOrganizationPhotos: 🍏 id: $organizationId');
+    pp('$xz getOrganizationPhotos: 🍏 id: $organizationId');
     String? mURL = await getUrl();
     var cmd = 'getOrganizationPhotos';
     var url = '$mURL$cmd?organizationId=$organizationId&startDate=$startDate&endDate=$endDate';
     try {
       List result = await _sendHttpGET(url);
-      pp('$mm getOrganizationPhotos: 🍏 found: ${result.length} org photos');
+      pp('$xz getOrganizationPhotos: 🍏 found: ${result.length} org photos');
       List<Photo> list = [];
       for (var m in result) {
         list.add(Photo.fromJson(m));
@@ -1032,7 +1030,7 @@ class DataAPI {
 
   static Future<List<Video>> getOrganizationVideos(
       String organizationId, String startDate, String endDate) async {
-    pp('$mm getOrganizationVideos: 🍏 id: $organizationId');
+    pp('$xz getOrganizationVideos: 🍏 id: $organizationId');
     String? mURL = await getUrl();
     var cmd = 'getOrganizationVideos';
     var url = '$mURL$cmd?organizationId=$organizationId&startDate=$startDate&endDate=$endDate';
@@ -1053,7 +1051,7 @@ class DataAPI {
 
   static Future<List<Audio>> getOrganizationAudios(
       String organizationId) async {
-    pp('$mm getOrganizationAudios: 🍏 id: $organizationId');
+    pp('$xz getOrganizationAudios: 🍏 id: $organizationId');
     String? mURL = await getUrl();
     var cmd = 'getOrganizationAudios';
     var url = '$mURL$cmd?organizationId=$organizationId';
@@ -1074,7 +1072,7 @@ class DataAPI {
 
   static Future<List<Project>> getOrganizationProjects(
       String organizationId) async {
-    pp('$mm getOrganizationProjects: 🍏 id: $organizationId');
+    pp('$xz getOrganizationProjects: 🍏 id: $organizationId');
     String? mURL = await getUrl();
     var cmd = 'getOrganizationProjects';
     var url = '$mURL$cmd?organizationId=$organizationId';
@@ -1164,7 +1162,7 @@ class DataAPI {
         required double latitude,
       required double longitude,
       required double radiusInKM}) async {
-    pp('\n$mm ......... findProjectsByLocation: 🍏 radiusInKM: $radiusInKM kilometres,  '
+    pp('\n$xz ......... findProjectsByLocation: 🍏 radiusInKM: $radiusInKM kilometres,  '
         '🥏 🥏 🥏about to call _sendHttpGET.........');
     String? mURL = await getUrl();
     var cmd = 'findProjectsByLocation';
@@ -1176,14 +1174,14 @@ class DataAPI {
       for (var m in result) {
         list.add(Project.fromJson(m));
       }
-      pp('\n$mm findProjectsByLocation: 🍏 radiusInKM: $radiusInKM kilometres; 🔵🔵 found ${list.length}');
+      pp('\n$xz findProjectsByLocation: 🍏 radiusInKM: $radiusInKM kilometres; 🔵🔵 found ${list.length}');
       var map = HashMap<String, Project>();
       for (var element in list) {
         map[element.projectId!] = element;
       }
 
       var mList = map.values.toList();
-      pp('\n$mm findProjectsByLocation: 🍏 radiusInKM: $radiusInKM kilometres; 🔵🔵 found ${mList.length} after filtering for duplicates');
+      pp('\n$xz findProjectsByLocation: 🍏 radiusInKM: $radiusInKM kilometres; 🔵🔵 found ${mList.length} after filtering for duplicates');
       await cacheManager.addProjects(projects: mList);
       return mList;
     } catch (e) {
@@ -1196,7 +1194,7 @@ class DataAPI {
       {required double latitude,
       required double longitude,
       required double radiusInKM}) async {
-    pp('$mm findCitiesByLocation: 🍏 radiusInKM: $radiusInKM');
+    pp('$xz findCitiesByLocation: 🍏 radiusInKM: $radiusInKM');
     String? mURL = await getUrl();
     var cmd = 'findCitiesByLocation';
     var url =
@@ -1207,10 +1205,10 @@ class DataAPI {
       for (var m in result) {
         list.add(City.fromJson(m));
       }
-      pp('$mm findCitiesByLocation: 🍏 found: ${list.length} cities');
+      pp('$xz findCitiesByLocation: 🍏 found: ${list.length} cities');
       await cacheManager.addCities(cities: list);
       for (var city in list) {
-        pp('$mm city found by findCitiesByLocation call: ${city.toJson()} \n');
+        pp('$xz city found by findCitiesByLocation call: ${city.toJson()} \n');
       }
       return list;
     } catch (e) {
@@ -1224,7 +1222,7 @@ class DataAPI {
       required double latitude,
       required double longitude,
       required double radiusInKM}) async {
-    pp('$mm findProjectPositionsByLocation: 🍏 radiusInKM: $radiusInKM');
+    pp('$xz findProjectPositionsByLocation: 🍏 radiusInKM: $radiusInKM');
 
     String? mURL = await getUrl();
     var cmd = 'findProjectPositionsByLocation';
@@ -1236,7 +1234,7 @@ class DataAPI {
       for (var m in result) {
         list.add(ProjectPosition.fromJson(m));
       }
-      pp('$mm findProjectPositionsByLocation: 🍏 found: ${list.length} project positions');
+      pp('$xz findProjectPositionsByLocation: 🍏 found: ${list.length} project positions');
       await cacheManager.addProjectPositions(positions: list);
       return list;
     } catch (e) {
@@ -1247,7 +1245,7 @@ class DataAPI {
 
   static Future<List<Questionnaire>> getQuestionnairesByOrganization(
       String organizationId) async {
-    pp('$mm getQuestionnairesByOrganization: 🍏 id: $organizationId');
+    pp('$xz getQuestionnairesByOrganization: 🍏 id: $organizationId');
     String? mURL = await getUrl();
     var cmd = 'getQuestionnairesByOrganization?organizationId=$organizationId';
     var url = '$mURL$cmd';
@@ -1440,13 +1438,13 @@ class DataAPI {
     String? mURL = await getUrl();
     try {
       var result = await _callWebAPIPost('${mURL!}addPhoto', photo.toJson());
-      pp('\n\n\n$mm 🔴🔴🔴 DataAPI addPhoto succeeded. Everything OK?? 🔴🔴🔴');
+      pp('\n\n\n$xz 🔴🔴🔴 DataAPI addPhoto succeeded. Everything OK?? 🔴🔴🔴');
       var photoBack = Photo.fromJson(result);
       await cacheManager.addPhoto(photo: photoBack);
-      pp('$mm addPhoto has added photo to DB and to Hive cache\n');
+      pp('$xz addPhoto has added photo to DB and to Hive cache\n');
       return photo;
     } catch (e) {
-      pp('\n\n\n$mm 🔴🔴🔴 DataAPI addPhoto failed. Something fucked up here! ... 🔴🔴🔴\n\n');
+      pp('\n\n\n$xz 🔴🔴🔴 DataAPI addPhoto failed. Something fucked up here! ... 🔴🔴🔴\n\n');
       pp(e);
       rethrow;
     }
@@ -1457,7 +1455,7 @@ class DataAPI {
 
     try {
       var result = await _callWebAPIPost('${mURL!}addVideo', video.toJson());
-      pp('$mm addVideo has added photo to DB and to Hive cache');
+      pp('$xz addVideo has added photo to DB and to Hive cache');
       var vx = Video.fromJson(result);
       await cacheManager.addVideo(video: vx);
       return vx;
@@ -1473,10 +1471,10 @@ class DataAPI {
     try {
       var result = await _callWebAPIPost('${mURL!}addAudio', audio.toJson());
       var audiox = Audio.fromJson(result);
-      pp('$mm addAudio has added audio to DB : 😡😡😡 fromJson:: ${audiox.toJson()}');
+      pp('$xz addAudio has added audio to DB : 😡😡😡 fromJson:: ${audiox.toJson()}');
 
       var x = await cacheManager.addAudio(audio: audiox);
-      pp('$mm addAudio has added audio to Hive??? : 😡😡😡 result from hive: $x');
+      pp('$xz addAudio has added audio to Hive??? : 😡😡😡 result from hive: $x');
 
       return audiox;
     } catch (e) {
@@ -1491,10 +1489,10 @@ class DataAPI {
     try {
       var result = await _callWebAPIPost('${mURL!}addRating', rating.toJson());
       var mRating = Rating.fromJson(result);
-      pp('$mm addRating has added mRating to DB : 😡😡😡 fromJson:: ${mRating.toJson()}');
+      pp('$xz addRating has added mRating to DB : 😡😡😡 fromJson:: ${mRating.toJson()}');
 
       var x = await cacheManager.addRating(rating: mRating);
-      pp('$mm addRating has added result to Hive??? : 😡😡😡 result from hive: $x');
+      pp('$xz addRating has added result to Hive??? : 😡😡😡 result from hive: $x');
 
       return mRating;
     } catch (e) {
@@ -1802,9 +1800,7 @@ class DataAPI {
     }
     var start = DateTime.now();
     var token = await AppAuth.getAuthToken();
-    if (token != null) {
-      pp('$xz http POST call: 😡 😡 😡 Firebase Auth Token: 💙️ Token is GOOD! 💙 ');
-    }
+   
     headers['Authorization'] = 'Bearer $token';
     try {
       var resp = await client
@@ -1823,7 +1819,7 @@ class DataAPI {
             '🚨 🚨 Status Code 🚨 ${resp.statusCode} 🚨 ${resp.body}');
       }
       var end = DateTime.now();
-      pp('$xz http POST call: 🔆 elapsed time: ${end.difference(start).inSeconds} seconds 🔆 \n\n');
+      pp('$xz http POST call: 🔆 elapsed time: ${end.difference(start).inSeconds} seconds 🔆');
       try {
         var mJson = json.decode(resp.body);
         return mJson;

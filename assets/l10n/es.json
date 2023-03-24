@@ -257,7 +257,8 @@
   "addNewMembers": "Registre nuevos miembros para su organización",
   "serverNotAvailable": "El servidor no está disponible en este momento. Por favor, inténtelo de nuevo más tarde",
   "maxAudioLessThan": "La duración máxima del clip de audio debe ser inferior a $count minutos",
-  "maxVideoLessThan": "La duración máxima del video debe ser inferior a $count segundos"
+  "maxVideoLessThan": "La duración máxima del video debe ser inferior a $count segundos",
+  "initializing": "Inicializar la base de datos de su dispositivo y otros recursos. Espere unos segundos."
 
 
 

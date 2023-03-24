@@ -6,6 +6,7 @@ import 'package:geofence_service/geofence_service.dart';
 import 'package:responsive_builder/responsive_builder.dart';
 
 import '../../library/data/user.dart';
+import '../../library/generic_functions.dart';
 import '../../library/geofence/geofencer_two.dart';
 import 'dashboard_portrait.dart';
 import 'dashboard_tablet.dart';
@@ -25,6 +26,8 @@ class DashboardMainState extends State<DashboardMain>
   User? user;
   static const mm = '🌎🌎🌎🌎🌎🌎DashboardMain: 🔵🔵🔵';
 
+  bool initializing = false;
+  String? initializingText;
   @override
   void initState() {
     _controller = AnimationController(vsync: this);
@@ -33,8 +36,27 @@ class DashboardMainState extends State<DashboardMain>
     _getUser();
   }
 
+  void _getData() async {
+    setState(() {
+      initializing = true;
+    });
+    try {
+      await initializer.initializeGeo();
+    } catch (e) {
+      pp(e);
+      if (mounted) {
+        showToast(message: '$e', context: context);
+      }
+    }
+
+    setState(() {
+      initializing = false;
+    });
+  }
+
   void _initialize() async {
-    initializer.initializeGeo();
+
+
   }
   void _getUser() async {
     user = await prefsOGx.getUser();
@@ -50,6 +72,10 @@ class DashboardMainState extends State<DashboardMain>
 
   @override
   Widget build(BuildContext context) {
+    if (initializing) {
+
+      return Center();
+    }
     return user == null
         ? const SizedBox()
         : WillStartForegroundTask(

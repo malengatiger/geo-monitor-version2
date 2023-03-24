@@ -189,14 +189,8 @@ class FCMBloc {
       return;
     }
 
-    pp("\n$mm ..... subscribe to Geo FCM Topics ...........................");
-    // await prefsOGx.resetFCMSubscriptionFlag();
+    pp("$mm ..... subscribe to Geo FCM Topics ...........................");
 
-    // bool flag = await prefsOGx.getFCMSubscriptionFlag();
-    // if (flag) {
-    //   pp("\n\b$mm ..... app already subscribed to GeoMonitor FCM Topics ...... ✅✅✅?\n\n");
-    //   return;
-    // }
     messaging.subscribeToTopic('activities_${user.organizationId}');
     messaging.subscribeToTopic('projects_${user.organizationId}');
     messaging.subscribeToTopic('projectPositions_${user.organizationId}');

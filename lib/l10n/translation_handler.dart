@@ -25,7 +25,6 @@ class TranslationHandler {
 
 
   Future<String> translate(String key, String locale) async {
-    pp('$mm translate $key using locale: $locale, will clear current locale strings');
 
     if (localeMap.isEmpty) {
         await _loadFile(locale);
@@ -38,6 +37,7 @@ class TranslationHandler {
       if (value == null) {
         return 'UNAVAILABLE KEY: $key';
       }
+      pp('$mm translate $key using locale: 🌎$locale result: $value 🌎');
       return value;
   }
 

@@ -254,7 +254,8 @@
   "addNewMembers": "Ndapota nyoresai nhengo itsva dzesangano renyu",
   "serverNotAvailable": "Sevha haisi kuwanikwa panguva ino. Ndapota edza zvakare gare gare",
   "maxAudioLessThan": "Hurefu hwe clip yeaudio hunofanirwa kunge huri pasi pe$count maminetsi",
-  "maxVideoLessThan": "Hurefu hwevhidhiyo hunofanirwa kunge huri pasi pe$count seconds"
+  "maxVideoLessThan": "Hurefu hwevhidhiyo hunofanirwa kunge huri pasi pe$count seconds",
+  "initializing": "Kutanga mudziyo wako dhatabhesi uye zvimwe zviwanikwa. Ndokumbira umire kwemasekondi mashoma."
 
 
 }

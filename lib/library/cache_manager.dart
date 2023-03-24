@@ -95,7 +95,7 @@ class CacheManager {
 
   bool _isInitialized = false;
 
-  initialize({bool? forceInitialization = false}) async {
+  Future initialize({bool? forceInitialization = false}) async {
     // fileCounter = await prefsOGx.getFileCounter();
     if (forceInitialization != null) {
       if (forceInitialization) {
@@ -726,11 +726,6 @@ class CacheManager {
     return users.length;
   }
 
-  // Future deleteUsers() async {
-  //   _userBox?.clear();
-  //   pp('$mm all users removed from cache 🔆🔆');
-  // }
-
   Future addVideos({required List<Video> videos}) async {
     for (var v in videos) {
       await addVideo(video: v);
@@ -994,19 +989,19 @@ class CacheManager {
   }
 
   Future<DataBag> getOrganizationData({required String organizationId}) async {
-    pp('$mm$mm getOrganizationData starting ...');
+    pp('$mm ............. getOrganizationData starting ...');
     final start = DateTime.now();
-    if (!_isInitialized) {
-      pp('$mm$mm getOrganizationData: Hive not initialized yet; waiting for 3 seconds ... ${DateTime.now().toIso8601String()}');
-      await Future.delayed(const Duration(seconds: 5));
-      pp('$mm$mm getOrganizationData: Done waiting ... ${DateTime.now().toIso8601String()}');
-      if (_isInitialized) {
-        pp('$mm$mm getOrganizationData: Hive initialized!!');
-      } else {
-        getOrganizationData(organizationId: organizationId);
-      }
-
-    }
+    // if (!_isInitialized) {
+    //   pp('$mm$mm getOrganizationData: Hive not initialized yet; waiting for 3 seconds ... ${DateTime.now().toIso8601String()}');
+    //   await Future.delayed(const Duration(seconds: 3));
+    //   pp('$mm$mm getOrganizationData: Done waiting ... ${DateTime.now().toIso8601String()}');
+    //   if (_isInitialized) {
+    //     pp('$mm$mm getOrganizationData: Hive initialized!!');
+    //   } else {
+    //     getOrganizationData(organizationId: organizationId);
+    //   }
+    //
+    // }
 
     final projects = await getOrganizationProjects();
     final users = await getUsers();
@@ -1379,7 +1374,7 @@ class CacheManager {
   Future addUser({required User user}) async {
     var key = '${user.organizationId}_${user.userId}';
     _userBox?.put(key, user);
-    pp('$mm User added to local cache: 🔵🔵 cellphone: ${user.cellphone} 🔵 ${user.email} 🍎 ${user.name}');
+    // pp('$mm User added to local cache: 🔵🔵 cellphone: ${user.cellphone} 🔵 ${user.email} 🍎 ${user.name}');
   }
 
   Future deleteUser({required User user}) async {
@@ -1453,7 +1448,7 @@ class CacheManager {
   Future addCountry({required Country country}) async {
     var key = '${country.countryId}';
     _countryBox?.put(key, country);
-    pp('$mm Country added to local cache: 🌿 ${country.name}');
+    // pp('$mm Country added to local cache: 🌿 ${country.name}');
   }
 
   Future addMonitorReport({required MonitorReport monitorReport}) async {
