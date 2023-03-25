@@ -46,6 +46,7 @@ import '../../library/ui/maps/project_map_main.dart';
 import '../../library/ui/project_list/project_list_main.dart';
 import '../../library/users/full_user_photo.dart';
 import '../../library/users/list/user_list_main.dart';
+import '../activity/user_profile_card.dart';
 
 class DashboardTablet extends StatefulWidget {
   const DashboardTablet({Key? key, required this.user}) : super(key: key);
@@ -56,7 +57,8 @@ class DashboardTablet extends StatefulWidget {
   State<DashboardTablet> createState() => DashboardTabletState();
 }
 
-class DashboardTabletState extends State<DashboardTablet> with WidgetsBindingObserver {
+class DashboardTabletState extends State<DashboardTablet>
+    with WidgetsBindingObserver {
   final mm = '🍎🍎🍎🍎 DashboardTablet: 🔵 ';
 
   late StreamSubscription<Photo> photoSubscriptionFCM;
@@ -72,7 +74,6 @@ class DashboardTabletState extends State<DashboardTablet> with WidgetsBindingObs
   late StreamSubscription<DataBag> dataBagSubscription;
 
   late StreamSubscription<SettingsModel> settingsSubscription;
-
 
   late StreamSubscription<String> killSubscriptionFCM;
   var users = <User>[];
@@ -103,8 +104,7 @@ class DashboardTabletState extends State<DashboardTablet> with WidgetsBindingObs
       pp('$mm didChangeLocales: System Locale: $loc');
     });
     // Update state with the new values and redraw controls
-    setState(() {
-    });
+    setState(() {});
   }
 
   @override
@@ -141,8 +141,8 @@ class DashboardTabletState extends State<DashboardTablet> with WidgetsBindingObs
       pp('$mm 🍎 🍎 _listen to FCM message streams ... 🍎 🍎');
       pp('$mm ... _listenToFCM activityStream ...');
 
-      settingsSubscription =
-          organizationBloc.settingsStream.listen((SettingsModel settings) async {
+      settingsSubscription = organizationBloc.settingsStream
+          .listen((SettingsModel settings) async {
         pp('$mm settingsStream delivered settings ... ${settings.locale!}');
         await _handleNewSettings(settings);
         if (mounted) {
@@ -151,12 +151,12 @@ class DashboardTabletState extends State<DashboardTablet> with WidgetsBindingObs
       });
       activitySubscriptionFCM =
           fcmBloc.activityStream.listen((ActivityModel model) {
-            pp('$mm activityStream delivered activity data ... ${model.date!}');
-            _getData(false);
-            if (mounted) {
-              setState(() {});
-            }
-          });
+        pp('$mm activityStream delivered activity data ... ${model.date!}');
+        _getData(false);
+        if (mounted) {
+          setState(() {});
+        }
+      });
       projectSubscriptionFCM =
           fcmBloc.projectStream.listen((Project project) async {
         _getData(false);
@@ -201,15 +201,14 @@ class DashboardTabletState extends State<DashboardTablet> with WidgetsBindingObs
   Future<void> _handleNewSettings(SettingsModel settings) async {
     Locale newLocale = Locale(settings.locale!);
     await mTx.translate('settings', settings.locale!);
-    final m = LocaleAndTheme(themeIndex: settings!.themeIndex!,
-        locale: newLocale);
+    final m =
+        LocaleAndTheme(themeIndex: settings!.themeIndex!, locale: newLocale);
     themeBloc.themeStreamController.sink.add(m);
     settingsModel = settings;
     if (mounted) {
       await _setTexts();
       _getData(false);
     }
-
   }
 
   String? dashboardSubTitle, prefix, suffix;
@@ -220,7 +219,8 @@ class DashboardTabletState extends State<DashboardTablet> with WidgetsBindingObs
     if (settingsModel != null) {
       numberOfDays = settingsModel!.numberOfDays!;
       title = await mTx.translate('dashboard', settingsModel!.locale!);
-      var sub = await mTx.translate('dashboardSubTitle', settingsModel!.locale!);
+      var sub =
+          await mTx.translate('dashboardSubTitle', settingsModel!.locale!);
       pp('deciphering this string: 🍎 $sub');
       int index = sub.indexOf('\$');
       prefix = sub.substring(0, index);
@@ -234,11 +234,10 @@ class DashboardTabletState extends State<DashboardTablet> with WidgetsBindingObs
       }
       dashboardSubTitle = sub.replaceAll('\$count', '$numberOfDays');
 
-      setState(() {
-
-      });
+      setState(() {});
     }
   }
+
   void _getData(bool forceRefresh) async {
     setState(() {
       busy = true;
@@ -584,23 +583,22 @@ class DashboardTabletState extends State<DashboardTablet> with WidgetsBindingObs
     pp('$mm build: app Localizations.localeOf 🌎🌎🌎 locale: $appLocale, not the same as the app');
     var size = MediaQuery.of(context).size;
     var ori = MediaQuery.of(context).orientation;
-    var bottomHeight = 140.0;
+    var bottomHeight = 200.0;
     var padding = 360.0;
     var extPadding = 200.0;
     var top = -12.0;
     if (ori.name == 'portrait') {
       padding = 200;
       top = 0;
-      bottomHeight = 140;
+      bottomHeight = 200;
       extPadding = 120;
     }
-
 
     return SafeArea(
         child: Scaffold(
       appBar: AppBar(
         centerTitle: true,
-        title:  Text(title == null?'Dashboard':title!),
+        title: Text(title == null ? 'Dashboard' : title!),
         actions: [
           IconButton(
               icon: Icon(
@@ -635,7 +633,6 @@ class DashboardTabletState extends State<DashboardTablet> with WidgetsBindingObs
               color: Theme.of(context).primaryColor,
             ),
             onPressed: () {
-              pp('$mm =======================> requesting refresh .......');
               _getData(true);
             },
           )
@@ -646,29 +643,24 @@ class DashboardTabletState extends State<DashboardTablet> with WidgetsBindingObs
             children: [
               user == null
                   ? const SizedBox()
-                  : Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        const SizedBox(
-                          height: 20,
-                        ),
-                        Text(
-                          '${user!.name}',
-                          style: myTextStyleSmall(context),
-                        ),
-                        const SizedBox(
-                          width: 24,
-                        ),
-                        user!.imageUrl == null
-                            ? const CircleAvatar(
-                                radius: 8,
-                              )
-                            : CircleAvatar(
-                                radius: 28,
-                                backgroundImage: NetworkImage(user!.imageUrl!),
-                              )
-                      ],
+                  : Text(
+                      user!.organizationName!,
+                      style: myTextStyleLargePrimaryColor(context),
                     ),
+              user == null
+                  ? const SizedBox()
+                  : const SizedBox(
+                      height: 12,
+                    ),
+              user == null
+                  ? const SizedBox()
+                  : UserProfileCard(
+                      userName: user!.name!,
+                      userThumbUrl: user!.thumbnailUrl!,
+                      avatarRadius: 28,
+                      elevation: 4, width: 400,
+                      padding: 16,
+                      textStyle: myTextStyleMediumPrimaryColor(context)),
               const SizedBox(
                 height: 8,
               ),
@@ -676,17 +668,23 @@ class DashboardTabletState extends State<DashboardTablet> with WidgetsBindingObs
                 height: 32,
               ),
               Padding(
-                padding: const EdgeInsets.only(left: 28.0),
-                child: Row(
-                  children: [
-                    Text(prefix == null?'': prefix!),
-                    const SizedBox(width: 8,),
-                    Text('$numberOfDays', style: myTextStyleLargePrimaryColor(context),),
-                    const SizedBox(width: 8,),
-                    Text(suffix == null?'': suffix!),
-                  ],
-                )
-              ),
+                  padding: const EdgeInsets.only(left: 28.0),
+                  child: Row(
+                    children: [
+                      Text(prefix == null ? '' : prefix!, style: myTextStyleSmall(context),),
+                      const SizedBox(
+                        width: 8,
+                      ),
+                      Text(
+                        '$numberOfDays',
+                        style: myTextStyleLargePrimaryColor(context),
+                      ),
+                      const SizedBox(
+                        width: 8,
+                      ),
+                      Text(suffix == null ? '' : suffix!, style: myTextStyleSmall(context),),
+                    ],
+                  )),
             ],
           ),
         ),
@@ -698,7 +696,7 @@ class DashboardTabletState extends State<DashboardTablet> with WidgetsBindingObs
               return Row(
                 children: [
                   SizedBox(
-                    width: (size.width / 2)+20,
+                    width: (size.width / 2) + 20,
                     child: dataBag == null
                         ? const SizedBox()
                         : DashboardGrid(
@@ -706,6 +704,8 @@ class DashboardTabletState extends State<DashboardTablet> with WidgetsBindingObs
                             crossAxisCount: 2,
                             topPadding: 48,
                             elementPadding: 48,
+                            crossAxisSpacing: 4,
+                            mainAxisSpacing: 4,
                             leftPadding: 12,
                             onTypeTapped: (type) {
                               switch (type) {
@@ -791,7 +791,9 @@ class DashboardTabletState extends State<DashboardTablet> with WidgetsBindingObs
                             dataBag: dataBag!,
                             crossAxisCount: 3,
                             topPadding: 12,
-                            elementPadding: 48,
+                            crossAxisSpacing: 8,
+                            mainAxisSpacing: 8,
+                            elementPadding: 36,
                             leftPadding: 12,
                             onTypeTapped: (type) {
                               switch (type) {
@@ -821,7 +823,7 @@ class DashboardTabletState extends State<DashboardTablet> with WidgetsBindingObs
                                   break;
                               }
                             },
-                            gridPadding: 80,
+                            gridPadding: 40,
                           ),
                   ),
                   GeoActivity(

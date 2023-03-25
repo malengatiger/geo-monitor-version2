@@ -18,6 +18,8 @@ class DashboardGrid extends StatefulWidget {
   final DataBag dataBag;
   final double gridPadding;
   final int crossAxisCount;
+  final double crossAxisSpacing;
+  final double mainAxisSpacing;
 
   const DashboardGrid(
       {super.key,
@@ -28,7 +30,7 @@ class DashboardGrid extends StatefulWidget {
       this.leftPadding,
       required this.dataBag,
       required this.gridPadding,
-      required this.crossAxisCount});
+      required this.crossAxisCount, required this.crossAxisSpacing, required this.mainAxisSpacing});
 
   @override
   State<DashboardGrid> createState() => _DashboardGridState();
@@ -91,6 +93,8 @@ class _DashboardGridState extends State<DashboardGrid> {
         padding: EdgeInsets.all(widget.gridPadding),
         child: dashboardStrings == null? const SizedBox(): GridView.count(
           crossAxisCount: widget.crossAxisCount,
+          crossAxisSpacing: widget.crossAxisSpacing,
+          mainAxisSpacing: widget.mainAxisSpacing,
           children: [
             GestureDetector(
               onTap: () {

@@ -8,6 +8,7 @@ import 'package:geo_monitor/library/generic_functions.dart';
 import 'package:geo_monitor/library/ui/settings/settings_main.dart';
 import 'package:geo_monitor/library/users/full_user_photo.dart';
 import 'package:geo_monitor/ui/activity/geo_activity_mobile.dart';
+import 'package:geo_monitor/ui/activity/user_profile_card.dart';
 import 'package:geo_monitor/ui/dashboard/dashboard_grid.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:page_transition/page_transition.dart';
@@ -80,7 +81,6 @@ class DashboardPortraitState extends State<DashboardPortrait>
 
   late StreamSubscription<SettingsModel> settingsSubscription;
 
-
   late StreamSubscription<DataBag> dataBagSubscription;
   //
 
@@ -118,12 +118,12 @@ class DashboardPortraitState extends State<DashboardPortrait>
   void _listenForData() async {
     settingsSubscription =
         organizationBloc.settingsStream.listen((SettingsModel settings) async {
-          pp('$mm settingsStream delivered settings ... ${settings.locale!}');
-          await _handleNewSettings(settings);
-          if (mounted) {
-            setState(() {});
-          }
-        });
+      pp('$mm settingsStream delivered settings ... ${settings.locale!}');
+      await _handleNewSettings(settings);
+      if (mounted) {
+        setState(() {});
+      }
+    });
     settingsSubscriptionFCM = fcmBloc.settingsStream.listen((settings) async {
       pp('$mm: 🍎🍎 settings arrived with themeIndex: ${settings.themeIndex}... locale: ${settings.locale} 🍎🍎');
       await _handleNewSettings(settings);
@@ -132,9 +132,7 @@ class DashboardPortraitState extends State<DashboardPortrait>
       dataBag = bag;
       pp('$mm dataBagStream delivered a dataBag!! 🍐Yebo! 🍐');
       if (mounted) {
-        setState(() {
-
-        });
+        setState(() {});
       }
     });
   }
@@ -142,14 +140,13 @@ class DashboardPortraitState extends State<DashboardPortrait>
   Future<void> _handleNewSettings(SettingsModel settings) async {
     Locale newLocale = Locale(settings.locale!);
     await _setTexts();
-    final m = LocaleAndTheme(themeIndex: settings!.themeIndex!,
-        locale: newLocale);
+    final m =
+        LocaleAndTheme(themeIndex: settings!.themeIndex!, locale: newLocale);
     themeBloc.themeStreamController.sink.add(m);
     this.settings = settings;
+    _getData(true);
     if (mounted) {
-      setState(() {
-
-      });
+      setState(() {});
     }
     _getData(false);
   }
@@ -230,9 +227,7 @@ class DashboardPortraitState extends State<DashboardPortrait>
     var sub = await mTx.translate('dashboardSubTitle', settings!.locale!);
     subTitle = sub.replaceAll('\$count', '$numberOfDays');
     pp(subTitle);
-    setState(() {
-
-    });
+    setState(() {});
   }
 
   Future _getData(bool forceRefresh) async {
@@ -253,9 +248,11 @@ class DashboardPortraitState extends State<DashboardPortrait>
       throw Exception('No user cached on device');
     }
 
-    setState(() {
-      busy = true;
-    });
+    if (mounted) {
+      setState(() {
+        busy = true;
+      });
+    }
 
     await _doTheWork(forceRefresh);
 
@@ -264,7 +261,8 @@ class DashboardPortraitState extends State<DashboardPortrait>
 
   Future<void> _doTheWork(bool forceRefresh) async {
     if (deviceUser == null) {
-      throw Exception("The data refresh man is fucked! Device User is not found");
+      throw Exception(
+          "The data refresh man is fucked! Device User is not found");
     }
     if (widget.project != null) {
       await _getProjectData(widget.project!.projectId!, forceRefresh);
@@ -330,9 +328,7 @@ class DashboardPortraitState extends State<DashboardPortrait>
         if (mounted) {
           showToast(
               duration: const Duration(seconds: 5),
-              backgroundColor: Theme
-                  .of(context)
-                  .primaryColor,
+              backgroundColor: Theme.of(context).primaryColor,
               padding: 20,
               textStyle: myTextStyleMedium(context),
               message: arrivedAt,
@@ -349,10 +345,10 @@ class DashboardPortraitState extends State<DashboardPortrait>
       pp('$mm 🍎 🍎 _listen to FCM message streams ... 🍎 🍎');
       geofenceSubscriptionFCM =
           fcmBloc.geofenceStream.listen((GeofenceEvent event) async {
-            pp('$mm: 🍎geofenceSubscriptionFCM: 🍎 GeofenceEvent: '
-                'user ${event.user!.name} arrived: ${event.projectName} ');
-            _handleGeofenceEvent(event);
-          });
+        pp('$mm: 🍎geofenceSubscriptionFCM: 🍎 GeofenceEvent: '
+            'user ${event.user!.name} arrived: ${event.projectName} ');
+        _handleGeofenceEvent(event);
+      });
       projectSubscriptionFCM =
           fcmBloc.projectStream.listen((Project project) async {
         await _getData(false);
@@ -365,7 +361,6 @@ class DashboardPortraitState extends State<DashboardPortrait>
       settingsSubscriptionFCM = fcmBloc.settingsStream.listen((settings) async {
         pp('$mm: 🍎🍎 settings arrived with themeIndex: ${settings.themeIndex}... 🍎🍎');
         _handleNewSettings(settings);
-
       });
       userSubscriptionFCM = fcmBloc.userStream.listen((user) async {
         pp('$mm: 🍎 🍎 user arrived... 🍎 🍎');
@@ -377,7 +372,6 @@ class DashboardPortraitState extends State<DashboardPortrait>
       photoSubscriptionFCM = fcmBloc.photoStream.listen((user) async {
         pp('$mm: 🍎 🍎 photoSubscriptionFCM photo arrived... 🍎 🍎');
         _getData(false);
-
       });
 
       videoSubscriptionFCM = fcmBloc.videoStream.listen((Video message) async {
@@ -411,17 +405,15 @@ class DashboardPortraitState extends State<DashboardPortrait>
   }
 
   void _navigateToProjectList() {
-
-      Navigator.push(
-          context,
-          PageTransition(
-              type: PageTransitionType.scale,
-              alignment: Alignment.topLeft,
-              duration: const Duration(seconds: 1),
-              child: ProjectListMobile(
-                instruction: instruction,
-              )));
-
+    Navigator.push(
+        context,
+        PageTransition(
+            type: PageTransitionType.scale,
+            alignment: Alignment.topLeft,
+            duration: const Duration(seconds: 1),
+            child: ProjectListMobile(
+              instruction: instruction,
+            )));
   }
 
   void _navigateToMessageSender() {
@@ -567,7 +559,6 @@ class DashboardPortraitState extends State<DashboardPortrait>
       typePolygons = 4,
       typeSchedules = 5;
 
-
   @override
   Widget build(BuildContext context) {
     bool showAdminIcons = false;
@@ -633,10 +624,14 @@ class DashboardPortraitState extends State<DashboardPortrait>
             child: Padding(
               padding: const EdgeInsets.all(8.0),
               child: Column(
-
                 children: [
-                  Text(title == null? 'Dashboard': title!, style: myTextStyleSmall(context),),
-                  const SizedBox(height: 8,),
+                  Text(
+                    title == null ? 'Dashboard' : title!,
+                    style: myTextStyleSmall(context),
+                  ),
+                  const SizedBox(
+                    height: 8,
+                  ),
                   deviceUser == null
                       ? const SizedBox()
                       : Row(
@@ -655,30 +650,12 @@ class DashboardPortraitState extends State<DashboardPortrait>
                   ),
                   deviceUser == null
                       ? const SizedBox()
-                      : Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Text(deviceUser!.name!,
-                                style: GoogleFonts.lato(
-                                    textStyle:
-                                        Theme.of(context).textTheme.titleLarge,
-                                    fontWeight: FontWeight.normal,
-                                    color: Theme.of(context).primaryColor)),
-                            const SizedBox(
-                              width: 8,
-                            ),
-                            deviceUser!.thumbnailUrl == null
-                                ? const CircleAvatar()
-                                : GestureDetector(
-                                    onTap: _navigateToFullUserPhoto,
-                                    child: CircleAvatar(
-                                      backgroundImage: NetworkImage(
-                                          deviceUser!.thumbnailUrl!),
-                                      radius: 28,
-                                    ),
-                                  ),
-                          ],
-                        ),
+                      : UserProfileCard(
+                          userName: deviceUser!.name!,
+                          userThumbUrl: deviceUser!.thumbnailUrl!,
+                          avatarRadius: 28, elevation: 4,
+                          padding: 16,
+                          textStyle: myTextStyleMediumPrimaryColor(context)),
                   const SizedBox(
                     height: 0,
                   ),
@@ -697,10 +674,10 @@ class DashboardPortraitState extends State<DashboardPortrait>
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Text(subTitle,
+                      Text(
+                        subTitle,
                         style: myTextStyleSmall(context),
                       ),
-
                     ],
                   ),
                   const SizedBox(
@@ -732,38 +709,38 @@ class DashboardPortraitState extends State<DashboardPortrait>
                 dataBag == null
                     ? const SizedBox()
                     : DashboardGrid(
-                      gridPadding: 16,
-                      topPadding: 12,
-                      elementPadding: 48,
-                      leftPadding: 12,
-                      crossAxisCount: 2,
-                      dataBag: dataBag!,
-                      onTypeTapped: (type) {
-                        switch (type) {
-                          case typeProjects:
-                            _navigateToProjectList();
-                            break;
-                          case typeUsers:
-                            _navigateToUserList();
-                            break;
-                          case typePhotos:
-                            _navigateToProjectList();
-                            break;
-                          case typeVideos:
-                            _navigateToProjectList();
-                            break;
-                          case typeAudios:
-                            _navigateToProjectList();
-                            break;
-                          case typePositions:
-                            _navigateToProjectList();
-                            break;
-                          case typePolygons:
-                            _navigateToProjectList();
-                            break;
-                        }
-                      },
-                    ),
+                        gridPadding: 16,
+                        topPadding: 12,
+                        elementPadding: 48,
+                        leftPadding: 12,
+                        crossAxisCount: 2,
+                        dataBag: dataBag!,
+                        onTypeTapped: (type) {
+                          switch (type) {
+                            case typeProjects:
+                              _navigateToProjectList();
+                              break;
+                            case typeUsers:
+                              _navigateToUserList();
+                              break;
+                            case typePhotos:
+                              _navigateToProjectList();
+                              break;
+                            case typeVideos:
+                              _navigateToProjectList();
+                              break;
+                            case typeAudios:
+                              _navigateToProjectList();
+                              break;
+                            case typePositions:
+                              _navigateToProjectList();
+                              break;
+                            case typePolygons:
+                              _navigateToProjectList();
+                              break;
+                          }
+                        },
+                      ),
               ]),
       ),
     );
