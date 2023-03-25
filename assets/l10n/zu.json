@@ -93,7 +93,6 @@
   "memberDashboard": "Ideshibhodi Yelungu",
   "projectEditor": "Umhleli Wephrojekthi",
   "startDate": "Usuku okuqalwa ngalo",
-  "memberCreateFailed": "Ukudala Ilungu kuhlulekile",
   "small": "Encane",
   "selectLanguage": "Khetha Ulimi",
   "maxAudioLength": "Sicela ufake ubude bomsindo obukhulu ngamaminithi",
@@ -256,7 +255,12 @@
   "maxAudioLessThan": "Ubukhulu bobude besiqeshana somsindo kufanele bube ngaphansi kwamaminithi angu-$count",
   "maxVideoLessThan": "Ubude bevidiyo obukhulu kufanele bube ngaphansi kwamasekhondi angu-$count",
   "initializing": "Ukuqalisa isizindalwazi sedivayisi yakho nezinye izinsiza. Sicela ulinde imizuzwana embalwa.",
-  "af": "Afrikaans"
+  "af": "Afrikaans",
+  "memberCreated": "Ilungu lidaliwe",
+  "pleaseSelectGender": "Sicela ukhethe ubulili beLungu",
+  "memberUpdateFailed": "Ukubuyekezwa kwelungu kuhlulekile",
+  "pleaseSelectType": "Sicela ukhethe uhlobo lwelungu",
+  "memberCreateFailed": "Ukwakhiwa kwelungu kuhlulekile"
 
 
 }

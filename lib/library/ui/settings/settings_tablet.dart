@@ -46,16 +46,13 @@ class SettingsTabletState extends State<SettingsTablet>
   }
 
   void _listenToFCM() async {
-
     settingsSubscriptionFCM =
         fcmBloc.settingsStream.listen((SettingsModel event) async {
           if (mounted) {
             await _setTexts();
           }
         });
-
   }
-
 
 
   @override

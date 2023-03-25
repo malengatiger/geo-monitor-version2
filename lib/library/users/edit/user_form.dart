@@ -53,7 +53,7 @@ class UserFormState extends State<UserForm>
   int userType = -1;
   int genderType = -1;
   String? type;
-  String? gender, countryName;
+  String? gender, countryName, pleaseSelectCountry;
 
   UserFormStrings? userFormStrings;
   SettingsModel? settingsModel;
@@ -73,6 +73,8 @@ class UserFormState extends State<UserForm>
     settingsModel = await prefsOGx.getSettings();
     if (settingsModel != null) {
       userFormStrings = await UserFormStrings.getTranslated();
+      pleaseSelectCountry = await mTx.translate('pleaseSelectCountry',
+          settingsModel!.locale!);
     }
     setState(() {});
   }
@@ -128,7 +130,8 @@ class UserFormState extends State<UserForm>
       });
       showToast(
           context: context,
-          message: 'Please select country',
+          message: pleaseSelectCountry == null?
+          'Please select country': pleaseSelectCountry!,
           duration: const Duration(seconds: 2),
           backgroundColor: Colors.pink,
           textStyle: Styles.whiteSmall);
@@ -138,7 +141,7 @@ class UserFormState extends State<UserForm>
     if (gender == null) {
       showToast(
           context: context,
-          message: 'Please select user gender',
+          message: 'Please select Member gender',
           duration: const Duration(seconds: 2),
           backgroundColor: Colors.pink,
           textStyle: Styles.whiteSmall);
@@ -147,7 +150,7 @@ class UserFormState extends State<UserForm>
     if (type == null) {
       showToast(
           context: context,
-          message: 'Please select user type',
+          message: 'Please select Member type',
           duration: const Duration(seconds: 2),
           backgroundColor: Colors.pink,
           textStyle: Styles.whiteSmall);
@@ -353,7 +356,7 @@ class UserFormState extends State<UserForm>
     var ori = MediaQuery.of(context).orientation;
     if (ori.name == 'portrait') {
       spaceToButtons = 28;
-      spaceToTop = 24;
+      spaceToTop = 48;
     } else {
       spaceToButtons = 24;
       spaceToTop = 16;
@@ -371,36 +374,6 @@ class UserFormState extends State<UserForm>
                   child: SingleChildScrollView(
                     child: Column(
                       children: [
-                        const SizedBox(
-                          height: 8,
-                        ),
-                        CountryChooser(
-                          onSelected: (c) async {
-                            countryName = await mTx.translate(
-                                c.name!, settings!.locale!);
-                            setState(()  {
-                              country = c;
-
-                            });
-                          },
-                          hint: userFormStrings!.selectCountry,
-                        ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            const SizedBox(
-                              width: 12,
-                            ),
-                            country == null
-                                ? const SizedBox()
-                                : Text(
-                                    countryName == null
-                                        ? country!.name!
-                                        : countryName!,
-                                    style: myTextStyleMedium(context),
-                                  ),
-                          ],
-                        ),
                         SizedBox(
                           height: spaceToTop,
                         ),
@@ -550,6 +523,35 @@ class UserFormState extends State<UserForm>
                                 ),
                               ],
                             ),
+                          ],
+                        ),
+                        const SizedBox(
+                          height: 8,
+                        ),
+                        CountryChooser(
+                          onSelected: (country) async {
+                            countryName = await mTx.translate(
+                                country.name!, settings!.locale!);
+                            setState(() {
+                              this.country = country;
+                            });
+                          },
+                          hint: userFormStrings!.selectCountry,
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            const SizedBox(
+                              width: 12,
+                            ),
+                            country == null
+                                ? const SizedBox()
+                                : Text(
+                                    countryName == null
+                                        ? country!.name!
+                                        : countryName!,
+                                    style: myTextStyleMedium(context),
+                                  ),
                           ],
                         ),
                         SizedBox(

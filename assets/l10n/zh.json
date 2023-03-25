@@ -56,7 +56,6 @@
   "male": "男性",
   "projectEditor": "项目编辑",
   "startDate": "开始日期",
-  "memberCreateFailed": "成员创建失败",
   "saturday": "周六",
   "memberLocationResponse": "成员响应位置请求",
   "internetConnectionNotAvailable": "互联网连接不可用",
@@ -263,6 +262,11 @@
   "maxAudioLessThan": "最大音频剪辑长度应小于 $count 分钟",
   "maxVideoLessThan": "最大视频长度应小于 $count 秒",
   "initializing": "初始化您的设备数据库和其他资源。请稍等几秒钟。",
-  "sn": "绍纳语"
+  "sn": "绍纳语",
+  "memberCreated": "会员创建",
+  "pleaseSelectGender": "请选择会员性别",
+  "memberUpdateFailed": "会员更新失败",
+  "pleaseSelectType": "请选择会员类型",
+  "memberCreateFailed": "创建成员失败"
 
 }

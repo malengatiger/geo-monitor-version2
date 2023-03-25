@@ -94,7 +94,6 @@
   "memberDashboard": "Dashibodi ya Mwanachama",
   "projectEditor": "Mhariri wa Mradi",
   "startDate": "Tarehe ya Kuanza",
-  "memberCreateFailed": "Uundaji wa Mwanachama haukufaulu",
   "small": "Ndogo",
   "selectLanguage": "Chagua Lugha",
   "maxAudioLength": "Tafadhali weka upeo wa urefu wa sauti kwa dakika",
@@ -256,7 +255,12 @@
   "maxAudioLessThan": "Urefu wa juu zaidi wa klipu ya sauti unapaswa kuwa chini ya dakika $count",
   "maxVideoLessThan": "Urefu wa juu zaidi wa video unapaswa kuwa chini ya sekunde $count",
   "initializing": "Kuanzisha hifadhidata ya kifaa chako na rasilimali zingine. Tafadhali subiri kwa sekunde chache.",
-  "af": "Afrikaans"
+  "af": "Afrikaans",
+  "memberCreated": "Mwanachama ameundwa",
+  "pleaseSelectGender": "Tafadhali chagua jinsia ya Mwanachama",
+  "memberUpdateFailed": "Imeshindwa kusasisha mwanachama",
+  "pleaseSelectType": "Tafadhali chagua aina ya Mwanachama",
+  "memberCreateFailed": "Imeshindwa kuunda wanachama"
 
 
 }

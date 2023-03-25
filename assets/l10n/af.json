@@ -6,7 +6,6 @@
   "addProjectLocations": "Voeg projekliggings by",
   "videos": "Video\u0027s",
   "administratorsMembers": "Administrateurs \u0026 Lede",
-  "areas": "Gebiede",
   "photos": "Foto\u0027s",
   "april": "April",
   "organizationMembers": "Organisasie lede",
@@ -261,10 +260,9 @@
   "maxVideoLessThan": "Die maksimum videolengte moet minder as $count sekondes wees",
   "initializing": "Inisialiseer jou toesteldatabasis en ander hulpbronne. Wag asseblief vir \u0027n paar sekondes.",
 
-  "af": "Afrikaans"
-
-
-
-
-
+  "af": "Afrikaans",
+  "memberCreated": "Lid geskep",
+  "pleaseSelectGender": "Kies asseblief lidgeslag",
+  "memberUpdateFailed": "Lidopdatering het misluk",
+  "pleaseSelectType": "Kies asseblief lidtipe"
 }

@@ -154,11 +154,9 @@ class MyKeys {
     hashMap["noActivities"] = "noActivities";
     hashMap["tapToRefresh"] = "tapToRefresh";
     hashMap["loadingActivities"] = "loadingActivities";
-
     hashMap["projectsNotFound"] = "projectsNotFound";
     hashMap["newProject"] = "newProject";
     hashMap["enterProjectName"] = "enterProjectName";
-
     hashMap["enterDescription"] = "enterDescription";
     hashMap["settingsChanged"] = "settingsChanged";
     hashMap["projectAdded"] = "projectAdded";
@@ -305,6 +303,12 @@ class MyKeys {
     hashMap["maxVideoLessThan"] =  "maxVideoLessThan";
     hashMap["maxAudioLessThan"] =  "maxAudioLessThan";
     hashMap["initializing"] = "initializing";
+
+    hashMap["pleaseSelectGender"] = "pleaseSelectGender";
+    hashMap["pleaseSelectType"] = "pleaseSelectType";
+    hashMap["memberCreated"] = "memberCreated";
+    hashMap["memberCreateFailed"] = "memberCreateFailed";
+    hashMap["memberUpdateFailed"] = "memberUpdateFailed";
 
   }
 }

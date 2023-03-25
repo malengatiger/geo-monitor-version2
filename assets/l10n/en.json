@@ -96,7 +96,6 @@
   "memberDashboard": "Member Dashboard",
   "projectEditor": "Project Editor",
   "startDate": "Start Date",
-  "memberCreateFailed": "Member Creation Failed",
   "small": "Small",
   "selectLanguage": "Select Language",
   "maxAudioLength": "Please enter maximum audio length in minutes",
@@ -258,6 +257,11 @@
   "maxAudioLessThan": "The maximum audio clip length should be less than $count minutes",
   "maxVideoLessThan": "The maximum video length should be less than $count seconds",
   "initializing": "Initializing your device database and other resources. Please wait for a few seconds.",
-  "af": "Afrikaans"
+  "af": "Afrikaans",
+  "memberCreated": "Member created",
+  "pleaseSelectGender": "Please select Member gender",
+  "memberUpdateFailed": "Member update failed",
+  "pleaseSelectType": "Please select Member type",
+  "memberCreateFailed": "Member creation failed"
 
 }

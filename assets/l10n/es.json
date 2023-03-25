@@ -95,7 +95,6 @@
   "memberDashboard": "Panel de miembros",
   "projectEditor": "Editor de proyectos",
   "startDate": "Fecha de inicio",
-  "memberCreateFailed": "Error al crear miembro",
   "small": "Pequeño",
   "selectLanguage": "Seleccione el idioma",
   "maxAudioLength": "Ingrese la duración máxima del audio en minutos",
@@ -259,7 +258,12 @@
   "maxAudioLessThan": "La duración máxima del clip de audio debe ser inferior a $count minutos",
   "maxVideoLessThan": "La duración máxima del video debe ser inferior a $count segundos",
   "initializing": "Inicializar la base de datos de su dispositivo y otros recursos. Espere unos segundos.",
-  "af": "Africano"
+  "af": "Africano",
+  "memberCreated": "Miembro creado",
+  "pleaseSelectGender": "Seleccione el sexo del miembro",
+  "memberUpdateFailed": "Actualización de miembro fallida",
+  "pleaseSelectType": "Seleccione el tipo de miembro",
+  "memberCreateFailed": "No se pudo crear el miembro"
 
 
 

@@ -1,11 +1,13 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
-import 'package:geo_monitor/library/bloc/organization_bloc.dart';
 import 'package:geo_monitor/library/data/settings_model.dart';
 import 'package:geo_monitor/library/ui/settings/settings_form.dart';
 import 'package:uuid/uuid.dart';
 
 import '../../../l10n/translation_handler.dart';
 import '../../api/prefs_og.dart';
+import '../../bloc/fcm_bloc.dart';
 import '../../bloc/theme_bloc.dart';
 import '../../data/project.dart';
 import '../../data/user.dart';
@@ -30,22 +32,34 @@ class SettingsFormMonitorState extends State<SettingsFormMonitor> {
   Project? selectedProject;
   SettingsModel? settingsModel;
   SettingsModel? oldSettingsModel;
-
+  late StreamSubscription<SettingsModel> settingsSubscriptionFCM;
   int photoSize = 0;
   int currentThemeIndex = 0;
   int groupValue = 0;
   bool busy = false;
   bool busyWritingToDB = false;
-
   String? currentLocale;
+  Locale? selectedLocale;
+  String? selectSizePhotos, settingsChanged;
+  bool showColorPicker = false;
 
   @override
   void initState() {
     super.initState();
+    _listenToFCM();
     _getSettings();
   }
 
-  void _getSettings() async {
+  void _listenToFCM() async {
+    settingsSubscriptionFCM =
+        fcmBloc.settingsStream.listen((SettingsModel event) async {
+      if (mounted) {
+        await _setTexts();
+      }
+    });
+  }
+
+  Future _getSettings() async {
     pp('$mm 🍎🍎 ............. getting user from prefs ...');
     user = await prefsOGx.getUser();
     settingsModel = await prefsOGx.getSettings();
@@ -69,21 +83,22 @@ class SettingsFormMonitorState extends State<SettingsFormMonitor> {
       settings,
       small,
       medium,
-      large, maxVideoLessThan,maxAudioLessThan,
+      large,
+      maxVideoLessThan,
+      maxAudioLessThan,
       numberOfDaysForDashboardData,
       selectLanguage,
       title,
       hint;
 
-  void _setTexts() async {
-    title =
-        await mTx.translate('settings', settingsModel!.locale!);
+  Future _setTexts() async {
+    title = await mTx.translate('settings', settingsModel!.locale!);
     maxVideoLessThan =
-    await mTx.translate('maxVideoLessThan', settingsModel!.locale!);
+        await mTx.translate('maxVideoLessThan', settingsModel!.locale!);
     maxAudioLessThan =
-    await mTx.translate('maxAudioLessThan', settingsModel!.locale!);
+        await mTx.translate('maxAudioLessThan', settingsModel!.locale!);
     fieldMonitorInstruction =
-    await mTx.translate('fieldMonitorInstruction', settingsModel!.locale!);
+        await mTx.translate('fieldMonitorInstruction', settingsModel!.locale!);
     maximumMonitoringDistance = await mTx.translate(
         'maximumMonitoringDistance', settingsModel!.locale!);
     numberOfDaysForDashboardData = await mTx.translate(
@@ -134,15 +149,15 @@ class SettingsFormMonitorState extends State<SettingsFormMonitor> {
     settingsModel ??= SettingsModel(
         distanceFromProject: 500,
         photoSize: 1,
-        maxVideoLengthInSeconds: 20,
+        maxVideoLengthInSeconds: 120,
         maxAudioLengthInMinutes: 30,
         themeIndex: 0,
         settingsId: const Uuid().v4(),
         created: DateTime.now().toUtc().toIso8601String(),
         organizationId: user!.organizationId!,
         projectId: null,
-        activityStreamHours: 24,
-        numberOfDays: 7,
+        activityStreamHours: 48,
+        numberOfDays: 14,
         locale: 'en');
 
     currentThemeIndex = settingsModel!.themeIndex!;
@@ -169,11 +184,6 @@ class SettingsFormMonitorState extends State<SettingsFormMonitor> {
 
     setState(() {});
   }
-
-
-  Locale? selectedLocale;
-  String? selectSizePhotos, settingsChanged;
-  bool showColorPicker = false;
 
   @override
   Widget build(BuildContext context) {
@@ -228,18 +238,17 @@ class SettingsFormMonitorState extends State<SettingsFormMonitor> {
                           ),
                           busyWritingToDB
                               ? const SizedBox(
-                            width: 16,
-                            height: 16,
-                            child: CircularProgressIndicator(
-                              strokeWidth: 4,
-                              backgroundColor: Colors.pink,
-                            ),
-                          )
+                                  width: 16,
+                                  height: 16,
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 4,
+                                    backgroundColor: Colors.pink,
+                                  ),
+                                )
                               : const SizedBox(),
                           const SizedBox(
                             width: 8,
                           ),
-
                         ],
                       ),
                       const SizedBox(
@@ -260,14 +269,20 @@ class SettingsFormMonitorState extends State<SettingsFormMonitor> {
                           children: [
                             SizedBox(
                               width: 48,
-                              child: Text(settingsModel == null
-                                  ? '0'
-                                  : '${settingsModel!.distanceFromProject!}', style: myNumberStyleMediumPrimaryColor(context),),
+                              child: Text(
+                                settingsModel == null
+                                    ? '0'
+                                    : '${settingsModel!.distanceFromProject!}',
+                                style: myNumberStyleMediumPrimaryColor(context),
+                              ),
                             ),
                             Expanded(
-                              child: Text(maximumMonitoringDistance == null
-                                  ? ''
-                                  : maximumMonitoringDistance!, style: myTextStyleSmall(context),),
+                              child: Text(
+                                maximumMonitoringDistance == null
+                                    ? ''
+                                    : maximumMonitoringDistance!,
+                                style: myTextStyleSmall(context),
+                              ),
                             ),
                           ],
                         ),
@@ -281,14 +296,20 @@ class SettingsFormMonitorState extends State<SettingsFormMonitor> {
                           children: [
                             SizedBox(
                               width: 48,
-                              child: Text(settingsModel == null
-                                  ? '0'
-                                  : '${settingsModel!.maxVideoLengthInSeconds!}',style: myNumberStyleMediumPrimaryColor(context),),
+                              child: Text(
+                                settingsModel == null
+                                    ? '0'
+                                    : '${settingsModel!.maxVideoLengthInSeconds!}',
+                                style: myNumberStyleMediumPrimaryColor(context),
+                              ),
                             ),
                             Expanded(
-                              child: Text(maximumVideoLength == null
-                                  ? ''
-                                  : maximumVideoLength!, style: myTextStyleSmall(context),),
+                              child: Text(
+                                maximumVideoLength == null
+                                    ? ''
+                                    : maximumVideoLength!,
+                                style: myTextStyleSmall(context),
+                              ),
                             ),
                           ],
                         ),
@@ -302,14 +323,20 @@ class SettingsFormMonitorState extends State<SettingsFormMonitor> {
                           children: [
                             SizedBox(
                               width: 48,
-                              child: Text(settingsModel == null
-                                  ? '0'
-                                  : '${settingsModel!.maxAudioLengthInMinutes!}', style: myNumberStyleMediumPrimaryColor(context),),
+                              child: Text(
+                                settingsModel == null
+                                    ? '0'
+                                    : '${settingsModel!.maxAudioLengthInMinutes!}',
+                                style: myNumberStyleMediumPrimaryColor(context),
+                              ),
                             ),
                             Expanded(
-                              child: Text(maximumAudioLength == null
-                                  ? ''
-                                  : maximumAudioLength!, style: myTextStyleSmall(context),),
+                              child: Text(
+                                maximumAudioLength == null
+                                    ? ''
+                                    : maximumAudioLength!,
+                                style: myTextStyleSmall(context),
+                              ),
                             ),
                           ],
                         ),
@@ -323,14 +350,20 @@ class SettingsFormMonitorState extends State<SettingsFormMonitor> {
                           children: [
                             SizedBox(
                               width: 48,
-                              child: Text(settingsModel == null
-                                  ? '0'
-                                  : '${settingsModel!.activityStreamHours!}',style: myNumberStyleMediumPrimaryColor(context),),
+                              child: Text(
+                                settingsModel == null
+                                    ? '0'
+                                    : '${settingsModel!.activityStreamHours!}',
+                                style: myNumberStyleMediumPrimaryColor(context),
+                              ),
                             ),
                             Expanded(
-                              child: Text(activityStreamHours == null
-                                  ? ''
-                                  : activityStreamHours!,style: myTextStyleSmall(context),),
+                              child: Text(
+                                activityStreamHours == null
+                                    ? ''
+                                    : activityStreamHours!,
+                                style: myTextStyleSmall(context),
+                              ),
                             ),
                           ],
                         ),
@@ -344,14 +377,20 @@ class SettingsFormMonitorState extends State<SettingsFormMonitor> {
                           children: [
                             SizedBox(
                               width: 48,
-                              child: Text(settingsModel == null
-                                  ? '0'
-                                  : '${settingsModel!.numberOfDays!}',style: myNumberStyleMediumPrimaryColor(context),),
+                              child: Text(
+                                settingsModel == null
+                                    ? '0'
+                                    : '${settingsModel!.numberOfDays!}',
+                                style: myNumberStyleMediumPrimaryColor(context),
+                              ),
                             ),
                             Expanded(
-                              child: Text(numberOfDaysForDashboardData == null
-                                  ? ''
-                                  : numberOfDaysForDashboardData!, style: myTextStyleSmall(context),),
+                              child: Text(
+                                numberOfDaysForDashboardData == null
+                                    ? ''
+                                    : numberOfDaysForDashboardData!,
+                                style: myTextStyleSmall(context),
+                              ),
                             ),
                           ],
                         ),
@@ -376,17 +415,16 @@ class SettingsFormMonitorState extends State<SettingsFormMonitor> {
                             translatedLanguage == null
                                 ? const Text('No language')
                                 : Text(
-                              translatedLanguage!,
-                              style:
-                              myTextStyleMediumBoldPrimaryColor(context),
-                            ),
+                                    translatedLanguage!,
+                                    style: myTextStyleMediumBoldPrimaryColor(
+                                        context),
+                                  ),
                           ],
                         ),
                       ),
                       const SizedBox(
                         height: 24,
                       ),
-
                     ],
                   ),
                 ),
@@ -394,43 +432,44 @@ class SettingsFormMonitorState extends State<SettingsFormMonitor> {
             ),
           ),
         ),
-        showColorPicker? Positioned(
-          top: 20, left: 12, right: 12,
-          child: SizedBox(height: 300,
-            child: ColorSchemePicker(onColorScheme: (index) {
-              currentThemeIndex = index;
-              themeBloc.changeToTheme(currentThemeIndex);
-              if (settingsModel != null) {
-                settingsModel!.themeIndex = currentThemeIndex;
-                prefsOGx.saveSettings(settingsModel!);
-              }
-              setState(() {
-                showColorPicker = false;
-              });
-            }, crossAxisCount: 6, itemWidth: 28, elevation: 16,),
-          ),
-        ): const SizedBox(),
+        showColorPicker
+            ? Positioned(
+                top: 20,
+                left: 12,
+                right: 12,
+                child: SizedBox(
+                  height: 300,
+                  child: ColorSchemePicker(
+                    onColorScheme: (index) {
+                      currentThemeIndex = index;
+                      themeBloc.changeToTheme(currentThemeIndex);
+                      if (settingsModel != null) {
+                        settingsModel!.themeIndex = currentThemeIndex;
+                        prefsOGx.saveSettings(settingsModel!);
+                      }
+                      setState(() {
+                        showColorPicker = false;
+                      });
+                    },
+                    crossAxisCount: 6,
+                    itemWidth: 28,
+                    elevation: 16,
+                  ),
+                ),
+              )
+            : const SizedBox(),
       ],
     );
   }
 
   String? translatedLanguage;
-  void _setLanguage() async {
-    if (settingsModel != null) {
-      translatedLanguage =
-          await mTx.translate(settingsModel!.locale!, settingsModel!.locale!);
-    }
-  }
 
   void _handleLocaleChange(Locale locale, String translatedLanguage) async {
-    pp('$mm onLocaleChange ... going to ${locale.languageCode}');
-    mTx.translate('settings', locale.toLanguageTag());
-    var settings = await prefsOGx.getSettings();
-    if (settings != null) {
-      settings.locale = locale.languageCode;
-      await prefsOGx.saveSettings(settings);
-      organizationBloc.settingsController.sink.add(settings);
-      _getSettings();
+    pp('$mm onLocaleChange ... going to ${locale.languageCode} : $translatedLanguage');
+
+    if (settingsModel != null) {
+      settingsModel!.locale = locale.languageCode;
+      await prefsOGx.saveSettings(settingsModel!);
       themeBloc.changeToLocale(locale.languageCode);
     }
     setState(() {
@@ -442,4 +481,3 @@ class SettingsFormMonitorState extends State<SettingsFormMonitor> {
     widget.onLocaleChanged(locale.languageCode);
   }
 }
-

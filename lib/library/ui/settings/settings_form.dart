@@ -45,7 +45,6 @@ class SettingsFormState extends State<SettingsForm> {
 
   late StreamSubscription<SettingsModel> settingsSubscriptionFCM;
 
-
   int photoSize = 0;
   int currentThemeIndex = 0;
   int groupValue = 0;
@@ -93,12 +92,10 @@ class SettingsFormState extends State<SettingsForm> {
     }
     pp('$mm 🍎🍎 user is here, huh? 🌎 ${user!.name!}');
     _setExistingSettings();
-    final m1 =
-        await mTx.translate('maxVideoLessThan', settingsModel!.locale!);
+    final m1 = await mTx.translate('maxVideoLessThan', settingsModel!.locale!);
     maxVideoLessThan = m1.replaceAll('\$count', '120');
 
-    final m2 =
-        await mTx.translate('maxAudioLessThan', settingsModel!.locale!);
+    final m2 = await mTx.translate('maxAudioLessThan', settingsModel!.locale!);
     maxAudioLessThan = m2.replaceAll('\$count', '30');
     fieldMonitorInstruction =
         await mTx.translate('fieldMonitorInstruction', settingsModel!.locale!);
@@ -140,15 +137,11 @@ class SettingsFormState extends State<SettingsForm> {
 
     settingsSubscriptionFCM =
         fcmBloc.settingsStream.listen((SettingsModel event) async {
-          if (mounted) {
-            await _setTexts();
-          }
-        });
-
+      if (mounted) {
+        await _setTexts();
+      }
+    });
   }
-
-
-
 
   void onSelected(Project p1) {
     setState(() {
@@ -283,9 +276,6 @@ class SettingsFormState extends State<SettingsForm> {
               ? 'Settings have been saved'
               : settingsChanged!,
           context: context);
-
-      await Future.delayed(const Duration(milliseconds: 10));
-      //_checkLocaleChangeAndExit();
     }
   }
 
@@ -703,29 +693,20 @@ class SettingsFormState extends State<SettingsForm> {
   }
 
   String? translatedLanguage;
-  void _setLanguage() async {
-    if (settingsModel != null) {
-      translatedLanguage =
-          await mTx.translate(settingsModel!.locale!, settingsModel!.locale!);
-    }
-  }
 
   void _handleLocaleChange(Locale locale, String translatedLanguage) async {
     pp('$mm onLocaleChange ... going to ${locale.languageCode}');
-    mTx.translate('settings', locale.toLanguageTag());
-    var settings = await prefsOGx.getSettings();
-    if (settings != null) {
-      settings.locale = locale.languageCode;
-      await prefsOGx.saveSettings(settings);
-      organizationBloc.settingsController.sink.add(settings);
-      _getUser();
-      themeBloc.changeToLocale(locale.languageCode);
-    }
+    settingsModel!.locale = locale.languageCode;
+    await prefsOGx.saveSettings(settingsModel!);
+    await _setTexts();
+    themeBloc.changeToLocale(locale.languageCode);
+    organizationBloc.settingsController.sink.add(settingsModel!);
+
     setState(() {
       selectedLocale = locale;
       this.translatedLanguage = translatedLanguage;
     });
-    _setTexts();
+
     widget.onLocaleChanged(locale.languageCode);
   }
 }
@@ -867,7 +848,7 @@ class LocaleChooserState extends State<LocaleChooser> {
         '${locale.toString()}');
     settingsModel!.locale = locale!.languageCode;
     await prefsOGx.saveSettings(settingsModel!);
-    organizationBloc.settingsController.sink.add(settingsModel!);
+    // organizationBloc.settingsController.sink.add(settingsModel!);
     var language = 'English';
     switch (locale!.languageCode) {
       case 'eng':

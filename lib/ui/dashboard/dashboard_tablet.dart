@@ -200,14 +200,13 @@ class DashboardTabletState extends State<DashboardTablet>
 
   Future<void> _handleNewSettings(SettingsModel settings) async {
     Locale newLocale = Locale(settings.locale!);
-    await mTx.translate('settings', settings.locale!);
     final m =
         LocaleAndTheme(themeIndex: settings!.themeIndex!, locale: newLocale);
     themeBloc.themeStreamController.sink.add(m);
     settingsModel = settings;
     if (mounted) {
       await _setTexts();
-      _getData(false);
+      _getData(true);
     }
   }
 
@@ -501,33 +500,6 @@ class DashboardTabletState extends State<DashboardTablet>
     });
   }
 
-  void _displayProjectPosition(ProjectPosition pos) async {
-    pp('$mm _displayProjectPosition ...');
-    projectPosition = pos;
-    _resetFlags();
-    setState(() {
-      _showProjectPosition = true;
-    });
-  }
-
-  void _displayProjectPolygon(ProjectPolygon pol) async {
-    pp('$mm _displayProjectPolygon ...');
-    projectPolygon = pol;
-    _resetFlags();
-    setState(() {
-      _showProjectPolygon = true;
-    });
-  }
-
-  void _displayLocationRequest(LocationRequest req) async {
-    pp('$mm _displayLocationRequest ...');
-    request = req;
-    _resetFlags();
-    setState(() {
-      _showALocationRequest = true;
-    });
-  }
-
   void _navigateToLocationResponseMap(LocationResponse resp) async {
     Navigator.push(
         context,
@@ -550,31 +522,6 @@ class DashboardTabletState extends State<DashboardTablet>
             child: GeofenceMapTablet(
               geofenceEvent: event!,
             )));
-  }
-
-  void _displayUser(User user) async {
-    pp('$mm _displayUser ...');
-    someUser = user;
-    _resetFlags();
-    setState(() {
-      _showALocationRequest = true;
-    });
-  }
-
-  void _navigateToPhotoMap() {
-    pp('$mm _navigateToPhotoMap ...');
-
-    if (mounted) {
-      Navigator.push(
-          context,
-          PageTransition(
-              type: PageTransitionType.scale,
-              alignment: Alignment.topLeft,
-              duration: const Duration(milliseconds: 1000),
-              child: PhotoMap(
-                photo: photo!,
-              )));
-    }
   }
 
   @override
@@ -657,9 +604,10 @@ class DashboardTabletState extends State<DashboardTablet>
                   : UserProfileCard(
                       userName: user!.name!,
                       userThumbUrl: user!.thumbnailUrl!,
-                      avatarRadius: 28,
-                      elevation: 4, width: 400,
-                      padding: 16,
+                      avatarRadius: 24,
+                      elevation: 2,
+                      width: 400,
+                      padding: 12,
                       textStyle: myTextStyleMediumPrimaryColor(context)),
               const SizedBox(
                 height: 8,
@@ -671,7 +619,10 @@ class DashboardTabletState extends State<DashboardTablet>
                   padding: const EdgeInsets.only(left: 28.0),
                   child: Row(
                     children: [
-                      Text(prefix == null ? '' : prefix!, style: myTextStyleSmall(context),),
+                      Text(
+                        prefix == null ? '' : prefix!,
+                        style: myTextStyleSmall(context),
+                      ),
                       const SizedBox(
                         width: 8,
                       ),
@@ -682,7 +633,10 @@ class DashboardTabletState extends State<DashboardTablet>
                       const SizedBox(
                         width: 8,
                       ),
-                      Text(suffix == null ? '' : suffix!, style: myTextStyleSmall(context),),
+                      Text(
+                        suffix == null ? '' : suffix!,
+                        style: myTextStyleSmall(context),
+                      ),
                     ],
                   )),
             ],

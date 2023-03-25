@@ -28,7 +28,6 @@
   "male": "Murume",
   "projectEditor": "Project Editor",
   "startDate": "Zuva Rokutanga",
-  "memberCreateFailed": "Kugadzira Nhengo kwakundikana",
   "internetConnectionNotAvailable": "Kubatana kweInternet hakusipo",
   "locationNotAvailable": "Nzvimbo Yemudziyo haisi kuwanikwa",
   "numberOfDays": "Nhamba Yemazuva",
@@ -256,7 +255,12 @@
   "maxAudioLessThan": "Hurefu hwe clip yeaudio hunofanirwa kunge huri pasi pe$count maminetsi",
   "maxVideoLessThan": "Hurefu hwevhidhiyo hunofanirwa kunge huri pasi pe$count seconds",
   "initializing": "Kutanga mudziyo wako dhatabhesi uye zvimwe zviwanikwa. Ndokumbira umire kwemasekondi mashoma.",
-  "af": "Afrikaans"
+  "af": "Afrikaans",
+  "memberCreated": "Nhengo yakagadzirwa",
+  "pleaseSelectGender": "Ndapota sarudza nhengo yenhengo",
+  "memberUpdateFailed": "Kuvandudzwa kwenhengo kwakundikana",
+  "pleaseSelectType": "Ndapota sarudza Nhengo yerudzi",
+  "memberCreateFailed": "Kugadzira nhengo kwatadza"
 
 
 }

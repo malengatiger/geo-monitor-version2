@@ -144,11 +144,10 @@ class DashboardPortraitState extends State<DashboardPortrait>
         LocaleAndTheme(themeIndex: settings!.themeIndex!, locale: newLocale);
     themeBloc.themeStreamController.sink.add(m);
     this.settings = settings;
-    _getData(true);
+    _getData(false);
     if (mounted) {
       setState(() {});
     }
-    _getData(false);
   }
 
   void _getAuthenticationStatus() async {
@@ -653,8 +652,8 @@ class DashboardPortraitState extends State<DashboardPortrait>
                       : UserProfileCard(
                           userName: deviceUser!.name!,
                           userThumbUrl: deviceUser!.thumbnailUrl!,
-                          avatarRadius: 28, elevation: 4,
-                          padding: 16,
+                          avatarRadius: 20, elevation: 0,
+                          padding: 8,
                           textStyle: myTextStyleMediumPrimaryColor(context)),
                   const SizedBox(
                     height: 0,
@@ -714,6 +713,8 @@ class DashboardPortraitState extends State<DashboardPortrait>
                         elementPadding: 48,
                         leftPadding: 12,
                         crossAxisCount: 2,
+                        crossAxisSpacing: 2,
+                        mainAxisSpacing: 2,
                         dataBag: dataBag!,
                         onTypeTapped: (type) {
                           switch (type) {

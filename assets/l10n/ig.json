@@ -100,7 +100,6 @@
   "memberDashboard": "Dashboard otu",
   "projectEditor": "Onye nchịkọta akụkọ",
   "startDate": "Ụbọchị mmalite",
-  "memberCreateFailed": "Mepụta onye otu agaghị",
   "small": "Obere",
   "selectLanguage": "Họrọ Asụsụ",
   "maxAudioLength": "Biko tinye ogologo odiyo kacha n\u0027ime nkeji",
@@ -264,6 +263,11 @@
   "maxAudioLessThan": "Ogologo obere mkpachị ọdịyo kwesịrị ịbụ ihe na-erughị nkeji $count",
   "maxVideoLessThan": "Ogologo vidiyo kachasị kwesịrị ịbụ ihe na-erughị $count sekọnd",
   "initializing": "Ịmalite nchekwa data ngwaọrụ gị na akụrụngwa ndị ọzọ. Biko chere maka sekọnd ole na ole.",
-  "af": "Afrika"
+  "af": "Afrika",
+  "memberCreated": "Onye otu emepụtara",
+  "pleaseSelectGender": "Biko họrọ okike onye otu",
+  "memberUpdateFailed": "Mmelite otu onye dara",
+  "pleaseSelectType": "Biko họrọ ụdị onye otu",
+  "memberCreateFailed": "Ịmepụta ndị otu ada ada"
 
 }

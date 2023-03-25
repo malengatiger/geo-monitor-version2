@@ -95,7 +95,6 @@
   "memberDashboard": "Dashboard ya Xirho",
   "projectEditor": "Muhleri wa Phurojeke",
   "startDate": "Siku ro Sungula",
-  "memberCreateFailed": "Member Create yi tsandzekile",
   "small": "Xitsongo",
   "selectLanguage": "Hlawula Ririmi",
   "maxAudioLength": "Hi kombela u nghenisa ku leha lokukulu ka mpfumawulo hi timinete",
@@ -256,5 +255,10 @@
   "maxAudioLessThan": "Ku leha lokukulu ka xiphemu xa mpfumawulo ku fanele ku va ehansi ka $count minutes",
   "maxVideoLessThan": "Ku leha lokukulu ka vhidiyo ku fanele ku va ehansi ka $count seconds",
   "initializing": "Ku sungula database ya xitirhisiwa xa wena na switirhisiwa swin’wana. Hi kombela mi rindza tisekoni ti nga ri tingani.",
-  "af": "Afrikaans"
+  "af": "Afrikaans",
+  "memberCreated": "Xirho xi tumbuluxiwile",
+  "pleaseSelectGender": "Hi kombela u hlawula rimbewu ra Xirho",
+  "memberUpdateFailed": "Ku pfuxetiwa ka xirho ku tsandzekile",
+  "pleaseSelectType": "Hi kombela u hlawula muxaka wa Xirho",
+  "memberCreateFailed": "Ku tumbuluxiwa ka swirho ku tsandzekile"
 }

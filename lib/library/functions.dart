@@ -680,6 +680,7 @@ Future<File> getImageFileFromAssets(String path) async {
 }
 
 Future<String> getStringFromAssets(String path) async {
+  pp('getStringFromAssets: locale: $path');
   final stringData = await rootBundle.loadString('assets/l10n/$path.json');
   return stringData;
 }
@@ -766,6 +767,7 @@ Future<Map<String, String>> getStartEndDates() async {
       .subtract(Duration(days: numberOfDays))
       .toUtc()
       .toIso8601String();
+
   var endDate = DateTime.now().toUtc().toIso8601String();
   var map = <String, String>{};
   map['startDate'] = startDate;

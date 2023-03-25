@@ -94,7 +94,6 @@
   "memberDashboard": "Setho sa Dashboard",
   "projectEditor": "Mohlophisi oa morero",
   "startDate": "Letsatsi la qalo",
-  "memberCreateFailed": "Member Create hlolehile",
   "small": "Nyenyane",
   "selectLanguage": "Kgetha Puo",
   "maxAudioLength": "Ka kopo, kenya bolelele ba molumo ka metsotso",
@@ -256,7 +255,12 @@
   "maxAudioLessThan": "Bolelele ba sekotwana sa molumo bo lokela ho ba ka tlase ho $count metsotso",
   "maxVideoLessThan": "Bolelele ba video bo lokela ho ba tlase ho $count metsotsoana",
   "initializing": "Ho qala database ea sesebelisoa sa hau le lisebelisoa tse ling. Ke kopa o eme metsotsoana e seng mekae.",
-  "af": "Afrikaans"
+  "af": "Afrikaans",
+  "memberCreated": "Setho se entsoe",
+  "pleaseSelectGender": "Ke kopa o khethe bong ba Setho",
+  "memberUpdateFailed": "Kaonefatso ea setho e hlotsoe",
+  "pleaseSelectType": "Ka kopo, khetha mofuta oa Setho",
+  "memberCreateFailed": "Ho hloleha ho theha setho"
 
 
 
