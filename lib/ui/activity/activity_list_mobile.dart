@@ -68,7 +68,7 @@ class ActivityListMobileState extends State<ActivityListMobile>
   final ScrollController listScrollController = ScrollController();
   SettingsModel? settings;
   var models = <ActivityModel>[];
-  late AnimationController _animationController;
+  // late AnimationController _animationController;
   late StreamSubscription<ActivityModel> subscription;
   late StreamSubscription<SettingsModel> settingsSubscriptionFCM;
   late StreamSubscription<GeofenceEvent> geofenceSubscriptionFCM;
@@ -77,15 +77,12 @@ class ActivityListMobileState extends State<ActivityListMobile>
   late int activeType;
   User? user;
   bool busy = true;
-  String? prefix, suffix, name, title, loadingActivities;
+  String? prefix, suffix, name, noActivities, title, loadingActivities;
   final mm = '😎😎😎😎😎😎 ActivityListMobile: ';
 
   @override
   void initState() {
-    _animationController = AnimationController(
-        duration: const Duration(milliseconds: 2000),
-        reverseDuration: const Duration(milliseconds: 1000),
-        vsync: this);
+
     super.initState();
     _setTexts();
     _getData(true);
@@ -131,17 +128,11 @@ class ActivityListMobileState extends State<ActivityListMobile>
 
   Future _getData(bool forceRefresh) async {
     pp('$mm ... getting activity data ... forceRefresh: $forceRefresh');
-    if (models.isNotEmpty) {
-      _animationController.reverse().then((value) {
-        setState(() {
-          busy = true;
-        });
-      });
-    } else {
+
       setState(() {
         busy = true;
       });
-    }
+
     pp('$mm ... getting activity data ... forceRefresh: $forceRefresh');
     try {
       settings = await prefsOGx.getSettings();
@@ -161,17 +152,17 @@ class ActivityListMobileState extends State<ActivityListMobile>
         await _getOrganizationData(forceRefresh, hours);
       }
       _sortDescending();
-      _animationController.reset();
-      _animationController.forward();
     } catch (e) {
       pp(e);
       if (mounted) {
         showToast(message: '$e', context: context);
       }
     }
-    setState(() {
-      busy = false;
-    });
+    if (mounted) {
+      setState(() {
+        busy = false;
+      });
+    }
   }
 
   Future _getOrganizationData(bool forceRefresh, int hours) async {
@@ -207,7 +198,7 @@ class ActivityListMobileState extends State<ActivityListMobile>
         fcmBloc.settingsStream.listen((SettingsModel event) async {
       if (mounted) {
         await _setTexts();
-        _getData(false);
+        _getData(true);
       }
     });
 
@@ -333,8 +324,8 @@ class ActivityListMobileState extends State<ActivityListMobile>
               elevation: 4,
               child: Padding(
                 padding: const EdgeInsets.all(20.0),
-                child: Text(
-                  'No activities happening yet\n\nTap to Refresh',
+                child: Text(activityStrings == null?
+                  'No activities happening yet\n\nTap to Refresh':activityStrings!.noActivities!,
                   style: myTextStyleMediumPrimaryColor(context),
                 ),
               ),

@@ -180,7 +180,7 @@
   "noVideosInProject": "Geen video\u0027s in projek gevind nie",
   "messageReceived": "Boodskap ontvang",
   "noPhotosInProject": "Geen foto\u0027s in projek gevind nie",
-  "location": "Ligging $telling",
+  "location": "Ligging $count",
   "geoForOrg": "Geo vir organisasies",
   "geoForManagers": "Geo vir Bestuurders en Koördineerders",
   "howToStart": "Hoe om te begin",

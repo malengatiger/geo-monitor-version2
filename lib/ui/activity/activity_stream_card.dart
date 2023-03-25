@@ -299,19 +299,22 @@ class ActivityStrings {
       projectLocationAdded,
       projectAreaAdded,
       at,
+      loadingActivities,
       memberLocationResponse,
       conditionAdded,
-      arrivedAt,
+      arrivedAt, noActivities,
       memberAtProject,
       memberAddedChanged,
-      requestMemberLocation,
+      requestMemberLocation, tapToRefresh,
       settingsChanged;
 
   ActivityStrings(
       {required this.projectAdded,
       required this.projectLocationAdded,
       required this.projectAreaAdded,
-      required this.at,
+      required this.at, required this.loadingActivities,
+        required this.noActivities,
+        required this.tapToRefresh,
       required this.memberLocationResponse,
       required this.conditionAdded,
       required this.arrivedAt,
@@ -343,12 +346,23 @@ class ActivityStrings {
           await mTx.translate('memberLocationResponse', sett!.locale!);
       final requestMemberLocation =
           await mTx.translate('requestMemberLocation', sett!.locale!);
+      final noActivities =
+      await mTx.translate('noActivities', sett!.locale!);
+
+      final loadingActivities =
+      await mTx.translate('loadingActivities', sett!.locale!);
+
+      final tapToRefresh =
+      await mTx.translate('tapToRefresh', sett!.locale!);
 
       var activityStrings = ActivityStrings(
+          tapToRefresh: tapToRefresh,
           projectAdded: projectAdded,
           projectLocationAdded: projectLocationAdded,
           projectAreaAdded: projectAreaAdded,
           at: at,
+          loadingActivities: loadingActivities,
+          noActivities: noActivities,
           memberLocationResponse: memberLocationResponse,
           conditionAdded: conditionAdded,
           arrivedAt: arrivedAt,

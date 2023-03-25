@@ -83,9 +83,10 @@ class ProjectMapMobileState extends State<ProjectMapMobile>
   void _setTexts() async {
     var settings = await prefsOGx.getSettings();
     if (settings != null) {
-      title = await mTx.translate('projectLocationsMap', settings!.locale!);
-      locations = await mTx.translate('locations', settings!.locale!);
-      location = await mTx.translate('location', settings!.locale!);
+      title = await mTx.translate('projectLocationsMap', settings.locale!);
+      locations = await mTx.translate('locations', settings.locale!);
+      var m = await mTx.translate('location', settings.locale!);
+      location = m.replaceAll('\$count', '');
     }
   }
   void _listen() async {
@@ -231,8 +232,8 @@ class ProjectMapMobileState extends State<ProjectMapMobile>
         ),
         infoWindow: InfoWindow(
             title: projectPosition.projectName,
-            snippet:
-                'Project Location #$cnt of ${projectPositions.length} Here'),
+            snippet: location == null?
+                'Project Location': '${location!} $cnt'),
         onTap: () {
           _onMarkerTapped(projectPosition);
         },

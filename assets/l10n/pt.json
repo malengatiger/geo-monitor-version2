@@ -178,7 +178,7 @@
   "noVideosInProject": "Nenhum vídeo encontrado no projeto",
   "messageReceived": "Mensagem recebida",
   "noPhotosInProject": "Nenhuma foto encontrada no projeto",
-  "location": "Localização $ contagem",
+  "location": "Localização $count",
   "geoForOrg": "Geo para Organizações",
   "geoForManagers": "Geo para Gerentes e Coordenadores",
   "howToStart": "Como começar",

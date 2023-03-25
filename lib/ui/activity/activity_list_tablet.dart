@@ -43,12 +43,11 @@ class ActivityListTablet extends StatefulWidget {
       this.user,
       this.project,
       required this.onLocationResponse,
-      required this.onLocationRequest,
-      required this.settings})
+      required this.onLocationRequest,})
       : super(key: key);
   final double width;
   final bool thinMode;
-  final SettingsModel settings;
+  // final SettingsModel settings;
   final Function(Photo) onPhotoTapped;
   final Function(Video) onVideoTapped;
   final Function(Audio) onAudioTapped;
@@ -71,7 +70,7 @@ class ActivityListTablet extends StatefulWidget {
 class _ActivityListTabletState extends State<ActivityListTablet>
     with SingleTickerProviderStateMixin {
   final ScrollController listScrollController = ScrollController();
-  late AnimationController _animationController;
+  // late AnimationController _animationController;
 
   var models = <ActivityModel>[];
 
@@ -87,12 +86,8 @@ class _ActivityListTabletState extends State<ActivityListTablet>
   @override
   void initState() {
     pp('$mm ... initState');
-    _animationController = AnimationController(
-        duration: const Duration(milliseconds: 3000),
-        reverseDuration: const Duration(milliseconds: 2000),
-        vsync: this);
-    super.initState();
 
+    super.initState();
     _setTexts();
     _getData(true);
     _listenToStreams();
@@ -102,40 +97,28 @@ class _ActivityListTabletState extends State<ActivityListTablet>
   Future _setTexts() async {
     sett = await prefsOGx.getSettings();
     if (sett != null) {
-      final projectAdded = await mTx.translate('projectAdded', sett!.locale!);
-      final projectLocationAdded =
-          await mTx.translate('projectLocationAdded', sett!.locale!);
-      final projectAreaAdded =
-          await mTx.translate('projectAreaAdded', sett!.locale!);
-      final memberAtProject =
-          await mTx.translate('memberAtProject', sett!.locale!);
-      final settingsChanged =
-          await mTx.translate('settingsChanged', sett!.locale!);
-      final memberAddedChanged =
-          await mTx.translate('memberAddedChanged', sett!.locale!);
-      final at = await mTx.translate('at', sett!.locale!);
-      final arr = await mTx.translate('memberArrived', sett!.locale!);
-      final arrivedAt = arr.replaceAll('\$project', '');
-      final conditionAdded =
-          await mTx.translate('conditionAdded', sett!.locale!);
-      final memberLocationResponse =
-          await mTx.translate('memberLocationResponse', sett!.locale!);
-      final requestMemberLocation =
-          await mTx.translate('requestMemberLocation', sett!.locale!);
-
-      activityStrings = ActivityStrings(
-          projectAdded: projectAdded,
-          projectLocationAdded: projectLocationAdded,
-          projectAreaAdded: projectAreaAdded,
-          at: at,
-          memberLocationResponse: memberLocationResponse,
-          conditionAdded: conditionAdded,
-          arrivedAt: arrivedAt,
-          memberAtProject: memberAtProject,
-          memberAddedChanged: memberAddedChanged,
-          requestMemberLocation: requestMemberLocation,
-          settingsChanged: settingsChanged);
-
+      // final projectAdded = await mTx.translate('projectAdded', sett!.locale!);
+      // final projectLocationAdded =
+      //     await mTx.translate('projectLocationAdded', sett!.locale!);
+      // final projectAreaAdded =
+      //     await mTx.translate('projectAreaAdded', sett!.locale!);
+      // final memberAtProject =
+      //     await mTx.translate('memberAtProject', sett!.locale!);
+      // final settingsChanged =
+      //     await mTx.translate('settingsChanged', sett!.locale!);
+      // final memberAddedChanged =
+      //     await mTx.translate('memberAddedChanged', sett!.locale!);
+      // final at = await mTx.translate('at', sett!.locale!);
+      // final arr = await mTx.translate('memberArrived', sett!.locale!);
+      // final arrivedAt = arr.replaceAll('\$project', '');
+      // final conditionAdded =
+      //     await mTx.translate('conditionAdded', sett!.locale!);
+      // final memberLocationResponse =
+      //     await mTx.translate('memberLocationResponse', sett!.locale!);
+      // final requestMemberLocation =
+      //     await mTx.translate('requestMemberLocation', sett!.locale!);
+      //
+      activityStrings = await ActivityStrings.getTranslated();
       setState(() {});
     }
   }
@@ -150,40 +133,27 @@ class _ActivityListTabletState extends State<ActivityListTablet>
   }
 
   String? title;
-  String? prefix, suffix, loadingActivities, noActivities, tapToRefresh;
+  String? prefix, suffix;
 
   void _getData(bool forceRefresh) async {
     pp('$mm ... getting activity data ... forceRefresh: $forceRefresh');
-    loadingActivities =
-        await mTx.translate('loadingActivities', widget.settings.locale!);
-    noActivities = await mTx.translate('noActivities', widget.settings.locale!);
-    tapToRefresh = await mTx.translate('tapToRefresh', widget.settings.locale!);
-    if (models.isNotEmpty) {
-      _animationController.reverse().then((value) {
-        setState(() {
-          busy = true;
-        });
-      });
-    } else {
+
       setState(() {
         busy = true;
       });
-    }
+
     pp('$mm ... getting activity data ... forceRefresh: $forceRefresh');
     try {
       me = await prefsOGx.getUser();
       var hours = 12;
-      hours = widget.settings.activityStreamHours!;
-      var sub = await mTx.translate('activityTitle', widget.settings.locale!);
+      hours = sett!.activityStreamHours!;
+      var sub = await mTx.translate('activityTitle', sett!.locale!);
       int index = sub.indexOf('\$');
       prefix = sub.substring(0, index);
       suffix = sub.substring(index + 6);
       pp('$mm prefix: $prefix suffix: $suffix');
-
-      loadingActivities =
-          await mTx.translate('loadingActivities', widget.settings.locale!);
-
       pp('$mm ... get Activity (n hours) ... : $hours');
+
       if (widget.project != null) {
         pp('$mm ... widget.project != null, should get project data');
         await _getProjectData(forceRefresh, hours);
@@ -195,8 +165,6 @@ class _ActivityListTabletState extends State<ActivityListTablet>
         await _getOrganizationActivity(forceRefresh, hours);
       }
       _sortDescending();
-      _animationController.reset();
-      _animationController.forward();
     } catch (e) {
       pp(e);
       if (mounted) {
@@ -209,9 +177,11 @@ class _ActivityListTabletState extends State<ActivityListTablet>
             context: context);
       }
     }
-    setState(() {
-      busy = false;
-    });
+    if (mounted) {
+      setState(() {
+        busy = false;
+      });
+    }
   }
 
   Future _getOrganizationActivity(bool forceRefresh, int hours) async {
@@ -245,11 +215,8 @@ class _ActivityListTabletState extends State<ActivityListTablet>
 
     settingsSubscriptionFCM =
         fcmBloc.settingsStream.listen((SettingsModel event) async {
-      _getData(false);
-      if (mounted) {
-        pp('$mm settingsSubscriptionFCM: have refreshed!!!!!!!!!!!!!!');
-        setState(() {});
-      }
+      await _setTexts();
+      _getData(true);
     });
     settingsSubscription =
         organizationBloc.settingsStream.listen((SettingsModel event) async {
@@ -352,9 +319,9 @@ class _ActivityListTabletState extends State<ActivityListTablet>
                     height: 20,
                   ),
                   Text(
-                    loadingActivities == null
+                    activityStrings == null
                         ? 'Loading activities'
-                        : loadingActivities!,
+                        : activityStrings!.loadingActivities!,
                     style: myTextStyleSmall(context),
                   ),
                 ],
@@ -384,16 +351,16 @@ class _ActivityListTabletState extends State<ActivityListTablet>
                         height: 32,
                       ),
                       Text(
-                        noActivities == null
+                        activityStrings == null
                             ? 'No activities happening yet'
-                            : noActivities!,
+                            : activityStrings!.noActivities!,
                         style: myTextStyleSmall(context),
                       ),
                       const SizedBox(
                         height: 16,
                       ),
                       Text(
-                        tapToRefresh == null ? 'Tap to refresh' : tapToRefresh!,
+                        activityStrings == null ? 'Tap to refresh' : activityStrings!.tapToRefresh!,
                         style: myTextStyleSmallBold(context),
                       ),
                     ],
@@ -427,7 +394,7 @@ class _ActivityListTabletState extends State<ActivityListTablet>
                                   onRefreshRequested: () {
                                     _getData(true);
                                   },
-                                  hours: widget.settings.activityStreamHours!,
+                                  hours: sett!.activityStreamHours!,
                                   number: models.length,
                                 ),
                         ),
@@ -483,7 +450,7 @@ class _ActivityListTabletState extends State<ActivityListTablet>
                                   onRefreshRequested: () {
                                     _getData(true);
                                   },
-                                  hours: widget.settings.activityStreamHours!,
+                                  hours: sett!.activityStreamHours!,
                                   number: models.length,
                                 ),
                         ),

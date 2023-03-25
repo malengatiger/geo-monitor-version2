@@ -216,7 +216,6 @@ class GeoActivityState extends State<GeoActivity>
                       return settings == null
                           ? const SizedBox()
                           : ActivityListTablet(
-                              settings: settings!,
                               user: widget.user,
                               project: widget.project,
                               width: widget.width,
@@ -256,7 +255,6 @@ class GeoActivityState extends State<GeoActivity>
                       return settings == null
                           ? const SizedBox()
                           : ActivityListTablet(
-                              settings: settings!,
                               width: widget.width,
                               user: widget.user,
                               thinMode: widget.thinMode,

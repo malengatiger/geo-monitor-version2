@@ -1,9 +1,12 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:geo_monitor/library/ui/settings/settings_form.dart';
 import 'package:geo_monitor/library/ui/settings/settings_form_monitor.dart';
 
 import '../../../l10n/translation_handler.dart';
 import '../../api/prefs_og.dart';
+import '../../bloc/fcm_bloc.dart';
 import '../../cache_manager.dart';
 import '../../data/project.dart';
 import '../../data/settings_model.dart';
@@ -28,6 +31,9 @@ class SettingsMobileState extends State<SettingsMobile>
   var audioController = TextEditingController(text: '60');
   var activityController = TextEditingController(text: '24');
 
+  late StreamSubscription<SettingsModel> settingsSubscriptionFCM;
+
+
   var orgSettings = <SettingsModel>[];
 
   int photoSize = 0;
@@ -43,6 +49,7 @@ class SettingsMobileState extends State<SettingsMobile>
     _animationController = AnimationController(vsync: this);
     super.initState();
     _setTexts();
+    _listenToFCM();
     _getOrganizationSettings();
   }
 
@@ -53,7 +60,7 @@ class SettingsMobileState extends State<SettingsMobile>
     _setTexts();
   }
 
-  void _setTexts() async {
+  Future _setTexts() async {
     settingsModel = await prefsOGx.getSettings();
     if (settingsModel != null) {
       title = await mTx.translate('settings', settingsModel!.locale!);
@@ -64,6 +71,18 @@ class SettingsMobileState extends State<SettingsMobile>
     }
     setState(() {});
   }
+
+  void _listenToFCM() async {
+
+    settingsSubscriptionFCM =
+        fcmBloc.settingsStream.listen((SettingsModel event) async {
+          if (mounted) {
+            await _setTexts();
+          }
+        });
+
+  }
+
 
   void _getOrganizationSettings() async {
     pp('🍎🍎 ............. getting user from prefs ...');
@@ -90,6 +109,7 @@ class SettingsMobileState extends State<SettingsMobile>
   @override
   void dispose() {
     _animationController.dispose();
+    settingsSubscriptionFCM.cancel();
     super.dispose();
   }
 

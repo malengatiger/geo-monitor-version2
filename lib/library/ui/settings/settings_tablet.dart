@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:geo_monitor/library/api/prefs_og.dart';
 import 'package:geo_monitor/library/data/audio.dart';
@@ -9,7 +11,9 @@ import 'package:page_transition/page_transition.dart';
 import 'package:responsive_builder/responsive_builder.dart';
 
 import '../../../l10n/translation_handler.dart';
+import '../../bloc/fcm_bloc.dart';
 import '../../data/location_response.dart';
+import '../../data/settings_model.dart';
 import '../../functions.dart';
 import '../maps/location_response_map.dart';
 
@@ -23,15 +27,17 @@ class SettingsTablet extends StatefulWidget {
 class SettingsTabletState extends State<SettingsTablet>
     with SingleTickerProviderStateMixin {
   late AnimationController _controller;
+  late StreamSubscription<SettingsModel> settingsSubscriptionFCM;
 
   @override
   void initState() {
     _controller = AnimationController(vsync: this);
     super.initState();
-    _getTitles();
+    _setTexts();
+    _listenToFCM();
   }
   String? title;
-  void _getTitles() async {
+  Future _setTexts() async {
     var sett = await prefsOGx.getSettings();
     title = await mTx.translate('settings', sett!.locale!);
     setState(() {
@@ -39,9 +45,23 @@ class SettingsTabletState extends State<SettingsTablet>
     });
   }
 
+  void _listenToFCM() async {
+
+    settingsSubscriptionFCM =
+        fcmBloc.settingsStream.listen((SettingsModel event) async {
+          if (mounted) {
+            await _setTexts();
+          }
+        });
+
+  }
+
+
+
   @override
   void dispose() {
     _controller.dispose();
+    settingsSubscriptionFCM.cancel();
     super.dispose();
   }
 
@@ -152,6 +172,6 @@ class SettingsTabletState extends State<SettingsTablet>
 
   void _handleOnLocaleChanged(String locale) {
     pp('SettingsForm 😎😎😎😎 _handleOnLocaleChanged: $locale');
-    _getTitles();
+    _setTexts();
   }
 }

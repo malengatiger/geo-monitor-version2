@@ -358,37 +358,39 @@ class _ProjectDashboardGridState extends State<ProjectDashboardGrid>
               onTap: () {
                 _getData(true);
               },
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  const SizedBox(
-                    width: 28,
-                  ),
-                  Text(
-                    'Refresh the project dashboard data',
-                    style: myTextStyleSmall(context),
-                  ),
-                  const SizedBox(
-                    width: 4,
-                  ),
-                  const Icon(
-                    Icons.refresh,
-                    size: 12,
-                  ),
-                  const SizedBox(
-                    width: 48,
-                  ),
-                  busy
-                      ? const SizedBox(
-                          width: 18,
-                          height: 18,
-                          child: CircularProgressIndicator(
-                            strokeWidth: 4,
-                            backgroundColor: Colors.pink,
-                          ),
-                        )
-                      : const SizedBox(),
-                ],
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    const SizedBox(
+                      width: 28,
+                    ),
+                    Text(widget.dashboardStrings.refreshProjectDashboardData,
+                      style: myTextStyleSmall(context),
+                    ),
+                    const SizedBox(
+                      width: 4,
+                    ),
+                    const Icon(
+                      Icons.refresh,
+                      size: 12,
+                    ),
+                    const SizedBox(
+                      width: 4,
+                    ),
+                    busy
+                        ? const SizedBox(
+                            width: 16,
+                            height: 16,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 4,
+                              backgroundColor: Colors.pink,
+                            ),
+                          )
+                        : const SizedBox(),
+                  ],
+                ),
               ),
             ),
             SizedBox(

@@ -156,19 +156,6 @@ class ProjectDashboardMobileState extends State<ProjectDashboardMobile>
     });
   }
 
-  // Future _extractData(DataBag bag) async {
-  //   pp('$mm ............ Extracting org data from bag');
-  //   _projectPositions = bag.projectPositions!;
-  //   _projectPolygons = bag.projectPolygons!;
-  //   _photos = bag.photos!;
-  //   _videos = bag.videos!;
-  //   _schedules = bag.fieldMonitorSchedules!;
-  //   _audios = bag.audios!;
-  //
-  //   pp('$mm ..... setting state after extracting org data from bag');
-  //   setState(() {});
-  // }
-
   void _listenForFCM() async {
     var android = UniversalPlatform.isAndroid;
     var ios = UniversalPlatform.isIOS;
@@ -276,7 +263,7 @@ class ProjectDashboardMobileState extends State<ProjectDashboardMobile>
       child: Scaffold(
         appBar: AppBar(
           title:  Text(title == null?
-            'Project Dashboard': title!,
+            'Project Dashboard': title!, style: myTextStyleMedium(context),
           ),
           actions: [
             IconButton(
@@ -312,9 +299,7 @@ class ProjectDashboardMobileState extends State<ProjectDashboardMobile>
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      const SizedBox(
-                        width: 20,
-                      ),
+
                       Flexible(
                         child: Text(
                           widget.project.name!,
@@ -351,7 +336,7 @@ class ProjectDashboardMobileState extends State<ProjectDashboardMobile>
                   dashboardStrings == null? const SizedBox():ProjectDashboardGrid(onTypeTapped: onTypeTapped,
                       dashboardStrings: dashboardStrings!,
                       project: widget.project,
-                      showProjectName: true,
+                      showProjectName: false,
                       crossAxisCount: 2)
                 ],
               ),
@@ -410,6 +395,7 @@ class DashboardStrings {
       areas,
       locations,
       schedules,
+      refreshProjectDashboardData,
       audioClips;
 
   DashboardStrings(
@@ -418,6 +404,7 @@ class DashboardStrings {
       required this.photos,
       required this.videos,
       required this.areas,
+        required this.refreshProjectDashboardData,
       required this.locations,
       required this.schedules,
       required this.audioClips});
@@ -432,6 +419,7 @@ class DashboardStrings {
     var areas = await mTx.translate('areas', sett.locale!);
     var schedules = await mTx.translate('schedules', sett.locale!);
     var videos = await mTx.translate('videos', sett.locale!);
+    var refreshProjectDashboardData = await mTx.translate('refreshProjectDashboardData', sett.locale!);
 
     var m = DashboardStrings(
         projects: projects,
@@ -439,6 +427,7 @@ class DashboardStrings {
         photos: photos,
         videos: videos,
         areas: areas,
+        refreshProjectDashboardData: refreshProjectDashboardData,
         locations: locations,
         schedules: schedules,
         audioClips: audioClips);

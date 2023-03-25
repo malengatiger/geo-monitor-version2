@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flex_color_scheme/flex_color_scheme.dart';
 import 'package:flutter/material.dart';
 import 'package:geo_monitor/library/bloc/data_refresher.dart';
@@ -8,6 +10,7 @@ import 'package:uuid/uuid.dart';
 import '../../../l10n/translation_handler.dart';
 import '../../api/data_api.dart';
 import '../../api/prefs_og.dart';
+import '../../bloc/fcm_bloc.dart';
 import '../../bloc/theme_bloc.dart';
 import '../../cache_manager.dart';
 import '../../data/project.dart';
@@ -40,6 +43,9 @@ class SettingsFormState extends State<SettingsForm> {
   var activityController = TextEditingController(text: '24');
   var daysController = TextEditingController(text: '14');
 
+  late StreamSubscription<SettingsModel> settingsSubscriptionFCM;
+
+
   int photoSize = 0;
   int currentThemeIndex = 0;
   int groupValue = 0;
@@ -51,20 +57,14 @@ class SettingsFormState extends State<SettingsForm> {
   @override
   void initState() {
     super.initState();
-    _getSettings();
+    _setTexts();
+    _listenToFCM();
+    _getUser();
   }
 
-  void _getSettings() async {
+  void _getUser() async {
     pp('$mm 🍎🍎 ............. getting user from prefs ...');
     user = await prefsOGx.getUser();
-    settingsModel = await prefsOGx.getSettings();
-    oldSettingsModel = await prefsOGx.getSettings();
-    if (settingsModel != null) {
-      currentLocale = settingsModel!.locale!;
-    }
-    pp('$mm 🍎🍎 user is here, huh? 🌎 ${user!.name!}');
-    _setExistingSettings();
-    _setTexts();
   }
 
   String? fieldMonitorInstruction,
@@ -85,7 +85,14 @@ class SettingsFormState extends State<SettingsForm> {
       selectLanguage,
       hint;
 
-  void _setTexts() async {
+  Future _setTexts() async {
+    settingsModel = await prefsOGx.getSettings();
+    oldSettingsModel = await prefsOGx.getSettings();
+    if (settingsModel != null) {
+      currentLocale = settingsModel!.locale!;
+    }
+    pp('$mm 🍎🍎 user is here, huh? 🌎 ${user!.name!}');
+    _setExistingSettings();
     final m1 =
         await mTx.translate('maxVideoLessThan', settingsModel!.locale!);
     maxVideoLessThan = m1.replaceAll('\$count', '120');
@@ -128,58 +135,20 @@ class SettingsFormState extends State<SettingsForm> {
     setState(() {});
   }
 
-  // void _checkLocaleChangeAndExit() async {
-  //   pp('$mm if locale changed - display dialog with shutDown button');
-  //   var sett = await prefsOGx.getSettings();
-  //   String? message, stop;
-  //   if (sett != null) {
-  //     message = await mTx.translate('stopMessage', sett.locale!);
-  //     stop = await mTx.translate('stop', sett.locale!);
-  //     if (sett.locale == oldSettingsModel!.locale!) {
-  //       if (mounted) {
-  //         pp('Pooping out ... will not display dialog');
-  //         // Navigator.of(context).pop();
-  //       }
-  //     } else {
-  //       if (mounted) {
-  //         pp('$mm is mounted, so show dialog');
-  //         showDialog(
-  //           context: context,
-  //           barrierDismissible: false,
-  //           builder: (_) => Padding(
-  //             padding: const EdgeInsets.all(16.0),
-  //             child: Center(
-  //               child: SizedBox(
-  //                 width: 400,
-  //                 height: 400,
-  //                 child: Column(
-  //                   children: [
-  //                     Text(message == null
-  //                         ? 'If you have changed the language of the app please press stop'
-  //                             ' and then then restart the app to use the new language'
-  //                         : message!),
-  //                     const SizedBox(
-  //                       height: 64,
-  //                     ),
-  //                     ElevatedButton(
-  //                         onPressed: () {
-  //                           SystemChannels.platform
-  //                               .invokeMethod('SystemNavigator.pop');
-  //                         },
-  //                         child: Padding(
-  //                           padding: const EdgeInsets.all(8.0),
-  //                           child: Text(stop == null ? 'Stop' : stop!),
-  //                         )),
-  //                   ],
-  //                 ),
-  //               ),
-  //             ),
-  //           ),
-  //         );
-  //       }
-  //     }
-  //   }
-  // }
+  void _listenToFCM() async {
+    pp('$mm ... _listenToFCM settingsSubscriptionFCM ...');
+
+    settingsSubscriptionFCM =
+        fcmBloc.settingsStream.listen((SettingsModel event) async {
+          if (mounted) {
+            await _setTexts();
+          }
+        });
+
+  }
+
+
+
 
   void onSelected(Project p1) {
     setState(() {
@@ -749,7 +718,7 @@ class SettingsFormState extends State<SettingsForm> {
       settings.locale = locale.languageCode;
       await prefsOGx.saveSettings(settings);
       organizationBloc.settingsController.sink.add(settings);
-      _getSettings();
+      _getUser();
       themeBloc.changeToLocale(locale.languageCode);
     }
     setState(() {
