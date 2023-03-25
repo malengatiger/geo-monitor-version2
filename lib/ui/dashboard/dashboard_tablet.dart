@@ -247,11 +247,14 @@ class DashboardTabletState extends State<DashboardTablet>
       final startDate = map['startDate'];
       final endDate = map['endDate'];
 
+
+
       dataBag = await organizationBloc.getOrganizationData(
           organizationId: user!.organizationId!,
           forceRefresh: forceRefresh,
           startDate: startDate!,
           endDate: endDate!);
+
     } catch (e) {
       pp(e);
       if (mounted) {
@@ -444,12 +447,12 @@ class DashboardTabletState extends State<DashboardTablet>
   bool _showVideo = false;
   bool _showAudio = false;
 
-  bool _showLocationResponse = false;
-  bool _showProjectPosition = false;
-  bool _showALocationRequest = false;
-  bool _showProjectPolygon = false;
-  bool _showMessage = false;
-  bool _showUser = false;
+  // bool _showLocationResponse = false;
+  // bool _showProjectPosition = false;
+  // bool _showALocationRequest = false;
+  // bool _showProjectPolygon = false;
+  // bool _showMessage = false;
+  // bool _showUser = false;
 
   Photo? photo;
   Video? video;
@@ -465,12 +468,12 @@ class DashboardTabletState extends State<DashboardTablet>
     _showPhoto = false;
     _showVideo = false;
     _showAudio = false;
-    _showLocationResponse = false;
-    _showALocationRequest = false;
-    _showProjectPosition = false;
-    _showProjectPolygon = false;
-    _showMessage = false;
-    _showUser = false;
+    // _showLocationResponse = false;
+    // _showALocationRequest = false;
+    // _showProjectPosition = false;
+    // _showProjectPolygon = false;
+    // _showMessage = false;
+    // _showUser = false;
   }
 
   void _displayPhoto(Photo photo) async {
