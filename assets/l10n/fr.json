@@ -263,6 +263,8 @@
   "pleaseSelectGender": "Veuillez sélectionner le sexe du membre",
   "memberUpdateFailed": "La mise à jour des membres a échoué",
   "pleaseSelectType": "Veuillez sélectionner le type de membre",
-  "memberCreateFailed": "La création du membre a échoué"
+  "memberCreateFailed": "La création du membre a échoué",
+  "Eswatini": "Eswatini",
+  "Lesotho": "Lesotho"
 
 }

@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:geo_monitor/library/api/prefs_og.dart';
 
+import '../../../l10n/translation_handler.dart';
 import '../../api/data_api.dart';
 import '../../cache_manager.dart';
 import '../../data/country.dart';
+import '../../data/settings_model.dart';
 import '../../functions.dart';
 
 class CountryChooser extends StatefulWidget {
@@ -17,6 +20,8 @@ class CountryChooser extends StatefulWidget {
 class CountryChooserState extends State<CountryChooser> {
   List<Country> countries = <Country>[];
   bool loading = false;
+  SettingsModel? settings;
+
   @override
   void initState() {
     super.initState();
@@ -27,6 +32,7 @@ class CountryChooserState extends State<CountryChooser> {
     setState(() {
       loading = true;
     });
+    settings = await prefsOGx.getSettings();
     countries = await cacheManager.getCountries();
     if (countries.isEmpty) {
       countries = await DataAPI.getCountries();
@@ -39,15 +45,20 @@ class CountryChooserState extends State<CountryChooser> {
   }
 
   var list = <DropdownMenuItem>[];
-  void _buildDropDown() {
-    for (var entry in countries) {
-      list.add(DropdownMenuItem<Country>(
-        value: entry,
-        child: Text(
-          entry.name!,
-          style: myTextStyleSmall(context),
-        ),
-      ));
+  Future _buildDropDown() async {
+    var style = myTextStyleSmall(context);
+    if (mounted) {
+      for (var entry in countries) {
+        var translated = await mTx.translate(
+            '${entry.name}', settings!.locale!);
+        list.add(DropdownMenuItem<Country>(
+          value: entry,
+          child: Text(
+            translated,
+            style: style,
+          ),
+        ));
+      }
     }
   }
 

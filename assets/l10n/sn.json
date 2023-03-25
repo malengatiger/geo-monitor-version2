@@ -260,7 +260,9 @@
   "pleaseSelectGender": "Ndapota sarudza nhengo yenhengo",
   "memberUpdateFailed": "Kuvandudzwa kwenhengo kwakundikana",
   "pleaseSelectType": "Ndapota sarudza Nhengo yerudzi",
-  "memberCreateFailed": "Kugadzira nhengo kwatadza"
+  "memberCreateFailed": "Kugadzira nhengo kwatadza",
+  "Eswatini": "MuSwat",
+  "Lesotho": "Resoto"
 
 
 }

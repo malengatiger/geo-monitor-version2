@@ -264,5 +264,9 @@
   "memberCreated": "Lid geskep",
   "pleaseSelectGender": "Kies asseblief lidgeslag",
   "memberUpdateFailed": "Lidopdatering het misluk",
-  "pleaseSelectType": "Kies asseblief lidtipe"
+  "pleaseSelectType": "Kies asseblief lidtipe",
+
+  "Eswatini": "In Swat",
+  "Lesotho": "Lesotho"
+
 }

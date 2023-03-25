@@ -267,6 +267,8 @@
   "pleaseSelectGender": "请选择会员性别",
   "memberUpdateFailed": "会员更新失败",
   "pleaseSelectType": "请选择会员类型",
-  "memberCreateFailed": "创建成员失败"
+  "memberCreateFailed": "创建成员失败",
+  "Eswatini": "在斯瓦特",
+  "Lesotho": "莱索托"
 
 }

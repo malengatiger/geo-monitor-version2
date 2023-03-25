@@ -260,7 +260,9 @@
   "pleaseSelectGender": "Nceda ukhethe isini seLungu",
   "memberUpdateFailed": "Uhlaziyo lwelungu aluphumelelanga",
   "pleaseSelectType": "Nceda ukhethe uhlobo lweLungu",
-  "memberCreateFailed": "Ukwenziwa kwelungu akuphumelelanga"
+  "memberCreateFailed": "Ukwenziwa kwelungu akuphumelelanga",
+  "Eswatini": "Eswatini",
+  "Lesotho": "Lesotho"
 
 
 }

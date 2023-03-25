@@ -262,6 +262,8 @@
   "pleaseSelectGender": "Please select Member gender",
   "memberUpdateFailed": "Member update failed",
   "pleaseSelectType": "Please select Member type",
-  "memberCreateFailed": "Member creation failed"
+  "memberCreateFailed": "Member creation failed",
+  "Eswatini": "Eswatini",
+  "Lesotho": "Lesotho"
 
 }

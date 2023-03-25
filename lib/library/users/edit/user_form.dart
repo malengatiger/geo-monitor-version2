@@ -53,7 +53,10 @@ class UserFormState extends State<UserForm>
   int userType = -1;
   int genderType = -1;
   String? type;
-  String? gender, countryName, pleaseSelectCountry;
+  String? gender, countryName,
+      memberUpdateFailed,memberCreateFailed,
+      pleaseSelectGender, pleaseSelectType, memberCreated,
+      pleaseSelectCountry;
 
   UserFormStrings? userFormStrings;
   SettingsModel? settingsModel;
@@ -74,6 +77,18 @@ class UserFormState extends State<UserForm>
     if (settingsModel != null) {
       userFormStrings = await UserFormStrings.getTranslated();
       pleaseSelectCountry = await mTx.translate('pleaseSelectCountry',
+          settingsModel!.locale!);
+      memberUpdateFailed = await mTx.translate('memberUpdateFailed',
+          settingsModel!.locale!);
+      memberCreateFailed = await mTx.translate('memberCreateFailed',
+          settingsModel!.locale!);
+      pleaseSelectCountry = await mTx.translate('pleaseSelectCountry',
+          settingsModel!.locale!);
+      pleaseSelectGender = await mTx.translate('pleaseSelectGender',
+          settingsModel!.locale!);
+      pleaseSelectType = await mTx.translate('pleaseSelectType',
+          settingsModel!.locale!);
+      memberCreated = await mTx.translate('memberCreated',
           settingsModel!.locale!);
     }
     setState(() {});
@@ -141,7 +156,8 @@ class UserFormState extends State<UserForm>
     if (gender == null) {
       showToast(
           context: context,
-          message: 'Please select Member gender',
+          message: pleaseSelectGender == null?
+          'Please select Member gender': pleaseSelectGender!,
           duration: const Duration(seconds: 2),
           backgroundColor: Colors.pink,
           textStyle: Styles.whiteSmall);
@@ -150,7 +166,8 @@ class UserFormState extends State<UserForm>
     if (type == null) {
       showToast(
           context: context,
-          message: 'Please select Member type',
+          message: pleaseSelectType == null?
+          'Please select Member type':pleaseSelectType!,
           duration: const Duration(seconds: 2),
           backgroundColor: Colors.pink,
           textStyle: Styles.whiteSmall);
@@ -189,7 +206,8 @@ class UserFormState extends State<UserForm>
             type = null;
             if (mounted) {
               showToast(
-                  message: 'User created: ${user.name}',
+                  message: memberCreated == null?
+                  'User created: ${user.name}': memberCreated!,
                   context: context,
                   backgroundColor: Colors.teal,
                   textStyle: Styles.whiteSmall,
@@ -205,7 +223,9 @@ class UserFormState extends State<UserForm>
           } catch (e) {
             pp(e);
             ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text('User Create failed: $e')));
+                SnackBar(content: Text(
+                    memberCreateFailed == null?
+                    'User Create failed: $e': memberCreateFailed!)));
           }
         } else {
           widget.user!.name = nameController.text;
@@ -228,7 +248,9 @@ class UserFormState extends State<UserForm>
             }
           } catch (e) {
             ScaffoldMessenger.of(context)
-                .showSnackBar(SnackBar(content: Text('Update failed: $e')));
+                .showSnackBar(SnackBar(content: Text(
+                memberUpdateFailed == null?
+                'Update failed: $e':memberUpdateFailed!)));
           }
         }
       } catch (e) {
@@ -529,11 +551,11 @@ class UserFormState extends State<UserForm>
                           height: 8,
                         ),
                         CountryChooser(
-                          onSelected: (country) async {
+                          onSelected: (mCountry) async {
                             countryName = await mTx.translate(
-                                country.name!, settings!.locale!);
+                                mCountry.name!, settingsModel!.locale!);
                             setState(() {
-                              this.country = country;
+                              country = mCountry;
                             });
                           },
                           hint: userFormStrings!.selectCountry,
@@ -541,9 +563,6 @@ class UserFormState extends State<UserForm>
                         Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            const SizedBox(
-                              width: 12,
-                            ),
                             country == null
                                 ? const SizedBox()
                                 : Text(

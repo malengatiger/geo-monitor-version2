@@ -310,5 +310,9 @@ class MyKeys {
     hashMap["memberCreateFailed"] = "memberCreateFailed";
     hashMap["memberUpdateFailed"] = "memberUpdateFailed";
 
+    hashMap["Democratic Republic of Congo"] = "Democratic Republic of Congo";
+    hashMap["Lesotho"] = "Lesotho";
+    hashMap["Eswatini"] = "Eswatini";
+
   }
 }
