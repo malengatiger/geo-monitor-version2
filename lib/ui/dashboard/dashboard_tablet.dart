@@ -530,15 +530,21 @@ class DashboardTabletState extends State<DashboardTablet>
     pp('$mm build: app Localizations.localeOf 🌎🌎🌎 locale: $appLocale, not the same as the app');
     var size = MediaQuery.of(context).size;
     var ori = MediaQuery.of(context).orientation;
-    var bottomHeight = 200.0;
+    var bottomHeight = 160.0;
     var padding = 360.0;
     var extPadding = 200.0;
     var top = -12.0;
+    var avatarRadius = 24.0;
+    var userPadding = 16.0;
+    var spaceFromBottom = 8.0;
     if (ori.name == 'portrait') {
       padding = 200;
       top = 0;
       bottomHeight = 200;
       extPadding = 120;
+      avatarRadius = 20;
+      userPadding = 12;
+      spaceFromBottom = 20;
     }
 
     return SafeArea(
@@ -604,16 +610,16 @@ class DashboardTabletState extends State<DashboardTablet>
                   : UserProfileCard(
                       userName: user!.name!,
                       userThumbUrl: user!.thumbnailUrl!,
-                      avatarRadius: 24,
+                      avatarRadius: avatarRadius,
                       elevation: 2,
                       width: 400,
-                      padding: 12,
+                      padding: userPadding,
                       textStyle: myTextStyleMediumPrimaryColor(context)),
               const SizedBox(
-                height: 8,
+                height: 4,
               ),
-              const SizedBox(
-                height: 32,
+               SizedBox(
+                height: spaceFromBottom,
               ),
               Padding(
                   padding: const EdgeInsets.only(left: 28.0),
@@ -658,8 +664,8 @@ class DashboardTabletState extends State<DashboardTablet>
                             crossAxisCount: 2,
                             topPadding: 48,
                             elementPadding: 48,
-                            crossAxisSpacing: 4,
-                            mainAxisSpacing: 4,
+                            crossAxisSpacing: 8,
+                            mainAxisSpacing: 8,
                             leftPadding: 12,
                             onTypeTapped: (type) {
                               switch (type) {
@@ -689,7 +695,7 @@ class DashboardTabletState extends State<DashboardTablet>
                                   break;
                               }
                             },
-                            gridPadding: 64,
+                            gridPadding: 48,
                           ),
                   ),
                   GeoActivity(
@@ -747,7 +753,7 @@ class DashboardTabletState extends State<DashboardTablet>
                             topPadding: 12,
                             crossAxisSpacing: 8,
                             mainAxisSpacing: 8,
-                            elementPadding: 36,
+                            elementPadding: 48,
                             leftPadding: 12,
                             onTypeTapped: (type) {
                               switch (type) {
@@ -777,7 +783,7 @@ class DashboardTabletState extends State<DashboardTablet>
                                   break;
                               }
                             },
-                            gridPadding: 40,
+                            gridPadding: 32,
                           ),
                   ),
                   GeoActivity(
