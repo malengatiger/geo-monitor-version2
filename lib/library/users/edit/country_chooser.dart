@@ -9,9 +9,12 @@ import '../../data/settings_model.dart';
 import '../../functions.dart';
 
 class CountryChooser extends StatefulWidget {
-  const CountryChooser({Key? key, required this.onSelected, required this.hint}) : super(key: key);
+  const CountryChooser({Key? key, required this.onSelected, required this.hint, required this.refreshCountries})
+      : super(key: key);
+
   final Function(Country) onSelected;
   final String hint;
+  final bool refreshCountries;
 
   @override
   State<CountryChooser> createState() => CountryChooserState();
@@ -38,7 +41,7 @@ class CountryChooserState extends State<CountryChooser> {
       countries = await DataAPI.getCountries();
     }
     countries.sort((a, b) => a.name!.compareTo(b.name!));
-    _buildDropDown();
+    await _buildDropDown();
     setState(() {
       loading = false;
     });
@@ -47,19 +50,17 @@ class CountryChooserState extends State<CountryChooser> {
   var list = <DropdownMenuItem>[];
   Future _buildDropDown() async {
     var style = myTextStyleSmall(context);
-    if (mounted) {
-      for (var entry in countries) {
-        var translated = await mTx.translate(
-            '${entry.name}', settings!.locale!);
-        list.add(DropdownMenuItem<Country>(
-          value: entry,
-          child: Text(
-            translated,
-            style: style,
-          ),
-        ));
-      }
+    for (var entry in countries) {
+      var translated = await mTx.translate('${entry.name}', settings!.locale!);
+      list.add(DropdownMenuItem<Country>(
+        value: entry,
+        child: Text(
+          translated,
+          style: style,
+        ),
+      ));
     }
+
   }
 
   @override
@@ -75,7 +76,8 @@ class CountryChooserState extends State<CountryChooser> {
           )
         : DropdownButton(
             elevation: 4,
-            hint: Text(widget.hint,
+            hint: Text(
+              widget.hint,
               style: myTextStyleSmall(context),
             ),
             items: list,

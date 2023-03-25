@@ -6,7 +6,6 @@ import 'package:geo_monitor/library/bloc/fcm_bloc.dart';
 import 'package:geo_monitor/library/data/country.dart';
 import 'package:geo_monitor/library/data/settings_model.dart';
 import 'package:geo_monitor/library/users/edit/user_edit_mobile.dart';
-import 'package:geo_monitor/main.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:uuid/uuid.dart';
 
@@ -53,7 +52,7 @@ class UserFormState extends State<UserForm>
   int userType = -1;
   int genderType = -1;
   String? type;
-  String? gender, countryName,
+  String? gender, translatedCountryName,
       memberUpdateFailed,memberCreateFailed,
       pleaseSelectGender, pleaseSelectType, memberCreated,
       pleaseSelectCountry;
@@ -112,7 +111,7 @@ class UserFormState extends State<UserForm>
         var sett = await prefsOGx.getSettings();
         for (var value in countries) {
           if (widget.user!.countryId == value.countryId) {
-            countryName = await mTx.translate(value.name!, sett!.locale!);
+            translatedCountryName = await mTx.translate(value.name!, sett!.locale!);
             country = value;
           }
         }
@@ -123,10 +122,13 @@ class UserFormState extends State<UserForm>
   void _listen() async {
     settingsSubscription = fcmBloc.settingsStream.listen((event) async {
       if (country != null) {
-        countryName = await mTx.translate(country!.name!, event.locale!);
+        translatedCountryName = await mTx.translate(country!.name!, event.locale!);
       }
       if (mounted) {
         _setTexts();
+        setState(() {
+          refreshCountries = !refreshCountries;
+        });
       }
     });
   }
@@ -370,7 +372,7 @@ class UserFormState extends State<UserForm>
               user: widget.user!,
             )));
   }
-
+  bool refreshCountries = false;
   @override
   Widget build(BuildContext context) {
     var spaceToButtons = 0.0;
@@ -551,11 +553,13 @@ class UserFormState extends State<UserForm>
                           height: 8,
                         ),
                         CountryChooser(
+                          refreshCountries: refreshCountries,
                           onSelected: (mCountry) async {
-                            countryName = await mTx.translate(
+                            translatedCountryName = await mTx.translate(
                                 mCountry.name!, settingsModel!.locale!);
                             setState(() {
                               country = mCountry;
+                              refreshCountries = !refreshCountries;
                             });
                           },
                           hint: userFormStrings!.selectCountry,
@@ -566,9 +570,9 @@ class UserFormState extends State<UserForm>
                             country == null
                                 ? const SizedBox()
                                 : Text(
-                                    countryName == null
+                                    translatedCountryName == null
                                         ? country!.name!
-                                        : countryName!,
+                                        : translatedCountryName!,
                                     style: myTextStyleMedium(context),
                                   ),
                           ],

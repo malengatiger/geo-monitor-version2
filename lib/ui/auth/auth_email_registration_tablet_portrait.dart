@@ -231,6 +231,7 @@ class AuthEmailRegistrationPortraitState
     }
     prefsOGx.saveCountry(p1);
   }
+  bool refreshCountries = false;
 
   @override
   Widget build(BuildContext context) {
@@ -287,6 +288,7 @@ class AuthEmailRegistrationPortraitState
                               child: Row(
                                 children: [
                                   CountryChooser(
+                                      refreshCountries: refreshCountries,
                                       onSelected: _onCountrySelected,
                                     hint: 'Please select country',),
                                   const SizedBox(

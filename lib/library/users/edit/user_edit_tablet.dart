@@ -90,38 +90,44 @@ class UserEditTabletState extends State<UserEditTablet>
             return Stack(
               children: [
                 Padding(
-                  padding: const EdgeInsets.all(32.0),
+                  padding: const EdgeInsets.all(24.0),
                   child: Row(
                     children: [
-                      bd.Badge(
-                        child: bd.Badge(
-                          position:
-                              bd.BadgePosition.topStart(top: -12, start: -12),
-                          badgeStyle: bd.BadgeStyle(
-                              badgeColor: Theme.of(context).primaryColor,
-                              shape: bd.BadgeShape.square,
-                              elevation: 16),
-                          badgeContent: widget.user == null
-                              ? const SizedBox()
-                              : UserProfileCard(
-                                  userName: widget.user!.name!,
-                                  userThumbUrl: widget.user!.thumbnailUrl,
-                                  elevation: 8,
-                                  textStyle: myTextStyleMediumBoldPrimaryColor(
-                                      context),
-                                ),
-                          child: UserForm(
-                            width: width / 2,
-                            internalPadding: 32,
-                            user: widget.user,
+                      SizedBox(width: (width / 2) - 24,
+                        child: widget.user == null? UserForm(
+                          width: width / 2,
+                          internalPadding: 24,
+                          user: widget.user,
+                        ): bd.Badge(
+                          child: bd.Badge(
+                            position:
+                                bd.BadgePosition.topStart(top: -12, start: -12),
+                            badgeStyle: bd.BadgeStyle(
+                                badgeColor: Theme.of(context).primaryColor,
+                                shape: bd.BadgeShape.square,
+                                elevation: 16),
+                            badgeContent: widget.user == null
+                                ? const SizedBox()
+                                : UserProfileCard(
+                                    userName: widget.user!.name!,
+                                    userThumbUrl: widget.user!.thumbnailUrl,
+                                    elevation: 8,
+                                    textStyle: myTextStyleMediumBoldPrimaryColor(
+                                        context),
+                                  ),
+                            child: UserForm(
+                              width: width / 2,
+                              internalPadding: 24,
+                              user: widget.user,
+                            ),
                           ),
                         ),
                       ),
                       const SizedBox(
-                        width: 24,
+                        width: 16,
                       ),
                       GeoActivity(
-                          width: (width / 2) - 90,
+                          width: (width / 2) - 40,
                           thinMode: true,
                           showPhoto: showPhoto,
                           showVideo: showVideo,

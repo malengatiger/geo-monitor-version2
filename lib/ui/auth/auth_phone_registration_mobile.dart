@@ -274,7 +274,7 @@ class AuthPhoneRegistrationMobileState
     }
     prefsOGx.saveCountry(p1);
   }
-
+  bool refreshCountries = false;
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -329,7 +329,9 @@ class AuthPhoneRegistrationMobileState
                       padding: const EdgeInsets.symmetric(horizontal: 28.0),
                       child: Row(
                         children: [
-                          CountryChooser(onSelected: _onCountrySelected,
+                          CountryChooser(
+                            refreshCountries: refreshCountries,
+                            onSelected: _onCountrySelected,
                             hint: 'Please select country',),
                           const SizedBox(
                             width: 24,
