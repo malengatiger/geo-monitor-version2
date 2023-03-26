@@ -23,7 +23,6 @@ class UserEditMobile extends StatefulWidget {
 
 class UserEditMobileState extends State<UserEditMobile>
     with SingleTickerProviderStateMixin {
-  late AnimationController _controller;
   // var nameController = TextEditingController();
   // var emailController = TextEditingController();
   // var passwordController = TextEditingController();
@@ -88,7 +87,6 @@ class UserEditMobileState extends State<UserEditMobile>
 
   @override
   void dispose() {
-    _controller.dispose();
     super.dispose();
   }
 

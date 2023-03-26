@@ -637,7 +637,7 @@ class DashboardPortraitState extends State<DashboardPortrait>
                       ? const SizedBox()
                       : UserProfileCard(
                           userName: deviceUser!.name!,
-                          userThumbUrl: deviceUser!.thumbnailUrl!,
+                          userThumbUrl: deviceUser!.thumbnailUrl,
                           namePictureHorizontal: true,
                           avatarRadius: 20,
                           elevation: 0,

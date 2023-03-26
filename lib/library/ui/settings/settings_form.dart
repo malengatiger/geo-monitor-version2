@@ -388,8 +388,8 @@ class SettingsFormState extends State<SettingsForm> {
                           ),
                           busyWritingToDB
                               ? const SizedBox(
-                                  width: 16,
-                                  height: 16,
+                                  width: 12,
+                                  height: 12,
                                   child: CircularProgressIndicator(
                                     strokeWidth: 4,
                                     backgroundColor: Colors.pink,
@@ -846,11 +846,18 @@ class LocaleChooserState extends State<LocaleChooser> {
   void onChanged(Locale? locale) async {
     pp('LocaleChooser 🌀🌀🌀🌀:onChanged: selected locale: '
         '${locale.toString()}');
+    settingsModel = await prefsOGx.getSettings();
+    settingsModel ??= SettingsModel(distanceFromProject: 500, photoSize: 0,
+          maxVideoLengthInSeconds: 120, maxAudioLengthInMinutes: 30,
+          themeIndex: 0, settingsId: null, created: null,
+          organizationId: null, projectId: null, numberOfDays: 14,
+          locale: locale!.languageCode, activityStreamHours: 24);
+
     settingsModel!.locale = locale!.languageCode;
     await prefsOGx.saveSettings(settingsModel!);
-    // organizationBloc.settingsController.sink.add(settingsModel!);
+    await setTexts();
     var language = 'English';
-    switch (locale!.languageCode) {
+    switch (locale.languageCode) {
       case 'eng':
         language = english!;
         break;

@@ -9,10 +9,12 @@ import 'package:geo_monitor/library/data/country.dart';
 import 'package:geo_monitor/library/data/organization.dart';
 import 'package:geo_monitor/library/data/organization_registration_bag.dart';
 import 'package:geo_monitor/library/data/settings_model.dart';
+import 'package:geo_monitor/ui/auth/auth_phone_signin_mobile.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
 import 'package:uuid/uuid.dart';
 
 import '../../device_location/device_location_bloc.dart';
+import '../../l10n/translation_handler.dart';
 import '../../library/api/data_api.dart';
 import '../../library/bloc/theme_bloc.dart';
 import '../../library/data/user.dart' as ur;
@@ -37,7 +39,7 @@ class AuthPhoneRegistrationMobileState
   final mm = '🥬🥬🥬🥬🥬🥬 OrgRegistrationPage: ';
   String? phoneVerificationId;
   String? code;
-  final phoneController = TextEditingController(text: "+27659990000");
+  final phoneController = TextEditingController(text: "+19985550000");
   final codeController = TextEditingController(text: "123456");
   final orgNameController = TextEditingController();
   final adminController = TextEditingController();
@@ -50,7 +52,10 @@ class AuthPhoneRegistrationMobileState
   Country? country;
 
   final errorController = StreamController<ErrorAnimationType>();
-  String? currentText;
+  String? currentText, translatedCountryName;
+
+  SignInStrings? signInStrings;
+  SettingsModel? settingsModel;
 
   @override
   void initState() {
@@ -60,10 +65,24 @@ class AuthPhoneRegistrationMobileState
         reverseDuration: const Duration(milliseconds: 2000),
         vsync: this);
     super.initState();
+    _setTexts();
   }
 
-  void _start() async {
-    pp('$mm _start: ....... Verifying phone number ...');
+  Future _setTexts() async {
+    signInStrings = await SignInStrings.getTranslated();
+    settingsModel = await prefsOGx.getSettings();
+
+    if (settingsModel != null) {
+      if (country != null) {
+        translatedCountryName =
+            await mTx.translate('${country!.name}', settingsModel!.locale!);
+      }
+    }
+    setState(() {});
+  }
+
+  void _startVerification() async {
+    pp('$mm _startVerification: ....... Verifying phone number ...');
     setState(() {
       busy = true;
     });
@@ -85,7 +104,9 @@ class AuthPhoneRegistrationMobileState
             showToast(
                 backgroundColor: Theme.of(context).colorScheme.background,
                 textStyle: myTextStyleMedium(context),
-                message: 'Verification completed. Thank you!',
+                message: signInStrings == null
+                    ? 'Verification completed. Thank you!'
+                    : signInStrings!.verifyComplete,
                 duration: const Duration(seconds: 5),
                 context: context);
           }
@@ -100,7 +121,9 @@ class AuthPhoneRegistrationMobileState
             showToast(
                 backgroundColor: Theme.of(context).colorScheme.background,
                 textStyle: const TextStyle(color: Colors.white),
-                message: 'Verification failed. Please try later',
+                message: signInStrings == null
+                    ? 'Verification failed. Please try later'
+                    : signInStrings!.verifyFailed,
                 duration: const Duration(seconds: 5),
                 context: context);
           }
@@ -150,7 +173,9 @@ class AuthPhoneRegistrationMobileState
           backgroundColor: Theme.of(context).colorScheme.error,
           textStyle: const TextStyle(color: Colors.white),
           toastGravity: ToastGravity.CENTER,
-          message: 'Please put in the code that was sent to you',
+          message: signInStrings == null
+              ? 'Please put in the code that was sent to you'
+              : signInStrings!.putInCode,
           context: context);
       setState(() {
         busy = false;
@@ -159,20 +184,42 @@ class AuthPhoneRegistrationMobileState
     }
 
     try {
-      pp('$mm .... start building registration artifacts ...');
+      pp('$mm .... start building registration artifacts ... code: $code');
+      if (code == null) {
+        showToast(
+            message: 'SMS Code invalid',
+            context: context,
+            padding: 8.0,
+            backgroundColor: Theme.of(context).primaryColor);
+        return;
+      }
+      if (phoneVerificationId == null) {
+        showToast(
+            message: 'Phone verification failed',
+            context: context,
+            padding: 8.0,
+            backgroundColor: Theme.of(context).primaryColor);
+        return;
+      }
       PhoneAuthCredential authCredential = PhoneAuthProvider.credential(
           verificationId: phoneVerificationId!, smsCode: code!);
       var userCred = await firebaseAuth.signInWithCredential(authCredential);
+      pp('$mm ... start _doTheRegistration ...');
       await _doTheRegistration(userCred);
     } catch (e) {
-      pp(e);
+      pp('$mm ... what de fuck? $e');
       String msg = e.toString();
       if (msg.contains('dup key')) {
-        msg = 'Duplicate organization name, please modify';
+        msg = signInStrings == null
+            ? 'Duplicate organization name, please modify'
+            : signInStrings!.duplicateOrg;
       }
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(duration: const Duration(seconds: 5), content: Text(msg)));
+        showToast(
+            message: msg,
+            context: context,
+            backgroundColor: Theme.of(context).primaryColor,
+            padding: 16.0);
         setState(() {
           busy = false;
         });
@@ -186,19 +233,46 @@ class AuthPhoneRegistrationMobileState
   }
 
   Future<void> _doTheRegistration(UserCredential userCred) async {
+    pp('$mm _doTheRegistration; userCred: $userCred');
+    final organizationId = const Uuid().v4();
+    if (country == null) {
+      showToast(
+          backgroundColor: Theme.of(context).primaryColor,
+          padding: 16,
+          message: 'Country not initialized',
+          context: context);
+      return;
+    }
     var org = Organization(
         name: orgNameController.value.text,
         countryId: country!.countryId,
         email: '',
         created: DateTime.now().toUtc().toIso8601String(),
         countryName: country!.name,
-        organizationId: const Uuid().v4());
+        organizationId: organizationId);
 
     var loc = await locationBloc.getLocation();
 
     if (loc != null) {
       pp('$mm firebase user credential obtained:  🍎 $userCred');
       var gender = 'Unknown';
+      pp('$mm set up settings ...');
+      settingsModel ??= SettingsModel(
+            distanceFromProject: 200,
+            photoSize: 0,
+            locale: 'en',
+            maxVideoLengthInSeconds: 120,
+            maxAudioLengthInMinutes: 30,
+            themeIndex: 0,
+            settingsId: const Uuid().v4(),
+            created: DateTime.now().toUtc().toIso8601String(),
+            organizationId: organizationId,
+            projectId: null,
+            numberOfDays: 30,
+            activityStreamHours: 24);
+
+      settingsModel!.organizationId = organizationId;
+      pp('$mm create user object');
       user = ur.User(
           name: adminController.value.text,
           email: emailController.value.text,
@@ -211,26 +285,12 @@ class AuthPhoneRegistrationMobileState
           organizationName: orgNameController.value.text,
           organizationId: org.organizationId,
           countryId: country!.countryId,
-          password: '');
-
-      var mSettings = await DataAPI.addSettings(SettingsModel(
-          distanceFromProject: 500,
-          photoSize: 0,
-          locale: 'en',
-          maxVideoLengthInSeconds: 20,
-          maxAudioLengthInMinutes: 60,
-          themeIndex: 0,
-          settingsId: const Uuid().v4(),
-          created: DateTime.now().toUtc().toIso8601String(),
-          organizationId: org.organizationId,
-          projectId: null,
-          numberOfDays: 7,
-          activityStreamHours: 24));
-
+          password: null);
+      pp('$mm create OrganizationRegistrationBag');
       var bag = OrganizationRegistrationBag(
           organization: org,
           projectPosition: null,
-          settings: mSettings,
+          settings: settingsModel,
           user: user,
           project: null,
           date: DateTime.now().toUtc().toIso8601String(),
@@ -239,22 +299,20 @@ class AuthPhoneRegistrationMobileState
 
       var resultBag = await DataAPI.registerOrganization(bag);
       await cacheManager.addOrganization(organization: resultBag.organization!);
-
       user!.password = const Uuid().v4();
-      var res = await DataAPI.updateAuthedUser(user!);
+      // var result = await DataAPI.updateAuthedUser(user!);
 
-      pp('\n$mm Organization OG Administrator registered OK: adding org settings default ...');
-      await prefsOGx.saveSettings(mSettings);
-      await themeBloc.changeToTheme(mSettings.themeIndex!);
-      if (res == 0) {
-        await prefsOGx.saveUser(user!);
-        await cacheManager.addUser(user: user!);
-        await cacheManager.addProject(project: resultBag.project!);
-        await cacheManager.addProjectPosition(
-            projectPosition: resultBag.projectPosition!);
-        pp('\n$mm Organization OG Administrator registered OK:🌍🌍🌍🌍  🍎 '
-            '${user!.toJson()} 🌍🌍🌍🌍');
-      }
+      pp('\n$mm Organization OG Administrator registered OK: adding org settings default. '
+          '😡😡😡😡  ');
+      await prefsOGx.saveSettings(settingsModel!);
+      await themeBloc.changeToTheme(settingsModel!.themeIndex!);
+      await prefsOGx.saveUser(user!);
+      await cacheManager.addUser(user: user!);
+      await cacheManager.addProject(project: resultBag.project!);
+      await cacheManager.addProjectPosition(
+          projectPosition: resultBag.projectPosition!);
+      pp('\n$mm Organization OG Administrator registered OK:🌍🌍🌍🌍  🍎 '
+          '${user!.toJson()} 🌍🌍🌍🌍');
       pp('\n\n$mm Organization registered: 🌍🌍🌍🌍 🍎 ${resultBag.toJson()} 🌍🌍🌍🌍\n\n');
     }
   }
@@ -266,14 +324,21 @@ class AuthPhoneRegistrationMobileState
     }
   }
 
-  _onCountrySelected(Country p1) {
+  _onCountrySelected(Country p1) async {
+    country = p1;
+    if (settingsModel != null) {
+      translatedCountryName =
+          await mTx.translate('${country!.name}', settingsModel!.locale!);
+    } else {
+      translatedCountryName = await mTx.translate('${country!.name}', 'en');
+    }
+
     if (mounted) {
-      setState(() {
-        country = p1;
-      });
+      setState(() {});
     }
     prefsOGx.saveCountry(p1);
   }
+
   bool refreshCountries = false;
   @override
   Widget build(BuildContext context) {
@@ -281,7 +346,9 @@ class AuthPhoneRegistrationMobileState
         child: Scaffold(
       appBar: AppBar(
         title: Text(
-          'Organization Registration',
+          signInStrings == null
+              ? 'Organization Registration'
+              : signInStrings!.registerOrganization,
           style: myTextStyleSmall(context),
         ),
       ),
@@ -318,32 +385,34 @@ class AuthPhoneRegistrationMobileState
                     const SizedBox(
                       height: 16,
                     ),
-                    Text(
-                      'Phone Authentication',
-                      style: myTextStyleLarge(context),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        Text(
+                          signInStrings == null
+                              ? 'Phone Authentication'
+                              : signInStrings!.phoneAuth,
+                          style: myTextStyleMediumBold(context),
+                        ),
+                        const SizedBox(
+                          width: 8,
+                        ),
+                        verificationCompleted? IconButton(
+                            onPressed: () {
+                              _processRegistration();
+                            },
+                            icon: Icon(
+                              Icons.check,
+                              color: Theme.of(context).primaryColor,
+                              size: 32,
+                            )): const SizedBox(),
+                      ],
                     ),
                     const SizedBox(
                       height: 8,
                     ),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 28.0),
-                      child: Row(
-                        children: [
-                          CountryChooser(
-                            refreshCountries: refreshCountries,
-                            onSelected: _onCountrySelected,
-                            hint: 'Please select country',),
-                          const SizedBox(
-                            width: 24,
-                          ),
-                          country == null
-                              ? const SizedBox()
-                              : Text(
-                                  '${country!.name}',
-                                  style: myTextStyleSmall(context),
-                                ),
-                        ],
-                      ),
+                    const SizedBox(
+                      height: 4,
                     ),
                     Padding(
                       padding: const EdgeInsets.all(16.0),
@@ -356,7 +425,9 @@ class AuthPhoneRegistrationMobileState
                                   controller: orgNameController,
                                   keyboardType: TextInputType.text,
                                   decoration: InputDecoration(
-                                      hintText: 'Enter Organization Name',
+                                      hintText: signInStrings == null
+                                          ? 'Enter Organization Name'
+                                          : signInStrings!.enterOrg,
                                       hintStyle: myTextStyleSmall(context),
                                       enabledBorder: OutlineInputBorder(
                                         borderSide: BorderSide(
@@ -365,12 +436,16 @@ class AuthPhoneRegistrationMobileState
                                                 .primaryColor), //<-- SEE HERE
                                       ),
                                       label: Text(
-                                        'Organization Name',
+                                        signInStrings == null
+                                            ? 'Organization Name'
+                                            : signInStrings!.orgName,
                                         style: myTextStyleSmall(context),
                                       )),
                                   validator: (value) {
                                     if (value == null || value.isEmpty) {
-                                      return 'Please enter Organization Name';
+                                      return signInStrings == null
+                                          ? 'Please enter Organization Name'
+                                          : signInStrings!.enterOrg;
                                     }
                                     return null;
                                   },
@@ -382,7 +457,9 @@ class AuthPhoneRegistrationMobileState
                                   controller: adminController,
                                   keyboardType: TextInputType.text,
                                   decoration: InputDecoration(
-                                      hintText: 'Enter Administrator Name',
+                                      hintText: signInStrings == null
+                                          ? 'Enter Administrator Name'
+                                          : signInStrings!.enterAdmin,
                                       hintStyle: myTextStyleSmall(context),
                                       enabledBorder: OutlineInputBorder(
                                         borderSide: BorderSide(
@@ -391,12 +468,16 @@ class AuthPhoneRegistrationMobileState
                                                 .primaryColor), //<-- SEE HERE
                                       ),
                                       label: Text(
-                                        'Administrator Name',
+                                        signInStrings == null
+                                            ? 'Administrator Name'
+                                            : signInStrings!.adminName,
                                         style: myTextStyleSmall(context),
                                       )),
                                   validator: (value) {
                                     if (value == null || value.isEmpty) {
-                                      return 'Please enter Administrator Name';
+                                      return signInStrings == null
+                                          ? 'Please enter Administrator Name'
+                                          : signInStrings!.enterAdmin;
                                     }
                                     return null;
                                   },
@@ -408,17 +489,23 @@ class AuthPhoneRegistrationMobileState
                                   controller: phoneController,
                                   keyboardType: TextInputType.phone,
                                   decoration: InputDecoration(
-                                      hintText: 'Enter Phone Number',
+                                      hintText: signInStrings == null
+                                          ? 'Enter Phone Number'
+                                          : signInStrings!.enterPhone,
                                       enabledBorder: OutlineInputBorder(
                                         borderSide: BorderSide(
                                             width: 0.6,
                                             color: Theme.of(context)
                                                 .primaryColor), //<-- SEE HERE
                                       ),
-                                      label: const Text('Phone Number')),
+                                      label: Text(signInStrings == null
+                                          ? 'Phone Number'
+                                          : signInStrings!.phoneNumber)),
                                   validator: (value) {
                                     if (value == null || value.isEmpty) {
-                                      return 'Please enter Phone Number';
+                                      return signInStrings == null
+                                          ? 'Please enter Phone Number'
+                                          : signInStrings!.enterPhone;
                                     }
                                     return null;
                                   },
@@ -430,7 +517,9 @@ class AuthPhoneRegistrationMobileState
                                   controller: emailController,
                                   keyboardType: TextInputType.text,
                                   decoration: InputDecoration(
-                                      hintText: 'Enter Email Address',
+                                      hintText: signInStrings == null
+                                          ? 'Enter Email Address'
+                                          : signInStrings!.enterEmail,
                                       hintStyle: myTextStyleSmall(context),
                                       enabledBorder: OutlineInputBorder(
                                         borderSide: BorderSide(
@@ -439,18 +528,57 @@ class AuthPhoneRegistrationMobileState
                                                 .primaryColor), //<-- SEE HERE
                                       ),
                                       label: Text(
-                                        'Email Address',
+                                        signInStrings == null
+                                            ? 'Email Address'
+                                            : signInStrings!.emailAddress,
                                         style: myTextStyleSmall(context),
                                       )),
                                   validator: (value) {
                                     if (value == null || value.isEmpty) {
-                                      return 'Please enter Email address';
+                                      return signInStrings == null
+                                          ? 'Please enter Email address'
+                                          : signInStrings!.enterEmail;
                                     }
                                     return null;
                                   },
                                 ),
                                 const SizedBox(
-                                  height: 32,
+                                  height: 16,
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: .0),
+                                  child: Row(
+                                    children: [
+                                      CountryChooser(
+                                        refreshCountries: refreshCountries,
+                                        onSelected: _onCountrySelected,
+                                        hint: signInStrings == null
+                                            ? 'Please select country'
+                                            : signInStrings!
+                                                .pleaseSelectCountry,
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 8.0, vertical: 8),
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      translatedCountryName == null
+                                          ? const SizedBox()
+                                          : Text(
+                                              translatedCountryName!,
+                                              style: myTextStyleMediumBold(
+                                                  context),
+                                            ),
+                                    ],
+                                  ),
+                                ),
+                                const SizedBox(
+                                  height: 12,
                                 ),
                                 _codeHasBeenSent
                                     ? const SizedBox()
@@ -458,12 +586,24 @@ class AuthPhoneRegistrationMobileState
                                         onPressed: () {
                                           if (_formKey.currentState!
                                               .validate()) {
-                                            _start();
+                                            _startVerification();
                                           }
                                         },
-                                        child: const Padding(
-                                          padding: EdgeInsets.all(12.0),
-                                          child: Text('Verify Phone Number'),
+                                        child: Padding(
+                                          padding: const EdgeInsets.all(12.0),
+                                          child: Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.center,
+                                            children: [
+                                              Flexible(
+                                                child: Text(
+                                                    signInStrings == null
+                                                        ? 'Verify Phone Number'
+                                                        : signInStrings!
+                                                            .verifyPhone),
+                                              ),
+                                            ],
+                                          ),
                                         )),
                                 const SizedBox(
                                   height: 20,
@@ -474,7 +614,9 @@ class AuthPhoneRegistrationMobileState
                                         child: Column(
                                           children: [
                                             Text(
-                                              'Enter SMS pin code sent to ${phoneController.text}',
+                                              signInStrings == null
+                                                  ? 'Enter SMS pin code sent'
+                                                  : signInStrings!.enterSMS,
                                               style: myTextStyleSmall(context),
                                             ),
                                             const SizedBox(
@@ -540,10 +682,15 @@ class AuthPhoneRegistrationMobileState
                                                 : ElevatedButton(
                                                     onPressed:
                                                         _processRegistration,
-                                                    child: const Padding(
+                                                    child: Padding(
                                                       padding:
-                                                          EdgeInsets.all(12.0),
-                                                      child: Text('Send Code'),
+                                                          const EdgeInsets.all(
+                                                              12.0),
+                                                      child: Text(
+                                                          signInStrings == null
+                                                              ? 'Send Code'
+                                                              : signInStrings!
+                                                                  .sendCode),
                                                     )),
                                           ],
                                         ),

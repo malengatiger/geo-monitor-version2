@@ -173,8 +173,8 @@ class _UserListCardState extends State<UserListCard> {
       shape: getRoundedBorder(radius: 16),
       child: Padding(
         padding: widget.amInLandscape
-            ? const EdgeInsets.symmetric(horizontal: 24.0)
-            : const EdgeInsets.symmetric(horizontal: 12.0),
+            ? const EdgeInsets.symmetric(horizontal: 12.0)
+            : const EdgeInsets.symmetric(horizontal: 8.0),
         child: Column(
           children: [
             const SizedBox(
@@ -246,7 +246,7 @@ class _UserListCardState extends State<UserListCard> {
                             children: [
                               Padding(
                                 padding: const EdgeInsets.symmetric(
-                                    vertical: 6.0, horizontal: 20),
+                                    vertical: 4.0, horizontal: 8),
                                 child: Row(
                                   children: [
                                     mUser.thumbnailUrl == null

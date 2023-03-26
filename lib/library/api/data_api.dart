@@ -1872,6 +1872,14 @@ class DataAPI {
       if (resp.body.contains('not found')) {
         return false;
       }
+
+      if (resp.statusCode == 403) {
+        var msg =
+            '😡 😡 status code: ${resp.statusCode}, Request Forbidden 🥪 🥙 🌮  😡 ${resp.body}';
+        pp(msg);
+        throw Exception(msg);
+      }
+
       if (resp.statusCode != 200) {
         var msg =
             '😡 😡 The response is not 200; it is ${resp.statusCode}, NOT GOOD, throwing up !! 🥪 🥙 🌮  😡 ${resp.body}';

@@ -78,14 +78,18 @@ class DataRefresher {
             '${end.difference(start).inSeconds} seconds elapsed');
       } else {
         pp('\n\n$xz Fucking bag is null! 🍎🍎🍎🍎🍎🍎');
+        return DataBag(photos: [], videos: [], fieldMonitorSchedules: [],
+            projectPositions: [], projects: [], audios: [],
+            date: DateTime.now().toIso8601String(), users: [], projectPolygons: [], settings: []);
+
       }
     } catch (e) {
       pp('$xx Something went horribly wrong: $e');
-      throw Exception('Upload Exception: $e');
+      throw Exception('Data Refresh Exception: $e');
     }
 
     pp('$xx Done with org data, refreshing projects and users if needed ...');
-    final doRefresh = await prefsOGx.shouldRefreshBePerformed();
+    final doRefresh = prefsOGx.shouldRefreshBePerformed();
     if (doRefresh) {
       var projects =
           await _startProjectsRefresh(organizationId: organizationId!);

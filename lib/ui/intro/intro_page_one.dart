@@ -68,7 +68,7 @@ class IntroPageState extends State<IntroPage>
             ),
           ),
           Positioned(
-              top: 140,
+              top: 80, bottom: 80,
               left: 10, right: 10,
               child: SizedBox(
                 height: height,

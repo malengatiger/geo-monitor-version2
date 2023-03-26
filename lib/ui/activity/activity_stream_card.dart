@@ -200,15 +200,13 @@ class ActivityStreamCardState extends State<ActivityStreamCard> {
                   ),
                   Text(
                     msg,
-                    style: myTextStyleMedium(context),
+                    style: myTextStyleSmall(context),
                   ),
                 ],
               ),
-              Row(
+              Row(mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const SizedBox(
-                    width: 28,
-                  ),
+
                   Text(
                     dt,
                     style: myTextStyleTinyPrimaryColor(context),
