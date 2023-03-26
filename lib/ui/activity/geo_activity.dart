@@ -141,9 +141,10 @@ class GeoActivityState extends State<GeoActivity>
     }
   }
   Future<void> _handleGeofenceEvent(GeofenceEvent event) async {
+    pp('$mm _handleGeofenceEvent ....');
     var settings = await prefsOGx.getSettings();
     if (settings != null) {
-      final arr = await mTx.translate('memberArrived', settings!.locale!);
+      final arr = await mTx.translate('memberArrived', settings.locale!);
       if (event.projectName != null) {
         var arrivedAt = arr.replaceAll('\$project', event.projectName!);
         if (mounted) {

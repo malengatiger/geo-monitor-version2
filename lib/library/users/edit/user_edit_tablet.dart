@@ -111,6 +111,7 @@ class UserEditTabletState extends State<UserEditTablet>
                                 : UserProfileCard(
                                     userName: widget.user!.name!,
                                     userThumbUrl: widget.user!.thumbnailUrl,
+                                    namePictureHorizontal: true,
                                     elevation: 8,
                                     textStyle: myTextStyleMediumBoldPrimaryColor(
                                         context),
@@ -185,6 +186,7 @@ class UserEditTabletState extends State<UserEditTablet>
                             : UserProfileCard(
                           userName: widget.user!.name!,
                           userThumbUrl: widget.user!.thumbnailUrl,
+                          namePictureHorizontal: true,
                           elevation: 8,
                           textStyle: myTextStyleMediumPrimaryColor(
                               context),

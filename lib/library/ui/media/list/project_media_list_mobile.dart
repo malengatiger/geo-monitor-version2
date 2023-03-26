@@ -37,7 +37,7 @@ class ProjectMediaListMobile extends StatefulWidget {
 
 class ProjectMediaListMobileState extends State<ProjectMediaListMobile>
     with TickerProviderStateMixin {
-  static const mm = '🔆🔆🔆 MediaListMobile 💜💜 ';
+  static const mm = '🔆🔆🔆🔆🔆🔆 ProjectMediaListMobile 💜💜 ';
 
   late AnimationController _animationController;
   late StreamSubscription<List<Photo>> photoStreamSubscription;
@@ -62,7 +62,7 @@ class ProjectMediaListMobileState extends State<ProjectMediaListMobile>
   int videoIndex = 0;
   String? photosText, audioText, videoText, refreshData;
 
-
+  SettingsModel? settingsModel;
   @override
   void initState() {
     _animationController = AnimationController(
@@ -72,25 +72,25 @@ class ProjectMediaListMobileState extends State<ProjectMediaListMobile>
         vsync: this);
     _tabController = TabController(length: 3, vsync: this);
     super.initState();
+    pp('$mm initState ...........................');
     _setTexts();
     _listen();
-    _getData(false);
+    _getData(false, 'initState');
   }
 
   Future _setTexts() async {
-    var sett = await prefsOGx.getSettings();
-    if (sett != null) {
-      photosText = await mTx.translate('photos', sett.locale!);
-      audioText = await mTx.translate('audioClips', sett.locale!);
-      videoText = await mTx.translate('videos', sett.locale!);
-      refreshData = await mTx.translate('refreshData', sett.locale!);
+    settingsModel = await prefsOGx.getSettings();
+    if (settingsModel != null) {
+      photosText = await mTx.translate('photos', settingsModel!.locale!);
+      audioText = await mTx.translate('audioClips', settingsModel!.locale!);
+      videoText = await mTx.translate('videos', settingsModel!.locale!);
+      refreshData = await mTx.translate('refreshData', settingsModel!.locale!);
       setState(() {});
     }
   }
 
   Future<void> _listen() async {
     user ??= await prefsOGx.getUser();
-
     _listenToProjectStreams();
     _listenToSettingsStream();
   }
@@ -114,17 +114,15 @@ class ProjectMediaListMobileState extends State<ProjectMediaListMobile>
       _videos = value;
       if (mounted) {
         _animationController.forward();
-        _getData(false);
         setState(() {});
       } else {
         pp(' 😡😡😡 what the fuck? this thing is not mounted  😡😡😡');
       }
     });
     audioStreamSubscription = projectBloc.audioStream.listen((value) {
-      pp('$mm Videos received from projectAudioStream: 🏈 ${value.length}');
+      pp('$mm audioStreamSubscription: Audios received from projectAudioStream: 🏈 ${value.length}');
       _audios = value;
       if (mounted) {
-        _getData(false);
         _animationController.forward();
         setState(() {});
       } else {
@@ -137,13 +135,13 @@ class ProjectMediaListMobileState extends State<ProjectMediaListMobile>
     settingsSubscriptionFCM = fcmBloc.settingsStream.listen((event) async {
       if (mounted) {
         await _setTexts();
-        _getData(false);
+        await _getData(false, '_listenToSettingsStream');
       }
     });
   }
 
-  Future<void> _getData(bool forceRefresh) async {
-    pp('$mm: .......... _getData ...forceRefresh: $forceRefresh');
+  Future<void> _getData(bool forceRefresh, String calledBy) async {
+    pp('$mm: .......... _getData ...forceRefresh: $forceRefresh calledBy: $calledBy');
     setState(() {
       busy = true;
     });
@@ -302,22 +300,13 @@ class ProjectMediaListMobileState extends State<ProjectMediaListMobile>
               )),
           IconButton(
               onPressed: () {
-                _getData(true);
+                _getData(true, 'refresh icon pressed');
               },
               icon: Icon(
                 Icons.refresh,
                 size: 18,
                 color: Theme.of(context).primaryColor,
               )),
-          // IconButton(
-          //     onPressed: () {
-          //       Navigator.of(context).pop();
-          //     },
-          //     icon: Icon(
-          //       Icons.close,
-          //       size: 18,
-          //       color: Theme.of(context).primaryColor,
-          //     )),
         ],
         bottom: TabBar(
           controller: _tabController,

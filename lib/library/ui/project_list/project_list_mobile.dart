@@ -32,7 +32,6 @@ import '../maps/project_map_main.dart';
 import '../maps/project_polygon_map_mobile.dart';
 import '../media/list/project_media_main.dart';
 import '../project_edit/project_edit_main.dart';
-import '../project_monitor/project_monitor_main.dart';
 import '../project_monitor/project_monitor_mobile.dart';
 import '../schedule/project_schedules_mobile.dart';
 
@@ -252,24 +251,15 @@ class ProjectListMobileState extends State<ProjectListMobile>
             )));
   }
 
-  void _navigateToMonitorStart(Project p) {
-    Navigator.push(
-        context,
-        PageTransition(
-            type: PageTransitionType.scale,
-            alignment: Alignment.topLeft,
-            duration: const Duration(milliseconds: 1500),
-            child: ProjectMonitorMain(p)));
-  }
 
   void _navigateToProjectMedia(Project p) {
-    if (user!.userType == UserType.fieldMonitor) {}
+    pp('$mm _navigateToProjectMedia with project: 🔆🔆🔆${p.toJson()}🔆🔆🔆');
     Navigator.push(
         context,
         PageTransition(
             type: PageTransitionType.scale,
             alignment: Alignment.topLeft,
-            duration: const Duration(milliseconds: 1500),
+            duration: const Duration(milliseconds: 1000),
             child: ProjectMediaMain(project: p)));
   }
 

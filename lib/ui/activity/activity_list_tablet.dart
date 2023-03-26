@@ -212,18 +212,17 @@ class _ActivityListTabletState extends State<ActivityListTablet>
 
   void _listenToStreams() async {
     pp('$mm ... _listenToStreams  ...');
-
     settingsSubscriptionFCM =
         fcmBloc.settingsStream.listen((SettingsModel event) async {
       await _setTexts();
       _getData(true);
+
     });
     settingsSubscription =
         organizationBloc.settingsStream.listen((SettingsModel event) async {
       pp('$mm settingsSubscription: delivered settings, locale: ${event.locale}');
       await mTx.translate('settings', event.locale!);
-      _setTexts();
-      await Future.delayed(const Duration(milliseconds: 100));
+      await _setTexts();
       _getData(false);
     });
 

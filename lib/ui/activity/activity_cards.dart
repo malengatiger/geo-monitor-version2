@@ -31,7 +31,7 @@ class ThinCard extends StatelessWidget {
         child: Padding(
           padding: const EdgeInsets.all(8.0),
           child: SizedBox(
-            height: height +8,
+            height: height,
             child: Column(
               children: [
                 const SizedBox(
@@ -42,7 +42,7 @@ class ThinCard extends StatelessWidget {
                   children: [
                     Text(
                       dt,
-                      style: myTextStyleSmallBoldPrimaryColor(context),
+                      style: myTextStyleSmallPrimaryColor(context),
                     ),
                   ],
                 ),
@@ -68,12 +68,16 @@ class ThinCard extends StatelessWidget {
                   height: 12,
                 ),
                 Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     model.userName == null
                         ? const SizedBox()
                         : UserProfileCard(
+                            namePictureHorizontal: false,
+                            padding: 2,
+                            elevation: 2,
                             userName: model.userName!,
+                            textStyle: myTextStyleSmall(context),
                             userThumbUrl: model.userThumbnailUrl,
                           ),
                   ],
@@ -148,6 +152,7 @@ class WideCard extends StatelessWidget {
                     model.userName == null
                         ? const SizedBox()
                         : UserProfileCard(
+                            namePictureHorizontal: true,
                             userName: model.userName!,
                             userThumbUrl: model.userThumbnailUrl,
                           ),

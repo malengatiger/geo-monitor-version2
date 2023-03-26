@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:geo_monitor/library/data/activity_model.dart';
 import 'package:geo_monitor/library/functions.dart';
+import 'package:geo_monitor/ui/activity/user_profile_card.dart';
 
 import '../../l10n/translation_handler.dart';
 import '../../library/api/prefs_og.dart';
@@ -35,7 +36,7 @@ class ActivityStreamCardState extends State<ActivityStreamCard> {
   int count = 0;
 
   static const mm = '🌿🌿🌿🌿🌿🌿 ActivityStreamCard: 🌿 ';
- String? locale;
+  String? locale;
   @override
   void initState() {
     super.initState();
@@ -69,7 +70,7 @@ class ActivityStreamCardState extends State<ActivityStreamCard> {
                       children: [
                         Text(
                           dt,
-                          style: myTextStyleSmallBoldPrimaryColor(context),
+                          style: myTextStyleSmallPrimaryColor(context),
                         ),
                       ],
                     ),
@@ -81,18 +82,12 @@ class ActivityStreamCardState extends State<ActivityStreamCard> {
                       ? const CircleAvatar(
                           radius: 16,
                         )
-                      : CircleAvatar(
-                          radius: 16,
-                          backgroundImage: NetworkImage(
-                              widget.activityModel.userThumbnailUrl!),
-                        ),
-                  const SizedBox(
-                    height: 8,
-                  ),
-                  Text(
-                    widget.activityModel.userName!,
-                    style: myTextStyleTiny(context),
-                  ),
+                      : UserProfileCard(
+                          userName: widget.activityModel.userName!,
+                          padding: 2,
+                          elevation: 1,
+                          userThumbUrl: widget.activityModel.userThumbnailUrl,
+                          namePictureHorizontal: false),
                   const SizedBox(
                     height: 8,
                   ),
@@ -104,7 +99,7 @@ class ActivityStreamCardState extends State<ActivityStreamCard> {
                     ),
                   ),
                   const SizedBox(
-                    height: 24,
+                    height: 12,
                   ),
                 ],
               ),
@@ -115,7 +110,7 @@ class ActivityStreamCardState extends State<ActivityStreamCard> {
             child: Padding(
               padding: const EdgeInsets.all(16.0),
               child: SizedBox(
-                height: 120,
+                height: 180,
                 child: Column(
                   children: [
                     Flexible(
@@ -137,31 +132,14 @@ class ActivityStreamCardState extends State<ActivityStreamCard> {
                     const SizedBox(
                       height: 20,
                     ),
-                    Padding(
-                      padding:
-                          EdgeInsets.symmetric(horizontal: widget.frontPadding),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: [
-                          widget.activityModel.userThumbnailUrl == null
-                              ? const CircleAvatar(
-                                  radius: 16,
-                                )
-                              : CircleAvatar(
-                                  radius: 16,
-                                  backgroundImage: NetworkImage(
-                                      widget.activityModel.userThumbnailUrl!),
-                                ),
-                          const SizedBox(
-                            width: 8,
-                          ),
-                          Text(
-                            widget.activityModel.userName!,
-                            style: myTextStyleSmall(context),
-                          ),
-                        ],
-                      ),
-                    ),
+                    widget.activityModel.userName == null
+                        ? const SizedBox()
+                        : UserProfileCard(
+                            userName: widget.activityModel.userName!,
+                            padding: 0,
+                            elevation: 2,
+                            userThumbUrl: widget.activityModel.userThumbnailUrl,
+                            namePictureHorizontal: false),
                     const SizedBox(
                       height: 16,
                     ),
@@ -172,7 +150,7 @@ class ActivityStreamCardState extends State<ActivityStreamCard> {
                           Text(
                             getFmtDate(
                                 widget.activityModel.date!, widget.locale),
-                            style: myTextStyleTinyBoldPrimaryColor(context),
+                            style: myTextStyleTinyPrimaryColor(context),
                           )
                         ],
                       ),
@@ -202,6 +180,48 @@ class ActivityStreamCardState extends State<ActivityStreamCard> {
             message: msg);
   }
 
+  Widget _getShortie(Icon icon, String msg) {
+    final dt = getFmtDate(widget.activityModel.date!, widget.locale);
+    return Card(
+      shape: getRoundedBorder(radius: 16),
+      elevation: 4,
+      child: SizedBox(
+        height: 80,
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Row(
+                children: [
+                  icon,
+                  const SizedBox(
+                    width: 8,
+                  ),
+                  Text(
+                    msg,
+                    style: myTextStyleMedium(context),
+                  ),
+                ],
+              ),
+              Row(
+                children: [
+                  const SizedBox(
+                    width: 28,
+                  ),
+                  Text(
+                    dt,
+                    style: myTextStyleTinyPrimaryColor(context),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     late Icon icon;
@@ -218,18 +238,18 @@ class ActivityStreamCardState extends State<ActivityStreamCard> {
       case ActivityType.photoAdded:
         icon = Icon(Icons.camera_alt, color: Theme.of(context).primaryColor);
         message = '${widget.activityModel.projectName}';
-        return _getGeneric(icon, message, 132.0);
+        return _getGeneric(icon, message, 180.0);
 
       case ActivityType.videoAdded:
         icon = Icon(Icons.video_camera_front,
             color: Theme.of(context).primaryColorLight);
         message = '${widget.activityModel.projectName}';
-        return _getGeneric(icon, message, 132.0);
+        return _getGeneric(icon, message, 200.0);
 
       case ActivityType.audioAdded:
         icon = Icon(Icons.mic, color: Theme.of(context).primaryColor);
         message = '${widget.activityModel.projectName}';
-        return _getGeneric(icon, message, 132.0);
+        return _getGeneric(icon, message, 200.0);
 
       case ActivityType.messageAdded:
         icon = Icon(Icons.message, color: Theme.of(context).primaryColor);
@@ -239,28 +259,30 @@ class ActivityStreamCardState extends State<ActivityStreamCard> {
       case ActivityType.userAddedOrModified:
         icon = Icon(Icons.person, color: Theme.of(context).primaryColor);
         message = '${widget.activityStrings.memberAddedChanged}';
-
         return _getUserAdded(icon, message);
 
       case ActivityType.positionAdded:
         icon = Icon(Icons.home, color: Theme.of(context).primaryColor);
-        message = '${widget.activityStrings.projectLocationAdded}: ${widget.activityModel.projectName}';
-        return _getGeneric(icon, message, 140);
+        message =
+            '${widget.activityStrings.projectLocationAdded}: ${widget.activityModel.projectName}';
+        return _getGeneric(icon, message, 160);
 
       case ActivityType.polygonAdded:
         icon =
             Icon(Icons.circle_outlined, color: Theme.of(context).primaryColor);
-        message =  '${widget.activityStrings.projectAreaAdded} ${widget.activityModel.projectName}';
-        return _getGeneric(icon, message, 140);
+        message =
+            '${widget.activityStrings.projectAreaAdded} ${widget.activityModel.projectName}';
+        return _getGeneric(icon, message, 160);
 
       case ActivityType.settingsChanged:
         icon = Icon(Icons.settings, color: Theme.of(context).primaryColor);
-        message =  widget.activityStrings.settingsChanged!;
-        return _getGeneric(icon, message, 80);
+        message = widget.activityStrings.settingsChanged!;
+        return _getShortie(icon, message);
 
       case ActivityType.geofenceEventAdded:
         icon = Icon(Icons.person_2, color: Theme.of(context).primaryColor);
-        message = '${widget.activityStrings.arrivedAt} - ${widget.activityModel.geofenceEvent?.projectName!}';
+        message =
+            '${widget.activityStrings.arrivedAt} - ${widget.activityModel.geofenceEvent?.projectName!}';
         return _getUserAdded(icon, message);
 
       case ActivityType.conditionAdded:
@@ -270,14 +292,16 @@ class ActivityStreamCardState extends State<ActivityStreamCard> {
 
       case ActivityType.locationRequest:
         icon = Icon(Icons.location_on, color: Theme.of(context).primaryColor);
-        message = '${widget.activityStrings.requestMemberLocation} ${widget.activityModel.locationRequest!.userName}';
-        return _getGeneric(icon, message, 120);
+        message =
+            '${widget.activityStrings.requestMemberLocation} ${widget.activityModel.locationRequest!.userName}';
+        return _getGeneric(icon, message, 160);
 
       case ActivityType.locationResponse:
         icon =
             Icon(Icons.location_history, color: Theme.of(context).primaryColor);
-        message =  '${widget.activityStrings.memberLocationResponse} : ${widget.activityModel.locationResponse!.userName}';
-        return _getGeneric(icon, message, 140);
+        message =
+            '${widget.activityStrings.memberLocationResponse} : ${widget.activityModel.locationResponse!.userName}';
+        return _getGeneric(icon, message, 160);
 
       case ActivityType.kill:
         icon = Icon(Icons.cancel, color: Theme.of(context).primaryColor);
@@ -302,19 +326,22 @@ class ActivityStrings {
       loadingActivities,
       memberLocationResponse,
       conditionAdded,
-      arrivedAt, noActivities,
+      arrivedAt,
+      noActivities,
       memberAtProject,
       memberAddedChanged,
-      requestMemberLocation, tapToRefresh,
+      requestMemberLocation,
+      tapToRefresh,
       settingsChanged;
 
   ActivityStrings(
       {required this.projectAdded,
       required this.projectLocationAdded,
       required this.projectAreaAdded,
-      required this.at, required this.loadingActivities,
-        required this.noActivities,
-        required this.tapToRefresh,
+      required this.at,
+      required this.loadingActivities,
+      required this.noActivities,
+      required this.tapToRefresh,
       required this.memberLocationResponse,
       required this.conditionAdded,
       required this.arrivedAt,
@@ -346,14 +373,12 @@ class ActivityStrings {
           await mTx.translate('memberLocationResponse', sett!.locale!);
       final requestMemberLocation =
           await mTx.translate('requestMemberLocation', sett!.locale!);
-      final noActivities =
-      await mTx.translate('noActivities', sett!.locale!);
+      final noActivities = await mTx.translate('noActivities', sett!.locale!);
 
       final loadingActivities =
-      await mTx.translate('loadingActivities', sett!.locale!);
+          await mTx.translate('loadingActivities', sett!.locale!);
 
-      final tapToRefresh =
-      await mTx.translate('tapToRefresh', sett!.locale!);
+      final tapToRefresh = await mTx.translate('tapToRefresh', sett!.locale!);
 
       var activityStrings = ActivityStrings(
           tapToRefresh: tapToRefresh,

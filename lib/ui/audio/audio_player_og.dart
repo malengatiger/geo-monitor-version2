@@ -417,6 +417,7 @@ class AudioPlayerWidget extends StatelessWidget {
               UserProfileCard(
                   userName: user.name!,
                   padding: 8,
+                  namePictureHorizontal: true,
                   userThumbUrl: user.thumbnailUrl),
               const SizedBox(
                 height: 64,

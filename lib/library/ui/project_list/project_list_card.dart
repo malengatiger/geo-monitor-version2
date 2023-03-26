@@ -50,6 +50,7 @@ class _ProjectListCardState extends State<ProjectListCard> {
     super.initState();
     _setText();
   }
+
   void _setText() async {
     var sett = await prefsOGx.getSettings();
     if (sett != null) {
@@ -66,48 +67,98 @@ class _ProjectListCardState extends State<ProjectListCard> {
       });
     }
   }
-  @override
-  Widget build(BuildContext context) {
-    List<FocusedMenuItem> getPopUpMenuItems(Project project) {
-      List<FocusedMenuItem> menuItems = [];
+
+  List<FocusedMenuItem> getPopUpMenuItems(Project project) {
+    List<FocusedMenuItem> menuItems = [];
+    menuItems.add(
+      FocusedMenuItem(
+        // backgroundColor: Theme.of(context).primaryColor,
+          title: Expanded(
+            child: Text(projectDashboard == null?'Project Dashboard':projectDashboard!,
+                style: myTextStyleSmallBlack(context)),
+          ),
+          trailingIcon: Icon(
+            Icons.dashboard,
+            color: Theme.of(context).primaryColor,
+          ),
+          onPressed: () {
+            widget.navigateToProjectDashboard(project);
+          }),
+    );
+    menuItems.add(
+      FocusedMenuItem(
+        // backgroundColor: Theme.of(context).primaryColor,
+          title: Expanded(
+            child: Text(directionsToProject == null?
+            'Project Directions': directionsToProject!,
+              style: myTextStyleSmallBlack(context),
+            ),
+          ),
+          trailingIcon: Icon(
+            Icons.directions,
+            color: Theme.of(context).primaryColor,
+          ),
+          onPressed: () {
+            widget.navigateToProjectDirections(project);
+          }),
+    );
+    menuItems.add(
+      FocusedMenuItem(
+        // backgroundColor: Theme.of(context).primaryColor,
+          title: Expanded(
+            child: Text(projectLocationsMap == null?
+            'Project Locations Map': projectLocationsMap!,
+              style: myTextStyleSmallBlack(context),
+            ),
+          ),
+          trailingIcon: Icon(
+            Icons.map,
+            color: Theme.of(context).primaryColor,
+          ),
+          onPressed: () {
+            widget.navigateToProjectMap(project);
+          }),
+    );
+    menuItems.add(
+      FocusedMenuItem(
+        // backgroundColor: Theme.of(context).primaryColor,
+          title: Expanded(
+            child: Text(photosVideosAudioClips == null?
+            'Photos & Video & Audio': photosVideosAudioClips!,
+                style: myTextStyleSmallBlack(context)),
+          ),
+          trailingIcon: Icon(
+            Icons.camera,
+            color: Theme.of(context).primaryColor,
+          ),
+          onPressed: () {
+            pp(' 🔆 🔆 🔆 🔆 🔆 🔆 🔆 🔆 🔆 🔆 🔆 🔆'
+                ' ... about to navigate to project media ...');
+            widget.navigateToProjectMedia(project);
+          }),
+    );
+    if (widget.user.userType == UserType.orgAdministrator ||
+        widget.user.userType == UserType.orgExecutive) {
+      menuItems.add(FocusedMenuItem(
+        // backgroundColor: Theme.of(context).primaryColor,
+          title: Expanded(
+            child: Text(addProjectLocationHere == null?
+            'Add Project Location Here': addProjectLocationHere!,
+                style: myTextStyleSmallBlack(context)),
+          ),
+          trailingIcon: Icon(
+            Icons.location_pin,
+            color: Theme.of(context).primaryColor,
+          ),
+          onPressed: () {
+            widget.navigateToProjectLocation(project);
+          }));
       menuItems.add(
         FocusedMenuItem(
-            // backgroundColor: Theme.of(context).primaryColor,
+          // backgroundColor: Theme.of(context).primaryColor,
             title: Expanded(
-              child: Text(projectDashboard == null?'Project Dashboard':projectDashboard!,
-                  style: myTextStyleSmallBlack(context)),
-            ),
-            trailingIcon: Icon(
-              Icons.dashboard,
-              color: Theme.of(context).primaryColor,
-            ),
-            onPressed: () {
-              widget.navigateToProjectDashboard(project);
-            }),
-      );
-      menuItems.add(
-        FocusedMenuItem(
-            // backgroundColor: Theme.of(context).primaryColor,
-            title: Expanded(
-              child: Text(directionsToProject == null?
-                'Project Directions': directionsToProject!,
-                style: myTextStyleSmallBlack(context),
-              ),
-            ),
-            trailingIcon: Icon(
-              Icons.directions,
-              color: Theme.of(context).primaryColor,
-            ),
-            onPressed: () {
-              widget.navigateToProjectDirections(project);
-            }),
-      );
-      menuItems.add(
-        FocusedMenuItem(
-            // backgroundColor: Theme.of(context).primaryColor,
-            title: Expanded(
-              child: Text(projectLocationsMap == null?
-                'Project Locations Map': projectLocationsMap!,
+              child: Text(addProjectAreas == null?
+              'Create Project Areas': addProjectAreas!,
                 style: myTextStyleSmallBlack(context),
               ),
             ),
@@ -116,78 +167,30 @@ class _ProjectListCardState extends State<ProjectListCard> {
               color: Theme.of(context).primaryColor,
             ),
             onPressed: () {
-              widget.navigateToProjectMap(project);
+              widget.navigateToProjectPolygonMap(project);
             }),
       );
-
-      menuItems.add(
-        FocusedMenuItem(
-            // backgroundColor: Theme.of(context).primaryColor,
-            title: Expanded(
-              child: Text(photosVideosAudioClips == null?
-                  'Photos & Video & Audio': photosVideosAudioClips!,
-                  style: myTextStyleSmallBlack(context)),
-            ),
-            trailingIcon: Icon(
-              Icons.camera,
-              color: Theme.of(context).primaryColor,
-            ),
-            onPressed: () {
-              widget.navigateToProjectMedia(project);
-            }),
-      );
-
-      if (widget.user.userType == UserType.orgAdministrator ||
-          widget.user.userType == UserType.orgExecutive) {
-        menuItems.add(FocusedMenuItem(
-            // backgroundColor: Theme.of(context).primaryColor,
-            title: Expanded(
-              child: Text(addProjectLocationHere == null?
-                  'Add Project Location Here': addProjectLocationHere!,
-                  style: myTextStyleSmallBlack(context)),
-            ),
-            trailingIcon: Icon(
-              Icons.location_pin,
-              color: Theme.of(context).primaryColor,
-            ),
-            onPressed: () {
-              widget.navigateToProjectLocation(project);
-            }));
-        menuItems.add(
-          FocusedMenuItem(
-              // backgroundColor: Theme.of(context).primaryColor,
-              title: Expanded(
-                child: Text(addProjectAreas == null?
-                  'Create Project Areas': addProjectAreas!,
-                  style: myTextStyleSmallBlack(context),
-                ),
-              ),
-              trailingIcon: Icon(
-                Icons.map,
-                color: Theme.of(context).primaryColor,
-              ),
-              onPressed: () {
-                widget.navigateToProjectPolygonMap(project);
-              }),
-        );
-        menuItems.add(FocusedMenuItem(
-            // backgroundColor: Theme.of(context).primaryColor,
-            title: Expanded(
-              child: Text(editProject == null?
-                  'Edit Project': editProject!,
-                  style: myTextStyleSmallBlack(context)),
-            ),
-            trailingIcon: Icon(
-              Icons.create,
-              color: Theme.of(context).primaryColor,
-            ),
-            onPressed: () {
-              widget.navigateToDetail(project);
-            }));
-      }
-
-      return menuItems;
+      menuItems.add(FocusedMenuItem(
+        // backgroundColor: Theme.of(context).primaryColor,
+          title: Expanded(
+            child: Text(editProject == null?
+            'Edit Project': editProject!,
+                style: myTextStyleSmallBlack(context)),
+          ),
+          trailingIcon: Icon(
+            Icons.create,
+            color: Theme.of(context).primaryColor,
+          ),
+          onPressed: () {
+            widget.navigateToDetail(project);
+          }));
     }
+
+    return menuItems;
+  }
+
+  @override
+  Widget build(BuildContext context) {
 
     return SizedBox(
       width: widget.width,
@@ -203,7 +206,8 @@ class _ProjectListCardState extends State<ProjectListCard> {
             animateMenuItems: true,
             openWithTap: true,
             onPressed: () {
-              pp('💛️💛️💛️ not sure what I pressed ...');
+              pp('💛️💛️💛️ .... FocusedMenuHolder: will pop up menu items '
+                  'for project: ${mProject.toJson()} ...');
             },
             child: Padding(
               padding: EdgeInsets.symmetric(horizontal: widget.horizontalPadding),

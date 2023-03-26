@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:firebase_auth/firebase_auth.dart' as fb;
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:geo_monitor/l10n/translation_handler.dart';
 import 'package:geo_monitor/library/generic_functions.dart';
 import 'package:geo_monitor/library/ui/settings/settings_main.dart';
@@ -319,6 +318,7 @@ class DashboardPortraitState extends State<DashboardPortrait>
   }
 
   Future<void> _handleGeofenceEvent(GeofenceEvent event) async {
+    pp('$mm _handleGeofenceEvent ... ');
     var settings = await prefsOGx.getSettings();
     if (settings != null) {
       var arr = await mTx.translate('memberArrived', settings!.locale!);
@@ -415,20 +415,6 @@ class DashboardPortraitState extends State<DashboardPortrait>
             )));
   }
 
-  void _navigateToMessageSender() {
-    // Navigator.push(
-    //     context,
-    //     PageTransition(
-    //         type: PageTransitionType.scale,
-    //         alignment: Alignment.topLeft,
-    //         duration: const Duration(seconds: 1),
-    //         child: const ChatPage()));
-    showToast(
-        textStyle: myTextStyleMediumBold(context),
-        toastGravity: ToastGravity.TOP,
-        message: 'Messaging under construction, see you later!',
-        context: context);
-  }
 
   void _navigateToUserMediaList() async {
     if (mounted) {
@@ -652,7 +638,9 @@ class DashboardPortraitState extends State<DashboardPortrait>
                       : UserProfileCard(
                           userName: deviceUser!.name!,
                           userThumbUrl: deviceUser!.thumbnailUrl!,
-                          avatarRadius: 20, elevation: 0,
+                          namePictureHorizontal: true,
+                          avatarRadius: 20,
+                          elevation: 0,
                           padding: 8,
                           textStyle: myTextStyleMediumPrimaryColor(context)),
                   const SizedBox(

@@ -140,6 +140,13 @@ TextStyle myTextStyleTinyBoldPrimaryColor(BuildContext context) {
       fontSize: 10,
       color: Theme.of(context).primaryColor);
 }
+TextStyle myTextStyleTinyPrimaryColor(BuildContext context) {
+  return GoogleFonts.lato(
+      textStyle: Theme.of(context).textTheme.bodySmall,
+      fontWeight: FontWeight.normal,
+      fontSize: 10,
+      color: Theme.of(context).primaryColor);
+}
 
 TextStyle myTextStyleSmallBlack(BuildContext context) {
   return GoogleFonts.lato(

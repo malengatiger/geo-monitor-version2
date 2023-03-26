@@ -395,6 +395,7 @@ class AudioPlayerCardState extends State<AudioPlayerCard>
                         ? const SizedBox()
                         : UserProfileCard(
                             userName: user!.name!,
+                            namePictureHorizontal: true,
                             padding: 8,
                             userThumbUrl: user!.thumbnailUrl),
                     const SizedBox(
@@ -537,6 +538,7 @@ class AudioPlayerCardState extends State<AudioPlayerCard>
                         : UserProfileCard(
                             userName: user!.name!,
                             userThumbUrl: user!.thumbnailUrl!,
+                        namePictureHorizontal: true,
                             elevation: 4,
                             padding: 8.0),
                     const SizedBox(

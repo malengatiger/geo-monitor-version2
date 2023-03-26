@@ -247,14 +247,11 @@ class DashboardTabletState extends State<DashboardTablet>
       final startDate = map['startDate'];
       final endDate = map['endDate'];
 
-
-
       dataBag = await organizationBloc.getOrganizationData(
           organizationId: user!.organizationId!,
           forceRefresh: forceRefresh,
           startDate: startDate!,
           endDate: endDate!);
-
     } catch (e) {
       pp(e);
       if (mounted) {
@@ -613,6 +610,7 @@ class DashboardTabletState extends State<DashboardTablet>
                   : UserProfileCard(
                       userName: user!.name!,
                       userThumbUrl: user!.thumbnailUrl!,
+                      namePictureHorizontal: true,
                       avatarRadius: avatarRadius,
                       elevation: 2,
                       width: 400,
@@ -621,7 +619,7 @@ class DashboardTabletState extends State<DashboardTablet>
               const SizedBox(
                 height: 4,
               ),
-               SizedBox(
+              SizedBox(
                 height: spaceFromBottom,
               ),
               Padding(

@@ -215,6 +215,7 @@ class ActivityListMobileState extends State<ActivityListMobile>
   }
 
   Future<void> _handleGeofenceEvent(GeofenceEvent event) async {
+    pp('$mm _handleGeofenceEvent ....');
     final arr = await mTx.translate('memberArrived', settings!.locale!);
     if (event.projectName != null) {
       var arrivedAt = arr.replaceAll('\$project', event.projectName!);
