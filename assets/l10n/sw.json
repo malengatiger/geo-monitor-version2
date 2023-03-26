@@ -262,5 +262,22 @@
   "pleaseSelectType": "Tafadhali chagua aina ya Mwanachama",
   "memberCreateFailed": "Imeshindwa kuunda wanachama",
   "Eswatini": "Eswatini",
-  "Lesotho": "Lesotho"
+  "Lesotho": "Lesotho",
+  "verifyComplete": "Uthibitishaji umekamilika. Asante!",
+  "orgName": "Jina la shirika",
+  "memberSignedIn": "Mwanachama ameingia",
+  "enterPhone": "Weka Nambari ya Simu",
+  "serverUnreachable": "seva haiwezi kufikiwa",
+  "putInCode": "Tafadhali weka msimbo uliotumwa kwako",
+  "adminName": "Jina la Msimamizi",
+  "phoneSignIn": "Ingia kwa Simu",
+  "verifyPhone": "Thibitisha Nambari ya Simu",
+  "phoneAuth": "Uthibitishaji wa Simu",
+  "enterOrg": "Ingiza Jina la Shirika",
+  "signIn": "Weka sahihi",
+  "memberNotExist": "Mwanachama huyu hayupo kwenye hifadhidata",
+  "enterSMS": "Weka nambari ya siri ya SMS iliyotumwa kwa kifaa chako",
+  "enterAdmin": "Ingiza Jina la Msimamizi",
+  "verifyFailed": "Uthibitishaji haukufaulu. Tafadhali jaribu baadaye",
+  "duplicateOrg": "Jina la shirika"
 }

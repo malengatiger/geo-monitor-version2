@@ -262,7 +262,24 @@
   "pleaseSelectType": "Sicela ukhethe uhlobo lwelungu",
   "memberCreateFailed": "Ukwakhiwa kwelungu kuhlulekile",
   "Eswatini": "Eswatini",
-  "Lesotho": "Lesotho"
+  "Lesotho": "Lesotho",
+  "verifyComplete": "Ukuqinisekisa kuqediwe. Ngiyabonga!",
+  "orgName": "Igama lenhlangano",
+  "memberSignedIn": "Ilungu selingenile ngemvume",
+  "enterPhone": "Faka Inombolo Yocingo",
+  "serverUnreachable": "iseva ayikwazi ukufinyelelwa",
+  "putInCode": "Sicela ufake ikhodi othunyelwe yona",
+  "adminName": "Igama lomlawuli",
+  "phoneSignIn": "Ngena ngemvume Ngefoni",
+  "verifyPhone": "Qinisekisa Inombolo Yocingo",
+  "phoneAuth": "Ukuqinisekiswa Kwefoni",
+  "enterOrg": "Faka Igama Lenhlangano",
+  "signIn": "Ngena ngemvume",
+  "memberNotExist": "Leli lungu alikho kusizindalwazi",
+  "enterSMS": "Faka iphinikhodi ye-SMS ethunyelwe kudivayisi yakho",
+  "enterAdmin": "Faka Igama Lomlawuli",
+  "verifyFailed": "Ukuqinisekisa kuhlulekile. Sicela uzame ngokuhamba kwesikhathi",
+  "duplicateOrg": "Igama lenhlangano eliyimpinda"
 
 
 }

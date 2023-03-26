@@ -262,6 +262,23 @@
   "pleaseSelectType": "Ka kopo, khetha mofuta oa Setho",
   "memberCreateFailed": "Ho hloleha ho theha setho",
   "Eswatini": "Eswatini",
-  "Lesotho": "Lesotho"
+  "Lesotho": "Lesotho",
+  "verifyComplete": "Netefatso e phethiloe. Kea leboha!",
+  "orgName": "Lebitso la Mokhatlo",
+  "memberSignedIn": "Setho se se se saenetsoe",
+  "enterPhone": "Kenya Nomoro ea Mohala",
+  "serverUnreachable": "seva ha e fihlellehe",
+  "putInCode": "Ka kopo, kenya khoutu e rometsoeng ho uena",
+  "adminName": "Lebitso la Motsamaisi",
+  "phoneSignIn": "Kena ka Mohala",
+  "verifyPhone": "Netefatsa Nomoro ea Mohala",
+  "phoneAuth": "Netefatsa Mohala",
+  "enterOrg": "Kenya Lebitso la Mokhatlo",
+  "signIn": "Kena",
+  "memberNotExist": "Setho sena ha se teng polokelong ea litaba",
+  "enterSMS": "Kenya PIN khoutu ea SMS e rometsoeng sesebelisoa sa hau",
+  "enterAdmin": "Kenya Lebitso la Mookameli",
+  "verifyFailed": "Netefatso e hlolehile. Ka kopo, leka hamorao",
+  "duplicateOrg": "Hlahisa lebitso la mokhatlo"
 
 }

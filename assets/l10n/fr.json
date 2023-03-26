@@ -265,6 +265,23 @@
   "pleaseSelectType": "Veuillez sélectionner le type de membre",
   "memberCreateFailed": "La création du membre a échoué",
   "Eswatini": "Eswatini",
-  "Lesotho": "Lesotho"
+  "Lesotho": "Lesotho",
+  "verifyComplete": "Vérification terminée. Merci!",
+  "orgName": "nom de l\u0027organisation",
+  "memberSignedIn": "Le membre a été connecté",
+  "enterPhone": "Entrez le numéro de téléphone",
+  "serverUnreachable": "le serveur est injoignable",
+  "putInCode": "Merci de saisir le code qui vous a été envoyé",
+  "adminName": "Nom de l\u0027administrateur",
+  "phoneSignIn": "Connexion par téléphone",
+  "verifyPhone": "Vérifier le numéro de téléphone",
+  "phoneAuth": "Authentification par téléphone",
+  "enterOrg": "Entrez le nom de l\u0027organisation",
+  "signIn": "S\u0027identifier",
+  "memberNotExist": "Ce membre n\u0027existe pas dans la base de données",
+  "enterSMS": "Entrez le code PIN SMS envoyé à votre appareil",
+  "enterAdmin": "Entrez le nom de l\u0027administrateur",
+  "verifyFailed": "Échec de la vérification. Merci d\u0027essayer plus tard",
+  "duplicateOrg": "Nom d\u0027organisation en double"
 
 }

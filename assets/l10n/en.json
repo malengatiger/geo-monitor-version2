@@ -264,6 +264,24 @@
   "pleaseSelectType": "Please select Member type",
   "memberCreateFailed": "Member creation failed",
   "Eswatini": "Eswatini",
-  "Lesotho": "Lesotho"
+  "Lesotho": "Lesotho",
+
+  "verifyComplete": "Verification completed. Thank you!",
+  "orgName": "Organization Name",
+  "memberSignedIn": "Member has been signed in",
+  "enterPhone": "Enter Phone Number",
+  "serverUnreachable": "server cannot be reached",
+  "putInCode": "Please put in the code that was sent to you",
+  "adminName": "Administrator Name",
+  "phoneSignIn": "Phone Sign In",
+  "verifyPhone": "Verify Phone Number",
+  "phoneAuth": "Phone Authentication",
+  "enterOrg": "Enter Organization Name",
+  "signIn": "Sign In",
+  "memberNotExist": "This member does not exist in the database",
+  "enterSMS": "Enter SMS pin code sent to your device",
+  "enterAdmin": "Enter Administrator Name",
+  "verifyFailed": "Verification failed. Please try later",
+  "duplicateOrg": "Duplicate organization name"
 
 }

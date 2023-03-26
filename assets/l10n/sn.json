@@ -262,7 +262,24 @@
   "pleaseSelectType": "Ndapota sarudza Nhengo yerudzi",
   "memberCreateFailed": "Kugadzira nhengo kwatadza",
   "Eswatini": "MuSwat",
-  "Lesotho": "Resoto"
+  "Lesotho": "Resoto",
+  "verifyComplete": "Kuongorora kwapera. Ndatenda!",
+  "orgName": "Zita resangano",
+  "memberSignedIn": "Nhengo yakasainwa",
+  "enterPhone": "Isa Nhamba Yenhare",
+  "serverUnreachable": "server haigone kuwanikwa",
+  "putInCode": "Ndapota isa kodhi yawakatumirwa",
+  "adminName": "Zita reMutariri",
+  "phoneSignIn": "Phone Sign In",
+  "verifyPhone": "Verify Phone Number",
+  "phoneAuth": "Phone Authentication",
+  "enterOrg": "Pinda Zita reSangano",
+  "signIn": "Nyorera mu",
+  "memberNotExist": "Nhengo iyi haipo mudhatabhesi",
+  "enterSMS": "Isa SMS pini kodhi yakatumirwa kumudziyo wako",
+  "enterAdmin": "Isa Zita reMutariri",
+  "verifyFailed": "Kuongorora kwatadza. Ndapota edza gare gare",
+  "duplicateOrg": "Zita resangano rakafanana"
 
 
 }

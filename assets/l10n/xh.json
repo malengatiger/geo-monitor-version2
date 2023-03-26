@@ -262,7 +262,24 @@
   "pleaseSelectType": "Nceda ukhethe uhlobo lweLungu",
   "memberCreateFailed": "Ukwenziwa kwelungu akuphumelelanga",
   "Eswatini": "Eswatini",
-  "Lesotho": "Lesotho"
+  "Lesotho": "Lesotho",
+  "verifyComplete": "Ukuqinisekiswa kugqityiwe. Enkosi!",
+  "orgName": "Igama lombutho",
+  "memberSignedIn": "Ilungu lingenile",
+  "enterPhone": "Faka inombolo yefowuni",
+  "serverUnreachable": "umncedisi akanakufikelelwa",
+  "putInCode": "Nceda ufake ikhowudi ethunyelwe kuwe",
+  "adminName": "Igama loMlawuli",
+  "phoneSignIn": "Ngena ngefowuni",
+  "verifyPhone": "Qinisekisa inombolo yefowuni",
+  "phoneAuth": "Uqinisekiso lwefowuni",
+  "enterOrg": "Ngenisa Igama Lombutho",
+  "signIn": "Ngena",
+  "memberNotExist": "Eli lungu alikho kuvimba weenkcukacha",
+  "enterSMS": "Faka ikhowudi ye-SMS ethunyelwe kwisixhobo sakho",
+  "enterAdmin": "Ngenisa Igama Lomlawuli",
+  "verifyFailed": "Ukuqinisekiswa kusilele. Nceda uzame kamva",
+  "duplicateOrg": "Phinda kabini igama lombutho"
 
 
 }

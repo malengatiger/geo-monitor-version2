@@ -314,5 +314,31 @@ class MyKeys {
     hashMap["Lesotho"] = "Lesotho";
     hashMap["Eswatini"] = "Eswatini";
 
+    hashMap["signIn"] = "signIn";
+    hashMap["memberSignedIn"] = "memberSignedIn";
+    hashMap["putInCode"] = "putInCode";
+    hashMap["duplicateOrg"] = "duplicateOrg";
+    hashMap["memberNotExist"] = "memberNotExist";
+    hashMap["serverUnreachable"] = "serverUnreachable";
+    hashMap["phoneSignIn"] = "phoneSignIn";
+    hashMap["phoneAuth"] = "phoneAuth";
+    hashMap["enterPhone"] = "enterPhone";
+    hashMap["phoneNumber"] = "phoneNumber";
+
+    hashMap["verifyPhone"] = "verifyPhone";
+    hashMap["enterSMS"] = "enterSMS";
+    hashMap["sendCode"] = "sendCode";
+    hashMap["verifyComplete"] = "verifyComplete";
+    hashMap["verifyFailed"] = "verifyFailed";
+    hashMap["enterOrg"] = "enterOrg";
+
+    hashMap["orgName"] = "orgName";
+
+    hashMap["enterAdmin"] = "enterAdmin";
+    hashMap["adminName"] = "adminName";
+    hashMap["enterEmail"] = "enterEmail";
+    hashMap["emailAddress"] = "emailAddress";
+
+
   }
 }

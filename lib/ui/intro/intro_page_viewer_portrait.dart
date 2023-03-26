@@ -3,6 +3,8 @@ import 'dart:async';
 import 'package:dots_indicator/dots_indicator.dart';
 import 'package:firebase_auth/firebase_auth.dart' as fb;
 import 'package:flutter/material.dart';
+import 'package:geo_monitor/library/data/settings_model.dart';
+import 'package:geo_monitor/library/ui/settings/settings_form.dart';
 import 'package:geo_monitor/ui/auth/auth_registration_main.dart';
 import 'package:geo_monitor/ui/auth/auth_signin_main.dart';
 import 'package:geo_monitor/ui/dashboard/dashboard_main.dart';
@@ -35,22 +37,11 @@ class IntroPageViewerPortraitState extends State<IntroPageViewerPortrait>
   fb.FirebaseAuth firebaseAuth = fb.FirebaseAuth.instance;
   ur.User? user;
 
-  String? organizations,
-      managementPeople,
-      fieldWorkers,
-      executives,
-      information,
-      thankYou,
-      thankYouMessage,
-      infrastructure,
-      govt,
-      youth,
-      community,
-      registerOrganization;
 
   final mm =
       '${E.pear}${E.pear}${E.pear}${E.pear} IntroPageViewerPortrait: ${E.pear} ';
 
+  SettingsModel? settingsModel;
   @override
   void initState() {
     _animationController = AnimationController(vsync: this);
@@ -59,27 +50,30 @@ class IntroPageViewerPortraitState extends State<IntroPageViewerPortrait>
     _getAuthenticationStatus();
   }
 
-  void _setTexts() async {
-    var sett = await prefsOGx.getSettings();
+  IntroStrings? introStrings;
+  Future _setTexts({String? selectedLocale}) async {
+    settingsModel = await prefsOGx.getSettings();
     late String locale;
-    if (sett == null) {
-      locale = 'en';
+    if (settingsModel == null) {
+      settingsModel = SettingsModel(
+          distanceFromProject: 500,
+          photoSize: 1,
+          maxVideoLengthInSeconds: 120,
+          maxAudioLengthInMinutes: 30,
+          themeIndex: 0,
+          settingsId: null,
+          created: null,
+          organizationId: null,
+          projectId: null,
+          numberOfDays: 7,
+          locale: selectedLocale,
+          activityStreamHours: 24);
+      await prefsOGx.saveSettings(settingsModel!);
+      locale = selectedLocale == null?'en':selectedLocale!;
     } else {
-      locale = sett.locale!;
+      locale = settingsModel!.locale!;
     }
-    organizations = await mTx.translate('organizations', locale);
-    managementPeople = await mTx.translate('managementPeople', locale);
-    fieldWorkers = await mTx.translate('fieldWorkers', locale);
-    executives = await mTx.translate('executives', locale);
-    information = await mTx.translate('information', locale);
-    thankYou = await mTx.translate('thankYou', locale);
-    thankYouMessage = await mTx.translate('thankYouMessage', locale);
-
-    infrastructure = await mTx.translate('infrastructure', locale);
-    govt = await mTx.translate('govt', locale);
-    youth = await mTx.translate('youth', locale);
-    community = await mTx.translate('community', locale);
-    registerOrganization = await mTx.translate('registerOrganization', locale);
+    introStrings = await IntroStrings.getTranslated();
     setState(() {});
   }
 
@@ -199,6 +193,7 @@ class IntroPageViewerPortraitState extends State<IntroPageViewerPortrait>
 
   double currentIndexPage = 0.0;
   int pageIndex = 0;
+  String? hint;
   void _onPageChanged(int value) {
     if (mounted) {
       setState(() {
@@ -217,33 +212,58 @@ class IntroPageViewerPortraitState extends State<IntroPageViewerPortrait>
     _navigateToOrgRegistration();
   }
 
+  onSelected(Locale p1, String p2) async {
+    pp('$mm locale selected: $p1 - $p2');
+    await _setTexts(selectedLocale: p1.languageCode);
+  }
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(
         child: Scaffold(
       appBar: AppBar(
         title: Text(
-          information == null ? 'Geo Information' : information!,
+          introStrings == null ? 'Geo Information' : introStrings!.information!,
           style: myTextStyleLarge(context),
         ),
         bottom: PreferredSize(
-          preferredSize: Size.fromHeight(authed ? 4 : 48),
+          preferredSize: Size.fromHeight(authed ? 36 : 100),
           child: authed
-              ? const SizedBox()
+              ? Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    LocaleChooser(
+                        onSelected: onSelected,
+                        hint: introStrings == null ? 'Select Language' : introStrings!.hint),
+                  ],
+                )
               : Card(
                   elevation: 4,
                   color: Colors.black26,
                   // shape: getRoundedBorder(radius: 16),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  child: Column(
                     children: [
-                      TextButton(
-                          onPressed: onSignIn, child: const Text('Sign In')),
-                      TextButton(
-                          onPressed: onRegistration,
-                          child: Text(registerOrganization == null
-                              ? 'Register Organization'
-                              : registerOrganization!)),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          TextButton(
+                              onPressed: onSignIn, child:  Text(introStrings == null?
+                              'Sign In': introStrings!.signIn)),
+                          TextButton(
+                              onPressed: onRegistration,
+                              child: Text(introStrings == null
+                                  ? 'Register Organization'
+                                  : introStrings!.registerOrganization)),
+                        ],
+                      ),
+                      Row(mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          LocaleChooser(
+                              onSelected: onSelected,
+                              hint: introStrings == null ? 'Select Language' : introStrings!.hint),
+
+                        ],
+                      )
                     ],
                   ),
                 ),
@@ -258,27 +278,27 @@ class IntroPageViewerPortraitState extends State<IntroPageViewerPortrait>
               IntroPage(
                 title: 'Geo',
                 assetPath: 'assets/intro/pic2.jpg',
-                text: infrastructure == null ? lorem : infrastructure!,
+                text: introStrings == null ? lorem : introStrings!.infrastructure,
               ),
               IntroPage(
-                title: organizations == null ? 'Organizations' : organizations!,
+                title: introStrings == null ? 'Organizations' : introStrings!.organizations,
                 assetPath: 'assets/intro/pic5.jpg',
-                text: youth == null ? lorem : youth!,
+                text: introStrings == null ? lorem : introStrings!.youth,
               ),
               IntroPage(
-                title: managementPeople == null ? 'People' : managementPeople!,
+                title: introStrings == null ? 'People' : introStrings!.managementPeople,
                 assetPath: 'assets/intro/pic1.jpg',
-                text: community == null ? lorem : community!,
+                text: introStrings == null ? lorem : introStrings!.community,
               ),
               IntroPage(
-                title: fieldWorkers == null ? 'Field Monitors' : fieldWorkers!,
+                title: introStrings == null ? 'Field Monitors' : introStrings!.fieldWorkers,
                 assetPath: 'assets/intro/pic5.jpg',
                 text: lorem,
               ),
               IntroPage(
-                title: thankYou == null ? 'Thank You' : thankYou!,
+                title: introStrings == null ? 'Thank You' : introStrings!.thankYou,
                 assetPath: 'assets/intro/pic3.webp',
-                text: thankYouMessage == null ? lorem : thankYouMessage!,
+                text: introStrings == null ? lorem : introStrings!.thankYouMessage,
               ),
             ],
           ),
@@ -302,7 +322,6 @@ class IntroPageViewerPortraitState extends State<IntroPageViewerPortrait>
                       Colors.grey,
                       Colors.grey,
                       Colors.grey,
-
                     ], // Inactive dot colors
                     activeColors: [
                       Colors.pink,
@@ -310,7 +329,6 @@ class IntroPageViewerPortraitState extends State<IntroPageViewerPortrait>
                       Colors.teal,
                       Colors.indigo,
                       Colors.deepOrange,
-
                     ], // Àctive dot colors
                   ),
                 ),
@@ -320,5 +338,80 @@ class IntroPageViewerPortraitState extends State<IntroPageViewerPortrait>
         ],
       ),
     ));
+  }
+}
+
+class IntroStrings {
+  late String organizations,
+      managementPeople,
+      fieldWorkers,
+      executives,
+      information,
+      thankYou,
+      thankYouMessage,
+      infrastructure,
+      govt,
+      youth,
+      hint, signIn,
+      community,
+      registerOrganization;
+
+  IntroStrings(
+      {required this.organizations,
+      required this.managementPeople,
+      required this.fieldWorkers,
+      required this.executives,
+      required this.information,
+      required this.thankYou,
+      required this.thankYouMessage,
+      required this.infrastructure,
+      required this.govt,
+      required this.youth,
+      required this.hint,
+        required this.signIn,
+      required this.community,
+      required this.registerOrganization});
+
+  static Future<IntroStrings> getTranslated() async {
+    var settingsModel = await prefsOGx.getSettings();
+    var hint = await mTx.translate('selectLanguage', settingsModel!.locale!);
+
+    var signIn = await mTx.translate('signIn', settingsModel.locale!);
+    var organizations =
+        await mTx.translate('organizations', settingsModel.locale!);
+    var managementPeople =
+        await mTx.translate('managementPeople', settingsModel.locale!);
+    var fieldWorkers =
+        await mTx.translate('fieldWorkers', settingsModel.locale!);
+    var executives = await mTx.translate('executives', settingsModel.locale!);
+    var information = await mTx.translate('information', settingsModel.locale!);
+    var thankYou = await mTx.translate('thankYou', settingsModel.locale!);
+    var thankYouMessage =
+        await mTx.translate('thankYouMessage', settingsModel.locale!);
+
+    var infrastructure =
+        await mTx.translate('infrastructure', settingsModel.locale!);
+    var govt = await mTx.translate('govt', settingsModel.locale!);
+    var youth = await mTx.translate('youth', settingsModel.locale!);
+    var community = await mTx.translate('community', settingsModel.locale!);
+    var registerOrganization =
+        await mTx.translate('registerOrganization', settingsModel.locale!);
+
+    final m = IntroStrings(
+        organizations: organizations,
+        managementPeople: managementPeople,
+        fieldWorkers: fieldWorkers,
+        executives: executives,
+        information: information,
+        thankYou: thankYou,
+        signIn: signIn,
+        thankYouMessage: thankYouMessage,
+        infrastructure: infrastructure,
+        govt: govt,
+        youth: youth,
+        hint: hint,
+        community: community,
+        registerOrganization: registerOrganization);
+    return m;
   }
 }

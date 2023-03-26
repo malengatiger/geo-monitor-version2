@@ -265,6 +265,23 @@
   "pleaseSelectType": "Seleccione el tipo de miembro",
   "memberCreateFailed": "No se pudo crear el miembro",
   "Eswatini": "en golpe",
-  "Lesotho": "Lesoto"
+  "Lesotho": "Lesoto",
+  "verifyComplete": "Verificación completada. ¡Gracias!",
+  "orgName": "Nombre de la Organización",
+  "memberSignedIn": "El miembro ha iniciado sesión",
+  "enterPhone": "Ingresa número telefónico",
+  "serverUnreachable": "el servidor no puede ser alcanzado",
+  "putInCode": "Por favor ingrese el código que se le envió",
+  "adminName": "Nombre del administrador",
+  "phoneSignIn": "Iniciar sesión en el teléfono",
+  "verifyPhone": "Verificar número de teléfono",
+  "phoneAuth": "Autenticación telefónica",
+  "enterOrg": "Ingrese el nombre de la organización",
+  "signIn": "Iniciar sesión",
+  "memberNotExist": "Este miembro no existe en la base de datos.",
+  "enterSMS": "Ingrese el código PIN de SMS enviado a su dispositivo",
+  "enterAdmin": "Introduzca el nombre del administrador",
+  "verifyFailed": "Fallo en la verificación. Por favor intente mas tarde",
+  "duplicateOrg": "Nombre de organización duplicado"
 
 }

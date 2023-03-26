@@ -186,7 +186,6 @@ class AuthPhoneSignInMobileState extends State<AuthPhoneSignInMobile>
         var settings =await DataAPI.getOrganizationSettings(user!.organizationId!);
         settings.sort((a,b) => b.created!.compareTo(a.created!));
         await themeBloc.changeToTheme(settings.first.themeIndex!);
-        pp('$mm .......... do we get here: 1');
         if (settings.isEmpty) {
           await prefsOGx.saveSettings(SettingsModel(
               distanceFromProject: 500,
@@ -206,7 +205,6 @@ class AuthPhoneSignInMobileState extends State<AuthPhoneSignInMobile>
         } else {
           await prefsOGx.saveSettings(settings.first);
           await themeBloc.changeToTheme(settings.first.themeIndex!);
-          pp('$mm .......... do we get here: 2');
         }
         setState(() {
           busy = false;
@@ -219,7 +217,6 @@ class AuthPhoneSignInMobileState extends State<AuthPhoneSignInMobile>
               message: '${user!.name} has been signed in',
               context: context);
         }
-        pp('$mm getting GeoMonitor org data from the db using zip file:  🍎🍎');
         var map = await getStartEndDates();
         final startDate = map['startDate'];
         final endDate = map['endDate'];
@@ -281,7 +278,7 @@ class AuthPhoneSignInMobileState extends State<AuthPhoneSignInMobile>
         child: Scaffold(
       appBar: AppBar(
         title: Text(
-          'Phone Login',
+          'Phone SignIn',
           style: myTextStyleSmall(context),
         ),
       ),

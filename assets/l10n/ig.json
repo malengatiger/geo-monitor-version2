@@ -270,6 +270,24 @@
   "pleaseSelectType": "Biko họrọ ụdị onye otu",
   "memberCreateFailed": "Ịmepụta ndị otu ada ada",
   "Eswatini": "Eswatini",
-  "Lesotho": "Lesotho"
+  "Lesotho": "Lesotho",
+  "verifyComplete": "Emechara nkwenye. Daalụ!",
+  "orgName": "Aha nhazi",
+  "memberSignedIn": "Abanyela onye otu",
+  "enterPhone": "Tinye nọmba ekwentị",
+  "serverUnreachable": "enweghị ike iru ihe nkesa",
+  "putInCode": "Biko tinye koodu ezitere gị",
+  "adminName": "Aha nchịkwa",
+  "phoneSignIn": "Nbanye ekwentị",
+  "verifyPhone": "Nyochaa nọmba ekwentị",
+
+  "phoneAuth": "Nyocha ekwentị",
+  "enterOrg": "Tinye Aha nhazi",
+  "signIn": "Banye",
+  "memberNotExist": "Onye otu a adịghị na nchekwa data",
+  "enterSMS": "Tinye koodu ntụtụ SMS ezigara na ngwaọrụ gị",
+  "enterAdmin": "Tinye Aha nchịkwa",
+  "verifyFailed": "Nnwapụta dara. Biko nwaa ma emechaa",
+  "duplicateOrg": "Aha nhazi oyiri"
 
 }

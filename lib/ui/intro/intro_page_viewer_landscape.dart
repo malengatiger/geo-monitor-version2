@@ -7,13 +7,14 @@ import 'package:geo_monitor/ui/auth/auth_signin_main.dart';
 import 'package:geo_monitor/ui/dashboard/dashboard_main.dart';
 import 'package:page_transition/page_transition.dart';
 
+import '../../l10n/translation_handler.dart';
 import '../../library/api/prefs_og.dart';
 import '../../library/cache_manager.dart';
 import '../../library/data/user.dart' as ur;
 import '../../library/emojis.dart';
 import '../../library/functions.dart';
 import '../../library/generic_functions.dart';
-import '../dashboard/dashboard_portrait.dart';
+import '../../library/ui/settings/settings_form.dart';
 import 'intro_page_one_landscape.dart';
 
 class IntroPageViewerLandscape extends StatefulWidget {
@@ -30,12 +31,54 @@ class _IntroPageViewerLandscapeState extends State<IntroPageViewerLandscape>
   fb.FirebaseAuth firebaseAuth = fb.FirebaseAuth.instance;
   ur.User? user;
   bool authed = false;
+  String? organizations,
+      managementPeople,
+      fieldWorkers,
+      executives,
+      information,
+      thankYou,
+      thankYouMessage,
+      infrastructure,
+      govt,
+      youth,
+      community,
+      hint,
+      registerOrganization;
+
+  final mm =
+      '${E.pear}${E.pear}${E.pear}${E.pear} IntroPageViewerLandscape: ${E.pear} ';
 
   @override
   void initState() {
     _animationController = AnimationController(vsync: this);
     super.initState();
+    _setTexts();
     _getAuthenticationStatus();
+  }
+
+  Future _setTexts() async {
+    var sett = await prefsOGx.getSettings();
+    late String locale;
+    if (sett == null) {
+      locale = 'en';
+    } else {
+      locale = sett.locale!;
+    }
+    hint = await mTx.translate('selectLanguage', sett!.locale!);
+    organizations = await mTx.translate('organizations', locale);
+    managementPeople = await mTx.translate('managementPeople', locale);
+    fieldWorkers = await mTx.translate('fieldWorkers', locale);
+    executives = await mTx.translate('executives', locale);
+    information = await mTx.translate('information', locale);
+    thankYou = await mTx.translate('thankYou', locale);
+    thankYouMessage = await mTx.translate('thankYouMessage', locale);
+
+    infrastructure = await mTx.translate('infrastructure', locale);
+    govt = await mTx.translate('govt', locale);
+    youth = await mTx.translate('youth', locale);
+    community = await mTx.translate('community', locale);
+    registerOrganization = await mTx.translate('registerOrganization', locale);
+    setState(() {});
   }
 
   void _getAuthenticationStatus() async {
@@ -137,6 +180,11 @@ class _IntroPageViewerLandscapeState extends State<IntroPageViewerLandscape>
     }
   }
 
+  onSelected(Locale p1, String p2) async {
+    pp('$mm locale selected: $p1 - $p2');
+    await _setTexts();
+  }
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -160,7 +208,13 @@ class _IntroPageViewerLandscapeState extends State<IntroPageViewerLandscape>
                   color: Colors.black38,
                   shape: getRoundedBorder(radius: 16),
                   child: authed
-                      ? const SizedBox()
+                      ? Row(mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          LocaleChooser(
+                          onSelected: onSelected,
+                          hint: hint == null ? 'Select Language' : hint!),
+                        ],
+                      )
                       : Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
@@ -173,6 +227,9 @@ class _IntroPageViewerLandscapeState extends State<IntroPageViewerLandscape>
                             TextButton(
                                 onPressed: _navigateToOrgRegistration,
                                 child: const Text('Register Organization')),
+                            LocaleChooser(
+                                onSelected: onSelected,
+                                hint: hint == null ? 'Select Language' : hint!),
                           ],
                         ),
                 ),
@@ -183,50 +240,38 @@ class _IntroPageViewerLandscapeState extends State<IntroPageViewerLandscape>
           ListView(
             scrollDirection: Axis.horizontal,
             // itemExtent: ,
-            children: const [
+            children:  [
               IntroPageLandscape(
-                title: 'GeoMonitor',
+                title: 'Geo',
                 assetPath: 'assets/intro/pic2.jpg',
-                text: lorem,
+                text: infrastructure == null ? lorem : infrastructure!,
                 width: 420,
               ),
               IntroPageLandscape(
-                title: 'Organizations',
+                title: organizations == null ? 'Organizations' : organizations!,
                 assetPath: 'assets/intro/pic5.jpg',
-                text: lorem,
+                text: youth == null ? lorem : youth!,
                 width: 420,
               ),
               IntroPageLandscape(
-                title: 'Administrators',
+                title: managementPeople == null ? 'People' : managementPeople!,
                 assetPath: 'assets/intro/pic1.jpg',
-                text: lorem,
+                text: community == null ? lorem : community!,
                 width: 420,
               ),
               IntroPageLandscape(
-                title: 'Field Monitors',
+                title: fieldWorkers == null ? 'Field Monitors' : fieldWorkers!,
                 assetPath: 'assets/intro/pic5.jpg',
                 text: lorem,
                 width: 420,
               ),
               IntroPageLandscape(
-                title: 'Executives',
+                title: thankYou == null ? 'Thank You' : thankYou!,
                 assetPath: 'assets/intro/pic3.webp',
-                text: lorem,
+                text: thankYouMessage == null ? lorem : thankYouMessage!,
                 width: 420,
               ),
-              IntroPageLandscape(
-                title: 'How To',
-                assetPath: 'assets/intro/pic4.jpg',
-                text: lorem,
-                width: 420,
-              ),
-              IntroPageLandscape(
-                title: 'Thank You!',
-                assetPath: 'assets/intro/thanks.webp',
-                width: 420,
-                text:
-                    'Thank you for even getting to this point. Your time and effort is much appreciated and we hope you enjoy your journeys with this app!',
-              ),
+
             ],
           )
         ],

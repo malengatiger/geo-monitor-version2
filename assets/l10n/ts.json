@@ -262,5 +262,22 @@
   "pleaseSelectType": "Hi kombela u hlawula muxaka wa Xirho",
   "memberCreateFailed": "Ku tumbuluxiwa ka swirho ku tsandzekile",
   "Eswatini": "Eswatini",
-  "Lesotho": "Lesotho"
+  "Lesotho": "Lesotho",
+  "verifyComplete": "Ku tiyisisiwa ku hetisiwile. Inkomu!",
+  "orgName": "Vito ra Nhlangano",
+  "memberSignedIn": "Xirho xi sayiniwile",
+  "enterPhone": "Nghenisa Nomboro ya Foni",
+  "serverUnreachable": "sevha a yi nge fikeleleki",
+  "putInCode": "Hi kombela u nghenisa khodi leyi u rhumeriweke yona",
+  "adminName": "Vito ra Mulawuri",
+  "phoneSignIn": "Ku Nghena ka Foni",
+  "verifyPhone": "Tiyisisa Nomboro ya Foni",
+  "phoneAuth": "Ku Tiyisisiwa ka Foni",
+  "enterOrg": "Nghenisa Vito ra Nhlangano",
+  "signIn": "Nghena eka",
+  "memberNotExist": "Xirho lexi a xi kona eka database",
+  "enterSMS": "Nghenisa khodi ya pin ya SMS leyi rhumeriweke eka xitirhisiwa xa wena",
+  "enterAdmin": "Nghenisa Vito ra Mulawuri",
+  "verifyFailed": "Ku tiyisisiwa ku tsandzekile. Hi kombela u ringeta endzhaku",
+  "duplicateOrg": "Vito ra nhlangano leri phindhiweke"
 }

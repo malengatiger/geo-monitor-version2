@@ -264,7 +264,24 @@
   "pleaseSelectType": "Jọwọ yan Iru omo egbe",
   "memberCreateFailed": "Ṣiṣẹda ọmọ ẹgbẹ kuna",
   "Eswatini": "Eswatini",
-  "Lesotho": "Lesotho"
+  "Lesotho": "Lesotho",
+  "verifyComplete": "Ijeri ti pari. E dupe!",
+  "orgName": "Oruko Ajo",
+  "memberSignedIn": "Omo egbe ti wole",
+  "enterPhone": "Tẹ Nọmba foonu sii",
+  "serverUnreachable": "olupin ko le de ọdọ",
+  "putInCode": "Jọwọ fi koodu ti o ranṣẹ si ọ",
+  "adminName": "Orukọ Alakoso",
+  "phoneSignIn": "Foonu Wọle",
+  "verifyPhone": "Daju Nọmba foonu",
+  "phoneAuth": "Ijeri foonu",
+  "enterOrg": "Tẹ Orukọ Ajo",
+  "signIn": "Wọle",
+  "memberNotExist": "Ọmọ ẹgbẹ yii ko si ninu ibi ipamọ data",
+  "enterSMS": "Tẹ koodu PIN SMS ti a fi ranṣẹ si ẹrọ rẹ",
+  "enterAdmin": "Tẹ Orukọ Alakoso sii",
+  "verifyFailed": "Ijeri kuna. Jọwọ gbiyanju nigbamii",
+  "duplicateOrg": "Pidánpidán orukọ agbari"
 
 
 

@@ -262,7 +262,24 @@
   "pleaseSelectType": "Selecione o tipo de membro",
   "memberCreateFailed": "A criação do membro falhou",
   "Eswatini": "Em Swat",
-  "Lesotho": "Lesoto"
+  "Lesotho": "Lesoto",
+  "verifyComplete": "Verificação concluída. Obrigado!",
+  "orgName": "Nome da organização",
+  "memberSignedIn": "O membro foi conectado",
+  "enterPhone": "Digite o número de telefone",
+  "serverUnreachable": "servidor não pode ser alcançado",
+  "putInCode": "Por favor, coloque o código que foi enviado para você",
+  "adminName": "Nome do administrador",
+  "phoneSignIn": "Entrar no telefone",
+  "verifyPhone": "Verificar número de telefone",
+  "phoneAuth": "Autenticação de telefone",
+  "enterOrg": "Digite o nome da organização",
+  "signIn": "Entrar",
+  "memberNotExist": "Este membro não existe no banco de dados",
+  "enterSMS": "Digite o código PIN SMS enviado para o seu dispositivo",
+  "enterAdmin": "Digite o nome do administrador",
+  "verifyFailed": "Falha na verificação. Por favor tente mais tarde",
+  "duplicateOrg": "Nome da organização duplicado"
 
 
 

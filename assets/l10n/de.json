@@ -270,6 +270,23 @@
   "pleaseSelectType": "Bitte wählen Sie den Mitgliedstyp aus",
   "memberCreateFailed": "Mitgliedserstellung fehlgeschlagen",
   "Eswatini": "Im Schwat",
-  "Lesotho": "Lesotho"
+  "Lesotho": "Lesotho",
+  "verifyComplete": "Überprüfung abgeschlossen. Danke schön!",
+  "orgName": "Organisationsname",
+  "memberSignedIn": "Mitglied wurde angemeldet",
+  "enterPhone": "Telefonnummer eingeben",
+  "serverUnreachable": "Server nicht erreichbar",
+  "putInCode": "Bitte geben Sie den Code ein, der Ihnen zugesandt wurde",
+  "adminName": "Administratorname",
+  "phoneSignIn": "Anmelden per Telefon",
+  "verifyPhone": "Überprüfen Sie die Telefonnummer",
+  "phoneAuth": "Telefonauthentifizierung",
+  "enterOrg": "Geben Sie den Organisationsnamen ein",
+  "signIn": "Anmelden",
+  "memberNotExist": "Dieses Mitglied existiert nicht in der Datenbank",
+  "enterSMS": "Geben Sie den an Ihr Gerät gesendeten SMS-PIN-Code ein",
+  "enterAdmin": "Geben Sie den Administratornamen ein",
+  "verifyFailed": "Verifizierung fehlgeschlagen. Bitte versuch es später",
+  "duplicateOrg": "Doppelter Organisationsname"
 
 }

@@ -267,6 +267,24 @@
   "pleaseSelectType": "Kies asseblief lidtipe",
 
   "Eswatini": "In Swat",
-  "Lesotho": "Lesotho"
+  "Lesotho": "Lesotho",
+
+  "verifyComplete": "Verifikasie voltooi. Dankie!",
+  "orgName": "Organisasie Naam",
+  "memberSignedIn": "Lid is aangemeld",
+  "enterPhone": "Voer telefoonnommer in",
+  "serverUnreachable": "bediener kan nie bereik word nie",
+  "putInCode": "Voer asseblief die kode in wat aan jou gestuur is",
+  "adminName": "Administrateur Naam",
+  "phoneSignIn": "Telefoon Teken in",
+  "verifyPhone": "Verifieer telefoonnommer",
+  "phoneAuth": "Telefoonverifikasie",
+  "enterOrg": "Voer organisasienaam in",
+  "signIn": "Meld aan",
+  "memberNotExist": "Hierdie lid bestaan nie in die databasis nie",
+  "enterSMS": "Voer SMS-pinkode in wat na jou toestel gestuur is",
+  "enterAdmin": "Voer administrateurnaam in",
+  "verifyFailed": "Verifikasie het misluk. Probeer asseblief later",
+  "duplicateOrg": "Duplikaat organisasie naam"
 
 }
