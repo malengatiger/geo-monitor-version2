@@ -27,27 +27,26 @@ import 'activity_header.dart';
 import 'activity_stream_card.dart';
 
 class ActivityListTablet extends StatefulWidget {
-  const ActivityListTablet(
-      {Key? key,
-      required this.width,
-      required this.onPhotoTapped,
-      required this.onVideoTapped,
-      required this.onAudioTapped,
-      required this.onUserTapped,
-      required this.onProjectTapped,
-      required this.onProjectPositionTapped,
-      required this.onPolygonTapped,
-      required this.onGeofenceEventTapped,
-      required this.onOrgMessage,
-      required this.thinMode,
-      this.user,
-      this.project,
-      required this.onLocationResponse,
-      required this.onLocationRequest,})
-      : super(key: key);
+  const ActivityListTablet({
+    Key? key,
+    required this.width,
+    required this.onPhotoTapped,
+    required this.onVideoTapped,
+    required this.onAudioTapped,
+    required this.onUserTapped,
+    required this.onProjectTapped,
+    required this.onProjectPositionTapped,
+    required this.onPolygonTapped,
+    required this.onGeofenceEventTapped,
+    required this.onOrgMessage,
+    required this.thinMode,
+    this.user,
+    this.project,
+    required this.onLocationResponse,
+    required this.onLocationRequest,
+  }) : super(key: key);
   final double width;
   final bool thinMode;
-  // final SettingsModel settings;
   final Function(Photo) onPhotoTapped;
   final Function(Video) onVideoTapped;
   final Function(Audio) onAudioTapped;
@@ -70,7 +69,6 @@ class ActivityListTablet extends StatefulWidget {
 class _ActivityListTabletState extends State<ActivityListTablet>
     with SingleTickerProviderStateMixin {
   final ScrollController listScrollController = ScrollController();
-  // late AnimationController _animationController;
 
   var models = <ActivityModel>[];
 
@@ -97,27 +95,6 @@ class _ActivityListTabletState extends State<ActivityListTablet>
   Future _setTexts() async {
     sett = await prefsOGx.getSettings();
     if (sett != null) {
-      // final projectAdded = await mTx.translate('projectAdded', sett!.locale!);
-      // final projectLocationAdded =
-      //     await mTx.translate('projectLocationAdded', sett!.locale!);
-      // final projectAreaAdded =
-      //     await mTx.translate('projectAreaAdded', sett!.locale!);
-      // final memberAtProject =
-      //     await mTx.translate('memberAtProject', sett!.locale!);
-      // final settingsChanged =
-      //     await mTx.translate('settingsChanged', sett!.locale!);
-      // final memberAddedChanged =
-      //     await mTx.translate('memberAddedChanged', sett!.locale!);
-      // final at = await mTx.translate('at', sett!.locale!);
-      // final arr = await mTx.translate('memberArrived', sett!.locale!);
-      // final arrivedAt = arr.replaceAll('\$project', '');
-      // final conditionAdded =
-      //     await mTx.translate('conditionAdded', sett!.locale!);
-      // final memberLocationResponse =
-      //     await mTx.translate('memberLocationResponse', sett!.locale!);
-      // final requestMemberLocation =
-      //     await mTx.translate('requestMemberLocation', sett!.locale!);
-      //
       activityStrings = await ActivityStrings.getTranslated();
       setState(() {});
     }
@@ -136,11 +113,9 @@ class _ActivityListTabletState extends State<ActivityListTablet>
   String? prefix, suffix;
 
   void _getData(bool forceRefresh) async {
-    pp('$mm ... getting activity data ... forceRefresh: $forceRefresh');
-
-      setState(() {
-        busy = true;
-      });
+    setState(() {
+      busy = true;
+    });
 
     pp('$mm ... getting activity data ... forceRefresh: $forceRefresh');
     try {
@@ -151,20 +126,15 @@ class _ActivityListTabletState extends State<ActivityListTablet>
       int index = sub.indexOf('\$');
       prefix = sub.substring(0, index);
       suffix = sub.substring(index + 6);
-      pp('$mm prefix: $prefix suffix: $suffix');
-      pp('$mm ... get Activity (n hours) ... : $hours');
 
       if (widget.project != null) {
-        pp('$mm ... widget.project != null, should get project data');
         await _getProjectData(forceRefresh, hours);
       } else if (widget.user != null) {
-        pp('$mm ... widget.user != null, should get user data');
         await _getUserData(forceRefresh, hours);
       } else {
-        pp('$mm ... widget.project and widget.user == null, should get organization data');
         await _getOrganizationActivity(forceRefresh, hours);
       }
-      _sortDescending();
+      sortActivitiesDescending(models);
     } catch (e) {
       pp(e);
       if (mounted) {
@@ -190,8 +160,6 @@ class _ActivityListTabletState extends State<ActivityListTablet>
         hours: hours,
         forceRefresh: forceRefresh);
     pp('$mm org activity models found: ${models.length}');
-    _sortDescending();
-    setState(() {});
   }
 
   Future _getProjectData(bool forceRefresh, int hours) async {
@@ -199,15 +167,14 @@ class _ActivityListTabletState extends State<ActivityListTablet>
         projectId: widget.project!.projectId!,
         hours: hours,
         forceRefresh: forceRefresh);
-    _sortDescending();
-    setState(() {});
   }
 
   Future _getUserData(bool forceRefresh, int hours) async {
     models = await userBloc.getUserActivity(
-        userId: widget.user!.userId!, hours: hours, forceRefresh: forceRefresh);
-    _sortDescending();
-    setState(() {});
+        userId: widget.user!.userId!,
+        hours: hours,
+        forceRefresh: forceRefresh);
+
   }
 
   void _listenToStreams() async {
@@ -216,7 +183,6 @@ class _ActivityListTabletState extends State<ActivityListTablet>
         fcmBloc.settingsStream.listen((SettingsModel event) async {
       await _setTexts();
       _getData(true);
-
     });
     settingsSubscription =
         organizationBloc.settingsStream.listen((SettingsModel event) async {
@@ -226,45 +192,38 @@ class _ActivityListTabletState extends State<ActivityListTablet>
       _getData(false);
     });
 
-    subscription = fcmBloc.activityStream.listen((ActivityModel model) {
+    subscription = fcmBloc.activityStream.listen((ActivityModel activity) async {
       pp('$mm activityStream delivered activity data ... '
           'current models: ${models.length}\n\n');
 
-      if (model.geofenceEvent != null) {
-        models.insert(0, model);
-        pp('$mm current models after insertion: ${models.length}\n');
-        _sortDescending();
-        return;
-      }
+      // if (model.geofenceEvent != null) {
+      //   _getData(false);
+      //   return;
+      // }
 
-      if (isActivityValid(model)) {
-        models.insert(0, model);
-        pp('$mm current models after insertion: ${models.length}\n');
-        _sortDescending();
+      if (isActivityValid(activity)) {
+        models.insert(0, activity);
+        sortActivitiesDescending(models);
       }
 
       if (mounted) {
-        pp('$mm mounted; setting state ...');
         setState(() {});
       }
     });
   }
 
-  bool isActivityValid(ActivityModel m) {
+  bool isActivityValid(ActivityModel activity) {
     pp('$mm check validity of incoming activity');
     if (widget.project == null && widget.user == null) {
-      pp('$mm  incoming activity is for organization');
       return true;
     }
     if (widget.project != null) {
-      if (m.projectId == widget.project!.projectId) {
-        pp('$mm  incoming activity is for project');
+      if (activity.projectId == widget.project!.projectId) {
         return true;
       }
     }
     if (widget.user != null) {
-      if (m.userId == widget.user!.userId) {
-        pp('$mm  incoming activity is for user');
+      if (activity.userId == widget.user!.userId) {
         return true;
       }
     }
@@ -272,26 +231,8 @@ class _ActivityListTabletState extends State<ActivityListTablet>
   }
 
   bool sortedByDateAscending = false;
-  void _sort() {
-    if (sortedByDateAscending) {
-      _sortDescending();
-    } else {
-      _sortAscending();
-    }
-    if (mounted) {
-      setState(() {});
-    }
-  }
 
-  void _sortAscending() {
-    models.sort((a, b) => a.date!.compareTo(b.date!));
-    sortedByDateAscending = true;
-  }
 
-  void _sortDescending() {
-    models.sort((a, b) => b.date!.compareTo(a.date!));
-    sortedByDateAscending = false;
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -359,7 +300,9 @@ class _ActivityListTabletState extends State<ActivityListTablet>
                         height: 16,
                       ),
                       Text(
-                        activityStrings == null ? 'Tap to refresh' : activityStrings!.tapToRefresh!,
+                        activityStrings == null
+                            ? 'Tap to refresh'
+                            : activityStrings!.tapToRefresh!,
                         style: myTextStyleSmallBold(context),
                       ),
                     ],
@@ -371,7 +314,7 @@ class _ActivityListTabletState extends State<ActivityListTablet>
         ),
       );
     }
-    // pp('$mm ... build method returning widget; thinMode: ${widget.thinMode} .........................');
+    sortActivitiesDescending(models);
     return widget.thinMode
         ? SizedBox(
             width: widget.width,

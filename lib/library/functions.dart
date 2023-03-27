@@ -16,6 +16,7 @@ import 'package:video_thumbnail/video_thumbnail.dart' as vt;
 
 import '../device_location/device_location_bloc.dart';
 import 'api/prefs_og.dart';
+import 'data/activity_model.dart';
 import 'data/position.dart';
 import 'data/project_position.dart';
 
@@ -781,6 +782,11 @@ Future<Map<String, String>> getStartEndDates() async {
   map['endDate'] = endDate;
 
   return map;
+}
+
+void sortActivitiesDescending(List<ActivityModel> models) {
+  models.sort((a, b) => DateTime.parse(b.date!).millisecondsSinceEpoch
+      .compareTo(DateTime.parse(a.date!).millisecondsSinceEpoch));
 }
 
 pp(dynamic msg) {

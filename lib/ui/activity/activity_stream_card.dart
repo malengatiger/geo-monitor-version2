@@ -57,7 +57,7 @@ class ActivityStreamCardState extends State<ActivityStreamCard> {
         ? Card(
             shape: getRoundedBorder(radius: 16),
             child: Padding(
-              padding: const EdgeInsets.all(20.0),
+              padding: const EdgeInsets.all(16.0),
               child: Column(
                 children: [
                   const SizedBox(
@@ -85,21 +85,18 @@ class ActivityStreamCardState extends State<ActivityStreamCard> {
                       : UserProfileCard(
                           userName: widget.activityModel.userName!,
                           padding: 2,
-                          elevation: 1,
+                          elevation: 2,
                           userThumbUrl: widget.activityModel.userThumbnailUrl,
                           namePictureHorizontal: false),
                   const SizedBox(
                     height: 8,
                   ),
-                  Padding(
-                    padding: const EdgeInsets.only(left: 14.0),
-                    child: Text(
-                      msg,
-                      style: myTextStyleTiny(context),
-                    ),
+                  Text(
+                    msg,
+                    style: myTextStyleTiny(context),
                   ),
                   const SizedBox(
-                    height: 12,
+                    height: 4,
                   ),
                 ],
               ),

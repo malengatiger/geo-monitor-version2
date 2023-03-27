@@ -95,7 +95,7 @@ class DashboardPortraitState extends State<DashboardPortrait>
   int instruction = stayOnList;
   var items = <BottomNavigationBarItem>[];
   SettingsModel? settings;
-  String? title;
+  String? title, prefix, suffix;
 
   int numberOfDays = 7;
   @override
@@ -222,9 +222,21 @@ class DashboardPortraitState extends State<DashboardPortrait>
       numberOfDays = settings!.numberOfDays!;
     }
     title = await mTx.translate('dashboard', settings!.locale!);
-    var sub = await mTx.translate('dashboardSubTitle', settings!.locale!);
-    subTitle = sub.replaceAll('\$count', '$numberOfDays');
-    pp(subTitle);
+    var sub1 = await mTx.translate('dashboardSubTitle', settings!.locale!);
+    subTitle = sub1.replaceAll('\$count', '$numberOfDays');
+    var sub =
+    await mTx.translate('dashboardSubTitle', settings!.locale!);
+    pp('deciphering this string: 🍎 $sub');
+    int index = sub.indexOf('\$');
+    prefix = sub.substring(0, index);
+    String? stuff;
+    try {
+      stuff = sub.substring(index + 6);
+      suffix = stuff;
+      pp('$mm prefix: $prefix suffix: $suffix');
+    } catch (e) {
+      pp('🔴🔴🔴🔴🔴🔴 $e');
+    }
     setState(() {});
   }
 
@@ -288,7 +300,10 @@ class DashboardPortraitState extends State<DashboardPortrait>
         startDate: startDate!,
         endDate: endDate!);
     final end = DateTime.now();
-    pp('$mm _getOrganizationData: data bag returned ... ${end.difference(start).inSeconds} seconds elepased');
+    pp('$mm _getOrganizationData: data bag returned ... '
+        '${end.difference(start).inSeconds} seconds elapsed');
+
+    await _setTexts();
   }
 
   Future _getProjectData(String projectId, bool forceRefresh) async {
@@ -640,8 +655,8 @@ class DashboardPortraitState extends State<DashboardPortrait>
                           userThumbUrl: deviceUser!.thumbnailUrl,
                           namePictureHorizontal: true,
                           avatarRadius: 20,
-                          elevation: 0,
-                          padding: 8,
+                          elevation: 1,
+                          padding: 2,
                           textStyle: myTextStyleMediumPrimaryColor(context)),
                   const SizedBox(
                     height: 0,
@@ -656,13 +671,26 @@ class DashboardPortraitState extends State<DashboardPortrait>
                           ),
                         ),
                   const SizedBox(
-                    height: 12,
+                    height: 20,
                   ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
+                  Row(mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Text(
-                        subTitle,
+                        prefix == null ? '' : prefix!,
+                        style: myTextStyleSmall(context),
+                      ),
+                      const SizedBox(
+                        width: 8,
+                      ),
+                      Text(
+                        '$numberOfDays',
+                        style: myTextStyleLargePrimaryColor(context),
+                      ),
+                      const SizedBox(
+                        width: 8,
+                      ),
+                      Text(
+                        suffix == null ? '' : suffix!,
                         style: myTextStyleSmall(context),
                       ),
                     ],

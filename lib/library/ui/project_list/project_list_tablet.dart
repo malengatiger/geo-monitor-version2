@@ -82,7 +82,7 @@ class ProjectListTabletState extends State<ProjectListTablet>
         reverseDuration: const Duration(milliseconds: 2000),
         vsync: this);
     super.initState();
-    _getData();
+    _getData(false);
     _listen();
   }
 
@@ -94,16 +94,18 @@ class ProjectListTabletState extends State<ProjectListTablet>
       projectsNotFound = await mTx.translate('projectsNotFound', sett.locale!);
       refreshData = await mTx.translate('refreshData', sett.locale!);
     }
+    setState(() {});
   }
 
   void _listen() {
     settingsSubscriptionFCM = fcmBloc.settingsStream.listen((event) async {
       if (mounted) {
         await _setTexts();
-        _getData();
+        _getData(false);
       }
     });
     fcmBloc.projectStream.listen((Project project) {
+      _getData(false);
       if (mounted) {
         AppSnackbar.showSnackbar(
             scaffoldKey: _key,
@@ -112,10 +114,9 @@ class ProjectListTabletState extends State<ProjectListTablet>
             backgroundColor: Theme.of(context).primaryColor);
       }
     });
-    adminBloc.projectStream.listen((List<Project> list) {
+    projectBloc.projectStream.listen((List<Project> list) {
       projects = list;
       projects.sort((a, b) => a.name!.compareTo(b.name!));
-
       if (mounted) {
         setState(() {});
       }
@@ -147,7 +148,7 @@ class ProjectListTabletState extends State<ProjectListTablet>
     }
   }
 
-  void _getData() async {
+  void _getData(bool forceRefresh) async {
     setState(() {
       isBusy = true;
     });
@@ -156,7 +157,7 @@ class ProjectListTabletState extends State<ProjectListTablet>
     if (user != null) {
       pp('$mm user found: ${user!.toJson()}');
       _setUserType();
-      await refreshProjects(false);
+      await refreshProjects(forceRefresh);
     } else {
       pp('$mm user NOT found!!! 🥏 🥏 🥏');
 
@@ -218,6 +219,7 @@ class ProjectListTabletState extends State<ProjectListTablet>
             organizationId: user!.organizationId!, forceRefresh: forceRefresh);
       }
       projects.sort((a, b) => a.name!.compareTo(b.name!));
+      await _setTexts();
     } catch (e) {
       pp(e);
       if (mounted) {

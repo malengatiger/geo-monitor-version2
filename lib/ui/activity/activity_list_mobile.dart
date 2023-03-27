@@ -151,7 +151,7 @@ class ActivityListMobileState extends State<ActivityListMobile>
         activeType = orgActive;
         await _getOrganizationData(forceRefresh, hours);
       }
-      _sortDescending();
+      sortActivitiesDescending(models);
     } catch (e) {
       pp(e);
       if (mounted) {
@@ -249,26 +249,6 @@ class ActivityListMobileState extends State<ActivityListMobile>
   }
 
   bool sortedByDateAscending = false;
-  void _sort() {
-    if (sortedByDateAscending) {
-      _sortDescending();
-    } else {
-      _sortAscending();
-    }
-    if (mounted) {
-      setState(() {});
-    }
-  }
-
-  void _sortAscending() {
-    models.sort((a, b) => a.date!.compareTo(b.date!));
-    sortedByDateAscending = true;
-  }
-
-  void _sortDescending() {
-    models.sort((a, b) => b.date!.compareTo(a.date!));
-    sortedByDateAscending = false;
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -335,6 +315,7 @@ class ActivityListMobileState extends State<ActivityListMobile>
         ),
       );
     }
+    sortActivitiesDescending(models);
     return SafeArea(
         child: Scaffold(
       appBar: AppBar(
