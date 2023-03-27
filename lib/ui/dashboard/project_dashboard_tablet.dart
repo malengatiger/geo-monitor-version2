@@ -505,12 +505,17 @@ class ProjectDashboardTabletState extends State<ProjectDashboardTablet>
                         },
                         child: PhotoCard(
                             photo: photo!,
+                            elevation: 8.0,
                             onMapRequested: (photo) {
                               _navigateToPhotoMap();
                             },
                             onRatingRequested: (photo) {
                               pp('show rating ui');
-                            }),
+                            }, onPhotoCardClose: (){
+                          setState(() {
+                            _showPhoto = false;
+                          });
+                        },),
                       ),
                     ),
                   ))

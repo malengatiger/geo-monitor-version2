@@ -867,6 +867,12 @@ class DashboardTabletState extends State<DashboardTablet>
                         },
                         child: PhotoCard(
                             photo: photo!,
+                            elevation: 8.0,
+                            onPhotoCardClose: (){
+                              setState(() {
+                                _showPhoto = false;
+                              });
+                            },
                             onMapRequested: onMapRequested,
                             onRatingRequested: onRatingRequested),
                       ),

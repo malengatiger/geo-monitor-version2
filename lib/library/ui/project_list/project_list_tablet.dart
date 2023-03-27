@@ -8,12 +8,16 @@ import 'package:geo_monitor/l10n/translation_handler.dart';
 import 'package:geo_monitor/library/data/audio.dart';
 import 'package:geo_monitor/library/data/photo.dart';
 import 'package:geo_monitor/library/data/video.dart';
+import 'package:geo_monitor/library/ui/camera/chewie_video_player.dart';
+import 'package:geo_monitor/library/ui/camera/video_player_tablet.dart';
 import 'package:geo_monitor/library/ui/maps/project_map_mobile.dart';
 import 'package:geo_monitor/library/ui/maps/project_map_tablet.dart';
 import 'package:geo_monitor/library/ui/media/list/project_media_main.dart';
 import 'package:geo_monitor/library/ui/project_list/project_list_card.dart';
 import 'package:geo_monitor/library/ui/project_list/project_list_mobile.dart';
 import 'package:geo_monitor/ui/activity/geo_activity.dart';
+import 'package:geo_monitor/ui/audio/audio_player_og.dart';
+import 'package:geo_monitor/ui/dashboard/photo_card.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:map_launcher/map_launcher.dart';
 import 'package:page_transition/page_transition.dart';
@@ -70,7 +74,6 @@ class ProjectListTabletState extends State<ProjectListTablet>
   String? organizationProjects, projectsNotFound, refreshData;
   late StreamSubscription<SettingsModel> settingsSubscriptionFCM;
 
-
   @override
   void initState() {
     _animationController = AnimationController(
@@ -87,11 +90,10 @@ class ProjectListTabletState extends State<ProjectListTablet>
     var sett = await prefsOGx.getSettings();
     if (sett != null) {
       organizationProjects =
-      await mTx.translate('organizationProjects', sett.locale!);
+          await mTx.translate('organizationProjects', sett.locale!);
       projectsNotFound = await mTx.translate('projectsNotFound', sett.locale!);
       refreshData = await mTx.translate('refreshData', sett.locale!);
     }
-
   }
 
   void _listen() {
@@ -301,16 +303,18 @@ class ProjectListTabletState extends State<ProjectListTablet>
   void _navigateToProjectAudio(Project p) {
     if (user!.userType == UserType.fieldMonitor) {}
     Navigator.push(
-        context,
-        PageTransition(
-            type: PageTransitionType.scale,
-            alignment: Alignment.topLeft,
-            duration: const Duration(milliseconds: 1500),
-            child:  AudioRecorder(onCloseRequested: (){
+      context,
+      PageTransition(
+        type: PageTransitionType.scale,
+        alignment: Alignment.topLeft,
+        duration: const Duration(milliseconds: 1500),
+        child: AudioRecorder(
+            onCloseRequested: () {
               pp('On stop requested');
               Navigator.of(context).pop();
-            }, project: p),
-        ),
+            },
+            project: p),
+      ),
     );
   }
 
@@ -630,13 +634,20 @@ class ProjectListTabletState extends State<ProjectListTablet>
 
   @override
   Widget build(BuildContext context) {
+    var amInPortrait = false;
+    final ori = MediaQuery.of(context).orientation.name;
+    if (ori == 'portrait') {
+      amInPortrait = true;
+    }
     return SafeArea(
         child: Scaffold(
             key: _key,
             appBar: AppBar(
               centerTitle: true,
-              title: Text(organizationProjects == null?
-                'Organization Projects': organizationProjects!,
+              title: Text(
+                organizationProjects == null
+                    ? 'Organization Projects'
+                    : organizationProjects!,
                 style: myTextStyleLarge(context),
               ),
               actions: _getActions(),
@@ -739,10 +750,13 @@ class ProjectListTabletState extends State<ProjectListTablet>
                     ),
                   )
                 : Padding(
-                    padding:  EdgeInsets.all(12.0),
+                    padding: const EdgeInsets.all(12.0),
                     child: projects.isEmpty
                         ? Center(
-                            child: Text(projectsNotFound == null?'Projects Not Found': projectsNotFound!,
+                            child: Text(
+                                projectsNotFound == null
+                                    ? 'Projects Not Found'
+                                    : projectsNotFound!,
                                 style: GoogleFonts.lato(
                                     textStyle:
                                         Theme.of(context).textTheme.bodyLarge,
@@ -814,9 +828,12 @@ class ProjectListTabletState extends State<ProjectListTablet>
                                                       _navigateToProjectDashboard(
                                                           p);
                                                     },
-                                                    user: user!, navigateToProjectDirections: (project ) {
-                                                      _navigateToProjectDirections(project);
-                                                  },
+                                                    user: user!,
+                                                    navigateToProjectDirections:
+                                                        (project) {
+                                                      _navigateToProjectDirections(
+                                                          project);
+                                                    },
                                                   ),
                                                 ),
                                         ),
@@ -909,7 +926,9 @@ class ProjectListTabletState extends State<ProjectListTablet>
                                                       _navigateToProjectDashboard(
                                                           p);
                                                     },
-                                                    user: user!, navigateToProjectDirections: (project ) {  },
+                                                    user: user!,
+                                                    navigateToProjectDirections:
+                                                        (project) {},
                                                   ),
                                                 ),
                                         ),
@@ -958,6 +977,46 @@ class ProjectListTabletState extends State<ProjectListTablet>
                                       ),
                                     )
                                   : const SizedBox(),
+                              _showPhoto
+                                  ? Positioned(
+                                      left: amInPortrait ? 160 : 300,
+                                      right: amInPortrait ? 160 : 300,
+                                      child: PhotoCard(
+                                          photo: selectedPhoto!,
+                                          onPhotoCardClose: () {
+                                            setState(() {
+                                              _showPhoto = false;
+                                            });
+                                          },
+                                          elevation: 12.0,
+                                          onMapRequested: onMapRequested,
+                                          onRatingRequested: onRatingRequested),
+                                    )
+                                  : const SizedBox(),
+                              _playAudio
+                                  ? Positioned(
+                                      left: amInPortrait ? 200 : 300,
+                                      right: amInPortrait ? 200 : 300,
+                                      child: AudioPlayerOG(
+                                          audio: selectedAudio!,
+                                          onCloseRequested: () {
+                                            setState(() {
+                                              _playAudio = false;
+                                            });
+                                          }),
+                                    )
+                                  : const SizedBox(),
+                              _playVideo
+                                  ? Positioned(
+                                      child: VideoPlayerTablet(
+                                          video: selectedVideo!,
+                                          onCloseRequested: () {
+                                            setState(() {
+                                              _playVideo = false;
+                                            });
+                                          },
+                                          width: 400))
+                                  : const SizedBox(),
                             ],
                           ))));
   }
@@ -967,10 +1026,11 @@ class ProjectListTabletState extends State<ProjectListTablet>
     if (poss.isNotEmpty) {
       _navigateToDirections(
         latitude: poss.first.position!.coordinates[1],
-        longitude: poss.first.position!.coordinates[0],);
+        longitude: poss.first.position!.coordinates[0],
+      );
     }
-
   }
+
   void _navigateToLocationResponseMap(LocationResponse locationResponse) async {
     Navigator.push(
         context,
@@ -992,9 +1052,42 @@ class ProjectListTabletState extends State<ProjectListTablet>
     refreshProjects(true);
   }
 
-  showPhoto(Photo p1) {}
+  bool _showPhoto = false;
+  bool _playAudio = false;
+  bool _playVideo = false;
+  Photo? selectedPhoto;
+  Video? selectedVideo;
+  Audio? selectedAudio;
 
-  showVideo(Video p1) {}
+  Audio? audio;
+  showPhoto(Photo p1) {
+    selectedPhoto = p1;
+    setState(() {
+      _showPhoto = true;
+      _playAudio = false;
+      _playVideo = false;
+    });
+  }
 
-  showAudio(Audio p1) {}
+  showVideo(Video p1) {
+    selectedVideo = p1;
+    setState(() {
+      _showPhoto = false;
+      _playAudio = false;
+      _playVideo = true;
+    });
+  }
+
+  showAudio(Audio p1) {
+    selectedAudio = p1;
+    setState(() {
+      _showPhoto = false;
+      _playAudio = true;
+      _playVideo = false;
+    });
+  }
+
+  onMapRequested(Photo p1) {}
+
+  onRatingRequested(Photo p1) {}
 }

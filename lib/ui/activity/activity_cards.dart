@@ -29,7 +29,7 @@ class ThinCard extends StatelessWidget {
       child: Card(
         shape: getRoundedBorder(radius: 16),
         child: Padding(
-          padding: const EdgeInsets.all(8.0),
+          padding: const EdgeInsets.all(16.0),
           child: SizedBox(
             height: height,
             child: Column(

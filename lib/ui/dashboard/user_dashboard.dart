@@ -633,6 +633,12 @@ class UserDashboardState extends State<UserDashboard>
                               },
                               child: PhotoCard(
                                   photo: photo!,
+                                  elevation: 8.0,
+                                  onPhotoCardClose: (){
+                                    setState(() {
+                                      _showPhoto = false;
+                                    });
+                                  },
                                   onMapRequested: (mPhoto) {
                                     photo = mPhoto;
                                     _navigateToPhotoMap();

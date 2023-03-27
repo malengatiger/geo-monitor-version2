@@ -12,18 +12,20 @@ class PhotoCard extends StatelessWidget {
       {Key? key,
         required this.photo,
         required this.onMapRequested,
-        required this.onRatingRequested})
+        required this.onRatingRequested, required this.elevation, required this.onPhotoCardClose})
       : super(key: key);
 
   final Photo photo;
   final Function(Photo) onMapRequested;
   final Function(Photo) onRatingRequested;
+  final Function onPhotoCardClose;
+  final double elevation;
 
   @override
   Widget build(BuildContext context) {
     return Card(
       shape: getRoundedBorder(radius: 16),
-      elevation: 8,
+      elevation: elevation,
       child: SingleChildScrollView(
         child: Column(
           children: [
@@ -33,15 +35,8 @@ class PhotoCard extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 48.0),
               child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                mainAxisAlignment: MainAxisAlignment.end,
                 children: [
-                  Flexible(
-                    child: Text(
-                      '${photo.projectName}',
-                      style: myTextStyleLargePrimaryColor(context),
-                    ),
-                  ),
-                  const SizedBox(width: 24),
                   IconButton(
                       onPressed: () {
                         onMapRequested(photo);
@@ -49,7 +44,7 @@ class PhotoCard extends StatelessWidget {
                       icon: Icon(
                         Icons.location_on,
                         color: Theme.of(context).primaryColor,
-                        size: 24,
+                        size: 18,
                       )),
                   TextButton(
                     onPressed: () {
@@ -60,12 +55,29 @@ class PhotoCard extends StatelessWidget {
                       style: const TextStyle(fontSize: 14),
                     ),
                   ),
+                  IconButton(
+                      onPressed: () {
+                        onPhotoCardClose();
+                      },
+                      icon: const Icon(
+                        Icons.close,
+                        size: 18,
+                      )),
                 ],
               ),
             ),
             const SizedBox(
+              height: 8,
+            ),
+
+            Text(
+              '${photo.projectName}',
+              style: myTextStyleLargePrimaryColor(context),
+            ),
+            const SizedBox(
               height: 24,
             ),
+
             Text(
               '${photo.userName}',
               style: myTextStyleSmallBold(context),

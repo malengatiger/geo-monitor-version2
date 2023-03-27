@@ -198,9 +198,11 @@ class ActivityStreamCardState extends State<ActivityStreamCard> {
                   const SizedBox(
                     width: 8,
                   ),
-                  Text(
-                    msg,
-                    style: myTextStyleSmall(context),
+                  Flexible(
+                    child: Text(
+                      msg,
+                      style: myTextStyleSmall(context),
+                    ),
                   ),
                 ],
               ),
