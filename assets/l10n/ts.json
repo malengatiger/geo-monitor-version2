@@ -279,5 +279,9 @@
   "enterSMS": "Nghenisa khodi ya pin ya SMS leyi rhumeriweke eka xitirhisiwa xa wena",
   "enterAdmin": "Nghenisa Vito ra Mulawuri",
   "verifyFailed": "Ku tiyisisiwa ku tsandzekile. Hi kombela u ringeta endzhaku",
-  "duplicateOrg": "Vito ra nhlangano leri phindhiweke"
+  "duplicateOrg": "Vito ra nhlangano leri phindhiweke",
+  "memberLocation": "Xirho xi hlamule hi ndhawu ya vona",
+  "photoLocation": "Xifaniso xi tekiwile endhawini leyi",
+  "videoLocation": "Vhidiyo yi endliwe endhawini leyi",
+  "audioLocation": "Audi clip yi rhekhodiwile eka ndhawu leyi"
 }

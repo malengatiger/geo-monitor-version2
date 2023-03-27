@@ -279,7 +279,11 @@
   "enterSMS": "Faka ikhowudi ye-SMS ethunyelwe kwisixhobo sakho",
   "enterAdmin": "Ngenisa Igama Lomlawuli",
   "verifyFailed": "Ukuqinisekiswa kusilele. Nceda uzame kamva",
-  "duplicateOrg": "Phinda kabini igama lombutho"
+  "duplicateOrg": "Phinda kabini igama lombutho",
+  "memberLocation": "Ilungu liphendule ngendawo yalo",
+  "photoLocation": "Ifoto ithathwe kule ndawo",
+  "videoLocation": "Ividiyo yenziwe kule ndawo",
+  "audioLocation": "Ikliphu ye-Audi ishicilelwe kule ndawo"
 
 
 }

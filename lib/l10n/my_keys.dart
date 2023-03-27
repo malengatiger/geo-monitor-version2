@@ -339,6 +339,12 @@ class MyKeys {
     hashMap["enterEmail"] = "enterEmail";
     hashMap["emailAddress"] = "emailAddress";
 
+    hashMap["photoLocation"]  = "photoLocation";
+    hashMap["videoLocation"]  = "videoLocation";
+    hashMap["audioLocation"]  = "audioLocation";
+    hashMap["memberLocation"]  = "memberLocation";
+
+
 
   }
 }

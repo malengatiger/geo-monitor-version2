@@ -279,6 +279,10 @@
   "enterSMS": "Kenya PIN khoutu ea SMS e rometsoeng sesebelisoa sa hau",
   "enterAdmin": "Kenya Lebitso la Mookameli",
   "verifyFailed": "Netefatso e hlolehile. Ka kopo, leka hamorao",
-  "duplicateOrg": "Hlahisa lebitso la mokhatlo"
+  "duplicateOrg": "Hlahisa lebitso la mokhatlo",
+  "memberLocation": "Member a araba ka sebaka sa bona",
+  "photoLocation": "Senepe se nkuoe sebakeng sena",
+  "videoLocation": "Video e entsoe sebakeng sena",
+  "audioLocation": "Sekotwana sa Audi se hatisitsoe sebakeng sena"
 
 }

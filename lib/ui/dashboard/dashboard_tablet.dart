@@ -532,7 +532,7 @@ class DashboardTabletState extends State<DashboardTablet>
     var ori = MediaQuery.of(context).orientation;
     var bottomHeight = 160.0;
     var padding = 360.0;
-    var extPadding = 200.0;
+    var extPadding = 300.0;
     var top = -12.0;
     var avatarRadius = 24.0;
     var userPadding = 16.0;
@@ -541,7 +541,7 @@ class DashboardTabletState extends State<DashboardTablet>
       padding = 200;
       top = 0;
       bottomHeight = 200;
-      extPadding = 120;
+      extPadding = 140;
       avatarRadius = 20;
       userPadding = 12;
       spaceFromBottom = 20;
@@ -852,7 +852,7 @@ class DashboardTabletState extends State<DashboardTablet>
               ? Positioned(
                   left: extPadding,
                   right: extPadding,
-                  top: 0,
+                  top: -10,
                   child: SizedBox(
                     width: 600,
                     height: 800,

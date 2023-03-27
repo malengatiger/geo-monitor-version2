@@ -230,10 +230,6 @@ class _ActivityListTabletState extends State<ActivityListTablet>
     return false;
   }
 
-  bool sortedByDateAscending = false;
-
-
-
   @override
   Widget build(BuildContext context) {
     pp('$mm ... build method starting .........................');

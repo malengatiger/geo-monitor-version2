@@ -279,7 +279,11 @@
   "enterSMS": "Isa SMS pini kodhi yakatumirwa kumudziyo wako",
   "enterAdmin": "Isa Zita reMutariri",
   "verifyFailed": "Kuongorora kwatadza. Ndapota edza gare gare",
-  "duplicateOrg": "Zita resangano rakafanana"
+  "duplicateOrg": "Zita resangano rakafanana",
+  "memberLocation": "Member akadaira nenzvimbo yavo",
+  "photoLocation": "Mufananidzo wakatorwa panzvimbo iyi",
+  "videoLocation": "Vhidhiyo yakaitwa panzvimbo ino",
+  "audioLocation": "Audi clip yakarekodhwa panzvimbo ino"
 
 
 }

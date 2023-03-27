@@ -282,6 +282,10 @@
   "enterSMS": "Entrez le code PIN SMS envoyé à votre appareil",
   "enterAdmin": "Entrez le nom de l\u0027administrateur",
   "verifyFailed": "Échec de la vérification. Merci d\u0027essayer plus tard",
-  "duplicateOrg": "Nom d\u0027organisation en double"
+  "duplicateOrg": "Nom d\u0027organisation en double",
+  "memberLocation": "Le membre a répondu avec son emplacement",
+  "photoLocation": "La photo a été prise à cet endroit",
+  "videoLocation": "La vidéo a été réalisée à cet endroit",
+  "audioLocation": "Le clip Audi a été enregistré à cet endroit"
 
 }

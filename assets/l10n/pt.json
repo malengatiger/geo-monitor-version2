@@ -279,7 +279,11 @@
   "enterSMS": "Digite o código PIN SMS enviado para o seu dispositivo",
   "enterAdmin": "Digite o nome do administrador",
   "verifyFailed": "Falha na verificação. Por favor tente mais tarde",
-  "duplicateOrg": "Nome da organização duplicado"
+  "duplicateOrg": "Nome da organização duplicado",
+  "memberLocation": "O membro respondeu com sua localização",
+  "photoLocation": "A foto foi tirada neste local",
+  "videoLocation": "O vídeo foi feito neste local",
+  "audioLocation": "Audi clip foi gravado neste local"
 
 
 

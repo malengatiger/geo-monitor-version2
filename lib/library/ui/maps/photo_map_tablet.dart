@@ -7,6 +7,7 @@ import 'package:geo_monitor/library/api/prefs_og.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:intl/intl.dart';
 
+import '../../../l10n/translation_handler.dart';
 import '../../data/photo.dart';
 import '../../data/position.dart' as local;
 import '../../data/project_polygon.dart';
@@ -38,6 +39,7 @@ class PhotoMapState extends State<PhotoMap>
   final _key = GlobalKey<ScaffoldState>();
   bool busy = false;
   User? user;
+  String? photoLocationText, myDate;
   static const CameraPosition _kGooglePlex = CameraPosition(
     target: LatLng(-25.85656, 27.7857),
     zoom: 14.4746,
@@ -66,6 +68,15 @@ class PhotoMapState extends State<PhotoMap>
         });
       },
     );
+  }
+
+  Future _setTexts() async {
+    final sett = await prefsOGx.getSettings();
+    if (sett != null) {
+      photoLocationText = await mTx.translate('photoLocation',
+          sett!.locale!);
+      myDate = getFmtDate(widget.photo.created!, sett!.locale!);
+    }
   }
 
   void _getUser() async {
@@ -128,16 +139,16 @@ class PhotoMapState extends State<PhotoMap>
 
   @override
   Widget build(BuildContext context) {
-    String formattedDate =
-        DateFormat.yMMMEd().format(DateTime.parse(widget.photo.created!));
-    var time = TimeOfDay.fromDateTime(DateTime.parse(widget.photo.created!));
+    // String formattedDate =
+    //     DateFormat.yMMMEd().format(DateTime.parse(widget.photo.created!));
+    // var time = TimeOfDay.fromDateTime(DateTime.parse(widget.photo.created!));
     var deviceType = getThisDeviceType();
     return SafeArea(
       child: Scaffold(
         key: _key,
         appBar: AppBar(
-          title: Text(
-            'Photo Location',
+          title: Text(photoLocationText == null?
+            'Photo Location':photoLocationText! ,
             style: myTextStyleMediumBold(context),
           ),
           bottom: PreferredSize(
@@ -246,7 +257,7 @@ class PhotoMapState extends State<PhotoMap>
                                   height: 8,
                                 ),
                                 Text(
-                                  '$formattedDate ${time.hour}:${time.minute}',
+                                 myDate == null? widget.photo.created!: myDate!,
                                   style: myTextStyleSmall(context),
                                 ),
                                 const SizedBox(
@@ -310,8 +321,7 @@ class PhotoMapState extends State<PhotoMap>
                                   const SizedBox(
                                     height: 8,
                                   ),
-                                  Text(
-                                    '$formattedDate ${time.hour}:${time.minute}',
+                                  Text(myDate == null?widget.photo.created!:myDate!,
                                     style: myTextStyleSmall(context),
                                   ),
                                   const SizedBox(

@@ -703,12 +703,6 @@ class DashboardPortraitState extends State<DashboardPortrait>
             ),
           ),
         ),
-        // backgroundColor: Colors.brown[100],
-        // bottomNavigationBar: BottomNavigationBar(
-        //   items: items,
-        //   onTap: _handleBottomNav,
-        //   elevation: 8,
-        // ),
         body: busy
             ? const Center(
                 child: SizedBox(

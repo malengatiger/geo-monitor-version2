@@ -281,7 +281,11 @@
   "enterSMS": "Tẹ koodu PIN SMS ti a fi ranṣẹ si ẹrọ rẹ",
   "enterAdmin": "Tẹ Orukọ Alakoso sii",
   "verifyFailed": "Ijeri kuna. Jọwọ gbiyanju nigbamii",
-  "duplicateOrg": "Pidánpidán orukọ agbari"
+  "duplicateOrg": "Pidánpidán orukọ agbari",
+  "memberLocation": "Omo egbe fesi pẹlu wọn ipo",
+  "photoLocation": "A ya fọto ni ibi yii",
+  "videoLocation": "A ṣe fidio ni aaye yii",
+  "audioLocation": "Audi agekuru ti a gba silẹ ni ibi yi"
 
 
 

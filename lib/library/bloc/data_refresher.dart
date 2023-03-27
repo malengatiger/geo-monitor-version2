@@ -44,7 +44,7 @@ class DataRefresher {
       required String? organizationId,
       required String? projectId,
       required String? userId}) async {
-    pp('\n\n\n$xx manageRefresh inside Isolates: starting ... 🔵🔵🔵😡😡\n\n');
+    pp('\n\n\n$xx manageRefresh: inside Isolates: starting ... 🔵🔵🔵😡😡\n\n');
     var start = DateTime.now();
     if (numberOfDays == null) {
       var sett = await prefsOGx.getSettings();
@@ -59,33 +59,16 @@ class DataRefresher {
     await _setUp();
     DataBag? bag;
     try {
-      if (organizationId != null) {
-        bag = await _startOrganizationDataRefresh(
-            organizationId: organizationId, directoryPath: directory.path);
-      }
-      if (projectId != null) {
-        bag = await _startProjectRefresh(
-            projectId: projectId, directoryPath: directory.path);
-      }
-      if (userId != null) {
-        bag = await _startUserDataRefresh(
-            userId: userId, directoryPath: directory.path);
-      }
-      var end = DateTime.now();
-      if (bag != null) {
-        pp('$xx manageRefresh: 🥬🥬🥬🥬🥬🥬 '
-            'completed and data cached and sent to stream. 🥬🥬🥬 '
-            '${end.difference(start).inSeconds} seconds elapsed');
-      } else {
-        pp('\n\n$xz Fucking bag is null! 🍎🍎🍎🍎🍎🍎');
-        return DataBag(photos: [], videos: [], fieldMonitorSchedules: [],
-            projectPositions: [], projects: [], audios: [],
-            date: DateTime.now().toIso8601String(), users: [], projectPolygons: [], settings: []);
-
-      }
+      bag = await _performWork(organizationId, bag, projectId, userId);
+      _finish(bag, start);
     } catch (e) {
-      pp('$xx Something went horribly wrong: $e');
-      throw Exception('Data Refresh Exception: $e');
+      pp('$xx Something went horribly wrong, will RETRY ...: $e');
+      bag = await retry(
+          numberOfDays: numberOfDays,
+          organizationId: organizationId,
+          projectId: projectId,
+          userId: userId);
+      _finish(bag, start);
     }
 
     pp('$xx Done with org data, refreshing projects and users if needed ...');
@@ -103,6 +86,63 @@ class DataRefresher {
           'and users: ${users.length} countries: ${countries.length}');
     }
 
+    return bag;
+  }
+
+  DataBag? _finish(DataBag? bag, DateTime start) {
+    var end = DateTime.now();
+    if (bag != null) {
+      pp('$xx manageRefresh: 🥬🥬🥬🥬🥬🥬 '
+          'completed and data cached and sent to stream. 🥬🥬🥬 '
+          '${end.difference(start).inSeconds} seconds elapsed');
+    } else {
+      pp('\n\n$xz Fucking bag is null! 🍎🍎🍎🍎🍎🍎');
+      return DataBag(
+          photos: [],
+          videos: [],
+          fieldMonitorSchedules: [],
+          projectPositions: [],
+          projects: [],
+          audios: [],
+          date: DateTime.now().toIso8601String(),
+          users: [],
+          projectPolygons: [],
+          settings: []);
+    }
+  }
+
+  Future<DataBag?> retry(
+      {required int? numberOfDays,
+      required String? organizationId,
+      required String? projectId,
+      required String? userId}) async {
+
+    pp('$xx retrying the call after an error, will kick off after 5 seconds  ...');
+    await Future.delayed(Duration(seconds: 5));
+    DataBag? bag;
+    try {
+      bag = await _performWork(organizationId, bag, projectId, userId);
+    } catch (e) {
+      pp('$xx Something went horribly wrong on the RETRY, giving up!: $e');
+    }
+
+    return bag;
+  }
+
+  Future<DataBag?> _performWork(String? organizationId, DataBag? bag,
+      String? projectId, String? userId) async {
+    if (organizationId != null) {
+      bag = await _startOrganizationDataRefresh(
+          organizationId: organizationId, directoryPath: directory.path);
+    }
+    if (projectId != null) {
+      bag = await _startProjectRefresh(
+          projectId: projectId, directoryPath: directory.path);
+    }
+    if (userId != null) {
+      bag = await _startUserDataRefresh(
+          userId: userId, directoryPath: directory.path);
+    }
     return bag;
   }
 

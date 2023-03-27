@@ -286,6 +286,10 @@
   "enterSMS": "输入发送到您设备的短信密码",
   "enterAdmin": "输入管理员名称",
   "verifyFailed": "验证失败。请稍后再试",
-  "duplicateOrg": "重复的组织名称"
+  "duplicateOrg": "重复的组织名称",
+  "memberLocation": "成员回复了他们的位置",
+  "photoLocation": "照片是在这个位置拍摄的",
+  "videoLocation": "视频是在这个位置制作的",
+  "audioLocation": "奥迪剪辑是在这个位置录制的"
 
 }

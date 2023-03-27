@@ -32,7 +32,8 @@ User? user;
 /// Manages the uploading of media files to Cloud Storage using isolates
 class GeoUploader {
   static const xx = '🤞🏾🤞🏾🤞🏾🤞🏾🤞🏾🤞🏾GeoUploader: 🤞🏾🤞🏾🤞🏾🤞🏾';
-
+  int retryCount = 0;
+  static const maxRetries = 2;
   Future manageMediaUploads() async {
     pp('$xx manageMediaUploads: starting ... 🔵🔵🔵');
 
@@ -40,15 +41,35 @@ class GeoUploader {
       await uploadCachedPhotos();
       await uploadCachedAudios();
       await uploadCachedVideos();
-
       pp('$xx manageMediaUploads: 🥬🥬🥬🥬🥬🥬 '
           'completed and uploads done if needed. 🥬🥬🥬 '
           'should be Okey Dokey!');
     } catch (e) {
       pp('$xx Something went horribly wrong: $e');
-      throw Exception('Upload Exception: $e');
+      var result = _danceWithUploads();
+      if (result == 9) {
+        pp('$xx Something went horribly wrong, and unable to retry: $e');
+      }
     }
   }
+
+  Future<int> _danceWithUploads() async {
+    await Future.delayed(Duration(seconds: 5));
+    try {
+
+      await uploadCachedPhotos();
+      await uploadCachedAudios();
+      await uploadCachedVideos();
+
+      pp('$xx manageMediaUploads: RETRY seems to have worked !!! 🥬🥬🥬🥬🥬🥬 '
+          'completed and uploads done if needed. 🥬🥬🥬 '
+          'should be Okey Dokey!');
+      return 0;
+    } catch (e) {
+      pp('$xx retry failed; $e');
+      return 9;
+      }
+    }
 
   Future uploadCachedPhotos() async {
     pp('$xx ... checking for photo uploads ...');

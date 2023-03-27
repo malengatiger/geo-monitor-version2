@@ -287,6 +287,10 @@
   "enterSMS": "Geben Sie den an Ihr Gerät gesendeten SMS-PIN-Code ein",
   "enterAdmin": "Geben Sie den Administratornamen ein",
   "verifyFailed": "Verifizierung fehlgeschlagen. Bitte versuch es später",
-  "duplicateOrg": "Doppelter Organisationsname"
+  "duplicateOrg": "Doppelter Organisationsname",
+  "memberLocation": "Das Mitglied hat mit seinem Standort geantwortet",
+  "photoLocation": "Das Foto wurde an dieser Stelle aufgenommen",
+  "videoLocation": "An dieser Stelle wurde ein Video aufgenommen",
+  "audioLocation": "Audi Clip wurde an dieser Stelle aufgenommen"
 
 }

@@ -285,6 +285,10 @@
   "enterSMS": "Voer SMS-pinkode in wat na jou toestel gestuur is",
   "enterAdmin": "Voer administrateurnaam in",
   "verifyFailed": "Verifikasie het misluk. Probeer asseblief later",
-  "duplicateOrg": "Duplikaat organisasie naam"
+  "duplicateOrg": "Duplikaat organisasie naam",
+  "memberLocation": "Lid het gereageer met hul ligging",
+  "photoLocation": "Foto is op hierdie plek geneem",
+  "videoLocation": "Video is op hierdie plek gemaak",
+  "audioLocation": "Audi-snit is op hierdie plek opgeneem"
 
 }

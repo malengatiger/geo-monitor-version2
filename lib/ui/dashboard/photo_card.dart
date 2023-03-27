@@ -44,7 +44,7 @@ class PhotoCard extends StatelessWidget {
                       icon: Icon(
                         Icons.location_on,
                         color: Theme.of(context).primaryColor,
-                        size: 18,
+                        size: 20,
                       )),
                   TextButton(
                     onPressed: () {
@@ -52,7 +52,7 @@ class PhotoCard extends StatelessWidget {
                     },
                     child: Text(
                       E.heartRed,
-                      style: const TextStyle(fontSize: 14),
+                      style: const TextStyle(fontSize: 13),
                     ),
                   ),
                   IconButton(
@@ -67,15 +67,15 @@ class PhotoCard extends StatelessWidget {
               ),
             ),
             const SizedBox(
-              height: 8,
+              height: 4,
             ),
 
             Text(
               '${photo.projectName}',
-              style: myTextStyleLargePrimaryColor(context),
+              style: myTextStyleMediumPrimaryColor(context),
             ),
             const SizedBox(
-              height: 24,
+              height: 8,
             ),
 
             Text(
@@ -95,24 +95,26 @@ class PhotoCard extends StatelessWidget {
             Padding(
               padding:
               const EdgeInsets.symmetric(horizontal: 2.0, vertical: 2.0),
-              child: InteractiveViewer(
-                  child: CachedNetworkImage(
-                      fit: BoxFit.fill,
-                      progressIndicatorBuilder:
-                          (context, url, downloadProgress) => Center(
-                          child: SizedBox(
-                              width: 20,
-                              height: 20,
-                              child: CircularProgressIndicator(
-                                  backgroundColor: Colors.pink,
-                                  value: downloadProgress.progress))),
-                      errorWidget: (context, url, error) =>
-                      const Icon(Icons.error),
-                      fadeInDuration: const Duration(milliseconds: 1500),
-                      fadeInCurve: Curves.easeInOutCirc,
-                      placeholderFadeInDuration:
-                      const Duration(milliseconds: 1500),
-                      imageUrl: photo.url!)),
+              child: SingleChildScrollView(
+                child: InteractiveViewer(
+                    child: CachedNetworkImage(
+                        fit: BoxFit.fill,
+                        progressIndicatorBuilder:
+                            (context, url, downloadProgress) => Center(
+                            child: SizedBox(
+                                width: 20,
+                                height: 20,
+                                child: CircularProgressIndicator(
+                                    backgroundColor: Colors.pink,
+                                    value: downloadProgress.progress))),
+                        errorWidget: (context, url, error) =>
+                        const Icon(Icons.error),
+                        fadeInDuration: const Duration(milliseconds: 1500),
+                        fadeInCurve: Curves.easeInOutCirc,
+                        placeholderFadeInDuration:
+                        const Duration(milliseconds: 1500),
+                        imageUrl: photo.url!)),
+              ),
             ),
             const SizedBox(
               height: 24,

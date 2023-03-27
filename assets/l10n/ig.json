@@ -288,6 +288,10 @@
   "enterSMS": "Tinye koodu ntụtụ SMS ezigara na ngwaọrụ gị",
   "enterAdmin": "Tinye Aha nchịkwa",
   "verifyFailed": "Nnwapụta dara. Biko nwaa ma emechaa",
-  "duplicateOrg": "Aha nhazi oyiri"
+  "duplicateOrg": "Aha nhazi oyiri",
+  "memberLocation": "Onye otu azara ọnọdụ ha",
+  "photoLocation": "Esetere foto n\u0027ebe a",
+  "videoLocation": "Emere vidiyo n\u0027ebe a",
+  "audioLocation": "Edekọrọ obere vidiyo Audi n\u0027ebe a"
 
 }

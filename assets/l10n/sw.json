@@ -279,5 +279,9 @@
   "enterSMS": "Weka nambari ya siri ya SMS iliyotumwa kwa kifaa chako",
   "enterAdmin": "Ingiza Jina la Msimamizi",
   "verifyFailed": "Uthibitishaji haukufaulu. Tafadhali jaribu baadaye",
-  "duplicateOrg": "Jina la shirika"
+  "duplicateOrg": "Jina la shirika",
+  "memberLocation": "Mwanachama alijibu na eneo lao",
+  "photoLocation": "Picha ilipigwa mahali hapa",
+  "videoLocation": "Video ilitengenezwa mahali hapa",
+  "audioLocation": "Klipu ya Audi ilirekodiwa mahali hapa"
 }
