@@ -1,10 +1,13 @@
 import 'dart:async';
 
+import 'package:flutter/material.dart';
 import 'package:geo_monitor/library/bloc/data_refresher.dart';
+import 'package:geo_monitor/library/bloc/theme_bloc.dart';
 import 'package:geo_monitor/library/data/activity_model.dart';
 import 'package:geo_monitor/library/data/project_summary.dart';
 import 'package:geo_monitor/library/data/settings_model.dart';
 
+import '../../l10n/translation_handler.dart';
 import '../api/data_api.dart';
 import '../cache_manager.dart';
 import '../data/audio.dart';
@@ -154,6 +157,18 @@ class OrganizationBloc {
     projPolygonsController.sink.add(p);
   }
 
+  Future<SettingsModel?> getLatestSettings(String organizationId) async {
+    var list = await DataAPI.getOrganizationSettings(organizationId);
+
+    if (list.isNotEmpty) {
+      themeBloc.changeToTheme(list.first.themeIndex!);
+      await mTx.translate('settings', list.first.locale!);
+      return list.first;
+    }
+
+    return null;
+  }
+
   Future<DataBag> getOrganizationData(
       {required String organizationId,
       required bool forceRefresh,
@@ -173,6 +188,7 @@ class OrganizationBloc {
     if (forceRefresh) {
       pp('$mm get data from server .....................; '
           'forceRefresh: $forceRefresh; if true do the refresh ...');
+      await getLatestSettings(organizationId);
       bag = await dataRefresher.manageRefresh(numberOfDays: numberOfDays,
           organizationId: organizationId, projectId: null, userId: null);
       bag!.projects = projects;

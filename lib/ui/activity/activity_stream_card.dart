@@ -170,7 +170,7 @@ class ActivityStreamCardState extends State<ActivityStreamCard> {
             width: 428,
             height: height,
             icon: icon,
-            message: msg)
+            message: msg, namePictureHorizontal: true,)
         : WideCard(
             model: widget.activityModel,
             width: 600,
@@ -238,18 +238,18 @@ class ActivityStreamCardState extends State<ActivityStreamCard> {
       case ActivityType.photoAdded:
         icon = Icon(Icons.camera_alt, color: Theme.of(context).primaryColor);
         message = '${widget.activityModel.projectName}';
-        return _getGeneric(icon, message, 180.0);
+        return _getGeneric(icon, message, 100.0);
 
       case ActivityType.videoAdded:
         icon = Icon(Icons.video_camera_front,
             color: Theme.of(context).primaryColorLight);
         message = '${widget.activityModel.projectName}';
-        return _getGeneric(icon, message, 200.0);
+        return _getGeneric(icon, message, 100.0);
 
       case ActivityType.audioAdded:
         icon = Icon(Icons.mic, color: Theme.of(context).primaryColor);
         message = '${widget.activityModel.projectName}';
-        return _getGeneric(icon, message, 200.0);
+        return _getGeneric(icon, message, 100.0);
 
       case ActivityType.messageAdded:
         icon = Icon(Icons.message, color: Theme.of(context).primaryColor);

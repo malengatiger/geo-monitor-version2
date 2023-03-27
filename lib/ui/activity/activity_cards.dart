@@ -12,13 +12,14 @@ class ThinCard extends StatelessWidget {
       required this.message,
       required this.width,
       required this.height,
-      required this.locale})
+      required this.locale, required this.namePictureHorizontal})
       : super(key: key);
   final ActivityModel model;
   final Icon icon;
   final String message;
   final double width, height;
   final String locale;
+  final bool namePictureHorizontal;
 
   @override
   Widget build(BuildContext context) {
@@ -35,7 +36,7 @@ class ThinCard extends StatelessWidget {
             child: Column(
               children: [
                 const SizedBox(
-                  height: 12,
+                  height: 8,
                 ),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.start,
@@ -47,7 +48,7 @@ class ThinCard extends StatelessWidget {
                   ],
                 ),
                 const SizedBox(
-                  height: 12,
+                  height: 8,
                 ),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.start,
@@ -65,7 +66,7 @@ class ThinCard extends StatelessWidget {
                   ],
                 ),
                 const SizedBox(
-                  height: 12,
+                  height: 4,
                 ),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -73,8 +74,8 @@ class ThinCard extends StatelessWidget {
                     model.userName == null
                         ? const SizedBox()
                         : UserProfileCard(
-                            namePictureHorizontal: false,
-                            padding: 2,
+                            namePictureHorizontal: namePictureHorizontal,
+                            padding: 0,
                             elevation: 2,
                             userName: model.userName!,
                             textStyle: myTextStyleSmall(context),
