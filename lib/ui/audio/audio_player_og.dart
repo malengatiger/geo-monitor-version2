@@ -409,7 +409,7 @@ class AudioPlayerWidget extends StatelessWidget {
               ),
               Text(
                 projectName,
-                style: myTextStyleLargerPrimaryColor(context),
+                style: myTextStyleLargePrimaryColor(context),
               ),
                SizedBox(
                 height: padding,
@@ -417,10 +417,11 @@ class AudioPlayerWidget extends StatelessWidget {
               UserProfileCard(
                   userName: user.name!,
                   padding: 8,
+                  avatarRadius: 24,
                   namePictureHorizontal: true,
                   userThumbUrl: user.thumbnailUrl),
               const SizedBox(
-                height: 64,
+                height: 36,
               ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -457,9 +458,7 @@ class AudioPlayerWidget extends StatelessWidget {
               const SizedBox(
                 height: 8,
               ),
-              const SizedBox(
-                height: 16,
-              ),
+
               showControls
                   ? AudioPlayerControls(
                       onPlay: onPlay,

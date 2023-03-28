@@ -985,6 +985,7 @@ class ProjectListTabletState extends State<ProjectListTablet>
                                       right: amInPortrait ? 160 : 300,
                                       child: PhotoCard(
                                           photo: selectedPhoto!,
+                                          translatedDate: translatedDate!,
                                           onPhotoCardClose: () {
                                             setState(() {
                                               _showPhoto = false;
@@ -1062,17 +1063,23 @@ class ProjectListTabletState extends State<ProjectListTablet>
   Audio? selectedAudio;
 
   Audio? audio;
-  showPhoto(Photo p1) {
+  String? translatedDate;
+  showPhoto(Photo p1) async {
     selectedPhoto = p1;
+    final settings = await prefsOGx.getSettings();
+    translatedDate = await getFmtDate(p1.created!, settings!.locale!);
     setState(() {
       _showPhoto = true;
       _playAudio = false;
       _playVideo = false;
     });
+
   }
 
-  showVideo(Video p1) {
+  showVideo(Video p1) async {
     selectedVideo = p1;
+    final settings = await prefsOGx.getSettings();
+    translatedDate = await getFmtDate(p1.created!, settings!.locale!);
     setState(() {
       _showPhoto = false;
       _playAudio = false;
@@ -1080,8 +1087,10 @@ class ProjectListTabletState extends State<ProjectListTablet>
     });
   }
 
-  showAudio(Audio p1) {
+  showAudio(Audio p1) async {
     selectedAudio = p1;
+    final settings = await prefsOGx.getSettings();
+    translatedDate = await getFmtDate(p1.created!, settings!.locale!);
     setState(() {
       _showPhoto = false;
       _playAudio = true;

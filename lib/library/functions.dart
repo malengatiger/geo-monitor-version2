@@ -15,10 +15,12 @@ import 'package:path_provider/path_provider.dart';
 import 'package:video_thumbnail/video_thumbnail.dart' as vt;
 
 import '../device_location/device_location_bloc.dart';
+import '../l10n/translation_handler.dart';
 import 'api/prefs_og.dart';
 import 'data/activity_model.dart';
 import 'data/position.dart';
 import 'data/project_position.dart';
+import 'data/user.dart';
 
 List<String> logs = [];
 bool busy = false;
@@ -125,6 +127,13 @@ TextStyle myTextStyleTiny(BuildContext context) {
     fontSize: 10,
   );
 }
+TextStyle myTextStyleTiniest(BuildContext context) {
+  return GoogleFonts.lato(
+    textStyle: Theme.of(context).textTheme.bodySmall,
+    fontWeight: FontWeight.normal,
+    fontSize: 8,
+  );
+}
 
 TextStyle myTextStyleTinyBold(BuildContext context) {
   return GoogleFonts.lato(
@@ -141,6 +150,7 @@ TextStyle myTextStyleTinyBoldPrimaryColor(BuildContext context) {
       fontSize: 10,
       color: Theme.of(context).primaryColor);
 }
+
 TextStyle myTextStyleTinyPrimaryColor(BuildContext context) {
   return GoogleFonts.lato(
       textStyle: Theme.of(context).textTheme.bodySmall,
@@ -192,10 +202,12 @@ TextStyle myTextStyleMediumBold(BuildContext context) {
     fontSize: 14.0,
   );
 }
+
 TextStyle myTextStyleMediumBoldGrey(BuildContext context) {
   return GoogleFonts.lato(
     textStyle: Theme.of(context).textTheme.bodyMedium,
-    fontWeight: FontWeight.w900, color: Colors.grey.shade600,
+    fontWeight: FontWeight.w900,
+    color: Colors.grey.shade600,
     fontSize: 13.0,
   );
 }
@@ -785,8 +797,29 @@ Future<Map<String, String>> getStartEndDates() async {
 }
 
 void sortActivitiesDescending(List<ActivityModel> models) {
-  models.sort((a, b) => DateTime.parse(b.date!).millisecondsSinceEpoch
+  models.sort((a, b) => DateTime.parse(b.date!)
+      .millisecondsSinceEpoch
       .compareTo(DateTime.parse(a.date!).millisecondsSinceEpoch));
+}
+
+Future<String?> getTranslatedUserType(String type) async {
+  String? translated;
+  final sett = await prefsOGx.getSettings();
+  if (sett == null) {
+    return type;
+  }
+  switch (type) {
+    case UserType.fieldMonitor:
+      translated = await mTx.translate('fieldMonitor', sett!.locale!);
+      break;
+    case UserType.orgAdministrator:
+      translated = await mTx.translate('administrator', sett!.locale!);
+      break;
+    case UserType.orgExecutive:
+      translated = await mTx.translate('executive', sett!.locale!);
+      break;
+  }
+  return translated;
 }
 
 pp(dynamic msg) {
@@ -802,10 +835,11 @@ pp(dynamic msg) {
     }
   }
 }
+
 bool checkIfDateWithinRange(
     {required String date,
-      required String startDate,
-      required String endDate}) {
+    required String startDate,
+    required String endDate}) {
   final userDate = DateTime.parse(date);
   final sDate = DateTime.parse(startDate);
   final eDate = DateTime.parse(endDate);

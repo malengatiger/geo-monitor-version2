@@ -12,7 +12,9 @@ class PhotoCard extends StatelessWidget {
       {Key? key,
         required this.photo,
         required this.onMapRequested,
-        required this.onRatingRequested, required this.elevation, required this.onPhotoCardClose})
+        required this.onRatingRequested,
+        required this.elevation,
+        required this.onPhotoCardClose, required this.translatedDate})
       : super(key: key);
 
   final Photo photo;
@@ -20,9 +22,11 @@ class PhotoCard extends StatelessWidget {
   final Function(Photo) onRatingRequested;
   final Function onPhotoCardClose;
   final double elevation;
+  final String translatedDate;
 
   @override
   Widget build(BuildContext context) {
+
     return Card(
       shape: getRoundedBorder(radius: 16),
       elevation: elevation,
@@ -32,62 +36,70 @@ class PhotoCard extends StatelessWidget {
             const SizedBox(
               height: 12,
             ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 48.0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  IconButton(
-                      onPressed: () {
-                        onMapRequested(photo);
-                      },
-                      icon: Icon(
-                        Icons.location_on,
-                        color: Theme.of(context).primaryColor,
-                        size: 20,
-                      )),
-                  TextButton(
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                IconButton(
                     onPressed: () {
-                      onRatingRequested(photo);
+                      onMapRequested(photo);
                     },
-                    child: Text(
-                      E.heartRed,
-                      style: const TextStyle(fontSize: 13),
-                    ),
+                    icon: Icon(
+                      Icons.location_on,
+                      color: Theme.of(context).primaryColor,
+                      size: 20,
+                    )),
+                TextButton(
+                  onPressed: () {
+                    onRatingRequested(photo);
+                  },
+                  child: Text(
+                    E.heartRed,
+                    style: const TextStyle(fontSize: 13),
                   ),
-                  IconButton(
-                      onPressed: () {
-                        onPhotoCardClose();
-                      },
-                      icon: const Icon(
-                        Icons.close,
-                        size: 18,
-                      )),
-                ],
+                ),
+                IconButton(
+                    onPressed: () {
+                      onPhotoCardClose();
+                    },
+                    icon: const Icon(
+                      Icons.close,
+                      size: 18,
+                    )),
+              ],
+            ),
+            const SizedBox(
+              height: 4,
+            ),
+
+
+            Card(
+              shape: getRoundedBorder(radius: 16),
+              elevation: 4,
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  children: [
+                    Text(
+                      '${photo.projectName}',
+                      style: myTextStyleMediumPrimaryColor(context),
+                    ),
+                    const SizedBox(
+                      height: 8,
+                    ),
+                    Text(
+                      '${photo.userName}',
+                      style: myTextStyleSmallBold(context),
+                    ),
+                    const SizedBox(
+                      height: 4,
+                    ),
+                    Text(
+                      translatedDate,
+                      style: myTextStyleTiny(context),
+                    ),
+                  ],
+                ),
               ),
-            ),
-            const SizedBox(
-              height: 4,
-            ),
-
-            Text(
-              '${photo.projectName}',
-              style: myTextStyleMediumPrimaryColor(context),
-            ),
-            const SizedBox(
-              height: 8,
-            ),
-
-            Text(
-              '${photo.userName}',
-              style: myTextStyleSmallBold(context),
-            ),
-            const SizedBox(
-              height: 4,
-            ),
-            Text(
-              getFormattedDateShortWithTime(photo.created!, context),
-              style: myTextStyleTiny(context),
             ),
             const SizedBox(
               height: 12,

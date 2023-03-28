@@ -332,7 +332,7 @@ class AudioRecorderState extends State<AudioRecorder>
               readyForUpload: _readyForUpload,
               uploadFile: _uploadFile,
               padding: 28,
-              iconSize: 48,
+              iconSize: 20,
               uploadAudioClipText: uploadAudioClipText!),
     );
   }
@@ -501,7 +501,7 @@ class AudioRecorderCard extends StatelessWidget {
                                   onPressed: () {
                                     close();
                                   },
-                                  icon: const Icon(Icons.close)),
+                                  icon:  Icon(Icons.close, size: iconSize!,)),
                             ],
                           ),
                     Text(
@@ -514,8 +514,8 @@ class AudioRecorderCard extends StatelessWidget {
                     UserProfileCard(
                       userName: user.name!,
                       userThumbUrl: user.thumbnailUrl,
-                      namePictureHorizontal: true,
-                      avatarRadius: 20.0,
+                      namePictureHorizontal: false,
+                      avatarRadius: 28.0,
                       padding: 12.0,
                       elevation: 4.0,
                     ),

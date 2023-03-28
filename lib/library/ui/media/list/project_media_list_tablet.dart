@@ -219,8 +219,8 @@ class ProjectMediaListTabletState extends State<ProjectMediaListTablet>
     var padding = 300.0;
     var top = 0.0;
     if (ori.name == 'portrait') {
-      padding = 180.0;
-      top = 64.0;
+      padding = 140.0;
+      top = 8.0;
     }
     return SafeArea(
         child: Scaffold(
@@ -522,7 +522,9 @@ class ProjectMediaListTabletState extends State<ProjectMediaListTablet>
                         shape: getRoundedBorder(radius: 16),
                         child: SizedBox(
                           width: 600,
-                          child: AudioRecorder(onCloseRequested: (){
+                          child: AudioRecorder(
+
+                              onCloseRequested: (){
                             pp('On stop requested');
                             setState(() {
                               _showAudioRecorder = false;

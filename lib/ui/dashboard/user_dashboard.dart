@@ -81,7 +81,7 @@ class UserDashboardState extends State<UserDashboard>
   bool _showAudio = false;
 
   DashboardStrings? dashboardStrings;
-  String? memberDashboard;
+  String? memberDashboard, translatedDate;
   @override
   void initState() {
     _gridViewAnimationController = AnimationController(
@@ -277,6 +277,8 @@ class UserDashboardState extends State<UserDashboard>
   void _displayPhoto(Photo photo) async {
     pp('$mm _displayPhoto ...');
     this.photo = photo;
+    final settings = await prefsOGx.getSettings();
+    translatedDate = await getFmtDate(photo.created!, settings!.locale!);
     setState(() {
       _showPhoto = true;
       _showVideo = false;
@@ -633,6 +635,7 @@ class UserDashboardState extends State<UserDashboard>
                               },
                               child: PhotoCard(
                                   photo: photo!,
+                                  translatedDate: translatedDate!,
                                   elevation: 8.0,
                                   onPhotoCardClose: (){
                                     setState(() {

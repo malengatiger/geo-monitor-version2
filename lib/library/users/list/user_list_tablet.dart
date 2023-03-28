@@ -495,6 +495,7 @@ class _UserListTabletState extends State<UserListTablet> {
                     right: amInPortrait ? 160 : 300,
                     child: PhotoCard(
                         photo: selectedPhoto!,
+                        translatedDate: translatedDate!,
                         onPhotoCardClose: () {
                           setState(() {
                             _showPhoto = false;
@@ -541,8 +542,11 @@ class _UserListTabletState extends State<UserListTablet> {
   Audio? selectedAudio;
 
   Audio? audio;
-  showPhoto(Photo p1) {
+  String? translatedDate;
+  showPhoto(Photo p1) async {
     selectedPhoto = p1;
+    final settings = await prefsOGx.getSettings();
+    translatedDate = await getFmtDate(p1.created!, settings!.locale!);
     setState(() {
       _showPhoto = true;
       _playAudio = false;

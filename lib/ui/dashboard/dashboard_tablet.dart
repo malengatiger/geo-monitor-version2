@@ -211,7 +211,7 @@ class DashboardTabletState extends State<DashboardTablet>
     }
   }
 
-  String? dashboardSubTitle, prefix, suffix;
+  String? dashboardSubTitle, prefix, suffix, translatedUserType;
   Row? subtitleRow;
 
   Future _setTexts() async {
@@ -244,6 +244,8 @@ class DashboardTabletState extends State<DashboardTablet>
     });
     try {
       user = await prefsOGx.getUser();
+      translatedUserType = await getTranslatedUserType(user!.userType!);
+      pp('$mm translatedUserType: $translatedUserType');
       var map = await getStartEndDates();
       final startDate = map['startDate'];
       final endDate = map['endDate'];
@@ -463,6 +465,7 @@ class DashboardTabletState extends State<DashboardTablet>
   ProjectPosition? projectPosition;
   OrgMessage? orgMessage;
   User? someUser;
+  String? translatedDate;
 
   void _resetFlags() {
     _showPhoto = false;
@@ -479,6 +482,8 @@ class DashboardTabletState extends State<DashboardTablet>
   void _displayPhoto(Photo photo) async {
     pp('$mm _displayPhoto ...');
     this.photo = photo;
+    final settings = await prefsOGx.getSettings();
+    translatedDate = await getFmtDate(photo.created!, settings!.locale!);
     _resetFlags();
     setState(() {
       _showPhoto = true;
@@ -537,7 +542,7 @@ class DashboardTabletState extends State<DashboardTablet>
     var padding = 360.0;
     var extPadding = 300.0;
     var top = -12.0;
-    var avatarRadius = 24.0;
+    var avatarRadius = 32.0;
     var userPadding = 16.0;
     var spaceFromBottom = 8.0;
     if (ori.name == 'portrait') {
@@ -610,9 +615,10 @@ class DashboardTabletState extends State<DashboardTablet>
                       userName: user!.name!,
                       userThumbUrl: user!.thumbnailUrl!,
                       namePictureHorizontal: true,
-                      avatarRadius: avatarRadius,
+                      avatarRadius: 36,
                       elevation: 2,
-                      width: 400,
+                      width: 340,
+                      userType: translatedUserType,
                       padding: userPadding,
                       textStyle: myTextStyleMediumPrimaryColor(context)),
               const SizedBox(
@@ -866,6 +872,7 @@ class DashboardTabletState extends State<DashboardTablet>
                         },
                         child: PhotoCard(
                             photo: photo!,
+                            translatedDate: translatedDate!,
                             elevation: 8.0,
                             onPhotoCardClose: (){
                               setState(() {

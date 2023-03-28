@@ -413,14 +413,21 @@ class SettingsFormState extends State<SettingsForm> {
                       const SizedBox(
                         height: 24,
                       ),
-                      Text(
-                        fieldMonitorInstruction == null
-                            ? 'instruction'
-                            : fieldMonitorInstruction!,
-                        style: myTextStyleSmall(context),
+                      Card(
+                        shape: getRoundedBorder(radius: 12),
+                        elevation: 2,
+                        child: Padding(
+                          padding: const EdgeInsets.all(12.0),
+                          child: Text(
+                            fieldMonitorInstruction == null
+                                ? 'instruction'
+                                : fieldMonitorInstruction!,
+                            style: myTextStyleSmall(context),
+                          ),
+                        ),
                       ),
                       const SizedBox(
-                        height: 36,
+                        height: 24,
                       ),
                       SizedBox(
                         width: 400,

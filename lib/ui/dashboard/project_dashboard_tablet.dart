@@ -260,6 +260,8 @@ class ProjectDashboardTabletState extends State<ProjectDashboardTablet>
   void _displayPhoto(Photo photo) async {
     pp('$mm _displayPhoto ...');
     this.photo = photo;
+    final settings = await prefsOGx.getSettings();
+    translatedDate = await getFmtDate(photo.created!, settings!.locale!);
     setState(() {
       _showPhoto = true;
       _showVideo = false;
@@ -290,6 +292,7 @@ class ProjectDashboardTabletState extends State<ProjectDashboardTablet>
   Photo? photo;
   Video? video;
   Audio? audio;
+  String? translatedDate;
 
   void _navigateToPositionsMap() async {
     Navigator.push(
@@ -505,6 +508,7 @@ class ProjectDashboardTabletState extends State<ProjectDashboardTablet>
                         },
                         child: PhotoCard(
                             photo: photo!,
+                          translatedDate: translatedDate!,
                             elevation: 8.0,
                             onMapRequested: (photo) {
                               _navigateToPhotoMap();

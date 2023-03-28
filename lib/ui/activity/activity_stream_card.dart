@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:geo_monitor/library/cache_manager.dart';
 import 'package:geo_monitor/library/data/activity_model.dart';
 import 'package:geo_monitor/library/functions.dart';
 import 'package:geo_monitor/ui/activity/user_profile_card.dart';
@@ -6,6 +7,7 @@ import 'package:geo_monitor/ui/activity/user_profile_card.dart';
 import '../../l10n/translation_handler.dart';
 import '../../library/api/prefs_og.dart';
 import '../../library/data/activity_type_enum.dart';
+import '../../library/data/user.dart';
 import 'activity_cards.dart';
 
 /// This widget manages the display of an ActivityModel
@@ -41,6 +43,17 @@ class ActivityStreamCardState extends State<ActivityStreamCard> {
   void initState() {
     super.initState();
     _getLocale();
+    _getUser();
+  }
+
+  User? activityUser;
+  String? translatedUserType;
+  Future _getUser() async {
+    activityUser = await cacheManager.getUserById(widget.activityModel.userId!);
+    if (activityUser != null) {
+      translatedUserType = await getTranslatedUserType(activityUser!.userType!);
+    }
+    setState(() {});
   }
 
   void _getLocale() async {
@@ -53,8 +66,9 @@ class ActivityStreamCardState extends State<ActivityStreamCard> {
   Widget _getUserAdded(Icon icon, String msg) {
     final dt = getFmtDate(widget.activityModel.date!, widget.locale);
 
-    return widget.thinMode
-        ? Card(
+    return activityUser == null
+        ? const SizedBox()
+        : Card(
             shape: getRoundedBorder(radius: 16),
             child: Padding(
               padding: const EdgeInsets.all(16.0),
@@ -78,7 +92,7 @@ class ActivityStreamCardState extends State<ActivityStreamCard> {
                   const SizedBox(
                     height: 8,
                   ),
-                  widget.activityModel.userThumbnailUrl == null
+                  activityUser!.thumbnailUrl == null
                       ? const CircleAvatar(
                           radius: 16,
                         )
@@ -86,6 +100,10 @@ class ActivityStreamCardState extends State<ActivityStreamCard> {
                           userName: widget.activityModel.userName!,
                           padding: 2,
                           elevation: 2,
+                          avatarRadius: 24.0,
+                          userType: translatedUserType == null
+                              ? activityUser!.userType!
+                              : translatedUserType!,
                           userThumbUrl: widget.activityModel.userThumbnailUrl,
                           namePictureHorizontal: false),
                   const SizedBox(
@@ -101,80 +119,25 @@ class ActivityStreamCardState extends State<ActivityStreamCard> {
                 ],
               ),
             ),
-          )
-        : Card(
-            shape: getRoundedBorder(radius: 16),
-            child: Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: SizedBox(
-                height: 180,
-                child: Column(
-                  children: [
-                    Flexible(
-                      child: Row(
-                        children: [
-                          icon,
-                          const SizedBox(
-                            width: 8,
-                          ),
-                          Flexible(
-                            child: Text(
-                              msg,
-                              style: myTextStyleSmall(context),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(
-                      height: 20,
-                    ),
-                    widget.activityModel.userName == null
-                        ? const SizedBox()
-                        : UserProfileCard(
-                            userName: widget.activityModel.userName!,
-                            padding: 0,
-                            elevation: 2,
-                            userThumbUrl: widget.activityModel.userThumbnailUrl,
-                            namePictureHorizontal: false),
-                    const SizedBox(
-                      height: 16,
-                    ),
-                    Padding(
-                      padding: EdgeInsets.only(left: widget.frontPadding),
-                      child: Row(
-                        children: [
-                          Text(
-                            getFmtDate(
-                                widget.activityModel.date!, widget.locale),
-                            style: myTextStyleTinyPrimaryColor(context),
-                          )
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
           );
   }
 
   Widget _getGeneric(Icon icon, String msg, double height) {
-    return widget.thinMode
-        ? ThinCard(
+    return activityUser == null
+        ? const SizedBox()
+        : ThinCard(
             model: widget.activityModel,
             locale: widget.locale,
             width: 428,
+            avatarRadius: 24.0,
             height: height,
+            userType: translatedUserType == null
+                ? activityUser!.userType!
+                : translatedUserType!,
             icon: icon,
-            message: msg, namePictureHorizontal: true,)
-        : WideCard(
-            model: widget.activityModel,
-            width: 600,
-            locale: widget.locale,
-            height: height,
-            icon: icon,
-            message: msg);
+            message: msg,
+            namePictureHorizontal: true,
+          );
   }
 
   Widget _getShortie(Icon icon, String msg) {
@@ -203,9 +166,9 @@ class ActivityStreamCardState extends State<ActivityStreamCard> {
                   ),
                 ],
               ),
-              Row(mainAxisAlignment: MainAxisAlignment.center,
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-
                   Text(
                     dt,
                     style: myTextStyleTinyPrimaryColor(context),
@@ -235,18 +198,18 @@ class ActivityStreamCardState extends State<ActivityStreamCard> {
       case ActivityType.photoAdded:
         icon = Icon(Icons.camera_alt, color: Theme.of(context).primaryColor);
         message = '${widget.activityModel.projectName}';
-        return _getGeneric(icon, message, 112.0);
+        return _getGeneric(icon, message, 160.0);
 
       case ActivityType.videoAdded:
         icon = Icon(Icons.video_camera_front,
             color: Theme.of(context).primaryColorLight);
         message = '${widget.activityModel.projectName}';
-        return _getGeneric(icon, message, 100.0);
+        return _getGeneric(icon, message, 160.0);
 
       case ActivityType.audioAdded:
         icon = Icon(Icons.mic, color: Theme.of(context).primaryColor);
         message = '${widget.activityModel.projectName}';
-        return _getGeneric(icon, message, 100.0);
+        return _getGeneric(icon, message, 160.0);
 
       case ActivityType.messageAdded:
         icon = Icon(Icons.message, color: Theme.of(context).primaryColor);
