@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:geo_monitor/library/api/data_api.dart';
 import 'package:geo_monitor/library/api/prefs_og.dart';
+import 'package:geo_monitor/library/bloc/data_refresher.dart';
 import 'package:geo_monitor/library/bloc/organization_bloc.dart';
 import 'package:geo_monitor/library/bloc/theme_bloc.dart';
 import 'package:geo_monitor/library/data/settings_model.dart';
@@ -126,10 +127,15 @@ class AuthEmailSignInState extends State<AuthEmailSignIn> {
           String? notFound =
               await mTx.translate('memberNotExist', settingsList.first.locale!);
 
+          dataRefresher.manageRefresh(numberOfDays:  settingsList.first.numberOfDays!,
+              organizationId:  settingsList.first.organizationId!,
+              projectId: null, userId: null);
+
           if (mounted) {
             showToast(
                 message: txt == null ? 'Member sign in succeeded' : txt!,
                 context: context);
+
             widget.onSignedIn();
           }
         } else {
@@ -182,7 +188,7 @@ class AuthEmailSignInState extends State<AuthEmailSignIn> {
                       child: Column(
                         children: [
                           const SizedBox(
-                            height: 48,
+                            height: 32,
                           ),
                           Text(
                             emailAuth == null

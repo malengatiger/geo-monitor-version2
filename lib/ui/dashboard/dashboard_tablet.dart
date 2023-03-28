@@ -166,6 +166,7 @@ class DashboardTabletState extends State<DashboardTablet>
         pp('$mm: 🍎🍎 settings arrived with themeIndex: ${settings.themeIndex}... locale: ${settings.locale} 🍎🍎');
         await _handleNewSettings(settings);
       });
+
       userSubscriptionFCM = fcmBloc.userStream.listen((user) async {
         pp('$mm: 🍎 🍎 user arrived... 🍎 🍎');
         _getData(false);
@@ -204,9 +205,9 @@ class DashboardTabletState extends State<DashboardTablet>
         LocaleAndTheme(themeIndex: settings!.themeIndex!, locale: newLocale);
     themeBloc.themeStreamController.sink.add(m);
     settingsModel = settings;
+    await _getData(true);
     if (mounted) {
       await _setTexts();
-      _getData(true);
     }
   }
 
@@ -237,7 +238,7 @@ class DashboardTabletState extends State<DashboardTablet>
     }
   }
 
-  void _getData(bool forceRefresh) async {
+  Future _getData(bool forceRefresh) async {
     setState(() {
       busy = true;
     });
@@ -259,9 +260,11 @@ class DashboardTabletState extends State<DashboardTablet>
       }
     }
 
-    setState(() {
-      busy = false;
-    });
+    if (mounted) {
+      setState(() {
+        busy = false;
+      });
+    }
   }
 
   void _navigateToProjectList() {
@@ -567,18 +570,14 @@ class DashboardTabletState extends State<DashboardTablet>
                 color: Theme.of(context).primaryColor,
               ),
               onPressed: _navigateToCharts),
-          user == null
-              ? const SizedBox()
-              : user!.userType == UserType.fieldMonitor
-                  ? const SizedBox()
-                  : IconButton(
-                      icon: Icon(
-                        Icons.settings,
-                        size: 24,
-                        color: Theme.of(context).primaryColor,
-                      ),
-                      onPressed: _navigateToSettings,
-                    ),
+          IconButton(
+            icon: Icon(
+              Icons.settings,
+              size: 24,
+              color: Theme.of(context).primaryColor,
+            ),
+            onPressed: _navigateToSettings,
+          ),
           IconButton(
             icon: Icon(
               Icons.refresh,

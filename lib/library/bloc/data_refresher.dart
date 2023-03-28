@@ -71,21 +71,28 @@ class DataRefresher {
       _finish(bag, start);
     }
 
-    pp('$xx Done with org data, refreshing projects and users if needed ...');
-    final doRefresh = prefsOGx.shouldRefreshBePerformed();
-    if (doRefresh) {
-      var projects =
-          await _startProjectsRefresh(organizationId: organizationId!);
-      var users = await _startUsersRefresh(organizationId: organizationId);
-      var countries = await _startCountryRefresh();
-      bag!.projects = projects;
-      bag.users = users;
-      organizationBloc.dataBagController.sink.add(bag);
-      await prefsOGx.setDateRefreshed(DateTime.now().toIso8601String());
-      pp('$xx Done with refresh of projects: ${projects.length} '
-          'and users: ${users.length} countries: ${countries.length}');
-    }
+    pp('$xx Done with organization data, refreshing projects and users if needed ...');
+    // final doRefresh = prefsOGx.shouldRefreshBePerformed();
+    // if (doRefresh) {
+    //   var projects =
+    //       await _startProjectsRefresh(organizationId: organizationId!);
+    //   var users = await _startUsersRefresh(organizationId: organizationId);
+    //   var countries = await _startCountryRefresh();
+    //   bag!.projects = projects;
+    //   bag.users = users;
+    //   await prefsOGx.setDateRefreshed(DateTime.now().toIso8601String());
+    //   pp('$xx Done with refresh of projects: ${projects.length} '
+    //       'and users: ${users.length} countries: ${countries.length}');
+    // }
+    pp('$xx users empty; will start refresh ...... ');
+    var users = await _startUsersRefresh(organizationId: organizationId!);
+    bag!.users = users;
 
+    var projects = await _startProjectsRefresh(organizationId: organizationId!);
+    bag!.projects = projects;
+
+    pp('$xx users in bag: ${bag!.users!.length}; putting bag in stream ...... ');
+    organizationBloc.dataBagController.sink.add(bag!);
     return bag;
   }
 
@@ -116,7 +123,6 @@ class DataRefresher {
       required String? organizationId,
       required String? projectId,
       required String? userId}) async {
-
     pp('$xx retrying the call after an error, will kick off after 5 seconds  ...');
     await Future.delayed(Duration(seconds: 5));
     DataBag? bag;
@@ -182,9 +188,8 @@ class DataRefresher {
           mUrl: url,
           organizationId: organizationId,
         ));
-    pp('$xz users found: ${list.length}');
+    pp('$xz _startUsersRefresh: 🥬 users found: ${list.length}');
     await cacheManager.addUsers(users: list);
-
     return list;
   }
 
@@ -768,15 +773,15 @@ void _printDataBag(DataBag bag) {
   final schedules = bag.fieldMonitorSchedules!.length;
 
   pp('\n\n$xz _printDataBag: all org data extracted from zipped file on: 🔵🔵🔵${bag.date}');
-  pp('$xz projects: $projects');
-  pp('$xz users: $users');
-  pp('$xz positions: $positions');
-  pp('$xz polygons: $polygons');
-  pp('$xz photos: $photos');
-  pp('$xz videos: $videos');
-  pp('$xz audios: $audios');
-  pp('$xz schedules: $schedules');
-  pp('$xz data from backend listed above: 🔵🔵🔵 ${bag.date}');
+  // pp('$xz projects: $projects');
+  // pp('$xz users: $users');
+  // pp('$xz positions: $positions');
+  // pp('$xz polygons: $polygons');
+  // pp('$xz photos: $photos');
+  // pp('$xz videos: $videos');
+  // pp('$xz audios: $audios');
+  // pp('$xz schedules: $schedules');
+  // pp('$xz data from backend listed above: 🔵🔵🔵 ${bag.date}');
 }
 
 const xz = '🦀🦀🦀🦀🦀 Refresher Isolate ';

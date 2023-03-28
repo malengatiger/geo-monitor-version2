@@ -59,29 +59,11 @@ class _DashboardGridState extends State<DashboardGrid> {
     super.initState();
     _listen();
     _setTexts();
-    _getData();
   }
 
-  Future  _getData() async {
-    pp('$mm _getData ... starting to get projects and users');
-    setState(() {
-      busy = true;
-    });
-    try {
-      user = await prefsOGx.getUser();
-      projects = await organizationBloc.getOrganizationProjects(
-          organizationId: user!.organizationId!, forceRefresh: false);
-      users = await organizationBloc.getUsers(
-          organizationId: user!.organizationId!, forceRefresh: false);
-    } catch (e) {
-      pp(e);
-      if (mounted) {
-        showToast(message: '$e', context: context);
-      }
-    }
-
-    setState(() {
-      busy = false;
+  Future _listen() async {
+    settingsSubscription = fcmBloc.settingsStream.listen((SettingsModel settings) {
+      _setTexts();
     });
   }
 
@@ -93,30 +75,9 @@ class _DashboardGridState extends State<DashboardGrid> {
 
   Future _setTexts() async {
     dashboardStrings = await DashboardStrings.getTranslated();
-    // settingsModel = await prefsOGx.getSettings();
-    // projects = await mTx.translate('projects', settingsModel!.locale!);
-    // members = await mTx.translate('members', settingsModel!.locale!);
-    // areas = await mTx.translate('areas', settingsModel!.locale!);
-    // schedules = await mTx.translate('schedules', settingsModel!.locale!);
-    // videos = await mTx.translate('videos', settingsModel!.locale!);
-    // audioClips = await mTx.translate('audioClips', settingsModel!.locale!);
-    // locations = await mTx.translate('locations', settingsModel!.locale!);
-
     setState(() {});
   }
 
-  void _listen() async {
-    settingsSubscription =
-        fcmBloc.settingsStream.listen((SettingsModel settings) async {
-      pp('$mm settingsStream delivered settings ... ${settings.locale!}, will set titles');
-      settingsModel = settings;
-      await _setTexts();
-      await _getData();
-      if (mounted) {
-        setState(() {});
-      }
-    });
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -137,7 +98,7 @@ class _DashboardGridState extends State<DashboardGrid> {
                     child: DashboardElement(
                       title: dashboardStrings!.projects,
                       topPadding: widget.elementPadding,
-                      number: projects.length,
+                      number: widget.dataBag.projects!.length,
                       onTapped: () {
                         widget.onTypeTapped(typeProjects);
                       },
@@ -149,7 +110,7 @@ class _DashboardGridState extends State<DashboardGrid> {
                     },
                     child: DashboardElement(
                       title: dashboardStrings!.members,
-                      number: users.length,
+                      number: widget.dataBag.users!.length,
                       topPadding: widget.elementPadding,
                       onTapped: () {
                         widget.onTypeTapped(typeUsers);

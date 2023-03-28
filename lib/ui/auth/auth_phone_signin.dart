@@ -125,6 +125,9 @@ class AuthPhoneSignInState extends State<AuthPhoneSignIn>
                     _navigateToAvatarBuilder();
                   },
                   width: MediaQuery.of(context).size.width,
+                  onSuccessfulSignIn: (ur.User user) {
+                    widget.onSignedIn(user);
+                  },
                 ),
               ),
             )
@@ -135,6 +138,9 @@ class AuthPhoneSignInState extends State<AuthPhoneSignIn>
       return AuthPhoneSigninCard(
               width: 500,
               showAvatarBuilder: () {},
+              onSuccessfulSignIn: (ur.User user) {
+                widget.onSignedIn(user);
+              },
             );
     }
   }
@@ -142,10 +148,11 @@ class AuthPhoneSignInState extends State<AuthPhoneSignIn>
 
 class AuthPhoneSigninCard extends StatefulWidget {
   const AuthPhoneSigninCard({Key? key, required this.showAvatarBuilder, 
-    required this.width})
+    required this.width, required this.onSuccessfulSignIn})
       : super(key: key);
 
   final Function showAvatarBuilder;
+  final Function(ur.User user) onSuccessfulSignIn;
   final double width;
 
   @override
@@ -252,12 +259,12 @@ class _AuthPhoneSigninCardState extends State<AuthPhoneSigninCard> {
                   : signInStrings!.memberSignedIn,
               context: context);
         }
-        var map = await getStartEndDates();
-        final startDate = map['startDate'];
-        final endDate = map['endDate'];
-        zipBloc.getOrganizationDataZippedFile(
-            user!.organizationId!, startDate!, endDate!);
-        widget.showAvatarBuilder();
+        // var map = await getStartEndDates();
+        // final startDate = map['startDate'];
+        // final endDate = map['endDate'];
+        // zipBloc.getOrganizationDataZippedFile(
+        //     user!.organizationId!, startDate!, endDate!);
+        widget.onSuccessfulSignIn(user!);
         return;
       }
     } catch (e) {
@@ -381,183 +388,185 @@ class _AuthPhoneSigninCardState extends State<AuthPhoneSigninCard> {
       shape: getRoundedBorder(radius: 16),
       child: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: Column(
-          children: [
-            busy
-                ? Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: const [
-                      Padding(
-                        padding: EdgeInsets.all(12.0),
-                        child: SizedBox(
-                          height: 16,
-                          width: 16,
-                          child: CircularProgressIndicator(
-                            strokeWidth: 4,
-                            backgroundColor: Colors.pink,
+        child: SingleChildScrollView(
+          child: Column(
+            children: [
+              busy
+                  ? Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: const [
+                        Padding(
+                          padding: EdgeInsets.all(12.0),
+                          child: SizedBox(
+                            height: 16,
+                            width: 16,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 4,
+                              backgroundColor: Colors.pink,
+                            ),
                           ),
                         ),
-                      ),
-                    ],
-                  )
-                : const SizedBox(
-                    height: 12,
-                  ),
-            const SizedBox(
-              height: 24,
-            ),
-            SizedBox(width: 400,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    signInStrings == null
-                        ? 'Phone Authentication'
-                        : signInStrings!.phoneAuth,
-                    style: myTextStyleMediumBold(context),
-                  ),
-                ],
+                      ],
+                    )
+                  : const SizedBox(
+                      height: 12,
+                    ),
+              const SizedBox(
+                height: 24,
               ),
-            ),
-            const SizedBox(
-              height: 16,
-            ),
-            Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Form(
-                  key: _formKey,
-                  child: Column(
-                    children: [
-                      const SizedBox(
-                        height: 8,
-                      ),
-                      SizedBox(width: 400,
-                        child: TextFormField(
-                          controller: phoneController,
-                          keyboardType: TextInputType.phone,
-                          decoration: InputDecoration(
-                              hintText: signInStrings == null
-                                  ? 'Enter Phone Number'
-                                  : signInStrings!.enterPhone,
-                              label: Text(signInStrings == null
-                                  ? 'Phone Number'
-                                  : signInStrings!.phoneNumber)),
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return signInStrings == null
-                                  ? 'Please enter Phone Number'
-                                  : signInStrings!.enterPhone;
-                            }
-                            return null;
-                          },
+              SizedBox(width: 400,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      signInStrings == null
+                          ? 'Phone Authentication'
+                          : signInStrings!.phoneAuth,
+                      style: myTextStyleMediumBold(context),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(
+                height: 16,
+              ),
+              Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Form(
+                    key: _formKey,
+                    child: Column(
+                      children: [
+                        const SizedBox(
+                          height: 8,
                         ),
-                      ),
-                      const SizedBox(
-                        height: 60,
-                      ),
-                      ElevatedButton(
-                          onPressed: () {
-                            if (_formKey.currentState!.validate()) {
-                              _start();
-                            }
-                          },
-                          child: Padding(
-                            padding: const EdgeInsets.all(4.0),
-                            child: Text(signInStrings == null
-                                ? 'Verify Phone Number'
-                                : signInStrings!.verifyPhone),
-                          )),
-                      const SizedBox(
-                        height: 20,
-                      ),
-                      _codeHasBeenSent
-                          ? SizedBox(
-                              height: 200,
-                              child: Column(
-                                children: [
-                                  Text(
-                                    signInStrings == null
-                                        ? 'Enter SMS pin code sent'
-                                        : signInStrings!.enterSMS,
-                                    style: myTextStyleSmall(context),
-                                  ),
-                                  const SizedBox(
-                                    height: 16,
-                                  ),
-                                  Padding(
-                                    padding: const EdgeInsets.all(4.0),
-                                    child: PinCodeTextField(
-                                      length: 6,
-                                      obscureText: false,
-                                      textStyle: myNumberStyleLarge(context),
-                                      animationType: AnimationType.fade,
-                                      pinTheme: PinTheme(
-                                        shape: PinCodeFieldShape.box,
-                                        borderRadius: BorderRadius.circular(5),
-                                        fieldHeight: 50,
-                                        fieldWidth: 40,
-                                        activeFillColor: Theme.of(context)
+                        SizedBox(width: 400,
+                          child: TextFormField(
+                            controller: phoneController,
+                            keyboardType: TextInputType.phone,
+                            decoration: InputDecoration(
+                                hintText: signInStrings == null
+                                    ? 'Enter Phone Number'
+                                    : signInStrings!.enterPhone,
+                                label: Text(signInStrings == null
+                                    ? 'Phone Number'
+                                    : signInStrings!.phoneNumber)),
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return signInStrings == null
+                                    ? 'Please enter Phone Number'
+                                    : signInStrings!.enterPhone;
+                              }
+                              return null;
+                            },
+                          ),
+                        ),
+                        const SizedBox(
+                          height: 60,
+                        ),
+                        ElevatedButton(
+                            onPressed: () {
+                              if (_formKey.currentState!.validate()) {
+                                _start();
+                              }
+                            },
+                            child: Padding(
+                              padding: const EdgeInsets.all(4.0),
+                              child: Text(signInStrings == null
+                                  ? 'Verify Phone Number'
+                                  : signInStrings!.verifyPhone),
+                            )),
+                        const SizedBox(
+                          height: 20,
+                        ),
+                        _codeHasBeenSent
+                            ? SizedBox(
+                                height: 200,
+                                child: Column(
+                                  children: [
+                                    Text(
+                                      signInStrings == null
+                                          ? 'Enter SMS pin code sent'
+                                          : signInStrings!.enterSMS,
+                                      style: myTextStyleSmall(context),
+                                    ),
+                                    const SizedBox(
+                                      height: 16,
+                                    ),
+                                    Padding(
+                                      padding: const EdgeInsets.all(4.0),
+                                      child: PinCodeTextField(
+                                        length: 6,
+                                        obscureText: false,
+                                        textStyle: myNumberStyleLarge(context),
+                                        animationType: AnimationType.fade,
+                                        pinTheme: PinTheme(
+                                          shape: PinCodeFieldShape.box,
+                                          borderRadius: BorderRadius.circular(5),
+                                          fieldHeight: 50,
+                                          fieldWidth: 40,
+                                          activeFillColor: Theme.of(context)
+                                              .colorScheme
+                                              .background,
+                                        ),
+                                        animationDuration:
+                                            const Duration(milliseconds: 300),
+                                        backgroundColor: Theme.of(context)
                                             .colorScheme
                                             .background,
+                                        enableActiveFill: true,
+                                        errorAnimationController: errorController,
+                                        controller: codeController,
+                                        onCompleted: (v) {
+                                          pp("$mm PinCodeTextField: Completed: $v - should call submit ...");
+                                        },
+                                        onChanged: (value) {
+                                          pp(value);
+                                          setState(() {
+                                            currentText = value;
+                                          });
+                                        },
+                                        beforeTextPaste: (text) {
+                                          pp("$mm Allowing to paste $text");
+                                          //if you return true then it will show the paste confirmation dialog. Otherwise if false, then nothing will happen.
+                                          //but you can show anything you want here, like your pop up saying wrong paste format or etc
+                                          return true;
+                                        },
+                                        appContext: context,
                                       ),
-                                      animationDuration:
-                                          const Duration(milliseconds: 300),
-                                      backgroundColor: Theme.of(context)
-                                          .colorScheme
-                                          .background,
-                                      enableActiveFill: true,
-                                      errorAnimationController: errorController,
-                                      controller: codeController,
-                                      onCompleted: (v) {
-                                        pp("$mm PinCodeTextField: Completed: $v - should call submit ...");
-                                      },
-                                      onChanged: (value) {
-                                        pp(value);
-                                        setState(() {
-                                          currentText = value;
-                                        });
-                                      },
-                                      beforeTextPaste: (text) {
-                                        pp("$mm Allowing to paste $text");
-                                        //if you return true then it will show the paste confirmation dialog. Otherwise if false, then nothing will happen.
-                                        //but you can show anything you want here, like your pop up saying wrong paste format or etc
-                                        return true;
-                                      },
-                                      appContext: context,
                                     ),
-                                  ),
-                                  const SizedBox(
-                                    height: 28,
-                                  ),
-                                  busy
-                                      ? const SizedBox(
-                                          height: 16,
-                                          width: 16,
-                                          child: CircularProgressIndicator(
-                                            strokeWidth: 4,
-                                            backgroundColor: Colors.pink,
-                                          ),
-                                        )
-                                      : ElevatedButton(
-                                          onPressed: _processSignIn,
-                                          style: ButtonStyle(
-                                            elevation: MaterialStateProperty
-                                                .all<double>(8.0),
-                                          ),
-                                          child: Padding(
-                                            padding: const EdgeInsets.all(4.0),
-                                            child: Text(signInStrings == null
-                                                ? 'Send Code'
-                                                : signInStrings!.sendCode),
-                                          )),
-                                ],
-                              ),
-                            )
-                          : const SizedBox(),
-                    ],
-                  )),
-            )
-          ],
+                                    const SizedBox(
+                                      height: 28,
+                                    ),
+                                    busy
+                                        ? const SizedBox(
+                                            height: 16,
+                                            width: 16,
+                                            child: CircularProgressIndicator(
+                                              strokeWidth: 4,
+                                              backgroundColor: Colors.pink,
+                                            ),
+                                          )
+                                        : ElevatedButton(
+                                            onPressed: _processSignIn,
+                                            style: ButtonStyle(
+                                              elevation: MaterialStateProperty
+                                                  .all<double>(8.0),
+                                            ),
+                                            child: Padding(
+                                              padding: const EdgeInsets.all(4.0),
+                                              child: Text(signInStrings == null
+                                                  ? 'Send Code'
+                                                  : signInStrings!.sendCode),
+                                            )),
+                                  ],
+                                ),
+                              )
+                            : const SizedBox(),
+                      ],
+                    )),
+              )
+            ],
+          ),
         ),
       ),
     );

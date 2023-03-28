@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:geo_monitor/library/api/prefs_og.dart';
 import 'package:geo_monitor/library/functions.dart';
+import 'package:geo_monitor/library/generic_functions.dart';
 import 'package:responsive_builder/responsive_builder.dart';
 
 import '../../l10n/translation_handler.dart';
+import '../../library/bloc/data_refresher.dart';
 import '../../library/data/user.dart' as ur;
 import 'auth_email_signin.dart';
 import 'auth_phone_signin.dart';
@@ -26,19 +28,35 @@ class _AuthTabletSignInState extends State<AuthTabletSignIn> {
     super.initState();
     _setTexts();
   }
+
   Future _setTexts() async {
     final sett = await prefsOGx.getSettings();
     if (sett != null) {
       title = await mTx.translate('signIn', sett!.locale!);
       subTitle = await mTx.translate('signInInstruction', sett!.locale!);
     }
-    setState(() {
-
-    });
+    setState(() {});
   }
-  void _onSignedIn(ur.User user) async {}
 
-  void _onError(String message) async {}
+  void _onSignedIn(ur.User user) async {
+    final sett = await prefsOGx.getSettings();
+    if (sett != null) {
+      dataRefresher.manageRefresh(
+          numberOfDays: sett.numberOfDays!,
+          organizationId: sett.organizationId!,
+          projectId: null, userId: null);
+    }
+    Navigator.of(context).pop();
+  }
+
+  void _onError(String message) async {
+    showToast(
+        message: message,
+        context: context,
+        padding: 20,
+        textStyle: myTextStyleSmall(context),
+        backgroundColor: Theme.of(context).primaryColor);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -46,26 +64,33 @@ class _AuthTabletSignInState extends State<AuthTabletSignIn> {
     return SafeArea(
         child: Scaffold(
       appBar: AppBar(
-        title: Text(title == null?'Sign In':title!),
+        title: Text(title == null ? 'Sign In' : title!),
         bottom: PreferredSize(
+            preferredSize: Size.fromHeight(160),
             child: Padding(
               padding: const EdgeInsets.all(20.0),
               child: Column(
                 children: [
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 48.0),
-                    child: Text(subTitle == null?
-                      subText: subTitle!,
-                      style: myTextStyleSmall(context),
+                    child: Card(
+                      shape: getRoundedBorder(radius: 16),
+                      elevation: 4,
+                      child: Padding(
+                        padding: const EdgeInsets.all(24.0),
+                        child: Text(
+                          subTitle == null ? subText : subTitle!,
+                          style: myTextStyleSmall(context),
+                        ),
+                      ),
                     ),
                   ),
                   const SizedBox(
-                    height: 48,
+                    height: 4,
                   ),
                 ],
               ),
-            ),
-            preferredSize: Size.fromHeight(120)),
+            )),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -81,7 +106,9 @@ class _AuthTabletSignInState extends State<AuthTabletSignIn> {
                     onError: _onError,
                   ),
                 ),
-                const SizedBox(width: 48,),
+                const SizedBox(
+                  width: 48,
+                ),
                 SizedBox(
                   width: (width / 2),
                   height: 600,

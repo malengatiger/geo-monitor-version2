@@ -172,13 +172,13 @@ void printDataBag(DataBag bag) {
 
   const xz = '👌👌👌 DataBag print 👌';
   pp('\n\n$xz all org data extracted from zipped file on: 🔵🔵🔵${bag.date}');
-  pp('$xz projects: $projects');
-  pp('$xz users: $users');
-  pp('$xz positions: $positions');
-  pp('$xz polygons: $polygons');
-  pp('$xz photos: $photos');
-  pp('$xz videos: $videos');
-  pp('$xz audios: $audios');
-  pp('$xz schedules: $schedules');
-  pp('$xz data from backend listed above: 🔵🔵🔵 ${bag.date}');
+  // pp('$xz projects: $projects');
+  // pp('$xz users: $users');
+  // pp('$xz positions: $positions');
+  // pp('$xz polygons: $polygons');
+  // pp('$xz photos: $photos');
+  // pp('$xz videos: $videos');
+  // pp('$xz audios: $audios');
+  // pp('$xz schedules: $schedules');
+  // pp('$xz data from backend listed above: 🔵🔵🔵 ${bag.date}');
 }
