@@ -286,6 +286,9 @@
   "memberLocation": "Member responded with their location",
   "photoLocation": "Photo was taken at this location",
   "videoLocation": "Video was made at this location",
-  "audioLocation": "Audi clip was recorded at this location"
+  "audioLocation": "Audi clip was recorded at this location",
+  "password": "Password",
+  "signInOK": "Sign in succeeded!",
+  "enterPassword": "Enter Password"
 
 }

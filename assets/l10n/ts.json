@@ -283,5 +283,11 @@
   "memberLocation": "Xirho xi hlamule hi ndhawu ya vona",
   "photoLocation": "Xifaniso xi tekiwile endhawini leyi",
   "videoLocation": "Vhidiyo yi endliwe endhawini leyi",
-  "audioLocation": "Audi clip yi rhekhodiwile eka ndhawu leyi"
+  "audioLocation": "Audi clip yi rhekhodiwile eka ndhawu leyi",
+  "password": "Phasiwedi",
+  "signInOK": "Nghena ku humelerile!",
+  "enterPassword": "Nghenisa Password",
+  "phoneAuth": "Ku Tiyisisiwa ka Foni",
+  "signInInstruction": "Hi kombela u nghena hi ku tirhisa ndlela leyi faneleke. Swi ringanyetiwa ku tirhisa vuhlayiseki bya riqingho loko xitirhisiwa xa wena xi kota ku amukela marungula ya SMS. Loko xitirhisiwa xa wena xi nga seketeli marungula ya SMS hi kombela u tirhisa vuhlayiseki bya imeyili",
+  "emailAuth": "Ku Tiyisisiwa ka Imeyili"
 }

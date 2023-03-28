@@ -283,6 +283,12 @@
   "memberLocation": "Member a araba ka sebaka sa bona",
   "photoLocation": "Senepe se nkuoe sebakeng sena",
   "videoLocation": "Video e entsoe sebakeng sena",
-  "audioLocation": "Sekotwana sa Audi se hatisitsoe sebakeng sena"
+  "audioLocation": "Sekotwana sa Audi se hatisitsoe sebakeng sena",
+  "password": "Password",
+  "signInOK": "Ho kena ho atlehile!",
+  "enterPassword": "Kenya Password",
+  "phoneAuth": "Netefatsa Mohala",
+  "signInInstruction": "Ka kopo, kena u sebelisa mokhoa o nepahetseng. Ho khothaletsoa ho sebelisa netefatso ea mohala haeba sesebelisoa sa hau se ka amohela melaetsa ea SMS. Haeba sesebelisoa sa hau se sa tšehetse melaetsa ea SMS ka kopo sebelisa netefatso ea lengolo-tsoibila",
+  "emailAuth": "Netefatso ea Imeile"
 
 }

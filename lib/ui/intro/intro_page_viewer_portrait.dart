@@ -9,6 +9,7 @@ import 'package:geo_monitor/ui/auth/auth_registration_main.dart';
 import 'package:geo_monitor/ui/auth/auth_signin_main.dart';
 import 'package:geo_monitor/ui/dashboard/dashboard_main.dart';
 import 'package:page_transition/page_transition.dart';
+import 'package:uuid/uuid.dart';
 
 import '../../l10n/translation_handler.dart';
 import '../../library/api/prefs_og.dart';
@@ -53,11 +54,10 @@ class IntroPageViewerPortraitState extends State<IntroPageViewerPortrait>
   IntroStrings? introStrings;
   Future _setTexts({String? selectedLocale}) async {
     settingsModel = await prefsOGx.getSettings();
-    late String locale;
     if (settingsModel == null) {
       settingsModel = SettingsModel(
-          distanceFromProject: 500,
-          photoSize: 1,
+          distanceFromProject: 200,
+          photoSize: 0,
           maxVideoLengthInSeconds: 120,
           maxAudioLengthInMinutes: 30,
           themeIndex: 0,
@@ -65,13 +65,11 @@ class IntroPageViewerPortraitState extends State<IntroPageViewerPortrait>
           created: null,
           organizationId: null,
           projectId: null,
-          numberOfDays: 7,
+          numberOfDays: 30,
           locale: selectedLocale,
-          activityStreamHours: 24);
+          activityStreamHours: 48);
+
       await prefsOGx.saveSettings(settingsModel!);
-      locale = selectedLocale == null?'en':selectedLocale!;
-    } else {
-      locale = settingsModel!.locale!;
     }
     introStrings = await IntroStrings.getTranslated();
     setState(() {});
@@ -138,7 +136,7 @@ class IntroPageViewerPortraitState extends State<IntroPageViewerPortrait>
             type: PageTransitionType.scale,
             alignment: Alignment.topLeft,
             duration: const Duration(seconds: 1),
-            child: const AuthSignInMain()));
+            child: const AuthSignIn()));
 
     pp('$mm _navigateToSignIn ....... back from PhoneLogin with maybe a user ..');
     user = await prefsOGx.getUser();
@@ -214,6 +212,20 @@ class IntroPageViewerPortraitState extends State<IntroPageViewerPortrait>
 
   onSelected(Locale p1, String p2) async {
     pp('$mm locale selected: $p1 - $p2');
+    final s = SettingsModel(
+        distanceFromProject: 200,
+        photoSize: 0,
+        locale: p1.languageCode,
+        maxVideoLengthInSeconds: 60,
+        maxAudioLengthInMinutes: 15,
+        themeIndex: 0,
+        settingsId: const Uuid().v4(),
+        created: DateTime.now().toUtc().toIso8601String(),
+        organizationId: user!.organizationId,
+        projectId: null,
+        numberOfDays: 30,
+        activityStreamHours: 48);
+    await prefsOGx.saveSettings(s);
     await _setTexts(selectedLocale: p1.languageCode);
   }
 

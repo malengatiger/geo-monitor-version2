@@ -66,7 +66,7 @@ class ThinCard extends StatelessWidget {
                   ],
                 ),
                 const SizedBox(
-                  height: 4,
+                  height: 0,
                 ),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,

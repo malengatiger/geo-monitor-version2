@@ -292,6 +292,12 @@
   "memberLocation": "Onye otu azara ọnọdụ ha",
   "photoLocation": "Esetere foto n\u0027ebe a",
   "videoLocation": "Emere vidiyo n\u0027ebe a",
-  "audioLocation": "Edekọrọ obere vidiyo Audi n\u0027ebe a"
+  "audioLocation": "Edekọrọ obere vidiyo Audi n\u0027ebe a",
+  "password": "Okwuntughe",
+  "signInOK": "Nbanye nwere ihe ịga nke ọma!",
+  "enterPassword": "Tinye okwuntughe",
+  "phoneAuth": "Nyocha ekwentị",
+  "signInInstruction": "Biko jiri usoro dabara adaba banye. A na-atụ aro ka iji nyocha ekwentị ma ọ bụrụ na ngwaọrụ gị nwere ike ịnakwere ozi SMS. Ọ bụrụ na ngwaọrụ gị anaghị akwado ozi SMS biko jiri nyocha email",
+  "emailAuth": "Nyocha email"
 
 }

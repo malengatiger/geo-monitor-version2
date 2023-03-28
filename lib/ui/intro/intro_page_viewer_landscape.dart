@@ -6,10 +6,12 @@ import 'package:geo_monitor/ui/auth/auth_registration_main.dart';
 import 'package:geo_monitor/ui/auth/auth_signin_main.dart';
 import 'package:geo_monitor/ui/dashboard/dashboard_main.dart';
 import 'package:page_transition/page_transition.dart';
+import 'package:uuid/uuid.dart';
 
 import '../../l10n/translation_handler.dart';
 import '../../library/api/prefs_og.dart';
 import '../../library/cache_manager.dart';
+import '../../library/data/settings_model.dart';
 import '../../library/data/user.dart' as ur;
 import '../../library/emojis.dart';
 import '../../library/functions.dart';
@@ -132,7 +134,7 @@ class _IntroPageViewerLandscapeState extends State<IntroPageViewerLandscape>
             type: PageTransitionType.scale,
             alignment: Alignment.topLeft,
             duration: const Duration(seconds: 1),
-            child: const AuthSignInMain()));
+            child: const AuthSignIn()));
 
     if (result is ur.User) {
       pp('\n\n\n$mm _navigateToSignIn ....... back from AuthSignInMain with a user '
@@ -182,7 +184,21 @@ class _IntroPageViewerLandscapeState extends State<IntroPageViewerLandscape>
 
   onSelected(Locale p1, String p2) async {
     pp('$mm locale selected: $p1 - $p2');
-    await _setTexts();
+    final s = SettingsModel(
+        distanceFromProject: 200,
+        photoSize: 0,
+        locale: p1.languageCode,
+        maxVideoLengthInSeconds: 60,
+        maxAudioLengthInMinutes: 15,
+        themeIndex: 0,
+        settingsId: const Uuid().v4(),
+        created: DateTime.now().toUtc().toIso8601String(),
+        organizationId: user!.organizationId,
+        projectId: null,
+        numberOfDays: 30,
+        activityStreamHours: 48);
+    await prefsOGx.saveSettings(s);
+    await _setTexts();;
   }
 
   @override

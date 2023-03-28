@@ -291,6 +291,12 @@
   "memberLocation": "Das Mitglied hat mit seinem Standort geantwortet",
   "photoLocation": "Das Foto wurde an dieser Stelle aufgenommen",
   "videoLocation": "An dieser Stelle wurde ein Video aufgenommen",
-  "audioLocation": "Audi Clip wurde an dieser Stelle aufgenommen"
+  "audioLocation": "Audi Clip wurde an dieser Stelle aufgenommen",
+  "password": "Passwort",
+  "signInOK": "Anmeldung erfolgreich!",
+  "enterPassword": "Passwort eingeben",
+  "phoneAuth": "Telefonauthentifizierung",
+  "signInInstruction": "Bitte melden Sie sich mit der entsprechenden Methode an. Es wird empfohlen, die Telefonauthentifizierung zu verwenden, wenn Ihr Gerät SMS-Nachrichten annehmen kann. Wenn Ihr Gerät keine SMS-Nachrichten unterstützt, verwenden Sie bitte die E-Mail-Authentifizierung",
+  "emailAuth": "E-Mail-Authentifikation"
 
 }

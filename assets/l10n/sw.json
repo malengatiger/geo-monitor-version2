@@ -283,5 +283,11 @@
   "memberLocation": "Mwanachama alijibu na eneo lao",
   "photoLocation": "Picha ilipigwa mahali hapa",
   "videoLocation": "Video ilitengenezwa mahali hapa",
-  "audioLocation": "Klipu ya Audi ilirekodiwa mahali hapa"
+  "audioLocation": "Klipu ya Audi ilirekodiwa mahali hapa",
+  "password": "Nenosiri",
+  "signInOK": "Kuingia kumefaulu!",
+  "enterPassword": "Weka Nenosiri",
+  "phoneAuth": "Uthibitishaji wa Simu",
+  "signInInstruction": "Tafadhali ingia kwa kutumia mbinu inayofaa. Inapendekezwa kutumia uthibitishaji wa simu ikiwa kifaa chako kinaweza kukubali ujumbe wa SMS. Ikiwa kifaa chako hakitumii ujumbe wa SMS tafadhali tumia uthibitishaji wa barua pepe",
+  "emailAuth": "Uthibitishaji wa Barua pepe"
 }

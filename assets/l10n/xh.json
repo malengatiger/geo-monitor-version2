@@ -283,7 +283,13 @@
   "memberLocation": "Ilungu liphendule ngendawo yalo",
   "photoLocation": "Ifoto ithathwe kule ndawo",
   "videoLocation": "Ividiyo yenziwe kule ndawo",
-  "audioLocation": "Ikliphu ye-Audi ishicilelwe kule ndawo"
+  "audioLocation": "Ikliphu ye-Audi ishicilelwe kule ndawo",
+  "password": "Inombolo yokuvula",
+  "signInOK": "Ukungena kuphumelele!",
+  "enterPassword": "Faka Igama Lokugqithisa",
+  "phoneAuth": "Uqinisekiso lwefowuni",
+  "signInInstruction": "Nceda ungene usebenzisa indlela efanelekileyo. Kuyacetyiswa ukuba usebenzise uqinisekiso lwefowuni ukuba isixhobo sakho sinokuyamkela imiyalezo yeSMS. Ukuba isixhobo sakho asiyixhasi imiyalezo yeSMS nceda usebenzise uqinisekiso lwe-imeyile",
+  "emailAuth": "Uqinisekiso lwe-imeyile"
 
 
 }

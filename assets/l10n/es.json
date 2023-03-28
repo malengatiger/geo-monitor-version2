@@ -286,6 +286,12 @@
   "memberLocation": "El miembro respondió con su ubicación",
   "photoLocation": "La foto fue tomada en este lugar.",
   "videoLocation": "El video fue hecho en esta ubicación",
-  "audioLocation": "Audi clip fue grabado en este lugar"
+  "audioLocation": "Audi clip fue grabado en este lugar",
+  "password": "Contraseña",
+  "signInOK": "¡Iniciar sesión correctamente!",
+  "enterPassword": "Introducir la contraseña",
+  "phoneAuth": "Autenticación telefónica",
+  "signInInstruction": "Inicie sesión con el método adecuado. Se recomienda utilizar la autenticación telefónica si su dispositivo puede aceptar mensajes SMS. Si su dispositivo no es compatible con la mensajería SMS, utilice la autenticación por correo electrónico",
+  "emailAuth": "Verificacion de Email"
 
 }

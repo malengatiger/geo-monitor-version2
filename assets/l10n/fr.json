@@ -286,6 +286,12 @@
   "memberLocation": "Le membre a répondu avec son emplacement",
   "photoLocation": "La photo a été prise à cet endroit",
   "videoLocation": "La vidéo a été réalisée à cet endroit",
-  "audioLocation": "Le clip Audi a été enregistré à cet endroit"
+  "audioLocation": "Le clip Audi a été enregistré à cet endroit",
+  "password": "Mot de passe",
+  "signInOK": "Connexion réussie !",
+  "enterPassword": "Entrer le mot de passe",
+  "phoneAuth": "Authentification par téléphone",
+  "signInInstruction": "Veuillez vous connecter en utilisant la méthode appropriée. Il est recommandé d\u0027utiliser l\u0027authentification du téléphone si votre appareil peut accepter les messages SMS. Si votre appareil ne prend pas en charge la messagerie SMS, veuillez utiliser l\u0027authentification par e-mail",
+  "emailAuth": "Authentification par courriel"
 
 }

@@ -285,7 +285,13 @@
   "memberLocation": "Omo egbe fesi pẹlu wọn ipo",
   "photoLocation": "A ya fọto ni ibi yii",
   "videoLocation": "A ṣe fidio ni aaye yii",
-  "audioLocation": "Audi agekuru ti a gba silẹ ni ibi yi"
+  "audioLocation": "Audi agekuru ti a gba silẹ ni ibi yi",
+  "password": "Ọrọigbaniwọle",
+  "signInOK": "Wọle ni aṣeyọri!",
+  "enterPassword": "Tẹ Ọrọigbaniwọle sii",
+  "phoneAuth": "Ijeri foonu",
+  "signInInstruction": "Jọwọ wọle nipa lilo ọna ti o yẹ. O ti wa ni niyanju lati lo foonu ìfàṣẹsí ti o ba ti ẹrọ rẹ le gba SMS awọn ifiranṣẹ. Ti ẹrọ rẹ ko ba ṣe atilẹyin fifiranṣẹ SMS jọwọ lo ijẹrisi imeeli",
+  "emailAuth": "Imeeli Ijeri"
 
 
 

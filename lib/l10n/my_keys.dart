@@ -1,4 +1,3 @@
-// DO NOT EDIT. This is code generated via package:easy_localization/generate.dart
 
 import 'dart:collection';
 
@@ -344,7 +343,12 @@ class MyKeys {
     hashMap["audioLocation"]  = "audioLocation";
     hashMap["memberLocation"]  = "memberLocation";
 
+    hashMap["enterPassword"] = "Enter Password";
+    hashMap["password"] = "Password";
+    hashMap["signInOK"] = "Sign in succeeded!";
 
-
+    hashMap["phoneAuth"] = "phoneAuth";
+    hashMap["emailAuth"] = "emailAuth";
+    hashMap["signInInstruction"] = "signInInstruction";
   }
 }

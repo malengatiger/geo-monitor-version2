@@ -9,7 +9,7 @@ import 'package:geo_monitor/library/data/country.dart';
 import 'package:geo_monitor/library/data/organization.dart';
 import 'package:geo_monitor/library/data/organization_registration_bag.dart';
 import 'package:geo_monitor/library/data/settings_model.dart';
-import 'package:geo_monitor/ui/auth/auth_phone_signin_mobile.dart';
+import 'package:geo_monitor/ui/auth/auth_phone_signin.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
 import 'package:uuid/uuid.dart';
 

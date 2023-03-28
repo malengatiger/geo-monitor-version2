@@ -53,6 +53,7 @@ class PhotoMapState extends State<PhotoMap>
         reverseDuration: const Duration(milliseconds: 1500),
         vsync: this);
     super.initState();
+    _setTexts();
     _getUser();
     _setMarkerIcon();
   }
@@ -76,6 +77,9 @@ class PhotoMapState extends State<PhotoMap>
       photoLocationText = await mTx.translate('photoLocation',
           sett!.locale!);
       myDate = getFmtDate(widget.photo.created!, sett!.locale!);
+      setState(() {
+
+      });
     }
   }
 
@@ -139,9 +143,7 @@ class PhotoMapState extends State<PhotoMap>
 
   @override
   Widget build(BuildContext context) {
-    // String formattedDate =
-    //     DateFormat.yMMMEd().format(DateTime.parse(widget.photo.created!));
-    // var time = TimeOfDay.fromDateTime(DateTime.parse(widget.photo.created!));
+
     var deviceType = getThisDeviceType();
     return SafeArea(
       child: Scaffold(
@@ -265,7 +267,7 @@ class PhotoMapState extends State<PhotoMap>
                                 ),
                                 Text(
                                   '${widget.photo.userName}',
-                                  style: myTextStyleSmall(context),
+                                  style: myTextStyleSmallBoldPrimaryColor(context),
                                 ),
                                 const SizedBox(
                                   height: 8,
@@ -301,7 +303,7 @@ class PhotoMapState extends State<PhotoMap>
                           shape: getRoundedBorder(radius: 12),
                           color: Colors.black38,
                           child: Padding(
-                            padding: const EdgeInsets.all(16.0),
+                            padding: const EdgeInsets.all(12.0),
                             child: SizedBox(
                               // width: deviceType == 'phone' ? 100 : 220,
                               // height: deviceType == 'phone' ? 120 : 340,
@@ -313,9 +315,9 @@ class PhotoMapState extends State<PhotoMap>
                                   InteractiveViewer(
                                     child: Image.network(
                                       widget.photo.thumbnailUrl!,
-                                      width: deviceType == 'phone' ? 160 : 220,
-                                      height: deviceType == 'phone' ? 200 : 340,
-                                      fit: BoxFit.fill,
+                                      width: deviceType == 'phone' ? 240 : 300,
+                                      height: deviceType == 'phone' ? 300 : 400,
+                                      fit: BoxFit.cover,
                                     ),
                                   ),
                                   const SizedBox(
@@ -329,7 +331,7 @@ class PhotoMapState extends State<PhotoMap>
                                   ),
                                   Text(
                                     '${widget.photo.userName}',
-                                    style: myTextStyleSmallBold(context),
+                                    style: myTextStyleSmallBoldPrimaryColor(context),
                                   ),
                                   const SizedBox(
                                     height: 8,

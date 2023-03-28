@@ -283,7 +283,13 @@
   "memberLocation": "Member akadaira nenzvimbo yavo",
   "photoLocation": "Mufananidzo wakatorwa panzvimbo iyi",
   "videoLocation": "Vhidhiyo yakaitwa panzvimbo ino",
-  "audioLocation": "Audi clip yakarekodhwa panzvimbo ino"
+  "audioLocation": "Audi clip yakarekodhwa panzvimbo ino",
+  "password": "Pasiwedhi",
+  "signInOK": "Kusaina kwabudirira!",
+  "enterPassword": "Enter Password",
+  "phoneAuth": "Phone Authentication",
+  "signInInstruction": "Ndapota pinda uchishandisa nzira yakakodzera. Zvinokurudzirwa kushandisa chokwadi chefoni kana mudziyo wako uchigona kugamuchira mameseji eSMS. Kana mudziyo wako usingatsigire mameseji eSMS ndapota shandisa email yechokwadi",
+  "emailAuth": "Email Authentication"
 
 
 }

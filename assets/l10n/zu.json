@@ -279,7 +279,13 @@
   "enterSMS": "Faka iphinikhodi ye-SMS ethunyelwe kudivayisi yakho",
   "enterAdmin": "Faka Igama Lomlawuli",
   "verifyFailed": "Ukuqinisekisa kuhlulekile. Sicela uzame ngokuhamba kwesikhathi",
-  "duplicateOrg": "Igama lenhlangano eliyimpinda"
+  "duplicateOrg": "Igama lenhlangano eliyimpinda",
+  "password": "Iphasiwedi",
+  "signInOK": "Ukungena ngemvume kuphumelele!",
+  "enterPassword": "Faka Iphasiwedi",
+  "phoneAuth": "Ukuqinisekiswa Kwefoni",
+  "signInInstruction": "Sicela ungene ngemvume usebenzisa indlela efanele. Kunconywa ukusebenzisa ukuqinisekiswa kwefoni uma idivayisi yakho ingamukela imilayezo ye-SMS. Uma idivayisi yakho ingakusekeli umlayezo we-SMS sicela usebenzise ukuqinisekiswa kwe-imeyili",
+  "emailAuth": "Ukuqinisekiswa kwe-imeyili"
 
 
 }

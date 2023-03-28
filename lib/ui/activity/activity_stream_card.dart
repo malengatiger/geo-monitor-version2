@@ -235,7 +235,7 @@ class ActivityStreamCardState extends State<ActivityStreamCard> {
       case ActivityType.photoAdded:
         icon = Icon(Icons.camera_alt, color: Theme.of(context).primaryColor);
         message = '${widget.activityModel.projectName}';
-        return _getGeneric(icon, message, 100.0);
+        return _getGeneric(icon, message, 112.0);
 
       case ActivityType.videoAdded:
         icon = Icon(Icons.video_camera_front,
