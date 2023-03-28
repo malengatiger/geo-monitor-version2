@@ -331,7 +331,7 @@ class AudioRecorderState extends State<AudioRecorder>
               fileSize: fileSize,
               readyForUpload: _readyForUpload,
               uploadFile: _uploadFile,
-              padding: 28,
+              padding: 20,
               iconSize: 20,
               uploadAudioClipText: uploadAudioClipText!),
     );
@@ -489,132 +489,134 @@ class AudioRecorderCard extends StatelessWidget {
               elevation: 8,
               child: Padding(
                 padding: const EdgeInsets.all(8.0),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: <Widget>[
-                    deviceType == 'phone'
-                        ? const SizedBox()
-                        : Row(
-                            mainAxisAlignment: MainAxisAlignment.end,
-                            children: [
-                              IconButton(
-                                  onPressed: () {
-                                    close();
-                                  },
-                                  icon:  Icon(Icons.close, size: iconSize!,)),
-                            ],
-                          ),
-                    Text(
-                      projectName,
-                      style: myTextStyleLargePrimaryColor(context),
-                    ),
-                    SizedBox(
-                      height: padding,
-                    ),
-                    UserProfileCard(
-                      userName: user.name!,
-                      userThumbUrl: user.thumbnailUrl,
-                      namePictureHorizontal: false,
-                      avatarRadius: 28.0,
-                      padding: 12.0,
-                      elevation: 4.0,
-                    ),
-                    SizedBox(
-                      height: padding,
-                    ),
-                    SizedBox(
-                      height: timerCardHeight == null ? 120 : timerCardHeight!,
-                      child: showWaveForm
-                          ? TimerCard(
-                              fontSize: 28,
-                              seconds: seconds,
-                              elapsedTime: elapsedTimeText,
+                child: SingleChildScrollView(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                      deviceType == 'phone'
+                          ? const SizedBox()
+                          : Row(
+                              mainAxisAlignment: MainAxisAlignment.end,
+                              children: [
+                                IconButton(
+                                    onPressed: () {
+                                      close();
+                                    },
+                                    icon:  Icon(Icons.close, size: iconSize!,)),
+                              ],
+                            ),
+                      Text(
+                        projectName,
+                        style: myTextStyleLargePrimaryColor(context),
+                      ),
+                      SizedBox(
+                        height: padding,
+                      ),
+                      UserProfileCard(
+                        userName: user.name!,
+                        userThumbUrl: user.thumbnailUrl,
+                        namePictureHorizontal: false,
+                        avatarRadius: 28.0,
+                        padding: 12.0,
+                        elevation: 4.0,
+                      ),
+                      SizedBox(
+                        height: padding,
+                      ),
+                      SizedBox(
+                        height: timerCardHeight == null ? 120 : timerCardHeight!,
+                        child: showWaveForm
+                            ? TimerCard(
+                                fontSize: 28,
+                                seconds: seconds,
+                                elapsedTime: elapsedTimeText,
+                              )
+                            : const SizedBox(),
+                      ),
+                      SizedBox(
+                        height: padding,
+                      ),
+                      showWaveForm ? SiriCard() : const SizedBox(),
+                      showWaveForm
+                          ? const SizedBox(
+                              height: 24,
                             )
                           : const SizedBox(),
-                    ),
-                    SizedBox(
-                      height: padding,
-                    ),
-                    showWaveForm ? SiriCard() : const SizedBox(),
-                    showWaveForm
-                        ? const SizedBox(
-                            height: 24,
-                          )
-                        : const SizedBox(),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        _buildRecordStopControl(context),
-                        const SizedBox(width: 48),
-                        _buildPauseResumeControl(context),
-                      ],
-                    ),
-                    const SizedBox(
-                      height: 16,
-                    ),
-                    readyForUpload
-                        ? Card(
-                            elevation: 2,
-                            shape: getRoundedBorder(radius: 16),
-                            child: Column(
-                              children: [
-                                const SizedBox(
-                                  height: 20,
-                                ),
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Text(
-                                      fileUploadSizeText,
-                                      style: myTextStyleSmall(context),
-                                    ),
-                                    const SizedBox(
-                                      width: 8,
-                                    ),
-                                    Text(
-                                      ((fileSize / 1024 / 1024)
-                                          .toStringAsFixed(2)),
-                                      style: myTextStyleMediumBoldPrimaryColor(
-                                          context),
-                                    ),
-                                    const SizedBox(
-                                      width: 8,
-                                    ),
-                                    Text(
-                                      'MB',
-                                      style: myTextStyleSmall(context),
-                                    ),
-                                  ],
-                                ),
-                                const SizedBox(
-                                  height: 20,
-                                ),
-                                ElevatedButton(
-                                  onPressed: () {
-                                    uploadFile();
-                                  },
-                                  child: SizedBox(
-                                    width: 240.0,
-                                    child: Center(
-                                      child: Padding(
-                                        padding: const EdgeInsets.all(8.0),
-                                        child: Text(
-                                          uploadAudioClipText,
-                                          style: myTextStyleSmallBold(context),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          _buildRecordStopControl(context),
+                          const SizedBox(width: 48),
+                          _buildPauseResumeControl(context),
+                        ],
+                      ),
+                      const SizedBox(
+                        height: 16,
+                      ),
+                      readyForUpload
+                          ? Card(
+                              elevation: 2,
+                              shape: getRoundedBorder(radius: 16),
+                              child: Column(
+                                children: [
+                                  const SizedBox(
+                                    height: 20,
+                                  ),
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Text(
+                                        fileUploadSizeText,
+                                        style: myTextStyleSmall(context),
+                                      ),
+                                      const SizedBox(
+                                        width: 8,
+                                      ),
+                                      Text(
+                                        ((fileSize / 1024 / 1024)
+                                            .toStringAsFixed(2)),
+                                        style: myTextStyleMediumBoldPrimaryColor(
+                                            context),
+                                      ),
+                                      const SizedBox(
+                                        width: 8,
+                                      ),
+                                      Text(
+                                        'MB',
+                                        style: myTextStyleSmall(context),
+                                      ),
+                                    ],
+                                  ),
+                                  const SizedBox(
+                                    height: 20,
+                                  ),
+                                  ElevatedButton(
+                                    onPressed: () {
+                                      uploadFile();
+                                    },
+                                    child: SizedBox(
+                                      width: 240.0,
+                                      child: Center(
+                                        child: Padding(
+                                          padding: const EdgeInsets.all(8.0),
+                                          child: Text(
+                                            uploadAudioClipText,
+                                            style: myTextStyleSmallBold(context),
+                                          ),
                                         ),
                                       ),
                                     ),
                                   ),
-                                ),
-                                const SizedBox(
-                                  height: 16,
-                                ),
-                              ],
-                            ),
-                          )
-                        : const SizedBox(),
-                    const SizedBox(height: 20),
-                  ],
+                                  const SizedBox(
+                                    height: 16,
+                                  ),
+                                ],
+                              ),
+                            )
+                          : const SizedBox(),
+                      const SizedBox(height: 20),
+                    ],
+                  ),
                 ),
               ),
             ),
