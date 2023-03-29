@@ -841,7 +841,7 @@ class ProjectListTabletState extends State<ProjectListTablet>
                                     ),
                                     GeoActivity(
                                       width: firstWidth - 60,
-                                      thinMode: false,
+                                      thinMode: true,
                                       forceRefresh: true,
                                       showPhoto: showPhoto,
                                       showVideo: showVideo,

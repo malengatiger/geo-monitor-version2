@@ -249,6 +249,26 @@ class ActivityListMobileState extends State<ActivityListMobile>
   }
 
   bool sortedByDateAscending = false;
+  bool sortedAscending = false;
+  void _sort() {
+    if (sortedAscending) {
+      sortActivitiesDescending(models);
+      sortedAscending = false;
+    } else {
+      sortActivitiesAscending(models);
+      sortedAscending = true;
+    }
+    //scroll to top after sort
+    if (mounted) {
+      setState((){
+        listScrollController.animateTo(
+          listScrollController.position.minScrollExtent,
+          curve: Curves.easeOut,
+          duration: const Duration(milliseconds: 500),
+        );});
+    }
+
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -371,7 +391,7 @@ class ActivityListMobileState extends State<ActivityListMobile>
                       hours: settings == null
                           ? 12
                           : settings!.activityStreamHours!,
-                      number: models.length,
+                      number: models.length, onSortRequested: _sort,
                     ),
             ),
           ),

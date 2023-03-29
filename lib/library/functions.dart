@@ -803,6 +803,11 @@ void sortActivitiesDescending(List<ActivityModel> models) {
       .millisecondsSinceEpoch
       .compareTo(DateTime.parse(a.date!).millisecondsSinceEpoch));
 }
+void sortActivitiesAscending(List<ActivityModel> models) {
+  models.sort((a, b) => DateTime.parse(a.date!)
+      .millisecondsSinceEpoch
+      .compareTo(DateTime.parse(b.date!).millisecondsSinceEpoch));
+}
 
 Future<String?> getTranslatedUserType(String type) async {
   String? translated;

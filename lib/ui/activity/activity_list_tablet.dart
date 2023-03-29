@@ -171,10 +171,7 @@ class _ActivityListTabletState extends State<ActivityListTablet>
 
   Future _getUserData(bool forceRefresh, int hours) async {
     models = await userBloc.getUserActivity(
-        userId: widget.user!.userId!,
-        hours: hours,
-        forceRefresh: forceRefresh);
-
+        userId: widget.user!.userId!, hours: hours, forceRefresh: forceRefresh);
   }
 
   void _listenToStreams() async {
@@ -192,7 +189,8 @@ class _ActivityListTabletState extends State<ActivityListTablet>
       _getData(false);
     });
 
-    subscription = fcmBloc.activityStream.listen((ActivityModel activity) async {
+    subscription =
+        fcmBloc.activityStream.listen((ActivityModel activity) async {
       pp('$mm activityStream delivered activity data ... '
           'current models: ${models.length}\n\n');
 
@@ -310,120 +308,116 @@ class _ActivityListTabletState extends State<ActivityListTablet>
         ),
       );
     }
-    sortActivitiesDescending(models);
-    return widget.thinMode
-        ? SizedBox(
-            width: widget.width,
-            child: SingleChildScrollView(
-              child: Column(children: [
-                Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.only(
-                            left: 4.0, top: 12, bottom: 8),
-                        child: Padding(
-                          padding: const EdgeInsets.only(top: 16.0),
-                          child: prefix == null
+
+    final height = MediaQuery.of(context).size.height;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (listScrollController.hasClients) {
+        if (sortedAscending) {
+          listScrollController.animateTo(
+              listScrollController.position.maxScrollExtent,
+              duration: const Duration(milliseconds: 2000),
+              curve: Curves.fastOutSlowIn);
+        } else {
+          listScrollController.animateTo(
+              listScrollController.position.minScrollExtent,
+              duration: const Duration(milliseconds: 2000),
+              curve: Curves.fastOutSlowIn);
+        }
+      }
+    });
+    return Scaffold(
+        body: Stack(
+      children: [
+        SizedBox(
+          width: widget.width,
+          // height: height - 100,
+          child: SingleChildScrollView(
+            child: Column(children: [
+              const SizedBox(
+                height: 100,
+              ),
+              ListView.builder(
+                  shrinkWrap: true,
+                  itemCount: models.length,
+                  controller: listScrollController,
+                  itemBuilder: (_, index) {
+                    var act = models.elementAt(index);
+                    return GestureDetector(
+                      onTap: () {
+                        _handleTappedActivity(act);
+                      },
+                      child: activityStrings == null
+                          ? const SizedBox()
+                          : sett == null
                               ? const SizedBox()
-                              : ActivityHeader(
-                                  prefix: prefix!,
-                                  suffix: suffix!,
-                                  onRefreshRequested: () {
-                                    _getData(true);
-                                  },
-                                  hours: sett!.activityStreamHours!,
-                                  number: models.length,
+                              : ActivityStreamCard(
+                                  locale: sett!.locale!,
+                                  activityStrings: activityStrings!,
+                                  activityModel: act,
+                                  frontPadding: 36,
+                                  thinMode: widget.thinMode,
+                                  width: widget.thinMode ? 320 : widget.width,
                                 ),
-                        ),
-                      ),
-                    ]),
-                const SizedBox(
-                  height: 4,
-                ),
-                ListView.builder(
-                    shrinkWrap: true,
-                    itemCount: models.length,
-                    controller: listScrollController,
-                    itemBuilder: (_, index) {
-                      var act = models.elementAt(index);
-                      return GestureDetector(
-                        onTap: () {
-                          _handleTappedActivity(act);
-                        },
-                        child: activityStrings == null
-                            ? const SizedBox()
-                            : sett == null
-                                ? const SizedBox()
-                                : ActivityStreamCard(
-                                    locale: sett!.locale!,
-                                    activityStrings: activityStrings!,
-                                    activityModel: act,
-                                    frontPadding: 36,
-                                    thinMode: widget.thinMode,
-                                    width: widget.thinMode ? 320 : widget.width,
-                                  ),
-                      );
-                    }),
-              ]),
+                    );
+                  }),
+            ]),
+          ),
+        ),
+        Positioned(
+          child: SizedBox(
+            height: 100,
+            child: Card(
+              shape: getRoundedBorder(radius: 12),
+              elevation: 10,
+              child: Center(
+                child:
+                    Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+                  Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 4.0,
+                      vertical: 12,
+                    ),
+                    child: prefix == null
+                        ? const SizedBox()
+                        : ActivityHeader(
+                            prefix: prefix!,
+                            suffix: suffix!,
+                            onRefreshRequested: () {
+                              _getData(true);
+                            },
+                            hours: sett!.activityStreamHours!,
+                            number: models.length,
+                            onSortRequested: _sort,
+                          ),
+                  ),
+                ]),
+              ),
             ),
-          )
-        : SizedBox(
-            width: widget.width,
-            child: SingleChildScrollView(
-              child: Column(children: [
-                Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.only(
-                            left: 12.0, top: 12, bottom: 8),
-                        child: Padding(
-                          padding: const EdgeInsets.only(top: 16.0),
-                          child: prefix == null
-                              ? const SizedBox()
-                              : ActivityHeader(
-                                  prefix: prefix!,
-                                  suffix: suffix!,
-                                  onRefreshRequested: () {
-                                    _getData(true);
-                                  },
-                                  hours: sett!.activityStreamHours!,
-                                  number: models.length,
-                                ),
-                        ),
-                      ),
-                    ]),
-                const SizedBox(
-                  height: 4,
-                ),
-                ListView.builder(
-                    shrinkWrap: true,
-                    itemCount: models.length,
-                    controller: listScrollController,
-                    itemBuilder: (_, index) {
-                      var act = models.elementAt(index);
-                      return GestureDetector(
-                        onTap: () {
-                          _handleTappedActivity(act);
-                        },
-                        child: activityStrings == null
-                            ? const SizedBox()
-                            : sett == null
-                                ? const SizedBox()
-                                : ActivityStreamCard(
-                                    locale: sett!.locale!,
-                                    activityStrings: activityStrings!,
-                                    activityModel: act,
-                                    frontPadding: 16,
-                                    thinMode: widget.thinMode,
-                                    width: widget.width,
-                                  ),
-                      );
-                    }),
-              ]),
-            ),
-          );
+          ),
+        ),
+      ],
+    ));
+  }
+
+  bool sortedAscending = false;
+  void _sort() {
+    if (sortedAscending) {
+      sortActivitiesDescending(models);
+      sortedAscending = false;
+    } else {
+      sortActivitiesAscending(models);
+      sortedAscending = true;
+    }
+    //scroll to top after sort
+    if (mounted) {
+      setState(() {
+        listScrollController.animateTo(
+          listScrollController.position.minScrollExtent,
+          curve: Curves.fastOutSlowIn,
+          duration: const Duration(milliseconds: 2000),
+        );
+      });
+    }
   }
 
   Future<void> _handleTappedActivity(ActivityModel act) async {

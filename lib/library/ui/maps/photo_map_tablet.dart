@@ -119,7 +119,7 @@ class PhotoMapState extends State<PhotoMap>
 
     googleMapController = await _mapController.future;
     _animateCamera(
-        latitude: latLng.latitude, longitude: latLng.longitude, zoom: 14.0);
+        latitude: latLng.latitude, longitude: latLng.longitude, zoom: 18.0);
   }
 
   void _onMarkerTapped() {

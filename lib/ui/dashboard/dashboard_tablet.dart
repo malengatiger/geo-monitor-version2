@@ -545,14 +545,16 @@ class DashboardTabletState extends State<DashboardTablet>
     var avatarRadius = 32.0;
     var userPadding = 16.0;
     var spaceFromBottom = 8.0;
+    var width = 360.0;
     if (ori.name == 'portrait') {
       padding = 200;
       top = 0;
       bottomHeight = 200;
       extPadding = 140;
       avatarRadius = 20;
-      userPadding = 12;
-      spaceFromBottom = 20;
+      userPadding = 0.0;
+      spaceFromBottom = 8;
+      width = 300.0;
     }
 
     return SafeArea(
@@ -615,9 +617,9 @@ class DashboardTabletState extends State<DashboardTablet>
                       userName: user!.name!,
                       userThumbUrl: user!.thumbnailUrl!,
                       namePictureHorizontal: true,
-                      avatarRadius: 36,
+                      avatarRadius: 24,
                       elevation: 2,
-                      width: 340,
+                      width: width,
                       userType: translatedUserType,
                       padding: userPadding,
                       textStyle: myTextStyleMediumPrimaryColor(context)),

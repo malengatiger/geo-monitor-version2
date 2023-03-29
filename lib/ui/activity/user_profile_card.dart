@@ -27,12 +27,12 @@ class UserProfileCard extends StatelessWidget {
     return SizedBox(
       width: width ?? 240,
       child: Card(
-        elevation: elevation ?? 8.0,
+        elevation: elevation ?? 2.0,
         shape: getRoundedBorder(radius: 16),
         child: Padding(
           padding: EdgeInsets.all(padding ?? 8),
           child: namePictureHorizontal
-              ? SizedBox(height: userType == null? 72: 84,
+              ? SizedBox(height: userType == null? 60: 84,
                 child: Column(mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Row(mainAxisAlignment: MainAxisAlignment.center,
@@ -48,7 +48,7 @@ class UserProfileCard extends StatelessWidget {
                           const SizedBox(
                             width: 16,
                           ),
-                          SizedBox(height: 48,
+                          SizedBox(height: 36,
                             child: Column(mainAxisAlignment: MainAxisAlignment.center,
                               children: [
                                 Flexible(
@@ -73,7 +73,7 @@ class UserProfileCard extends StatelessWidget {
                   ),
               )
               : SizedBox(
-                  height: 140,
+                  height: 100,
                   child: Column(
                     children: [
                       const SizedBox(
@@ -90,7 +90,7 @@ class UserProfileCard extends StatelessWidget {
                       const SizedBox(
                         height: 8,
                       ),
-                      SizedBox(height: 48,
+                      SizedBox(height: 36,
                         child: Column(
                           children: [
                             Flexible(

@@ -87,7 +87,7 @@ class PrefsOGx {
       return null;
     } else {
       user = User.fromJson(mJson);
-      // pp("$mm getUser 🧩🧩🧩🧩🧩 retrieved .. ${user.name}  🔴🔴");
+      pp("$mm getUser 🧩🧩🧩🧩🧩 retrieved .. ${user.toJson()}  🔴🔴");
       return user;
     }
   }

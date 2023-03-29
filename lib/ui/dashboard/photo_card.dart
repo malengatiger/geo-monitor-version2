@@ -1,5 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:geo_monitor/ui/activity/user_profile_card.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import '../../library/data/photo.dart';
@@ -70,8 +71,6 @@ class PhotoCard extends StatelessWidget {
             const SizedBox(
               height: 4,
             ),
-
-
             Card(
               shape: getRoundedBorder(radius: 16),
               elevation: 4,
@@ -86,17 +85,23 @@ class PhotoCard extends StatelessWidget {
                     const SizedBox(
                       height: 8,
                     ),
-                    Text(
-                      '${photo.userName}',
-                      style: myTextStyleSmallBold(context),
-                    ),
-                    const SizedBox(
-                      height: 4,
-                    ),
-                    Text(
-                      translatedDate,
-                      style: myTextStyleTiny(context),
-                    ),
+                   Row(mainAxisAlignment: MainAxisAlignment.center,
+                     children: [
+                       UserProfileCard(userName: photo.userName!,
+                           userThumbUrl: photo.userUrl,
+                           elevation: 3,
+                           padding: 0.0, avatarRadius: 16, textStyle: myTextStyleSmall(context),
+                           namePictureHorizontal: true),
+                       const SizedBox(
+                         width: 4,
+                       ),
+                       Text(
+                         translatedDate,
+                         style: myTextStyleTinyBold(context),
+                       ),
+                     ],
+                   ),
+
                   ],
                 ),
               ),

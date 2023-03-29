@@ -75,7 +75,7 @@ class ActivityStreamCardState extends State<ActivityStreamCard> {
               child: Column(
                 children: [
                   const SizedBox(
-                    height: 8,
+                    height: 4,
                   ),
                   Padding(
                     padding: const EdgeInsets.only(left: 0.0),
@@ -90,7 +90,7 @@ class ActivityStreamCardState extends State<ActivityStreamCard> {
                     ),
                   ),
                   const SizedBox(
-                    height: 8,
+                    height: 4,
                   ),
                   activityUser!.thumbnailUrl == null
                       ? const CircleAvatar(
@@ -100,14 +100,14 @@ class ActivityStreamCardState extends State<ActivityStreamCard> {
                           userName: widget.activityModel.userName!,
                           padding: 2,
                           elevation: 2,
-                          avatarRadius: 24.0,
+                          avatarRadius: 20.0,
                           userType: translatedUserType == null
                               ? activityUser!.userType!
                               : translatedUserType!,
                           userThumbUrl: widget.activityModel.userThumbnailUrl,
                           namePictureHorizontal: false),
                   const SizedBox(
-                    height: 8,
+                    height: 4,
                   ),
                   Text(
                     msg,

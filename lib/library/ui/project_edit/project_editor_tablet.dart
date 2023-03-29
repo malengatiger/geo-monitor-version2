@@ -168,7 +168,7 @@ class ProjectEditorTabletState extends State<ProjectEditorTablet>
                 ),
                 GeoActivity(
                     width: (width / 2) - 200,
-                    thinMode: false,
+                    thinMode: true,
                     project: widget.project,
                     showPhoto: (photo) {},
                     showVideo: (video) {},

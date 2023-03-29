@@ -8,10 +8,11 @@ class ActivityHeader extends StatelessWidget {
       {Key? key,
       required this.onRefreshRequested,
       required this.hours,
-      required this.number, required this.prefix, required this.suffix})
+      required this.number, required this.prefix, required this.suffix, required this.onSortRequested})
       : super(key: key);
 
   final Function() onRefreshRequested;
+  final Function() onSortRequested;
   final int hours;
   final int number;
   final String prefix, suffix;
@@ -53,7 +54,7 @@ class ActivityHeader extends StatelessWidget {
         ),
         GestureDetector(
           onTap: () {
-            onRefreshRequested();
+            onSortRequested();
           },
           child: bd.Badge(
             badgeContent: Text(
@@ -63,7 +64,7 @@ class ActivityHeader extends StatelessWidget {
             badgeStyle: bd.BadgeStyle(
                 elevation: 8,
                 badgeColor: getRandomColor(),
-                padding: const EdgeInsets.all(8.0)),
+                padding: const EdgeInsets.all(16.0)),
           ),
         ),
       ],
