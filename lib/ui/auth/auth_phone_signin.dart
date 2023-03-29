@@ -228,19 +228,9 @@ class _AuthPhoneSigninCardState extends State<AuthPhoneSigninCard> {
         settings.sort((a, b) => b.created!.compareTo(a.created!));
         await themeBloc.changeToTheme(settings.first.themeIndex!);
         if (settings.isEmpty) {
-          await prefsOGx.saveSettings(SettingsModel(
-              distanceFromProject: 200,
-              photoSize: 0,
-              locale: 'en',
-              maxVideoLengthInSeconds: 60,
-              maxAudioLengthInMinutes: 15,
-              themeIndex: 0,
-              settingsId: const Uuid().v4(),
-              created: DateTime.now().toUtc().toIso8601String(),
-              organizationId: user!.organizationId,
-              projectId: null,
-              numberOfDays: 30,
-              activityStreamHours: 48));
+          var sett = getBaseSettings();
+          sett.organizationId = user!.organizationId!;
+          await prefsOGx.saveSettings(sett);
           await themeBloc.changeToTheme(0);
         } else {
           await prefsOGx.saveSettings(settings.first);

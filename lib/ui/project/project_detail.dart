@@ -9,7 +9,7 @@ import '../../library/data/project.dart';
 import '../../library/data/user.dart';
 
 import '../../library/functions.dart';
-import '../../library/snack.dart';
+import '../../library/generic_functions.dart';
 import 'project_editor.dart';
 
 /// shows the details for projects
@@ -304,16 +304,12 @@ class ProjectDetailState extends State<ProjectDetail> {
         break;
       case 1:
         pp('Project Nav  tapped');
-        AppSnackbar.showErrorSnackbar(
-            scaffoldKey: _key, message: 'Under Construction');
+        showToast(message: 'Under Construction', context: context);
+
         break;
       case 2:
         pp('Map Nav  tapped');
-        AppSnackbar.showErrorSnackbar(
-            scaffoldKey: _key, message: 'Under Construction');
-//        Navigator.push(context, SlideRightRoute(
-//          widget: MapEditor(widget.project),
-//        ));
+        showToast(message: 'Under Construction', context: context);
         break;
     }
   }
@@ -325,11 +321,7 @@ class ProjectDetailState extends State<ProjectDetail> {
       debugPrint('✳️ ✳️ ✳️ ......  refresh project done, set state ...');
       setState(() {});
     } catch (e) {
-      AppSnackbar.showSnackbar(
-          scaffoldKey: _key,
-          message: '$e',
-          textColor: Colors.white,
-          backgroundColor: Colors.pink);
+      showToast(message: '$e', context: context);
     }
   }
 }

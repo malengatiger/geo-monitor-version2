@@ -60,19 +60,7 @@ class AuthEmailSignInState extends State<AuthEmailSignIn> {
   Future _setTexts() async {
     settingsModel = await prefsOGx.getSettings();
     if (settingsModel == null) {
-      settingsModel = SettingsModel(
-          distanceFromProject: 200,
-          photoSize: 0,
-          maxVideoLengthInSeconds: 60,
-          maxAudioLengthInMinutes: 15,
-          themeIndex: 0,
-          settingsId: null,
-          created: DateTime.now().toUtc().toIso8601String(),
-          organizationId: null,
-          projectId: null,
-          numberOfDays: 30,
-          locale: 'en',
-          activityStreamHours: 48);
+      settingsModel =getBaseSettings();
       await prefsOGx.saveSettings(settingsModel!);
     }
     signInText = await mTx.translate('signIn', settingsModel!.locale!);

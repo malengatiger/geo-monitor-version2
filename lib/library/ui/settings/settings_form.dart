@@ -157,19 +157,8 @@ class SettingsFormState extends State<SettingsForm> {
         await prefsOGx.saveSettings(settingsModel!);
       }
     }
-    settingsModel ??= SettingsModel(
-        distanceFromProject: 500,
-        photoSize: 1,
-        maxVideoLengthInSeconds: 120,
-        maxAudioLengthInMinutes: 20,
-        themeIndex: 0,
-        settingsId: const Uuid().v4(),
-        created: DateTime.now().toUtc().toIso8601String(),
-        organizationId: user!.organizationId!,
-        projectId: null,
-        activityStreamHours: 24,
-        numberOfDays: 14,
-        locale: 'en');
+    settingsModel ??= getBaseSettings();
+    settingsModel!.organizationId = user!.organizationId!;
 
     currentThemeIndex = settingsModel!.themeIndex!;
     distController.text = '${settingsModel?.distanceFromProject}';
@@ -854,11 +843,7 @@ class LocaleChooserState extends State<LocaleChooser> {
     pp('LocaleChooser 🌀🌀🌀🌀:onChanged: selected locale: '
         '${locale.toString()}');
     settingsModel = await prefsOGx.getSettings();
-    settingsModel ??= SettingsModel(distanceFromProject: 500, photoSize: 0,
-          maxVideoLengthInSeconds: 120, maxAudioLengthInMinutes: 30,
-          themeIndex: 0, settingsId: null, created: null,
-          organizationId: null, projectId: null, numberOfDays: 14,
-          locale: locale!.languageCode, activityStreamHours: 24);
+    settingsModel ??= getBaseSettings();
 
     settingsModel!.locale = locale!.languageCode;
     await prefsOGx.saveSettings(settingsModel!);

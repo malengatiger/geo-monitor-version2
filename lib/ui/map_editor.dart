@@ -7,7 +7,7 @@ import '../library/bloc/admin_bloc.dart';
 import '../library/data/community.dart';
 import '../library/data/position.dart';
 import '../library/functions.dart';
-import '../library/snack.dart';
+import '../library/generic_functions.dart';
 
 class MapEditor extends StatefulWidget {
   final Community community;
@@ -176,11 +176,7 @@ class MapEditorState extends State<MapEditor>  {
     _setMarkers();
     setState(() {});
 
-    AppSnackbar.showSnackbarWithProgressIndicator(
-        scaffoldKey: _key,
-        message: 'Adding point to polygon',
-        textColor: Colors.blue,
-        backgroundColor: Colors.black);
+    showToast(message: 'Adding point to polygon', context: context);
 
     try {
       var res = await adminBloc.addToPolygon(

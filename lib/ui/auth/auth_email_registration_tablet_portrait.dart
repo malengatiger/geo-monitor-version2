@@ -169,20 +169,10 @@ class AuthEmailRegistrationPortraitState
         password: password);
 
     await prefsOGx.saveUser(user!);
+    var sett = getBaseSettings();
+    sett.organizationId = org.organizationId!;
 
-    var mSettings = await DataAPI.addSettings(SettingsModel(
-        distanceFromProject: 500,
-        photoSize: 0,
-        locale: 'en',
-        maxVideoLengthInSeconds: 20,
-        maxAudioLengthInMinutes: 60,
-        themeIndex: 0,
-        settingsId: const Uuid().v4(),
-        created: DateTime.now().toUtc().toIso8601String(),
-        organizationId: org.organizationId,
-        projectId: null,
-        numberOfDays: 7,
-        activityStreamHours: 24));
+    var mSettings = await DataAPI.addSettings(sett);
 
     await prefsOGx.saveSettings(mSettings);
 

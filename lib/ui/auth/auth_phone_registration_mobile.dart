@@ -257,20 +257,7 @@ class AuthPhoneRegistrationMobileState
       pp('$mm firebase user credential obtained:  🍎 $userCred');
       var gender = 'Unknown';
       pp('$mm set up settings ...');
-      settingsModel ??= SettingsModel(
-            distanceFromProject: 200,
-            photoSize: 0,
-            locale: 'en',
-            maxVideoLengthInSeconds: 120,
-            maxAudioLengthInMinutes: 30,
-            themeIndex: 0,
-            settingsId: const Uuid().v4(),
-            created: DateTime.now().toUtc().toIso8601String(),
-            organizationId: organizationId,
-            projectId: null,
-            numberOfDays: 30,
-            activityStreamHours: 24);
-
+      settingsModel ??= getBaseSettings();
       settingsModel!.organizationId = organizationId;
       pp('$mm create user object');
       user = ur.User(

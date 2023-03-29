@@ -5,6 +5,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:geo_monitor/library/data/project_polygon.dart';
+import 'package:geo_monitor/library/data/settings_model.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:google_maps_utils/google_maps_utils.dart';
@@ -12,6 +13,7 @@ import 'package:image/image.dart' as img;
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:intl/intl.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:uuid/uuid.dart';
 import 'package:video_thumbnail/video_thumbnail.dart' as vt;
 
 import '../device_location/device_location_bloc.dart';
@@ -820,6 +822,24 @@ Future<String?> getTranslatedUserType(String type) async {
       break;
   }
   return translated;
+}
+
+SettingsModel getBaseSettings() {
+  var model = SettingsModel(
+      distanceFromProject: 500,
+      photoSize: 1,
+      maxVideoLengthInSeconds: 120,
+      maxAudioLengthInMinutes: 15,
+      themeIndex: 0,
+      settingsId: const Uuid().v4(),
+      created: DateTime.now().toUtc().toIso8601String(),
+      organizationId: null,
+      projectId: null,
+      activityStreamHours: 24,
+      numberOfDays: 14,
+      locale: 'en');
+
+  return model;
 }
 
 pp(dynamic msg) {

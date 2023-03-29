@@ -8,7 +8,7 @@ import 'package:geo_monitor/l10n/translation_handler.dart';
 import 'package:geo_monitor/library/data/audio.dart';
 import 'package:geo_monitor/library/data/photo.dart';
 import 'package:geo_monitor/library/data/video.dart';
-import 'package:geo_monitor/library/ui/camera/chewie_video_player.dart';
+import 'package:geo_monitor/library/generic_functions.dart';
 import 'package:geo_monitor/library/ui/camera/video_player_tablet.dart';
 import 'package:geo_monitor/library/ui/maps/project_map_mobile.dart';
 import 'package:geo_monitor/library/ui/maps/project_map_tablet.dart';
@@ -40,7 +40,6 @@ import '../../data/settings_model.dart';
 import '../../data/user.dart' as mon;
 import '../../data/user.dart';
 import '../../functions.dart';
-import '../../snack.dart';
 import '../maps/location_response_map.dart';
 import '../maps/org_map_mobile.dart';
 import '../maps/project_polygon_map_mobile.dart';
@@ -107,11 +106,7 @@ class ProjectListTabletState extends State<ProjectListTablet>
     fcmBloc.projectStream.listen((Project project) {
       _getData(false);
       if (mounted) {
-        AppSnackbar.showSnackbar(
-            scaffoldKey: _key,
-            message: 'Project added: ${project.name}',
-            textColor: Colors.white,
-            backgroundColor: Theme.of(context).primaryColor);
+        showToast(message: 'Project added: ${project.name}', context: context);
       }
     });
     projectBloc.projectStream.listen((List<Project> list) {

@@ -5,7 +5,7 @@ import '../../library/bloc/admin_bloc.dart';
 import '../../library/data/project.dart';
 import '../../library/data/user.dart';
 import '../../library/functions.dart';
-import '../../library/snack.dart';
+import '../../library/generic_functions.dart';
 
 class ProjectEditor extends StatefulWidget {
   final Project? project;
@@ -198,8 +198,7 @@ class ProjectEditorState extends State<ProjectEditor> {
   }
 
   _showError(String message) {
-    AppSnackbar.showErrorSnackbar(
-        scaffoldKey: _key, message: message, actionLabel: 'Error');
+    showToast(message: message, context: context);
   }
 
   void _onNavTapped(int value) {

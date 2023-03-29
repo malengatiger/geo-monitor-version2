@@ -5,7 +5,7 @@ import '../../library/bloc/user_bloc.dart';
 import '../../library/data/field_monitor_schedule.dart';
 import '../../library/data/user.dart';
 import '../../library/functions.dart';
-import '../../library/snack.dart';
+import '../../library/generic_functions.dart';
 
 
 class SchedulesListDesktop extends StatefulWidget {
@@ -45,8 +45,7 @@ class SchedulesListDesktopState extends State<SchedulesListDesktop>
       _schedules = await userBloc.getFieldMonitorSchedules(
           userId: _user!.userId!, forceRefresh: refresh);
     } catch (e) {
-      AppSnackbar.showErrorSnackbar(
-          scaffoldKey: _key, message: 'Data refresh failed: $e');
+      showToast(message: 'Data refresh failed: $e', context: context);
     }
 
     setState(() {

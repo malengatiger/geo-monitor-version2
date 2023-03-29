@@ -10,7 +10,7 @@ import '../../library/data/questionnaire.dart';
 import '../../library/data/section.dart';
 import '../../library/data/user.dart';
 import '../../library/functions.dart';
-import '../../library/snack.dart';
+import '../../library/generic_functions.dart';
 import 'section_editor.dart';
 
 class QuestionnaireEditor extends StatefulWidget {
@@ -310,8 +310,8 @@ class QuestionnaireEditorState extends State<QuestionnaireEditor>
   }
 
   void _showErrorSnack(String s) {
-    AppSnackbar.showErrorSnackbar(
-        scaffoldKey: _key, message: s, actionLabel: 'Err', );
+    showToast(message: s, context: context);
+
   }
 
 

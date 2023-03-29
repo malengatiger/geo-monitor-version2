@@ -6,7 +6,7 @@ import '../../library/data/community.dart';
 import '../../library/data/country.dart';
 import '../../library/data/user.dart';
 import '../../library/functions.dart';
-import '../../library/snack.dart';
+import '../../library/generic_functions.dart';
 import '../../library/ui/countries.dart';
 
 
@@ -226,21 +226,15 @@ class SettlementEditorState extends State<SettlementEditor>
       setState(() {
         isBusy = false;
       });
-      AppSnackbar.showSnackbar(
-          scaffoldKey: _key,
-          message: 'Settlement added',
-          textColor: Colors.lightGreen,
-          backgroundColor: Colors.black);
+      if (mounted) {
+        showToast(message: 'Settlement added', context: context);
+      }
+
     } catch (e) {
       setState(() {
         isBusy = false;
       });
       pp(e);
-      // AppSnackbar.showErrorSnackbar(
-      //     scaffoldKey: _key,
-      //     message: '$e',
-      //     actionLabel: 'Error',
-      //     listener: this);
     }
   }
 

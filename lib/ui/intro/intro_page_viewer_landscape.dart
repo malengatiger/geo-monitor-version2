@@ -184,19 +184,8 @@ class _IntroPageViewerLandscapeState extends State<IntroPageViewerLandscape>
 
   onSelected(Locale p1, String p2) async {
     pp('$mm locale selected: $p1 - $p2');
-    final s = SettingsModel(
-        distanceFromProject: 200,
-        photoSize: 0,
-        locale: p1.languageCode,
-        maxVideoLengthInSeconds: 60,
-        maxAudioLengthInMinutes: 15,
-        themeIndex: 0,
-        settingsId: const Uuid().v4(),
-        created: DateTime.now().toUtc().toIso8601String(),
-        organizationId: user!.organizationId,
-        projectId: null,
-        numberOfDays: 30,
-        activityStreamHours: 48);
+    final s = getBaseSettings();
+    s.organizationId = user!.organizationId;
     await prefsOGx.saveSettings(s);
     await _setTexts();;
   }

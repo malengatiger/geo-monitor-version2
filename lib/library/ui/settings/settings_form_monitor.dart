@@ -146,19 +146,8 @@ class SettingsFormMonitorState extends State<SettingsFormMonitor> {
         await prefsOGx.saveSettings(settingsModel!);
       }
     }
-    settingsModel ??= SettingsModel(
-        distanceFromProject: 500,
-        photoSize: 1,
-        maxVideoLengthInSeconds: 120,
-        maxAudioLengthInMinutes: 30,
-        themeIndex: 0,
-        settingsId: const Uuid().v4(),
-        created: DateTime.now().toUtc().toIso8601String(),
-        organizationId: user!.organizationId!,
-        projectId: null,
-        activityStreamHours: 48,
-        numberOfDays: 14,
-        locale: 'en');
+    settingsModel ??= getBaseSettings();
+    settingsModel!.organizationId = user!.organizationId;
 
     currentThemeIndex = settingsModel!.themeIndex!;
     if (settingsModel?.locale != null) {

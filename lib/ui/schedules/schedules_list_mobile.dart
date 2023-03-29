@@ -10,7 +10,7 @@ import '../../library/cache_manager.dart';
 import '../../library/data/field_monitor_schedule.dart';
 import '../../library/data/user.dart';
 import '../../library/functions.dart';
-import '../../library/snack.dart';
+import '../../library/generic_functions.dart';
 import '../../library/ui/maps/project_map_mobile.dart';
 import '../../library/ui/media/user_media_list/user_media_list_mobile.dart';
 
@@ -79,8 +79,7 @@ class SchedulesListMobileState extends State<SchedulesListMobile>
       _schedules = await userBloc.getFieldMonitorSchedules(
           userId: _user!.userId!, forceRefresh: refresh);
     } catch (e) {
-      AppSnackbar.showErrorSnackbar(
-          scaffoldKey: _key, message: 'Data refresh failed: $e');
+      showToast(message: 'Data refresh failed: $e', context: context);
     }
 
     setState(() {
