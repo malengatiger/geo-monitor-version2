@@ -170,6 +170,7 @@ class GeoActivityState extends State<GeoActivity>
 
   @override
   Widget build(BuildContext context) {
+    final width = MediaQuery.of(context).size.width;
     return settings == null
         ? const SizedBox()
         : SizedBox(
@@ -179,7 +180,7 @@ class GeoActivityState extends State<GeoActivity>
               child: SizedBox(
                 width: widget.width,
                 child: ScreenTypeLayout(
-                  mobile: ActivityListMobile(
+                  mobile: ActivityListTablet(
                     project: widget.project,
                     user: widget.user,
                     onPhotoTapped: (photo) {
@@ -210,7 +211,7 @@ class GeoActivityState extends State<GeoActivity>
                     },
                     onLocationResponse: (locResp) {
                       widget.showLocationResponse(locResp);
-                    },
+                    }, width: width, thinMode: true,
                   ),
                   tablet: OrientationLayoutBuilder(
                     portrait: (context) {

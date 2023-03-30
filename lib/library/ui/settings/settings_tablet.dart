@@ -78,7 +78,7 @@ class SettingsTabletState extends State<SettingsTablet>
           child: Row(
             children: [
               SizedBox(
-                width: size.width / 2,
+                width: (size.width / 2) - 40,
                 child:  Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8),
                   child: SettingsForm(
@@ -93,7 +93,7 @@ class SettingsTabletState extends State<SettingsTablet>
                 width: 24.0,
               ),
               GeoActivity(
-                  width: (size.width / 2) - 60,
+                  width: (size.width / 2) - 20,
                   thinMode: false,
                   showPhoto: showPhoto,
                   showVideo: showVideo,
@@ -115,7 +115,7 @@ class SettingsTabletState extends State<SettingsTablet>
         return Row(
           children: [
             SizedBox(
-              width: (size.width / 2) + 48,
+              width: (size.width / 2),
               child:  Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8),
                 child: SettingsForm(
@@ -128,7 +128,7 @@ class SettingsTabletState extends State<SettingsTablet>
             ),
 
             GeoActivity(
-                width: (size.width / 2) - 72,
+                width: (size.width / 2),
                 thinMode: false,
                 showPhoto: showPhoto,
                 showVideo: showVideo,

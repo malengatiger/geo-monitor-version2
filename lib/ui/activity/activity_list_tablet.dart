@@ -238,9 +238,10 @@ class _ActivityListTabletState extends State<ActivityListTablet>
           child: Padding(
             padding: const EdgeInsets.all(16.0),
             child: SizedBox(
-              height: 100,
+              height: 120, width: 300,
               child: Column(
                 children: [
+                  const SizedBox(height: 36,),
                   const SizedBox(
                     width: 20,
                     height: 20,
@@ -308,23 +309,22 @@ class _ActivityListTabletState extends State<ActivityListTablet>
         ),
       );
     }
-
-    final height = MediaQuery.of(context).size.height;
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (listScrollController.hasClients) {
-        if (sortedAscending) {
-          listScrollController.animateTo(
-              listScrollController.position.maxScrollExtent,
-              duration: const Duration(milliseconds: 2000),
-              curve: Curves.fastOutSlowIn);
-        } else {
-          listScrollController.animateTo(
-              listScrollController.position.minScrollExtent,
-              duration: const Duration(milliseconds: 2000),
-              curve: Curves.fastOutSlowIn);
-        }
-      }
-    });
+    final deviceType = getThisDeviceType();
+    // WidgetsBinding.instance.addPostFrameCallback((_) {
+    //   if (listScrollController.hasClients) {
+    //     if (sortedAscending) {
+    //       listScrollController.animateTo(
+    //           listScrollController.position.maxScrollExtent,
+    //           duration: const Duration(milliseconds: 2000),
+    //           curve: Curves.fastOutSlowIn);
+    //     } else {
+    //       listScrollController.animateTo(
+    //           listScrollController.position.minScrollExtent,
+    //           duration: const Duration(milliseconds: 2000),
+    //           curve: Curves.fastOutSlowIn);
+    //     }
+    //   }
+    // });
     return Scaffold(
         body: Stack(
       children: [
