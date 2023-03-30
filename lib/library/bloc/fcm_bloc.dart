@@ -383,7 +383,6 @@ class FCMBloc {
       pp("$mm processFCMMessage  🔵 🔵 🔵 ........................... cache GEOFENCE EVENT  🍎  🍎");
       var m = jsonDecode(data['geofenceEvent']);
       var msg = GeofenceEvent.fromJson(m);
-
       await cacheManager.addGeofenceEvent(geofenceEvent: msg);
       _geofenceController.sink.add(msg);
     }

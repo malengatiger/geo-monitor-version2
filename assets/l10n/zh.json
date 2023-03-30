@@ -1,4 +1,5 @@
 {
+  "messageFromGeo": "消息来自 $geo",
   "cancel": "取消",
   "maxAudioLength": "请以分钟为单位输入最大音频长度",
   "Angola": "安哥拉",

@@ -1,4 +1,6 @@
 {
+  "messageFromGeo": "Le message est arrivé de $geo",
+
   "november": "Novembre",
   "projects": "Projets",
   "callMember": "Appeler le membre",

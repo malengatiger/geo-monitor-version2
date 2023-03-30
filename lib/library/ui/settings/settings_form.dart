@@ -668,14 +668,13 @@ class SettingsFormState extends State<SettingsForm> {
                     onColorScheme: (index) async {
                       currentThemeIndex = index;
                       themeBloc.changeToTheme(currentThemeIndex);
+                      setState(() {
+                        showColorPicker = false;
+                      });
                       if (settingsModel != null) {
                         settingsModel!.themeIndex = currentThemeIndex;
                         prefsOGx.saveSettings(settingsModel!);
                       }
-                      await Future.delayed(const Duration(milliseconds: 500));
-                      setState(() {
-                        showColorPicker = false;
-                      });
                     },
                     crossAxisCount: 6,
                     itemWidth: 60,

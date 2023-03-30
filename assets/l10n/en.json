@@ -292,6 +292,8 @@
   "enterPassword": "Enter Password",
   "phoneAuth": "Phone Authentication",
   "signInInstruction": "Please sign in using the appropriate method. It is recommended to use phone authentication if your device can accept SMS messages. If your device does not support SMS messaging please use email authentication",
-  "emailAuth": "Email Authentication"
+  "emailAuth": "Email Authentication",
+  "messageFromGeo": "Message arrived from $geo"
+
 
 }

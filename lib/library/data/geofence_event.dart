@@ -1,4 +1,5 @@
 import 'package:hive/hive.dart';
+
 import '../data/user.dart';
 import 'position.dart';
 
@@ -33,6 +34,12 @@ class GeofenceEvent extends HiveObject {
   @HiveField(9)
   String? projectId;
 
+  @HiveField(10)
+  String? translatedMessage;
+
+  @HiveField(11)
+  String? translatedTitle;
+
   GeofenceEvent(
       {required this.status,
         required this.user,
@@ -42,6 +49,8 @@ class GeofenceEvent extends HiveObject {
         required this.projectId,
         required this.position,
         required this.projectName,
+        required this.translatedMessage,
+        required this.translatedTitle,
         required this.date});
 
   GeofenceEvent.fromJson(Map data) {
@@ -50,6 +59,8 @@ class GeofenceEvent extends HiveObject {
     projectPositionId = data['projectPositionId'];
     projectName = data['projectName'];
     projectId = data['projectId'];
+    translatedMessage = data['translatedMessage'];
+    translatedTitle = data['translatedTitle'];
 
     date = data['date'];
     organizationId = data['organizationId'];
@@ -68,6 +79,8 @@ class GeofenceEvent extends HiveObject {
       'projectPositionId': projectPositionId,
       'projectName': projectName,
       'projectId': projectId,
+      'translatedMessage': translatedMessage,
+      'translatedTitle': translatedTitle,
       'date': date,
       'position': position == null? null: position!.toJson(),
       'user': user == null? null : user!.toJson(),

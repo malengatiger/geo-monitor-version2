@@ -6,6 +6,7 @@ import 'package:geofence_service/models/geofence.dart' as geo;
 import 'package:uuid/uuid.dart';
 
 import '../../device_location/device_location_bloc.dart';
+import '../../l10n/translation_handler.dart';
 import '../api/data_api.dart';
 import '../api/prefs_og.dart';
 import '../bloc/organization_bloc.dart';
@@ -159,10 +160,19 @@ class TheGreatGeofencer {
 
     var loc = await locationBloc.getLocation();
 
+    final sett = await prefsOGx.getSettings();
+    String message = 'A member has arrived at ${ geofence.data['projectName']}';
+    String title = 'Message from Geo';
+    if (sett != null) {
+      final arr = await mTx.translate('arrivedAt', sett.locale!);
+      message = arr.replaceAll('\$project', geofence.data['projectName']);
+    }
+
     if (loc != null) {
       var event = GeofenceEvent(
           status: geofenceStatus.toString(),
           organizationId: geofence.data['organizationId'],
+          translatedMessage: message,
           user: _user,
           position: Position(
               coordinates: [loc.longitude, loc.latitude], type: 'Point'),
@@ -170,7 +180,8 @@ class TheGreatGeofencer {
           projectPositionId: geofence.id,
           projectId: geofence.data['projectId'],
           projectName: geofence.data['projectName'],
-          date: DateTime.now().toUtc().toIso8601String());
+          date: DateTime.now().toUtc().toIso8601String(),
+          translatedTitle: title);
 
       String status = geofenceStatus.toString();
       switch (status) {

@@ -9,7 +9,6 @@ import 'package:geo_monitor/ui/auth/auth_registration_main.dart';
 import 'package:geo_monitor/ui/auth/auth_signin_main.dart';
 import 'package:geo_monitor/ui/dashboard/dashboard_main.dart';
 import 'package:page_transition/page_transition.dart';
-import 'package:uuid/uuid.dart';
 
 import '../../l10n/translation_handler.dart';
 import '../../library/api/prefs_og.dart';
@@ -18,7 +17,7 @@ import '../../library/data/user.dart' as ur;
 import '../../library/emojis.dart';
 import '../../library/functions.dart';
 import '../../library/generic_functions.dart';
-import '../dashboard/dashboard_portrait.dart';
+import '../dashboard/dashboard_mobile.dart';
 import '../intro/intro_page_one.dart';
 
 class IntroPageViewerPortrait extends StatefulWidget {
@@ -112,7 +111,7 @@ class IntroPageViewerPortraitState extends State<IntroPageViewerPortrait>
             type: PageTransitionType.scale,
             alignment: Alignment.topLeft,
             duration: const Duration(seconds: 2),
-            child: const DashboardPortrait()));
+            child: const DashboardMobile()));
   }
 
   Future<void> _navigateToSignIn() async {

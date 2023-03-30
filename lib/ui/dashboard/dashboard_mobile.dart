@@ -41,8 +41,8 @@ import '../../library/ui/weather/daily_forecast_page.dart';
 import '../../library/users/list/user_list_main.dart';
 import '../intro/intro_page_viewer_portrait.dart';
 
-class DashboardPortrait extends StatefulWidget {
-  const DashboardPortrait({
+class DashboardMobile extends StatefulWidget {
+  const DashboardMobile({
     Key? key,
     this.user,
     this.project,
@@ -50,12 +50,12 @@ class DashboardPortrait extends StatefulWidget {
   final User? user;
   final Project? project;
   @override
-  DashboardPortraitState createState() => DashboardPortraitState();
+  DashboardMobileState createState() => DashboardMobileState();
 }
 
-class DashboardPortraitState extends State<DashboardPortrait>
+class DashboardMobileState extends State<DashboardMobile>
     with SingleTickerProviderStateMixin {
-  static const mm = '🎽🎽🎽🎽🎽🎽 DashboardPortrait: 🎽';
+  static const mm = '🎽🎽🎽🎽🎽🎽 DashboardMobile: 🎽';
 
   late AnimationController _gridViewAnimationController;
   late StreamSubscription<Photo> photoSubscriptionFCM;
@@ -123,10 +123,12 @@ class DashboardPortraitState extends State<DashboardPortrait>
         setState(() {});
       }
     });
+
     settingsSubscriptionFCM = fcmBloc.settingsStream.listen((settings) async {
       pp('$mm: 🍎🍎 settings arrived with themeIndex: ${settings.themeIndex}... locale: ${settings.locale} 🍎🍎');
       await _handleNewSettings(settings);
     });
+
     dataBagSubscription = organizationBloc.dataBagStream.listen((DataBag bag) {
       dataBag = bag;
       pp('$mm dataBagStream delivered a dataBag!! 🍐Yebo! 🍐');

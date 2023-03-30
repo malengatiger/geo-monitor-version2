@@ -48,8 +48,12 @@ class ActivityStreamCardState extends State<ActivityStreamCard> {
 
   User? activityUser;
   String? translatedUserType;
+
   Future _getUser() async {
-    activityUser = await cacheManager.getUserById(widget.activityModel.userId!);
+    if (widget.activityModel.userId != null) {
+      activityUser =
+      await cacheManager.getUserById(widget.activityModel.userId!);
+    }
     if (activityUser != null) {
       translatedUserType = await getTranslatedUserType(activityUser!.userType!);
     }
@@ -315,28 +319,28 @@ class ActivityStrings {
     if (sett != null) {
       final projectAdded = await mTx.translate('projectAdded', sett!.locale!);
       final projectLocationAdded =
-          await mTx.translate('projectLocationAdded', sett!.locale!);
+          await mTx.translate('projectLocationAdded', sett.locale!);
       final projectAreaAdded =
-          await mTx.translate('projectAreaAdded', sett!.locale!);
+          await mTx.translate('projectAreaAdded', sett.locale!);
       final memberAtProject =
-          await mTx.translate('memberAtProject', sett!.locale!);
+          await mTx.translate('memberAtProject', sett.locale!);
       final settingsChanged =
-          await mTx.translate('settingsChanged', sett!.locale!);
+          await mTx.translate('settingsChanged', sett.locale!);
       final memberAddedChanged =
-          await mTx.translate('memberAddedChanged', sett!.locale!);
-      final at = await mTx.translate('at', sett!.locale!);
-      final arr = await mTx.translate('arrivedAt', sett!.locale!);
+          await mTx.translate('memberAddedChanged', sett.locale!);
+      final at = await mTx.translate('at', sett.locale!);
+      final arr = await mTx.translate('arrivedAt', sett.locale!);
       final arrivedAt = arr.replaceAll('\$project', '');
       final conditionAdded =
-          await mTx.translate('conditionAdded', sett!.locale!);
+          await mTx.translate('conditionAdded', sett.locale!);
       final memberLocationResponse =
-          await mTx.translate('memberLocationResponse', sett!.locale!);
+          await mTx.translate('memberLocationResponse', sett.locale!);
       final requestMemberLocation =
-          await mTx.translate('requestMemberLocation', sett!.locale!);
-      final noActivities = await mTx.translate('noActivities', sett!.locale!);
+          await mTx.translate('requestMemberLocation', sett.locale!);
+      final noActivities = await mTx.translate('noActivities', sett.locale!);
 
       final loadingActivities =
-          await mTx.translate('loadingActivities', sett!.locale!);
+          await mTx.translate('loadingActivities', sett.locale!);
 
       final tapToRefresh = await mTx.translate('tapToRefresh', sett!.locale!);
 

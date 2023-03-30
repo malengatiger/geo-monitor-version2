@@ -9,7 +9,7 @@ import '../../l10n/translation_handler.dart';
 import '../../library/data/user.dart';
 import '../../library/generic_functions.dart';
 import '../../library/geofence/geofencer_two.dart';
-import 'dashboard_portrait.dart';
+import 'dashboard_mobile.dart';
 import 'dashboard_tablet.dart';
 
 class DashboardMain extends StatefulWidget {
@@ -119,11 +119,11 @@ class DashboardMainState extends State<DashboardMain>
           isSticky: false,
         ),
         iosNotificationOptions: const IOSNotificationOptions(),
-        notificationTitle: 'Geo Service is running',
+        notificationTitle: 'Geo service is running',
         notificationText: 'Tap to return to the app',
         foregroundTaskOptions: const ForegroundTaskOptions(),
         child: ScreenTypeLayout(
-          mobile: const DashboardPortrait(),
+          mobile: const DashboardMobile(),
           tablet: OrientationLayoutBuilder(
             portrait: (context) {
               return DashboardTablet(

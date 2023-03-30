@@ -68,10 +68,8 @@ class ActivityListMobileState extends State<ActivityListMobile>
   final ScrollController listScrollController = ScrollController();
   SettingsModel? settings;
   var models = <ActivityModel>[];
-  // late AnimationController _animationController;
   late StreamSubscription<ActivityModel> subscription;
   late StreamSubscription<SettingsModel> settingsSubscriptionFCM;
-  late StreamSubscription<GeofenceEvent> geofenceSubscriptionFCM;
 
   static const userActive = 0, projectActive = 1, orgActive = 2;
   late int activeType;
@@ -91,7 +89,6 @@ class ActivityListMobileState extends State<ActivityListMobile>
 
   @override
   void dispose() {
-    geofenceSubscriptionFCM.cancel();
     settingsSubscriptionFCM.cancel();
     subscription.cancel();
     super.dispose();
@@ -187,12 +184,6 @@ class ActivityListMobileState extends State<ActivityListMobile>
   void _listenToFCM() async {
     pp('$mm ... _listenToFCM activityStream ...');
 
-    geofenceSubscriptionFCM =
-        fcmBloc.geofenceStream.listen((GeofenceEvent event) async {
-      pp('$mm: 🍎geofenceSubscriptionFCM: 🍎 GeofenceEvent: '
-          'user ${event.user!.name} arrived: ${event.projectName} ');
-      await _handleGeofenceEvent(event);
-    });
 
     settingsSubscriptionFCM =
         fcmBloc.settingsStream.listen((SettingsModel event) async {
@@ -214,22 +205,6 @@ class ActivityListMobileState extends State<ActivityListMobile>
     });
   }
 
-  Future<void> _handleGeofenceEvent(GeofenceEvent event) async {
-    pp('$mm _handleGeofenceEvent ....');
-    final arr = await mTx.translate('memberArrived', settings!.locale!);
-    if (event.projectName != null) {
-      var arrivedAt = arr.replaceAll('\$project', event.projectName!);
-      if (mounted) {
-        showToast(
-            duration: const Duration(seconds: 6),
-            backgroundColor: Theme.of(context).primaryColor,
-            padding: 20,
-            textStyle: myTextStyleMedium(context),
-            message: arrivedAt,
-            context: context);
-      }
-    }
-  }
 
   bool isActivityValid(ActivityModel m) {
     if (widget.project == null && widget.user == null) {

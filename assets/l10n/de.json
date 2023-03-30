@@ -297,6 +297,8 @@
   "enterPassword": "Passwort eingeben",
   "phoneAuth": "Telefonauthentifizierung",
   "signInInstruction": "Bitte melden Sie sich mit der entsprechenden Methode an. Es wird empfohlen, die Telefonauthentifizierung zu verwenden, wenn Ihr Gerät SMS-Nachrichten annehmen kann. Wenn Ihr Gerät keine SMS-Nachrichten unterstützt, verwenden Sie bitte die E-Mail-Authentifizierung",
-  "emailAuth": "E-Mail-Authentifikation"
+  "emailAuth": "E-Mail-Authentifikation",
+  "messageFromGeo": "Nachricht kam von $geo"
+
 
 }

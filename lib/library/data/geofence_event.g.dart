@@ -25,6 +25,8 @@ class GeofenceEventAdapter extends TypeAdapter<GeofenceEvent> {
       projectId: fields[9] as String?,
       position: fields[8] as Position?,
       projectName: fields[4] as String?,
+      translatedMessage: fields[10] as String?,
+      translatedTitle: fields[11] as String?,
       date: fields[2] as String?,
     );
   }
@@ -32,7 +34,7 @@ class GeofenceEventAdapter extends TypeAdapter<GeofenceEvent> {
   @override
   void write(BinaryWriter writer, GeofenceEvent obj) {
     writer
-      ..writeByte(9)
+      ..writeByte(11)
       ..writeByte(0)
       ..write(obj.status)
       ..writeByte(1)
@@ -50,7 +52,11 @@ class GeofenceEventAdapter extends TypeAdapter<GeofenceEvent> {
       ..writeByte(8)
       ..write(obj.position)
       ..writeByte(9)
-      ..write(obj.projectId);
+      ..write(obj.projectId)
+      ..writeByte(10)
+      ..write(obj.translatedMessage)
+      ..writeByte(11)
+      ..write(obj.translatedTitle);
   }
 
   @override
