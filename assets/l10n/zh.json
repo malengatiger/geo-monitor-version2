@@ -1,5 +1,7 @@
 {
   "messageFromGeo": "消息来自 $geo",
+  "tapToReturn": "点击返回 $geo",
+  "geoRunning": "$geo 服务正在运行。",
   "cancel": "取消",
   "maxAudioLength": "请以分钟为单位输入最大音频长度",
   "Angola": "安哥拉",

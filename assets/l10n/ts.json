@@ -1,5 +1,8 @@
 {
   "messageFromGeo": "Rungula ri fikile ri huma eka $geo",
+  "tapToReturn": "Thepha ku tlhelela eka $geo",
+  "geoRunning": "$geo vukorhokeri bya tirha.",
+
   "november": "Hukuri",
   "projects": "Tiphurojeke",
   "callMember": "Fonela Xirho",

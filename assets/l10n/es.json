@@ -1,4 +1,6 @@
 {
+  "tapToReturn": "Toca para volver a $geo",
+  "geoRunning": "El servicio $geo se está ejecutando.",
   "messageFromGeo": "Llegó un mensaje de $geo",
   "november": "Noviembre",
   "projects": "Proyectos",

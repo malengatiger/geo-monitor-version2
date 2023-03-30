@@ -11,6 +11,8 @@ class MyKeys {
   }
 
   static _buildMap() {
+    hashMap["geoRunning"] = "geoRunning";
+    hashMap["tapToReturn"] = "tapToReturn";
     hashMap["messageFromGeo"] = "messageFromGeo";
     hashMap["weHelpYou"] = "weHelpYou";
     hashMap['november'] = 'november';

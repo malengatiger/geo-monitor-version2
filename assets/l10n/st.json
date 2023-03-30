@@ -1,6 +1,7 @@
 {
   "messageFromGeo": "Molaetsa o fihlile ho tsoa ho $geo",
-
+  "tapToReturn": "Tlanya ho khutlela ho $geo",
+  "geoRunning": "Ts\u0027ebeletso ea $geo ea sebetsa.",
   "november": "Pulungoana",
   "projects": "Merero",
   "callMember": "Letsetsa Setho",

@@ -1,5 +1,8 @@
 {
   "messageFromGeo": "Ujumbe ulifika kutoka $geo",
+  "tapToReturn": "Gusa ili urudi kwenye $geo",
+  "geoRunning": "Huduma ya $geo inaendelea.",
+
   "november": "Novemba",
   "projects": "Miradi",
   "callMember": "Piga Mwanachama",

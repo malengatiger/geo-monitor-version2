@@ -166,6 +166,8 @@ class TheGreatGeofencer {
     if (sett != null) {
       final arr = await mTx.translate('arrivedAt', sett.locale!);
       message = arr.replaceAll('\$project', geofence.data['projectName']);
+      final tit = await mTx.translate('messageFromGeo', sett.locale!);
+      title = tit.replaceAll('\$geo', 'Geo');
     }
 
     if (loc != null) {

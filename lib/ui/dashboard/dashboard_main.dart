@@ -75,7 +75,7 @@ class DashboardMainState extends State<DashboardMain>
       return Center(
         child: Padding(
           padding: const EdgeInsets.all(28.0),
-          child: SizedBox(width: 300, height: 300,
+          child: SizedBox(width: 400, height: 300,
             child: Card(
               elevation: 8,
               shape: getRoundedBorder(radius: 16),
@@ -91,7 +91,7 @@ class DashboardMainState extends State<DashboardMain>
                       const SizedBox(height: 48,),
                       Text(initializingText == null
                           ? '...'
-                          : initializingText!, style: myTextStyleMedium(context),),
+                          : initializingText!, style: myTextStyleSmall(context),),
                     ],
                   ),
                 ),

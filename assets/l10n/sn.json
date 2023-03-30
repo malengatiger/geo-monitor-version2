@@ -1,6 +1,7 @@
 {
   "messageFromGeo": "Shoko rasvika kubva ku$geo",
-
+  "tapToReturn": "Tinya kuti udzokere ku$geo",
+  "geoRunning": "$geo service iri kushanda.",
   "projects": "Projects",
   "callMember": "Call Member",
   "endDate": "End Date",

@@ -1,6 +1,7 @@
 {
   "messageFromGeo": "Ozi sitere na $geo",
-
+  "tapToReturn": "Pịa ka ịlaghachi na $geo",
+  "geoRunning": "Ọrụ $geo na-agba ọsọ.",
   "november": "Nọvemba",
   "projects": "Ihe oru ngo",
   "callMember": "Kpọọ onye otu",

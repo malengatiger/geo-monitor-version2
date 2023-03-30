@@ -1,4 +1,6 @@
 {
+  "tapToReturn": "Tik om terug te keer na $geo",
+  "geoRunning": "$geo-diens loop.",
   "messageFromGeo": "Boodskap het van $geo af gekom",
   "weHelpYou": "Ons help jou om meer te sien!",
   "november": "November",

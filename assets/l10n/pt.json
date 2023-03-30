@@ -1,6 +1,7 @@
 {
   "messageFromGeo": "Chegou a mensagem de $geo",
-
+  "tapToReturn": "Toque para retornar a $geo",
+  "geoRunning": "O serviço $geo está em execução.",
   "november": "novembro",
   "projects": "Projetos",
   "callMember": "Chamar Membro",

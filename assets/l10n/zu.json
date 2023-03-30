@@ -1,5 +1,7 @@
 {
   "messageFromGeo": "Umlayezo ufikile uvela ku-$geo",
+  "tapToReturn": "Thepha ukuze ubuyele ku-$geo",
+  "geoRunning": "Isevisi ye-$geo iyasebenza.",
   "november": "Novemba",
   "projects": "Amaphrojekthi",
   "callMember": "Shayela Ilungu",
