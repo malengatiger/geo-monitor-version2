@@ -348,7 +348,12 @@ class DataRefresher {
     await cacheManager.addPhotos(photos: bag.photos!);
     await cacheManager.addVideos(videos: bag.videos!);
     await cacheManager.addAudios(audios: bag.audios!);
-    await cacheManager.addSettingsList(settings: bag.settings!);
+    bag.settings!.sort((a, b) => DateTime.parse(b.created!)
+        .millisecondsSinceEpoch
+        .compareTo(DateTime.parse(a.created!).millisecondsSinceEpoch));
+    if (bag.settings!.isNotEmpty) {
+      await cacheManager.addSettings(settings: bag.settings!.first);
+    }
     await cacheManager.addFieldMonitorSchedules(
         schedules: bag.fieldMonitorSchedules!);
 

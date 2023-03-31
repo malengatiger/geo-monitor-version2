@@ -842,7 +842,7 @@ SettingsModel getBaseSettings() {
       projectId: null,
       activityStreamHours: 24,
       numberOfDays: 30,
-      locale: 'en', individualLocale: 'en');
+      locale: 'en');
 
   return model;
 }

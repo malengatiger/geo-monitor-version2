@@ -205,7 +205,6 @@ class IntroPageViewerPortraitState extends State<IntroPageViewerPortrait>
 
     final baseSettings = getBaseSettings();
     baseSettings.locale = p1.languageCode;
-    baseSettings.individualLocale = p1.languageCode;
     await prefsOGx.saveSettings(baseSettings);
     await _setTexts(selectedLocale: p1.languageCode);
   }

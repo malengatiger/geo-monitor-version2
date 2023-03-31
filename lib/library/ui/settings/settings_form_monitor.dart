@@ -459,7 +459,6 @@ class SettingsFormMonitorState extends State<SettingsFormMonitor> {
     settingsModel = await prefsOGx.getSettings();
     if (settingsModel != null) {
       settingsModel!.locale = locale.languageCode;
-      settingsModel!.individualLocale = locale.languageCode;
       await prefsOGx.saveSettings(settingsModel!);
       await translator.translate('settings', settingsModel!.locale!);
       fcmBloc.settingsStreamController.sink.add(settingsModel!);

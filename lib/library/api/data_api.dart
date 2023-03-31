@@ -226,8 +226,7 @@ class DataAPI {
     String? mURL = await getUrl();
     List<TranslationBag> mList = [];
     try {
-      List result = await _sendHttpGET(
-          '${mURL!}getTranslationBags');
+      List result = await _sendHttpGET('${mURL!}getTranslationBags');
       for (var element in result) {
         mList.add(TranslationBag.fromJson(element));
       }
@@ -251,9 +250,13 @@ class DataAPI {
         mList.add(SettingsModel.fromJson(element));
       }
       if (mList.isNotEmpty) {
-        mList.sort((a, b) => b.created!.compareTo(a.created!));
+        mList.sort((a, b) => DateTime.parse(b.created!)
+            .millisecondsSinceEpoch
+            .compareTo(DateTime.parse(a.created!).millisecondsSinceEpoch));
+          await cacheManager.addSettings(settings: mList!.first);
+
         await prefsOGx.saveSettings(mList.first);
-        await cacheManager.addOrganizationSettingsList([mList.first]);
+        await cacheManager.addSettings(settings: mList.first);
       }
 
       pp('🌿 🌿 🌿 getOrganizationSettings returned: 🌿 ${mList.length}');
@@ -310,6 +313,7 @@ class DataAPI {
       rethrow;
     }
   }
+
   static Future<List<ProjectSummary>> getProjectDailySummary(
       String projectId, String startDate, String endDate) async {
     String? mURL = await getUrl();
@@ -633,6 +637,7 @@ class DataAPI {
       rethrow;
     }
   }
+
   static Future<List<ProjectPolygon>> getOrganizationProjectPolygons(
       String organizationId, String startDate, String endDate) async {
     String? mURL = await getUrl();
@@ -652,6 +657,7 @@ class DataAPI {
       rethrow;
     }
   }
+
   static Future<List<ProjectPolygon>> getAllOrganizationProjectPolygons(
       String organizationId) async {
     String? mURL = await getUrl();
@@ -671,8 +677,6 @@ class DataAPI {
       rethrow;
     }
   }
-
-
 
   static Future<LocationRequest> sendLocationRequest(
       LocationRequest request) async {
@@ -701,7 +705,6 @@ class DataAPI {
     }
   }
 
-
   static Future<List<ProjectPosition>> getProjectPositions(
       String projectId, String startDate, String endDate) async {
     String? mURL = await getUrl();
@@ -726,8 +729,8 @@ class DataAPI {
     String? mURL = await getUrl();
 
     try {
-      var result =
-          await _sendHttpGET('${mURL!}getProjectPolygons?projectId=$projectId&startDate=$startDate&endDate=$endDate');
+      var result = await _sendHttpGET(
+          '${mURL!}getProjectPolygons?projectId=$projectId&startDate=$startDate&endDate=$endDate');
       List<ProjectPolygon> list = [];
       result.forEach((m) {
         list.add(ProjectPolygon.fromJson(m));
@@ -798,13 +801,15 @@ class DataAPI {
     }
   }
 
-  static Future<List<Photo>> getProjectPhotos({required String projectId,
-    required String startDate, required String endDate}) async {
+  static Future<List<Photo>> getProjectPhotos(
+      {required String projectId,
+      required String startDate,
+      required String endDate}) async {
     String? mURL = await getUrl();
 
     try {
-      var result =
-          await _sendHttpGET('${mURL!}getProjectPhotos?projectId=$projectId&startDate=$startDate&endDate=$endDate');
+      var result = await _sendHttpGET(
+          '${mURL!}getProjectPhotos?projectId=$projectId&startDate=$startDate&endDate=$endDate');
       List<Photo> list = [];
       result.forEach((m) {
         list.add(Photo.fromJson(m));
@@ -835,7 +840,8 @@ class DataAPI {
     }
   }
 
-  static Future<DataBag> getProjectData(String projectId, String startDate, String endDate) async {
+  static Future<DataBag> getProjectData(
+      String projectId, String startDate, String endDate) async {
     String? mURL = await getUrl();
 
     var bag = DataBag(
@@ -850,8 +856,8 @@ class DataAPI {
         date: DateTime.now().toIso8601String(),
         settings: []);
     try {
-      var result =
-          await _sendHttpGET('${mURL!}getProjectData?projectId=$projectId&startDate=$startDate&endDate=$endDate');
+      var result = await _sendHttpGET(
+          '${mURL!}getProjectData?projectId=$projectId&startDate=$startDate&endDate=$endDate');
 
       bag = DataBag.fromJson(result);
       await cacheManager.addProjects(projects: bag.projects!);
@@ -861,7 +867,13 @@ class DataAPI {
       await cacheManager.addPhotos(photos: bag.photos!);
       await cacheManager.addVideos(videos: bag.videos!);
       await cacheManager.addAudios(audios: bag.audios!);
-      await cacheManager.addSettingsList(settings: bag.settings!);
+      //get latest settings
+      bag.settings!.sort((a, b) => DateTime.parse(b.created!)
+          .millisecondsSinceEpoch
+          .compareTo(DateTime.parse(a.created!).millisecondsSinceEpoch));
+      if (bag.settings!.isNotEmpty) {
+        await cacheManager.addSettings(settings: bag.settings!.first);
+      }
       await cacheManager.addFieldMonitorSchedules(
           schedules: bag.fieldMonitorSchedules!);
     } catch (e) {
@@ -907,12 +919,13 @@ class DataAPI {
     }
   }
 
-  static Future<List<Video>> getProjectVideos(String projectId, String startDate, String endDate) async {
+  static Future<List<Video>> getProjectVideos(
+      String projectId, String startDate, String endDate) async {
     String? mURL = await getUrl();
 
     try {
-      var result =
-          await _sendHttpGET('${mURL!}getProjectVideos?projectId=$projectId&startDate=$startDate&endDate=$endDate');
+      var result = await _sendHttpGET(
+          '${mURL!}getProjectVideos?projectId=$projectId&startDate=$startDate&endDate=$endDate');
       List<Video> list = [];
       result.forEach((m) {
         list.add(Video.fromJson(m));
@@ -925,12 +938,13 @@ class DataAPI {
     }
   }
 
-  static Future<List<Audio>> getProjectAudios(String projectId, String startDate, String endDate) async {
+  static Future<List<Audio>> getProjectAudios(
+      String projectId, String startDate, String endDate) async {
     String? mURL = await getUrl();
 
     try {
-      var result =
-          await _sendHttpGET('${mURL!}getProjectAudios?projectId=$projectId&startDate=$startDate&endDate=$endDate');
+      var result = await _sendHttpGET(
+          '${mURL!}getProjectAudios?projectId=$projectId&startDate=$startDate&endDate=$endDate');
       List<Audio> list = [];
       result.forEach((m) {
         list.add(Audio.fromJson(m));
@@ -1011,7 +1025,8 @@ class DataAPI {
     pp('$xz getOrganizationPhotos: 🍏 id: $organizationId');
     String? mURL = await getUrl();
     var cmd = 'getOrganizationPhotos';
-    var url = '$mURL$cmd?organizationId=$organizationId&startDate=$startDate&endDate=$endDate';
+    var url =
+        '$mURL$cmd?organizationId=$organizationId&startDate=$startDate&endDate=$endDate';
     try {
       List result = await _sendHttpGET(url);
       pp('$xz getOrganizationPhotos: 🍏 found: ${result.length} org photos');
@@ -1033,7 +1048,8 @@ class DataAPI {
     pp('$xz getOrganizationVideos: 🍏 id: $organizationId');
     String? mURL = await getUrl();
     var cmd = 'getOrganizationVideos';
-    var url = '$mURL$cmd?organizationId=$organizationId&startDate=$startDate&endDate=$endDate';
+    var url =
+        '$mURL$cmd?organizationId=$organizationId&startDate=$startDate&endDate=$endDate';
     try {
       List result = await _sendHttpGET(url);
       List<Video> list = [];
@@ -1090,8 +1106,8 @@ class DataAPI {
       rethrow;
     }
   }
-  static Future<List<User>> getOrganizationUsers(
-      String organizationId) async {
+
+  static Future<List<User>> getOrganizationUsers(String organizationId) async {
     String? mURL = await getUrl();
     var cmd = 'getAllOrganizationUsers';
     var url = '$mURL$cmd?organizationId=$organizationId';
@@ -1157,9 +1173,8 @@ class DataAPI {
   }
 
   static Future<List<Project>> findProjectsByLocation(
-      {
-        required String organizationId,
-        required double latitude,
+      {required String organizationId,
+      required double latitude,
       required double longitude,
       required double radiusInKM}) async {
     pp('\n$xz ......... findProjectsByLocation: 🍏 radiusInKM: $radiusInKM kilometres,  '
@@ -1800,7 +1815,7 @@ class DataAPI {
     }
     var start = DateTime.now();
     var token = await AppAuth.getAuthToken();
-   
+
     headers['Authorization'] = 'Bearer $token';
     try {
       var resp = await client

@@ -245,7 +245,6 @@ class SettingsFormState extends State<SettingsForm> {
         themeIndex: currentThemeIndex,
         settingsId: const Uuid().v4(),
         created: date,
-        individualLocale: null,
         organizationId: user!.organizationId,
         projectId: selectedProject == null ? null : selectedProject!.projectId,
         activityStreamHours: int.parse(activityController.value.text),
@@ -696,7 +695,6 @@ class SettingsFormState extends State<SettingsForm> {
   void _handleLocaleChange(Locale locale, String translatedLanguage) async {
     pp('$mm onLocaleChange ... going to ${locale.languageCode}');
     settingsModel!.locale = locale.languageCode;
-    settingsModel!.individualLocale = locale.languageCode;
     await prefsOGx.saveSettings(settingsModel!);
     await _setTexts();
     themeBloc.changeToLocale(locale.languageCode);

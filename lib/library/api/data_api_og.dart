@@ -249,11 +249,11 @@ class DataAPI extends GetxController {
       for (var element in result) {
         mList.add(SettingsModel.fromJson(element));
       }
-      if (mList.isNotEmpty) {
-        mList.sort((a, b) => b.created!.compareTo(a.created!));
-        await prefsOGx.saveSettings(mList.first);
-        await cacheManager.addOrganizationSettingsList([mList.first]);
-      }
+      // if (mList.isNotEmpty) {
+      //   mList.sort((a, b) => b.created!.compareTo(a.created!));
+      //   await prefsOGx.saveSettings(mList.first);
+      //   await cacheManager.addOrganizationSettingsList([mList.first]);
+      // }
 
       pp('🌿 🌿 🌿 getOrganizationSettings returned: 🌿 ${mList.length}');
       return mList;
@@ -860,7 +860,7 @@ class DataAPI extends GetxController {
       await cacheManager.addPhotos(photos: bag.photos!);
       await cacheManager.addVideos(videos: bag.videos!);
       await cacheManager.addAudios(audios: bag.audios!);
-      await cacheManager.addSettingsList(settings: bag.settings!);
+      // await cacheManager.addSettingsList(settings: bag.settings!);
       await cacheManager.addFieldMonitorSchedules(
           schedules: bag.fieldMonitorSchedules!);
     } catch (e) {

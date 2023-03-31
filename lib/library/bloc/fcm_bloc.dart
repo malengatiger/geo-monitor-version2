@@ -371,6 +371,7 @@ class FCMBloc {
       if (settings.projectId == null) {
         pp('$mm This is an organization-wide setting, update the cached settings ...');
         await prefsOGx.saveSettings(settings);
+        await cacheManager.addSettings(settings: settings);
         await themeBloc.changeToTheme(settings.themeIndex!);
         settingsStreamController.sink.add(settings);
         dataRefresher.manageRefresh(numberOfDays: settings.numberOfDays,

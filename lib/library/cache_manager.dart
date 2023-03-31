@@ -603,19 +603,19 @@ class CacheManager {
     pp('$mm PhotoForUpload added to local cache: ${photo.project!.name}');
   }
 
-  Future addOrganizationSettingsList(List<SettingsModel> settings) async {
-    for (var value in settings) {
-      await addSettings(settings: value);
-    }
-  }
+  // Future addOrganizationSettingsList(List<SettingsModel> settings) async {
+  //   for (var value in settings) {
+  //     await addSettings(settings: value);
+  //   }
+  // }
 
-  Future addSettingsList({required List<SettingsModel> settings}) async {
-    for (var m in settings) {
-      await addSettings(settings: m);
-    }
-
-    pp('$mm SettingsModels added to local cache: ${settings.length}');
-  }
+  // Future addSettingsList({required List<SettingsModel> settings}) async {
+  //   for (var m in settings) {
+  //     await addSettings(settings: m);
+  //   }
+  //
+  //   pp('$mm SettingsModels added to local cache: ${settings.length}');
+  // }
 
   Future addSettings({required SettingsModel settings}) async {
     var key = '${settings.organizationId}_';
@@ -869,6 +869,14 @@ class CacheManager {
     }
     pp('$mm ${list.length} org settings list found in cache 🔵');
     return list;
+  }
+  Future<SettingsModel> getSettings() async {
+    var values = _settingsBox?.values.toList();
+    if (values != null && values.isNotEmpty) {
+      return values.first;
+    }
+    pp('$mm ${values?.length} org settings list found in cache 🔵');
+    return getBaseSettings();
   }
 
   Future<List<SettingsModel>> getProjectSettings(String projectId) async {
