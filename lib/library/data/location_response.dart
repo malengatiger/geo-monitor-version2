@@ -24,6 +24,11 @@ class LocationResponse extends HiveObject {
   String? requesterId;
   @HiveField(8)
   String? requesterName;
+  @HiveField(9)
+  String? translatedMessage;
+
+  @HiveField(10)
+  String? translatedTitle;
 
   LocationResponse({
     required this.position,
@@ -34,6 +39,8 @@ class LocationResponse extends HiveObject {
     required this.organizationId,
     required this.organizationName,
     required this.requesterId,
+    required this.translatedMessage,
+    required this.translatedTitle,
     required this.requesterName,
   });
 
@@ -47,6 +54,8 @@ class LocationResponse extends HiveObject {
     locationResponseId = data['locationResponseId'];
     userName = data['userName'];
     organizationName = data['organizationName'];
+    translatedMessage = data['translatedMessage'];
+    translatedTitle = data['translatedTitle'];
     if (data['position'] != null) {
       position = Position.fromJson(data['position']);
     }
@@ -59,6 +68,8 @@ class LocationResponse extends HiveObject {
       'userId': userId,
       'organizationId': organizationId,
       'userName': userName,
+      'translatedMessage': translatedMessage,
+      'translatedTitle': translatedTitle,
       'locationResponseId': locationResponseId,
       'organizationName': organizationName,
       'position': position == null ? null : position!.toJson()

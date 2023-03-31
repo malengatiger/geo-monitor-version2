@@ -28,6 +28,11 @@ class SettingsModel {
   int? numberOfDays;
   @HiveField(11)
   String? locale = "en";
+  @HiveField(12)
+  String? translatedMessage;
+
+  @HiveField(13)
+  String? translatedTitle;
 
   SettingsModel(
       {required this.distanceFromProject,
@@ -41,6 +46,8 @@ class SettingsModel {
       required this.projectId,
       required this.numberOfDays,
       required this.locale,
+        required this.translatedMessage,
+        required this.translatedTitle,
       required this.activityStreamHours});
 
   SettingsModel.fromJson(Map data) {
@@ -51,6 +58,8 @@ class SettingsModel {
     created = data['created'];
     activityStreamHours = data['activityStreamHours'];
     organizationId = data['organizationId'];
+    translatedMessage = data['translatedMessage'];
+    translatedTitle = data['translatedTitle'];
     if (data['locale'] != null) {
       locale = data['locale'];
     } else {
@@ -87,6 +96,8 @@ class SettingsModel {
       'numberOfDays': numberOfDays ?? 7,
       'activityStreamHours': activityStreamHours,
       'settingsId': settingsId,
+      'translatedMessage': translatedMessage,
+      'translatedTitle': translatedTitle,
       'themeIndex': themeIndex,
       'locale': locale,
       'maxVideoLengthInSeconds': maxVideoLengthInSeconds,

@@ -7,12 +7,13 @@ import 'package:geo_monitor/library/bloc/theme_bloc.dart';
 import 'package:geo_monitor/library/data/country.dart';
 import 'package:geo_monitor/library/data/organization.dart';
 import 'package:geo_monitor/library/data/organization_registration_bag.dart';
-import 'package:geo_monitor/library/data/settings_model.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
 import 'package:uuid/uuid.dart';
 
 import '../../device_location/device_location_bloc.dart';
+import '../../l10n/translation_handler.dart';
 import '../../library/api/data_api.dart';
+import '../../library/cache_manager.dart';
 import '../../library/data/user.dart' as ur;
 import '../../library/functions.dart';
 import '../../library/generic_functions.dart';
@@ -146,6 +147,7 @@ class AuthEmailRegistrationPortraitState
 
   Future<void> _doTheRegistration(
       UserCredential userCred, String password) async {
+
     var org = Organization(
         name: orgNameController.value.text,
         countryId: country!.countryId,
@@ -154,6 +156,9 @@ class AuthEmailRegistrationPortraitState
         countryName: country!.name,
         organizationId: const Uuid().v4());
 
+    final sett1 = await cacheManager.getSettings();
+    final memberAdded = await translator.translate('memberAddedChanged', sett1.locale!);
+    final messageFromGeo = await getFCMMessageTitle();
     user = ur.User(
         name: adminController.value.text,
         email: emailController.value.text,
@@ -166,6 +171,8 @@ class AuthEmailRegistrationPortraitState
         organizationName: orgNameController.value.text,
         organizationId: org.organizationId,
         countryId: country!.countryId,
+        translatedMessage: memberAdded,
+        translatedTitle: messageFromGeo,
         password: password);
 
     await prefsOGx.saveUser(user!);

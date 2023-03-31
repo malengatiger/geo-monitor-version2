@@ -8,10 +8,12 @@ import 'package:responsive_builder/responsive_builder.dart';
 import 'package:uuid/uuid.dart';
 
 import '../../../device_location/device_location_bloc.dart';
+import '../../../l10n/translation_handler.dart';
 import '../../api/data_api.dart';
 import '../../api/prefs_og.dart';
 import '../../bloc/organization_bloc.dart';
 import '../../bloc/project_bloc.dart';
+import '../../cache_manager.dart';
 import '../../data/city.dart';
 import '../../data/location_response.dart';
 import '../../data/place_mark.dart';
@@ -199,12 +201,18 @@ class ProjectLocationHandlerState extends State<ProjectLocationHandler>
         }
       }
       var org = await prefsOGx.getUser();
+      final sett = await cacheManager.getSettings();
+      final projectLocationAdded = await translator.translate('projectLocationAdded', sett!.locale!);
+      final messageFromGeo = await translator.translate('messageFromGeo', sett!.locale!);
+
       var projectPosition = ProjectPosition(
           userId: user!.userId,
           userName: user!.name,
           placemark: pm == null ? null : PlaceMark.getPlaceMark(placemark: pm),
           projectName: widget.project.name,
           caption: 'tbd',
+          translatedMessage: projectLocationAdded,
+          translatedTitle: messageFromGeo,
           organizationId: org!.organizationId,
           created: DateTime.now().toUtc().toIso8601String(),
           position:

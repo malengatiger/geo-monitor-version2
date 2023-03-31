@@ -30,6 +30,8 @@ class AudioAdapter extends TypeAdapter<Audio> {
       audioId: fields[3] as String?,
       durationInSeconds: fields[13] as int?,
       organizationId: fields[7] as String?,
+      translatedMessage: fields[15] as String?,
+      translatedTitle: fields[16] as String?,
       userUrl: fields[14] as String?,
       projectName: fields[11] as String?,
     );
@@ -38,7 +40,7 @@ class AudioAdapter extends TypeAdapter<Audio> {
   @override
   void write(BinaryWriter writer, Audio obj) {
     writer
-      ..writeByte(15)
+      ..writeByte(17)
       ..writeByte(0)
       ..write(obj.url)
       ..writeByte(1)
@@ -68,7 +70,11 @@ class AudioAdapter extends TypeAdapter<Audio> {
       ..writeByte(13)
       ..write(obj.durationInSeconds)
       ..writeByte(14)
-      ..write(obj.userUrl);
+      ..write(obj.userUrl)
+      ..writeByte(15)
+      ..write(obj.translatedMessage)
+      ..writeByte(16)
+      ..write(obj.translatedTitle);
   }
 
   @override

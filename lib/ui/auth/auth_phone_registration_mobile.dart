@@ -260,6 +260,9 @@ class AuthPhoneRegistrationMobileState
       settingsModel ??= getBaseSettings();
       settingsModel!.organizationId = organizationId;
       pp('$mm create user object');
+      final sett = await cacheManager.getSettings();
+      final memberAddedChanged = await translator.translate('memberAddedChanged', sett!.locale!);
+      final messageFromGeo = await getFCMMessageTitle();
       user = ur.User(
           name: adminController.value.text,
           email: emailController.value.text,
@@ -272,6 +275,8 @@ class AuthPhoneRegistrationMobileState
           organizationName: orgNameController.value.text,
           organizationId: org.organizationId,
           countryId: country!.countryId,
+          translatedTitle: messageFromGeo,
+          translatedMessage: memberAddedChanged,
           password: null);
       pp('$mm create OrganizationRegistrationBag');
       var bag = OrganizationRegistrationBag(

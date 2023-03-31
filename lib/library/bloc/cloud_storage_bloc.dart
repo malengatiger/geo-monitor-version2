@@ -14,6 +14,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:uuid/uuid.dart';
 
 import '../../device_location/device_location_bloc.dart';
+import '../../l10n/translation_handler.dart';
 import '../api/data_api.dart';
 import '../api/prefs_og.dart';
 import '../data/audio.dart';
@@ -103,12 +104,20 @@ class CloudStorageBloc {
           '${distance.toStringAsFixed(2)} metres 😡😡');
 
       var dur = await audioPlayer.setUrl(url);
+      final sett = await cacheManager.getSettings();
+      final audioArrived =
+          await translator.translate('audioArrived', sett!.locale!);
+      final messageFromGeo =
+          await translator.translate('messageFromGeo', sett!.locale!);
+
       Audio audio = Audio(
           url: url,
           userUrl: user.imageUrl,
           created: DateTime.now().toUtc().toIso8601String(),
           userId: user.userId,
           userName: user.name,
+          translatedTitle: messageFromGeo,
+          translatedMessage: audioArrived,
           projectPosition: audioForUpload.position,
           distanceFromProjectPosition: distance,
           projectId: audioForUpload.project!.projectId!!,
@@ -197,12 +206,20 @@ class CloudStorageBloc {
       pp('$mm adding photo ..... 😡😡 distance: '
           '${distance.toStringAsFixed(2)} metres 😡😡');
       var user = await prefsOGx.getUser();
+      final sett = await cacheManager.getSettings();
+      final photoArrived =
+          await translator.translate('photoArrived', sett!.locale!);
+      final messageFromGeo =
+          await translator.translate('messageFromGeo', sett!.locale!);
+
       photo = Photo(
           url: url,
           caption: 'tbd',
           created: DateTime.now().toUtc().toIso8601String(),
           userId: _user!.userId,
           userName: _user!.name,
+          translatedMessage: photoArrived,
+          translatedTitle: messageFromGeo,
           projectPosition: photoForUpload.position,
           distanceFromProjectPosition: distance,
           projectId: photoForUpload.project!.projectId!,
@@ -284,12 +301,16 @@ class CloudStorageBloc {
       pp('$mm adding video ..... 😡😡 distance: '
           '${distance.toStringAsFixed(2)} metres 😡😡');
       var u = const Uuid();
+      final messageTitle = await getFCMMessageTitle();
+      final videoArrived = await getFCMMessage('videoArrived');
       video = Video(
           url: url,
           caption: 'tbd',
           created: DateTime.now().toUtc().toIso8601String(),
           userId: _user!.userId,
           userName: _user!.name,
+          translatedTitle: messageTitle,
+          translatedMessage: videoArrived,
           projectPosition: videoForUpload.position,
           distanceFromProjectPosition: distance,
           projectId: videoForUpload.project!.projectId!,

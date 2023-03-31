@@ -6,6 +6,7 @@ import 'package:uuid/uuid.dart';
 import '../../../l10n/translation_handler.dart';
 import '../../bloc/admin_bloc.dart';
 import '../../bloc/project_bloc.dart';
+import '../../cache_manager.dart';
 import '../../data/project.dart';
 import '../../data/user.dart';
 
@@ -88,6 +89,9 @@ class ProjectEditCardState extends State<ProjectEditCard>
         if (widget.project == null) {
           pp('😡 😡 😡 _submit new project ......... ${nameController.text}');
           var uuid = const Uuid();
+          final sett = await cacheManager.getSettings();
+          final projectAddedToOrganization = await translator.translate('projectAddedToOrganization', sett!.locale!);
+          final messageFromGeo = await getFCMMessageTitle();
           project = Project(
               name: nameController.text,
               description: descController.text,
@@ -95,6 +99,8 @@ class ProjectEditCardState extends State<ProjectEditCard>
               organizationName: admin!.organizationName!,
               created: DateTime.now().toUtc().toIso8601String(),
               monitorMaxDistanceInMetres: dist,
+              translatedMessage: projectAddedToOrganization,
+              translatedTitle: messageFromGeo,
               photos: [],
               videos: [],
               communities: [],

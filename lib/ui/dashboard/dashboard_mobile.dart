@@ -124,11 +124,6 @@ class DashboardMobileState extends State<DashboardMobile>
       }
     });
 
-    settingsSubscriptionFCM = fcmBloc.settingsStream.listen((settings) async {
-      pp('$mm: 🍎🍎 settingsSubscriptionFCM delivered: arrived with themeIndex: ${settings.themeIndex}... locale: ${settings.locale} 🍎🍎');
-      await _handleNewSettings(settings);
-    });
-
     dataBagSubscription = organizationBloc.dataBagStream.listen((DataBag bag) {
       dataBag = bag;
       pp('$mm dataBagStream delivered a dataBag!! 🍐Yebo! 🍐');
@@ -375,10 +370,7 @@ class DashboardMobileState extends State<DashboardMobile>
         pp('$mm: 🍎🍎 settings arrived with themeIndex: ${settings.themeIndex}... 🍎🍎');
         _handleNewSettings(settings);
       });
-      settingsSubscription = organizationBloc.settingsStream.listen((settings) async {
-        pp('$mm: 🍎🍎 settings arrived with themeIndex: ${settings.themeIndex}... 🍎🍎');
-        _handleNewSettings(settings);
-      });
+
       userSubscriptionFCM = fcmBloc.userStream.listen((user) async {
         pp('$mm: 🍎 🍎 user arrived... 🍎 🍎');
         if (user.userId == deviceUser!.userId!) {

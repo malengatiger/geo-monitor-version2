@@ -1,7 +1,7 @@
 import 'package:hive/hive.dart';
 
-import 'city.dart';
 import '../data/position.dart';
+import 'city.dart';
 
 part 'project_polygon.g.dart';
 
@@ -35,6 +35,12 @@ class ProjectPolygon extends HiveObject {
   @HiveField(9)
   String? userName;
 
+  @HiveField(10)
+  String? translatedMessage;
+
+  @HiveField(11)
+  String? translatedTitle;
+
   ProjectPolygon(
       {required this.projectName,
       required this.projectPolygonId,
@@ -43,6 +49,8 @@ class ProjectPolygon extends HiveObject {
       required this.nearestCities,
       required this.organizationId,
       this.name,
+        required this.translatedMessage,
+        required this.translatedTitle,
       required this.projectId,
       required this.userId,
       required this.userName});
@@ -56,6 +64,8 @@ class ProjectPolygon extends HiveObject {
     name = data['name'];
     organizationId = data['organizationId'];
     created = data['created'];
+    translatedMessage = data['translatedMessage'];
+    translatedTitle = data['translatedTitle'];
 
     positions = [];
     if (data['positions'] != null) {
@@ -93,6 +103,8 @@ class ProjectPolygon extends HiveObject {
       'projectPolygonId': projectPolygonId,
       'created': created,
       'name': name,
+      'translatedMessage': translatedMessage,
+      'translatedTitle': translatedTitle,
       'positions': positionList,
       'nearestCities': cityList,
     };

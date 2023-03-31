@@ -185,6 +185,9 @@ class UserFormState extends State<UserForm>
 
       try {
         if (widget.user == null) {
+          final sett = await cacheManager.getSettings();
+          final memberAddedChanged = await translator.translate('memberAddedChanged', sett!.locale!);
+          final messageFromGeo = await getFCMMessageTitle();
           var user = ar.User(
               name: nameController.text,
               email: emailController.text,
@@ -194,6 +197,8 @@ class UserFormState extends State<UserForm>
               countryId: country!.countryId,
               userType: type,
               gender: gender,
+              translatedTitle: messageFromGeo,
+              translatedMessage: memberAddedChanged,
               active: 0,
               created: DateTime.now().toUtc().toIso8601String(),
               fcmRegistration: 'tbd',

@@ -36,6 +36,12 @@ class ProjectPosition extends HiveObject {
   @HiveField(12)
   String? possibleAddress;
 
+  @HiveField(13)
+  String? translatedMessage;
+
+  @HiveField(14)
+  String? translatedTitle;
+
   ProjectPosition(
       {required this.projectName,
       required this.caption,
@@ -46,6 +52,8 @@ class ProjectPosition extends HiveObject {
       required this.nearestCities,
       required this.organizationId,
       this.name,
+        required this.translatedMessage,
+        required this.translatedTitle,
       this.possibleAddress,
       required this.userId,
       required this.userName,
@@ -63,6 +71,8 @@ class ProjectPosition extends HiveObject {
     projectId = data['projectId'];
     organizationId = data['organizationId'];
     created = data['created'];
+    translatedMessage = data['translatedMessage'];
+    translatedTitle = data['translatedTitle'];
 
     if (data['position'] != null) {
       position = Position.fromJson(data['position']);
@@ -95,6 +105,8 @@ class ProjectPosition extends HiveObject {
       'projectPositionId': projectPositionId,
       'caption': caption,
       'created': created,
+      'translatedMessage': translatedMessage,
+      'translatedTitle': translatedTitle,
       'possibleAddress': possibleAddress,
       'position': position == null ? null : position!.toJson(),
       'placemark': placemark == null ? null : placemark!.toJson(),

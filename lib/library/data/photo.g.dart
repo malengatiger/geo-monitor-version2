@@ -30,6 +30,8 @@ class PhotoAdapter extends TypeAdapter<Photo> {
       organizationId: fields[7] as String?,
       projectName: fields[12] as String?,
       height: fields[13] as int?,
+      translatedMessage: fields[18] as String?,
+      translatedTitle: fields[19] as String?,
       projectPositionId: fields[5] as String?,
       projectPolygonId: fields[16] as String?,
       width: fields[14] as int?,
@@ -41,7 +43,7 @@ class PhotoAdapter extends TypeAdapter<Photo> {
   @override
   void write(BinaryWriter writer, Photo obj) {
     writer
-      ..writeByte(18)
+      ..writeByte(20)
       ..writeByte(0)
       ..write(obj.url)
       ..writeByte(1)
@@ -77,7 +79,11 @@ class PhotoAdapter extends TypeAdapter<Photo> {
       ..writeByte(16)
       ..write(obj.projectPolygonId)
       ..writeByte(17)
-      ..write(obj.userUrl);
+      ..write(obj.userUrl)
+      ..writeByte(18)
+      ..write(obj.translatedMessage)
+      ..writeByte(19)
+      ..write(obj.translatedTitle);
   }
 
   @override

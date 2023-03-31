@@ -19,6 +19,7 @@ import 'package:video_thumbnail/video_thumbnail.dart' as vt;
 import '../device_location/device_location_bloc.dart';
 import '../l10n/translation_handler.dart';
 import 'api/prefs_og.dart';
+import 'cache_manager.dart';
 import 'data/activity_model.dart';
 import 'data/position.dart';
 import 'data/project_position.dart';
@@ -842,9 +843,23 @@ SettingsModel getBaseSettings() {
       projectId: null,
       activityStreamHours: 24,
       numberOfDays: 30,
+      translatedMessage: null,
+      translatedTitle: null,
       locale: 'en');
 
   return model;
+}
+
+Future<String> getFCMMessageTitle() async {
+  final sett = await cacheManager.getSettings();
+  final m = await translator.translate('messageFromGeo', sett.locale!);
+  final messageFromGeo = m.replaceAll('\$geo', 'Geo');
+  return messageFromGeo;
+}
+Future<String> getFCMMessage(String key) async {
+  final sett = await cacheManager.getSettings();
+  final m = await translator.translate(key, sett.locale!);
+  return m;
 }
 
 pp(dynamic msg) {

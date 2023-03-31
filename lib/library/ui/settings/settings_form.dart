@@ -235,10 +235,16 @@ class SettingsFormState extends State<SettingsForm> {
             context: context);
         return;
       }
+      final sett = await cacheManager.getSettings();
+      final settingsChanged = await translator.translate('settingsChanged', sett!.locale!);
+      final messageFromGeo = await translator.translate('messageFromGeo', sett!.locale!);
+
       settingsModel = SettingsModel(
         locale: selectedLocale.toString(),
         distanceFromProject: int.parse(distController.value.text),
         photoSize: groupValue,
+        translatedMessage: settingsChanged,
+        translatedTitle: messageFromGeo,
         maxVideoLengthInSeconds: int.parse(videoController.value.text),
         maxAudioLengthInMinutes: int.parse(audioController.value.text),
         numberOfDays: int.parse(daysController.value.text),

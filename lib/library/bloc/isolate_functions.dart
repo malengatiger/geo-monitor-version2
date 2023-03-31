@@ -7,6 +7,8 @@ import 'package:geo_monitor/library/bloc/photo_for_upload.dart';
 import 'package:geo_monitor/library/bloc/video_for_upload.dart';
 import 'package:http/http.dart' as http;
 
+import '../../l10n/translation_handler.dart';
+import '../cache_manager.dart';
 import '../data/audio.dart';
 import '../data/photo.dart';
 import '../data/video.dart';
@@ -43,6 +45,11 @@ Future<Photo?> uploadPhotoFile(
     pp('$xx problems with uploading file, response url is null');
     return null;
   }
+  final sett = await cacheManager.getSettings();
+  final photoArrived =
+      await translator.translate('photoArrived', sett!.locale!);
+  final messageFromGeo =
+      await translator.translate('messageFromGeo', sett!.locale!);
 
   var photo = Photo(
       url: responseUrl,
@@ -51,6 +58,8 @@ Future<Photo?> uploadPhotoFile(
       created: photoForUpload.date,
       userId: photoForUpload.userId,
       userName: photoForUpload.userName,
+      translatedMessage: photoArrived,
+      translatedTitle: messageFromGeo,
       projectPosition: photoForUpload.position!,
       distanceFromProjectPosition: distance,
       projectId: photoForUpload.project!.projectId,
@@ -95,6 +104,12 @@ Future<Audio?> uploadAudioFile(
     return null;
   }
 
+  final sett = await cacheManager.getSettings();
+  final audioArrived =
+      await translator.translate('audioArrived', sett!.locale!);
+  final messageFromGeo =
+      await translator.translate('messageFromGeo', sett!.locale!);
+
   var audio = Audio(
       url: responseUrl,
       userUrl: audioForUpload.userThumbnailUrl,
@@ -102,6 +117,8 @@ Future<Audio?> uploadAudioFile(
       created: audioForUpload.date,
       userId: audioForUpload.userId,
       userName: audioForUpload.userName,
+      translatedTitle: messageFromGeo,
+      translatedMessage: audioArrived,
       projectPosition: audioForUpload.position!,
       distanceFromProjectPosition: distance,
       projectId: audioForUpload.project!.projectId,
@@ -120,7 +137,6 @@ Future<Video?> uploadVideoFile(
     required double size,
     required String mJson,
     required double distance}) async {
-
   pp('\n\n$xx 🍐🍐🍐🍐🍐🍐 _uploadVideoFile: objectName: $objectName '
       ' size : $size MB');
   var map = json.decode(mJson);
@@ -140,6 +156,9 @@ Future<Video?> uploadVideoFile(
     return null;
   }
   pp('$xx 🍐🍐🍐🍐🍐🍐 attempting to add video to DB ... size: $size MB');
+  final messageTitle = await getFCMMessageTitle();
+  final videoArrived = await getFCMMessage('videoArrived');
+
   var video = Video(
       url: responseUrl,
       userUrl: videoForUpload.userThumbnailUrl,
@@ -149,6 +168,8 @@ Future<Video?> uploadVideoFile(
       userName: videoForUpload.userName,
       projectPosition: videoForUpload.position!,
       distanceFromProjectPosition: distance,
+      translatedMessage: videoArrived,
+      translatedTitle: messageTitle,
       projectId: videoForUpload.project!.projectId,
       thumbnailUrl: thumbUrl,
       projectName: videoForUpload.project!.name,
@@ -230,8 +251,7 @@ Future _callPost(String mUrl, Map? bag, String token) async {
     } else {
       pp('👿👿👿 ._callWebAPIPost: 🔆 statusCode: 👿👿👿 ${resp.statusCode} 🔆🔆🔆 for $mUrl');
       pp(resp.body);
-      throw Exception(
-          '🚨🚨 Status Code 🚨 ${resp.statusCode} 🚨 ${resp.body}');
+      throw Exception('🚨🚨 Status Code 🚨 ${resp.statusCode} 🚨 ${resp.body}');
     }
     var end = DateTime.now();
     pp('$xx http POST call: 🔆 elapsed time: ${end.difference(start).inSeconds} seconds 🔆');
@@ -344,7 +364,8 @@ Future<String?> getSignedUploadUrl(
   }
 }
 
-Future uploadUsingSignedUrl({required String mUrl, required File file, required String token}) async {
+Future uploadUsingSignedUrl(
+    {required String mUrl, required File file, required String token}) async {
   Map<String, String> headers = {
     'Content-type': 'application/json',
     'Accept': 'application/json',
@@ -375,5 +396,3 @@ Future uploadUsingSignedUrl({required String mUrl, required File file, required 
   }
   return null;
 }
-
-

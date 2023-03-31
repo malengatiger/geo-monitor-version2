@@ -44,6 +44,11 @@ class Photo extends HiveObject {
 
   @HiveField(17)
   String? userUrl;
+  @HiveField(18)
+  String? translatedMessage;
+
+  @HiveField(19)
+  String? translatedTitle;
 
   Photo(
       {required this.url,
@@ -59,6 +64,8 @@ class Photo extends HiveObject {
       required this.organizationId,
       required this.projectName,
       required this.height,
+        required this.translatedMessage,
+        required this.translatedTitle,
       this.projectPositionId,
       this.projectPolygonId,
       required this.width,
@@ -79,6 +86,8 @@ class Photo extends HiveObject {
     created = data['created'];
     organizationId = data['organizationId'];
     landscape = data['landscape'];
+    translatedMessage = data['translatedMessage'];
+    translatedTitle = data['translatedTitle'];
 
     userId = data['userId'];
     photoId = data['photoId'];
@@ -97,6 +106,8 @@ class Photo extends HiveObject {
       'url': url,
       'userUrl': userUrl,
       'landscape': landscape,
+      'translatedMessage': translatedMessage,
+      'translatedTitle': translatedTitle,
       'projectPositionId': projectPositionId,
       'projectPolygonId': projectPolygonId,
       'caption': caption,

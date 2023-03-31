@@ -15,6 +15,7 @@ import '../../../l10n/translation_handler.dart';
 import '../../api/data_api.dart';
 import '../../api/prefs_og.dart';
 import '../../bloc/project_bloc.dart';
+import '../../cache_manager.dart';
 import '../../data/city.dart';
 import '../../data/position.dart';
 import '../../data/position.dart' as local;
@@ -238,6 +239,10 @@ class ProjectPolygonMapMobileState extends State<ProjectPolygonMapMobile>
             type: 'Point', coordinates: [point.longitude, point.latitude]));
       }
       pp('$mm Positions in this project polygon: ${positions.length}; 🔷 polygon about to be created');
+      final sett = await cacheManager.getSettings();
+      final projectAreaAdded = await translator.translate('projectAreaAdded', sett!.locale!);
+      final messageFromGeo = await getFCMMessageTitle();
+
       var pos = ProjectPolygon(
           projectName: widget.project.name,
           userId: user!.userId,
@@ -246,6 +251,8 @@ class ProjectPolygonMapMobileState extends State<ProjectPolygonMapMobile>
           created: DateTime.now().toUtc().toIso8601String(),
           positions: positions,
           nearestCities: cities,
+          translatedTitle: messageFromGeo,
+          translatedMessage: projectAreaAdded,
           organizationId: widget.project.organizationId,
           projectId: widget.project.projectId);
 

@@ -1,13 +1,13 @@
 
 import 'package:hive/hive.dart';
 
-import 'city.dart';
-import 'community.dart';
-import '../data/video.dart';
+import '../data/monitor_report.dart';
 import '../data/photo.dart';
 import '../data/project_position.dart';
 import '../data/rating_content.dart';
-import '../data/monitor_report.dart';
+import '../data/video.dart';
+import 'city.dart';
+import 'community.dart';
 
 part 'project.g.dart';
 
@@ -42,6 +42,12 @@ class Project extends HiveObject {
   @HiveField(13)
   double? monitorMaxDistanceInMetres;
 
+  @HiveField(14)
+  String? translatedMessage;
+
+  @HiveField(15)
+  String? translatedTitle;
+
   Project(
       {required this.name,
       required this.description,
@@ -55,6 +61,8 @@ class Project extends HiveObject {
       required this.projectPositions,
       required this.monitorReports,
       required this.organizationName,
+        required this.translatedMessage,
+        required this.translatedTitle,
       required this.monitorMaxDistanceInMetres,
       required this.projectId});
 
@@ -68,7 +76,8 @@ class Project extends HiveObject {
     organizationName = data['organizationName'];
     // //pp('Project.fromJson 😑 😑 😑 log 1 ...');
     monitorMaxDistanceInMetres = data['monitorMaxDistanceInMetres'];
-
+    translatedMessage = data['translatedMessage'];
+    translatedTitle = data['translatedTitle'];
     //pp('Project.fromJson 😑 😑 😑 log 2 ...');
     monitorReports = [];
     if (data['monitorReports'] != null) {
@@ -173,6 +182,8 @@ class Project extends HiveObject {
       'organizationName': organizationName,
       'nearestCities': mCities,
       'photos': mPhotos,
+      'translatedMessage': translatedMessage,
+      'translatedTitle': translatedTitle,
       'videos': mVideos,
       'ratings': mRatings,
       'created': created,

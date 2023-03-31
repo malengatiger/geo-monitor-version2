@@ -29,6 +29,8 @@ class ProjectAdapter extends TypeAdapter<Project> {
       projectPositions: (fields[7] as List?)?.cast<ProjectPosition>(),
       monitorReports: (fields[12] as List?)?.cast<MonitorReport>(),
       organizationName: fields[5] as String?,
+      translatedMessage: fields[14] as String?,
+      translatedTitle: fields[15] as String?,
       monitorMaxDistanceInMetres: fields[13] as double?,
       projectId: fields[1] as String?,
     );
@@ -37,7 +39,7 @@ class ProjectAdapter extends TypeAdapter<Project> {
   @override
   void write(BinaryWriter writer, Project obj) {
     writer
-      ..writeByte(14)
+      ..writeByte(16)
       ..writeByte(0)
       ..write(obj.name)
       ..writeByte(1)
@@ -65,7 +67,11 @@ class ProjectAdapter extends TypeAdapter<Project> {
       ..writeByte(12)
       ..write(obj.monitorReports)
       ..writeByte(13)
-      ..write(obj.monitorMaxDistanceInMetres);
+      ..write(obj.monitorMaxDistanceInMetres)
+      ..writeByte(14)
+      ..write(obj.translatedMessage)
+      ..writeByte(15)
+      ..write(obj.translatedTitle);
   }
 
   @override

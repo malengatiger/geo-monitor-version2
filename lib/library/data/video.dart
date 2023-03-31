@@ -41,6 +41,11 @@ class Video extends HiveObject {
   double? size;
   @HiveField(16)
   String? userUrl;
+  @HiveField(17)
+  String? translatedMessage;
+
+  @HiveField(18)
+  String? translatedTitle;
 
   Video(
       {required this.url,
@@ -58,6 +63,8 @@ class Video extends HiveObject {
       required this.durationInSeconds,
       required this.organizationId,
       required this.size,
+        required this.translatedMessage,
+        required this.translatedTitle,
       required this.userUrl,
       required this.projectName}); // Video({required this.url, this.userId, required this.created});
 
@@ -74,6 +81,8 @@ class Video extends HiveObject {
     thumbnailUrl = data['thumbnailUrl'];
     videoId = data['videoId'];
     userName = data['userName'];
+    translatedMessage = data['translatedMessage'];
+    translatedTitle = data['translatedTitle'];
     if (data['size'] != null) {
       size = data['size'];
     } else {
@@ -98,6 +107,8 @@ class Video extends HiveObject {
       'videoId': videoId,
       'organizationId': organizationId,
       'durationInSeconds': durationInSeconds,
+      'translatedMessage': translatedMessage,
+      'translatedTitle': translatedTitle,
       'userName': userName,
       'thumbnailUrl': thumbnailUrl,
       'distanceFromProjectPosition': distanceFromProjectPosition,

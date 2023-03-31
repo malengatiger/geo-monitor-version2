@@ -4,7 +4,9 @@ import 'package:geo_monitor/library/api/prefs_og.dart';
 import 'package:geo_monitor/library/data/location_request.dart';
 import 'package:uuid/uuid.dart';
 
+import '../../l10n/translation_handler.dart';
 import '../api/data_api.dart';
+import '../cache_manager.dart';
 import '../data/location_response.dart';
 import '../data/position.dart';
 import '../data/user.dart';
@@ -28,12 +30,18 @@ class LocationRequestHandler {
       return;
     }
     pp('$mm ..... sending user location request ....');
+    final sett = await cacheManager.getSettings();
+    final locationRequestArrived = await translator.translate('locationRequestArrived', sett!.locale!);
+    final messageFromGeo = await translator.translate('messageFromGeo', sett!.locale!);
+
     var req = LocationRequest(
       organizationId: user.organizationId,
       requesterId: requesterId,
       requesterName: requesterName,
       userName: userName,
       userId: userId,
+      translatedTitle: messageFromGeo,
+      translatedMessage: locationRequestArrived,
       organizationName: user.organizationName,
       created: DateTime.now().toUtc().toIso8601String(),
     );
@@ -53,11 +61,16 @@ class LocationRequestHandler {
 
     pp('$mm ..... sending user location response ....');
 
+    final messageTitle = await getFCMMessageTitle();
+    final locationResponseArrived = await getFCMMessage('locationResponseArrived');
+
     var locResp = LocationResponse(
         position: Position(coordinates: [longitude, latitude], type: 'Point'),
         date: DateTime.now().toUtc().toIso8601String(),
         userId: user.userId,
         userName: user.name,
+        translatedMessage: locationResponseArrived,
+        translatedTitle: messageTitle,
         requesterName: requesterName,
         requesterId: requesterId,
         locationResponseId: const Uuid().v4(),

@@ -1,4 +1,5 @@
 import 'package:hive/hive.dart';
+
 import '../data/position.dart';
 
 part 'user.g.dart';
@@ -41,6 +42,12 @@ class User extends HiveObject {
   @HiveField(16)
   String? thumbnailUrl;
 
+  @HiveField(17)
+  String? translatedMessage;
+
+  @HiveField(18)
+  String? translatedTitle;
+
   User(
       {required this.name,
       required this.email,
@@ -53,6 +60,8 @@ class User extends HiveObject {
       required this.organizationId,
       required this.countryId,
         required this.active, this.imageUrl, this.thumbnailUrl,
+        required this.translatedMessage,
+        required this.translatedTitle,
       this.position,
       this.fcmRegistration,
         required this.password});
@@ -72,6 +81,8 @@ class User extends HiveObject {
     cellphone = data['cellphone'];
     created = data['created'];
     userType = data['userType'];
+    translatedMessage = data['translatedMessage'];
+    translatedTitle = data['translatedTitle'];
     organizationId = data['organizationId'];
     organizationName = data['organizationName'];
     if (data['position'] != null) {
@@ -92,6 +103,8 @@ class User extends HiveObject {
       'updated': updated,
       'active': active,
       'cellphone': cellphone,
+      'translatedMessage': translatedMessage,
+      'translatedTitle': translatedTitle,
       'created': created,
       'userType': userType,
       'organizationId': organizationId,

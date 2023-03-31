@@ -4,9 +4,11 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:uuid/uuid.dart';
 
+import '../../../l10n/translation_handler.dart';
 import '../../api/prefs_og.dart';
 import '../../bloc/admin_bloc.dart';
 import '../../bloc/organization_bloc.dart';
+import '../../cache_manager.dart';
 import '../../data/project.dart';
 import '../../data/user.dart';
 import '../../functions.dart';
@@ -70,6 +72,9 @@ class ProjectEditMobileState extends State<ProjectEditMobile>
         if (widget.project == null) {
           pp('😡 😡 😡 _submit new project ......... ${nameController.text}');
           var uuid = const Uuid();
+          final sett = await cacheManager.getSettings();
+          final projectAddedToOrganization = await translator.translate('projectAddedToOrganization', sett!.locale!);
+          final messageFromGeo = await getFCMMessageTitle();
           mProject = Project(
               name: nameController.text,
               description: descController.text,
@@ -77,6 +82,8 @@ class ProjectEditMobileState extends State<ProjectEditMobile>
               organizationName: admin!.organizationName!,
               created: DateTime.now().toUtc().toIso8601String(),
               monitorMaxDistanceInMetres: double.parse(maxController.text),
+              translatedTitle: messageFromGeo,
+              translatedMessage: projectAddedToOrganization,
               photos: [],
               videos: [],
               communities: [],

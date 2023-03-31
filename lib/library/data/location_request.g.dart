@@ -23,6 +23,8 @@ class LocationRequestAdapter extends TypeAdapter<LocationRequest> {
       requesterName: fields[3] as String?,
       userName: fields[5] as String?,
       userId: fields[4] as String?,
+      translatedMessage: fields[7] as String?,
+      translatedTitle: fields[8] as String?,
       organizationName: fields[6] as String?,
     );
   }
@@ -30,7 +32,7 @@ class LocationRequestAdapter extends TypeAdapter<LocationRequest> {
   @override
   void write(BinaryWriter writer, LocationRequest obj) {
     writer
-      ..writeByte(7)
+      ..writeByte(9)
       ..writeByte(0)
       ..write(obj.organizationId)
       ..writeByte(1)
@@ -44,7 +46,11 @@ class LocationRequestAdapter extends TypeAdapter<LocationRequest> {
       ..writeByte(5)
       ..write(obj.userName)
       ..writeByte(6)
-      ..write(obj.organizationName);
+      ..write(obj.organizationName)
+      ..writeByte(7)
+      ..write(obj.translatedMessage)
+      ..writeByte(8)
+      ..write(obj.translatedTitle);
   }
 
   @override

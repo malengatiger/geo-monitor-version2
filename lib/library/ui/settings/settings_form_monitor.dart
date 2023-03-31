@@ -65,7 +65,6 @@ class SettingsFormMonitorState extends State<SettingsFormMonitor> {
     if (settingsModel != null) {
       currentLocale = settingsModel!.locale!;
     }
-    pp('$mm 🍎🍎 user is here, huh? 🌎 ${user!.name!}');
     _setExistingSettings();
     _setTexts();
   }

@@ -37,6 +37,11 @@ class Audio extends HiveObject {
 
   @HiveField(14)
   String? userUrl;
+  @HiveField(15)
+  String? translatedMessage;
+
+  @HiveField(16)
+  String? translatedTitle;
 
   Audio(
       {required this.url,
@@ -52,6 +57,8 @@ class Audio extends HiveObject {
       required this.audioId,
       required this.durationInSeconds,
       required this.organizationId,
+        required this.translatedMessage,
+        required this.translatedTitle,
       required this.userUrl,
       required this.projectName}); // Audio({required this.url, this.userId, required this.created});
 
@@ -62,6 +69,8 @@ class Audio extends HiveObject {
 
     projectPositionId = data['projectPositionId'];
     projectPolygonId = data['projectPolygonId'];
+    translatedMessage = data['translatedMessage'];
+    translatedTitle = data['translatedTitle'];
     caption = data['caption'];
     if (data['durationInSeconds'] == null) {
       durationInSeconds = 0;
@@ -93,6 +102,8 @@ class Audio extends HiveObject {
       'projectPolygonId': projectPolygonId,
       'caption': caption,
       'created': created,
+      'translatedMessage': translatedMessage,
+      'translatedTitle': translatedTitle,
       'durationInSeconds': durationInSeconds,
       'userId': userId,
       'audioId': audioId,

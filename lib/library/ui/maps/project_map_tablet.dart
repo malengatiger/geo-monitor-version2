@@ -15,6 +15,7 @@ import 'package:uuid/uuid.dart';
 import '../../../device_location/device_location_bloc.dart';
 import '../../../l10n/translation_handler.dart';
 import '../../api/data_api.dart';
+import '../../cache_manager.dart';
 import '../../data/city.dart';
 import '../../data/photo.dart';
 import '../../data/position.dart' as local;
@@ -364,12 +365,18 @@ class ProjectMapTabletState extends State<ProjectMapTablet>
           latitude: _longPressLat, longitude: _longPressLng, radiusInKM: 5.0);
 
       pp('$mm Cities around this project position: ${cities.length}');
+      final sett = await cacheManager.getSettings();
+      final projectPositionAdded = await translator.translate('projectPositionAdded', sett!.locale!);
+      final messageFromGeo = await translator.translate('messageFromGeo', sett!.locale!);
+
 
       var pos = ProjectPosition(
           projectName: widget.project.name,
           userId: user!.userId,
           userName: user!.name,
           caption: 'tbd',
+          translatedMessage: projectPositionAdded,
+          translatedTitle: messageFromGeo,
           projectPositionId: const Uuid().v4(),
           created: DateTime.now().toUtc().toIso8601String(),
           position: local.Position(

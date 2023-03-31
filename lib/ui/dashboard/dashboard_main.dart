@@ -45,8 +45,11 @@ class DashboardMainState extends State<DashboardMain>
       final sett = await prefsOGx.getSettings();
       if (sett != null) {
         initializingText = await translator.translate('initializing', sett.locale!);
-        geoRunning = await translator.translate('geoRunning', sett.locale!);
-        tapToReturn = await translator.translate('tapToReturn', sett.locale!);
+        final gr = await translator.translate('geoRunning', sett.locale!);
+        final tap = await translator.translate('tapToReturn', sett.locale!);
+
+        geoRunning = gr.replaceAll('\$geo', 'Geo');
+        tapToReturn = tap.replaceAll('\$geo', 'Geo');
         pp('$mm initializingText: $initializingText');
         setState(() {
 
@@ -78,7 +81,7 @@ class DashboardMainState extends State<DashboardMain>
       return Center(
         child: Padding(
           padding: const EdgeInsets.all(28.0),
-          child: SizedBox(width: 400, height: 300,
+          child: SizedBox(width: 360, height: 240,
             child: Card(
               elevation: 8,
               shape: getRoundedBorder(radius: 16),
