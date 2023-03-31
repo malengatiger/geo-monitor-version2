@@ -134,12 +134,9 @@
   "newProject": "New Project",
   "loadingActivities": "Ikojọpọ Data aṣayan iṣẹ-ṣiṣe",
   "enterProjectName": "Tẹ orukọ Project sii",
-  "memberAddedChanged": "Omo egbe yipada tabi fi kun",
   "memberAtProject": "Omo egbe ni Project",
-  "projectAdded": "Ise agbese kun tabi yipada",
   "projectLocationAdded": "Ibi ise agbese kun",
   "enterDescription": "Tẹ Apejuwe",
-  "projectAreaAdded": "Agbegbe Project kun",
   "settingsChanged": "Awọn eto yipada tabi ṣafikun",
   "enterEmail": "Tẹ adirẹsi imeeli sii",
   "enterCell": "Tẹ Nọmba Tẹlifoonu sii",
@@ -292,9 +289,18 @@
   "password": "Ọrọigbaniwọle",
   "signInOK": "Wọle ni aṣeyọri!",
   "enterPassword": "Tẹ Ọrọigbaniwọle sii",
-  "phoneAuth": "Ijeri foonu",
   "signInInstruction": "Jọwọ wọle nipa lilo ọna ti o yẹ. O ti wa ni niyanju lati lo foonu ìfàṣẹsí ti o ba ti ẹrọ rẹ le gba SMS awọn ifiranṣẹ. Ti ẹrọ rẹ ko ba ṣe atilẹyin fifiranṣẹ SMS jọwọ lo ijẹrisi imeeli",
-  "emailAuth": "Imeeli Ijeri"
+  "emailAuth": "Imeeli Ijeri",
+  "memberAddedChanged": "A ti ṣafikun ọmọ ẹgbẹ kan tabi yipada.",
+  "locationRequestArrived": "Ibere fun ipo ti de.",
+  "videoArrived": "Agekuru fidio lati inu aaye ti de.",
+  "projectAdded": "Iṣẹ akanṣe $project ti jẹ afikun.",
+  "projectPositionAdded": "A ti ṣafikun ipo iṣẹ akanṣe si $project ise agbese",
+  "audioArrived": "Agekuru ohun lati inu aaye ti de.",
+  "photoArrived": "Fọto kan lati inu aaye ti de.",
+  "locationResponseArrived": "Idahun si ibeere ipo ti de.",
+  "settingsArrived": "Awọn eto iṣẹ akanṣe tuntun ti de.",
+  "projectAreaAdded": "A ti ṣafikun agbegbe iṣẹ akanṣe si $iṣẹ akanṣe"
 
 
 

@@ -136,12 +136,9 @@
   "projectsNotFound": "Proyectos no encontrados",
   "newProject": "Nuevo proyecto",
   "enterProjectName": "Ingrese el nombre del proyecto",
-  "memberAddedChanged": "Miembro cambiado o agregado",
   "memberAtProject": "Miembro en Proyecto",
-  "projectAdded": "Proyecto añadido o modificado",
   "projectLocationAdded": "Se agregó la ubicación del proyecto",
   "enterDescription": "Introduce la descripción",
-  "projectAreaAdded": "Área de proyecto añadida",
   "settingsChanged": "Configuraciones cambiadas o añadidas",
   "enterEmail": "Introducir la dirección de correo electrónico",
   "enterCell": "Ingrese el número de teléfono",
@@ -295,6 +292,16 @@
   "enterPassword": "Introducir la contraseña",
   "phoneAuth": "Autenticación telefónica",
   "signInInstruction": "Inicie sesión con el método adecuado. Se recomienda utilizar la autenticación telefónica si su dispositivo puede aceptar mensajes SMS. Si su dispositivo no es compatible con la mensajería SMS, utilice la autenticación por correo electrónico",
-  "emailAuth": "Verificacion de Email"
+  "emailAuth": "Verificacion de Email",
+  "memberAddedChanged": "Se ha agregado o modificado un miembro.",
+  "locationRequestArrived": "Llegó una solicitud de ubicación.",
+  "videoArrived": "Ha llegado un videoclip desde el campo.",
+  "projectAdded": "Proyecto $proyecto ha sido agregado.",
+  "projectPositionAdded": "Se ha agregado una ubicación de proyecto a $project",
+  "audioArrived": "Ha llegado un clip de audio desde el campo.",
+  "photoArrived": "Ha llegado una fotografía del campo.",
+  "locationResponseArrived": "Ha llegado una respuesta a la solicitud de ubicación.",
+  "settingsArrived": "Han llegado nuevos ajustes de proyecto.",
+  "projectAreaAdded": "Se ha agregado un área de proyecto a $project"
 
 }

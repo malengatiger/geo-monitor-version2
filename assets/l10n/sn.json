@@ -133,12 +133,9 @@
   "sn": "Shona",
   "newProject": "New Project",
   "enterProjectName": "Pinda Zita reProjekti",
-  "memberAddedChanged": "Nhengo yakachinjwa kana kuwedzerwa",
   "memberAtProject": "Nhengo paProjekti",
-  "projectAdded": "Project yakawedzerwa kana kuchinjwa",
   "projectLocationAdded": "Nzvimbo yeprojekiti yakawedzerwa",
   "enterDescription": "Pinda Tsanangudzo",
-  "projectAreaAdded": "Project Area yakawedzerwa",
   "settingsChanged": "Zvirongwa zvakachinjwa kana kuwedzerwa",
   "enterEmail": "Isa Email Kero",
   "profilePhoto": "Gadzira Profile Photo",
@@ -290,9 +287,18 @@
   "password": "Pasiwedhi",
   "signInOK": "Kusaina kwabudirira!",
   "enterPassword": "Enter Password",
-  "phoneAuth": "Phone Authentication",
   "signInInstruction": "Ndapota pinda uchishandisa nzira yakakodzera. Zvinokurudzirwa kushandisa chokwadi chefoni kana mudziyo wako uchigona kugamuchira mameseji eSMS. Kana mudziyo wako usingatsigire mameseji eSMS ndapota shandisa email yechokwadi",
-  "emailAuth": "Email Authentication"
+  "emailAuth": "Email Authentication",
+  "memberAddedChanged": "Nhengo yawedzerwa kana kugadziriswa.",
+  "locationRequestArrived": "Chikumbiro chenzvimbo chakasvika.",
+  "videoArrived": "Video clip kubva kumunda yasvika.",
+  "projectAdded": "Project $project yawedzerwa.",
+  "projectPositionAdded": "Nzvimbo yeprojekiti yawedzerwa ku $project",
+  "audioArrived": "Iaudio clip kubva kumunda yasvika.",
+  "photoArrived": "Mufananidzo kubva kumunda wasvika.",
+  "locationResponseArrived": "Mhinduro kuchikumbiro chenzvimbo yasvika.",
+  "settingsArrived": "Zvirongwa zvitsva zvepurojekiti zvasvika.",
+  "projectAreaAdded": "Nzvimbo yeprojekiti yakawedzerwa ku $project"
 
 
 }

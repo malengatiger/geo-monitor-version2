@@ -11,6 +11,21 @@ class MyKeys {
   }
 
   static _buildMap() {
+    hashMap["audioArrived"] = "audioArrived";
+    hashMap["photoArrived"] = "photoArrived";
+    hashMap["videoArrived"] = "videoArrived";
+
+    hashMap["locationRequestArrived"] = "locationRequestArrived";
+    hashMap["locationResponseArrived"] = "locationResponseArrived";
+
+    hashMap["memberAddedChanged"] = "memberAddedChanged";
+
+    hashMap["projectAdded"] = "projectAdded";
+    hashMap["settingsArrived"] = "settingsArrived";
+
+    hashMap["projectAreaAdded"] = "projectAreaAdded";
+    hashMap["projectPositionAdded"] = "projectPositionAdded";
+
     hashMap["geoRunning"] = "geoRunning";
     hashMap["tapToReturn"] = "tapToReturn";
     hashMap["messageFromGeo"] = "messageFromGeo";

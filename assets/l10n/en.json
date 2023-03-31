@@ -132,12 +132,9 @@
   "loadingActivities": "Loading Activity Data",
   "newProject": "New Project",
   "enterProjectName": "Enter Project Name",
-  "memberAddedChanged": "Member changed or added",
   "memberAtProject": "Member at Project",
-  "projectAdded": "Project added or changed",
   "projectLocationAdded": "Project location added",
   "enterDescription": "Enter Description",
-  "projectAreaAdded": "Project Area added",
   "settingsChanged": "Settings changed or added",
   "enterEmail": "Enter Email Address",
   "enterCell": "Enter Telephone Number",
@@ -295,7 +292,17 @@
   "emailAuth": "Email Authentication",
   "messageFromGeo": "Message arrived from $geo",
   "tapToReturn": "Tap to return to $geo",
-  "geoRunning": "$geo service is running."
+  "geoRunning": "$geo service is running.",
+  "memberAddedChanged": "A member has been added or modified.",
+  "locationRequestArrived": "A request for location arrived.",
+  "videoArrived": "A video clip from the field has arrived.",
+  "projectAdded": "Project $project has been added.",
+  "projectPositionAdded": "A project location has been added to $project",
+  "audioArrived": "An audio clip from the field has arrived.",
+  "photoArrived": "A photograph from the field has arrived.",
+  "locationResponseArrived": "A response to location request has arrived.",
+  "settingsArrived": "New project settings have arrived.",
+  "projectAreaAdded": "A project area has been added to $project"
 
 
 }

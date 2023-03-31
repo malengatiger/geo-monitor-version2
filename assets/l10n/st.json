@@ -134,12 +134,9 @@
   "sn": "Shona",
   "newProject": "Morero o Mocha",
   "enterProjectName": "Kenya Lebitso la Morero",
-  "memberAddedChanged": "Setho se fetotsoe kapa se ekelitsoe",
   "memberAtProject": "Member at Project",
-  "projectAdded": "Morero o kentsoe kapa o fetotsoe",
   "projectLocationAdded": "Sebaka sa morero se kentsoe",
   "enterDescription": "Kenya Tlhaloso",
-  "projectAreaAdded": "Sebaka sa Morero se ekelitsoe",
   "settingsChanged": "Litlhophiso li fetotsoe kapa li kentsoe",
   "enterEmail": "Kenya Aterese ea Imeile",
   "enterCell": "Kenya Nomoro ea Mohala",
@@ -290,8 +287,17 @@
   "password": "Password",
   "signInOK": "Ho kena ho atlehile!",
   "enterPassword": "Kenya Password",
-  "phoneAuth": "Netefatsa Mohala",
   "signInInstruction": "Ka kopo, kena u sebelisa mokhoa o nepahetseng. Ho khothaletsoa ho sebelisa netefatso ea mohala haeba sesebelisoa sa hau se ka amohela melaetsa ea SMS. Haeba sesebelisoa sa hau se sa tšehetse melaetsa ea SMS ka kopo sebelisa netefatso ea lengolo-tsoibila",
-  "emailAuth": "Netefatso ea Imeile"
+  "emailAuth": "Netefatso ea Imeile",
+  "memberAddedChanged": "Setho se kentsoe kapa se fetotsoe.",
+  "locationRequestArrived": "Ho ile ha fihla kopo ea sebaka.",
+  "videoArrived": "Sekotwana sa video se tsoang tšimong se fihlile.",
+  "projectAdded": "Morero $project e kentsoe.",
+  "projectPositionAdded": "Sebaka sa morero se kentsoe ho $project",
+  "audioArrived": "Sekotwana sa molumo se tsoang tšimong se fihlile.",
+  "photoArrived": "Senepe se tsoang tšimong se fihlile.",
+  "locationResponseArrived": "Karabo ea kopo ea sebaka e fihlile.",
+  "settingsArrived": "Litlhophiso tse ncha tsa projeke li fihlile.",
+  "projectAreaAdded": "Sebaka sa morero se kentsoe $project"
 
 }

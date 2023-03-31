@@ -134,12 +134,9 @@
   "projectsNotFound": "Amaphrojekthi Ayitholakali",
   "newProject": "Iphrojekthi Entsha",
   "enterProjectName": "Faka Igama Lephrojekthi",
-  "memberAddedChanged": "Ilungu lishintshiwe noma lengeziwe",
   "memberAtProject": "Ilungu kuProjekthi",
-  "projectAdded": "Iphrojekthi ingeziwe noma ishintshiwe",
   "projectLocationAdded": "Indawo yephrojekthi yengeziwe",
   "enterDescription": "Faka Incazelo",
-  "projectAreaAdded": "Indawo Yephrojekthi yengeziwe",
   "settingsChanged": "Izilungiselelo zishintshiwe noma zengeziwe",
   "enterEmail": "Faka Ikheli Le-imeyili",
   "enterCell": "Faka Inombolo Yocingo",
@@ -286,9 +283,18 @@
   "password": "Iphasiwedi",
   "signInOK": "Ukungena ngemvume kuphumelele!",
   "enterPassword": "Faka Iphasiwedi",
-  "phoneAuth": "Ukuqinisekiswa Kwefoni",
   "signInInstruction": "Sicela ungene ngemvume usebenzisa indlela efanele. Kunconywa ukusebenzisa ukuqinisekiswa kwefoni uma idivayisi yakho ingamukela imilayezo ye-SMS. Uma idivayisi yakho ingakusekeli umlayezo we-SMS sicela usebenzise ukuqinisekiswa kwe-imeyili",
-  "emailAuth": "Ukuqinisekiswa kwe-imeyili"
+  "emailAuth": "Ukuqinisekiswa kwe-imeyili",
+  "memberAddedChanged": "Ilungu lengeziwe noma lishintshiwe.",
+  "locationRequestArrived": "Kwafika isicelo sendawo.",
+  "videoArrived": "Isiqeshana sevidiyo esivela ensimini sesifikile.",
+  "projectAdded": "Iphrojekthi ye-$project yengeziwe.",
+  "projectPositionAdded": "Indawo yephrojekthi yengezwe kuphrojekthi ye-$project",
+  "audioArrived": "Isiqeshana somsindo esivela ensimini sesifikile.",
+  "photoArrived": "Isithombe esivela ensimini sesifikile.",
+  "locationResponseArrived": "Impendulo yesicelo sendawo isifikile.",
+  "settingsArrived": "Izilungiselelo ezintsha zephrojekthi sezifikile.",
+  "projectAreaAdded": "Indawo yephrojekthi yengezwe kuphrojekthi ye-$project"
 
 
 }

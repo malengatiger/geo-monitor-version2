@@ -141,12 +141,9 @@
   "newProject": "Ọrụ ọhụrụ",
   "loadingActivities": "Na-ebu data mmemme",
   "enterProjectName": "Tinye aha oru ngo",
-  "memberAddedChanged": "Onye otu gbanwere ma ọ bụ tinye",
   "memberAtProject": "Onye otu na Project",
-  "projectAdded": "Agbakwunyere ma ọ bụ gbanwee oru ngo",
   "projectLocationAdded": "Agbakwunyere ebe ọrụ",
   "enterDescription": "Tinye nkọwa",
-  "projectAreaAdded": "Mpaghara Project agbakwunyere",
   "settingsChanged": "Agbanwere ma ọ bụ tinye ntọala",
   "enterEmail": "Tinye adreesị ozi-e",
   "enterCell": "Tinye nọmba ekwentị",
@@ -299,8 +296,17 @@
   "password": "Okwuntughe",
   "signInOK": "Nbanye nwere ihe ịga nke ọma!",
   "enterPassword": "Tinye okwuntughe",
-  "phoneAuth": "Nyocha ekwentị",
   "signInInstruction": "Biko jiri usoro dabara adaba banye. A na-atụ aro ka iji nyocha ekwentị ma ọ bụrụ na ngwaọrụ gị nwere ike ịnakwere ozi SMS. Ọ bụrụ na ngwaọrụ gị anaghị akwado ozi SMS biko jiri nyocha email",
-  "emailAuth": "Nyocha email"
+  "emailAuth": "Nyocha email",
+  "memberAddedChanged": "Agbakwunyela ma ọ bụ gbanwee otu onye.",
+  "locationRequestArrived": "Arịrịọ maka ọnọdụ bịarutere.",
+  "videoArrived": "Obere vidiyo si n\u0027ọhịa abịala.",
+  "projectAdded": "Agbakwunyela Project $project.",
+  "projectPositionAdded": "Agbakwunyela ebe ọrụ na $project",
+  "audioArrived": "Mpempe vidiyo sitere na ubi abatala.",
+  "photoArrived": "Foto sitere n\u0027ubi abatala.",
+  "locationResponseArrived": "Azịza nye arịrịọ ọnọdụ abịala.",
+  "settingsArrived": "Ntọala oru ngo ọhụrụ abịala.",
+  "projectAreaAdded": "Etinyela mpaghara oru ngo na $project"
 
 }

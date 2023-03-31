@@ -134,12 +134,9 @@
   "projectsNotFound": "Projetos não encontrados",
   "newProject": "Novo projeto",
   "enterProjectName": "Digite o nome do projeto",
-  "memberAddedChanged": "Membro alterado ou adicionado",
   "memberAtProject": "Membro na Projeto",
-  "projectAdded": "Projeto adicionado ou alterado",
   "projectLocationAdded": "Local do projeto adicionado",
   "enterDescription": "Insira a descrição",
-  "projectAreaAdded": "Área do projeto adicionada",
   "settingsChanged": "Configurações alteradas ou adicionadas",
   "enterEmail": "Insira o endereço de e-mail",
   "enterCell": "Digite o número de telefone",
@@ -290,9 +287,18 @@
   "password": "Senha",
   "signInOK": "Login bem-sucedido!",
   "enterPassword": "Digite a senha",
-  "phoneAuth": "Autenticação de telefone",
   "signInInstruction": "Por favor, entre usando o método apropriado. É recomendável usar a autenticação por telefone se o seu dispositivo puder aceitar mensagens SMS. Se o seu dispositivo não suportar mensagens SMS, use a autenticação de e-mail",
-  "emailAuth": "Autenticação do email"
+  "emailAuth": "Autenticação do email",
+  "memberAddedChanged": "Um membro foi adicionado ou modificado.",
+  "locationRequestArrived": "Chegou um pedido de localização.",
+  "videoArrived": "Chegou um videoclipe do campo.",
+  "projectAdded": "O projeto $project foi adicionado.",
+  "projectPositionAdded": "Um local de projeto foi adicionado a $project",
+  "audioArrived": "Chegou um clipe de áudio do campo.",
+  "photoArrived": "Chegou uma fotografia do campo.",
+  "locationResponseArrived": "Chegou uma resposta ao pedido de localização.",
+  "settingsArrived": "Novas configurações de projeto chegaram.",
+  "projectAreaAdded": "Uma área de projeto foi adicionada a $project"
 
 
 

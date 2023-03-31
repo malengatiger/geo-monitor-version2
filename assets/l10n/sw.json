@@ -135,12 +135,9 @@
   "loadingActivities": "Inapakia Data ya Shughuli",
   "newProject": "Mradi Mpya",
   "enterProjectName": "Weka Jina la Mradi",
-  "memberAddedChanged": "Mwanachama alibadilishwa au aliongeza",
   "memberAtProject": "Mwanachama katika Mradi",
-  "projectAdded": "Mradi umeongezwa au kubadilishwa",
   "projectLocationAdded": "Eneo la mradi limeongezwa",
   "enterDescription": "Ingiza Maelezo",
-  "projectAreaAdded": "Eneo la Mradi limeongezwa",
   "settingsChanged": "Mipangilio imebadilishwa au kuongezwa",
   "enterEmail": "Weka Anwani ya Barua Pepe",
   "enterCell": "Weka Nambari ya Simu",
@@ -293,5 +290,16 @@
   "enterPassword": "Weka Nenosiri",
   "phoneAuth": "Uthibitishaji wa Simu",
   "signInInstruction": "Tafadhali ingia kwa kutumia mbinu inayofaa. Inapendekezwa kutumia uthibitishaji wa simu ikiwa kifaa chako kinaweza kukubali ujumbe wa SMS. Ikiwa kifaa chako hakitumii ujumbe wa SMS tafadhali tumia uthibitishaji wa barua pepe",
-  "emailAuth": "Uthibitishaji wa Barua pepe"
+  "emailAuth": "Uthibitishaji wa Barua pepe",
+  "memberAddedChanged": "Mwanachama ameongezwa au kurekebishwa.",
+  "locationRequestArrived": "Ombi la mahali lilifika.",
+  "videoArrived": "Klipu ya video kutoka uwanjani imefika.",
+  "projectAdded": "Project $project imeongezwa.",
+  "projectPositionAdded": "Mahali pa mradi pameongezwa kwa $project",
+  "audioArrived": "Klipu ya sauti kutoka uwanjani imefika.",
+  "photoArrived": "Picha kutoka uwanjani imefika.",
+  "locationResponseArrived": "Jibu la ombi la eneo limefika.",
+  "settingsArrived": "Mipangilio mipya ya mradi imefika.",
+  "projectAreaAdded": "Eneo la mradi limeongezwa kwenye mradi wa $"
+
 }

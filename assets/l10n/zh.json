@@ -48,7 +48,6 @@
   "at": "在",
   "stop": "停止",
   "memberAtProject": "项目成员",
-  "projectAdded": "添加或更改项目",
   "organizationDashboard": "组织仪表板",
   "Namibia": "纳米比亚",
   "addProjectAreas": "添加项目区域",
@@ -149,7 +148,6 @@
   "friday": "星期五",
   "selectSizePhotos": "选择照片尺寸",
   "requestMemberLocation": "请求会员位置",
-  "projectAreaAdded": "已添加项目区",
   "selectLanguage": "选择语言",
   "pleaseEnterVideoLength": "请以秒为单位输入最大视频长度",
   "noActivities": "暂无活动",
@@ -297,8 +295,16 @@
   "password": "密码",
   "signInOK": "登录成功！",
   "enterPassword": "输入密码",
-  "phoneAuth": "电话认证",
   "signInInstruction": "请使用适当的方法登录。如果您的设备可以接受 SMS 消息，建议使用电话身份验证。如果您的设备不支持短信，请使用电子邮件身份验证",
-  "emailAuth": "电子邮件认证"
+  "emailAuth": "电子邮件认证",
+  "locationRequestArrived": "收到位置请求。",
+  "videoArrived": "来自该领域的视频剪辑已经到达。",
+  "projectAdded": "已添加项目 $project。",
+  "projectPositionAdded": "项目位置已添加到 $project",
+  "audioArrived": "来自现场的音频剪辑已经到达。",
+  "photoArrived": "来自现场的照片已经到达。",
+  "locationResponseArrived": "已收到对位置请求的响应。",
+  "settingsArrived": "新的项目设置已经到来。",
+  "projectAreaAdded": "项目区域已添加到 $project"
 
 }

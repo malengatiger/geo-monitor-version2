@@ -136,10 +136,8 @@
   "enterProjectName": "Ngenisa Igama leProjekthi",
   "memberAddedChanged": "Ilungu litshintshiwe okanye longezwe",
   "memberAtProject": "Ilungu kwiProjekthi",
-  "projectAdded": "Iprojekthi yongezwe okanye itshintshiwe",
   "projectLocationAdded": "Indawo yeprojekthi yongeziwe",
   "enterDescription": "Ngenisa iNkcazo",
-  "projectAreaAdded": "Indawo yeProjekthi yongeziwe",
   "settingsChanged": "Iisetingi zitshintshiwe okanye zongeziwe",
   "enterEmail": "Ngenisa idilesi ye-imeyile",
   "enterCell": "Faka inombolo yomnxeba",
@@ -290,9 +288,17 @@
   "password": "Inombolo yokuvula",
   "signInOK": "Ukungena kuphumelele!",
   "enterPassword": "Faka Igama Lokugqithisa",
-  "phoneAuth": "Uqinisekiso lwefowuni",
   "signInInstruction": "Nceda ungene usebenzisa indlela efanelekileyo. Kuyacetyiswa ukuba usebenzise uqinisekiso lwefowuni ukuba isixhobo sakho sinokuyamkela imiyalezo yeSMS. Ukuba isixhobo sakho asiyixhasi imiyalezo yeSMS nceda usebenzise uqinisekiso lwe-imeyile",
-  "emailAuth": "Uqinisekiso lwe-imeyile"
+  "emailAuth": "Uqinisekiso lwe-imeyile",
+  "locationRequestArrived": "Kwafika isicelo sendawo.",
+  "videoArrived": "Ikliphu yevidiyo evela endle ifikile.",
+  "projectAdded": "Iprojekthi ye-$project yongeziwe.",
+  "projectPositionAdded": "Indawo yeprojekthi yongezwe kwiprojekthi ye-$",
+  "audioArrived": "Ikliphu yeaudio evela endle ifikile.",
+  "photoArrived": "Ifoto evela ebaleni ifikile.",
+  "locationResponseArrived": "Impendulo kwisicelo sendawo ifikile.",
+  "settingsArrived": "Izicwangciso ezintsha zeprojekthi zifikile.",
+  "projectAreaAdded": "Indawo yeprojekthi yongezwe kwiprojekthi ye-$"
 
 
 }

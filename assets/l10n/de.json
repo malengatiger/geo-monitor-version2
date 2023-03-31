@@ -45,7 +45,6 @@
   "at": "bei",
   "stop": "Stoppen",
   "memberAtProject": "Mitglied bei Projekt",
-  "projectAdded": "Projekt hinzugefügt oder geändert",
   "organizationDashboard": "Organisations-Dashboard",
   "Namibia": "Namibia",
   "addProjectAreas": "Projektbereiche hinzufügen",
@@ -146,7 +145,6 @@
   "friday": "Freitag",
   "selectSizePhotos": "Wählen Sie die Größe der Fotos",
   "requestMemberLocation": "Mitgliedsstandort anfordern",
-  "projectAreaAdded": "Projektbereich hinzugefügt",
   "selectLanguage": "Sprache auswählen",
   "pleaseEnterVideoLength": "Bitte geben Sie die maximale Videolänge in Sekunden ein",
   "noActivities": "Es finden noch keine Aktivitäten statt",
@@ -300,7 +298,16 @@
   "emailAuth": "E-Mail-Authentifikation",
   "messageFromGeo": "Nachricht kam von $geo",
   "tapToReturn": "Tippen Sie hier, um zu $geo zurückzukehren",
-  "geoRunning": "Der $geo-Dienst wird ausgeführt."
+  "geoRunning": "Der $geo-Dienst wird ausgeführt.",
+  "locationRequestArrived": "Eine Standortanfrage ist eingetroffen.",
+  "videoArrived": "Ein Videoclip vom Feld ist eingetroffen.",
+  "projectAdded": "Projekt $project wurde hinzugefügt.",
+  "projectPositionAdded": "Ein Projektstandort wurde zu $project hinzugefügt",
+  "audioArrived": "Ein Audioclip vom Feld ist eingetroffen.",
+  "photoArrived": "Ein Foto vom Feld ist eingetroffen.",
+  "locationResponseArrived": "Eine Antwort auf die Standortanfrage ist eingetroffen.",
+  "settingsArrived": "Neue Projekteinstellungen sind eingetroffen.",
+  "projectAreaAdded": "$project wurde ein Projektbereich hinzugefügt"
 
 
 

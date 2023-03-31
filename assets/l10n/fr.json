@@ -133,12 +133,9 @@
   "projectsNotFound": "Projets introuvables",
   "newProject": "Nouveau projet",
   "enterProjectName": "Entrez le nom du projet",
-  "memberAddedChanged": "Membre modifié ou ajouté",
   "memberAtProject": "Membre chez Projet",
-  "projectAdded": "Projet ajouté ou modifié",
   "projectLocationAdded": "Emplacement du projet ajouté",
   "enterDescription": "Entrez la description",
-  "projectAreaAdded": "Zone de projet ajoutée",
   "settingsChanged": "Paramètres modifiés ou ajoutés",
   "enterEmail": "Entrer l\u0027adresse e-mail",
   "enterCell": "Entrez le numéro de téléphone",
@@ -278,7 +275,6 @@
   "adminName": "Nom de l\u0027administrateur",
   "phoneSignIn": "Connexion par téléphone",
   "verifyPhone": "Vérifier le numéro de téléphone",
-  "phoneAuth": "Authentification par téléphone",
   "enterOrg": "Entrez le nom de l\u0027organisation",
   "signIn": "S\u0027identifier",
   "memberNotExist": "Ce membre n\u0027existe pas dans la base de données",
@@ -295,6 +291,16 @@
   "enterPassword": "Entrer le mot de passe",
   "phoneAuth": "Authentification par téléphone",
   "signInInstruction": "Veuillez vous connecter en utilisant la méthode appropriée. Il est recommandé d\u0027utiliser l\u0027authentification du téléphone si votre appareil peut accepter les messages SMS. Si votre appareil ne prend pas en charge la messagerie SMS, veuillez utiliser l\u0027authentification par e-mail",
-  "emailAuth": "Authentification par courriel"
+  "emailAuth": "Authentification par courriel",
+  "memberAddedChanged": "Un membre a été ajouté ou modifié.",
+  "locationRequestArrived": "Une demande de localisation est arrivée.",
+  "videoArrived": "Un clip vidéo du terrain est arrivé.",
+  "projectAdded": "Le projet $project a été ajouté.",
+  "projectPositionAdded": "Un emplacement de projet a été ajouté à $project",
+  "audioArrived": "Un clip audio du terrain est arrivé.",
+  "photoArrived": "Une photo du terrain est arrivée.",
+  "locationResponseArrived": "Une réponse à la demande de localisation est arrivée.",
+  "settingsArrived": "De nouveaux paramètres de projet sont arrivés.",
+  "projectAreaAdded": "Une zone de projet a été ajoutée à $project"
 
 }
