@@ -117,7 +117,7 @@ class DashboardMobileState extends State<DashboardMobile>
   void _listenForData() async {
     settingsSubscription =
         organizationBloc.settingsStream.listen((SettingsModel settings) async {
-      pp('$mm settingsStream delivered settings ... ${settings.locale!}');
+      pp('$mm organizationBloc.settingsStream delivered settings ... ${settings.locale!}');
       await _handleNewSettings(settings);
       if (mounted) {
         setState(() {});
@@ -125,7 +125,7 @@ class DashboardMobileState extends State<DashboardMobile>
     });
 
     settingsSubscriptionFCM = fcmBloc.settingsStream.listen((settings) async {
-      pp('$mm: 🍎🍎 settings arrived with themeIndex: ${settings.themeIndex}... locale: ${settings.locale} 🍎🍎');
+      pp('$mm: 🍎🍎 settingsSubscriptionFCM delivered: arrived with themeIndex: ${settings.themeIndex}... locale: ${settings.locale} 🍎🍎');
       await _handleNewSettings(settings);
     });
 
@@ -146,9 +146,6 @@ class DashboardMobileState extends State<DashboardMobile>
     themeBloc.themeStreamController.sink.add(m);
     this.settings = settings;
     _getData(false);
-    if (mounted) {
-      setState(() {});
-    }
   }
 
   void _getAuthenticationStatus() async {
@@ -223,11 +220,11 @@ class DashboardMobileState extends State<DashboardMobile>
     if (settings != null) {
       numberOfDays = settings!.numberOfDays!;
     }
-    title = await mTx.translate('dashboard', settings!.locale!);
-    var sub1 = await mTx.translate('dashboardSubTitle', settings!.locale!);
+    title = await translator.translate('dashboard', settings!.locale!);
+    var sub1 = await translator.translate('dashboardSubTitle', settings!.locale!);
     subTitle = sub1.replaceAll('\$count', '$numberOfDays');
     var sub =
-    await mTx.translate('dashboardSubTitle', settings!.locale!);
+    await translator.translate('dashboardSubTitle', settings!.locale!);
     pp('deciphering this string: 🍎 $sub');
     int index = sub.indexOf('\$');
     prefix = sub.substring(0, index);
@@ -248,13 +245,13 @@ class DashboardMobileState extends State<DashboardMobile>
 
     if (deviceUser != null) {
       if (deviceUser!.userType == UserType.orgAdministrator) {
-        type = await mTx.translate('administrator', settings!.locale!);
+        type = await translator.translate('administrator', settings!.locale!);
       }
       if (deviceUser!.userType == UserType.orgExecutive) {
-        type = await mTx.translate('executive', settings!.locale!);
+        type = await translator.translate('executive', settings!.locale!);
       }
       if (deviceUser!.userType == UserType.fieldMonitor) {
-        type = await mTx.translate('fieldMonitor', settings!.locale!);
+        type = await translator.translate('fieldMonitor', settings!.locale!);
       }
     } else {
       throw Exception('No user cached on device');
@@ -338,7 +335,7 @@ class DashboardMobileState extends State<DashboardMobile>
     pp('$mm _handleGeofenceEvent ... ');
     var settings = await prefsOGx.getSettings();
     if (settings != null) {
-      var arr = await mTx.translate('memberArrived', settings!.locale!);
+      var arr = await translator.translate('memberArrived', settings!.locale!);
       if (event.projectName != null) {
         var arrivedAt = arr.replaceAll('\$project', event.projectName!);
         if (mounted) {
@@ -375,6 +372,10 @@ class DashboardMobileState extends State<DashboardMobile>
       });
 
       settingsSubscriptionFCM = fcmBloc.settingsStream.listen((settings) async {
+        pp('$mm: 🍎🍎 settings arrived with themeIndex: ${settings.themeIndex}... 🍎🍎');
+        _handleNewSettings(settings);
+      });
+      settingsSubscription = organizationBloc.settingsStream.listen((settings) async {
         pp('$mm: 🍎🍎 settings arrived with themeIndex: ${settings.themeIndex}... 🍎🍎');
         _handleNewSettings(settings);
       });
@@ -432,7 +433,6 @@ class DashboardMobileState extends State<DashboardMobile>
             )));
   }
 
-
   void _navigateToUserMediaList() async {
     if (mounted) {
       Navigator.push(
@@ -475,16 +475,20 @@ class DashboardMobileState extends State<DashboardMobile>
     }
   }
 
-  void _navigateToSettings() {
+  Future<void> _navigateToSettings() async {
     pp('$mm .................. _navigateToIntro to Settings ....');
     if (mounted) {
-      Navigator.push(
+     await Navigator.push(
           context,
           PageTransition(
               type: PageTransitionType.fade,
               alignment: Alignment.center,
               duration: const Duration(seconds: 1),
               child: const SettingsMain()));
+     pp('$mm  back from Settings ....');
+     settings = await prefsOGx.getSettings();
+     await _handleNewSettings(settings!);
+
     }
   }
 

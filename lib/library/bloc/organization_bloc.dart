@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:flutter/material.dart';
 import 'package:geo_monitor/library/bloc/data_refresher.dart';
 import 'package:geo_monitor/library/bloc/theme_bloc.dart';
 import 'package:geo_monitor/library/data/activity_model.dart';
@@ -162,7 +161,7 @@ class OrganizationBloc {
 
     if (list.isNotEmpty) {
       themeBloc.changeToTheme(list.first.themeIndex!);
-      await mTx.translate('settings', list.first.locale!);
+      await translator.translate('settings', list.first.locale!);
       return list.first;
     }
 

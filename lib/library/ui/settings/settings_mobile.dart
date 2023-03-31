@@ -63,7 +63,7 @@ class SettingsMobileState extends State<SettingsMobile>
   Future _setTexts() async {
     settingsModel = await prefsOGx.getSettings();
     if (settingsModel != null) {
-      title = await mTx.translate('settings', settingsModel!.locale!);
+      title = await translator.translate('settings', settingsModel!.locale!);
     }
     user = await prefsOGx.getUser();
     if (user!.userType! == UserType.fieldMonitor) {
@@ -123,7 +123,7 @@ class SettingsMobileState extends State<SettingsMobile>
           style: myTextStyleLarge(context),
         ),
         bottom:  PreferredSize(
-          preferredSize: Size.fromHeight(showMonitorForm? 100: 8),
+          preferredSize: Size.fromHeight(showMonitorForm? 40: 8),
           child: const SizedBox(),
         ),
       ),

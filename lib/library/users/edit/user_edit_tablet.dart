@@ -45,7 +45,7 @@ class UserEditTabletState extends State<UserEditTablet>
     admin = await prefsOGx.getUser();
     var sett = await prefsOGx.getSettings();
     if (sett != null) {
-      title = await mTx.translate('editMember', sett.locale!);
+      title = await translator.translate('editMember', sett.locale!);
     }
 
     setState(() {});

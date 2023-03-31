@@ -53,13 +53,13 @@ class ProjectPhotosPageState extends State<ProjectPhotosPage>
   void _setTexts() async {
     settingsModel = await prefsOGx.getSettings();
     if (settingsModel != null) {
-      var nf = await mTx.translate(
+      var nf = await translator.translate(
           'photosNotFoundInProject', settingsModel!.locale!);
       notFound = nf.replaceAll('\$project', '\n\n${widget.project.name!}');
       networkProblem =
-          await mTx.translate('networkProblem', settingsModel!.locale!);
+          await translator.translate('networkProblem', settingsModel!.locale!);
       loadingActivities =
-          await mTx.translate('loadingActivities', settingsModel!.locale!);
+          await translator.translate('loadingActivities', settingsModel!.locale!);
       setState(() {});
     }
   }

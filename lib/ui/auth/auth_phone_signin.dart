@@ -5,13 +5,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:geo_monitor/library/api/prefs_og.dart';
-import 'package:geo_monitor/library/bloc/zip_bloc.dart';
 import 'package:geo_monitor/library/cache_manager.dart';
-import 'package:geo_monitor/library/data/settings_model.dart';
 import 'package:geo_monitor/library/users/avatar_editor.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
-import 'package:uuid/uuid.dart';
 
 import '../../l10n/translation_handler.dart';
 import '../../library/api/data_api.dart';
@@ -126,7 +123,12 @@ class AuthPhoneSignInState extends State<AuthPhoneSignIn>
                   },
                   width: MediaQuery.of(context).size.width,
                   onSuccessfulSignIn: (ur.User user) {
-                    widget.onSignedIn(user);
+                    var msg = 'Sign in OK';
+                    if (signInStrings != null) {
+                      msg = signInStrings!.signInOK;
+                    }
+                    showToast(message: msg, context: context);
+                    Navigator.of(context).pop(user);
                   },
                 ),
               ),
@@ -585,7 +587,7 @@ class SignInStrings {
       enterEmail,
       pleaseSelectCountry,
       memberNotExist,
-      registerOrganization,
+      registerOrganization, signInOK, enterPassword, password,
       emailAddress;
 
   SignInStrings(
@@ -611,42 +613,54 @@ class SignInStrings {
       required this.memberNotExist,
       required this.enterEmail,
       required this.pleaseSelectCountry,
+        required this.signInOK,
+        required this.enterPassword,
+        required this.password,
       required this.emailAddress});
 
   static Future<SignInStrings> getTranslated() async {
     final sett = await prefsOGx.getSettings();
 
-    var signIn = await mTx.translate('signIn', sett!.locale!);
-    var memberNotExist = await mTx.translate('memberNotExist', sett.locale!);
-    var memberSignedIn = await mTx.translate('memberSignedIn', sett.locale!);
-    var putInCode = await mTx.translate('putInCode', sett.locale!);
-    var duplicateOrg = await mTx.translate('duplicateOrg', sett.locale!);
+    var signIn = await translator.translate('signIn', sett!.locale!);
+    var memberNotExist = await translator.translate('memberNotExist', sett.locale!);
+    var memberSignedIn = await translator.translate('memberSignedIn', sett.locale!);
+    var putInCode = await translator.translate('putInCode', sett.locale!);
+    var duplicateOrg = await translator.translate('duplicateOrg', sett.locale!);
     var pleaseSelectCountry =
-        await mTx.translate('pleaseSelectCountry', sett.locale!);
+        await translator.translate('pleaseSelectCountry', sett.locale!);
 
     var registerOrganization =
-        await mTx.translate('registerOrganization', sett.locale!);
+        await translator.translate('registerOrganization', sett.locale!);
 
-    var enterPhone = await mTx.translate('enterPhone', sett.locale!);
+    var enterPhone = await translator.translate('enterPhone', sett.locale!);
+    var signInOK = await translator.translate('signInOK', sett.locale!);
+
+    var enterPassword = await translator.translate('enterPassword', sett.locale!);
+
+    var password = await translator.translate('password', sett.locale!);
+
     var serverUnreachable =
-        await mTx.translate('serverUnreachable', sett.locale!);
-    var phoneSignIn = await mTx.translate('phoneSignIn', sett.locale!);
-    var phoneAuth = await mTx.translate('phoneAuth', sett.locale!);
-    var phoneNumber = await mTx.translate('phoneNumber', sett.locale!);
-    var verifyPhone = await mTx.translate('verifyPhone', sett.locale!);
-    var enterSMS = await mTx.translate('enterSMS', sett.locale!);
-    var sendCode = await mTx.translate('sendCode', sett.locale!);
-    var verifyComplete = await mTx.translate('verifyComplete', sett.locale!);
-    var verifyFailed = await mTx.translate('verifyFailed', sett.locale!);
-    var enterOrg = await mTx.translate('enterOrg', sett.locale!);
-    var orgName = await mTx.translate('orgName', sett.locale!);
-    var enterAdmin = await mTx.translate('enterAdmin', sett.locale!);
-    var adminName = await mTx.translate('adminName', sett.locale!);
-    var enterEmail = await mTx.translate('enterEmail', sett.locale!);
-    var emailAddress = await mTx.translate('emailAddress', sett.locale!);
+        await translator.translate('serverUnreachable', sett.locale!);
+    var phoneSignIn = await translator.translate('phoneSignIn', sett.locale!);
+    var phoneAuth = await translator.translate('phoneAuth', sett.locale!);
+    var phoneNumber = await translator.translate('phoneNumber', sett.locale!);
+    var verifyPhone = await translator.translate('verifyPhone', sett.locale!);
+    var enterSMS = await translator.translate('enterSMS', sett.locale!);
+    var sendCode = await translator.translate('sendCode', sett.locale!);
+    var verifyComplete = await translator.translate('verifyComplete', sett.locale!);
+    var verifyFailed = await translator.translate('verifyFailed', sett.locale!);
+    var enterOrg = await translator.translate('enterOrg', sett.locale!);
+    var orgName = await translator.translate('orgName', sett.locale!);
+    var enterAdmin = await translator.translate('enterAdmin', sett.locale!);
+    var adminName = await translator.translate('adminName', sett.locale!);
+    var enterEmail = await translator.translate('enterEmail', sett.locale!);
+    var emailAddress = await translator.translate('emailAddress', sett.locale!);
 
     final m = SignInStrings(
         signIn: signIn,
+        signInOK: signInOK,
+        password: password,
+        enterPassword: enterPassword,
         memberSignedIn: memberSignedIn,
         putInCode: putInCode,
         duplicateOrg: duplicateOrg,

@@ -7,7 +7,6 @@ import 'package:geo_monitor/library/data/activity_model.dart';
 import 'package:geo_monitor/library/data/geofence_event.dart';
 import 'package:geo_monitor/library/data/location_response.dart';
 import 'package:geo_monitor/library/data/settings_model.dart';
-import 'package:geo_monitor/ui/activity/activity_list_mobile.dart';
 import 'package:responsive_builder/responsive_builder.dart';
 import 'package:universal_platform/universal_platform.dart';
 
@@ -144,7 +143,7 @@ class GeoActivityState extends State<GeoActivity>
     pp('$mm _handleGeofenceEvent ....');
     var settings = await prefsOGx.getSettings();
     if (settings != null) {
-      final arr = await mTx.translate('memberArrived', settings.locale!);
+      final arr = await translator.translate('memberArrived', settings.locale!);
       if (event.projectName != null) {
         var arrivedAt = arr.replaceAll('\$project', event.projectName!);
         if (mounted) {

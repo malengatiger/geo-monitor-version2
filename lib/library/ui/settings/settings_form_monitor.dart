@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:geo_monitor/library/data/settings_model.dart';
 import 'package:geo_monitor/library/ui/settings/settings_form.dart';
-import 'package:uuid/uuid.dart';
 
 import '../../../l10n/translation_handler.dart';
 import '../../api/prefs_og.dart';
@@ -54,7 +53,7 @@ class SettingsFormMonitorState extends State<SettingsFormMonitor> {
     settingsSubscriptionFCM =
         fcmBloc.settingsStream.listen((SettingsModel event) async {
       if (mounted) {
-        await _setTexts();
+        await _getSettings();
       }
     });
   }
@@ -63,7 +62,6 @@ class SettingsFormMonitorState extends State<SettingsFormMonitor> {
     pp('$mm 🍎🍎 ............. getting user from prefs ...');
     user = await prefsOGx.getUser();
     settingsModel = await prefsOGx.getSettings();
-    oldSettingsModel = await prefsOGx.getSettings();
     if (settingsModel != null) {
       currentLocale = settingsModel!.locale!;
     }
@@ -92,42 +90,42 @@ class SettingsFormMonitorState extends State<SettingsFormMonitor> {
       hint;
 
   Future _setTexts() async {
-    title = await mTx.translate('settings', settingsModel!.locale!);
+    title = await translator.translate('settings', settingsModel!.locale!);
     maxVideoLessThan =
-        await mTx.translate('maxVideoLessThan', settingsModel!.locale!);
+        await translator.translate('maxVideoLessThan', settingsModel!.locale!);
     maxAudioLessThan =
-        await mTx.translate('maxAudioLessThan', settingsModel!.locale!);
+        await translator.translate('maxAudioLessThan', settingsModel!.locale!);
     fieldMonitorInstruction =
-        await mTx.translate('fieldMonitorInstruction', settingsModel!.locale!);
-    maximumMonitoringDistance = await mTx.translate(
+        await translator.translate('fieldMonitorInstruction', settingsModel!.locale!);
+    maximumMonitoringDistance = await translator.translate(
         'maximumMonitoringDistance', settingsModel!.locale!);
-    numberOfDaysForDashboardData = await mTx.translate(
+    numberOfDaysForDashboardData = await translator.translate(
         'numberOfDaysForDashboardData', settingsModel!.locale!);
     maximumVideoLength =
-        await mTx.translate('maximumVideoLength', settingsModel!.locale!);
+        await translator.translate('maximumVideoLength', settingsModel!.locale!);
     maximumAudioLength =
-        await mTx.translate('maximumAudioLength', settingsModel!.locale!);
+        await translator.translate('maximumAudioLength', settingsModel!.locale!);
     activityStreamHours =
-        await mTx.translate('activityStreamHours', settingsModel!.locale!);
+        await translator.translate('activityStreamHours', settingsModel!.locale!);
     selectSizePhotos =
-        await mTx.translate('selectSizePhotos', settingsModel!.locale!);
+        await translator.translate('selectSizePhotos', settingsModel!.locale!);
     pleaseSelectCountry =
-        await mTx.translate('pleaseSelectCountry', settingsModel!.locale!);
+        await translator.translate('pleaseSelectCountry', settingsModel!.locale!);
     tapForColorScheme =
-        await mTx.translate('tapForColorScheme', settingsModel!.locale!);
-    numberOfDays = await mTx.translate('numberOfDays', settingsModel!.locale!);
-    settings = await mTx.translate('settings', settingsModel!.locale!);
-    small = await mTx.translate('small', settingsModel!.locale!);
-    medium = await mTx.translate('medium', settingsModel!.locale!);
-    large = await mTx.translate('large', settingsModel!.locale!);
+        await translator.translate('tapForColorScheme', settingsModel!.locale!);
+    numberOfDays = await translator.translate('numberOfDays', settingsModel!.locale!);
+    settings = await translator.translate('settings', settingsModel!.locale!);
+    small = await translator.translate('small', settingsModel!.locale!);
+    medium = await translator.translate('medium', settingsModel!.locale!);
+    large = await translator.translate('large', settingsModel!.locale!);
     selectLanguage =
-        await mTx.translate('selectLanguage', settingsModel!.locale!);
-    hint = await mTx.translate('selectLanguage', settingsModel!.locale!);
+        await translator.translate('selectLanguage', settingsModel!.locale!);
+    hint = await translator.translate('selectLanguage', settingsModel!.locale!);
     settingsChanged =
-        await mTx.translate('settingsChanged', settingsModel!.locale!);
+        await translator.translate('settingsChanged', settingsModel!.locale!);
 
     translatedLanguage =
-        await mTx.translate(settingsModel!.locale!, settingsModel!.locale!);
+        await translator.translate(settingsModel!.locale!, settingsModel!.locale!);
 
     setState(() {});
   }
@@ -170,6 +168,8 @@ class SettingsFormMonitorState extends State<SettingsFormMonitor> {
       photoSize = 0;
       groupValue = 2;
     }
+
+    widget.onLocaleChanged(settingsModel!.locale!);
 
     setState(() {});
   }
@@ -456,9 +456,13 @@ class SettingsFormMonitorState extends State<SettingsFormMonitor> {
   void _handleLocaleChange(Locale locale, String translatedLanguage) async {
     pp('$mm onLocaleChange ... going to ${locale.languageCode} : $translatedLanguage');
 
+    settingsModel = await prefsOGx.getSettings();
     if (settingsModel != null) {
       settingsModel!.locale = locale.languageCode;
+      settingsModel!.individualLocale = locale.languageCode;
       await prefsOGx.saveSettings(settingsModel!);
+      await translator.translate('settings', settingsModel!.locale!);
+      fcmBloc.settingsStreamController.sink.add(settingsModel!);
       themeBloc.changeToLocale(locale.languageCode);
     }
     setState(() {

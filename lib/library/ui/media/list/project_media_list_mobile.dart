@@ -81,10 +81,10 @@ class ProjectMediaListMobileState extends State<ProjectMediaListMobile>
   Future _setTexts() async {
     settingsModel = await prefsOGx.getSettings();
     if (settingsModel != null) {
-      photosText = await mTx.translate('photos', settingsModel!.locale!);
-      audioText = await mTx.translate('audioClips', settingsModel!.locale!);
-      videoText = await mTx.translate('videos', settingsModel!.locale!);
-      refreshData = await mTx.translate('refreshData', settingsModel!.locale!);
+      photosText = await translator.translate('photos', settingsModel!.locale!);
+      audioText = await translator.translate('audioClips', settingsModel!.locale!);
+      videoText = await translator.translate('videos', settingsModel!.locale!);
+      refreshData = await translator.translate('refreshData', settingsModel!.locale!);
       setState(() {});
     }
   }

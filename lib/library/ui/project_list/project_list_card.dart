@@ -54,14 +54,14 @@ class _ProjectListCardState extends State<ProjectListCard> {
   void _setText() async {
     var sett = await prefsOGx.getSettings();
     if (sett != null) {
-      projectDashboard = await mTx.translate('projectDashboard', sett.locale!);
-      addProjectAreas = await mTx.translate('addProjectAreas', sett.locale!);
-      directionsToProject = await mTx.translate('directionsToProject', sett.locale!);
-      addProjectLocationHere = await mTx.translate('addProjectLocationHere', sett.locale!);
-      projectDetails = await mTx.translate('projectDetails', sett.locale!);
-      editProject = await mTx.translate('editProject', sett.locale!);
-      projectLocationsMap = await mTx.translate('projectLocationsMap', sett.locale!);
-      photosVideosAudioClips = await mTx.translate('photosVideosAudioClips', sett.locale!);
+      projectDashboard = await translator.translate('projectDashboard', sett.locale!);
+      addProjectAreas = await translator.translate('addProjectAreas', sett.locale!);
+      directionsToProject = await translator.translate('directionsToProject', sett.locale!);
+      addProjectLocationHere = await translator.translate('addProjectLocationHere', sett.locale!);
+      projectDetails = await translator.translate('projectDetails', sett.locale!);
+      editProject = await translator.translate('editProject', sett.locale!);
+      projectLocationsMap = await translator.translate('projectLocationsMap', sett.locale!);
+      photosVideosAudioClips = await translator.translate('photosVideosAudioClips', sett.locale!);
       setState(() {
 
       });

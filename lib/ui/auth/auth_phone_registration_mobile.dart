@@ -75,7 +75,7 @@ class AuthPhoneRegistrationMobileState
     if (settingsModel != null) {
       if (country != null) {
         translatedCountryName =
-            await mTx.translate('${country!.name}', settingsModel!.locale!);
+            await translator.translate('${country!.name}', settingsModel!.locale!);
       }
     }
     setState(() {});
@@ -315,9 +315,9 @@ class AuthPhoneRegistrationMobileState
     country = p1;
     if (settingsModel != null) {
       translatedCountryName =
-          await mTx.translate('${country!.name}', settingsModel!.locale!);
+          await translator.translate('${country!.name}', settingsModel!.locale!);
     } else {
-      translatedCountryName = await mTx.translate('${country!.name}', 'en');
+      translatedCountryName = await translator.translate('${country!.name}', 'en');
     }
 
     if (mounted) {

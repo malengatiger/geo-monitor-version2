@@ -82,7 +82,7 @@ class PhotoHandlerState extends State<PhotoHandler>
       var sett = await prefsOGx.getSettings();
       if (sett != null) {
         takePicture =
-        await mTx.translate('takePicture', sett.locale!);
+        await translator.translate('takePicture', sett.locale!);
 
       }
       pp('$mm .......... getting project positions and polygons');

@@ -89,10 +89,10 @@ class DataRefresher {
     bag!.users = users;
 
     var projects = await _startProjectsRefresh(organizationId: organizationId!);
-    bag!.projects = projects;
+    bag.projects = projects;
 
     pp('$xx users in bag: ${bag!.users!.length}; putting bag in stream ...... ');
-    organizationBloc.dataBagController.sink.add(bag!);
+    organizationBloc.dataBagController.sink.add(bag);
     return bag;
   }
 
@@ -116,6 +116,7 @@ class DataRefresher {
           projectPolygons: [],
           settings: []);
     }
+    return null;
   }
 
   Future<DataBag?> retry(

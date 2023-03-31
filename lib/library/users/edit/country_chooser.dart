@@ -51,7 +51,7 @@ class CountryChooserState extends State<CountryChooser> {
   Future _buildDropDown() async {
     var style = myTextStyleSmall(context);
     for (var entry in countries) {
-      var translated = await mTx.translate('${entry.name}', settings!.locale!);
+      var translated = await translator.translate('${entry.name}', settings!.locale!);
       list.add(DropdownMenuItem<Country>(
         value: entry,
         child: Text(

@@ -122,7 +122,7 @@ class _ActivityListTabletState extends State<ActivityListTablet>
       me = await prefsOGx.getUser();
       var hours = 12;
       hours = sett!.activityStreamHours!;
-      var sub = await mTx.translate('activityTitle', sett!.locale!);
+      var sub = await translator.translate('activityTitle', sett!.locale!);
       int index = sub.indexOf('\$');
       prefix = sub.substring(0, index);
       suffix = sub.substring(index + 6);
@@ -184,7 +184,7 @@ class _ActivityListTabletState extends State<ActivityListTablet>
     settingsSubscription =
         organizationBloc.settingsStream.listen((SettingsModel event) async {
       pp('$mm settingsSubscription: delivered settings, locale: ${event.locale}');
-      await mTx.translate('settings', event.locale!);
+      await translator.translate('settings', event.locale!);
       await _setTexts();
       _getData(false);
     });

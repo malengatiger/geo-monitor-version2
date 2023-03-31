@@ -26,7 +26,6 @@ import 'package:responsive_builder/responsive_builder.dart';
 import '../../../ui/audio/audio_recorder.dart';
 import '../../../ui/dashboard/project_dashboard_main.dart';
 import '../../api/prefs_og.dart';
-import '../../bloc/admin_bloc.dart';
 import '../../bloc/fcm_bloc.dart';
 import '../../bloc/organization_bloc.dart';
 import '../../bloc/project_bloc.dart';
@@ -89,9 +88,9 @@ class ProjectListTabletState extends State<ProjectListTablet>
     var sett = await prefsOGx.getSettings();
     if (sett != null) {
       organizationProjects =
-          await mTx.translate('organizationProjects', sett.locale!);
-      projectsNotFound = await mTx.translate('projectsNotFound', sett.locale!);
-      refreshData = await mTx.translate('refreshData', sett.locale!);
+          await translator.translate('organizationProjects', sett.locale!);
+      projectsNotFound = await translator.translate('projectsNotFound', sett.locale!);
+      refreshData = await translator.translate('refreshData', sett.locale!);
     }
     setState(() {});
   }

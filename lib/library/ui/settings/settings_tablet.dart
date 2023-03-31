@@ -39,7 +39,7 @@ class SettingsTabletState extends State<SettingsTablet>
   String? title;
   Future _setTexts() async {
     var sett = await prefsOGx.getSettings();
-    title = await mTx.translate('settings', sett!.locale!);
+    title = await translator.translate('settings', sett!.locale!);
     setState(() {
 
     });

@@ -817,13 +817,13 @@ Future<String?> getTranslatedUserType(String type) async {
   }
   switch (type) {
     case UserType.fieldMonitor:
-      translated = await mTx.translate('fieldMonitor', sett!.locale!);
+      translated = await translator.translate('fieldMonitor', sett!.locale!);
       break;
     case UserType.orgAdministrator:
-      translated = await mTx.translate('administrator', sett!.locale!);
+      translated = await translator.translate('administrator', sett!.locale!);
       break;
     case UserType.orgExecutive:
-      translated = await mTx.translate('executive', sett!.locale!);
+      translated = await translator.translate('executive', sett!.locale!);
       break;
   }
   return translated;
@@ -841,8 +841,8 @@ SettingsModel getBaseSettings() {
       organizationId: null,
       projectId: null,
       activityStreamHours: 24,
-      numberOfDays: 14,
-      locale: 'en');
+      numberOfDays: 30,
+      locale: 'en', individualLocale: 'en');
 
   return model;
 }

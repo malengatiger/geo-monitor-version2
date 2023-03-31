@@ -102,20 +102,20 @@ class ActivityListMobileState extends State<ActivityListMobile>
     if (settings != null) {
       locale = settings!.locale;
       if (widget.project != null) {
-        title = await mTx.translate('projectActivity', settings!.locale!);
+        title = await translator.translate('projectActivity', settings!.locale!);
         name = widget.project!.name!;
       } else if (widget.user != null) {
-        title = await mTx.translate('memberActivity', settings!.locale!);
+        title = await translator.translate('memberActivity', settings!.locale!);
         name = widget.user!.name;
       } else {
-        title = await mTx.translate('organizationActivity', settings!.locale!);
+        title = await translator.translate('organizationActivity', settings!.locale!);
         name = user!.organizationName;
       }
       activityStrings = await ActivityStrings.getTranslated();
       loadingActivities =
-          await mTx.translate('loadingActivities', settings!.locale!);
+          await translator.translate('loadingActivities', settings!.locale!);
 
-      var sub = await mTx.translate('activityTitle', settings!.locale!);
+      var sub = await translator.translate('activityTitle', settings!.locale!);
       int index = sub.indexOf('\$');
       prefix = sub.substring(0, index);
       suffix = sub.substring(index + 6);

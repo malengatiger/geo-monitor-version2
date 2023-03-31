@@ -60,9 +60,9 @@ class OrganizationMapMobileState extends State<OrganizationMapMobile>
     var sett = await prefsOGx.getSettings();
     if (sett != null) {
       organizationProjects =
-      await mTx.translate('organizationProjects', sett.locale!);
+      await translator.translate('organizationProjects', sett.locale!);
       projectLocatedHere =
-      await mTx.translate('projectLocatedHere', sett.locale!);
+      await translator.translate('projectLocatedHere', sett.locale!);
     }
     user = await prefsOGx.getUser();
     organization = await organizationBloc.getOrganizationById(

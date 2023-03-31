@@ -100,7 +100,7 @@ class UserDashboardState extends State<UserDashboard>
   Future _setTexts() async {
     var sett = await prefsOGx.getSettings();
     if (sett != null) {
-      memberDashboard = await mTx.translate('memberDashboard', sett!.locale!);
+      memberDashboard = await translator.translate('memberDashboard', sett!.locale!);
       dashboardStrings = await DashboardStrings.getTranslated();
     }
     if (mounted) {

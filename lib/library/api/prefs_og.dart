@@ -87,7 +87,7 @@ class PrefsOGx {
       return null;
     } else {
       user = User.fromJson(mJson);
-      pp("$mm getUser 🧩🧩🧩🧩🧩 retrieved .. ${user.toJson()}  🔴🔴");
+      pp("$mm getUser 🧩🧩🧩🧩🧩 retrieved .. ${user.name}  🔴🔴");
       return user;
     }
   }
@@ -98,14 +98,13 @@ class PrefsOGx {
     return null;
   }
 
-  Future<SettingsModel?> getSettings() async {
-    // pp('\n$mm ......... getting settings from cache! ...');
+  Future<SettingsModel> getSettings() async {
     SettingsModel? settings;
     var mJson = await box.read('settings');
     if (mJson == null) {
       pp('$mm SettingsModel does not exist in Prefs, '
           'one time ok, 🍎🍎🍎 returning null');
-      return null;
+      return getBaseSettings();
     } else {
       settings = SettingsModel.fromJson(mJson);
       // pp("$mm getSettings 🧩 🧩 🧩 🧩 🧩 retrieved: ${settings.toJson()}  🔴🔴");

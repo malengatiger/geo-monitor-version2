@@ -86,13 +86,13 @@ class AudioPlayerOGState extends State<AudioPlayerOG> {
     settingsModel = await prefsOGx.getSettings();
     if (settingsModel != null) {
       loadingActivities =
-      await mTx.translate('loadingActivities', settingsModel!.locale!);
-      createdAt = await mTx.translate('createdAt', settingsModel!.locale!);
-      elapsedTimeText = await mTx.translate('elapsedTime', settingsModel!.locale!);
+      await translator.translate('loadingActivities', settingsModel!.locale!);
+      createdAt = await translator.translate('createdAt', settingsModel!.locale!);
+      elapsedTimeText = await translator.translate('elapsedTime', settingsModel!.locale!);
       playAudioClip =
-          await mTx.translate('playAudioClip', settingsModel!.locale!);
+          await translator.translate('playAudioClip', settingsModel!.locale!);
       errorRecording =
-          await mTx.translate('errorRecording', settingsModel!.locale!);
+          await translator.translate('errorRecording', settingsModel!.locale!);
     }
     setState(() {
       _showControls = true;

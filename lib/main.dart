@@ -73,7 +73,7 @@ void main() async {
   await Hive.initFlutter(hiveName);
 
   if (settings != null) {
-    mTx.translate('settings', settings!.locale!);
+    translator.translate('settings', settings!.locale!);
     pp('$mx $heartBlue translation service initialization started for locale👌 ${settings!.locale!}');
   }
 

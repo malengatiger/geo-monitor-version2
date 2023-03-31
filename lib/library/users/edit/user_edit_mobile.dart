@@ -65,18 +65,18 @@ class UserEditMobileState extends State<UserEditMobile>
     var sett = await prefsOGx.getSettings();
     if (sett != null) {
       userFormStrings = await UserFormStrings.getTranslated();
-      hint = await mTx.translate('pleaseSelectCountry', sett.locale!);
-      title = await mTx.translate('members', sett.locale!);
-      newMember = await mTx.translate('newMember', sett.locale!);
-      editMember = await mTx.translate('editMember', sett.locale!);
-      name = await mTx.translate('name', sett.locale!);
+      hint = await translator.translate('pleaseSelectCountry', sett.locale!);
+      title = await translator.translate('members', sett.locale!);
+      newMember = await translator.translate('newMember', sett.locale!);
+      editMember = await translator.translate('editMember', sett.locale!);
+      name = await translator.translate('name', sett.locale!);
     }
     setState(() {});
   }
   void _listen() async {
     settingsSubscription = fcmBloc.settingsStream.listen((event) async {
       if (country != null) {
-        countryName = await mTx.translate(country!.name!, event.locale!);
+        countryName = await translator.translate(country!.name!, event.locale!);
       }
       if (mounted) {
         _setTexts();
@@ -222,20 +222,20 @@ class UserFormStrings {
   static Future<UserFormStrings?> getTranslated() async {
     var sett = await prefsOGx.getSettings();
     if (sett != null) {
-      var userName = await mTx.translate('name', sett.locale!);
-      var cellphone = await mTx.translate('cellphone', sett.locale!);
-      var male = await mTx.translate('male', sett.locale!);
-      var female = await mTx.translate('female', sett.locale!);
-      var fieldMonitor = await mTx.translate('fieldMonitor', sett.locale!);
-      var executive = await mTx.translate('executive', sett.locale!);
-      var administrator = await mTx.translate('administrator', sett.locale!);
-      var submitUser = await mTx.translate('submitMember', sett.locale!);
-      var profilePhoto = await mTx.translate('profilePhoto', sett.locale!);
-      var enterCell = await mTx.translate('enterCell', sett.locale!);
-      var enterEmail = await mTx.translate('enterEmail', sett.locale!);
-      var enterFullName = await mTx.translate('enterFullName', sett.locale!);
-      var selectCountry = await mTx.translate('pleaseSelectCountry', sett.locale!);
-      var emailAddress = await mTx.translate('emailAddress', sett.locale!);
+      var userName = await translator.translate('name', sett.locale!);
+      var cellphone = await translator.translate('cellphone', sett.locale!);
+      var male = await translator.translate('male', sett.locale!);
+      var female = await translator.translate('female', sett.locale!);
+      var fieldMonitor = await translator.translate('fieldMonitor', sett.locale!);
+      var executive = await translator.translate('executive', sett.locale!);
+      var administrator = await translator.translate('administrator', sett.locale!);
+      var submitUser = await translator.translate('submitMember', sett.locale!);
+      var profilePhoto = await translator.translate('profilePhoto', sett.locale!);
+      var enterCell = await translator.translate('enterCell', sett.locale!);
+      var enterEmail = await translator.translate('enterEmail', sett.locale!);
+      var enterFullName = await translator.translate('enterFullName', sett.locale!);
+      var selectCountry = await translator.translate('pleaseSelectCountry', sett.locale!);
+      var emailAddress = await translator.translate('emailAddress', sett.locale!);
 
       var m = UserFormStrings(
           selectCountry: selectCountry,

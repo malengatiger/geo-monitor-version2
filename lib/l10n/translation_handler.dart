@@ -3,10 +3,12 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:geo_monitor/l10n/my_keys.dart';
+import 'package:geo_monitor/library/api/prefs_og.dart';
+import 'package:geo_monitor/library/data/settings_model.dart';
 
 import '../library/functions.dart';
 
-final TranslationHandler mTx = TranslationHandler._instance;
+final TranslationHandler translator = TranslationHandler._instance;
 
 class TranslationHandler {
   static final TranslationHandler _instance = TranslationHandler._internal();
@@ -19,28 +21,33 @@ class TranslationHandler {
     // initialization logic
   }
   final android = Platform.isAndroid;
-  var localeMap = HashMap<String,String>();
+  var localeMap = HashMap<String, String>();
   static const mm = '🌎🔵 mtX: ';
   String? currentLocale;
-
+  SettingsModel? settingsModel;
 
   Future<String> translate(String key, String locale) async {
-
+    settingsModel = await prefsOGx.getSettings();
+    if (settingsModel != null) {
+      if (settingsModel!.individualLocale != null) {
+        locale = settingsModel!.individualLocale!;
+      }
+    }
     if (localeMap.isEmpty) {
+      await _loadFile(locale);
+    } else {
+      if (locale != currentLocale) {
         await _loadFile(locale);
-      } else {
-        if (locale != currentLocale) {
-          await _loadFile(locale);
-        }
       }
-      final value = localeMap[key];
-      if (value == null) {
-        return 'UNAVAILABLE KEY: $key';
-      }
-      pp('$mm translate $key using locale: 🌎$locale result: $value 🌎');
-      return value;
-  }
+    }
 
+    final value = localeMap[key];
+    if (value == null) {
+      return 'UNAVAILABLE KEY: $key';
+    }
+    pp('$mm translate $key using locale: 🌎$locale result: $value 🌎');
+    return value;
+  }
 
   _loadFile(String locale) async {
     pp('$mm loading locale strings for $locale, will clear current locale $currentLocale strings');

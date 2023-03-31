@@ -5,7 +5,6 @@ import 'package:animations/animations.dart';
 import 'package:flutter/material.dart';
 import 'package:geo_monitor/library/api/prefs_og.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:intl/intl.dart';
 
 import '../../../l10n/translation_handler.dart';
 import '../../data/photo.dart';
@@ -74,7 +73,7 @@ class PhotoMapState extends State<PhotoMap>
   Future _setTexts() async {
     final sett = await prefsOGx.getSettings();
     if (sett != null) {
-      photoLocationText = await mTx.translate('photoLocation',
+      photoLocationText = await translator.translate('photoLocation',
           sett!.locale!);
       myDate = getFmtDate(widget.photo.created!, sett!.locale!);
       setState(() {

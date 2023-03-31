@@ -6,12 +6,10 @@ import 'package:geo_monitor/ui/auth/auth_registration_main.dart';
 import 'package:geo_monitor/ui/auth/auth_signin_main.dart';
 import 'package:geo_monitor/ui/dashboard/dashboard_main.dart';
 import 'package:page_transition/page_transition.dart';
-import 'package:uuid/uuid.dart';
 
 import '../../l10n/translation_handler.dart';
 import '../../library/api/prefs_og.dart';
 import '../../library/cache_manager.dart';
-import '../../library/data/settings_model.dart';
 import '../../library/data/user.dart' as ur;
 import '../../library/emojis.dart';
 import '../../library/functions.dart';
@@ -66,20 +64,20 @@ class _IntroPageViewerLandscapeState extends State<IntroPageViewerLandscape>
     } else {
       locale = sett.locale!;
     }
-    hint = await mTx.translate('selectLanguage', sett!.locale!);
-    organizations = await mTx.translate('organizations', locale);
-    managementPeople = await mTx.translate('managementPeople', locale);
-    fieldWorkers = await mTx.translate('fieldWorkers', locale);
-    executives = await mTx.translate('executives', locale);
-    information = await mTx.translate('information', locale);
-    thankYou = await mTx.translate('thankYou', locale);
-    thankYouMessage = await mTx.translate('thankYouMessage', locale);
+    hint = await translator.translate('selectLanguage', sett!.locale!);
+    organizations = await translator.translate('organizations', locale);
+    managementPeople = await translator.translate('managementPeople', locale);
+    fieldWorkers = await translator.translate('fieldWorkers', locale);
+    executives = await translator.translate('executives', locale);
+    information = await translator.translate('information', locale);
+    thankYou = await translator.translate('thankYou', locale);
+    thankYouMessage = await translator.translate('thankYouMessage', locale);
 
-    infrastructure = await mTx.translate('infrastructure', locale);
-    govt = await mTx.translate('govt', locale);
-    youth = await mTx.translate('youth', locale);
-    community = await mTx.translate('community', locale);
-    registerOrganization = await mTx.translate('registerOrganization', locale);
+    infrastructure = await translator.translate('infrastructure', locale);
+    govt = await translator.translate('govt', locale);
+    youth = await translator.translate('youth', locale);
+    community = await translator.translate('community', locale);
+    registerOrganization = await translator.translate('registerOrganization', locale);
     setState(() {});
   }
 

@@ -6,7 +6,6 @@ import 'package:flutter/material.dart';
 import 'package:geo_monitor/library/api/prefs_og.dart';
 import 'package:geo_monitor/library/data/geofence_event.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:intl/intl.dart';
 
 import '../../../l10n/translation_handler.dart';
 import '../../data/position.dart' as local;
@@ -61,7 +60,7 @@ class GeofenceMapTabletState extends State<GeofenceMapTablet>
   Future _setTexts() async {
     final sett = await prefsOGx.getSettings();
     if (sett != null) {
-      memberAtProject = await mTx.translate('memberAtProject', sett!.locale!);
+      memberAtProject = await translator.translate('memberAtProject', sett!.locale!);
       translatedDate = getFmtDate(widget.geofenceEvent.date!, sett!.locale!);
     }
   }

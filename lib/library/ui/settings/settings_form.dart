@@ -92,42 +92,45 @@ class SettingsFormState extends State<SettingsForm> {
     }
     pp('$mm 🍎🍎 user is here, huh? 🌎 ${user!.name!}');
     _setExistingSettings();
-    final m1 = await mTx.translate('maxVideoLessThan', settingsModel!.locale!);
+    final m1 =
+        await translator.translate('maxVideoLessThan', settingsModel!.locale!);
     maxVideoLessThan = m1.replaceAll('\$count', '120');
 
-    final m2 = await mTx.translate('maxAudioLessThan', settingsModel!.locale!);
+    final m2 =
+        await translator.translate('maxAudioLessThan', settingsModel!.locale!);
     maxAudioLessThan = m2.replaceAll('\$count', '30');
-    fieldMonitorInstruction =
-        await mTx.translate('fieldMonitorInstruction', settingsModel!.locale!);
-    maximumMonitoringDistance = await mTx.translate(
+    fieldMonitorInstruction = await translator.translate(
+        'fieldMonitorInstruction', settingsModel!.locale!);
+    maximumMonitoringDistance = await translator.translate(
         'maximumMonitoringDistance', settingsModel!.locale!);
-    numberOfDaysForDashboardData = await mTx.translate(
+    numberOfDaysForDashboardData = await translator.translate(
         'numberOfDaysForDashboardData', settingsModel!.locale!);
-    maximumVideoLength =
-        await mTx.translate('maximumVideoLength', settingsModel!.locale!);
-    maximumAudioLength =
-        await mTx.translate('maximumAudioLength', settingsModel!.locale!);
-    activityStreamHours =
-        await mTx.translate('activityStreamHours', settingsModel!.locale!);
+    maximumVideoLength = await translator.translate(
+        'maximumVideoLength', settingsModel!.locale!);
+    maximumAudioLength = await translator.translate(
+        'maximumAudioLength', settingsModel!.locale!);
+    activityStreamHours = await translator.translate(
+        'activityStreamHours', settingsModel!.locale!);
     selectSizePhotos =
-        await mTx.translate('selectSizePhotos', settingsModel!.locale!);
-    pleaseSelectCountry =
-        await mTx.translate('pleaseSelectCountry', settingsModel!.locale!);
+        await translator.translate('selectSizePhotos', settingsModel!.locale!);
+    pleaseSelectCountry = await translator.translate(
+        'pleaseSelectCountry', settingsModel!.locale!);
     tapForColorScheme =
-        await mTx.translate('tapForColorScheme', settingsModel!.locale!);
-    numberOfDays = await mTx.translate('numberOfDays', settingsModel!.locale!);
-    settings = await mTx.translate('settings', settingsModel!.locale!);
-    small = await mTx.translate('small', settingsModel!.locale!);
-    medium = await mTx.translate('medium', settingsModel!.locale!);
-    large = await mTx.translate('large', settingsModel!.locale!);
+        await translator.translate('tapForColorScheme', settingsModel!.locale!);
+    numberOfDays =
+        await translator.translate('numberOfDays', settingsModel!.locale!);
+    settings = await translator.translate('settings', settingsModel!.locale!);
+    small = await translator.translate('small', settingsModel!.locale!);
+    medium = await translator.translate('medium', settingsModel!.locale!);
+    large = await translator.translate('large', settingsModel!.locale!);
     selectLanguage =
-        await mTx.translate('selectLanguage', settingsModel!.locale!);
-    hint = await mTx.translate('selectLanguage', settingsModel!.locale!);
+        await translator.translate('selectLanguage', settingsModel!.locale!);
+    hint = await translator.translate('selectLanguage', settingsModel!.locale!);
     settingsChanged =
-        await mTx.translate('settingsChanged', settingsModel!.locale!);
+        await translator.translate('settingsChanged', settingsModel!.locale!);
 
-    translatedLanguage =
-        await mTx.translate(settingsModel!.locale!, settingsModel!.locale!);
+    translatedLanguage = await translator.translate(
+        settingsModel!.locale!, settingsModel!.locale!);
 
     setState(() {});
   }
@@ -242,6 +245,7 @@ class SettingsFormState extends State<SettingsForm> {
         themeIndex: currentThemeIndex,
         settingsId: const Uuid().v4(),
         created: date,
+        individualLocale: null,
         organizationId: user!.organizationId,
         projectId: selectedProject == null ? null : selectedProject!.projectId,
         activityStreamHours: int.parse(activityController.value.text),
@@ -692,6 +696,7 @@ class SettingsFormState extends State<SettingsForm> {
   void _handleLocaleChange(Locale locale, String translatedLanguage) async {
     pp('$mm onLocaleChange ... going to ${locale.languageCode}');
     settingsModel!.locale = locale.languageCode;
+    settingsModel!.individualLocale = locale.languageCode;
     await prefsOGx.saveSettings(settingsModel!);
     await _setTexts();
     themeBloc.changeToLocale(locale.languageCode);
@@ -744,30 +749,30 @@ class LocaleChooserState extends State<LocaleChooser> {
 
   Future setTexts() async {
     settingsModel = await prefsOGx.getSettings();
+    settingsModel ??= getBaseSettings();
     if (settingsModel != null) {
-      english = await mTx.translate('en', settingsModel!.locale!);
-      afrikaans = await mTx.translate('af', settingsModel!.locale!);
-      french = await mTx.translate('fr', settingsModel!.locale!);
-      portuguese = await mTx.translate('pt', settingsModel!.locale!);
-      lingala = await mTx.translate('ig', settingsModel!.locale!);
-      sotho = await mTx.translate('st', settingsModel!.locale!);
-      spanish = await mTx.translate('es', settingsModel!.locale!);
-      swahili = await mTx.translate('sw', settingsModel!.locale!);
-      tsonga = await mTx.translate('ts', settingsModel!.locale!);
-      xhosa = await mTx.translate('xh', settingsModel!.locale!);
-      zulu = await mTx.translate('zu', settingsModel!.locale!);
-      yoruba = await mTx.translate('yo', settingsModel!.locale!);
-
-      german = await mTx.translate('de', settingsModel!.locale!);
-      chinese = await mTx.translate('zh', settingsModel!.locale!);
-      shona = await mTx.translate('sn', settingsModel!.locale!);
+      english = await translator.translate('en', settingsModel!.locale!);
+      afrikaans = await translator.translate('af', settingsModel!.locale!);
+      french = await translator.translate('fr', settingsModel!.locale!);
+      portuguese = await translator.translate('pt', settingsModel!.locale!);
+      lingala = await translator.translate('ig', settingsModel!.locale!);
+      sotho = await translator.translate('st', settingsModel!.locale!);
+      spanish = await translator.translate('es', settingsModel!.locale!);
+      swahili = await translator.translate('sw', settingsModel!.locale!);
+      tsonga = await translator.translate('ts', settingsModel!.locale!);
+      xhosa = await translator.translate('xh', settingsModel!.locale!);
+      zulu = await translator.translate('zu', settingsModel!.locale!);
+      yoruba = await translator.translate('yo', settingsModel!.locale!);
+      german = await translator.translate('de', settingsModel!.locale!);
+      chinese = await translator.translate('zh', settingsModel!.locale!);
+      shona = await translator.translate('sn', settingsModel!.locale!);
       setState(() {});
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    return DropdownButton<Locale>(
+    return settingsModel == null? const SizedBox(): DropdownButton<Locale>(
         hint: Text(
           widget.hint,
           style: myTextStyleSmall(context),
@@ -845,8 +850,10 @@ class LocaleChooserState extends State<LocaleChooser> {
     settingsModel ??= getBaseSettings();
 
     settingsModel!.locale = locale!.languageCode;
+
     await prefsOGx.saveSettings(settingsModel!);
     await setTexts();
+
     var language = 'English';
     switch (locale.languageCode) {
       case 'eng':

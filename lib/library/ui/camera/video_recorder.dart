@@ -98,26 +98,26 @@ class VideoRecorderState extends State<VideoRecorder>
       var m = settingsModel?.maxAudioLengthInMinutes;
       limitInSeconds = m! * 60;
       recordingComplete =
-          await mTx.translate('recordingComplete', settingsModel!.locale!);
-      elapsedTime = await mTx.translate('elapsedTime', settingsModel!.locale!);
+          await translator.translate('recordingComplete', settingsModel!.locale!);
+      elapsedTime = await translator.translate('elapsedTime', settingsModel!.locale!);
 
-      fileUploadSize = await mTx.translate('fileSize', settingsModel!.locale!);
+      fileUploadSize = await translator.translate('fileSize', settingsModel!.locale!);
       uploadAudioClipText =
-          await mTx.translate('uploadAudioClip', settingsModel!.locale!);
-      elapsedTime = await mTx.translate('elapsedTime', settingsModel!.locale!);
+          await translator.translate('uploadAudioClip', settingsModel!.locale!);
+      elapsedTime = await translator.translate('elapsedTime', settingsModel!.locale!);
       locationNotAvailable =
-          await mTx.translate('locationNotAvailable', settingsModel!.locale!);
+          await translator.translate('locationNotAvailable', settingsModel!.locale!);
 
       waitingToRecordVideo =
-          await mTx.translate('waitingToRecordVideo', settingsModel!.locale!);
+          await translator.translate('waitingToRecordVideo', settingsModel!.locale!);
       recordingLimitReached =
-          await mTx.translate('recordingLimitReached', settingsModel!.locale!);
+          await translator.translate('recordingLimitReached', settingsModel!.locale!);
       videoToBeUploaded =
-          await mTx.translate('videoToBeUploaded', settingsModel!.locale!);
+          await translator.translate('videoToBeUploaded', settingsModel!.locale!);
       maxSeconds = settingsModel!.maxVideoLengthInSeconds!;
-      title = await mTx.translate('recordVideo', settingsModel!.locale!);
-      durationText = await mTx.translate('duration', settingsModel!.locale!);
-      fileSizeText = await mTx.translate('fileSize', settingsModel!.locale!);
+      title = await translator.translate('recordVideo', settingsModel!.locale!);
+      durationText = await translator.translate('duration', settingsModel!.locale!);
+      fileSizeText = await translator.translate('fileSize', settingsModel!.locale!);
     }
 
     setState(() {});

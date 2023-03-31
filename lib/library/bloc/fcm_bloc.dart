@@ -63,7 +63,7 @@ class FCMBloc {
       StreamController.broadcast();
   final StreamController<String> _killController = StreamController.broadcast();
 
-  final StreamController<SettingsModel> _settingsController =
+  final StreamController<SettingsModel> settingsStreamController =
       StreamController.broadcast();
   final StreamController<GeofenceEvent> _geofenceController =
       StreamController.broadcast();
@@ -73,7 +73,7 @@ class FCMBloc {
       _locationResponseController.stream;
 
   Stream<GeofenceEvent> get geofenceStream => _geofenceController.stream;
-  Stream<SettingsModel> get settingsStream => _settingsController.stream;
+  Stream<SettingsModel> get settingsStream => settingsStreamController.stream;
 
   Stream<User> get userStream => userController.stream;
   Stream<Project> get projectStream => _projectController.stream;
@@ -98,7 +98,7 @@ class FCMBloc {
     _videoController.close();
     _conditionController.close();
     _messageController.close();
-    _settingsController.close();
+    settingsStreamController.close();
     _killController.close();
     _projectPositionController.close();
     _projectPolygonController.close();
@@ -372,7 +372,7 @@ class FCMBloc {
         pp('$mm This is an organization-wide setting, update the cached settings ...');
         await prefsOGx.saveSettings(settings);
         await themeBloc.changeToTheme(settings.themeIndex!);
-        _settingsController.sink.add(settings);
+        settingsStreamController.sink.add(settings);
         dataRefresher.manageRefresh(numberOfDays: settings.numberOfDays,
             organizationId: settings.organizationId,
             projectId: null, userId: null);

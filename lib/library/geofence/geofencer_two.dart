@@ -164,9 +164,9 @@ class TheGreatGeofencer {
     String message = 'A member has arrived at ${ geofence.data['projectName']}';
     String title = 'Message from Geo';
     if (sett != null) {
-      final arr = await mTx.translate('arrivedAt', sett.locale!);
+      final arr = await translator.translate('arrivedAt', sett.locale!);
       message = arr.replaceAll('\$project', geofence.data['projectName']);
-      final tit = await mTx.translate('messageFromGeo', sett.locale!);
+      final tit = await translator.translate('messageFromGeo', sett.locale!);
       title = tit.replaceAll('\$geo', 'Geo');
     }
 

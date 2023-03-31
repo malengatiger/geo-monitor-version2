@@ -317,32 +317,32 @@ class ActivityStrings {
   static Future<ActivityStrings?> getTranslated() async {
     var sett = await prefsOGx.getSettings();
     if (sett != null) {
-      final projectAdded = await mTx.translate('projectAdded', sett!.locale!);
+      final projectAdded = await translator.translate('projectAdded', sett!.locale!);
       final projectLocationAdded =
-          await mTx.translate('projectLocationAdded', sett.locale!);
+          await translator.translate('projectLocationAdded', sett.locale!);
       final projectAreaAdded =
-          await mTx.translate('projectAreaAdded', sett.locale!);
+          await translator.translate('projectAreaAdded', sett.locale!);
       final memberAtProject =
-          await mTx.translate('memberAtProject', sett.locale!);
+          await translator.translate('memberAtProject', sett.locale!);
       final settingsChanged =
-          await mTx.translate('settingsChanged', sett.locale!);
+          await translator.translate('settingsChanged', sett.locale!);
       final memberAddedChanged =
-          await mTx.translate('memberAddedChanged', sett.locale!);
-      final at = await mTx.translate('at', sett.locale!);
-      final arr = await mTx.translate('arrivedAt', sett.locale!);
+          await translator.translate('memberAddedChanged', sett.locale!);
+      final at = await translator.translate('at', sett.locale!);
+      final arr = await translator.translate('arrivedAt', sett.locale!);
       final arrivedAt = arr.replaceAll('\$project', '');
       final conditionAdded =
-          await mTx.translate('conditionAdded', sett.locale!);
+          await translator.translate('conditionAdded', sett.locale!);
       final memberLocationResponse =
-          await mTx.translate('memberLocationResponse', sett.locale!);
+          await translator.translate('memberLocationResponse', sett.locale!);
       final requestMemberLocation =
-          await mTx.translate('requestMemberLocation', sett.locale!);
-      final noActivities = await mTx.translate('noActivities', sett.locale!);
+          await translator.translate('requestMemberLocation', sett.locale!);
+      final noActivities = await translator.translate('noActivities', sett.locale!);
 
       final loadingActivities =
-          await mTx.translate('loadingActivities', sett.locale!);
+          await translator.translate('loadingActivities', sett.locale!);
 
-      final tapToRefresh = await mTx.translate('tapToRefresh', sett!.locale!);
+      final tapToRefresh = await translator.translate('tapToRefresh', sett!.locale!);
 
       var activityStrings = ActivityStrings(
           tapToRefresh: tapToRefresh,

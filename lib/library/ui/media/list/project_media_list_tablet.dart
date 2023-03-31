@@ -76,9 +76,9 @@ class ProjectMediaListTabletState extends State<ProjectMediaListTablet>
   Future _setTexts() async {
     var sett = await prefsOGx.getSettings();
     if (sett != null) {
-      photosText = await mTx.translate('photos', sett.locale!);
-      audioText = await mTx.translate('audioClips', sett.locale!);
-      videoText = await mTx.translate('videos', sett.locale!);
+      photosText = await translator.translate('photos', sett.locale!);
+      audioText = await translator.translate('audioClips', sett.locale!);
+      videoText = await translator.translate('videos', sett.locale!);
       setState(() {});
     }
   }

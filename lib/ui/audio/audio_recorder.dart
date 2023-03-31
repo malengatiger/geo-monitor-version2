@@ -95,20 +95,20 @@ class AudioRecorderState extends State<AudioRecorder>
     if (settingsModel != null) {
       var m = settingsModel?.maxAudioLengthInMinutes;
       limitInSeconds = m! * 60;
-      title = await mTx.translate('recordAudioClip', settingsModel!.locale!);
-      elapsedTime = await mTx.translate('elapsedTime', settingsModel!.locale!);
+      title = await translator.translate('recordAudioClip', settingsModel!.locale!);
+      elapsedTime = await translator.translate('elapsedTime', settingsModel!.locale!);
 
-      fileUploadSize = await mTx.translate('fileSize', settingsModel!.locale!);
+      fileUploadSize = await translator.translate('fileSize', settingsModel!.locale!);
       uploadAudioClipText =
-          await mTx.translate('uploadAudioClip', settingsModel!.locale!);
+          await translator.translate('uploadAudioClip', settingsModel!.locale!);
       locationNotAvailable =
-          await mTx.translate('locationNotAvailable', settingsModel!.locale!);
+          await translator.translate('locationNotAvailable', settingsModel!.locale!);
 
       waitingToRecordAudio =
-          await mTx.translate('waitingToRecordAudio', settingsModel!.locale!);
+          await translator.translate('waitingToRecordAudio', settingsModel!.locale!);
       audioToBeUploaded =
-          await mTx.translate('audioToBeUploaded', settingsModel!.locale!);
-      durationText = await mTx.translate('duration', settingsModel!.locale!);
+          await translator.translate('audioToBeUploaded', settingsModel!.locale!);
+      durationText = await translator.translate('duration', settingsModel!.locale!);
     }
 
     setState(() {});

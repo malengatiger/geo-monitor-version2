@@ -80,7 +80,7 @@ class GeoActivityMobileState extends State<GeoActivityMobile>
   Future _setTexts() async {
     settingsModel = await prefsOGx.getSettings();
     if (settingsModel != null) {
-      arrivedAt = await mTx.translate('memberArrived', settingsModel!.locale!);
+      arrivedAt = await translator.translate('memberArrived', settingsModel!.locale!);
     }
   }
 
@@ -126,7 +126,7 @@ class GeoActivityMobileState extends State<GeoActivityMobile>
     pp('$mm _handleGeofenceEvent ...');
     var settings = await prefsOGx.getSettings();
     if (settings != null) {
-      var arr = await mTx.translate('memberArrived', settings.locale!);
+      var arr = await translator.translate('memberArrived', settings.locale!);
       if (event.projectName != null) {
         var arrivedAt = arr.replaceAll('\$project', event.projectName!);
         if (mounted) {

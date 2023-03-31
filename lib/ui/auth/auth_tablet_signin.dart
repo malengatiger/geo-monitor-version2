@@ -32,8 +32,8 @@ class _AuthTabletSignInState extends State<AuthTabletSignIn> {
   Future _setTexts() async {
     final sett = await prefsOGx.getSettings();
     if (sett != null) {
-      title = await mTx.translate('signIn', sett!.locale!);
-      subTitle = await mTx.translate('signInInstruction', sett!.locale!);
+      title = await translator.translate('signIn', sett!.locale!);
+      subTitle = await translator.translate('signInInstruction', sett!.locale!);
     }
     setState(() {});
   }

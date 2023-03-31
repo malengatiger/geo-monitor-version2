@@ -88,7 +88,7 @@ class ProjectDashboardMobileState extends State<ProjectDashboardMobile>
     var sett = await prefsOGx.getSettings();
     if (sett != null) {
       dashboardStrings = await DashboardStrings.getTranslated();
-      title = await mTx.translate('projectDashboard', sett!.locale!);
+      title = await translator.translate('projectDashboard', sett!.locale!);
     }
   }
 
@@ -411,15 +411,15 @@ class DashboardStrings {
 
   static Future<DashboardStrings> getTranslated() async {
     var sett = await prefsOGx.getSettings();
-    var projects = await mTx.translate('projects', sett!.locale!);
-    var members = await mTx.translate('members', sett.locale!);
-    var photos = await mTx.translate('photos', sett.locale!);
-    var audioClips = await mTx.translate('audioClips', sett.locale!);
-    var locations = await mTx.translate('locations', sett.locale!);
-    var areas = await mTx.translate('areas', sett.locale!);
-    var schedules = await mTx.translate('schedules', sett.locale!);
-    var videos = await mTx.translate('videos', sett.locale!);
-    var refreshProjectDashboardData = await mTx.translate('refreshProjectDashboardData', sett.locale!);
+    var projects = await translator.translate('projects', sett!.locale!);
+    var members = await translator.translate('members', sett.locale!);
+    var photos = await translator.translate('photos', sett.locale!);
+    var audioClips = await translator.translate('audioClips', sett.locale!);
+    var locations = await translator.translate('locations', sett.locale!);
+    var areas = await translator.translate('areas', sett.locale!);
+    var schedules = await translator.translate('schedules', sett.locale!);
+    var videos = await translator.translate('videos', sett.locale!);
+    var refreshProjectDashboardData = await translator.translate('refreshProjectDashboardData', sett.locale!);
 
     var m = DashboardStrings(
         projects: projects,

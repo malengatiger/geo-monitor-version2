@@ -75,19 +75,19 @@ class UserFormState extends State<UserForm>
     settingsModel = await prefsOGx.getSettings();
     if (settingsModel != null) {
       userFormStrings = await UserFormStrings.getTranslated();
-      pleaseSelectCountry = await mTx.translate('pleaseSelectCountry',
+      pleaseSelectCountry = await translator.translate('pleaseSelectCountry',
           settingsModel!.locale!);
-      memberUpdateFailed = await mTx.translate('memberUpdateFailed',
+      memberUpdateFailed = await translator.translate('memberUpdateFailed',
           settingsModel!.locale!);
-      memberCreateFailed = await mTx.translate('memberCreateFailed',
+      memberCreateFailed = await translator.translate('memberCreateFailed',
           settingsModel!.locale!);
-      pleaseSelectCountry = await mTx.translate('pleaseSelectCountry',
+      pleaseSelectCountry = await translator.translate('pleaseSelectCountry',
           settingsModel!.locale!);
-      pleaseSelectGender = await mTx.translate('pleaseSelectGender',
+      pleaseSelectGender = await translator.translate('pleaseSelectGender',
           settingsModel!.locale!);
-      pleaseSelectType = await mTx.translate('pleaseSelectType',
+      pleaseSelectType = await translator.translate('pleaseSelectType',
           settingsModel!.locale!);
-      memberCreated = await mTx.translate('memberCreated',
+      memberCreated = await translator.translate('memberCreated',
           settingsModel!.locale!);
     }
     setState(() {});
@@ -111,7 +111,7 @@ class UserFormState extends State<UserForm>
         var sett = await prefsOGx.getSettings();
         for (var value in countries) {
           if (widget.user!.countryId == value.countryId) {
-            translatedCountryName = await mTx.translate(value.name!, sett!.locale!);
+            translatedCountryName = await translator.translate(value.name!, sett!.locale!);
             country = value;
           }
         }
@@ -122,7 +122,7 @@ class UserFormState extends State<UserForm>
   void _listen() async {
     settingsSubscription = fcmBloc.settingsStream.listen((event) async {
       if (country != null) {
-        translatedCountryName = await mTx.translate(country!.name!, event.locale!);
+        translatedCountryName = await translator.translate(country!.name!, event.locale!);
       }
       if (mounted) {
         _setTexts();
@@ -555,7 +555,7 @@ class UserFormState extends State<UserForm>
                         CountryChooser(
                           refreshCountries: refreshCountries,
                           onSelected: (mCountry) async {
-                            translatedCountryName = await mTx.translate(
+                            translatedCountryName = await translator.translate(
                                 mCountry.name!, settingsModel!.locale!);
                             setState(() {
                               country = mCountry;

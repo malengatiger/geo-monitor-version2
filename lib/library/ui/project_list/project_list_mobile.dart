@@ -82,9 +82,9 @@ class ProjectListMobileState extends State<ProjectListMobile>
     var sett = await prefsOGx.getSettings();
     if (sett != null) {
       organizationProjects =
-          await mTx.translate('organizationProjects', sett.locale!);
-      projectsNotFound = await mTx.translate('projectsNotFound', sett.locale!);
-      refreshData = await mTx.translate('refreshData', sett.locale!);
+          await translator.translate('organizationProjects', sett.locale!);
+      projectsNotFound = await translator.translate('projectsNotFound', sett.locale!);
+      refreshData = await translator.translate('refreshData', sett.locale!);
     }
   }
 

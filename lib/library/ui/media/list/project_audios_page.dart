@@ -50,12 +50,12 @@ class ProjectAudiosPageState extends State<ProjectAudiosPage> {
   void _setTexts() async {
     settingsModel = await prefsOGx.getSettings();
     var nf =
-        await mTx.translate('audiosNotFoundInProject', settingsModel!.locale!);
+        await translator.translate('audiosNotFoundInProject', settingsModel!.locale!);
     notFound = nf.replaceAll('\$project', '\n\n${widget.project.name!}');
     networkProblem =
-        await mTx.translate('networkProblem', settingsModel!.locale!);
+        await translator.translate('networkProblem', settingsModel!.locale!);
     loadingActivities =
-        await mTx.translate('loadingActivities', settingsModel!.locale!);
+        await translator.translate('loadingActivities', settingsModel!.locale!);
     setState(() {});
   }
 
@@ -80,7 +80,7 @@ class ProjectAudiosPageState extends State<ProjectAudiosPage> {
     try {
       settingsModel = await prefsOGx.getSettings();
       if (settingsModel != null) {
-        durationText = await mTx.translate('duration', settingsModel!.locale!);
+        durationText = await translator.translate('duration', settingsModel!.locale!);
       }
       var map = await getStartEndDates();
       final startDate = map['startDate'];

@@ -163,10 +163,10 @@ class ProjectMapTabletState extends State<ProjectMapTablet>
   void _setTexts() async {
     var sett = await prefsOGx.getSettings();
     if (sett != null) {
-      projectLocationsAreas = await mTx.translate('projectLocationsAreas', sett!.locale!);
-      var loc = await mTx.translate('location', sett!.locale!);
+      projectLocationsAreas = await translator.translate('projectLocationsAreas', sett!.locale!);
+      var loc = await translator.translate('location', sett!.locale!);
       location = loc.replaceAll('\$count', '');
-      locations = await mTx.translate('locations', sett!.locale!);
+      locations = await translator.translate('locations', sett!.locale!);
     }
 
   }

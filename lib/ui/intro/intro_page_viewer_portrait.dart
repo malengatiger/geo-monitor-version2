@@ -36,6 +36,7 @@ class IntroPageViewerPortraitState extends State<IntroPageViewerPortrait>
   bool authed = false;
   fb.FirebaseAuth firebaseAuth = fb.FirebaseAuth.instance;
   ur.User? user;
+  String? signInFailed;
 
 
   final mm =
@@ -51,6 +52,7 @@ class IntroPageViewerPortraitState extends State<IntroPageViewerPortrait>
   }
 
   IntroStrings? introStrings;
+
   Future _setTexts({String? selectedLocale}) async {
     settingsModel = await prefsOGx.getSettings();
     if (settingsModel == null) {
@@ -59,6 +61,7 @@ class IntroPageViewerPortraitState extends State<IntroPageViewerPortrait>
       await prefsOGx.saveSettings(settingsModel!);
     }
     introStrings = await IntroStrings.getTranslated();
+    signInFailed = await translator.translate('signInFailed', settingsModel!.locale!);
     setState(() {});
   }
 
@@ -139,7 +142,7 @@ class IntroPageViewerPortraitState extends State<IntroPageViewerPortrait>
           '${E.redDot}${E.redDot} NOT GOOD! ${E.redDot}');
       if (mounted) {
         showToast(
-            message: 'Phone Sign In Failed',
+            message: signInFailed == null?'Phone Sign In Failed':signInFailed!,
             duration: const Duration(seconds: 5),
             backgroundColor: Theme.of(context).primaryColor,
             padding: 12.0,
@@ -197,10 +200,13 @@ class IntroPageViewerPortraitState extends State<IntroPageViewerPortrait>
     _navigateToOrgRegistration();
   }
 
-  onSelected(Locale p1, String p2) async {
-    pp('$mm locale selected: $p1 - $p2');
-    final s = getBaseSettings();
-    await prefsOGx.saveSettings(s);
+  onLanguageSelected(Locale p1, String p2) async {
+    pp('$mm locale selected: $p1 - $p2, will save in new settings ... ');
+
+    final baseSettings = getBaseSettings();
+    baseSettings.locale = p1.languageCode;
+    baseSettings.individualLocale = p1.languageCode;
+    await prefsOGx.saveSettings(baseSettings);
     await _setTexts(selectedLocale: p1.languageCode);
   }
 
@@ -220,7 +226,7 @@ class IntroPageViewerPortraitState extends State<IntroPageViewerPortrait>
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
                     LocaleChooser(
-                        onSelected: onSelected,
+                        onSelected: onLanguageSelected,
                         hint: introStrings == null ? 'Select Language' : introStrings!.hint),
                   ],
                 )
@@ -246,7 +252,7 @@ class IntroPageViewerPortraitState extends State<IntroPageViewerPortrait>
                       Row(mainAxisAlignment: MainAxisAlignment.end,
                         children: [
                           LocaleChooser(
-                              onSelected: onSelected,
+                              onSelected: onLanguageSelected,
                               hint: introStrings == null ? 'Select Language' : introStrings!.hint),
 
                         ],
@@ -339,7 +345,7 @@ class IntroStrings {
       infrastructure,
       govt,
       youth,
-      hint, signIn,
+      hint, signIn, signInFailed,
       community,
       registerOrganization;
 
@@ -357,32 +363,33 @@ class IntroStrings {
       required this.hint,
         required this.signIn,
       required this.community,
+
       required this.registerOrganization});
 
   static Future<IntroStrings> getTranslated() async {
     var settingsModel = await prefsOGx.getSettings();
-    var hint = await mTx.translate('selectLanguage', settingsModel!.locale!);
+    var hint = await translator.translate('selectLanguage', settingsModel!.locale!);
 
-    var signIn = await mTx.translate('signIn', settingsModel.locale!);
+    var signIn = await translator.translate('signIn', settingsModel.locale!);
     var organizations =
-        await mTx.translate('organizations', settingsModel.locale!);
+        await translator.translate('organizations', settingsModel.locale!);
     var managementPeople =
-        await mTx.translate('managementPeople', settingsModel.locale!);
+        await translator.translate('managementPeople', settingsModel.locale!);
     var fieldWorkers =
-        await mTx.translate('fieldWorkers', settingsModel.locale!);
-    var executives = await mTx.translate('executives', settingsModel.locale!);
-    var information = await mTx.translate('information', settingsModel.locale!);
-    var thankYou = await mTx.translate('thankYou', settingsModel.locale!);
+        await translator.translate('fieldWorkers', settingsModel.locale!);
+    var executives = await translator.translate('executives', settingsModel.locale!);
+    var information = await translator.translate('information', settingsModel.locale!);
+    var thankYou = await translator.translate('thankYou', settingsModel.locale!);
     var thankYouMessage =
-        await mTx.translate('thankYouMessage', settingsModel.locale!);
+        await translator.translate('thankYouMessage', settingsModel.locale!);
 
     var infrastructure =
-        await mTx.translate('infrastructure', settingsModel.locale!);
-    var govt = await mTx.translate('govt', settingsModel.locale!);
-    var youth = await mTx.translate('youth', settingsModel.locale!);
-    var community = await mTx.translate('community', settingsModel.locale!);
+        await translator.translate('infrastructure', settingsModel.locale!);
+    var govt = await translator.translate('govt', settingsModel.locale!);
+    var youth = await translator.translate('youth', settingsModel.locale!);
+    var community = await translator.translate('community', settingsModel.locale!);
     var registerOrganization =
-        await mTx.translate('registerOrganization', settingsModel.locale!);
+        await translator.translate('registerOrganization', settingsModel.locale!);
 
     final m = IntroStrings(
         organizations: organizations,

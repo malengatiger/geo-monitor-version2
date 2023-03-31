@@ -48,15 +48,15 @@ class ProjectVideosPageState extends State<ProjectVideosPage> {
 
     settingsModel = await prefsOGx.getSettings();
     if (settingsModel != null) {
-      durationText = await mTx.translate('duration', settingsModel!.locale!);
+      durationText = await translator.translate('duration', settingsModel!.locale!);
 
-      final nf = await mTx.translate(
+      final nf = await translator.translate(
           'videosNotFoundInProject', settingsModel!.locale!);
       notFound = nf.replaceAll('\$project', '\n\n${widget.project.name!}');
       networkProblem =
-          await mTx.translate('networkProblem', settingsModel!.locale!);
+          await translator.translate('networkProblem', settingsModel!.locale!);
       loadingActivities =
-          await mTx.translate('loadingActivities', settingsModel!.locale!);
+          await translator.translate('loadingActivities', settingsModel!.locale!);
       setState(() {
 
       });

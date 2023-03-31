@@ -346,9 +346,9 @@ class MyKeys {
     hashMap["audioLocation"]  = "audioLocation";
     hashMap["memberLocation"]  = "memberLocation";
 
-    hashMap["enterPassword"] = "Enter Password";
-    hashMap["password"] = "Password";
-    hashMap["signInOK"] = "Sign in succeeded!";
+    hashMap["enterPassword"] = "enterPassword";
+    hashMap["password"] = "password";
+    hashMap["signInOK"] = "signInOK";
 
     hashMap["phoneAuth"] = "phoneAuth";
     hashMap["emailAuth"] = "emailAuth";

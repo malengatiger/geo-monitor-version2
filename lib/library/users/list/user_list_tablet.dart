@@ -163,8 +163,8 @@ class _UserListTabletState extends State<UserListTablet> {
   Future _setTexts() async {
     var sett = await prefsOGx.getSettings();
     if (sett != null) {
-      title = await mTx.translate('organizationMembers', sett!.locale!);
-      subTitle = await mTx.translate('administratorsMembers', sett!.locale!);
+      title = await translator.translate('organizationMembers', sett!.locale!);
+      subTitle = await translator.translate('administratorsMembers', sett!.locale!);
       setState(() {});
     }
   }

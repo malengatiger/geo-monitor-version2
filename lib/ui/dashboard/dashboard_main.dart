@@ -25,7 +25,7 @@ class DashboardMainState extends State<DashboardMain>
   User? user;
   static const mm = '🌎🌎🌎🌎🌎🌎DashboardMain: 🔵🔵🔵';
   bool initializing = false;
-  String? initializingText;
+  String? initializingText, geoRunning, tapToReturn;
 
   @override
   void initState() {
@@ -40,10 +40,13 @@ class DashboardMainState extends State<DashboardMain>
       initializing = true;
     });
     try {
+
       await initializer.initializeGeo();
       final sett = await prefsOGx.getSettings();
       if (sett != null) {
-        initializingText = await mTx.translate('initializing', sett.locale!);
+        initializingText = await translator.translate('initializing', sett.locale!);
+        geoRunning = await translator.translate('geoRunning', sett.locale!);
+        tapToReturn = await translator.translate('tapToReturn', sett.locale!);
         pp('$mm initializingText: $initializingText');
         setState(() {
 
@@ -114,13 +117,13 @@ class DashboardMainState extends State<DashboardMain>
           channelName: 'Geofence Service Notification',
           channelDescription:
           'This notification appears when the geofence service is running in the background.',
-          channelImportance: NotificationChannelImportance.LOW,
-          priority: NotificationPriority.LOW,
+          channelImportance: NotificationChannelImportance.DEFAULT,
+          priority: NotificationPriority.DEFAULT,
           isSticky: false,
         ),
         iosNotificationOptions: const IOSNotificationOptions(),
-        notificationTitle: 'Geo service is running',
-        notificationText: 'Tap to return to the app',
+        notificationTitle: geoRunning == null?'Geo service is running': geoRunning!,
+        notificationText: tapToReturn == null? 'Tap to return to Geo':tapToReturn!,
         foregroundTaskOptions: const ForegroundTaskOptions(),
         child: ScreenTypeLayout(
           mobile: const DashboardMobile(),

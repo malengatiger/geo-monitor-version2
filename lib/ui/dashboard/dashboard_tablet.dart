@@ -218,9 +218,9 @@ class DashboardTabletState extends State<DashboardTablet>
     settingsModel = await prefsOGx.getSettings();
     if (settingsModel != null) {
       numberOfDays = settingsModel!.numberOfDays!;
-      title = await mTx.translate('dashboard', settingsModel!.locale!);
+      title = await translator.translate('dashboard', settingsModel!.locale!);
       var sub =
-          await mTx.translate('dashboardSubTitle', settingsModel!.locale!);
+          await translator.translate('dashboardSubTitle', settingsModel!.locale!);
       pp('deciphering this string: 🍎 $sub');
       int index = sub.indexOf('\$');
       prefix = sub.substring(0, index);

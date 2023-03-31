@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:geo_monitor/library/api/prefs_og.dart';
 import 'package:geo_monitor/library/bloc/fcm_bloc.dart';
 import 'package:geo_monitor/library/bloc/organization_bloc.dart';
 import 'package:geo_monitor/ui/dashboard/project_dashboard_mobile.dart';
@@ -12,7 +11,6 @@ import '../../library/data/project.dart';
 import '../../library/data/settings_model.dart';
 import '../../library/data/user.dart';
 import '../../library/functions.dart';
-import '../../library/generic_functions.dart';
 import 'dashboard_element.dart';
 
 class DashboardGrid extends StatefulWidget {
@@ -47,6 +45,8 @@ class _DashboardGridState extends State<DashboardGrid> {
   final mm = '🔵🔵🔵🔵DashboardGrid:  🍎 ';
 
   late StreamSubscription<SettingsModel> settingsSubscription;
+  late StreamSubscription<SettingsModel> settingsSubscriptionFCM;
+
   SettingsModel? settingsModel;
   DashboardStrings? dashboardStrings;
 
@@ -62,7 +62,13 @@ class _DashboardGridState extends State<DashboardGrid> {
   }
 
   Future _listen() async {
-    settingsSubscription = fcmBloc.settingsStream.listen((SettingsModel settings) {
+    settingsSubscriptionFCM = fcmBloc.settingsStream.listen((SettingsModel settings) {
+      pp('$mm fcmBloc.settingsStream delivered settings ... ${settings.toJson()}');
+
+      _setTexts();
+    });
+    settingsSubscription = organizationBloc.settingsStream.listen((SettingsModel settings) {
+      pp('$mm organizationBloc.settingsStream delivered settings ... ${settings.toJson()}');
       _setTexts();
     });
   }
@@ -75,6 +81,7 @@ class _DashboardGridState extends State<DashboardGrid> {
 
   Future _setTexts() async {
     dashboardStrings = await DashboardStrings.getTranslated();
+    pp('$mm setting translated texts ...');
     setState(() {});
   }
 

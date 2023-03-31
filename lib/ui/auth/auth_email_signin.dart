@@ -7,7 +7,6 @@ import 'package:geo_monitor/library/bloc/organization_bloc.dart';
 import 'package:geo_monitor/library/bloc/theme_bloc.dart';
 import 'package:geo_monitor/library/data/settings_model.dart';
 import 'package:geo_monitor/library/functions.dart';
-import 'package:geo_monitor/ui/intro/intro_page_one.dart';
 
 import '../../l10n/translation_handler.dart';
 import '../../library/generic_functions.dart';
@@ -63,17 +62,17 @@ class AuthEmailSignInState extends State<AuthEmailSignIn> {
       settingsModel =getBaseSettings();
       await prefsOGx.saveSettings(settingsModel!);
     }
-    signInText = await mTx.translate('signIn', settingsModel!.locale!);
-    enterEmail = await mTx.translate('enterEmail', settingsModel!.locale!);
-    emailAddress = await mTx.translate('emailAddress', settingsModel!.locale!);
+    signInText = await translator.translate('signIn', settingsModel!.locale!);
+    enterEmail = await translator.translate('enterEmail', settingsModel!.locale!);
+    emailAddress = await translator.translate('emailAddress', settingsModel!.locale!);
     enterPassword =
-        await mTx.translate('enterPassword', settingsModel!.locale!);
-    password = await mTx.translate('password', settingsModel!.locale!);
-    signInFailed = await mTx.translate('signInFailed', settingsModel!.locale!);
-    signedInOK = await mTx.translate('signedInOK', settingsModel!.locale!);
-    notFound = await mTx.translate('memberNotExist', settingsModel!.locale!);
+        await translator.translate('enterPassword', settingsModel!.locale!);
+    password = await translator.translate('password', settingsModel!.locale!);
+    signInFailed = await translator.translate('signInFailed', settingsModel!.locale!);
+    signedInOK = await translator.translate('signedInOK', settingsModel!.locale!);
+    notFound = await translator.translate('memberNotExist', settingsModel!.locale!);
 
-    emailAuth = await mTx.translate('emailAuth', settingsModel!.locale!);
+    emailAuth = await translator.translate('emailAuth', settingsModel!.locale!);
 
     setState(() {});
   }
@@ -111,9 +110,9 @@ class AuthEmailSignInState extends State<AuthEmailSignIn> {
           await prefsOGx.saveSettings(settingsList.first);
           await themeBloc.changeToTheme(settingsList.first.themeIndex!);
           String? txt =
-              await mTx.translate('memberSignedIn', settingsList.first.locale!);
+              await translator.translate('memberSignedIn', settingsList.first.locale!);
           String? notFound =
-              await mTx.translate('memberNotExist', settingsList.first.locale!);
+              await translator.translate('memberNotExist', settingsList.first.locale!);
 
           dataRefresher.manageRefresh(numberOfDays:  settingsList.first.numberOfDays!,
               organizationId:  settingsList.first.organizationId!,
