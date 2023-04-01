@@ -9,6 +9,7 @@ import 'package:geo_monitor/library/api/data_api.dart';
 import 'package:geo_monitor/library/api/prefs_og.dart';
 import 'package:geo_monitor/library/bloc/fcm_bloc.dart';
 import 'package:geo_monitor/library/bloc/organization_bloc.dart';
+import 'package:geo_monitor/library/errors/error_handler.dart';
 import 'package:http/http.dart' as http;
 import 'package:path_provider/path_provider.dart';
 
@@ -20,6 +21,7 @@ import '../data/data_bag.dart';
 import '../data/project.dart';
 import '../data/user.dart';
 import '../functions.dart';
+import 'geo_exception.dart';
 import 'project_bloc.dart';
 import 'user_bloc.dart';
 
@@ -48,9 +50,7 @@ class DataRefresher {
     var start = DateTime.now();
     if (numberOfDays == null) {
       var sett = await prefsOGx.getSettings();
-      if (sett != null) {
-        this.numberOfDays = sett.numberOfDays!;
-      }
+      this.numberOfDays = sett.numberOfDays!;
     } else {
       this.numberOfDays = numberOfDays;
     }
@@ -63,6 +63,9 @@ class DataRefresher {
       _finish(bag, start);
     } catch (e) {
       pp('$xx Something went horribly wrong, will RETRY ...: $e');
+      if (e is GeoException) {
+        e.saveError();
+      }
       bag = await retry(
           numberOfDays: numberOfDays,
           organizationId: organizationId,
@@ -86,13 +89,16 @@ class DataRefresher {
     // }
     pp('$xx users empty; will start refresh ...... ');
     var users = await _startUsersRefresh(organizationId: organizationId!);
-    bag!.users = users;
+    if (bag != null) {
+      bag.users = users;
+      var projects =
+          await _startProjectsRefresh(organizationId: organizationId!);
+      bag.projects = projects;
 
-    var projects = await _startProjectsRefresh(organizationId: organizationId!);
-    bag.projects = projects;
-
-    pp('$xx users in bag: ${bag!.users!.length}; putting bag in stream ...... ');
-    organizationBloc.dataBagController.sink.add(bag);
+      pp('$xx users in bag: ${bag!.users!.length}; putting bag in stream ...... ');
+      organizationBloc.dataBagController.sink.add(bag);
+    }
+    await errorHandler.uploadErrors();
     return bag;
   }
 
@@ -125,13 +131,10 @@ class DataRefresher {
       required String? projectId,
       required String? userId}) async {
     pp('$xx retrying the call after an error, will kick off after 5 seconds  ...');
-    await Future.delayed(Duration(seconds: 5));
+    await Future.delayed(const Duration(seconds: 5));
     DataBag? bag;
-    try {
-      bag = await _performWork(organizationId, bag, projectId, userId);
-    } catch (e) {
-      pp('$xx Something went horribly wrong on the RETRY, giving up!: $e');
-    }
+
+    bag = await _performWork(organizationId, bag, projectId, userId);
 
     return bag;
   }
@@ -155,16 +158,25 @@ class DataRefresher {
 
   Future _setUp() async {
     url = (await DataAPI.getUrl())!;
-    token = (await AppAuth.getAuthToken())!;
-    startDate =
-        DateTime.now().subtract(Duration(days: numberOfDays)).toIso8601String();
-    endDate = DateTime.now().toUtc().toIso8601String();
-    pp('$xx 🍎🍎🍎 check dates:startDate: $startDate endDate: $endDate 🍎🍎🍎');
-    user = await prefsOGx.getUser();
-    if (user == null) {
-      throw Exception('User is null');
+    // String? token;
+    try {
+      token = (await AppAuth.getAuthToken())!;
+      startDate =
+          DateTime.now()
+              .subtract(Duration(days: numberOfDays))
+              .toIso8601String();
+      endDate = DateTime.now().toUtc().toIso8601String();
+      pp('$xx 🍎🍎🍎 check dates:startDate: $startDate endDate: $endDate 🍎🍎🍎');
+      user = await prefsOGx.getUser();
+      if (user == null) {
+        throw Exception('User is null');
+      }
+      _check();
+    } catch (e) {
+      pp('$mm $e');
+      throw GeoException(message: 'Unable to obtain Firebase token',
+          translationKey: 'networkProblem', errorType: GeoException.socketException, url: url);
     }
-    _check();
   }
 
   Future<List<Project>> _startProjectsRefresh(
@@ -597,8 +609,34 @@ Future<List<User>> getUsers(
       pp('$xz getUsers: Bad status; ${httpResponse.statusCode} ${httpResponse.body}');
       return [];
     }
-  } catch (e) {
-    pp('$xz Problem getting users: $e');
+  } on SocketException {
+    pp('$xz No Internet connection, really means that server cannot be reached 😑');
+    throw GeoException(
+        message: 'No Internet connection',
+        url: mUrl,
+        translationKey: 'networkProblem',
+        errorType: GeoException.socketException);
+  } on HttpException {
+    pp("$xz HttpException occurred 😱");
+    throw GeoException(
+        message: 'Server not around',
+        url: mUrl,
+        translationKey: 'serverProblem',
+        errorType: GeoException.httpException);
+  } on FormatException {
+    pp("$xz Bad response format 👎");
+    throw GeoException(
+        message: 'Bad response format',
+        url: mUrl,
+        translationKey: 'serverProblem',
+        errorType: GeoException.formatException);
+  } on TimeoutException {
+    pp("$xz GET Request has timed out in $timeOutInSeconds seconds 👎");
+    throw GeoException(
+        message: 'Request timed out',
+        url: mUrl,
+        translationKey: 'networkProblem',
+        errorType: GeoException.timeoutException);
   }
 
   return [];
@@ -640,8 +678,34 @@ Future<List<Country>> getCountries(
       pp('$xz getCountries: Bad status; ${httpResponse.statusCode} ${httpResponse.body}');
       return [];
     }
-  } catch (e) {
-    pp('$xz Problem getting countries: $e');
+  } on SocketException {
+    pp('$xz No Internet connection, really means that server cannot be reached 😑');
+    throw GeoException(
+        message: 'No Internet connection',
+        url: mUrl,
+        translationKey: 'networkProblem',
+        errorType: GeoException.socketException);
+  } on HttpException {
+    pp("$xz HttpException occurred 😱");
+    throw GeoException(
+        message: 'Server not around',
+        url: mUrl,
+        translationKey: 'serverProblem',
+        errorType: GeoException.httpException);
+  } on FormatException {
+    pp("$xz Bad response format 👎");
+    throw GeoException(
+        message: 'Bad response format',
+        url: mUrl,
+        translationKey: 'serverProblem',
+        errorType: GeoException.formatException);
+  } on TimeoutException {
+    pp("$xz GET Request has timed out in $timeOutInSeconds seconds 👎");
+    throw GeoException(
+        message: 'Request timed out',
+        url: mUrl,
+        translationKey: 'networkProblem',
+        errorType: GeoException.timeoutException);
   }
 
   return [];
@@ -654,58 +718,52 @@ Future<DataBag?> _getDataBag(
   pp('$xz _getDataBag: 🔆🔆🔆 get zipped data ...');
 
   DataBag? dataBag;
-  try {
-    http.Response response = await _sendRequestToBackend(mUrl, token);
-    pp('$xz _getDataBag: 🔆🔆🔆 get zipped data, response: ${response.contentLength} bytes ...');
 
-    File zipFile =
-        File('$directoryPath/zip${DateTime.now().millisecondsSinceEpoch}.zip');
-    zipFile.writeAsBytesSync(response.bodyBytes);
+  http.Response response = await _sendRequestToBackend(mUrl, token);
+  pp('$xz _getDataBag: 🔆🔆🔆 get zipped data, response: ${response.contentLength} bytes ...');
 
-    pp('$xz _getDataBag: 🔆🔆🔆 handle file inside zip: ${await zipFile.length()}');
+  File zipFile =
+      File('$directoryPath/zip${DateTime.now().millisecondsSinceEpoch}.zip');
+  zipFile.writeAsBytesSync(response.bodyBytes);
 
-    //create zip archive
-    final inputStream = InputFileStream(zipFile.path);
-    final archive = ZipDecoder().decodeBuffer(inputStream);
+  pp('$xz _getDataBag: 🔆🔆🔆 handle file inside zip: ${await zipFile.length()}');
 
-    pp('$xz _getDataBag: 🔆🔆🔆 handle file inside zip archive');
-    for (var file in archive.files) {
-      if (file.isFile) {
-        var fileName = '$directoryPath/${file.name}';
-        pp('$xz _getDataBag: file from inside archive ... ${file.size} bytes 🔵 isCompressed: ${file.isCompressed} 🔵 zipped file name: ${file.name}');
-        var outFile = File(fileName);
-        outFile = await outFile.create(recursive: true);
-        await outFile.writeAsBytes(file.content);
-        pp('$xz _getDataBag: file after decompress ... ${await outFile.length()} bytes  🍎 path: ${outFile.path} 🍎');
+  //create zip archive
+  final inputStream = InputFileStream(zipFile.path);
+  final archive = ZipDecoder().decodeBuffer(inputStream);
 
-        if (outFile.existsSync()) {
-          pp('$xz decompressed file exists and has length of 🍎 ${await outFile.length()} bytes');
-          var m = outFile.readAsStringSync(encoding: utf8);
-          var mJson = json.decode(m);
-          dataBag = DataBag.fromJson(mJson);
-          _printDataBag(dataBag);
-          var end = DateTime.now().millisecondsSinceEpoch;
-          var ms = (end - start) / 1000;
-          pp('$xz getOrganizationDataZippedFile 🍎🍎🍎🍎 work is done!, elapsed seconds: $ms\n\n');
-        } else {
-          pp('$xz ERROR: could not find file');
-        }
+  pp('$xz _getDataBag: 🔆🔆🔆 handle file inside zip archive');
+  for (var file in archive.files) {
+    if (file.isFile) {
+      var fileName = '$directoryPath/${file.name}';
+      pp('$xz _getDataBag: file from inside archive ... ${file.size} bytes 🔵 isCompressed: ${file.isCompressed} 🔵 zipped file name: ${file.name}');
+      var outFile = File(fileName);
+      outFile = await outFile.create(recursive: true);
+      await outFile.writeAsBytes(file.content);
+      pp('$xz _getDataBag: file after decompress ... ${await outFile.length()} bytes  🍎 path: ${outFile.path} 🍎');
+
+      if (outFile.existsSync()) {
+        pp('$xz decompressed file exists and has length of 🍎 ${await outFile.length()} bytes');
+        var m = outFile.readAsStringSync(encoding: utf8);
+        var mJson = json.decode(m);
+        dataBag = DataBag.fromJson(mJson);
+        _printDataBag(dataBag);
+        var end = DateTime.now().millisecondsSinceEpoch;
+        var ms = (end - start) / 1000;
+        pp('$xz getOrganizationDataZippedFile 🍎🍎🍎🍎 work is done!, elapsed seconds: $ms\n\n');
+      } else {
+        pp('$xz ERROR: could not find file');
       }
     }
-    if (dataBag == null) {
-      pp('$xz _getDataBag: dataBag is null');
-      final sett = await prefsOGx.getSettings();
-      final serverProblem =
-          await translator.translate('serverProblem', sett.locale!);
-      throw serverProblem;
-    }
-    return dataBag;
-  } catch (e) {
+  }
+  if (dataBag == null) {
+    pp('$xz _getDataBag: dataBag is null');
     final sett = await prefsOGx.getSettings();
     final serverProblem =
         await translator.translate('serverProblem', sett.locale!);
     throw serverProblem;
   }
+  return dataBag;
 }
 
 final client = http.Client();
@@ -759,29 +817,32 @@ Future<http.Response> _sendRequestToBackend(String mUrl, String token) async {
     }
   } on SocketException {
     pp('$xz No Internet connection, really means that server cannot be reached 😑');
-    final sett = await prefsOGx.getSettings();
-    final networkProblem =
-        await translator.translate('networkProblem', sett.locale!);
-    throw networkProblem;
+    throw GeoException(
+        message: 'No Internet connection',
+        url: mUrl,
+        translationKey: 'networkProblem',
+        errorType: GeoException.socketException);
   } on HttpException {
     pp("$xz HttpException occurred 😱");
-    final sett = await prefsOGx.getSettings();
-    final serverProblem =
-        await translator.translate('serverProblem', sett.locale!);
-    throw serverProblem;
-    throw 'HttpException';
+    throw GeoException(
+        message: 'Server not around',
+        url: mUrl,
+        translationKey: 'serverProblem',
+        errorType: GeoException.httpException);
   } on FormatException {
     pp("$xz Bad response format 👎");
-    final sett = await prefsOGx.getSettings();
-    final serverProblem =
-        await translator.translate('serverProblem', sett.locale!);
-    throw serverProblem;
+    throw GeoException(
+        message: 'Bad response format',
+        url: mUrl,
+        translationKey: 'serverProblem',
+        errorType: GeoException.formatException);
   } on TimeoutException {
     pp("$xz GET Request has timed out in $timeOutInSeconds seconds 👎");
-    final sett = await prefsOGx.getSettings();
-    final networkProblem =
-        await translator.translate('networkProblem', sett.locale!);
-    throw networkProblem;
+    throw GeoException(
+        message: 'Request timed out',
+        url: mUrl,
+        translationKey: 'networkProblem',
+        errorType: GeoException.timeoutException);
   }
 }
 
@@ -795,7 +856,6 @@ void _printDataBag(DataBag bag) {
   final audios = bag.audios!.length;
   final schedules = bag.fieldMonitorSchedules!.length;
 
-  pp('\n\n$xz _printDataBag: all org data extracted from zipped file on: 🔵🔵🔵${bag.date}');
   // pp('$xz projects: $projects');
   // pp('$xz users: $users');
   // pp('$xz positions: $positions');

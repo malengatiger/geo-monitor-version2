@@ -43,7 +43,7 @@ class UserProfileCard extends StatelessWidget {
                                 )
                               : CircleAvatar(
                                   radius: avatarRadius ?? 24,
-                                  backgroundImage: NetworkImage(userThumbUrl!),
+                                  backgroundImage: NetworkImage(userThumbUrl!,),
                                 ),
                           const SizedBox(
                             width: 16,

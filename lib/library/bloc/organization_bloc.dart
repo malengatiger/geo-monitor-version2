@@ -192,7 +192,6 @@ class OrganizationBloc {
           organizationId: organizationId, projectId: null, userId: null);
       bag!.projects = projects;
       bag.users = users;
-      printDataBag(bag!);
       return bag;
     } else {
       bag = await cacheManager.getOrganizationData(organizationId: organizationId);
@@ -203,7 +202,6 @@ class OrganizationBloc {
             organizationId: organizationId, projectId: null, userId: null);
         bag!.projects = projects;
         bag.users = users;
-        printDataBag(bag);
         return bag;
       }
     }
@@ -213,7 +211,6 @@ class OrganizationBloc {
     final start2 = DateTime.now();
     pp('\n\n$mm ... filter bag by the dates .... before filter');
 
-    printDataBag(bag);
     var mBag = filterBagContentsByDate(
         bag: bag, startDate: startDate, endDate: endDate);
 

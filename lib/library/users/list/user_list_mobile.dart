@@ -13,6 +13,7 @@ import 'package:url_launcher/url_launcher.dart';
 import '../../../l10n/translation_handler.dart';
 import '../../api/prefs_og.dart';
 import '../../bloc/fcm_bloc.dart';
+import '../../bloc/geo_exception.dart';
 import '../../bloc/location_request_handler.dart';
 import '../../bloc/organization_bloc.dart';
 import '../../data/settings_model.dart';
@@ -112,8 +113,26 @@ class UserListMobileState extends State<UserListMobile>
       users.sort((a, b) => (a.name!.compareTo(b.name!)));
       pp('.......................... users to work with: ${users.length}');
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Organization user refresh failed: $e')));
+      if (mounted) {
+        setState(() {
+          busy = false;
+        });
+        if (e is GeoException) {
+          e.saveError();
+          final msg = await e.getTranslatedMessage();
+          if (mounted) {
+            showToast(
+                backgroundColor: Theme
+                    .of(context)
+                    .primaryColor,
+                textStyle: myTextStyleMedium(context),
+                padding: 16,
+                duration: const Duration(seconds: 10),
+                message: msg,
+                context: context);
+          }
+        }
+      }
     }
     setState(() {
       busy = false;
@@ -268,7 +287,7 @@ class UserListMobileState extends State<UserListMobile>
         appBar: AppBar(
           title: Text(title == null?
             'Members': title!,
-            style: myTextStyleLarge(context),
+            style: myTextStyleMedium(context),
           ),
           actions: busy
               ? []

@@ -28,6 +28,7 @@ import 'package:universal_platform/universal_platform.dart';
 import '../../l10n/translation_handler.dart';
 import '../../library/api/prefs_og.dart';
 import '../../library/bloc/downloader.dart';
+import '../../library/bloc/geo_exception.dart';
 import '../../library/bloc/theme_bloc.dart';
 import '../../library/data/audio.dart';
 import '../../library/data/data_bag.dart';
@@ -257,8 +258,20 @@ class DashboardTabletState extends State<DashboardTablet>
           endDate: endDate!);
     } catch (e) {
       pp(e);
-      if (mounted) {
-        showToast(message: '$e', context: context);
+      if (e is GeoException) {
+        e.saveError();
+        final msg = await e.getTranslatedMessage();
+        if (mounted) {
+          showToast(
+              backgroundColor: Theme
+                  .of(context)
+                  .primaryColor,
+              textStyle: myTextStyleMedium(context),
+              padding: 16,
+              duration: const Duration(seconds: 10),
+              message: msg,
+              context: context);
+        }
       }
     }
 

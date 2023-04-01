@@ -23,6 +23,7 @@ import '../data/user.dart';
 import '../data/video.dart';
 import '../functions.dart';
 import 'audio_for_upload.dart';
+import 'geo_exception.dart';
 
 final CloudStorageBloc cloudStorageBloc = CloudStorageBloc();
 
@@ -370,12 +371,12 @@ class CloudStorageBloc {
   }
 
   static const xz = '🌿🌿🌿🌿🌿🌿🌿 CloudStorageBloc: ';
-  Future<File> downloadFile(String url) async {
-    pp('$xz : downloadFile: 😡😡😡 $url ....');
+  Future<File> downloadFile(String mUrl) async {
+    pp('$xz : downloadFile: 😡😡😡 $mUrl ....');
 
     try {
       final http.Response response =
-          await http.get(Uri.parse(url)).catchError((e) {
+          await http.get(Uri.parse(mUrl)).catchError((e) {
         pp('😡😡😡 Download failed: 😡😡😡 $e');
         throw Exception('😡😡😡 Download failed: $e');
       });
@@ -386,7 +387,7 @@ class CloudStorageBloc {
       if (response.statusCode == 200) {
         final Directory directory = await getApplicationDocumentsDirectory();
         var type = 'jpg';
-        if (url.contains('mp4')) {
+        if (mUrl.contains('mp4')) {
           type = 'mp4';
         }
         final File mFile = File(
@@ -403,29 +404,27 @@ class CloudStorageBloc {
       }
     } on SocketException {
       pp('$xz No Internet connection, really means that server cannot be reached 😑');
-      final sett = await prefsOGx.getSettings();
-      final networkProblem =
-          await translator.translate('networkProblem', sett.locale!);
-      throw networkProblem;
+      throw GeoException(message: 'No Internet connection',
+          url: mUrl,
+          translationKey: 'networkProblem', errorType: GeoException.socketException);
+
     } on HttpException {
       pp("$xz HttpException occurred 😱");
-      final sett = await prefsOGx.getSettings();
-      final serverProblem =
-          await translator.translate('serverProblem', sett.locale!);
-      throw serverProblem;
-      throw 'HttpException';
+      throw GeoException(message: 'Server not around',
+          url: mUrl,
+          translationKey: 'serverProblem', errorType: GeoException.httpException);
     } on FormatException {
       pp("$xz Bad response format 👎");
-      final sett = await prefsOGx.getSettings();
-      final serverProblem =
-          await translator.translate('serverProblem', sett.locale!);
-      throw serverProblem;
+      throw GeoException(message: 'Bad response format',
+          url: mUrl,
+          translationKey: 'serverProblem', errorType: GeoException.formatException);
+
     } on TimeoutException {
       pp("$xz GET Request has timed out in $timeOutInSeconds seconds 👎");
-      final sett = await prefsOGx.getSettings();
-      final networkProblem =
-          await translator.translate('networkProblem', sett.locale!);
-      throw networkProblem;
+      throw GeoException(message: 'Request timed out',
+          url: mUrl,
+          translationKey: 'networkProblem', errorType: GeoException.timeoutException);
+
     }
   }
 

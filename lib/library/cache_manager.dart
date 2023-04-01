@@ -5,6 +5,7 @@ import 'package:geo_monitor/library/bloc/photo_for_upload.dart';
 import 'package:geo_monitor/library/bloc/video_for_upload.dart';
 import 'package:geo_monitor/library/data/activity_model.dart';
 import 'package:geo_monitor/library/data/activity_type_enum.dart';
+import 'package:geo_monitor/library/data/app_error.dart';
 import 'package:geo_monitor/library/data/project_assignment.dart';
 import 'package:geo_monitor/library/data/project_summary.dart';
 import 'package:geo_monitor/library/data/settings_model.dart';
@@ -92,6 +93,7 @@ class CacheManager {
   Box<ActivityModel>? _activityBox;
   // Box<ActivityModel>? _activityHistoryBox;
   Box<ProjectSummary>? _summaryBox;
+  Box<AppError>? _appErrorBox;
 
   bool _isInitialized = false;
 
@@ -162,7 +164,9 @@ class CacheManager {
   }
 
   Future<void> _openBoxes() async {
+    _appErrorBox = await Hive.openBox<AppError>('appErrors');
     _summaryBox = await Hive.openBox<ProjectSummary>('summaries');
+
     _activityBox = await Hive.openBox<ActivityModel>('activities');
 
     _orgBox = await Hive.openBox<Organization>('organizations');
@@ -206,6 +210,10 @@ class CacheManager {
 
   void _registerAdapters() {
     p('\n$xx ... Registering Hive object adapters ...');
+    if (!Hive.isAdapterRegistered(66)) {
+      Hive.registerAdapter(AppErrorAdapter());
+      p('$xx Hive AppErrorAdapter registered');
+    }
     if (!Hive.isAdapterRegistered(65)) {
       Hive.registerAdapter(ProjectSummaryAdapter());
       p('$xx Hive ProjectSummaryAdapter registered');
@@ -1343,6 +1351,18 @@ class CacheManager {
         '${photo.organizationId}_${photo.projectId}_${photo.userId}_${photo.photoId}_${photo.created}';
     _photoBox?.put(key, photo);
     // pp('$mm Photo added to local cache:  🔵 🔵 ${photo.projectName}');
+  }
+
+  Future addAppError({required AppError appError}) async {
+    var key =
+        '${DateTime.parse(appError.created!).millisecondsSinceEpoch}';
+    _appErrorBox?.put(key, appError);
+    pp('$mm appError added to cache: ${appError.errorMessage}');
+  }
+
+  Future<List<AppError>> getAppErrors() async {
+    final values = _appErrorBox?.values;
+    return values!.toList();
   }
   
 

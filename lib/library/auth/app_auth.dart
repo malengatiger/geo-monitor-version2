@@ -32,8 +32,12 @@ class AppAuth {
 
     firebaseAuth.userChanges().listen((event) async {
       pp('$locks user changes from Firebase. will need to update the user, maybe ...');
-      var token = await event?.getIdToken();
-      await _checkUser(token);
+      try {
+        var token = await event?.getIdToken();
+        await _checkUser(token);
+      } catch (e) {
+        pp('$locks `firebase token acquisition falling down: $e');
+      }
     });
   }
 

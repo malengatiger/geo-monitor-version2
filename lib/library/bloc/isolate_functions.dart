@@ -8,13 +8,13 @@ import 'package:geo_monitor/library/bloc/video_for_upload.dart';
 import 'package:http/http.dart' as http;
 
 import '../../l10n/translation_handler.dart';
-import '../api/prefs_og.dart';
 import '../cache_manager.dart';
 import '../data/audio.dart';
 import '../data/photo.dart';
 import '../data/video.dart';
 import '../functions.dart';
 import 'audio_for_upload.dart';
+import 'geo_exception.dart';
 
 ///
 ///TOP LEVEL functions running inside an isolate
@@ -185,45 +185,27 @@ Future<Video?> uploadVideoFile(
 }
 
 Future<Photo> _addPhotoToDatabase(Photo photo, String url, String token) async {
-  try {
-    var result = await _callPost('${url}addPhoto', photo.toJson(), token);
-    pp('\n\n\n$xx 🔴🔴🔴  addPhoto succeeded. Everything OK?? 🔴🔴🔴');
-    var photoBack = Photo.fromJson(result);
-    pp('$xx addPhoto has added photo to DB \n');
-    return photoBack;
-  } catch (e) {
-    pp('\n\n\n$xx 🔴🔴🔴  addPhoto failed. Something fucked up here! ... 🔴🔴🔴\n\n');
-    pp(e);
-    rethrow;
-  }
+  var result = await _callPost('${url}addPhoto', photo.toJson(), token);
+  pp('\n\n\n$xx 🔴🔴🔴  addPhoto succeeded. Everything OK?? 🔴🔴🔴');
+  var photoBack = Photo.fromJson(result);
+  pp('$xx addPhoto has added photo to DB \n');
+  return photoBack;
 }
 
 Future<Video> _addVideoToDatabase(Video video, String url, String token) async {
-  try {
-    var result = await _callPost('${url}addVideo', video.toJson(), token);
-    pp('\n\n\n$xx 🔴🔴🔴  addVideo succeeded. Everything OK?? 🔴🔴🔴');
-    var videoBack = Video.fromJson(result);
-    pp('$xx addVideo has added video to DB \n');
-    return videoBack;
-  } catch (e) {
-    pp('\n\n\n$xx 🔴🔴🔴  addVideo failed. Something fucked up here! ... 🔴🔴🔴\n\n');
-    pp(e);
-    rethrow;
-  }
+  var result = await _callPost('${url}addVideo', video.toJson(), token);
+  pp('\n\n\n$xx 🔴🔴🔴  addVideo succeeded. Everything OK?? 🔴🔴🔴');
+  var videoBack = Video.fromJson(result);
+  pp('$xx addVideo has added video to DB \n');
+  return videoBack;
 }
 
 Future<Audio> _addAudioToDatabase(Audio audio, String url, String token) async {
-  try {
-    var result = await _callPost('${url}addAudio', audio.toJson(), token);
-    pp('\n\n\n$xx 🔴🔴🔴  addAudio succeeded. Everything OK?? 🔴🔴🔴');
-    var audioBack = Audio.fromJson(result);
-    pp('$xx addAudio has added audio to DB \n');
-    return audioBack;
-  } catch (e) {
-    pp('\n\n\n$xx 🔴🔴🔴  addAudio failed. Something fucked up here! ... 🔴🔴🔴\n\n');
-    pp(e);
-    rethrow;
-  }
+  var result = await _callPost('${url}addAudio', audio.toJson(), token);
+  pp('\n\n\n$xx 🔴🔴🔴  addAudio succeeded. Everything OK?? 🔴🔴🔴');
+  var audioBack = Audio.fromJson(result);
+  pp('$xx addAudio has added audio to DB \n');
+  return audioBack;
 }
 
 Future _callPost(String mUrl, Map? bag, String token) async {
@@ -264,25 +246,32 @@ Future _callPost(String mUrl, Map? bag, String token) async {
     }
   } on SocketException {
     pp('$xx No Internet connection, really means that server cannot be reached 😑');
-    final sett = await prefsOGx.getSettings();
-    final networkProblem = await translator.translate('networkProblem', sett.locale!);
-    throw networkProblem;
+    throw GeoException(
+        message: 'No Internet connection',
+        url: mUrl,
+        translationKey: 'networkProblem',
+        errorType: GeoException.socketException);
   } on HttpException {
     pp("$xx HttpException occurred 😱");
-    final sett = await prefsOGx.getSettings();
-    final serverProblem = await translator.translate('serverProblem', sett.locale!);
-    throw serverProblem;
-    throw 'HttpException';
+    throw GeoException(
+        message: 'Server not around',
+        url: mUrl,
+        translationKey: 'serverProblem',
+        errorType: GeoException.httpException);
   } on FormatException {
     pp("$xx Bad response format 👎");
-    final sett = await prefsOGx.getSettings();
-    final serverProblem = await translator.translate('serverProblem', sett.locale!);
-    throw serverProblem;
+    throw GeoException(
+        message: 'Bad response format',
+        url: mUrl,
+        translationKey: 'serverProblem',
+        errorType: GeoException.formatException);
   } on TimeoutException {
     pp("$xx GET Request has timed out in $timeOutInSeconds seconds 👎");
-    final sett = await prefsOGx.getSettings();
-    final networkProblem = await translator.translate('networkProblem', sett.locale!);
-    throw networkProblem;
+    throw GeoException(
+        message: 'Request timed out',
+        url: mUrl,
+        translationKey: 'networkProblem',
+        errorType: GeoException.timeoutException);
   }
 }
 
@@ -313,8 +302,34 @@ Future<String?> _sendUploadRequest(
       pp('\n\n$xx We have a problem, Boss! 🔴🔴🔴 statusCode: ${response.statusCode} '
           '- ${response.reasonPhrase}');
     }
-  } catch (e) {
-    pp('$xx Possible network problem with request.send() 🔴🔴🔴 $e');
+  } on SocketException {
+    pp('$xx No Internet connection, really means that server cannot be reached 😑');
+    throw GeoException(
+        message: 'No Internet connection',
+        url: mUrl,
+        translationKey: 'networkProblem',
+        errorType: GeoException.socketException);
+  } on HttpException {
+    pp("$xx HttpException occurred 😱");
+    throw GeoException(
+        message: 'Server not around',
+        url: mUrl,
+        translationKey: 'serverProblem',
+        errorType: GeoException.httpException);
+  } on FormatException {
+    pp("$xx Bad response format 👎");
+    throw GeoException(
+        message: 'Bad response format',
+        url: mUrl,
+        translationKey: 'serverProblem',
+        errorType: GeoException.formatException);
+  } on TimeoutException {
+    pp("$xx GET Request has timed out in $timeOutInSeconds seconds 👎");
+    throw GeoException(
+        message: 'Request timed out',
+        url: mUrl,
+        translationKey: 'networkProblem',
+        errorType: GeoException.timeoutException);
   }
 
   return responseString;
@@ -358,16 +373,32 @@ Future<String?> getSignedUploadUrl(
     return resp.body;
   } on SocketException {
     pp('$xx No Internet connection, really means that server cannot be reached 😑');
-    throw 'GeoMonitor server cannot be reached at this time. Please try again!';
+    throw GeoException(
+        message: 'No Internet connection',
+        url: mUrl,
+        translationKey: 'networkProblem',
+        errorType: GeoException.socketException);
   } on HttpException {
     pp("$xx HttpException occurred 😱");
-    throw 'HttpException';
+    throw GeoException(
+        message: 'Server not around',
+        url: mUrl,
+        translationKey: 'serverProblem',
+        errorType: GeoException.httpException);
   } on FormatException {
     pp("$xx Bad response format 👎");
-    throw 'Bad response format';
+    throw GeoException(
+        message: 'Bad response format',
+        url: mUrl,
+        translationKey: 'serverProblem',
+        errorType: GeoException.formatException);
   } on TimeoutException {
-    pp("$xx GET Request has timed out in 120 seconds 👎");
-    throw 'Request has timed out in 120 seconds';
+    pp("$xx GET Request has timed out in $timeOutInSeconds seconds 👎");
+    throw GeoException(
+        message: 'Request timed out',
+        url: mUrl,
+        translationKey: 'networkProblem',
+        errorType: GeoException.timeoutException);
   }
 }
 

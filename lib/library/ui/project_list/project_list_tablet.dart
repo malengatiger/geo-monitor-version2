@@ -27,6 +27,7 @@ import '../../../ui/audio/audio_recorder.dart';
 import '../../../ui/dashboard/project_dashboard_main.dart';
 import '../../api/prefs_og.dart';
 import '../../bloc/fcm_bloc.dart';
+import '../../bloc/geo_exception.dart';
 import '../../bloc/organization_bloc.dart';
 import '../../bloc/project_bloc.dart';
 import '../../cache_manager.dart';
@@ -146,16 +147,34 @@ class ProjectListTabletState extends State<ProjectListTablet>
     setState(() {
       isBusy = true;
     });
-    user = await prefsOGx.getUser();
-
-    if (user != null) {
-      pp('$mm user found: ${user!.toJson()}');
-      _setUserType();
-      await refreshProjects(forceRefresh);
-    } else {
-      pp('$mm user NOT found!!! 🥏 🥏 🥏');
-
-      throw Exception('$mm Fucked! we are! user is null???');
+    try {
+      user = await prefsOGx.getUser();
+      if (user != null) {
+        pp('$mm user found: ${user!.toJson()}');
+        _setUserType();
+        await refreshProjects(forceRefresh);
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() {
+          busy = false;
+        });
+        if (e is GeoException) {
+          e.saveError();
+          final msg = await e.getTranslatedMessage();
+          if (mounted) {
+            showToast(
+                backgroundColor: Theme
+                    .of(context)
+                    .primaryColor,
+                textStyle: myTextStyleMedium(context),
+                padding: 16,
+                duration: const Duration(seconds: 10),
+                message: msg,
+                context: context);
+          }
+        }
+      }
     }
     setState(() {
       isBusy = false;

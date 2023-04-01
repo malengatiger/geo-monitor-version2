@@ -17,6 +17,7 @@ import '../../../l10n/translation_handler.dart';
 import '../../../ui/audio/audio_player_og.dart';
 import '../../../ui/dashboard/photo_card.dart';
 import '../../bloc/fcm_bloc.dart';
+import '../../bloc/geo_exception.dart';
 import '../../bloc/location_request_handler.dart';
 import '../../data/audio.dart';
 import '../../data/location_response.dart';
@@ -182,7 +183,24 @@ class _UserListTabletState extends State<UserListTablet> {
     } catch (e) {
       pp(e);
       if (mounted) {
-        showToast(message: '$e', context: context);
+        setState(() {
+          busy = false;
+        });
+        if (e is GeoException) {
+          e.saveError();
+          final msg = await e.getTranslatedMessage();
+          if (mounted) {
+            showToast(
+                backgroundColor: Theme
+                    .of(context)
+                    .primaryColor,
+                textStyle: myTextStyleMedium(context),
+                padding: 16,
+                duration: const Duration(seconds: 10),
+                message: msg,
+                context: context);
+          }
+        }
       }
     }
     setState(() {

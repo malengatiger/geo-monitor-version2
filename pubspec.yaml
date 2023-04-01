@@ -97,7 +97,7 @@ dependencies:
   at_gauges: ^1.0.1
   fl_chart: ^0.61.0
   flutter_background_service: ^2.4.6
-  device_info_plus:
+  device_info_plus: ^8.1.0
 #  flutter_isolate: ^2.0.4
 #  intl_translation: ^0.18.0
 #  easy_localization: ^3.0.2-dev.5

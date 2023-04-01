@@ -4,7 +4,6 @@ import 'dart:io';
 
 import 'package:archive/archive_io.dart';
 import 'package:geo_monitor/library/api/data_api.dart';
-import 'package:geo_monitor/library/emojis.dart';
 import 'package:http/http.dart' as http;
 import 'package:path_provider/path_provider.dart';
 
@@ -12,6 +11,7 @@ import '../auth/app_auth.dart';
 import '../cache_manager.dart';
 import '../data/data_bag.dart';
 import '../functions.dart';
+import 'geo_exception.dart';
 
 final ZipBloc zipBloc = ZipBloc();
 
@@ -147,22 +147,31 @@ class ZipBloc {
       }
       return resp;
     } on SocketException {
-      pp('\n\n$xz SocketException: ${E.redDot}${E.redDot}${E.redDot} '
-          'No Internet connection, really means that server cannot be reached; 😑'
-          ' ${E.redDot} this looks like a fuck up of some kind!!');
-      throw 'GeoMonitor server cannot be reached at this time. Please try again!';
+      pp('$xz No Internet connection, really means that server cannot be reached 😑');
+      throw GeoException(message: 'No Internet connection',
+          url: mUrl,
+          translationKey: 'networkProblem', errorType: GeoException.socketException);
+
     } on HttpException {
       pp("$xz HttpException occurred 😱");
-      throw 'HttpException';
+      throw GeoException(message: 'Server not around',
+          url: mUrl,
+          translationKey: 'serverProblem', errorType: GeoException.httpException);
     } on FormatException {
       pp("$xz Bad response format 👎");
-      throw 'Bad response format';
+      throw GeoException(message: 'Bad response format',
+          url: mUrl,
+          translationKey: 'serverProblem', errorType: GeoException.formatException);
+
     } on TimeoutException {
-      pp("$xz GET Request has timed out in 120 seconds 👎");
-      throw 'Request has timed out in 120 seconds';
+      pp("$xz GET Request has timed out in $timeOutInSeconds seconds 👎");
+      throw GeoException(message: 'Request timed out',
+          url: mUrl,
+          translationKey: 'networkProblem', errorType: GeoException.timeoutException);
+
     }
   }
-
+  static const timeOutInSeconds = 120;
 }
 
 void printDataBag(DataBag bag) {
@@ -176,7 +185,6 @@ void printDataBag(DataBag bag) {
   final schedules = bag.fieldMonitorSchedules!.length;
 
   const xz = '👌👌👌 DataBag print 👌';
-  pp('\n\n$xz all org data extracted from zipped file on: 🔵🔵🔵${bag.date}');
   // pp('$xz projects: $projects');
   // pp('$xz users: $users');
   // pp('$xz positions: $positions');

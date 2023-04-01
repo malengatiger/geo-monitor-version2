@@ -14,6 +14,7 @@ import '../cache_manager.dart';
 import '../data/data_bag.dart';
 import '../emojis.dart';
 import '../functions.dart';
+import 'geo_exception.dart';
 
 final DownloaderService downloaderService = DownloaderService._instance;
 
@@ -136,18 +137,30 @@ class DownloaderService {
       return mJson;
     } on SocketException {
       pp('$mm No Internet connection, really means that server cannot be reached 😑');
-      throw 'GeoMonitor server cannot be reached at this time. Please try later';
+      throw GeoException(message: 'No Internet connection',
+          url: mUrl,
+          translationKey: 'networkProblem', errorType: GeoException.socketException);
+
     } on HttpException {
       pp("$mm HttpException occurred 😱");
-      throw 'HttpException';
+      throw GeoException(message: 'Server not around',
+          url: mUrl,
+          translationKey: 'serverProblem', errorType: GeoException.httpException);
     } on FormatException {
       pp("$mm Bad response format 👎");
-      throw 'Bad response format';
+      throw GeoException(message: 'Bad response format',
+          url: mUrl,
+          translationKey: 'serverProblem', errorType: GeoException.formatException);
+
     } on TimeoutException {
-      pp("$mm GET Request has timed out in 90 seconds 👎");
-      throw 'Request has timed out in 90 seconds';
+      pp("$mm GET Request has timed out in $timeOutInSeconds seconds 👎");
+      throw GeoException(message: 'Request timed out',
+          url: mUrl,
+          translationKey: 'networkProblem', errorType: GeoException.timeoutException);
+
     }
   }
+  static const timeOutInSeconds = 120;
 }
 
 class DownloaderMessage {

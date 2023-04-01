@@ -152,7 +152,15 @@ class ActivityListMobileState extends State<ActivityListMobile>
     } catch (e) {
       pp(e);
       if (mounted) {
-        showToast(message: '$e', context: context);
+        setState(() {
+          busy = false;
+        });
+        showToast(
+            backgroundColor: Theme.of(context).primaryColor,
+            textStyle: myTextStyleMedium(context),
+            padding: 16,
+            duration: const Duration(seconds: 10),
+            message: '$e', context: context);
       }
     }
     if (mounted) {

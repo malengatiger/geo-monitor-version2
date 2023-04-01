@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:firebase_auth/firebase_auth.dart' as fb;
 import 'package:flutter/material.dart';
 import 'package:geo_monitor/l10n/translation_handler.dart';
+import 'package:geo_monitor/library/bloc/geo_exception.dart';
 import 'package:geo_monitor/library/generic_functions.dart';
 import 'package:geo_monitor/library/ui/settings/settings_main.dart';
 import 'package:geo_monitor/library/users/full_user_photo.dart';
@@ -257,10 +258,31 @@ class DashboardMobileState extends State<DashboardMobile>
         busy = true;
       });
     }
-
-    await _doTheWork(forceRefresh);
-
-    _gridViewAnimationController.forward();
+    try {
+      await _doTheWork(forceRefresh);
+      _gridViewAnimationController.forward();
+    } catch (e) {
+        if (mounted) {
+          setState(() {
+            busy = false;
+          });
+        }
+        if (e is GeoException) {
+          e.saveError();
+          final msg = await e.getTranslatedMessage();
+          if (mounted) {
+            showToast(
+                backgroundColor: Theme
+                    .of(context)
+                    .primaryColor,
+                textStyle: myTextStyleMedium(context),
+                padding: 16,
+                duration: const Duration(seconds: 10),
+                message: msg,
+                context: context);
+          }
+        }
+    }
   }
 
   Future<void> _doTheWork(bool forceRefresh) async {
@@ -367,7 +389,7 @@ class DashboardMobileState extends State<DashboardMobile>
       });
 
       settingsSubscriptionFCM = fcmBloc.settingsStream.listen((settings) async {
-        pp('$mm: 🍎🍎 settings arrived with themeIndex: ${settings.themeIndex}... 🍎🍎');
+        pp('$mm: 🍎🍎 settingsSubscriptionFCM: settings arrived with themeIndex: ${settings.themeIndex}... 🍎🍎');
         _handleNewSettings(settings);
       });
 

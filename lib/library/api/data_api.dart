@@ -5,14 +5,16 @@ import 'dart:io';
 
 import 'package:flutter_dotenv/flutter_dotenv.dart' as dot;
 import 'package:geo_monitor/library/bloc/connection_check.dart';
+import 'package:geo_monitor/library/bloc/geo_exception.dart';
 import 'package:geo_monitor/library/data/activity_model.dart';
+import 'package:geo_monitor/library/data/app_error.dart';
 import 'package:geo_monitor/library/data/location_request.dart';
 import 'package:geo_monitor/library/data/organization_registration_bag.dart';
 import 'package:geo_monitor/library/data/project_polygon.dart';
 import 'package:geo_monitor/library/data/project_summary.dart';
-import 'package:geo_monitor/library/emojis.dart';
 import 'package:http/http.dart' as http;
 
+import '../../l10n/translation_handler.dart';
 import '../auth/app_auth.dart';
 import '../bloc/organization_bloc.dart';
 import '../bloc/project_bloc.dart';
@@ -1449,6 +1451,23 @@ class DataAPI {
     }
   }
 
+  static Future<AppError> addAppError(AppError appError) async {
+    String? mURL = await getUrl();
+    try {
+      pp('$xz appError: ${appError.toJson()}');
+      var result = await _callWebAPIPost('${mURL!}addAppError', appError.toJson());
+      pp('\n\n\n$xz 🔴🔴🔴 DataAPI addAppError succeeded. Everything OK?? 🔴🔴🔴');
+      var ae = AppError.fromJson(result);
+      await cacheManager.addAppError(appError: ae);
+      pp('$xz addAppError has added AppError to DB and to Hive cache\n');
+      return appError;
+    } catch (e) {
+      pp('\n\n\n$xz 🔴🔴🔴 DataAPI addAppException failed. Something fucked up here! ... 🔴🔴🔴\n\n');
+      pp(e);
+      rethrow;
+    }
+  }
+
   static Future<Photo> addPhoto(Photo photo) async {
     String? mURL = await getUrl();
     try {
@@ -1830,8 +1849,9 @@ class DataAPI {
       } else {
         pp('👿👿👿 DataAPI._callWebAPIPost: 🔆 statusCode: 👿👿👿 ${resp.statusCode} 🔆🔆🔆 for $mUrl');
         pp(resp.body);
-        throw Exception(
-            '🚨 🚨 Status Code 🚨 ${resp.statusCode} 🚨 ${resp.body}');
+        final sett = await prefsOGx.getSettings();
+        final serverProblem = await translator.translate('serverProblem', sett.locale!);
+        throw serverProblem;
       }
       var end = DateTime.now();
       pp('$xz http POST call: 🔆 elapsed time: ${end.difference(start).inSeconds} seconds 🔆');
@@ -1843,22 +1863,33 @@ class DataAPI {
         return resp.body;
       }
     } on SocketException {
-      pp('\n\n$xz ${E.redDot}${E.redDot} ${E.redDot} '
-          'GeoMonitor Server not available. ${E.redDot} Possible Internet Connection issue '
-          '${E.redDot} ${E.redDot} ${E.redDot}\n');
-      throw 'GeoMonitor Server not available. Possible Internet Connection issue';
+      pp('$xz No Internet connection, really means that server cannot be reached 😑');
+      throw GeoException(message: 'No Internet connection',
+          url: mUrl,
+          translationKey: 'networkProblem', errorType: GeoException.socketException);
+
     } on HttpException {
-      pp("$xz Couldn't find the post 😱");
-      throw 'Could not find the post';
+      pp("$xz HttpException occurred 😱");
+      throw GeoException(message: 'Server not around',
+          url: mUrl,
+          translationKey: 'serverProblem', errorType: GeoException.httpException);
     } on FormatException {
       pp("$xz Bad response format 👎");
-      throw 'Bad response format';
+      throw GeoException(message: 'Bad response format',
+          url: mUrl,
+          translationKey: 'serverProblem', errorType: GeoException.formatException);
+
     } on TimeoutException {
-      pp("$xz POST Request has timed out in $timeOutInSeconds seconds 👎");
-      throw 'Request has timed out in $timeOutInSeconds seconds';
+      pp("$xz GET Request has timed out in $timeOutInSeconds seconds 👎");
+      throw GeoException(message: 'Request timed out',
+          url: mUrl,
+          translationKey: 'networkProblem', errorType: GeoException.timeoutException);
+
     }
   }
 
+  //todo - create error object cached on device and uploaded to server when network is cool
+  //todo - trying to see how many errors we get and on what devices ...
   static const timeOutInSeconds = 120;
   static final client = http.Client();
 
@@ -1905,16 +1936,27 @@ class DataAPI {
       return mJson;
     } on SocketException {
       pp('$xz No Internet connection, really means that server cannot be reached 😑');
-      throw 'GeoMonitor server cannot be reached at this time. Please try again!';
+      throw GeoException(message: 'No Internet connection',
+          url: mUrl,
+          translationKey: 'networkProblem', errorType: GeoException.socketException);
+
     } on HttpException {
       pp("$xz HttpException occurred 😱");
-      throw 'HttpException';
+      throw GeoException(message: 'Server not around',
+          url: mUrl,
+          translationKey: 'serverProblem', errorType: GeoException.httpException);
     } on FormatException {
       pp("$xz Bad response format 👎");
-      throw 'Bad response format';
+      throw GeoException(message: 'Bad response format',
+          url: mUrl,
+          translationKey: 'serverProblem', errorType: GeoException.formatException);
+
     } on TimeoutException {
       pp("$xz GET Request has timed out in $timeOutInSeconds seconds 👎");
-      throw 'Request has timed out in $timeOutInSeconds seconds';
+      throw GeoException(message: 'Request timed out',
+          url: mUrl,
+          translationKey: 'networkProblem', errorType: GeoException.timeoutException);
+
     }
   }
 }

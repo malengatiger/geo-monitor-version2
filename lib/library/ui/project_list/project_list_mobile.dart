@@ -17,6 +17,7 @@ import '../../../ui/audio/audio_recorder.dart';
 import '../../api/prefs_og.dart';
 import '../../bloc/admin_bloc.dart';
 import '../../bloc/fcm_bloc.dart';
+import '../../bloc/geo_exception.dart';
 import '../../bloc/organization_bloc.dart';
 import '../../bloc/project_bloc.dart';
 import '../../data/position.dart';
@@ -27,6 +28,7 @@ import '../../data/settings_model.dart';
 import '../../data/user.dart';
 import '../../data/user.dart' as mon;
 import '../../functions.dart';
+import '../../generic_functions.dart';
 import '../maps/org_map_mobile.dart';
 import '../maps/project_map_main.dart';
 import '../maps/project_polygon_map_mobile.dart';
@@ -211,8 +213,24 @@ class ProjectListMobileState extends State<ProjectListMobile>
     } catch (e) {
       pp(e);
       if (mounted) {
-        ScaffoldMessenger.of(context)
-            .showSnackBar(SnackBar(content: Text('$e')));
+        setState(() {
+          busy = false;
+        });
+        if (e is GeoException) {
+          e.saveError();
+          final msg = await e.getTranslatedMessage();
+          if (mounted) {
+            showToast(
+                backgroundColor: Theme
+                    .of(context)
+                    .primaryColor,
+                textStyle: myTextStyleMedium(context),
+                padding: 16,
+                duration: const Duration(seconds: 10),
+                message: msg,
+                context: context);
+          }
+        }
       }
     }
     if (mounted) {

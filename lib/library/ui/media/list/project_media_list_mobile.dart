@@ -12,6 +12,7 @@ import 'package:page_transition/page_transition.dart';
 import '../../../../l10n/translation_handler.dart';
 import '../../../api/prefs_og.dart';
 import '../../../bloc/fcm_bloc.dart';
+import '../../../bloc/geo_exception.dart';
 import '../../../bloc/project_bloc.dart';
 import '../../../data/audio.dart';
 import '../../../data/photo.dart';
@@ -20,6 +21,7 @@ import '../../../data/settings_model.dart';
 import '../../../data/user.dart';
 import '../../../data/video.dart';
 import '../../../functions.dart';
+import '../../../generic_functions.dart';
 import '../../camera/photo_handler.dart';
 import '../full_photo/full_photo_mobile.dart';
 import 'photo_details.dart';
@@ -162,8 +164,24 @@ class ProjectMediaListMobileState extends State<ProjectMediaListMobile>
     } catch (e) {
       pp('$mm ...... refresh problem: $e');
       if (mounted) {
-        ScaffoldMessenger.of(context)
-            .showSnackBar(SnackBar(content: Text('$e')));
+        setState(() {
+          busy = false;
+        });
+        if (e is GeoException) {
+          e.saveError();
+          final msg = await e.getTranslatedMessage();
+          if (mounted) {
+            showToast(
+                backgroundColor: Theme
+                    .of(context)
+                    .primaryColor,
+                textStyle: myTextStyleMedium(context),
+                padding: 16,
+                duration: const Duration(seconds: 10),
+                message: msg,
+                context: context);
+          }
+        }
       }
     }
 
