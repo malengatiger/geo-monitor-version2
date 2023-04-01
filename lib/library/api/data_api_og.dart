@@ -14,6 +14,7 @@ import 'package:geo_monitor/library/emojis.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 
+import '../../l10n/translation_handler.dart';
 import '../auth/app_auth.dart';
 import '../bloc/organization_bloc.dart';
 import '../bloc/project_bloc.dart';
@@ -1826,23 +1827,31 @@ class DataAPI extends GetxController {
       pp('\n\n$xz ${E.redDot}${E.redDot} ${E.redDot} '
           'GeoMonitor Server not available. ${E.redDot} Possible Internet Connection issue '
           '${E.redDot} ${E.redDot} ${E.redDot}\n');
-      throw 'GeoMonitor Server not available. Possible Internet Connection issue';
+      final sett = await prefsOGx.getSettings();
+      final networkProblem = await translator.translate('networkProblem', sett.locale!);
+      throw networkProblem;
     } on HttpException {
       pp("$xz Couldn't find the post 😱");
-      throw 'Could not find the post';
+      final sett = await prefsOGx.getSettings();
+      final serverProblem = await translator.translate('serverProblem', sett.locale!);
+      throw serverProblem;
     } on FormatException {
       pp("$xz Bad response format 👎");
-      throw 'Bad response format';
+      final sett = await prefsOGx.getSettings();
+      final serverProblem = await translator.translate('serverProblem', sett.locale!);
+      throw serverProblem;
     } on TimeoutException {
       pp("$xz POST Request has timed out in $timeOutInSeconds seconds 👎");
-      throw 'Request has timed out in $timeOutInSeconds seconds';
+      final sett = await prefsOGx.getSettings();
+      final networkProblem = await translator.translate('networkProblem', sett.locale!);
+      throw networkProblem;
     }
   }
 
   static const timeOutInSeconds = 120;
   final client = http.Client();
 
-  static const xz = '🌎🌎🌎🌎🌎🌎 DataAPI: ';
+  static const xz = '🌎🌎🌎🌎🌎🌎 DataAPI: 🌎🌎 ';
   Future _sendHttpGET(String mUrl) async {
     pp('$xz http GET call:  🔆 🔆 🔆 calling : 💙  $mUrl  💙');
     var start = DateTime.now();
@@ -1885,16 +1894,27 @@ class DataAPI extends GetxController {
       return mJson;
     } on SocketException {
       pp('$xz No Internet connection, really means that server cannot be reached 😑');
-      throw 'GeoMonitor server cannot be reached at this time. Please try again!';
+      final sett = await prefsOGx.getSettings();
+      final networkProblem = await translator.translate('networkProblem', sett.locale!);
+      throw networkProblem;
     } on HttpException {
       pp("$xz HttpException occurred 😱");
+      final sett = await prefsOGx.getSettings();
+      final serverProblem = await translator.translate('serverProblem', sett.locale!);
+      throw serverProblem;
       throw 'HttpException';
     } on FormatException {
       pp("$xz Bad response format 👎");
-      throw 'Bad response format';
+      final sett = await prefsOGx.getSettings();
+      final serverProblem = await translator.translate('serverProblem', sett.locale!);
+      throw serverProblem;
     } on TimeoutException {
       pp("$xz GET Request has timed out in $timeOutInSeconds seconds 👎");
-      throw 'Request has timed out in $timeOutInSeconds seconds';
+      final sett = await prefsOGx.getSettings();
+      final networkProblem = await translator.translate('networkProblem', sett.locale!);
+      throw networkProblem;
     }
   }
+
+
 }

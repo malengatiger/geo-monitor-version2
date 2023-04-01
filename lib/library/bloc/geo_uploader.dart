@@ -11,6 +11,7 @@ import 'package:geo_monitor/library/bloc/photo_for_upload.dart';
 import 'package:geo_monitor/library/bloc/video_for_upload.dart';
 
 import '../../device_location/device_location_bloc.dart';
+import '../../l10n/translation_handler.dart';
 import '../auth/app_auth.dart';
 import '../cache_manager.dart';
 import '../data/audio.dart';
@@ -168,7 +169,9 @@ class GeoUploader {
 
       if (user == null) {
         pp('🔴🔴🔴🔴🔴🔴🔴🔴 user is null. WTF? 🔴🔴');
-        throw Exception('Fuck it! - User is NULL!!');
+        final sett = await prefsOGx.getSettings();
+        final serverProblem = await translator.translate('serverProblem', sett.locale!);
+        throw serverProblem;
       } else {
         pp('$xx 🍐🍐🍐🍐🍐🍐The user is OK');
       }

@@ -332,7 +332,7 @@ class CloudStorageBloc {
       return uploadFinished;
     } catch (e) {
       pp('\n\n$mm 👿👿👿👿 Video write to database failed, We may have a database problem: 🔴🔴🔴 $e');
-      listener.onError('We have a database problem $e');
+      listener.onError('$e');
       return uploadError;
     }
   }
@@ -369,37 +369,67 @@ class CloudStorageBloc {
     });
   }
 
+  static const xz = '🌿🌿🌿🌿🌿🌿🌿 CloudStorageBloc: ';
   Future<File> downloadFile(String url) async {
-    pp('🌿🌿🌿🌿🌿🌿🌿 : downloadFile: 😡😡😡 $url ....');
-    final http.Response response =
-        await http.get(Uri.parse(url)).catchError((e) {
-      pp('😡😡😡 Download failed: 😡😡😡 $e');
-      throw Exception('😡😡😡 Download failed: $e');
-    });
+    pp('$xz : downloadFile: 😡😡😡 $url ....');
 
-    pp('🌿🌿🌿🌿🌿🌿🌿 : downloadFile: OK?? 💜💜💜💜'
-        '  statusCode: ${response.statusCode}');
+    try {
+      final http.Response response =
+          await http.get(Uri.parse(url)).catchError((e) {
+        pp('😡😡😡 Download failed: 😡😡😡 $e');
+        throw Exception('😡😡😡 Download failed: $e');
+      });
 
-    if (response.statusCode == 200) {
-      final Directory directory = await getApplicationDocumentsDirectory();
-      var type = 'jpg';
-      if (url.contains('mp4')) {
-        type = 'mp4';
+      pp('$xz : downloadFile: OK?? 💜💜💜💜'
+          '  statusCode: ${response.statusCode}');
+
+      if (response.statusCode == 200) {
+        final Directory directory = await getApplicationDocumentsDirectory();
+        var type = 'jpg';
+        if (url.contains('mp4')) {
+          type = 'mp4';
+        }
+        final File mFile = File(
+            '${directory.path}/download${DateTime.now().millisecondsSinceEpoch}.$type');
+        pp('$xz : downloadFile: 💜  .... new file: ${mFile.path}');
+        mFile.writeAsBytesSync(response.bodyBytes);
+        var len = await mFile.length();
+        pp('$xz : downloadFile: 💜  .... file downloaded length: 😡 '
+            '${(len / 1024).toStringAsFixed(1)} KB - path: ${mFile.path}');
+        return mFile;
+      } else {
+        pp('$xz : downloadFile: Download failed: 😡😡😡 statusCode ${response.statusCode} 😡 ${response.body} 😡');
+        throw Exception('Download failed: statusCode: ${response.statusCode}');
       }
-      final File mFile = File(
-          '${directory.path}/download${DateTime.now().millisecondsSinceEpoch}.$type');
-      pp('🌿🌿🌿🌿🌿🌿🌿 : downloadFile: 💜  .... new file: ${mFile.path}');
-      mFile.writeAsBytesSync(response.bodyBytes);
-      var len = await mFile.length();
-      pp('🌿🌿🌿🌿🌿🌿🌿 : downloadFile: 💜  .... file downloaded length: 😡 '
-          '${(len / 1024).toStringAsFixed(1)} KB - path: ${mFile.path}');
-      return mFile;
-    } else {
-      pp('🌿🌿🌿🌿🌿🌿🌿 : downloadFile: Download failed: 😡😡😡 statusCode ${response.statusCode} 😡 ${response.body} 😡');
-      throw Exception('Download failed: statusCode: ${response.statusCode}');
+    } on SocketException {
+      pp('$xz No Internet connection, really means that server cannot be reached 😑');
+      final sett = await prefsOGx.getSettings();
+      final networkProblem =
+          await translator.translate('networkProblem', sett.locale!);
+      throw networkProblem;
+    } on HttpException {
+      pp("$xz HttpException occurred 😱");
+      final sett = await prefsOGx.getSettings();
+      final serverProblem =
+          await translator.translate('serverProblem', sett.locale!);
+      throw serverProblem;
+      throw 'HttpException';
+    } on FormatException {
+      pp("$xz Bad response format 👎");
+      final sett = await prefsOGx.getSettings();
+      final serverProblem =
+          await translator.translate('serverProblem', sett.locale!);
+      throw serverProblem;
+    } on TimeoutException {
+      pp("$xz GET Request has timed out in $timeOutInSeconds seconds 👎");
+      final sett = await prefsOGx.getSettings();
+      final networkProblem =
+          await translator.translate('networkProblem', sett.locale!);
+      throw networkProblem;
     }
   }
 
+  static const timeOutInSeconds = 120;
   // ignore: missing_return
   Future<int> deleteFolder(String folderName) async {
     pp('.deleteFolder ######## deleting $folderName');

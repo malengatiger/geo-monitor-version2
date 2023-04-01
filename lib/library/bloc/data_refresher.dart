@@ -12,13 +12,13 @@ import 'package:geo_monitor/library/bloc/organization_bloc.dart';
 import 'package:http/http.dart' as http;
 import 'package:path_provider/path_provider.dart';
 
+import '../../l10n/translation_handler.dart';
 import '../auth/app_auth.dart';
 import '../cache_manager.dart';
 import '../data/country.dart';
 import '../data/data_bag.dart';
 import '../data/project.dart';
 import '../data/user.dart';
-import '../emojis.dart';
 import '../functions.dart';
 import 'project_bloc.dart';
 import 'user_bloc.dart';
@@ -694,17 +694,23 @@ Future<DataBag?> _getDataBag(
     }
     if (dataBag == null) {
       pp('$xz _getDataBag: dataBag is null');
-      throw 'Bad Bag!! why null?';
+      final sett = await prefsOGx.getSettings();
+      final serverProblem =
+          await translator.translate('serverProblem', sett.locale!);
+      throw serverProblem;
     }
     return dataBag;
   } catch (e) {
-    pp('$xz What the fuck is wrong? $e');
-    throw 'This is not acceptable';
+    final sett = await prefsOGx.getSettings();
+    final serverProblem =
+        await translator.translate('serverProblem', sett.locale!);
+    throw serverProblem;
   }
 }
 
 final client = http.Client();
 int start = 0;
+const timeOutInSeconds = 120;
 
 Future<http.Response> _sendRequestToBackend(String mUrl, String token) async {
   pp('$xz _sendRequestToBackend call:  🔆 🔆 🔆 calling : 💙  $mUrl  💙');
@@ -752,19 +758,30 @@ Future<http.Response> _sendRequestToBackend(String mUrl, String token) async {
       throw Exception('$e');
     }
   } on SocketException {
-    pp('\n\n$xz SocketException: ${E.redDot}${E.redDot}${E.redDot} '
-        'No Internet connection, really means that server cannot be reached; 😑'
-        ' ${E.redDot} this looks like a fuck up of some kind!!');
-    throw 'GeoMonitor server cannot be reached at this time. Please try again!';
+    pp('$xz No Internet connection, really means that server cannot be reached 😑');
+    final sett = await prefsOGx.getSettings();
+    final networkProblem =
+        await translator.translate('networkProblem', sett.locale!);
+    throw networkProblem;
   } on HttpException {
     pp("$xz HttpException occurred 😱");
+    final sett = await prefsOGx.getSettings();
+    final serverProblem =
+        await translator.translate('serverProblem', sett.locale!);
+    throw serverProblem;
     throw 'HttpException';
   } on FormatException {
     pp("$xz Bad response format 👎");
-    throw 'Bad response format';
+    final sett = await prefsOGx.getSettings();
+    final serverProblem =
+        await translator.translate('serverProblem', sett.locale!);
+    throw serverProblem;
   } on TimeoutException {
-    pp("$xz GET Request has timed out in 120 seconds 👎");
-    throw 'Request has timed out in 120 seconds';
+    pp("$xz GET Request has timed out in $timeOutInSeconds seconds 👎");
+    final sett = await prefsOGx.getSettings();
+    final networkProblem =
+        await translator.translate('networkProblem', sett.locale!);
+    throw networkProblem;
   }
 }
 

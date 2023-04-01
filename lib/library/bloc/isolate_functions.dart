@@ -8,11 +8,11 @@ import 'package:geo_monitor/library/bloc/video_for_upload.dart';
 import 'package:http/http.dart' as http;
 
 import '../../l10n/translation_handler.dart';
+import '../api/prefs_og.dart';
 import '../cache_manager.dart';
 import '../data/audio.dart';
 import '../data/photo.dart';
 import '../data/video.dart';
-import '../emojis.dart';
 import '../functions.dart';
 import 'audio_for_upload.dart';
 
@@ -263,24 +263,31 @@ Future _callPost(String mUrl, Map? bag, String token) async {
       return resp.body;
     }
   } on SocketException {
-    pp('\n\n$xx ${E.redDot}${E.redDot} ${E.redDot} '
-        'GeoMonitor Server not available. ${E.redDot} Possible Internet Connection issue '
-        '${E.redDot} ${E.redDot} ${E.redDot}\n');
-    throw 'GeoMonitor Server not available. Possible Internet Connection issue';
+    pp('$xx No Internet connection, really means that server cannot be reached 😑');
+    final sett = await prefsOGx.getSettings();
+    final networkProblem = await translator.translate('networkProblem', sett.locale!);
+    throw networkProblem;
   } on HttpException {
-    pp("$xx Couldn't find the post 😱");
-    throw 'Could not find the post';
+    pp("$xx HttpException occurred 😱");
+    final sett = await prefsOGx.getSettings();
+    final serverProblem = await translator.translate('serverProblem', sett.locale!);
+    throw serverProblem;
+    throw 'HttpException';
   } on FormatException {
     pp("$xx Bad response format 👎");
-    throw 'Bad response format';
+    final sett = await prefsOGx.getSettings();
+    final serverProblem = await translator.translate('serverProblem', sett.locale!);
+    throw serverProblem;
   } on TimeoutException {
-    pp("$xx POST Request has timed out in 120 seconds 👎");
-    throw 'Request has timed out in 120 seconds';
+    pp("$xx GET Request has timed out in $timeOutInSeconds seconds 👎");
+    final sett = await prefsOGx.getSettings();
+    final networkProblem = await translator.translate('networkProblem', sett.locale!);
+    throw networkProblem;
   }
 }
 
 const xx = '😎😎😎😎😎😎😎😎 Isolate Uploader Functions : 😎😎😎 ';
-
+const timeOutInSeconds = 120;
 Future<String?> _sendUploadRequest(
     String token, String url, String objectName, String path) async {
   Map<String, String> headers = {
