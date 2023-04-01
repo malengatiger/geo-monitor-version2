@@ -130,11 +130,17 @@ class DataRefresher {
       required String? organizationId,
       required String? projectId,
       required String? userId}) async {
+
     pp('$xx retrying the call after an error, will kick off after 5 seconds  ...');
     await Future.delayed(const Duration(seconds: 5));
     DataBag? bag;
 
-    bag = await _performWork(organizationId, bag, projectId, userId);
+    try {
+      bag = await _performWork(organizationId, bag, projectId, userId);
+    } catch (e) {
+      pp('$mm retry failed : $e');
+      rethrow;
+    }
 
     return bag;
   }

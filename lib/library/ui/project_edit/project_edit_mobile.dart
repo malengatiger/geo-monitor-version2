@@ -26,16 +26,42 @@ class ProjectEditMobileState extends State<ProjectEditMobile>
   late AnimationController _controller;
   var nameController = TextEditingController();
   var descController = TextEditingController();
-  var maxController = TextEditingController(text: '200');
+  var maxController = TextEditingController(text: '500');
   var isBusy = false;
 
   User? admin;
   final _formKey = GlobalKey<FormState>();
 
+  String? projectEditor, projectName, description, maximumMonitoringDistance, submitProject,
+  newProject, editProject, enterProjectName, addProjectLocations,
+      enterDescription, enterDistance, descriptionOfProject;
+
+  Future _setTexts() async {
+    final sett = await prefsOGx.getSettings();
+    projectEditor = await translator.translate('projectEditor', sett.locale!);
+
+    projectName = await translator.translate('projectName', sett.locale!);
+    newProject = await translator.translate('newProject', sett.locale!);
+    enterProjectName = await translator.translate('enterProjectName', sett.locale!);
+    enterDescription = await translator.translate('enterDescription', sett.locale!);
+    descriptionOfProject = await translator.translate('descriptionOfProject', sett.locale!);
+    submitProject = await translator.translate('submitProject', sett.locale!);
+    editProject = await translator.translate('editProject', sett.locale!);
+    enterDistance = await translator.translate('enterDistance', sett.locale!);
+    addProjectLocations = await translator.translate('addProjectLocations', sett.locale!);
+
+    maximumMonitoringDistance = await translator.translate('maximumMonitoringDistance', sett.locale!);
+
+    setState(() {
+
+    });
+  }
+
   @override
   void initState() {
     _controller = AnimationController(vsync: this);
     super.initState();
+    _setTexts();
     _setup();
     _getUser();
   }
@@ -140,8 +166,8 @@ class ProjectEditMobileState extends State<ProjectEditMobile>
       child: Scaffold(
         key: _key,
         appBar: AppBar(
-          title: Text(
-            'Project Editor',
+          title: Text(projectEditor == null?
+            'Project Editor': projectEditor!,
             style: myTextStyleLarge(context),
           ),
           actions: [
@@ -161,7 +187,8 @@ class ProjectEditMobileState extends State<ProjectEditMobile>
             child: Column(
               children: [
                 Text(
-                  widget.project == null ? 'New Project' : 'Edit Project',
+                  widget.project == null ? newProject == null?'New Project': newProject! : editProject == null?
+                  'Edit Project': editProject!,
                   style: myTextStyleMedium(context),
                 ),
                 const SizedBox(
@@ -206,11 +233,14 @@ class ProjectEditMobileState extends State<ProjectEditMobile>
                               Icons.event,
                               color: Theme.of(context).primaryColor,
                             ),
-                            labelText: 'Project Name',
-                            hintText: 'Enter Project Name'),
+                            labelText: projectName == null?
+                            'Project Name': projectName!,
+                            hintText: enterProjectName == null?
+                            'Enter Project Name': enterProjectName!),
                         validator: (value) {
                           if (value!.isEmpty) {
-                            return 'Please enter Project name';
+                            return enterProjectName == null?
+                            'Please enter Project name': enterProjectName!;
                           }
                           return null;
                         },
@@ -232,11 +262,13 @@ class ProjectEditMobileState extends State<ProjectEditMobile>
                               Icons.info_outline,
                               color: Theme.of(context).primaryColor,
                             ),
-                            labelText: 'Description',
+                            labelText: descriptionOfProject == null?
+                            'Description':descriptionOfProject!,
                             hintText: 'Enter Description'),
                         validator: (value) {
                           if (value!.isEmpty) {
-                            return 'Please enter Description';
+                            return enterDescription == null?
+                            'Please enter Description': enterDescription!;
                           }
                           return null;
                         },
@@ -252,12 +284,14 @@ class ProjectEditMobileState extends State<ProjectEditMobile>
                               Icons.camera_enhance_outlined,
                               color: Theme.of(context).primaryColor,
                             ),
-                            labelText: 'Max Monitor Distance in Metres',
-                            hintText:
-                                'Enter Maximum Monitor Distance in metres'),
+                            labelText: maximumMonitoringDistance == null?
+                            'Max Monitor Distance in Metres': maximumMonitoringDistance!,
+                            hintText: enterDistance == null?
+                                'Enter Maximum Monitor Distance in metres': enterDistance!),
                         validator: (value) {
                           if (value!.isEmpty) {
-                            return 'Please enter Maximum Monitor Distance in Metres';
+                            return enterDistance == null?
+                            'Please enter Maximum Monitor Distance in Metres': enterDistance!;
                           }
                           return null;
                         },
@@ -283,8 +317,8 @@ class ProjectEditMobileState extends State<ProjectEditMobile>
                                         child: ElevatedButton(
                                           child: Padding(
                                             padding: const EdgeInsets.all(12.0),
-                                            child: Text(
-                                              'Add Project Location',
+                                            child: Text(addProjectLocations == null?
+                                              'Add Project Location':addProjectLocations!,
                                               style: Styles.whiteSmall,
                                             ),
                                           ),
@@ -305,8 +339,8 @@ class ProjectEditMobileState extends State<ProjectEditMobile>
                                     onPressed: _submit,
                                     child: Padding(
                                       padding: const EdgeInsets.all(12.0),
-                                      child: Text(
-                                        'Submit Project',
+                                      child: Text(submitProject == null?
+                                        'Submit Project': submitProject!,
                                         style: myTextStyleMedium(context),
                                       ),
                                     ),

@@ -35,14 +35,15 @@ class ProjectEditCardState extends State<ProjectEditCard>
   var maxController = TextEditingController();
   bool busy = false;
   User? admin;
-  String? projectEditor, newProject, editProject, submitProject,
-      enterProjectName,
-      projectName, descriptionOfProject, maximumMonitoringDistance, addProjectLocations;
+  String? projectEditor, projectName, description, maximumMonitoringDistance, submitProject,
+      newProject, editProject, enterProjectName, addProjectLocations,
+      enterDescription, enterDistance, descriptionOfProject;
 
   @override
   void initState() {
     _controller = AnimationController(vsync: this);
     super.initState();
+    _setTexts();
     _setControllers();
     _getUser();
   }
@@ -53,23 +54,34 @@ class ProjectEditCardState extends State<ProjectEditCard>
       maxController = TextEditingController(text: '${widget.project!.monitorMaxDistanceInMetres!}');
     }
   }
+  Future _setTexts() async {
+    final sett = await prefsOGx.getSettings();
+    projectEditor = await translator.translate('projectEditor', sett.locale!);
+
+    projectName = await translator.translate('projectName', sett.locale!);
+    newProject = await translator.translate('newProject', sett.locale!);
+    enterProjectName = await translator.translate('enterProjectName', sett.locale!);
+    enterDescription = await translator.translate('enterDescription', sett.locale!);
+    descriptionOfProject = await translator.translate('descriptionOfProject', sett.locale!);
+    submitProject = await translator.translate('submitProject', sett.locale!);
+    editProject = await translator.translate('editProject', sett.locale!);
+    enterDistance = await translator.translate('enterDistance', sett.locale!);
+    addProjectLocations = await translator.translate('addProjectLocations', sett.locale!);
+
+    maximumMonitoringDistance = await translator.translate('maximumMonitoringDistance', sett.locale!);
+
+    setState(() {
+
+    });
+  }
+
 
   void _getUser() async {
     admin = await prefsOGx.getUser();
-    var sett = await prefsOGx.getSettings();
-    if (sett != null) {
-      projectEditor = await translator.translate('projectEditor', sett.locale!);
-      projectName = await translator.translate('projectName', sett.locale!);
-      maximumMonitoringDistance = await translator.translate('maximumMonitoringDistance', sett.locale!);
-      descriptionOfProject = await translator.translate('descriptionOfProject', sett.locale!);
-      submitProject = await translator.translate('submitProject', sett.locale!);
-      addProjectLocations = await translator.translate('addProjectLocations', sett.locale!);
-      enterProjectName = await translator.translate('enterProjectName', sett.locale!);
-      setState(() {
 
-      });
+    setState(() {
 
-    }
+    });
   }
 
   @override
@@ -90,7 +102,7 @@ class ProjectEditCardState extends State<ProjectEditCard>
           pp('😡 😡 😡 _submit new project ......... ${nameController.text}');
           var uuid = const Uuid();
           final sett = await cacheManager.getSettings();
-          final projectAddedToOrganization = await translator.translate('projectAddedToOrganization', sett!.locale!);
+          final projectAddedToOrganization = await translator.translate('projectAddedToOrganization', sett.locale!);
           final messageFromGeo = await getFCMMessageTitle();
           project = Project(
               name: nameController.text,
