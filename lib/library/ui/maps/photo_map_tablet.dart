@@ -72,14 +72,12 @@ class PhotoMapState extends State<PhotoMap>
 
   Future _setTexts() async {
     final sett = await prefsOGx.getSettings();
-    if (sett != null) {
-      photoLocationText = await translator.translate('photoLocation',
-          sett!.locale!);
-      myDate = getFmtDate(widget.photo.created!, sett!.locale!);
-      setState(() {
+    photoLocationText = await translator.translate('photoLocation',
+        sett!.locale!);
+    myDate = getFmtDate(widget.photo.created!, sett!.locale!);
+    setState(() {
 
-      });
-    }
+    });
   }
 
   void _getUser() async {

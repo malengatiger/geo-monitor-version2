@@ -99,10 +99,8 @@ class UserDashboardState extends State<UserDashboard>
 
   Future _setTexts() async {
     var sett = await prefsOGx.getSettings();
-    if (sett != null) {
-      memberDashboard = await translator.translate('memberDashboard', sett!.locale!);
-      dashboardStrings = await DashboardStrings.getTranslated();
-    }
+    memberDashboard = await translator.translate('memberDashboard', sett!.locale!);
+    dashboardStrings = await DashboardStrings.getTranslated();
     if (mounted) {
       setState(() {
 
@@ -278,7 +276,7 @@ class UserDashboardState extends State<UserDashboard>
     pp('$mm _displayPhoto ...');
     this.photo = photo;
     final settings = await prefsOGx.getSettings();
-    translatedDate = await getFmtDate(photo.created!, settings!.locale!);
+    translatedDate = getFmtDate(photo.created!, settings!.locale!);
     setState(() {
       _showPhoto = true;
       _showVideo = false;

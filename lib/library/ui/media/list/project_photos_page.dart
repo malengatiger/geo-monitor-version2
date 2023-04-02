@@ -52,7 +52,6 @@ class ProjectPhotosPageState extends State<ProjectPhotosPage>
 
   void _setTexts() async {
     settingsModel = await prefsOGx.getSettings();
-    if (settingsModel != null) {
       var nf = await translator.translate(
           'photosNotFoundInProject', settingsModel!.locale!);
       notFound = nf.replaceAll('\$project', '\n\n${widget.project.name!}');
@@ -61,7 +60,7 @@ class ProjectPhotosPageState extends State<ProjectPhotosPage>
       loadingActivities =
           await translator.translate('loadingActivities', settingsModel!.locale!);
       setState(() {});
-    }
+
   }
 
   @override

@@ -62,9 +62,7 @@ class SettingsMobileState extends State<SettingsMobile>
 
   Future _setTexts() async {
     settingsModel = await prefsOGx.getSettings();
-    if (settingsModel != null) {
       title = await translator.translate('settings', settingsModel!.locale!);
-    }
     user = await prefsOGx.getUser();
     if (user!.userType! == UserType.fieldMonitor) {
       showMonitorForm = true;

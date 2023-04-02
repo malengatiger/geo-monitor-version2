@@ -80,11 +80,8 @@ class PhotoHandlerState extends State<PhotoHandler>
     });
     try {
       var sett = await prefsOGx.getSettings();
-      if (sett != null) {
-        takePicture =
-        await translator.translate('takePicture', sett.locale!);
-
-      }
+      takePicture =
+      await translator.translate('takePicture', sett.locale!);
       pp('$mm .......... getting project positions and polygons');
       user = await prefsOGx.getUser();
       polygons = await projectBloc.getProjectPolygons(
@@ -114,21 +111,19 @@ class PhotoHandlerState extends State<PhotoHandler>
     pp('$mm photo taking started ....');
     var settings = await prefsOGx.getSettings();
     var height = 640.0, width = 480.0;
-    if (settings != null) {
-      switch (settings.photoSize) {
-        case 0:
-          height = 640;
-          width = 480;
-          break;
-        case 1:
-          height = 720;
-          width = 1280;
-          break;
-        case 2:
-          height = 1080;
-          width = 1920;
-          break;
-      }
+    switch (settings.photoSize) {
+      case 0:
+        height = 640;
+        width = 480;
+        break;
+      case 1:
+        height = 720;
+        width = 1280;
+        break;
+      case 2:
+        height = 1080;
+        width = 1920;
+        break;
     }
     final XFile? file = await _picker.pickImage(
         source: ImageSource.camera,

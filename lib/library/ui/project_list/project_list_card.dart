@@ -53,19 +53,17 @@ class _ProjectListCardState extends State<ProjectListCard> {
 
   void _setText() async {
     var sett = await prefsOGx.getSettings();
-    if (sett != null) {
-      projectDashboard = await translator.translate('projectDashboard', sett.locale!);
-      addProjectAreas = await translator.translate('addProjectAreas', sett.locale!);
-      directionsToProject = await translator.translate('directionsToProject', sett.locale!);
-      addProjectLocationHere = await translator.translate('addProjectLocationHere', sett.locale!);
-      projectDetails = await translator.translate('projectDetails', sett.locale!);
-      editProject = await translator.translate('editProject', sett.locale!);
-      projectLocationsMap = await translator.translate('projectLocationsMap', sett.locale!);
-      photosVideosAudioClips = await translator.translate('photosVideosAudioClips', sett.locale!);
-      setState(() {
+    projectDashboard = await translator.translate('projectDashboard', sett.locale!);
+    addProjectAreas = await translator.translate('addProjectAreas', sett.locale!);
+    directionsToProject = await translator.translate('directionsToProject', sett.locale!);
+    addProjectLocationHere = await translator.translate('addProjectLocationHere', sett.locale!);
+    projectDetails = await translator.translate('projectDetails', sett.locale!);
+    editProject = await translator.translate('editProject', sett.locale!);
+    projectLocationsMap = await translator.translate('projectLocationsMap', sett.locale!);
+    photosVideosAudioClips = await translator.translate('photosVideosAudioClips', sett.locale!);
+    setState(() {
 
-      });
-    }
+    });
   }
 
   List<FocusedMenuItem> getPopUpMenuItems(Project project) {

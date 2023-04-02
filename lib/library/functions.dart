@@ -783,9 +783,7 @@ double getFileSizeInMB({required int bytes, int decimals = 0}) {
 Future<Map<String, String>> getStartEndDates() async {
   int numberOfDays = 7;
   var settings = await prefsOGx.getSettings();
-  if (settings != null) {
-    numberOfDays = settings.numberOfDays!;
-  }
+  numberOfDays = settings.numberOfDays!;
   var startDate = DateTime.now()
       .subtract(Duration(days: numberOfDays))
       .toUtc()
@@ -813,9 +811,7 @@ void sortActivitiesAscending(List<ActivityModel> models) {
 Future<String?> getTranslatedUserType(String type) async {
   String? translated;
   final sett = await prefsOGx.getSettings();
-  if (sett == null) {
-    return type;
-  }
+
   switch (type) {
     case UserType.fieldMonitor:
       translated = await translator.translate('fieldMonitor', sett!.locale!);

@@ -217,6 +217,7 @@ class OrganizationBloc {
     mBag.projects = projects;
     mBag.users = users;
     dataBagController.sink.add(mBag);
+
     final end2 = DateTime.now();
     pp('\n$mm filtered bag .... ${end2.difference(start2)} seconds elapsed for filter');
     printDataBag(mBag);

@@ -55,18 +55,16 @@ class _UserListCardState extends State<UserListCard> {
   }
   void _setTexts() async {
     var sett = await prefsOGx.getSettings();
-    if (sett != null) {
-      callMember = await translator.translate('callMember', sett.locale!);
-      sendMemberMessage = await translator.translate('sendMemberMessage', sett.locale!);
-      memberDashboard = await translator.translate('memberDashboard', sett.locale!);
-      editMember = await translator.translate('editMember', sett.locale!);
-      requestMemberLocation = await translator.translate('requestMemberLocation', sett.locale!);
-      fieldMonitorSchedules = await translator.translate('fieldMonitorSchedules', sett.locale!);
-      removeMember = await translator.translate('removeMember', sett.locale!);
-      setState(() {
+    callMember = await translator.translate('callMember', sett.locale!);
+    sendMemberMessage = await translator.translate('sendMemberMessage', sett.locale!);
+    memberDashboard = await translator.translate('memberDashboard', sett.locale!);
+    editMember = await translator.translate('editMember', sett.locale!);
+    requestMemberLocation = await translator.translate('requestMemberLocation', sett.locale!);
+    fieldMonitorSchedules = await translator.translate('fieldMonitorSchedules', sett.locale!);
+    removeMember = await translator.translate('removeMember', sett.locale!);
+    setState(() {
 
-      });
-    }
+    });
   }
   List<FocusedMenuItem> _getMenuItems(User someUser, BuildContext context) {
     List<FocusedMenuItem> list = [];

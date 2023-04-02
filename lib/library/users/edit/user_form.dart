@@ -73,7 +73,6 @@ class UserFormState extends State<UserForm>
   void _setTexts() async {
     admin = await prefsOGx.getUser();
     settingsModel = await prefsOGx.getSettings();
-    if (settingsModel != null) {
       userFormStrings = await UserFormStrings.getTranslated();
       pleaseSelectCountry = await translator.translate('pleaseSelectCountry',
           settingsModel!.locale!);
@@ -89,7 +88,7 @@ class UserFormState extends State<UserForm>
           settingsModel!.locale!);
       memberCreated = await translator.translate('memberCreated',
           settingsModel!.locale!);
-    }
+
     setState(() {});
   }
 

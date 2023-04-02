@@ -99,7 +99,6 @@ class ActivityListMobileState extends State<ActivityListMobile>
   Future _setTexts() async {
     user = await prefsOGx.getUser();
     settings = await prefsOGx.getSettings();
-    if (settings != null) {
       locale = settings!.locale;
       if (widget.project != null) {
         title = await translator.translate('projectActivity', settings!.locale!);
@@ -120,7 +119,7 @@ class ActivityListMobileState extends State<ActivityListMobile>
       prefix = sub.substring(0, index);
       suffix = sub.substring(index + 6);
       setState(() {});
-    }
+
   }
 
   Future _getData(bool forceRefresh) async {

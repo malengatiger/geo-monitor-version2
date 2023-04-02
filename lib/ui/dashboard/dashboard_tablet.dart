@@ -217,7 +217,6 @@ class DashboardTabletState extends State<DashboardTablet>
 
   Future _setTexts() async {
     settingsModel = await prefsOGx.getSettings();
-    if (settingsModel != null) {
       numberOfDays = settingsModel!.numberOfDays!;
       title = await translator.translate('dashboard', settingsModel!.locale!);
       var sub =
@@ -236,7 +235,7 @@ class DashboardTabletState extends State<DashboardTablet>
       dashboardSubTitle = sub.replaceAll('\$count', '$numberOfDays');
 
       setState(() {});
-    }
+
   }
 
   Future _getData(bool forceRefresh) async {
@@ -496,7 +495,7 @@ class DashboardTabletState extends State<DashboardTablet>
     pp('$mm _displayPhoto ...');
     this.photo = photo;
     final settings = await prefsOGx.getSettings();
-    translatedDate = await getFmtDate(photo.created!, settings!.locale!);
+    translatedDate =  getFmtDate(photo.created!, settings!.locale!);
     _resetFlags();
     setState(() {
       _showPhoto = true;

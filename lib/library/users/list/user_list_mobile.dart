@@ -89,10 +89,8 @@ class UserListMobileState extends State<UserListMobile>
   String? subTitle, title;
   Future _setTexts() async {
     var sett = await prefsOGx.getSettings();
-    if (sett != null) {
-      title = await translator.translate('organizationMembers', sett!.locale!);
-      subTitle = await translator.translate('administratorsMembers', sett!.locale!);
-    }
+    title = await translator.translate('organizationMembers', sett!.locale!);
+    subTitle = await translator.translate('administratorsMembers', sett!.locale!);
   }
   Future _getData(bool forceRefresh) async {
     setState(() {

@@ -31,22 +31,20 @@ class _AuthTabletSignInState extends State<AuthTabletSignIn> {
 
   Future _setTexts() async {
     final sett = await prefsOGx.getSettings();
-    if (sett != null) {
-      title = await translator.translate('signIn', sett!.locale!);
-      subTitle = await translator.translate('signInInstruction', sett!.locale!);
-    }
+    title = await translator.translate('signIn', sett!.locale!);
+    subTitle = await translator.translate('signInInstruction', sett!.locale!);
     setState(() {});
   }
 
   void _onSignedIn(ur.User user) async {
     final sett = await prefsOGx.getSettings();
-    if (sett != null) {
-      dataRefresher.manageRefresh(
-          numberOfDays: sett.numberOfDays!,
-          organizationId: sett.organizationId!,
-          projectId: null, userId: null);
+    dataRefresher.manageRefresh(
+        numberOfDays: sett.numberOfDays!,
+        organizationId: sett.organizationId!,
+        projectId: null, userId: null);
+    if (mounted) {
+      Navigator.of(context).pop();
     }
-    Navigator.of(context).pop();
   }
 
   void _onError(String message) async {

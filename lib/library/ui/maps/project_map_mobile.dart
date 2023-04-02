@@ -83,12 +83,10 @@ class ProjectMapMobileState extends State<ProjectMapMobile>
 
   void _setTexts() async {
     var settings = await prefsOGx.getSettings();
-    if (settings != null) {
-      title = await translator.translate('projectLocationsMap', settings.locale!);
-      locations = await translator.translate('locations', settings.locale!);
-      var m = await translator.translate('location', settings.locale!);
-      location = m.replaceAll('\$count', '');
-    }
+    title = await translator.translate('projectLocationsMap', settings.locale!);
+    locations = await translator.translate('locations', settings.locale!);
+    var m = await translator.translate('location', settings.locale!);
+    location = m.replaceAll('\$count', '');
   }
   void _listen() async {
     _positionStreamSubscription =

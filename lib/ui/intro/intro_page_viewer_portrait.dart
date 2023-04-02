@@ -55,11 +55,9 @@ class IntroPageViewerPortraitState extends State<IntroPageViewerPortrait>
 
   Future _setTexts({String? selectedLocale}) async {
     settingsModel = await prefsOGx.getSettings();
-    if (settingsModel == null) {
       settingsModel = getBaseSettings();
-
       await prefsOGx.saveSettings(settingsModel!);
-    }
+
     introStrings = await IntroStrings.getTranslated();
     signInFailed = await translator.translate('signInFailed', settingsModel!.locale!);
     setState(() {});

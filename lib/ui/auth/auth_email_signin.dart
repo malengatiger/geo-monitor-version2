@@ -58,10 +58,9 @@ class AuthEmailSignInState extends State<AuthEmailSignIn> {
 
   Future _setTexts() async {
     settingsModel = await prefsOGx.getSettings();
-    if (settingsModel == null) {
       settingsModel =getBaseSettings();
       await prefsOGx.saveSettings(settingsModel!);
-    }
+
     signInText = await translator.translate('signIn', settingsModel!.locale!);
     enterEmail = await translator.translate('enterEmail', settingsModel!.locale!);
     emailAddress = await translator.translate('emailAddress', settingsModel!.locale!);

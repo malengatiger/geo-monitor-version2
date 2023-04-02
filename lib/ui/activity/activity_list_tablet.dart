@@ -94,10 +94,10 @@ class _ActivityListTabletState extends State<ActivityListTablet>
   SettingsModel? sett;
   Future _setTexts() async {
     sett = await prefsOGx.getSettings();
-    if (sett != null) {
+
       activityStrings = await ActivityStrings.getTranslated();
       setState(() {});
-    }
+
   }
 
   @override

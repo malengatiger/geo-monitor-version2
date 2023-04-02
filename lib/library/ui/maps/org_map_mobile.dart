@@ -58,12 +58,11 @@ class OrganizationMapMobileState extends State<OrganizationMapMobile>
       loading = true;
     });
     var sett = await prefsOGx.getSettings();
-    if (sett != null) {
       organizationProjects =
       await translator.translate('organizationProjects', sett.locale!);
       projectLocatedHere =
       await translator.translate('projectLocatedHere', sett.locale!);
-    }
+
     user = await prefsOGx.getUser();
     organization = await organizationBloc.getOrganizationById(
         organizationId: user!.organizationId!);

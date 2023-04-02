@@ -82,12 +82,10 @@ class ProjectListMobileState extends State<ProjectListMobile>
 
   Future _setTexts() async {
     var sett = await prefsOGx.getSettings();
-    if (sett != null) {
-      organizationProjects =
-          await translator.translate('organizationProjects', sett.locale!);
-      projectsNotFound = await translator.translate('projectsNotFound', sett.locale!);
-      refreshData = await translator.translate('refreshData', sett.locale!);
-    }
+    organizationProjects =
+        await translator.translate('organizationProjects', sett.locale!);
+    projectsNotFound = await translator.translate('projectsNotFound', sett.locale!);
+    refreshData = await translator.translate('refreshData', sett.locale!);
   }
 
   void _listen() {
@@ -142,9 +140,7 @@ class ProjectListMobileState extends State<ProjectListMobile>
     });
     user = await prefsOGx.getUser();
     var settings = await prefsOGx.getSettings();
-    if (settings != null) {
-      numberOfDays = settings.numberOfDays!;
-    }
+    numberOfDays = settings.numberOfDays!;
     if (user != null) {
       pp('$mm user found: ${user!.name!}');
       _setUserType();

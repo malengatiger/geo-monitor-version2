@@ -70,12 +70,11 @@ class AudioPlayerCardState extends State<AudioPlayerCard>
 
   void _setTexts() async {
     settingsModel = await prefsOGx.getSettings();
-    if (settingsModel != null) {
       createdAt = await translator.translate('createdAt', settingsModel!.locale!);
       durationText = await translator.translate('duration', settingsModel!.locale!);
       errorRecording =
           await translator.translate('errorRecording', settingsModel!.locale!);
-    }
+
     setState(() {});
   }
 

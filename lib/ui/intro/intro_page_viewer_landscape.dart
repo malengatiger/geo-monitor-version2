@@ -59,11 +59,8 @@ class _IntroPageViewerLandscapeState extends State<IntroPageViewerLandscape>
   Future _setTexts() async {
     var sett = await prefsOGx.getSettings();
     late String locale;
-    if (sett == null) {
-      locale = 'en';
-    } else {
-      locale = sett.locale!;
-    }
+    locale = sett.locale!;
+
     hint = await translator.translate('selectLanguage', sett!.locale!);
     organizations = await translator.translate('organizations', locale);
     managementPeople = await translator.translate('managementPeople', locale);

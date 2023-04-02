@@ -79,9 +79,8 @@ class GeoActivityMobileState extends State<GeoActivityMobile>
 
   Future _setTexts() async {
     settingsModel = await prefsOGx.getSettings();
-    if (settingsModel != null) {
       arrivedAt = await translator.translate('memberArrived', settingsModel!.locale!);
-    }
+
   }
 
   int count = 0;
@@ -125,21 +124,19 @@ class GeoActivityMobileState extends State<GeoActivityMobile>
   Future<void> _handleGeofenceEvent(GeofenceEvent event) async {
     pp('$mm _handleGeofenceEvent ...');
     var settings = await prefsOGx.getSettings();
-    if (settings != null) {
-      var arr = await translator.translate('memberArrived', settings.locale!);
-      if (event.projectName != null) {
-        var arrivedAt = arr.replaceAll('\$project', event.projectName!);
-        if (mounted) {
-          showToast(
-              duration: const Duration(seconds: 5),
-              backgroundColor: Theme
-                  .of(context)
-                  .primaryColor,
-              padding: 20,
-              textStyle: myTextStyleMedium(context),
-              message: arrivedAt,
-              context: context);
-        }
+    var arr = await translator.translate('memberArrived', settings.locale!);
+    if (event.projectName != null) {
+      var arrivedAt = arr.replaceAll('\$project', event.projectName!);
+      if (mounted) {
+        showToast(
+            duration: const Duration(seconds: 5),
+            backgroundColor: Theme
+                .of(context)
+                .primaryColor,
+            padding: 20,
+            textStyle: myTextStyleMedium(context),
+            message: arrivedAt,
+            context: context);
       }
     }
   }

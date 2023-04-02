@@ -43,18 +43,15 @@ class DashboardMainState extends State<DashboardMain>
 
       await initializer.initializeGeo();
       final sett = await prefsOGx.getSettings();
-      if (sett != null) {
-        initializingText = await translator.translate('initializing', sett.locale!);
-        final gr = await translator.translate('geoRunning', sett.locale!);
-        final tap = await translator.translate('tapToReturn', sett.locale!);
+      initializingText = await translator.translate('initializing', sett.locale!);
+      final gr = await translator.translate('geoRunning', sett.locale!);
+      final tap = await translator.translate('tapToReturn', sett.locale!);
+      geoRunning = gr.replaceAll('\$geo', 'Geo');
+      tapToReturn = tap.replaceAll('\$geo', 'Geo');
+      pp('$mm initializingText: $initializingText');
+      setState(() {
 
-        geoRunning = gr.replaceAll('\$geo', 'Geo');
-        tapToReturn = tap.replaceAll('\$geo', 'Geo');
-        pp('$mm initializingText: $initializingText');
-        setState(() {
-
-        });
-      }
+      });
       await Future.delayed(const Duration(milliseconds: 2000));
       await _getUser();
     } catch (e) {
@@ -80,7 +77,7 @@ class DashboardMainState extends State<DashboardMain>
     if (initializing) {
       return Center(
         child: Padding(
-          padding: const EdgeInsets.all(28.0),
+          padding: const EdgeInsets.all(16.0),
           child: SizedBox(width: 360, height: 240,
             child: Card(
               elevation: 8,

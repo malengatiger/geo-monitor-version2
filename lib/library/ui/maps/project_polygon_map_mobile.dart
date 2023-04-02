@@ -79,12 +79,10 @@ class ProjectPolygonMapMobileState extends State<ProjectPolygonMapMobile>
 
   void _setTexts() async {
     var sett = await prefsOGx.getSettings();
-    if (sett != null) {
-      title = await translator.translate('projectMonitoringAreas', sett.locale!);
-      areas = await translator.translate('areas', sett.locale!);
-      var x = await translator.translate('area', sett.locale!);
-      area = x.replaceAll('$count', '');
-    }
+    title = await translator.translate('projectMonitoringAreas', sett.locale!);
+    areas = await translator.translate('areas', sett.locale!);
+    var x = await translator.translate('area', sett.locale!);
+    area = x.replaceAll('$count', '');
   }
 
   void _getData(bool forceRefresh) async {

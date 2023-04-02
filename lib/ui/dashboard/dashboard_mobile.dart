@@ -213,9 +213,8 @@ class DashboardMobileState extends State<DashboardMobile>
 
   Future _setTexts() async {
     settings = await prefsOGx.getSettings();
-    if (settings != null) {
-      numberOfDays = settings!.numberOfDays!;
-    }
+    numberOfDays = settings!.numberOfDays!;
+
     title = await translator.translate('dashboard', settings!.locale!);
     var sub1 = await translator.translate('dashboardSubTitle', settings!.locale!);
     subTitle = sub1.replaceAll('\$count', '$numberOfDays');
@@ -351,19 +350,17 @@ class DashboardMobileState extends State<DashboardMobile>
   Future<void> _handleGeofenceEvent(GeofenceEvent event) async {
     pp('$mm _handleGeofenceEvent ... ');
     var settings = await prefsOGx.getSettings();
-    if (settings != null) {
-      var arr = await translator.translate('memberArrived', settings!.locale!);
-      if (event.projectName != null) {
-        var arrivedAt = arr.replaceAll('\$project', event.projectName!);
-        if (mounted) {
-          showToast(
-              duration: const Duration(seconds: 5),
-              backgroundColor: Theme.of(context).primaryColor,
-              padding: 20,
-              textStyle: myTextStyleMedium(context),
-              message: arrivedAt,
-              context: context);
-        }
+    var arr = await translator.translate('memberArrived', settings!.locale!);
+    if (event.projectName != null) {
+      var arrivedAt = arr.replaceAll('\$project', event.projectName!);
+      if (mounted) {
+        showToast(
+            duration: const Duration(seconds: 5),
+            backgroundColor: Theme.of(context).primaryColor,
+            padding: 20,
+            textStyle: myTextStyleMedium(context),
+            message: arrivedAt,
+            context: context);
       }
     }
   }

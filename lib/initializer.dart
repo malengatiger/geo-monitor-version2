@@ -23,14 +23,12 @@ class Initializer {
   Future<void> initializeGeo() async {
     pp('$mx initializeGeo: ... GET CACHED SETTINGS; set themeIndex .............. ');
     var settings = await prefsOGx.getSettings();
-    if (settings != null) {
-      themeIndex = settings.themeIndex!;
-      Locale newLocale = Locale(settings!.locale!);
-      final m = LocaleAndTheme(themeIndex: settings.themeIndex!,
-          locale: newLocale);
-      themeBloc.themeStreamController.sink.add(m);
-      pp('$mx THEME: themeIndex up top is: $themeIndex locale: ${settings!.locale}');
-    }
+    themeIndex = settings.themeIndex!;
+    Locale newLocale = Locale(settings!.locale!);
+    final m = LocaleAndTheme(themeIndex: settings.themeIndex!,
+        locale: newLocale);
+    themeBloc.themeStreamController.sink.add(m);
+    pp('$mx THEME: themeIndex up top is: $themeIndex locale: ${settings!.locale}');
 
     await cacheManager.initialize(forceInitialization: false);
 
@@ -64,11 +62,9 @@ class Initializer {
     Future.delayed(const Duration(seconds: 30)).then((value) async {
       pp('$mx start data refresh after delaying for 30 seconds');
       var settings = await prefsOGx.getSettings();
-      if (settings != null) {
-        dataRefresher.manageRefresh(numberOfDays: numberOfDays,
-            organizationId: settings.organizationId!,
-            projectId: null, userId: null);
-      }
+      dataRefresher.manageRefresh(numberOfDays: numberOfDays,
+          organizationId: settings.organizationId!,
+          projectId: null, userId: null);
 
     });
   }

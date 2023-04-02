@@ -163,11 +163,9 @@ class _UserListTabletState extends State<UserListTablet> {
   String? subTitle;
   Future _setTexts() async {
     var sett = await prefsOGx.getSettings();
-    if (sett != null) {
-      title = await translator.translate('organizationMembers', sett!.locale!);
-      subTitle = await translator.translate('administratorsMembers', sett!.locale!);
-      setState(() {});
-    }
+    title = await translator.translate('organizationMembers', sett!.locale!);
+    subTitle = await translator.translate('administratorsMembers', sett!.locale!);
+    setState(() {});
   }
 
   void _getData(bool forceRefresh) async {
@@ -564,7 +562,7 @@ class _UserListTabletState extends State<UserListTablet> {
   showPhoto(Photo p1) async {
     selectedPhoto = p1;
     final settings = await prefsOGx.getSettings();
-    translatedDate = await getFmtDate(p1.created!, settings!.locale!);
+    translatedDate = getFmtDate(p1.created!, settings!.locale!);
     setState(() {
       _showPhoto = true;
       _playAudio = false;

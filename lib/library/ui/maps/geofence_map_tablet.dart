@@ -59,10 +59,8 @@ class GeofenceMapTabletState extends State<GeofenceMapTablet>
 
   Future _setTexts() async {
     final sett = await prefsOGx.getSettings();
-    if (sett != null) {
-      memberAtProject = await translator.translate('memberAtProject', sett!.locale!);
-      translatedDate = getFmtDate(widget.geofenceEvent.date!, sett!.locale!);
-    }
+    memberAtProject = await translator.translate('memberAtProject', sett!.locale!);
+    translatedDate = getFmtDate(widget.geofenceEvent.date!, sett!.locale!);
   }
 
   void _setMarkerIcon() async {

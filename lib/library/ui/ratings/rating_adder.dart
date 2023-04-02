@@ -59,19 +59,17 @@ class RatingAdderState extends State<RatingAdder>
 
   void _setTexts() async {
     var sett = await prefsOGx.getSettings();
-    if (sett != null) {
-      addAudioRating = await translator.translate('addAudioRating', sett.locale!);
-      addVideoRating = await translator.translate('addVideoRating', sett.locale!);
-      addPhotoRating = await translator.translate('addPhotoRating', sett.locale!);
-      if (widget.video != null) {
-        date = getFmtDate(widget.video!.created!, sett.locale!);
-      }
-      if (widget.audio != null) {
-        date = getFmtDate(widget.audio!.created!, sett.locale!);
-      }
-      if (widget.photo != null) {
-        date = getFmtDate(widget.photo!.created!, sett.locale!);
-      }
+    addAudioRating = await translator.translate('addAudioRating', sett.locale!);
+    addVideoRating = await translator.translate('addVideoRating', sett.locale!);
+    addPhotoRating = await translator.translate('addPhotoRating', sett.locale!);
+    if (widget.video != null) {
+      date = getFmtDate(widget.video!.created!, sett.locale!);
+    }
+    if (widget.audio != null) {
+      date = getFmtDate(widget.audio!.created!, sett.locale!);
+    }
+    if (widget.photo != null) {
+      date = getFmtDate(widget.photo!.created!, sett.locale!);
     }
   }
 

@@ -148,9 +148,7 @@ class UserAudiosState extends State<UserAudios> {
       loading = true;
     });
     var sett = await prefsOGx.getSettings();
-    if (sett != null) {
-      durationText = await translator.translate('duration', sett.locale!);
-    }
+    durationText = await translator.translate('duration', sett.locale!);
     audios = await userBloc.getAudios(
         userId: widget.user.userId!, forceRefresh: widget.refresh);
     audios.sort((a, b) => b.created!.compareTo(a.created!));

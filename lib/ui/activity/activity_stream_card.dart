@@ -62,9 +62,7 @@ class ActivityStreamCardState extends State<ActivityStreamCard> {
 
   void _getLocale() async {
     var sett = await prefsOGx.getSettings();
-    if (sett != null) {
-      locale = sett.locale;
-    }
+    locale = sett.locale;
   }
 
   Widget _getUserAdded(Icon icon, String msg) {
@@ -316,52 +314,50 @@ class ActivityStrings {
 
   static Future<ActivityStrings?> getTranslated() async {
     var sett = await prefsOGx.getSettings();
-    if (sett != null) {
-      final projectAdded = await translator.translate('projectAdded', sett!.locale!);
-      final projectLocationAdded =
-          await translator.translate('projectLocationAdded', sett.locale!);
-      final projectAreaAdded =
-          await translator.translate('projectAreaAdded', sett.locale!);
-      final memberAtProject =
-          await translator.translate('memberAtProject', sett.locale!);
-      final settingsChanged =
-          await translator.translate('settingsChanged', sett.locale!);
-      final memberAddedChanged =
-          await translator.translate('memberAddedChanged', sett.locale!);
-      final at = await translator.translate('at', sett.locale!);
-      final arr = await translator.translate('arrivedAt', sett.locale!);
-      final arrivedAt = arr.replaceAll('\$project', '');
-      final conditionAdded =
-          await translator.translate('conditionAdded', sett.locale!);
-      final memberLocationResponse =
-          await translator.translate('memberLocationResponse', sett.locale!);
-      final requestMemberLocation =
-          await translator.translate('requestMemberLocation', sett.locale!);
-      final noActivities = await translator.translate('noActivities', sett.locale!);
+    final projectAdded = await translator.translate('projectAdded', sett!.locale!);
+    final projectLocationAdded =
+        await translator.translate('projectLocationAdded', sett.locale!);
+    final projectAreaAdded =
+        await translator.translate('projectAreaAdded', sett.locale!);
+    final memberAtProject =
+        await translator.translate('memberAtProject', sett.locale!);
+    final settingsChanged =
+        await translator.translate('settingsChanged', sett.locale!);
+    final memberAddedChanged =
+        await translator.translate('memberAddedChanged', sett.locale!);
+    final at = await translator.translate('at', sett.locale!);
+    final arr = await translator.translate('arrivedAt', sett.locale!);
+    final arrivedAt = arr.replaceAll('\$project', '');
+    final conditionAdded =
+        await translator.translate('conditionAdded', sett.locale!);
+    final memberLocationResponse =
+        await translator.translate('memberLocationResponse', sett.locale!);
+    final requestMemberLocation =
+        await translator.translate('requestMemberLocation', sett.locale!);
+    final noActivities = await translator.translate('noActivities', sett.locale!);
 
-      final loadingActivities =
-          await translator.translate('loadingActivities', sett.locale!);
+    final loadingActivities =
+        await translator.translate('loadingActivities', sett.locale!);
 
-      final tapToRefresh = await translator.translate('tapToRefresh', sett!.locale!);
+    final tapToRefresh = await translator.translate('tapToRefresh', sett!.locale!);
 
-      var activityStrings = ActivityStrings(
-          tapToRefresh: tapToRefresh,
-          projectAdded: projectAdded,
-          projectLocationAdded: projectLocationAdded,
-          projectAreaAdded: projectAreaAdded,
-          at: at,
-          loadingActivities: loadingActivities,
-          noActivities: noActivities,
-          memberLocationResponse: memberLocationResponse,
-          conditionAdded: conditionAdded,
-          arrivedAt: arrivedAt,
-          memberAtProject: memberAtProject,
-          memberAddedChanged: memberAddedChanged,
-          requestMemberLocation: requestMemberLocation,
-          settingsChanged: settingsChanged);
+    var activityStrings = ActivityStrings(
+        tapToRefresh: tapToRefresh,
+        projectAdded: projectAdded,
+        projectLocationAdded: projectLocationAdded,
+        projectAreaAdded: projectAreaAdded,
+        at: at,
+        loadingActivities: loadingActivities,
+        noActivities: noActivities,
+        memberLocationResponse: memberLocationResponse,
+        conditionAdded: conditionAdded,
+        arrivedAt: arrivedAt,
+        memberAtProject: memberAtProject,
+        memberAddedChanged: memberAddedChanged,
+        requestMemberLocation: requestMemberLocation,
+        settingsChanged: settingsChanged);
 
-      return activityStrings;
-    }
+    return activityStrings;
     return null;
   }
 }

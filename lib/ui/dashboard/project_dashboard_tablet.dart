@@ -87,9 +87,7 @@ class ProjectDashboardTabletState extends State<ProjectDashboardTablet>
 
   void _setTexts() async {
     var sett = await prefsOGx.getSettings();
-    if (sett != null) {
-      dashboardStrings = await DashboardStrings.getTranslated();
-    }
+    dashboardStrings = await DashboardStrings.getTranslated();
   }
   var type = '';
   void _getData(bool forceRefresh) async {
@@ -261,7 +259,7 @@ class ProjectDashboardTabletState extends State<ProjectDashboardTablet>
     pp('$mm _displayPhoto ...');
     this.photo = photo;
     final settings = await prefsOGx.getSettings();
-    translatedDate = await getFmtDate(photo.created!, settings!.locale!);
+    translatedDate = getFmtDate(photo.created!, settings!.locale!);
     setState(() {
       _showPhoto = true;
       _showVideo = false;

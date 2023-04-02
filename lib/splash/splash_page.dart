@@ -23,12 +23,10 @@ class _SplashWidgetState extends State<SplashWidget> {
   String? message;
   void _performSetup() async {
     var sett = await prefsOGx.getSettings();
-    if (sett != null) {
-      message = await translator.translate('weHelpYou', sett.locale!);
-      setState(() {
+    message = await translator.translate('weHelpYou', sett.locale!);
+    setState(() {
 
-      });
-    }
+    });
 
   }
 

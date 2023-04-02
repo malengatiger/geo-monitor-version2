@@ -142,21 +142,19 @@ class GeoActivityState extends State<GeoActivity>
   Future<void> _handleGeofenceEvent(GeofenceEvent event) async {
     pp('$mm _handleGeofenceEvent ....');
     var settings = await prefsOGx.getSettings();
-    if (settings != null) {
-      final arr = await translator.translate('memberArrived', settings.locale!);
-      if (event.projectName != null) {
-        var arrivedAt = arr.replaceAll('\$project', event.projectName!);
-        if (mounted) {
-          showToast(
-              duration: const Duration(seconds: 5),
-              backgroundColor: Theme
-                  .of(context)
-                  .primaryColor,
-              padding: 20,
-              textStyle: myTextStyleMedium(context),
-              message: arrivedAt,
-              context: context);
-        }
+    final arr = await translator.translate('memberArrived', settings.locale!);
+    if (event.projectName != null) {
+      var arrivedAt = arr.replaceAll('\$project', event.projectName!);
+      if (mounted) {
+        showToast(
+            duration: const Duration(seconds: 5),
+            backgroundColor: Theme
+                .of(context)
+                .primaryColor,
+            padding: 20,
+            textStyle: myTextStyleMedium(context),
+            message: arrivedAt,
+            context: context);
       }
     }
   }

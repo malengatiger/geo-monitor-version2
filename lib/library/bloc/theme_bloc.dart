@@ -30,18 +30,14 @@ class ThemeBloc {
 
   _initialize() async {
     settings = await prefsOGx.getSettings();
-    if (settings != null) {
+
       pp('$mm ThemeBloc: initialize:: adding index to stream ....theme index: ${settings!.themeIndex}');
       Locale newLocale = Locale(settings!.locale!);
       final m = LocaleAndTheme(themeIndex: settings!.themeIndex!,
           locale: newLocale);
       pp('$mm ThemeBloc: initialize: locale = ${m.locale.toString()}');
       themeStreamController.sink.add(m);
-    } else {
-      Locale newLocale = Locale(settings!.locale!);
-      final m = LocaleAndTheme(themeIndex: 0, locale: newLocale);
-      themeStreamController.sink.add(m);
-    }
+
   }
 
   ThemeBag getTheme(int index) {
@@ -53,10 +49,9 @@ class ThemeBloc {
     pp('\n\n$mm changing to theme index: $_themeIndex');
     pp('$mm _setStream: setting stream .... to theme index: $_themeIndex');
     settings ??= await prefsOGx.getSettings();
-    if (settings != null) {
       settings!.themeIndex = _themeIndex;
       await prefsOGx.saveSettings(settings!);
-    }
+
     Locale newLocale = Locale(settings!.locale!);
     final m = LocaleAndTheme(themeIndex: settings!.themeIndex!,
         locale: newLocale);

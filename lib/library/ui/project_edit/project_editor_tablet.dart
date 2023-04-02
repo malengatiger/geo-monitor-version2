@@ -45,16 +45,13 @@ class ProjectEditorTabletState extends State<ProjectEditorTablet>
   void _getUser() async {
     admin = await prefsOGx.getUser();
     var sett = await prefsOGx.getSettings();
-    if (sett != null) {
-      projectEditor = await translator.translate('projectEditor', sett.locale!);
-      editProject = await translator.translate('editProject', sett.locale!);
-      newProject = await translator.translate('newProject', sett.locale!);
+    projectEditor = await translator.translate('projectEditor', sett.locale!);
+    editProject = await translator.translate('editProject', sett.locale!);
+    newProject = await translator.translate('newProject', sett.locale!);
 
-      setState(() {
+    setState(() {
 
-      });
-
-    }
+    });
     if (admin != null) {
       pp('🎽 🎽 🎽 We have an admin user? 🎽 🎽 🎽 ${admin!.name!}');
       setState(() {});

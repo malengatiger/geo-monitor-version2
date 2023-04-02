@@ -92,7 +92,6 @@ class AudioRecorderState extends State<AudioRecorder>
   Future _setTexts() async {
     user = await prefsOGx.getUser();
     settingsModel = await prefsOGx.getSettings();
-    if (settingsModel != null) {
       var m = settingsModel?.maxAudioLengthInMinutes;
       limitInSeconds = m! * 60;
       title = await translator.translate('recordAudioClip', settingsModel!.locale!);
@@ -109,7 +108,7 @@ class AudioRecorderState extends State<AudioRecorder>
       audioToBeUploaded =
           await translator.translate('audioToBeUploaded', settingsModel!.locale!);
       durationText = await translator.translate('duration', settingsModel!.locale!);
-    }
+
 
     setState(() {});
   }

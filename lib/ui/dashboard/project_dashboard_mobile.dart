@@ -86,10 +86,8 @@ class ProjectDashboardMobileState extends State<ProjectDashboardMobile>
 
   void _setTexts() async {
     var sett = await prefsOGx.getSettings();
-    if (sett != null) {
-      dashboardStrings = await DashboardStrings.getTranslated();
-      title = await translator.translate('projectDashboard', sett!.locale!);
-    }
+    dashboardStrings = await DashboardStrings.getTranslated();
+    title = await translator.translate('projectDashboard', sett!.locale!);
   }
 
   @override

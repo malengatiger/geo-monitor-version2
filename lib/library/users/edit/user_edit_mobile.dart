@@ -63,14 +63,12 @@ class UserEditMobileState extends State<UserEditMobile>
 
   void _setTexts() async {
     var sett = await prefsOGx.getSettings();
-    if (sett != null) {
-      userFormStrings = await UserFormStrings.getTranslated();
-      hint = await translator.translate('pleaseSelectCountry', sett.locale!);
-      title = await translator.translate('members', sett.locale!);
-      newMember = await translator.translate('newMember', sett.locale!);
-      editMember = await translator.translate('editMember', sett.locale!);
-      name = await translator.translate('name', sett.locale!);
-    }
+    userFormStrings = await UserFormStrings.getTranslated();
+    hint = await translator.translate('pleaseSelectCountry', sett.locale!);
+    title = await translator.translate('members', sett.locale!);
+    newMember = await translator.translate('newMember', sett.locale!);
+    editMember = await translator.translate('editMember', sett.locale!);
+    name = await translator.translate('name', sett.locale!);
     setState(() {});
   }
   void _listen() async {
@@ -221,39 +219,37 @@ class UserFormStrings {
 
   static Future<UserFormStrings?> getTranslated() async {
     var sett = await prefsOGx.getSettings();
-    if (sett != null) {
-      var userName = await translator.translate('name', sett.locale!);
-      var cellphone = await translator.translate('cellphone', sett.locale!);
-      var male = await translator.translate('male', sett.locale!);
-      var female = await translator.translate('female', sett.locale!);
-      var fieldMonitor = await translator.translate('fieldMonitor', sett.locale!);
-      var executive = await translator.translate('executive', sett.locale!);
-      var administrator = await translator.translate('administrator', sett.locale!);
-      var submitUser = await translator.translate('submitMember', sett.locale!);
-      var profilePhoto = await translator.translate('profilePhoto', sett.locale!);
-      var enterCell = await translator.translate('enterCell', sett.locale!);
-      var enterEmail = await translator.translate('enterEmail', sett.locale!);
-      var enterFullName = await translator.translate('enterFullName', sett.locale!);
-      var selectCountry = await translator.translate('pleaseSelectCountry', sett.locale!);
-      var emailAddress = await translator.translate('emailAddress', sett.locale!);
+    var userName = await translator.translate('name', sett.locale!);
+    var cellphone = await translator.translate('cellphone', sett.locale!);
+    var male = await translator.translate('male', sett.locale!);
+    var female = await translator.translate('female', sett.locale!);
+    var fieldMonitor = await translator.translate('fieldMonitor', sett.locale!);
+    var executive = await translator.translate('executive', sett.locale!);
+    var administrator = await translator.translate('administrator', sett.locale!);
+    var submitUser = await translator.translate('submitMember', sett.locale!);
+    var profilePhoto = await translator.translate('profilePhoto', sett.locale!);
+    var enterCell = await translator.translate('enterCell', sett.locale!);
+    var enterEmail = await translator.translate('enterEmail', sett.locale!);
+    var enterFullName = await translator.translate('enterFullName', sett.locale!);
+    var selectCountry = await translator.translate('pleaseSelectCountry', sett.locale!);
+    var emailAddress = await translator.translate('emailAddress', sett.locale!);
 
-      var m = UserFormStrings(
-          selectCountry: selectCountry,
-          emailAddress: emailAddress,
-          enterCell: enterCell,
-          enterEmail: enterEmail,
-          enterFullName: enterFullName,
-          userName: userName,
-          cellphone: cellphone,
-          male: male,
-          female: female,
-          fieldMonitor: fieldMonitor,
-          executive: executive,
-          administrator: administrator,
-          submitMember: submitUser,
-          profilePhoto: profilePhoto);
-      return m;
-    }
+    var m = UserFormStrings(
+        selectCountry: selectCountry,
+        emailAddress: emailAddress,
+        enterCell: enterCell,
+        enterEmail: enterEmail,
+        enterFullName: enterFullName,
+        userName: userName,
+        cellphone: cellphone,
+        male: male,
+        female: female,
+        fieldMonitor: fieldMonitor,
+        executive: executive,
+        administrator: administrator,
+        submitMember: submitUser,
+        profilePhoto: profilePhoto);
+    return m;
     return null;
   }
 }

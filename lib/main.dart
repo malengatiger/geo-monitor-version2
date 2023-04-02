@@ -46,9 +46,8 @@ void main() async {
 
 
   settings = await prefsOGx.getSettings();
-  if (settings != null) {
-    locale = Locale(settings!.locale!);
-  }
+  locale = Locale(settings!.locale!);
+
   pp('$mx main: locale set up ...');
   await GetStorage.init(cacheName);
 

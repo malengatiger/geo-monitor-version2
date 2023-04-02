@@ -84,7 +84,6 @@ class AudioPlayerOGState extends State<AudioPlayerOG> {
     pp('$mm _setTexts ....');
     user = await cacheManager.getUserById(widget.audio.userId!);
     settingsModel = await prefsOGx.getSettings();
-    if (settingsModel != null) {
       loadingActivities =
       await translator.translate('loadingActivities', settingsModel!.locale!);
       createdAt = await translator.translate('createdAt', settingsModel!.locale!);
@@ -93,7 +92,7 @@ class AudioPlayerOGState extends State<AudioPlayerOG> {
           await translator.translate('playAudioClip', settingsModel!.locale!);
       errorRecording =
           await translator.translate('errorRecording', settingsModel!.locale!);
-    }
+
     setState(() {
       _showControls = true;
     });

@@ -47,7 +47,6 @@ class ProjectVideosPageState extends State<ProjectVideosPage> {
   void _setTexts() async {
 
     settingsModel = await prefsOGx.getSettings();
-    if (settingsModel != null) {
       durationText = await translator.translate('duration', settingsModel!.locale!);
 
       final nf = await translator.translate(
@@ -60,7 +59,7 @@ class ProjectVideosPageState extends State<ProjectVideosPage> {
       setState(() {
 
       });
-    }
+
   }
 
   void _subscribeToStreams() async {

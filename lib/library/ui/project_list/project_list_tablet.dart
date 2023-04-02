@@ -87,12 +87,10 @@ class ProjectListTabletState extends State<ProjectListTablet>
 
   Future _setTexts() async {
     var sett = await prefsOGx.getSettings();
-    if (sett != null) {
-      organizationProjects =
-          await translator.translate('organizationProjects', sett.locale!);
-      projectsNotFound = await translator.translate('projectsNotFound', sett.locale!);
-      refreshData = await translator.translate('refreshData', sett.locale!);
-    }
+    organizationProjects =
+        await translator.translate('organizationProjects', sett.locale!);
+    projectsNotFound = await translator.translate('projectsNotFound', sett.locale!);
+    refreshData = await translator.translate('refreshData', sett.locale!);
     setState(() {});
   }
 
@@ -1080,7 +1078,7 @@ class ProjectListTabletState extends State<ProjectListTablet>
   showPhoto(Photo p1) async {
     selectedPhoto = p1;
     final settings = await prefsOGx.getSettings();
-    translatedDate = await getFmtDate(p1.created!, settings!.locale!);
+    translatedDate = getFmtDate(p1.created!, settings!.locale!);
     setState(() {
       _showPhoto = true;
       _playAudio = false;
@@ -1092,7 +1090,7 @@ class ProjectListTabletState extends State<ProjectListTablet>
   showVideo(Video p1) async {
     selectedVideo = p1;
     final settings = await prefsOGx.getSettings();
-    translatedDate = await getFmtDate(p1.created!, settings!.locale!);
+    translatedDate = getFmtDate(p1.created!, settings!.locale!);
     setState(() {
       _showPhoto = false;
       _playAudio = false;
@@ -1103,7 +1101,7 @@ class ProjectListTabletState extends State<ProjectListTablet>
   showAudio(Audio p1) async {
     selectedAudio = p1;
     final settings = await prefsOGx.getSettings();
-    translatedDate = await getFmtDate(p1.created!, settings!.locale!);
+    translatedDate = getFmtDate(p1.created!, settings!.locale!);
     setState(() {
       _showPhoto = false;
       _playAudio = true;

@@ -72,12 +72,11 @@ class AuthPhoneRegistrationMobileState
     signInStrings = await SignInStrings.getTranslated();
     settingsModel = await prefsOGx.getSettings();
 
-    if (settingsModel != null) {
       if (country != null) {
         translatedCountryName =
             await translator.translate('${country!.name}', settingsModel!.locale!);
       }
-    }
+
     setState(() {});
   }
 

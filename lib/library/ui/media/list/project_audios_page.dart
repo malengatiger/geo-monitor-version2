@@ -79,9 +79,8 @@ class ProjectAudiosPageState extends State<ProjectAudiosPage> {
     });
     try {
       settingsModel = await prefsOGx.getSettings();
-      if (settingsModel != null) {
         durationText = await translator.translate('duration', settingsModel!.locale!);
-      }
+
       var map = await getStartEndDates();
       final startDate = map['startDate'];
       final endDate = map['endDate'];

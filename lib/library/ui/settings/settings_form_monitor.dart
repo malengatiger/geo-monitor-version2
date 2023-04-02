@@ -62,9 +62,8 @@ class SettingsFormMonitorState extends State<SettingsFormMonitor> {
     pp('$mm 🍎🍎 ............. getting user from prefs ...');
     user = await prefsOGx.getUser();
     settingsModel = await prefsOGx.getSettings();
-    if (settingsModel != null) {
       currentLocale = settingsModel!.locale!;
-    }
+
     _setExistingSettings();
     _setTexts();
   }
@@ -456,13 +455,13 @@ class SettingsFormMonitorState extends State<SettingsFormMonitor> {
     pp('$mm onLocaleChange ... going to ${locale.languageCode} : $translatedLanguage');
 
     settingsModel = await prefsOGx.getSettings();
-    if (settingsModel != null) {
+
       settingsModel!.locale = locale.languageCode;
       await prefsOGx.saveSettings(settingsModel!);
       await translator.translate('settings', settingsModel!.locale!);
       fcmBloc.settingsStreamController.sink.add(settingsModel!);
       themeBloc.changeToLocale(locale.languageCode);
-    }
+
     setState(() {
       selectedLocale = locale;
       this.translatedLanguage = translatedLanguage;

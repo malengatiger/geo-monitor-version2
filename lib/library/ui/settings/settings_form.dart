@@ -87,9 +87,8 @@ class SettingsFormState extends State<SettingsForm> {
   Future _setTexts() async {
     settingsModel = await prefsOGx.getSettings();
     oldSettingsModel = await prefsOGx.getSettings();
-    if (settingsModel != null) {
       currentLocale = settingsModel!.locale!;
-    }
+
     pp('$mm 🍎🍎 user is here, huh? 🌎 ${user!.name!}');
     _setExistingSettings();
     final m1 =
@@ -754,7 +753,6 @@ class LocaleChooserState extends State<LocaleChooser> {
   Future setTexts() async {
     settingsModel = await prefsOGx.getSettings();
     settingsModel ??= getBaseSettings();
-    if (settingsModel != null) {
       english = await translator.translate('en', settingsModel!.locale!);
       afrikaans = await translator.translate('af', settingsModel!.locale!);
       french = await translator.translate('fr', settingsModel!.locale!);
@@ -771,7 +769,7 @@ class LocaleChooserState extends State<LocaleChooser> {
       chinese = await translator.translate('zh', settingsModel!.locale!);
       shona = await translator.translate('sn', settingsModel!.locale!);
       setState(() {});
-    }
+
   }
 
   @override
@@ -851,8 +849,6 @@ class LocaleChooserState extends State<LocaleChooser> {
     pp('LocaleChooser 🌀🌀🌀🌀:onChanged: selected locale: '
         '${locale.toString()}');
     settingsModel = await prefsOGx.getSettings();
-    settingsModel ??= getBaseSettings();
-
     settingsModel!.locale = locale!.languageCode;
 
     await prefsOGx.saveSettings(settingsModel!);
