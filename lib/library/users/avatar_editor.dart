@@ -8,7 +8,9 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:geo_monitor/library/api/data_api.dart';
 import 'package:geo_monitor/library/api/prefs_og.dart';
 import 'package:geo_monitor/library/bloc/fcm_bloc.dart';
+import 'package:geo_monitor/library/bloc/geo_exception.dart';
 import 'package:geo_monitor/library/cache_manager.dart';
+import 'package:geo_monitor/library/errors/error_handler.dart';
 import 'package:geo_monitor/library/functions.dart';
 import 'package:geo_monitor/ui/dashboard/dashboard_mobile.dart';
 import 'package:image_picker/image_picker.dart';
@@ -20,17 +22,17 @@ import '../data/settings_model.dart';
 import '../data/user.dart';
 import '../generic_functions.dart';
 
-class AvatarEditor extends StatefulWidget {
-  const AvatarEditor(
+class UserProfilePictureEditor extends StatefulWidget {
+  const UserProfilePictureEditor(
       {Key? key, required this.user, required this.goToDashboardWhenDone})
       : super(key: key);
   final User user;
   final bool goToDashboardWhenDone;
   @override
-  AvatarEditorState createState() => AvatarEditorState();
+  UserProfilePictureEditorState createState() => UserProfilePictureEditorState();
 }
 
-class AvatarEditorState extends State<AvatarEditor>
+class UserProfilePictureEditorState extends State<UserProfilePictureEditor>
     with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   final ImagePicker _picker = ImagePicker();
@@ -40,7 +42,12 @@ class AvatarEditorState extends State<AvatarEditor>
 
   bool _showOldPhoto = false;
   bool _showNewPhoto = false;
-  String? memberProfilePicture, useCamera, pickFromGallery, memberProfileUploaded, profileInstruction;
+  String? memberProfilePicture,
+      useCamera,
+      pickFromGallery,
+      memberProfileUploaded,
+      memberProfileUploadFailed,
+      profileInstruction;
   late StreamSubscription<SettingsModel> settingsStreamSubscription;
 
   @override
@@ -53,6 +60,7 @@ class AvatarEditorState extends State<AvatarEditor>
       _showOldPhoto = true;
     }
   }
+
   void _listen() async {
     settingsStreamSubscription = fcmBloc.settingsStream.listen((event) {
       _setTexts();
@@ -66,17 +74,22 @@ class AvatarEditorState extends State<AvatarEditor>
     super.dispose();
   }
 
+  late SettingsModel sett;
   Future _setTexts() async {
-    final sett = await prefsOGx.getSettings();
-    profileInstruction = await translator.translate('profileInstruction', sett.locale!);
+    sett = await prefsOGx.getSettings();
+    profileInstruction =
+        await translator.translate('profileInstruction', sett.locale!);
     useCamera = await translator.translate('useCamera', sett.locale!);
-    pickFromGallery = await translator.translate('pickFromGallery', sett.locale!);
-    memberProfilePicture = await translator.translate('memberProfilePicture', sett.locale!);
-    memberProfileUploaded = await translator.translate('memberProfileUploaded', sett.locale!);
+    pickFromGallery =
+        await translator.translate('pickFromGallery', sett.locale!);
+    memberProfilePicture =
+        await translator.translate('memberProfilePicture', sett.locale!);
+    memberProfileUploaded =
+        await translator.translate('memberProfileUploaded', sett.locale!);
+    memberProfileUploadFailed =
+    await translator.translate('memberProfileUploadFailed', sett.locale!);
     if (mounted) {
-      setState(() {
-
-      });
+      setState(() {});
     }
   }
 
@@ -153,11 +166,12 @@ class AvatarEditorState extends State<AvatarEditor>
       if (mounted) {
         showToast(
             context: context,
-            message: 'Photo upload failed, please try again in a minute',
+            message: memberProfileUploadFailed == null?
+            'Photo upload failed, please try again in a minute':memberProfileUploadFailed!,
             backgroundColor: Theme.of(context).primaryColor,
-            textStyle: Styles.whiteSmall,
+            textStyle: myTextStyleMedium(context),
             toastGravity: ToastGravity.TOP,
-            duration: const Duration(seconds: 2));
+            duration: const Duration(seconds: 5));
       }
       return;
     }
@@ -167,18 +181,7 @@ class AvatarEditorState extends State<AvatarEditor>
       _showOldPhoto = false;
       _showNewPhoto = true;
     });
-    if (mounted) {
-      showToast(
-          context: context,
-          message: 'Picture file saved on device, size: $m MB',
-          backgroundColor: Theme.of(context).primaryColor,
-          textStyle: Styles.whiteSmall,
-          toastGravity: ToastGravity.TOP,
-          duration: const Duration(seconds: 2));
 
-      //todo - might be from somewhere other than login
-      //_navigateToDashboard();
-    }
   }
 
   void _navigateToDashboard() async {
@@ -199,7 +202,7 @@ class AvatarEditorState extends State<AvatarEditor>
   final photoStorageName = 'geoUserPhotos';
   String? url, thumbUrl;
 
-  Future<int> _uploadToCloud(String filePath, String thumbnailPath) async {
+  Future _uploadToCloud(String filePath, String thumbnailPath) async {
     late UploadTask uploadTask;
     late TaskSnapshot taskSnapshot;
     setState(() {
@@ -242,7 +245,23 @@ class AvatarEditorState extends State<AvatarEditor>
       return 0;
     } catch (e) {
       pp(e);
-      return 9;
+      if (e is GeoException) {
+        errorHandler.handleError(exception: e);
+        final msg =
+            await translator.translate(e.geTranslationKey(), sett.locale!);
+        if (mounted) {
+          showToast(
+              padding: 16,
+              textStyle: myTextStyleMedium(context),
+              backgroundColor: Theme.of(context).primaryColor,
+              duration: const Duration(seconds: 5),
+              message: msg,
+              context: context);
+          setState(() {
+            busy = false;
+          });
+        }
+      }
     }
   }
 
@@ -263,12 +282,24 @@ class AvatarEditorState extends State<AvatarEditor>
             textStyle: myTextStyleMedium(context),
             backgroundColor: Theme.of(context).primaryColor,
             duration: const Duration(seconds: 3),
-            message: memberProfileUploaded!, context: context);
+            message: memberProfileUploaded!,
+            context: context);
       }
     } catch (e) {
       pp(e);
-      if (mounted) {
-        showToast(message: '$e', context: context);
+      if (e is GeoException) {
+        errorHandler.handleError(exception: e);
+        final msg =
+            await translator.translate(e.geTranslationKey(), sett.locale!);
+        if (mounted) {
+          showToast(
+              padding: 16,
+              textStyle: myTextStyleMedium(context),
+              backgroundColor: Theme.of(context).primaryColor,
+              duration: const Duration(seconds: 5),
+              message: msg,
+              context: context);
+        }
       }
     }
 
@@ -288,14 +319,15 @@ class AvatarEditorState extends State<AvatarEditor>
         ' date: ${DateTime.now().toIso8601String()}\n');
   }
 
-
   @override
   Widget build(BuildContext context) {
     return SafeArea(
         child: Scaffold(
       appBar: AppBar(
-        title: Text(memberProfilePicture == null?
-          'Member Profile Picture': memberProfilePicture!,
+        title: Text(
+          memberProfilePicture == null
+              ? 'Member Profile Picture'
+              : memberProfilePicture!,
         ),
       ),
       body: Stack(
@@ -311,7 +343,8 @@ class AvatarEditorState extends State<AvatarEditor>
                     const SizedBox(
                       height: 12,
                     ),
-                    Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
                         Text(
                           '${widget.user.name}',
@@ -319,10 +352,23 @@ class AvatarEditorState extends State<AvatarEditor>
                         ),
                         imageFile == null
                             ? const SizedBox()
-                            : IconButton(
-                          onPressed: _processFile,
-                          icon: Icon(Icons.check, size: 36.0, color: Theme.of(context).primaryColor,),
-                        ),
+                            : busy
+                                ? const SizedBox(
+                                    width: 16,
+                                    height: 16,
+                                    child: CircularProgressIndicator(
+                                      strokeWidth: 4,
+                                      backgroundColor: Colors.pink,
+                                    ),
+                                  )
+                                : IconButton(
+                                    onPressed: _processFile,
+                                    icon: Icon(
+                                      Icons.check,
+                                      size: 36.0,
+                                      color: Theme.of(context).primaryColor,
+                                    ),
+                                  ),
                       ],
                     ),
                     const SizedBox(
@@ -330,9 +376,10 @@ class AvatarEditorState extends State<AvatarEditor>
                     ),
                     Padding(
                       padding: const EdgeInsets.all(28.0),
-                      child: Text(profileInstruction == null?
-                        'Please set up your profile picture. You can use an existing photo or take a new one with the camera':
-                      profileInstruction!,
+                      child: Text(
+                        profileInstruction == null
+                            ? 'Please set up your profile picture. You can use an existing photo or take a new one with the camera'
+                            : profileInstruction!,
                         style: myTextStyleSmall(context),
                       ),
                     ),
@@ -379,8 +426,10 @@ class AvatarEditorState extends State<AvatarEditor>
                               children: [
                                 TextButton(
                                     onPressed: _takePhoto,
-                                    child: Text(useCamera == null?
-                                      'Use Camera': useCamera!,
+                                    child: Text(
+                                      useCamera == null
+                                          ? 'Use Camera'
+                                          : useCamera!,
                                       style: myTextStyleMedium(context),
                                     )),
                                 const SizedBox(
@@ -388,8 +437,10 @@ class AvatarEditorState extends State<AvatarEditor>
                                 ),
                                 TextButton(
                                     onPressed: _pickPhotoFromGallery,
-                                    child: Text(pickFromGallery == null?
-                                      'Pick from Gallery': pickFromGallery!,
+                                    child: Text(
+                                      pickFromGallery == null
+                                          ? 'Pick from Gallery'
+                                          : pickFromGallery!,
                                       style: myTextStyleMedium(context),
                                     )),
                                 const SizedBox(
@@ -399,8 +450,12 @@ class AvatarEditorState extends State<AvatarEditor>
                                     ? const SizedBox()
                                     : IconButton(
                                         onPressed: _processFile,
-                                        icon: Icon(Icons.check, size: 36.0, color: Theme.of(context).primaryColor,),
-                                       ),
+                                        icon: Icon(
+                                          Icons.check,
+                                          size: 36.0,
+                                          color: Theme.of(context).primaryColor,
+                                        ),
+                                      ),
                               ],
                             ),
                           ),

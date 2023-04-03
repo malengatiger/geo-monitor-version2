@@ -87,7 +87,7 @@ class AuthPhoneSignInState extends State<AuthPhoneSignIn>
             type: PageTransitionType.scale,
             alignment: Alignment.topLeft,
             duration: const Duration(seconds: 1),
-            child: AvatarEditor(
+            child: UserProfilePictureEditor(
               user: user!,
               goToDashboardWhenDone: true,
             )));

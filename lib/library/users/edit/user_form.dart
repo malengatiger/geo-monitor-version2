@@ -5,6 +5,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:geo_monitor/library/bloc/fcm_bloc.dart';
 import 'package:geo_monitor/library/data/country.dart';
 import 'package:geo_monitor/library/data/settings_model.dart';
+import 'package:geo_monitor/library/errors/error_handler.dart';
 import 'package:geo_monitor/library/users/edit/user_edit_mobile.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:uuid/uuid.dart';
@@ -13,6 +14,7 @@ import '../../../l10n/translation_handler.dart';
 import '../../api/data_api.dart';
 import '../../api/prefs_og.dart';
 import '../../bloc/admin_bloc.dart';
+import '../../bloc/geo_exception.dart';
 import '../../bloc/organization_bloc.dart';
 import '../../cache_manager.dart';
 import '../../data/user.dart' as ar;
@@ -228,10 +230,19 @@ class UserFormState extends State<UserForm>
             }
           } catch (e) {
             pp(e);
-            ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text(
-                    memberCreateFailed == null?
-                    'User Create failed: $e': memberCreateFailed!)));
+            if (e is GeoException) {
+              errorHandler.handleError(exception: e);
+            }
+            if (mounted) {
+              showToast(
+                  context: context,
+                  message: memberCreateFailed == null?
+                  'Member create failed, please try again in a minute':memberCreateFailed!,
+                  backgroundColor: Theme.of(context).primaryColor,
+                  textStyle: myTextStyleMedium(context),
+                  toastGravity: ToastGravity.TOP,
+                  duration: const Duration(seconds: 5));
+            }
           }
         } else {
           widget.user!.name = nameController.text;
@@ -253,16 +264,37 @@ class UserFormState extends State<UserForm>
               Navigator.pop(context, list);
             }
           } catch (e) {
-            ScaffoldMessenger.of(context)
-                .showSnackBar(SnackBar(content: Text(
-                memberUpdateFailed == null?
-                'Update failed: $e':memberUpdateFailed!)));
+
+            if (e is GeoException) {
+              errorHandler.handleError(exception: e);
+            }
+            if (mounted) {
+              showToast(
+                  context: context,
+                  message: memberUpdateFailed == null?
+                  'Member update failed, please try again in a minute':memberUpdateFailed!,
+                  backgroundColor: Theme.of(context).primaryColor,
+                  textStyle: myTextStyleMedium(context),
+                  toastGravity: ToastGravity.TOP,
+                  duration: const Duration(seconds: 5));
+            }
           }
         }
       } catch (e) {
         pp(e);
-        ScaffoldMessenger.of(context)
-            .showSnackBar(SnackBar(content: Text('$e')));
+        if (e is GeoException) {
+          errorHandler.handleError(exception: e);
+        }
+        if (mounted) {
+          showToast(
+              context: context,
+              message: memberUpdateFailed == null?
+              'Member update failed, please try again in a minute':memberUpdateFailed!,
+              backgroundColor: Theme.of(context).primaryColor,
+              textStyle: myTextStyleMedium(context),
+              toastGravity: ToastGravity.TOP,
+              duration: const Duration(seconds: 5));
+        }
       }
       setState(() {
         isBusy = false;
@@ -345,13 +377,16 @@ class UserFormState extends State<UserForm>
 
   void _navigateToAvatarBuilder() async {
     //Navigator.of(context).pop();
+    if (widget.user == null) {
+      return;
+    }
     var user = await Navigator.push(
         context,
         PageTransition(
             type: PageTransitionType.scale,
             alignment: Alignment.topLeft,
             duration: const Duration(seconds: 2),
-            child: AvatarEditor(
+            child: UserProfilePictureEditor(
               user: widget.user!,
               goToDashboardWhenDone: false,
             )));
@@ -377,21 +412,23 @@ class UserFormState extends State<UserForm>
             )));
   }
   bool refreshCountries = false;
+
   @override
   Widget build(BuildContext context) {
     var spaceToButtons = 0.0;
     var spaceToTop = 0.0;
     var ori = MediaQuery.of(context).orientation;
     if (ori.name == 'portrait') {
-      spaceToButtons = 28;
-      spaceToTop = 48;
+      spaceToButtons = 20;
+      spaceToTop = 24;
     } else {
-      spaceToButtons = 24;
-      spaceToTop = 16;
+      spaceToButtons = 20;
+      spaceToTop = 12;
     }
     return SizedBox(
       width: widget.width,
       child: Card(
+        elevation: 8.0,
         shape: getRoundedBorder(radius: 16),
         child: Padding(
           padding: EdgeInsets.all(widget.internalPadding),
@@ -449,7 +486,7 @@ class UserFormState extends State<UserForm>
                           },
                         ),
                         const SizedBox(
-                          height: 4,
+                          height: 2,
                         ),
                         TextFormField(
                           controller: cellphoneController,
