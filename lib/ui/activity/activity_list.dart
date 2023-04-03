@@ -374,7 +374,7 @@ class ActivityListState extends State<ActivityList>
                   ),
                 ],
               ),
-              Positioned(
+              Positioned(left: 12, right: 12,
                 child: SizedBox(
                   height: 100,
                   child: Card(
@@ -466,7 +466,7 @@ class ActivityListState extends State<ActivityList>
                 ),
               ],
             ),
-            Positioned(
+            Positioned(left: 12, right: 12,
               child: SizedBox(
                 height: 100,
                 child: Card(

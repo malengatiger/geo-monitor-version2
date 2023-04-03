@@ -167,7 +167,6 @@ class GeoActivityState extends State<GeoActivity>
 
   @override
   Widget build(BuildContext context) {
-    final width = MediaQuery.of(context).size.width;
     return settings == null
         ? const SizedBox()
         : SizedBox(
