@@ -33,6 +33,7 @@ import '../../library/data/settings_model.dart';
 import '../../library/data/user.dart';
 import '../../library/data/video.dart';
 import '../../library/emojis.dart';
+import '../../library/errors/error_handler.dart';
 import '../../library/functions.dart';
 import '../../library/ui/maps/project_map_mobile.dart';
 import '../../library/ui/media/list/project_media_list_mobile.dart';
@@ -267,8 +268,9 @@ class DashboardMobileState extends State<DashboardMobile>
           });
         }
         if (e is GeoException) {
-          e.saveError();
-          final msg = await e.getTranslatedMessage();
+          var sett = await prefsOGx.getSettings();
+          errorHandler.handleError(exception: e);
+          final msg = await translator.translate(e.geTranslationKey(), sett.locale!);
           if (mounted) {
             showToast(
                 backgroundColor: Theme

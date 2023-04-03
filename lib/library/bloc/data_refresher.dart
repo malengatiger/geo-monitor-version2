@@ -64,7 +64,7 @@ class DataRefresher {
     } catch (e) {
       pp('$xx Something went horribly wrong, will RETRY ...: $e');
       if (e is GeoException) {
-        e.saveError();
+        errorHandler.handleError(exception: e);
       }
       bag = await retry(
           numberOfDays: numberOfDays,
@@ -75,18 +75,7 @@ class DataRefresher {
     }
 
     pp('$xx Done with organization data, refreshing projects and users if needed ...');
-    // final doRefresh = prefsOGx.shouldRefreshBePerformed();
-    // if (doRefresh) {
-    //   var projects =
-    //       await _startProjectsRefresh(organizationId: organizationId!);
-    //   var users = await _startUsersRefresh(organizationId: organizationId);
-    //   var countries = await _startCountryRefresh();
-    //   bag!.projects = projects;
-    //   bag.users = users;
-    //   await prefsOGx.setDateRefreshed(DateTime.now().toIso8601String());
-    //   pp('$xx Done with refresh of projects: ${projects.length} '
-    //       'and users: ${users.length} countries: ${countries.length}');
-    // }
+
     pp('$xx users empty; will start refresh ...... ');
     var users = await _startUsersRefresh(organizationId: organizationId!);
     if (bag != null) {
@@ -98,7 +87,10 @@ class DataRefresher {
       pp('$xx users in bag: ${bag!.users!.length}; putting bag in stream ...... ');
       organizationBloc.dataBagController.sink.add(bag);
     }
+    //upload errors cached ...
     await errorHandler.uploadErrors();
+    var end = DateTime.now();
+    pp('$mm Data refresh took ${end.difference(start).inSeconds} seconds');
     return bag;
   }
 
@@ -134,14 +126,7 @@ class DataRefresher {
     pp('$xx retrying the call after an error, will kick off after 5 seconds  ...');
     await Future.delayed(const Duration(seconds: 5));
     DataBag? bag;
-
-    try {
-      bag = await _performWork(organizationId, bag, projectId, userId);
-    } catch (e) {
-      pp('$mm retry failed : $e');
-      rethrow;
-    }
-
+    bag = await _performWork(organizationId, bag, projectId, userId);
     return bag;
   }
 
@@ -230,7 +215,7 @@ class DataRefresher {
       {required String organizationId, required String directoryPath}) async {
     pp('$xx .......  startOrganizationRefresh in an isolate ...');
     DataBag? bag;
-    try {
+
       bag = await Isolate.run(() async =>
           await refreshOrganizationDataInIsolate(
               token: token,
@@ -250,12 +235,7 @@ class DataRefresher {
         pp('$xx Yo! this bag be null ... someone not behaving!');
       }
       return bag;
-    } on StateError catch (e) {
-      pp(e.message); // In a bad state!
-    } on FormatException catch (e) {
-      pp(e.message);
-    }
-    return null;
+
   }
 
   Future<DataBag?> _startProjectRefresh(
@@ -263,7 +243,7 @@ class DataRefresher {
     pp('$xx .......  startProjectRefresh in an isolate ...');
     await _setUp();
     DataBag? bag;
-    try {
+
       bag = await Isolate.run(() async => await refreshProjectDataInIsolate(
           token: token,
           directoryPath: directoryPath,
@@ -279,12 +259,7 @@ class DataRefresher {
         pp('$xx startProjectRefresh: isolate function completed, dataBag cached.\n');
       }
       return bag;
-    } on StateError catch (e) {
-      pp(e.message); // In a bad state!
-    } on FormatException catch (e) {
-      pp(e.message);
-    }
-    return bag;
+
   }
 
   Future<DataBag?> _startUserDataRefresh(
@@ -292,7 +267,7 @@ class DataRefresher {
     pp('$xx .......  startUserRefresh in an isolate ...');
     await _setUp();
     DataBag? bag;
-    try {
+
       bag = await Isolate.run(() async => await refreshUserDataInIsolate(
           token: token,
           directoryPath: directoryPath,
@@ -310,12 +285,7 @@ class DataRefresher {
         pp('$xx bag is null. Fuck!!');
       }
       return bag;
-    } on StateError catch (e) {
-      pp(e.message); // In a bad state!
-    } on FormatException catch (e) {
-      pp(e.message);
-    }
-    return bag;
+
   }
 
   void _check() {
@@ -401,7 +371,7 @@ Future<DataBag?> refreshOrganizationDataInIsolate(
     required String directoryPath}) async {
   pp('$xz ............ refreshOrganizationDataInIsolate starting ....');
   DataBag? bag;
-  try {
+
     bag = await getOrganizationDataZippedFile(
         url: url,
         directoryPath: directoryPath,
@@ -411,11 +381,13 @@ Future<DataBag?> refreshOrganizationDataInIsolate(
         token: token);
     if (bag == null) {
       pp('$xz Bag not returned from getOrganizationDataZippedFile ');
-      throw Exception('$xz Hey Ho, no bag!');
+      throw GeoException(
+          message: 'Problem with http call: $e',
+          url: url,
+          translationKey: 'serverProblem',
+          errorType: GeoException.socketException);
     }
-  } catch (e) {
-    pp(e);
-  }
+
 
   return bag;
 }
@@ -429,7 +401,7 @@ Future<DataBag?> refreshProjectDataInIsolate(
     required String directoryPath}) async {
   pp('$xz refreshProjectDataInIsolate starting ....');
   DataBag? bag;
-  try {
+
     bag = await getProjectDataZippedFile(
         url: url,
         directoryPath: directoryPath,
@@ -437,9 +409,6 @@ Future<DataBag?> refreshProjectDataInIsolate(
         startDate: startDate,
         endDate: endDate,
         token: token);
-  } catch (e) {
-    pp(e);
-  }
 
   return bag;
 }
@@ -453,7 +422,7 @@ Future<DataBag?> refreshUserDataInIsolate(
     required String directoryPath}) async {
   pp('$xz refreshUserDataInIsolate starting ....');
   DataBag? bag;
-  try {
+
     bag = await getUserDataZippedFile(
         url: url,
         directoryPath: directoryPath,
@@ -461,9 +430,7 @@ Future<DataBag?> refreshUserDataInIsolate(
         startDate: startDate,
         endDate: endDate,
         token: token);
-  } catch (e) {
-    pp(e);
-  }
+
 
   return bag;
 }
@@ -546,7 +513,7 @@ Future<List<Project>> getAllOrganizationProjects(
     'Content-Encoding': 'application/json',
     'Authorization': 'Bearer $token'
   };
-  try {
+
     mUrl = '${mUrl}getAllOrganizationProjects?organizationId=$organizationId';
     var uri = Uri.parse(mUrl);
 
@@ -570,11 +537,7 @@ Future<List<Project>> getAllOrganizationProjects(
       pp('$xz Bad status; ${httpResponse.statusCode} ${httpResponse.body}');
       return [];
     }
-  } catch (e) {
-    pp('$xz Problem getting projects: $e');
-  }
 
-  return [];
 }
 
 Future<List<User>> getUsers(
@@ -787,20 +750,18 @@ Future<http.Response> _sendRequestToBackend(String mUrl, String token) async {
     'Accept-Encoding': 'gzip, deflate',
     'Authorization': 'Bearer $token'
   };
-
+  pp('$xz _sendRequestToBackend call:  🔆 🔆 🔆 '
+      'just about to call http client ....');
   try {
-    pp('$xz _sendRequestToBackend call:  🔆 🔆 🔆 '
-        'just about to call http client ....');
-    try {
       final client = http.Client();
       var uri = Uri.parse(mUrl);
-
       http.Response httpResponse = await client
           .get(
             uri,
             headers: headers,
           )
           .timeout(const Duration(seconds: 120));
+
       pp('$xz _sendRequestToBackend: RESPONSE: .... : 💙 statusCode: 👌👌👌 '
           '${httpResponse.statusCode} 👌👌👌  for $mUrl');
       var end = DateTime.now();
@@ -812,21 +773,24 @@ Future<http.Response> _sendRequestToBackend(String mUrl, String token) async {
             '$xz 😡😡😡😡 The response is not 200; it is ${httpResponse.statusCode}, '
             'NOT GOOD, throwing up !! 😡 ${httpResponse.body}';
         pp(msg);
-        throw HttpException(msg);
+        pp('$xz Bad status code ... 😑');
+        throw GeoException(
+            message: 'Bad status code: ${httpResponse.statusCode}',
+            url: mUrl,
+            translationKey: 'serverProblem',
+            errorType: GeoException.socketException);
       } else {
-        pp('$xz status is 200,  🍎 Return the httpResponse: ${httpResponse.contentLength} bytes  🍎');
+        pp('$xz status is 200, 🍎 Return the httpResponse: '
+            '${httpResponse.contentLength} bytes  🍎');
+        return httpResponse;
       }
-      return httpResponse;
-    } catch (e) {
-      pp('$xz Problem with http call: $e');
-      throw Exception('$e');
-    }
+
   } on SocketException {
     pp('$xz No Internet connection, really means that server cannot be reached 😑');
     throw GeoException(
-        message: 'No Internet connection',
+        message: 'Sever unreachable',
         url: mUrl,
-        translationKey: 'networkProblem',
+        translationKey: 'serverProblem',
         errorType: GeoException.socketException);
   } on HttpException {
     pp("$xz HttpException occurred 😱");

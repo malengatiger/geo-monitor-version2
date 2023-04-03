@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:geo_monitor/library/data/location_response.dart';
+import 'package:geo_monitor/library/errors/error_handler.dart';
 import 'package:geo_monitor/library/ui/maps/location_response_map.dart';
 import 'package:geo_monitor/library/ui/schedule/scheduler_mobile.dart';
 import 'package:geo_monitor/library/users/kill_user_page.dart';
@@ -116,8 +117,9 @@ class UserListMobileState extends State<UserListMobile>
           busy = false;
         });
         if (e is GeoException) {
-          e.saveError();
-          final msg = await e.getTranslatedMessage();
+          var sett = await prefsOGx.getSettings();
+          errorHandler.handleError(exception: e);
+          final msg = await translator.translate(e.geTranslationKey(), sett.locale!);
           if (mounted) {
             showToast(
                 backgroundColor: Theme

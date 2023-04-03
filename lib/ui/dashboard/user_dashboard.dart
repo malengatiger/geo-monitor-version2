@@ -34,7 +34,7 @@ import '../../library/data/user.dart';
 import '../../library/data/video.dart';
 import '../../library/functions.dart';
 import '../../library/generic_functions.dart';
-import '../../library/geofence/geofencer_two.dart';
+import '../../library/geofence/the_great_geofencer.dart';
 import '../../library/ui/maps/location_response_map.dart';
 import '../../library/ui/project_list/project_list_mobile.dart';
 import 'user_dashboard_grid.dart';

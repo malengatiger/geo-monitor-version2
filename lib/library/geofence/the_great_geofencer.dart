@@ -1,6 +1,8 @@
 import 'dart:async';
 
+import 'package:geo_monitor/library/bloc/geo_exception.dart';
 import 'package:geo_monitor/library/data/position.dart';
+import 'package:geo_monitor/library/errors/error_handler.dart';
 import 'package:geofence_service/geofence_service.dart';
 import 'package:geofence_service/models/geofence.dart' as geo;
 import 'package:uuid/uuid.dart';
@@ -21,7 +23,7 @@ final geofenceService = GeofenceService.instance.setup(
     accuracy: 100,
     loiteringDelayMs: 60000,
     statusChangeDelayMs: 10000,
-    useActivityRecognition: true,
+    useActivityRecognition: false,
     allowMockLocations: false,
     printDevLog: false,
     geofenceRadiusSortType: GeofenceRadiusSortType.DESC);
@@ -37,27 +39,6 @@ class TheGreatGeofencer {
 
   final _geofenceList = <geo.Geofence>[];
   User? _user;
-
-  // Future initialize() async {
-  //   pp('$mm Create a [GeofenceService] instance and set options.....');
-  //   var geofenceService = GeofenceService.instance.setup(
-  //       interval: 5000,
-  //       accuracy: 100,
-  //       loiteringDelayMs: 30000,
-  //       statusChangeDelayMs: 10000,
-  //       useActivityRecognition: true,
-  //       allowMockLocations: false,
-  //       printDevLog: true,
-  //       geofenceRadiusSortType: GeofenceRadiusSortType.DESC);
-  //
-  //   pp('\n\n$mm GeofenceService initialized .... 🌺 🌺 🌺 ');
-  //
-  //   _user = await prefsOGx.getUser();
-  //   if (_user != null) {
-  //     pp('$mm Geofences for Organization: ${_user!.organizationId} name: ${_user!.organizationName} .... 🌺 🌺 🌺 ');
-  //     pp('$mm Geofences for User: ${_user!.toJson()}');
-  //   }
-  // }
 
   Future<List<ProjectPosition>> _findProjectPositionsByLocation(
       {required String organizationId,
@@ -103,8 +84,7 @@ class TheGreatGeofencer {
             latitude: loc!.latitude!,
             longitude: loc!.longitude!,
             radiusInKM: radiusInKM ?? 5);
-        pp('$xx buildGeofences .... project positions found by location: ${mList
-            .length} ');
+        pp('$xx buildGeofences .... project positions found by location: ${mList.length} ');
       }
     } catch (e) {
       pp(e);
@@ -118,13 +98,14 @@ class TheGreatGeofencer {
         break;
       }
     }
+
     pp('$xx ${_geofenceList.length} geofences added to list');
     geofenceService.addGeofenceList(_geofenceList);
+
     geofenceService.addGeofenceStatusChangeListener(
         (geofence, geofenceRadius, geofenceStatus, location) async {
       pp('$xx Geofence Listener 💠 FIRED!! '
           '🔵🔵🔵 geofenceStatus: ${geofenceStatus.name}  at 🔶 ${geofence.data['projectName']}');
-
       await _processGeofenceEvent(
           geofence: geofence,
           geofenceRadius: geofenceRadius,
@@ -135,17 +116,23 @@ class TheGreatGeofencer {
     try {
       pp('$xx  🔶🔶🔶🔶🔶🔶 Starting GeofenceService ...... 🔶🔶🔶🔶🔶🔶 ');
       await geofenceService.start().onError((error, stackTrace) => {
-            pp('\n\n\n$mm $reds GeofenceService failed to start, onError: 🔴 $error 🔴 \n\n\n')
-            //todo - navigate user to system settings - explain why activity permission required
-            //todo - see ErrorCodes.ACTIVITY_RECOGNITION_PERMISSION_PERMANENTLY_DENIED
+            // pp('\n\n\n$mm $reds GeofenceService failed to start, onError: 🔴 $error 🔴 \n\n\n')
+            errorHandler.handleError(
+                exception: GeoException(
+                    message: 'No location available, geofenceEvent failed',
+                    translationKey: 'serverProblem',
+                    errorType: GeoException.formatException,
+                    url: '/geo/v1/addGeofenceEvent'))
           });
 
       pp('$xx ✅✅✅✅✅✅ geofences 🍐🍐🍐 STARTED OK 🍐🍐🍐 '
-          '🔆🔆🔆 will wait for geofence status change 🔵🔵🔵🔵🔵 ');
+          '🔆🔆🔆 will wait for geofence status changes ... 🔵🔵🔵🔵🔵 ');
     } catch (e) {
       pp('\n\n$xx GeofenceService failed to start: 🔴 $e 🔴 }');
+      errorHandler.handleError(exception: GeoException(message: 'GeofenceService failed to start',
+          translationKey: 'serverProblem', errorType: GeoException.formatException,
+          url: 'n/a'));
     }
-
   }
 
   final reds = '🔴 🔴 🔴 🔴 🔴 🔴 TheGreatGeofencer: ';
@@ -163,7 +150,7 @@ class TheGreatGeofencer {
     //use org settings rather than possibly changed settings from prefs
     final sett = await cacheManager.getSettings();
 
-    String message = 'A member has arrived at ${ geofence.data['projectName']}';
+    String message = 'A member has arrived at ${geofence.data['projectName']}';
     String title = 'Message from Geo';
     final arr = await translator.translate('arrivedAt', sett.locale!);
     message = arr.replaceAll('\$project', geofence.data['projectName']);
@@ -193,20 +180,42 @@ class TheGreatGeofencer {
           break;
         case 'GeofenceStatus.DWELL':
           event.status = 'DWELL';
-          var gfe = await DataAPI.addGeofenceEvent(event);
-          pp('$xx geofence event added to database for ${event.projectName}');
-          _streamController.sink.add(gfe);
+          addObject(event);
           break;
         case 'GeofenceStatus.EXIT':
           event.status = 'EXIT';
-          var gfe = await DataAPI.addGeofenceEvent(event);
-          pp('$xx geofence event added to database for ${event.projectName}');
-          _streamController.sink.add(gfe);
+          addObject(event);
           break;
       }
     } else {
       pp('$mm $reds UNABLE TO PROCESS GEOFENCE - location not available');
-      throw Exception('No location available');
+      errorHandler.handleError(
+          exception: GeoException(
+              message: 'No location available, add geofenceEvent failed',
+              translationKey: 'serverProblem',
+              errorType: GeoException.formatException,
+              url: '/geo/v1/addGeofenceEvent'));
+    }
+  }
+
+  Future addObject(GeofenceEvent event) async {
+    pp('$xx about to send geofence event to backend ... ');
+    try {
+      var gfe = await DataAPI.addGeofenceEvent(event);
+      pp('$xx geofence event added to database for ${event.projectName}');
+      _streamController.sink.add(gfe);
+    } catch (e) {
+      pp('$xx failed to add geofence event');
+      if (e is GeoException) {
+        errorHandler.handleError(exception: e);
+      } else {
+        errorHandler.handleError(
+            exception: GeoException(
+                message: 'Failed to add geofenceEvent',
+                translationKey: 'serverProblem',
+                errorType: GeoException.httpException,
+                url: '/geo/v1/addGeofenceEvent'));
+      }
     }
   }
 

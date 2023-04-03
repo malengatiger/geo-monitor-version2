@@ -27,6 +27,7 @@ import '../../data/project_position.dart';
 import '../../data/settings_model.dart';
 import '../../data/user.dart';
 import '../../data/user.dart' as mon;
+import '../../errors/error_handler.dart';
 import '../../functions.dart';
 import '../../generic_functions.dart';
 import '../maps/org_map_mobile.dart';
@@ -213,8 +214,9 @@ class ProjectListMobileState extends State<ProjectListMobile>
           busy = false;
         });
         if (e is GeoException) {
-          e.saveError();
-          final msg = await e.getTranslatedMessage();
+          var sett = await prefsOGx.getSettings();
+          errorHandler.handleError(exception: e);
+          final msg = await translator.translate(e.geTranslationKey(), sett.locale!);
           if (mounted) {
             showToast(
                 backgroundColor: Theme

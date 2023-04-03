@@ -515,8 +515,8 @@ class AudioRecorderCard extends StatelessWidget {
                         userName: user.name!,
                         userThumbUrl: user.thumbnailUrl,
                         namePictureHorizontal: false,
-                        avatarRadius: 28.0,
-                        padding: 12.0,
+                        avatarRadius: 24.0,
+                        padding: 8.0,
                         elevation: 4.0,
                       ),
                       SizedBox(

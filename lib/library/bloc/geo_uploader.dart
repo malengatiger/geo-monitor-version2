@@ -7,8 +7,10 @@ import 'dart:ui';
 
 import 'package:geo_monitor/library/api/data_api.dart';
 import 'package:geo_monitor/library/api/prefs_og.dart';
+import 'package:geo_monitor/library/bloc/geo_exception.dart';
 import 'package:geo_monitor/library/bloc/photo_for_upload.dart';
 import 'package:geo_monitor/library/bloc/video_for_upload.dart';
+import 'package:geo_monitor/library/errors/error_handler.dart';
 
 import '../../device_location/device_location_bloc.dart';
 import '../../l10n/translation_handler.dart';
@@ -36,8 +38,7 @@ class GeoUploader {
   int retryCount = 0;
   static const maxRetries = 2;
   Future manageMediaUploads() async {
-    pp('$xx manageMediaUploads: starting ... 🔵🔵🔵');
-
+    pp('$xx ............ manageMediaUploads: starting ... 🔵🔵🔵');
     try {
       await uploadCachedPhotos();
       await uploadCachedAudios();
@@ -46,31 +47,25 @@ class GeoUploader {
           'completed and uploads done if needed. 🥬🥬🥬 '
           'should be Okey Dokey!');
     } catch (e) {
-      pp('$xx Something went horribly wrong: $e');
-      var result = _danceWithUploads();
-      if (result == 9) {
-        pp('$xx Something went horribly wrong, and unable to retry: $e');
+      pp('$xx Something went horribly wrong with media upload: $e');
+      if (e is GeoException) {
+        errorHandler.handleError(exception: e);
       }
+       await _retryUploads();
     }
   }
 
-  Future<int> _danceWithUploads() async {
-    await Future.delayed(Duration(seconds: 5));
-    try {
+  Future<int> _retryUploads() async {
+    await Future.delayed(const Duration(seconds: 5));
+    await uploadCachedPhotos();
+    await uploadCachedAudios();
+    await uploadCachedVideos();
 
-      await uploadCachedPhotos();
-      await uploadCachedAudios();
-      await uploadCachedVideos();
-
-      pp('$xx manageMediaUploads: RETRY seems to have worked !!! 🥬🥬🥬🥬🥬🥬 '
-          'completed and uploads done if needed. 🥬🥬🥬 '
-          'should be Okey Dokey!');
-      return 0;
-    } catch (e) {
-      pp('$xx retry failed; $e');
-      return 9;
-      }
-    }
+    pp('$xx manageMediaUploads: RETRY seems to have worked !!! 🥬🥬🥬🥬🥬🥬 '
+        'completed and uploads done if needed. 🥬🥬🥬 '
+        'should be Okey Dokey!');
+    return 0;
+  }
 
   Future uploadCachedPhotos() async {
     pp('$xx ... checking for photo uploads ...');
@@ -101,8 +96,14 @@ class GeoUploader {
     }
     pp('$xx ... ${videos.length} videosForUpload found. 🔵 🔵 🔵 Will upload now ...');
     int cnt = 0;
+    final sett = await cacheManager.getSettings();
+    final videoArrived =
+    await translator.translate('videoArrived', sett.locale!);
+    final messageFromGeo =
+    await translator.translate('messageFromGeo', sett.locale!);
+
     for (var p in videos) {
-      var result = await _startVideoUpload(p);
+      var result = await _startVideoUpload(videoForUploading: p, videoArrived: videoArrived, messageFromGeo: messageFromGeo);
       if (result != null) {
         await cacheManager.removeUploadedVideo(video: p);
         cnt++;
@@ -122,8 +123,14 @@ class GeoUploader {
     }
     pp('$xx ... ${audios.length} audiosForUpload found. 🔵 🔵 🔵 Will upload now ...');
     int cnt = 0;
+    final sett = await cacheManager.getSettings();
+    final audioArrived =
+    await translator.translate('audioArrived', sett.locale!);
+    final messageFromGeo =
+    await translator.translate('messageFromGeo', sett.locale!);
+
     for (var p in audios) {
-      var result = await _startAudioUpload(p);
+      var result = await _startAudioUpload(audioForUploading: p, messageFromGeo: messageFromGeo, audioArrived: audioArrived);
       if (result != null) {
         await cacheManager.removeUploadedAudio(audio: p);
         cnt++;
@@ -176,6 +183,12 @@ class GeoUploader {
         pp('$xx 🍐🍐🍐🍐🍐🍐The user is OK');
       }
 
+      final sett = await cacheManager.getSettings();
+      final photoArrived =
+      await translator.translate('photoArrived', sett!.locale!);
+      final messageFromGeo =
+      await translator.translate('messageFromGeo', sett!.locale!);
+
       var mJson = json.encode(photoForUploading.toJson());
 
       var photo = await Isolate.run(() async => await uploadPhotoFile(
@@ -185,6 +198,8 @@ class GeoUploader {
           height: height,
           width: width,
           mJson: mJson,
+          photoArrived: photoArrived,
+          messageFromGeo: messageFromGeo,
           distance: distance));
 
       if (photo != null) {
@@ -201,7 +216,8 @@ class GeoUploader {
     return null;
   }
 
-  Future<Video?> _startVideoUpload(VideoForUpload videoForUploading) async {
+  Future<Video?> _startVideoUpload({required VideoForUpload videoForUploading, required String videoArrived,
+    required String messageFromGeo,}) async {
     user = await prefsOGx.getUser();
     try {
       String? url = await DataAPI.getUrl();
@@ -250,12 +266,15 @@ class GeoUploader {
           token: token!,
           size: size,
           mJson: mJson,
+          videoArrived: videoArrived,
+          messageFromGeo: messageFromGeo,
           distance: distance));
 
       if (vid != null) {
         await cacheManager.addVideo(video: vid);
         await cacheManager.removeUploadedVideo(video: videoForUploading);
       }
+
       return vid;
     } on StateError catch (e) {
       pp(e.message); // In a bad state!
@@ -265,7 +284,9 @@ class GeoUploader {
     return null;
   }
 
-  Future<Audio?> _startAudioUpload(AudioForUpload audioForUploading) async {
+  Future<Audio?> _startAudioUpload({required AudioForUpload audioForUploading,
+      required String audioArrived,
+      required String messageFromGeo,}) async {
     user = await prefsOGx.getUser();
     try {
       String? url = await DataAPI.getUrl();
@@ -281,7 +302,6 @@ class GeoUploader {
           audioForUploading.filePath = mFile.path;
         } else {
           pp('$xx File does not exist. 🔴🔴🔴 Deplaning ...');
-          await cacheManager.removeUploadedAudio(audio: audioForUploading);
           return null;
         }
       }
@@ -296,7 +316,7 @@ class GeoUploader {
         pp('🔴🔴🔴🔴🔴🔴🔴🔴 user is null. WTF? 🔴🔴');
         throw Exception('Fuck it! - User is NULL!!');
       } else {
-        pp('$xx 🍐🍐🍐🍐🍐🍐The user is OK');
+        pp('$xx 🍐🍐🍐🍐🍐🍐The user is OK, distance: $distance metres');
       }
 
       var mJson = json.encode(audioForUploading.toJson());
@@ -308,12 +328,15 @@ class GeoUploader {
           height: height,
           width: width,
           mJson: mJson,
+          audioArrived: audioArrived,
+          messageFromGeo: messageFromGeo,
           distance: distance));
 
       if (audio != null) {
         await cacheManager.addAudio(audio: audio);
         await cacheManager.removeUploadedAudio(audio: audioForUploading);
       }
+
       return audio;
     } on StateError catch (e) {
       pp(e.message); // In a bad state!

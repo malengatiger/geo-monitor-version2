@@ -23,6 +23,7 @@ import '../../../data/project.dart';
 import '../../../data/settings_model.dart';
 import '../../../data/user.dart';
 import '../../../data/video.dart';
+import '../../../errors/error_handler.dart';
 import '../../../functions.dart';
 import '../../../generic_functions.dart';
 import '../full_photo/full_photo_mobile.dart';
@@ -163,8 +164,9 @@ class ProjectMediaListTabletState extends State<ProjectMediaListTablet>
           busy = false;
         });
         if (e is GeoException) {
-          e.saveError();
-          final msg = await e.getTranslatedMessage();
+          var sett = await prefsOGx.getSettings();
+          errorHandler.handleError(exception: e);
+          final msg = await translator.translate(e.geTranslationKey(), sett.locale!);
           if (mounted) {
             showToast(
                 backgroundColor: Theme

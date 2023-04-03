@@ -39,6 +39,7 @@ import '../../library/data/project_position.dart';
 import '../../library/data/settings_model.dart';
 import '../../library/data/user.dart';
 import '../../library/data/video.dart';
+import '../../library/errors/error_handler.dart';
 import '../../library/functions.dart';
 import '../../library/generic_functions.dart';
 import '../../library/ui/maps/location_response_map.dart';
@@ -258,8 +259,9 @@ class DashboardTabletState extends State<DashboardTablet>
     } catch (e) {
       pp(e);
       if (e is GeoException) {
-        e.saveError();
-        final msg = await e.getTranslatedMessage();
+        var sett = await prefsOGx.getSettings();
+        errorHandler.handleError(exception: e);
+        final msg = await translator.translate(e.geTranslationKey(), sett.locale!);
         if (mounted) {
           showToast(
               backgroundColor: Theme
@@ -550,7 +552,7 @@ class DashboardTabletState extends State<DashboardTablet>
     pp('$mm build: app Localizations.localeOf 🌎🌎🌎 locale: $appLocale, not the same as the app');
     var size = MediaQuery.of(context).size;
     var ori = MediaQuery.of(context).orientation;
-    var bottomHeight = 160.0;
+    var bottomHeight = 200.0;
     var padding = 360.0;
     var extPadding = 300.0;
     var top = -12.0;
@@ -628,8 +630,8 @@ class DashboardTabletState extends State<DashboardTablet>
                   : UserProfileCard(
                       userName: user!.name!,
                       userThumbUrl: user!.thumbnailUrl!,
-                      namePictureHorizontal: true,
-                      avatarRadius: 24,
+                      namePictureHorizontal: false,
+                      avatarRadius: 20,
                       elevation: 2,
                       width: width,
                       userType: translatedUserType,
@@ -719,7 +721,7 @@ class DashboardTabletState extends State<DashboardTablet>
                           ),
                   ),
                   GeoActivity(
-                    width: (size.width / 2) - 40,
+                    width: (size.width / 2) - 20,
                     forceRefresh: true,
                     thinMode: true,
                     showPhoto: (photo) {

@@ -155,25 +155,26 @@ class ProjectVideosPageState extends State<ProjectVideosPage> {
 }
 
 class LoadingCard extends StatelessWidget {
-  const LoadingCard({Key? key, required this.loadingActivities}) : super(key: key);
+  const LoadingCard({Key? key, required this.loadingActivities, this.width, this.height}) : super(key: key);
 
   final String loadingActivities;
+  final double? width, height;
 
   @override
   Widget build(BuildContext context) {
     return Center(
-      child: SizedBox(width: 400, height: 300,
+      child: SizedBox(width: width == null?300: width!, height: height == null? 200: height!,
         child: Padding(
-          padding: const EdgeInsets.all(24.0),
+          padding: const EdgeInsets.all(12.0),
           child: Card(
             shape: getRoundedBorder(radius: 16),
             elevation: 8,
             child: Padding(
-              padding: const EdgeInsets.all(28.0),
+              padding: const EdgeInsets.all(16.0),
               child: Column(
                 children: [
                   const SizedBox(
-                    height: 60,
+                    height: 24,
                   ),
                   const SizedBox(
                     width: 20,
@@ -184,9 +185,9 @@ class LoadingCard extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(
-                    height: 48,
+                    height: 24,
                   ),
-                  Text(loadingActivities, style: myTextStyleMediumBold(context),),
+                  Text(loadingActivities, style: myTextStyleMedium(context),),
                 ],
               ),
             ),

@@ -408,6 +408,17 @@ class OrganizationBloc {
       rethrow;
     }
   }
+  Future<List<ActivityModel>> getCachedOrganizationActivity(
+      {required String organizationId,
+        required int hours,
+       }) async {
+      var activities = await cacheManager.getActivitiesWithinHours(hours);
+      pp('$mm 💜💜💜💜 getCachedOrganizationActivity found in cache: 💜 ${activities.length} activities ; organizationId: $organizationId 💜');
+      activityController.sink.add(activities);
+      pp('$mm 💜💜💜💜 getCachedOrganizationActivity found: 💜 ${activities.length} activities ; organizationId: $organizationId 💜');
+      return activities;
+
+  }
 
   Future<List<ProjectSummary>> getOrganizationDailySummaries(
       {required String organizationId,

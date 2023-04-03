@@ -14,7 +14,6 @@ import 'package:geo_monitor/library/data/project_polygon.dart';
 import 'package:geo_monitor/library/data/project_summary.dart';
 import 'package:http/http.dart' as http;
 
-import '../../l10n/translation_handler.dart';
 import '../auth/app_auth.dart';
 import '../bloc/organization_bloc.dart';
 import '../bloc/project_bloc.dart';
@@ -125,15 +124,10 @@ class DataAPI {
     String? mURL = await getUrl();
     Map bag = geofenceEvent.toJson();
 
-    try {
-      var result = await _callWebAPIPost('${mURL!}addGeofenceEvent', bag);
-      var s = GeofenceEvent.fromJson(result);
-      await cacheManager.addGeofenceEvent(geofenceEvent: s);
-      return s;
-    } catch (e) {
-      pp(e);
-      rethrow;
-    }
+    var result = await _callWebAPIPost('${mURL!}addGeofenceEvent', bag);
+    var s = GeofenceEvent.fromJson(result);
+    await cacheManager.addGeofenceEvent(geofenceEvent: s);
+    return s;
   }
 
   static Future<LocationResponse> addLocationResponse(
@@ -141,34 +135,25 @@ class DataAPI {
     String? mURL = await getUrl();
     Map bag = response.toJson();
 
-    try {
-      var result = await _callWebAPIPost('${mURL!}addLocationResponse', bag);
-      var s = LocationResponse.fromJson(result);
-      await cacheManager.addLocationResponse(locationResponse: s);
-      return s;
-    } catch (e) {
-      pp(e);
-      rethrow;
-    }
+    var result = await _callWebAPIPost('${mURL!}addLocationResponse', bag);
+    var s = LocationResponse.fromJson(result);
+    await cacheManager.addLocationResponse(locationResponse: s);
+    return s;
   }
 
   static Future<List<FieldMonitorSchedule>> getProjectFieldMonitorSchedules(
       String projectId) async {
     String? mURL = await getUrl();
     List<FieldMonitorSchedule> mList = [];
-    try {
-      List result = await _sendHttpGET(
-          '${mURL!}getProjectFieldMonitorSchedules?projectId=$projectId');
-      for (var element in result) {
-        mList.add(FieldMonitorSchedule.fromJson(element));
-      }
-      pp('🌿 🌿 🌿 getProjectFieldMonitorSchedules returned: 🌿 ${mList.length}');
-      await cacheManager.addFieldMonitorSchedules(schedules: mList);
-      return mList;
-    } catch (e) {
-      pp(e);
-      rethrow;
+
+    List result = await _sendHttpGET(
+        '${mURL!}getProjectFieldMonitorSchedules?projectId=$projectId');
+    for (var element in result) {
+      mList.add(FieldMonitorSchedule.fromJson(element));
     }
+    pp('🌿 🌿 🌿 getProjectFieldMonitorSchedules returned: 🌿 ${mList.length}');
+    await cacheManager.addFieldMonitorSchedules(schedules: mList);
+    return mList;
   }
 
   static Future<List<FieldMonitorSchedule>> getUserFieldMonitorSchedules(
@@ -244,56 +229,48 @@ class DataAPI {
       String organizationId) async {
     String? mURL = await getUrl();
     List<SettingsModel> mList = [];
-    try {
-      List result = await _sendHttpGET(
-          '${mURL!}getOrganizationSettings?organizationId=$organizationId');
 
-      for (var element in result) {
-        mList.add(SettingsModel.fromJson(element));
-      }
-      if (mList.isNotEmpty) {
-        mList.sort((a, b) => DateTime.parse(b.created!)
-            .millisecondsSinceEpoch
-            .compareTo(DateTime.parse(a.created!).millisecondsSinceEpoch));
-          await cacheManager.addSettings(settings: mList!.first);
+    List result = await _sendHttpGET(
+        '${mURL!}getOrganizationSettings?organizationId=$organizationId');
 
-        await prefsOGx.saveSettings(mList.first);
-        await cacheManager.addSettings(settings: mList.first);
-      }
-
-      pp('🌿 🌿 🌿 getOrganizationSettings returned: 🌿 ${mList.length}');
-      return mList;
-    } catch (e) {
-      pp(e);
-      rethrow;
+    for (var element in result) {
+      mList.add(SettingsModel.fromJson(element));
     }
+    if (mList.isNotEmpty) {
+      mList.sort((a, b) => DateTime.parse(b.created!)
+          .millisecondsSinceEpoch
+          .compareTo(DateTime.parse(a.created!).millisecondsSinceEpoch));
+      await cacheManager.addSettings(settings: mList!.first);
+
+      await prefsOGx.saveSettings(mList.first);
+      await cacheManager.addSettings(settings: mList.first);
+    }
+
+    pp('🌿 🌿 🌿 getOrganizationSettings returned: 🌿 ${mList.length}');
+    return mList;
   }
 
   static Future<List<ActivityModel>> getOrganizationActivity(
       String organizationId, int hours) async {
     String? mURL = await getUrl();
     List<ActivityModel> mList = [];
-    try {
-      List result = await _sendHttpGET(
-          '${mURL!}getOrganizationActivity?organizationId=$organizationId&hours=$hours');
 
-      for (var element in result) {
-        mList.add(ActivityModel.fromJson(element));
-      }
+    List result = await _sendHttpGET(
+        '${mURL!}getOrganizationActivity?organizationId=$organizationId&hours=$hours');
 
-      if (mList.isNotEmpty) {
-        await cacheManager.deleteActivityModels();
-        mList.sort((a, b) => b.date!.compareTo(a.date!));
-        await cacheManager.addActivityModels(activities: mList);
-        organizationBloc.activityController.sink.add(mList);
-      }
-
-      pp('$xz 🌿 🌿 🌿 getOrganizationActivity returned: 🌿 ${mList.length}');
-      return mList;
-    } catch (e) {
-      pp(e);
-      rethrow;
+    for (var element in result) {
+      mList.add(ActivityModel.fromJson(element));
     }
+
+    if (mList.isNotEmpty) {
+      await cacheManager.deleteActivityModels();
+      mList.sort((a, b) => b.date!.compareTo(a.date!));
+      await cacheManager.addActivityModels(activities: mList);
+      organizationBloc.activityController.sink.add(mList);
+    }
+
+    pp('$xz 🌿 🌿 🌿 getOrganizationActivity returned: 🌿 ${mList.length}');
+    return mList;
   }
 
   static Future<List<ProjectSummary>> getOrganizationDailySummary(
@@ -1455,7 +1432,8 @@ class DataAPI {
     String? mURL = await getUrl();
     try {
       pp('$xz appError: ${appError.toJson()}');
-      var result = await _callWebAPIPost('${mURL!}addAppError', appError.toJson());
+      var result =
+          await _callWebAPIPost('${mURL!}addAppError', appError.toJson());
       pp('\n\n\n$xz 🔴🔴🔴 DataAPI addAppError succeeded. Everything OK?? 🔴🔴🔴');
       var ae = AppError.fromJson(result);
       await cacheManager.addAppError(appError: ae);
@@ -1849,9 +1827,11 @@ class DataAPI {
       } else {
         pp('👿👿👿 DataAPI._callWebAPIPost: 🔆 statusCode: 👿👿👿 ${resp.statusCode} 🔆🔆🔆 for $mUrl');
         pp(resp.body);
-        final sett = await prefsOGx.getSettings();
-        final serverProblem = await translator.translate('serverProblem', sett.locale!);
-        throw serverProblem;
+        throw GeoException(
+            message: 'Bad status code: ${resp.statusCode} - ${resp.body}',
+            url: mUrl,
+            translationKey: 'serverProblem',
+            errorType: GeoException.socketException);
       }
       var end = DateTime.now();
       pp('$xz http POST call: 🔆 elapsed time: ${end.difference(start).inSeconds} seconds 🔆');
@@ -1864,27 +1844,32 @@ class DataAPI {
       }
     } on SocketException {
       pp('$xz No Internet connection, really means that server cannot be reached 😑');
-      throw GeoException(message: 'No Internet connection',
+      throw GeoException(
+          message: 'No Internet connection',
           url: mUrl,
-          translationKey: 'networkProblem', errorType: GeoException.socketException);
-
+          translationKey: 'networkProblem',
+          errorType: GeoException.socketException);
     } on HttpException {
       pp("$xz HttpException occurred 😱");
-      throw GeoException(message: 'Server not around',
+      throw GeoException(
+          message: 'Server not around',
           url: mUrl,
-          translationKey: 'serverProblem', errorType: GeoException.httpException);
+          translationKey: 'serverProblem',
+          errorType: GeoException.httpException);
     } on FormatException {
       pp("$xz Bad response format 👎");
-      throw GeoException(message: 'Bad response format',
+      throw GeoException(
+          message: 'Bad response format',
           url: mUrl,
-          translationKey: 'serverProblem', errorType: GeoException.formatException);
-
+          translationKey: 'serverProblem',
+          errorType: GeoException.formatException);
     } on TimeoutException {
       pp("$xz GET Request has timed out in $timeOutInSeconds seconds 👎");
-      throw GeoException(message: 'Request timed out',
+      throw GeoException(
+          message: 'Request timed out',
           url: mUrl,
-          translationKey: 'networkProblem', errorType: GeoException.timeoutException);
-
+          translationKey: 'networkProblem',
+          errorType: GeoException.timeoutException);
     }
   }
 
@@ -1923,40 +1908,53 @@ class DataAPI {
         var msg =
             '😡 😡 status code: ${resp.statusCode}, Request Forbidden 🥪 🥙 🌮  😡 ${resp.body}';
         pp(msg);
-        throw Exception(msg);
+        throw GeoException(
+            message: 'Forbidden call',
+            url: mUrl,
+            translationKey: 'serverProblem',
+            errorType: GeoException.httpException);
       }
 
       if (resp.statusCode != 200) {
         var msg =
             '😡 😡 The response is not 200; it is ${resp.statusCode}, NOT GOOD, throwing up !! 🥪 🥙 🌮  😡 ${resp.body}';
         pp(msg);
-        throw HttpException(msg);
+        throw GeoException(
+            message: 'Bad status code: ${resp.statusCode} - ${resp.body}',
+            url: mUrl,
+            translationKey: 'serverProblem',
+            errorType: GeoException.socketException);
       }
       var mJson = json.decode(resp.body);
       return mJson;
     } on SocketException {
       pp('$xz No Internet connection, really means that server cannot be reached 😑');
-      throw GeoException(message: 'No Internet connection',
+      throw GeoException(
+          message: 'No Internet connection',
           url: mUrl,
-          translationKey: 'networkProblem', errorType: GeoException.socketException);
-
+          translationKey: 'networkProblem',
+          errorType: GeoException.socketException);
     } on HttpException {
       pp("$xz HttpException occurred 😱");
-      throw GeoException(message: 'Server not around',
+      throw GeoException(
+          message: 'Server not around',
           url: mUrl,
-          translationKey: 'serverProblem', errorType: GeoException.httpException);
+          translationKey: 'serverProblem',
+          errorType: GeoException.httpException);
     } on FormatException {
       pp("$xz Bad response format 👎");
-      throw GeoException(message: 'Bad response format',
+      throw GeoException(
+          message: 'Bad response format',
           url: mUrl,
-          translationKey: 'serverProblem', errorType: GeoException.formatException);
-
+          translationKey: 'serverProblem',
+          errorType: GeoException.formatException);
     } on TimeoutException {
       pp("$xz GET Request has timed out in $timeOutInSeconds seconds 👎");
-      throw GeoException(message: 'Request timed out',
+      throw GeoException(
+          message: 'Request timed out',
           url: mUrl,
-          translationKey: 'networkProblem', errorType: GeoException.timeoutException);
-
+          translationKey: 'networkProblem',
+          errorType: GeoException.timeoutException);
     }
   }
 }

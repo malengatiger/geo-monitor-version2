@@ -14,7 +14,8 @@ class ThinCard extends StatelessWidget {
       required this.height,
       required this.locale,
       required this.namePictureHorizontal,
-      required this.userType, required this.avatarRadius})
+      required this.userType,
+      required this.avatarRadius})
       : super(key: key);
   final ActivityModel model;
   final Icon icon;
@@ -32,7 +33,7 @@ class ThinCard extends StatelessWidget {
       child: Card(
         shape: getRoundedBorder(radius: 16),
         child: Padding(
-          padding: const EdgeInsets.all(16.0),
+          padding: const EdgeInsets.all(12.0),
           child: SizedBox(
             height: height,
             child: Column(
@@ -71,12 +72,12 @@ class ThinCard extends StatelessWidget {
                   height: 0,
                 ),
                 Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.start,
                   children: [
                     model.userName == null
                         ? const SizedBox()
                         : UserProfileCard(
-                            namePictureHorizontal: namePictureHorizontal,
+                            namePictureHorizontal: false,
                             padding: 0,
                             elevation: 2,
                             userType: userType,

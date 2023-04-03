@@ -701,9 +701,10 @@ class SettingsFormState extends State<SettingsForm> {
     pp('$mm onLocaleChange ... going to ${locale.languageCode}');
     settingsModel!.locale = locale.languageCode;
     await prefsOGx.saveSettings(settingsModel!);
+    await translator.translate('settings', settingsModel!.locale!);
     await _setTexts();
     themeBloc.changeToLocale(locale.languageCode);
-    organizationBloc.settingsController.sink.add(settingsModel!);
+    fcmBloc.settingsStreamController.sink.add(settingsModel!);
 
     setState(() {
       selectedLocale = locale;

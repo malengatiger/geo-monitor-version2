@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:geo_monitor/initializer.dart';
 import 'package:geo_monitor/library/api/prefs_og.dart';
+import 'package:geo_monitor/library/bloc/data_refresher.dart';
 import 'package:geo_monitor/library/functions.dart';
 import 'package:geofence_service/geofence_service.dart';
 import 'package:responsive_builder/responsive_builder.dart';
@@ -8,7 +9,7 @@ import 'package:responsive_builder/responsive_builder.dart';
 import '../../l10n/translation_handler.dart';
 import '../../library/data/user.dart';
 import '../../library/generic_functions.dart';
-import '../../library/geofence/geofencer_two.dart';
+import '../../library/geofence/the_great_geofencer.dart';
 import 'dashboard_mobile.dart';
 import 'dashboard_tablet.dart';
 
@@ -35,23 +36,20 @@ class DashboardMainState extends State<DashboardMain>
   }
 
   void _initialize() async {
-
     setState(() {
       initializing = true;
     });
     try {
-
       await initializer.initializeGeo();
       final sett = await prefsOGx.getSettings();
-      initializingText = await translator.translate('initializing', sett.locale!);
+      initializingText =
+          await translator.translate('initializing', sett.locale!);
       final gr = await translator.translate('geoRunning', sett.locale!);
       final tap = await translator.translate('tapToReturn', sett.locale!);
       geoRunning = gr.replaceAll('\$geo', 'Geo');
       tapToReturn = tap.replaceAll('\$geo', 'Geo');
       pp('$mm initializingText: $initializingText');
-      setState(() {
-
-      });
+      setState(() {});
       await Future.delayed(const Duration(milliseconds: 2000));
       await _getUser();
     } catch (e) {
@@ -71,6 +69,16 @@ class DashboardMainState extends State<DashboardMain>
     setState(() {});
   }
 
+  void _refreshWhileInBackground() async {
+    final sett = await prefsOGx.getSettings();
+    await dataRefresher.manageRefresh(
+        numberOfDays: sett.numberOfDays,
+        organizationId: sett.organizationId,
+        projectId: null,
+        userId: null);
+
+    pp('$mm Background data refresh completed');
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -78,7 +86,9 @@ class DashboardMainState extends State<DashboardMain>
       return Center(
         child: Padding(
           padding: const EdgeInsets.all(16.0),
-          child: SizedBox(width: 360, height: 240,
+          child: SizedBox(
+            width: 360,
+            height: 240,
             child: Card(
               elevation: 8,
               shape: getRoundedBorder(radius: 16),
@@ -87,14 +97,26 @@ class DashboardMainState extends State<DashboardMain>
                   padding: const EdgeInsets.all(12.0),
                   child: Column(
                     children: [
-                      const SizedBox(height: 48,),
-                      const SizedBox(width: 16, height: 16, child: CircularProgressIndicator(
-                        strokeWidth: 4, backgroundColor: Colors.pink,
-                      ),),
-                      const SizedBox(height: 48,),
-                      Text(initializingText == null
-                          ? '...'
-                          : initializingText!, style: myTextStyleSmall(context),),
+                      const SizedBox(
+                        height: 48,
+                      ),
+                      const SizedBox(
+                        width: 16,
+                        height: 16,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 4,
+                          backgroundColor: Colors.pink,
+                        ),
+                      ),
+                      const SizedBox(
+                        height: 48,
+                      ),
+                      Text(
+                        initializingText == null
+                            ? '...........'
+                            : initializingText!,
+                        style: myTextStyleSmall(context),
+                      ),
                     ],
                   ),
                 ),
@@ -107,40 +129,54 @@ class DashboardMainState extends State<DashboardMain>
       return user == null
           ? const SizedBox()
           : WillStartForegroundTask(
-        onWillStart: () async {
-          pp(
-              '\n\n\n$mm WillStartForegroundTask: onWillStart - what do we do now, Boss? 🌎🌎🌎🌎🌎🌎\n\n');
-          return geofenceService.isRunningService;
-        },
-        androidNotificationOptions: AndroidNotificationOptions(
-          channelId: 'geofence_service_notification_channel',
-          channelName: 'Geofence Service Notification',
-          channelDescription:
-          'This notification appears when the geofence service is running in the background.',
-          channelImportance: NotificationChannelImportance.DEFAULT,
-          priority: NotificationPriority.DEFAULT,
-          isSticky: false,
-        ),
-        iosNotificationOptions: const IOSNotificationOptions(),
-        notificationTitle: geoRunning == null?'Geo service is running': geoRunning!,
-        notificationText: tapToReturn == null? 'Tap to return to Geo':tapToReturn!,
-        foregroundTaskOptions: const ForegroundTaskOptions(),
-        child: ScreenTypeLayout(
-          mobile: const DashboardMobile(),
-          tablet: OrientationLayoutBuilder(
-            portrait: (context) {
-              return DashboardTablet(
-                user: user!,
-              );
-            },
-            landscape: (context) {
-              return DashboardTablet(
-                user: user!,
-              );
-            },
-          ),
-        ),
-      );
+              onWillStart: () async {
+                pp('\n\n$mm WillStartForegroundTask: onWillStart '
+                    '🌎 what do we do now, Boss? 🌎🌎🌎🌎🌎🌎try data refresh? ... ');
+                _refreshWhileInBackground();
+                return geofenceService.isRunningService;
+              },
+              androidNotificationOptions: AndroidNotificationOptions(
+                  channelId: 'geofence_service_notification_channel',
+                  channelName: 'Geofence Service Notification',
+                  channelDescription:
+                      'This notification appears when the geofence service is running in the background.',
+                  channelImportance: NotificationChannelImportance.DEFAULT,
+                  priority: NotificationPriority.DEFAULT,
+                  isSticky: false,
+                  playSound: false,
+                  enableVibration: false,
+                  showWhen: false),
+              iosNotificationOptions: const IOSNotificationOptions(),
+              notificationTitle:
+                  geoRunning == null ? 'Geo service is running' : geoRunning!,
+              notificationText:
+                  tapToReturn == null ? 'Tap to return to Geo' : tapToReturn!,
+              foregroundTaskOptions: const ForegroundTaskOptions(
+                interval: 5000,
+                isOnceEvent: false,
+                autoRunOnBoot: true,
+                allowWakeLock: true,
+                allowWifiLock: true,
+              ),
+              callback: () {
+                pp('$mm callback from WillStartForegroundTask fired! 🍎 WHY?');
+              },
+              child: ScreenTypeLayout(
+                mobile: const DashboardMobile(),
+                tablet: OrientationLayoutBuilder(
+                  portrait: (context) {
+                    return DashboardTablet(
+                      user: user!,
+                    );
+                  },
+                  landscape: (context) {
+                    return DashboardTablet(
+                      user: user!,
+                    );
+                  },
+                ),
+              ),
+            );
     }
   }
 }

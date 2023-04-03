@@ -23,7 +23,7 @@ import '../../library/data/user.dart';
 import '../../library/data/video.dart';
 import '../../library/functions.dart';
 import '../../library/generic_functions.dart';
-import 'activity_list_tablet.dart';
+import 'activity_list.dart';
 
 class GeoActivity extends StatefulWidget {
   const GeoActivity({
@@ -177,7 +177,7 @@ class GeoActivityState extends State<GeoActivity>
               child: SizedBox(
                 width: widget.width,
                 child: ScreenTypeLayout(
-                  mobile: ActivityListTablet(
+                  mobile: ActivityList(
                     project: widget.project,
                     user: widget.user,
                     onPhotoTapped: (photo) {
@@ -208,16 +208,15 @@ class GeoActivityState extends State<GeoActivity>
                     },
                     onLocationResponse: (locResp) {
                       widget.showLocationResponse(locResp);
-                    }, width: width, thinMode: true,
+                    },
                   ),
                   tablet: OrientationLayoutBuilder(
                     portrait: (context) {
                       return settings == null
                           ? const SizedBox()
-                          : ActivityListTablet(
+                          : ActivityList(
                               user: widget.user,
                               project: widget.project,
-                              width: widget.width,
                               onPhotoTapped: (photo) {
                                 widget.showPhoto(photo);
                               },
@@ -247,16 +246,13 @@ class GeoActivityState extends State<GeoActivity>
                               onOrgMessage: (orgMessage) {
                                 widget.showOrgMessage(orgMessage);
                               },
-                              thinMode: widget.thinMode,
                             );
                     },
                     landscape: (context) {
                       return settings == null
                           ? const SizedBox()
-                          : ActivityListTablet(
-                              width: widget.width,
+                          : ActivityList(
                               user: widget.user,
-                              thinMode: widget.thinMode,
                               project: widget.project,
                               onPhotoTapped: (photo) {
                                 widget.showPhoto(photo);

@@ -17,10 +17,9 @@ final ErrorHandler errorHandler = ErrorHandler();
 
 class ErrorHandler {
   static const mm = '👿👿👿👿👿👿👿ErrorHandler: 👿👿';
-  Future handleError(
-      {
-      required GeoException exception}) async {
-    pp('$mm handleError ... $exception');
+
+  Future handleError({required GeoException exception}) async {
+    pp('$mm handleError, will save the error in cache until it can be downloaded: ... $exception');
 
     var deviceData = <String, dynamic>{};
     final DeviceInfoPlugin deviceInfoPlugin = DeviceInfoPlugin();
@@ -47,23 +46,26 @@ class ErrorHandler {
           deviceData = _readMacOsDeviceInfo(await deviceInfoPlugin.macOsInfo);
         }
       }
+      pp('$mm setting up AppError; deviceData: $deviceData}');
       final user = await prefsOGx.getUser();
       final ae = AppError(
-          errorMessage: exception.toString(),
-          model: deviceData['model'],
-          created: DateTime.now().toUtc().toIso8601String(),
-          userId: user!.userId,
-          userName: user.name,
-          errorPosition: errorPosition,
-          versionCodeName: deviceData['versionCodeName'],
-          manufacturer: deviceData['manufacturer'],
-          brand: deviceData['brand'],
-          organizationId: user.organizationId,
-          uploadedDate: null,
-          baseOS: deviceData['baseOS'],
-          deviceType: deviceType,
-          userUrl: user.thumbnailUrl,
-          iosSystemName: deviceData['systemName'], iosName: deviceData['iosName'],);
+        errorMessage: exception.toString(),
+        model: deviceData['model'],
+        created: DateTime.now().toUtc().toIso8601String(),
+        userId: user!.userId,
+        userName: user.name,
+        errorPosition: errorPosition,
+        versionCodeName: deviceData['versionCodeName'],
+        manufacturer: deviceData['manufacturer'],
+        brand: deviceData['brand'],
+        organizationId: user.organizationId,
+        uploadedDate: null,
+        baseOS: deviceData['baseOS'],
+        deviceType: deviceType,
+        userUrl: user.thumbnailUrl,
+        iosSystemName: deviceData['systemName'],
+        iosName: deviceData['iosName'],
+      );
 
       await cacheManager.addAppError(appError: ae);
     } on PlatformException {
@@ -74,17 +76,22 @@ class ErrorHandler {
   }
 
   Future uploadErrors() async {
-    pp('$mm uploadErrors ... ');
+    pp('$mm ....... uploadErrors starting ... ');
 
     final list = await cacheManager.getAppErrors();
+    pp('$mm ....... uploadErrors ... will upload a possible list of'
+        ' ${list.length} Some may have been previously uploaded');
+    int cnt = 0;
     for (var value in list) {
       if (value.uploadedDate == null) {
         await DataAPI.addAppError(value);
-        value.uploadedDate = DateTime.now().toIso8601String();
+        value.uploadedDate = DateTime.now().toUtc().toIso8601String();
         await cacheManager.addAppError(appError: value);
+        cnt++;
       }
     }
-    pp('$mm uploadErrors completed.');
+
+    pp('$mm uploadErrors completed. uploaded $cnt errors from cache');
   }
 
   Map<String, dynamic> _readAndroidBuildData(AndroidDeviceInfo build) {

@@ -39,6 +39,7 @@ import '../../data/project_position.dart';
 import '../../data/settings_model.dart';
 import '../../data/user.dart' as mon;
 import '../../data/user.dart';
+import '../../errors/error_handler.dart';
 import '../../functions.dart';
 import '../maps/location_response_map.dart';
 import '../maps/org_map_mobile.dart';
@@ -158,8 +159,9 @@ class ProjectListTabletState extends State<ProjectListTablet>
           busy = false;
         });
         if (e is GeoException) {
-          e.saveError();
-          final msg = await e.getTranslatedMessage();
+          var sett = await prefsOGx.getSettings();
+          errorHandler.handleError(exception: e);
+          final msg = await translator.translate(e.geTranslationKey(), sett.locale!);
           if (mounted) {
             showToast(
                 backgroundColor: Theme
@@ -779,7 +781,7 @@ class ProjectListTabletState extends State<ProjectListTablet>
                             children: [
                               OrientationLayoutBuilder(landscape: (context) {
                                 final width = MediaQuery.of(context).size.width;
-                                final firstWidth = width / 2;
+                                final halfWidth = width / 2;
                                 return Row(
                                   children: [
                                     GestureDetector(
@@ -811,10 +813,10 @@ class ProjectListTabletState extends State<ProjectListTablet>
                                           child: user == null
                                               ? const SizedBox()
                                               : SizedBox(
-                                                  width: firstWidth,
+                                                  width: halfWidth - 120,
                                                   child: ProjectListCard(
                                                     projects: projects,
-                                                    width: firstWidth,
+                                                    width: halfWidth - 120,
                                                     horizontalPadding: 12,
                                                     navigateToDetail: (p) {
                                                       _navigateToDetail(p);
@@ -856,7 +858,7 @@ class ProjectListTabletState extends State<ProjectListTablet>
                                       width: 20,
                                     ),
                                     GeoActivity(
-                                      width: firstWidth - 60,
+                                      width: halfWidth + 60,
                                       thinMode: true,
                                       forceRefresh: true,
                                       showPhoto: showPhoto,
@@ -876,8 +878,8 @@ class ProjectListTabletState extends State<ProjectListTablet>
                                 );
                               }, portrait: (context) {
                                 final width = MediaQuery.of(context).size.width;
-                                final firstWidth = (width / 2) - 20;
-                                final secondWidth = (width / 2) - 80;
+                                final firstWidth = (width / 2);
+                                final secondWidth = (width / 2) - 76;
                                 return Row(
                                   children: [
                                     GestureDetector(

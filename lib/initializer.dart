@@ -11,7 +11,7 @@ import 'library/bloc/theme_bloc.dart';
 import 'library/cache_manager.dart';
 import 'library/emojis.dart';
 import 'library/functions.dart';
-import 'library/geofence/geofencer_two.dart';
+import 'library/geofence/the_great_geofencer.dart';
 
 int themeIndex = 0;
 final Initializer initializer = Initializer();

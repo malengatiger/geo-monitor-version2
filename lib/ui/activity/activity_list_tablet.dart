@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:geo_monitor/library/bloc/fcm_bloc.dart';
 import 'package:geo_monitor/library/bloc/organization_bloc.dart';
 import 'package:geo_monitor/library/data/location_request.dart';
+import 'package:geo_monitor/ui/activity/activity_list.dart';
 
 import '../../l10n/translation_handler.dart';
 import '../../library/api/prefs_og.dart';
@@ -95,9 +96,8 @@ class _ActivityListTabletState extends State<ActivityListTablet>
   Future _setTexts() async {
     sett = await prefsOGx.getSettings();
 
-      activityStrings = await ActivityStrings.getTranslated();
-      setState(() {});
-
+    activityStrings = await ActivityStrings.getTranslated();
+    setState(() {});
   }
 
   @override
@@ -238,10 +238,13 @@ class _ActivityListTabletState extends State<ActivityListTablet>
           child: Padding(
             padding: const EdgeInsets.all(16.0),
             child: SizedBox(
-              height: 120, width: 300,
+              height: 120,
+              width: 300,
               child: Column(
                 children: [
-                  const SizedBox(height: 36,),
+                  const SizedBox(
+                    height: 36,
+                  ),
                   const SizedBox(
                     width: 20,
                     height: 20,
@@ -331,37 +334,11 @@ class _ActivityListTabletState extends State<ActivityListTablet>
         SizedBox(
           width: widget.width,
           // height: height - 100,
-          child: SingleChildScrollView(
-            child: Column(children: [
-              const SizedBox(
-                height: 100,
-              ),
-              ListView.builder(
-                  shrinkWrap: true,
-                  itemCount: models.length,
-                  controller: listScrollController,
-                  itemBuilder: (_, index) {
-                    var act = models.elementAt(index);
-                    return GestureDetector(
-                      onTap: () {
-                        _handleTappedActivity(act);
-                      },
-                      child: activityStrings == null
-                          ? const SizedBox()
-                          : sett == null
-                              ? const SizedBox()
-                              : ActivityStreamCard(
-                                  locale: sett!.locale!,
-                                  activityStrings: activityStrings!,
-                                  activityModel: act,
-                                  frontPadding: 36,
-                                  thinMode: widget.thinMode,
-                                  width: widget.thinMode ? 320 : widget.width,
-                                ),
-                    );
-                  }),
-            ]),
-          ),
+          child: ActivityListCard(
+              models: models,
+              onTapped: _handleTappedActivity,
+              activityStrings: activityStrings!,
+              locale: sett!.locale!),
         ),
         Positioned(
           child: SizedBox(
@@ -449,4 +426,5 @@ class _ActivityListTabletState extends State<ActivityListTablet>
       widget.onOrgMessage(act.orgMessage!);
     }
   }
+
 }

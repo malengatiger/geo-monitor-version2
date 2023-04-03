@@ -7,8 +7,6 @@ import 'package:geo_monitor/library/bloc/photo_for_upload.dart';
 import 'package:geo_monitor/library/bloc/video_for_upload.dart';
 import 'package:http/http.dart' as http;
 
-import '../../l10n/translation_handler.dart';
-import '../cache_manager.dart';
 import '../data/audio.dart';
 import '../data/photo.dart';
 import '../data/video.dart';
@@ -17,7 +15,7 @@ import 'audio_for_upload.dart';
 import 'geo_exception.dart';
 
 ///
-///TOP LEVEL functions running inside an isolate
+///TOP LEVEL functions to upload media while running inside isolates
 ///
 http.Client client = http.Client();
 
@@ -28,7 +26,10 @@ Future<Photo?> uploadPhotoFile(
     required int height,
     required int width,
     required String mJson,
+    required String photoArrived,
+    required String messageFromGeo,
     required double distance}) async {
+
   pp('$xx 🍐🍐🍐🍐🍐🍐 _uploadPhotoFile: objectName: $objectName url: $url');
 
   var map = json.decode(mJson);
@@ -45,11 +46,6 @@ Future<Photo?> uploadPhotoFile(
     pp('$xx problems with uploading file, response url is null');
     return null;
   }
-  final sett = await cacheManager.getSettings();
-  final photoArrived =
-      await translator.translate('photoArrived', sett!.locale!);
-  final messageFromGeo =
-      await translator.translate('messageFromGeo', sett!.locale!);
 
   var photo = Photo(
       url: responseUrl,
@@ -84,6 +80,8 @@ Future<Audio?> uploadAudioFile(
     required int height,
     required int width,
     required String mJson,
+    required String audioArrived,
+    required String messageFromGeo,
     required double distance}) async {
   pp('$xx 🍐🍐🍐🍐🍐🍐 _uploadAudioFile: objectName: $objectName url: $url');
 
@@ -103,12 +101,6 @@ Future<Audio?> uploadAudioFile(
     pp('$xx problems with uploading file, response url is null');
     return null;
   }
-
-  final sett = await cacheManager.getSettings();
-  final audioArrived =
-      await translator.translate('audioArrived', sett!.locale!);
-  final messageFromGeo =
-      await translator.translate('messageFromGeo', sett!.locale!);
 
   var audio = Audio(
       url: responseUrl,
@@ -136,6 +128,8 @@ Future<Video?> uploadVideoFile(
     required String token,
     required double size,
     required String mJson,
+    required String videoArrived,
+    required String messageFromGeo,
     required double distance}) async {
   pp('\n\n$xx 🍐🍐🍐🍐🍐🍐 _uploadVideoFile: objectName: $objectName '
       ' size : $size MB');
@@ -156,8 +150,6 @@ Future<Video?> uploadVideoFile(
     return null;
   }
   pp('$xx 🍐🍐🍐🍐🍐🍐 attempting to add video to DB ... size: $size MB');
-  final messageTitle = await getFCMMessageTitle();
-  final videoArrived = await getFCMMessage('videoArrived');
 
   var video = Video(
       url: responseUrl,
@@ -169,7 +161,7 @@ Future<Video?> uploadVideoFile(
       projectPosition: videoForUpload.position!,
       distanceFromProjectPosition: distance,
       translatedMessage: videoArrived,
-      translatedTitle: messageTitle,
+      translatedTitle: messageFromGeo,
       projectId: videoForUpload.project!.projectId,
       thumbnailUrl: thumbUrl,
       projectName: videoForUpload.project!.name,
