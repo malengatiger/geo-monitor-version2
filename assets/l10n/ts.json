@@ -1,7 +1,13 @@
 {
+  "pickFromGallery": "Hlawula eka Photo Gallery",
+  "memberProfilePicture": "Xifaniso xa Profayile ya Xirho",
+  "useCamera": "Tirhisa Khamera",
+  "profileInstruction": "Hi kombela u veka xifaniso xa wena xa profile. U nga tirhisa xifaniso lexi nga kona kutani u teka lexintshwa hi khamera.",
   "messageFromGeo": "Rungula ri fikile ri huma eka $geo",
   "tapToReturn": "Thepha ku tlhelela eka $geo",
   "geoRunning": "$geo vukorhokeri bya tirha.",
+  "memberProfileUploaded": "Xifaniso xa xivumbeko xa xirho xi layichiwile naswona database yi pfuxetiwile",
+  "memberProfileUploadFailed": "Ku layicha xifaniso xa xivumbeko xa xirho ku tsandzekile. Hi kombela u ringeta nakambe endzhaku",
 
   "november": "Hukuri",
   "projects": "Tiphurojeke",

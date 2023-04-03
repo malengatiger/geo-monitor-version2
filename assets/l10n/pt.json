@@ -1,4 +1,11 @@
 {
+  "pickFromGallery": "Escolha na Galeria de Fotos",
+  "memberProfilePicture": "Foto do perfil do membro",
+  "useCamera": "Usar câmera",
+  "profileInstruction": "Por favor, configure sua foto de perfil. Você pode usar uma foto existente ou tirar uma nova com a câmera.",
+  "memberProfileUploaded": "A foto do perfil do membro foi carregada e o banco de dados atualizado",
+  "memberProfileUploadFailed": "O upload da foto do perfil do membro falhou. Por favor, tente novamente mais tarde",
+
   "messageFromGeo": "Chegou a mensagem de $geo",
   "tapToReturn": "Toque para retornar a $geo",
   "geoRunning": "O serviço $geo está em execução.",

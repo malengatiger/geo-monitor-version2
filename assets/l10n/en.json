@@ -1,4 +1,10 @@
 {
+  "pickFromGallery": "Pick from Photo Gallery",
+  "memberProfilePicture": "Member Profile Picture",
+  "useCamera": "Use Camera",
+  "profileInstruction": "Please set up your profile picture. You can use an existing photo or take a new one with the camera.",
+  "memberProfileUploaded": "Member profile picture uploaded and database updated",
+  "memberProfileUploadFailed": "Member profile picture upload failed. Please try again later",
   "dashboardSubTitle": "Data represents the last $count days",
 
   "activityTitle": "Activities in the last $count hours",

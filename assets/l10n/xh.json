@@ -1,4 +1,8 @@
 {
+  "pickFromGallery": "Khetha kwiGalari yeeFoto",
+  "memberProfilePicture": "Umfanekiso weProfayili yeLungu",
+  "useCamera": "Sebenzisa iKhamera",
+  "profileInstruction": "Nceda usete umfanekiso wakho weprofayile. Ungasebenzisa ifoto ekhoyo okanye uthathe entsha ngekhamera.",
   "messageFromGeo": "Umyalezo ufikile usuka kwi-$geo",
   "tapToReturn": "Cofa ukuze ubuyele kwi-$geo",
   "geoRunning": "Inkonzo ye-$geo iyasebenza.",
@@ -11,6 +15,9 @@
   "areas": "Iindawo",
   "photos": "Iifoto",
   "april": "UTshazimpuzi",
+  "memberProfileUploaded": "Umfanekiso weprofayile welungu ulayishiwe kwaye ugcino lwedatha luhlaziyiwe",
+  "memberProfileUploadFailed": "Ukulayisha umfanekiso weprofayile yelungu akuphumelelanga. Nceda uzame kwakhona mva",
+
   "organizationMembers": "Amalungu oMbutho",
   "executive": "Isigqeba",
   "emailAddress": "Idilesi yemeyile",

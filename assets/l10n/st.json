@@ -1,4 +1,8 @@
 {
+  "pickFromGallery": "Khetha ho Kalari ea Lifoto",
+  "memberProfilePicture": "Setho sa Profile Setšoantšo",
+  "useCamera": "Sebelisa Khamera",
+  "profileInstruction": "Ka kopo, hlophisa setšoantšo sa hau sa profil. U ka sebelisa foto e teng kapa ua nka e ncha ka khamera.",
   "messageFromGeo": "Molaetsa o fihlile ho tsoa ho $geo",
   "tapToReturn": "Tlanya ho khutlela ho $geo",
   "geoRunning": "Ts\u0027ebeletso ea $geo ea sebetsa.",
@@ -11,6 +15,9 @@
   "areas": "Libaka",
   "photos": "Linepe",
   "april": "Mmesa",
+  "memberProfileUploaded": "Setšoantšo sa boemo ba setho se kentsoe \u0027me database se ntlafalitsoe",
+  "memberProfileUploadFailed": "Ho hloleha ho kenya setšoantšo sa boemo ba setho. Ka kopo, leka hape hamorao",
+
   "organizationMembers": "Litho tsa Mokhatlo",
   "executive": "Phethahatso",
   "emailAddress": "Aterese ea imeile",

@@ -1,4 +1,10 @@
 {
+  "pickFromGallery": "Họrọ site na gallery foto",
+  "memberProfilePicture": "Foto profaịlụ onye otu",
+  "useCamera": "Jiri igwefoto",
+  "profileInstruction": "Biko hazie foto profaịlụ gị. Ị nwere ike iji foto dị ugbu a ma ọ bụ were igwefoto were nke ọhụrụ see nke ọhụrụ.",
+  "memberProfileUploaded": "Ebugoro foto profaịlụ onye otu yana emelitere nchekwa data",
+  "memberProfileUploadFailed": "Nbulite foto profaịlụ onye otu agaghị. Biko nwaa ọzọ ma emechaa",
   "messageFromGeo": "Ozi sitere na $geo",
   "tapToReturn": "Pịa ka ịlaghachi na $geo",
   "geoRunning": "Ọrụ $geo na-agba ọsọ.",

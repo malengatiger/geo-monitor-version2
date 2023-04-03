@@ -1,4 +1,11 @@
 {
+  "pickFromGallery": "Chagua kutoka kwa Matunzio ya Picha",
+  "memberProfilePicture": "Picha ya Wasifu wa Mwanachama",
+  "useCamera": "Tumia Kamera",
+  "profileInstruction": "Tafadhali weka picha yako ya wasifu. Unaweza kutumia picha iliyopo au kuchukua mpya ukitumia kamera.",
+  "memberProfileUploaded": "Picha ya wasifu wa mwanachama imepakiwa na hifadhidata imesasishwa",
+  "memberProfileUploadFailed": "Imeshindwa kupakia picha ya wasifu wa mwanachama. Tafadhali jaribu tena baadae",
+
   "messageFromGeo": "Ujumbe ulifika kutoka $geo",
   "tapToReturn": "Gusa ili urudi kwenye $geo",
   "geoRunning": "Huduma ya $geo inaendelea.",

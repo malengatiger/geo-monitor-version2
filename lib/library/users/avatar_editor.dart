@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:cached_network_image/cached_network_image.dart';
@@ -6,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:geo_monitor/library/api/data_api.dart';
 import 'package:geo_monitor/library/api/prefs_og.dart';
+import 'package:geo_monitor/library/bloc/fcm_bloc.dart';
 import 'package:geo_monitor/library/cache_manager.dart';
 import 'package:geo_monitor/library/functions.dart';
 import 'package:geo_monitor/ui/dashboard/dashboard_mobile.dart';
@@ -13,6 +15,8 @@ import 'package:image_picker/image_picker.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:path_provider/path_provider.dart';
 
+import '../../l10n/translation_handler.dart';
+import '../data/settings_model.dart';
 import '../data/user.dart';
 import '../generic_functions.dart';
 
@@ -36,13 +40,43 @@ class AvatarEditorState extends State<AvatarEditor>
 
   bool _showOldPhoto = false;
   bool _showNewPhoto = false;
+  String? memberProfilePicture, useCamera, pickFromGallery, memberProfileUploaded, profileInstruction;
+  late StreamSubscription<SettingsModel> settingsStreamSubscription;
 
   @override
   void initState() {
     _controller = AnimationController(vsync: this);
     super.initState();
+    _setTexts();
+    _listen();
     if (widget.user.thumbnailUrl != null) {
       _showOldPhoto = true;
+    }
+  }
+  void _listen() async {
+    settingsStreamSubscription = fcmBloc.settingsStream.listen((event) {
+      _setTexts();
+    });
+  }
+
+  @override
+  void dispose() {
+    settingsStreamSubscription.cancel();
+    _controller.dispose();
+    super.dispose();
+  }
+
+  Future _setTexts() async {
+    final sett = await prefsOGx.getSettings();
+    profileInstruction = await translator.translate('profileInstruction', sett.locale!);
+    useCamera = await translator.translate('useCamera', sett.locale!);
+    pickFromGallery = await translator.translate('pickFromGallery', sett.locale!);
+    memberProfilePicture = await translator.translate('memberProfilePicture', sett.locale!);
+    memberProfileUploaded = await translator.translate('memberProfileUploaded', sett.locale!);
+    if (mounted) {
+      setState(() {
+
+      });
     }
   }
 
@@ -61,6 +95,8 @@ class AvatarEditorState extends State<AvatarEditor>
 
   XFile? xFile;
   File? imageFile;
+  bool busy = false;
+
   void _takePhoto() async {
     pp('$mm photo taking started ....');
 
@@ -166,6 +202,9 @@ class AvatarEditorState extends State<AvatarEditor>
   Future<int> _uploadToCloud(String filePath, String thumbnailPath) async {
     late UploadTask uploadTask;
     late TaskSnapshot taskSnapshot;
+    setState(() {
+      busy = true;
+    });
     try {
       //upload main file
       var fileName = 'photo@${widget.user.organizationId}@${widget.user.userId}'
@@ -218,6 +257,14 @@ class AvatarEditorState extends State<AvatarEditor>
       }
       await cacheManager.addUser(user: widget.user);
       pp('\n\n$mm User photo and thumbnail uploaded and database updated\n');
+      if (mounted) {
+        showToast(
+            padding: 16,
+            textStyle: myTextStyleMedium(context),
+            backgroundColor: Theme.of(context).primaryColor,
+            duration: const Duration(seconds: 3),
+            message: memberProfileUploaded!, context: context);
+      }
     } catch (e) {
       pp(e);
       if (mounted) {
@@ -241,35 +288,15 @@ class AvatarEditorState extends State<AvatarEditor>
         ' date: ${DateTime.now().toIso8601String()}\n');
   }
 
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
 
   @override
   Widget build(BuildContext context) {
     return SafeArea(
         child: Scaffold(
       appBar: AppBar(
-        leading: IconButton(
-            onPressed: _navigateToDashboard,
-            icon: const Icon(Icons.arrow_back_ios)),
-        title: Text(
-          'User Avatar Builder',
-          style: myTextStyleSmall(context),
+        title: Text(memberProfilePicture == null?
+          'Member Profile Picture': memberProfilePicture!,
         ),
-        actions: [
-          _showNewPhoto
-              ? IconButton(
-                  onPressed: _processFile,
-                  icon: Icon(
-                    Icons.check,
-                    size: 32,
-                    color: Theme.of(context).primaryColor,
-                  ))
-              : const SizedBox()
-        ],
       ),
       body: Stack(
         children: [
@@ -284,17 +311,28 @@ class AvatarEditorState extends State<AvatarEditor>
                     const SizedBox(
                       height: 12,
                     ),
-                    Text(
-                      '${widget.user.name}',
-                      style: myTextStyleLargePrimaryColor(context),
+                    Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        Text(
+                          '${widget.user.name}',
+                          style: myTextStyleLargePrimaryColor(context),
+                        ),
+                        imageFile == null
+                            ? const SizedBox()
+                            : IconButton(
+                          onPressed: _processFile,
+                          icon: Icon(Icons.check, size: 36.0, color: Theme.of(context).primaryColor,),
+                        ),
+                      ],
                     ),
                     const SizedBox(
                       height: 12,
                     ),
                     Padding(
                       padding: const EdgeInsets.all(28.0),
-                      child: Text(
-                        'Please set up your profile picture. You can use an existing photo or take a new one with the camera',
+                      child: Text(profileInstruction == null?
+                        'Please set up your profile picture. You can use an existing photo or take a new one with the camera':
+                      profileInstruction!,
                         style: myTextStyleSmall(context),
                       ),
                     ),
@@ -341,8 +379,8 @@ class AvatarEditorState extends State<AvatarEditor>
                               children: [
                                 TextButton(
                                     onPressed: _takePhoto,
-                                    child: Text(
-                                      'Use Camera',
+                                    child: Text(useCamera == null?
+                                      'Use Camera': useCamera!,
                                       style: myTextStyleMedium(context),
                                     )),
                                 const SizedBox(
@@ -350,8 +388,8 @@ class AvatarEditorState extends State<AvatarEditor>
                                 ),
                                 TextButton(
                                     onPressed: _pickPhotoFromGallery,
-                                    child: Text(
-                                      'Pick from Gallery',
+                                    child: Text(pickFromGallery == null?
+                                      'Pick from Gallery': pickFromGallery!,
                                       style: myTextStyleMedium(context),
                                     )),
                                 const SizedBox(
@@ -359,12 +397,10 @@ class AvatarEditorState extends State<AvatarEditor>
                                 ),
                                 imageFile == null
                                     ? const SizedBox()
-                                    : TextButton(
+                                    : IconButton(
                                         onPressed: _processFile,
-                                        child: Text(
-                                          'Submit Photo',
-                                          style: myTextStyleMedium(context),
-                                        )),
+                                        icon: Icon(Icons.check, size: 36.0, color: Theme.of(context).primaryColor,),
+                                       ),
                               ],
                             ),
                           ),

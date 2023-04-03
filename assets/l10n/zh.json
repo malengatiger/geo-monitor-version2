@@ -1,4 +1,11 @@
 {
+  "memberProfileUploaded": "上传会员资料图片并更新数据库",
+  "memberProfileUploadFailed": "会员头像上传失败。请稍后再试",
+
+  "pickFromGallery": "从照片库中选择",
+  "memberProfilePicture": "会员头像",
+  "useCamera": "使用相机",
+  "profileInstruction": "请设置您的头像。您可以使用现有照片或使用相机拍摄新照片。",
   "messageFromGeo": "消息来自 $geo",
   "tapToReturn": "点击返回 $geo",
   "geoRunning": "$geo 服务正在运行。",

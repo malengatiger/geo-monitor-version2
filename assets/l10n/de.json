@@ -1,4 +1,9 @@
 {
+  "pickFromGallery": "Wählen Sie aus der Fotogalerie",
+  "memberProfilePicture": "Mitgliedsprofilbild",
+  "useCamera": "Kamera verwenden",
+  "profileInstruction": "Bitte richten Sie Ihr Profilbild ein. Sie können ein vorhandenes Foto verwenden oder ein neues mit der Kamera aufnehmen.",
+
   "cancel": "Stornieren",
   "maxAudioLength": "Bitte geben Sie die maximale Audiolänge in Minuten ein",
   "Angola": "Angola",
@@ -307,7 +312,10 @@
   "photoArrived": "Ein Foto vom Feld ist eingetroffen.",
   "locationResponseArrived": "Eine Antwort auf die Standortanfrage ist eingetroffen.",
   "settingsArrived": "Neue Projekteinstellungen sind eingetroffen.",
-  "projectAreaAdded": "$project wurde ein Projektbereich hinzugefügt"
+  "projectAreaAdded": "$project wurde ein Projektbereich hinzugefügt",
+  "memberProfileUploaded": "Mitgliedsprofilbild hochgeladen und Datenbank aktualisiert",
+  "memberProfileUploadFailed": "Hochladen des Mitgliedsprofilbilds fehlgeschlagen. Bitte versuchen Sie es später erneut"
+
 
 
 

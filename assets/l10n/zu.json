@@ -1,4 +1,10 @@
 {
+  "memberProfileUploaded": "Isithombe sephrofayela yelungu silayishiwe futhi isizindalwazi sibuyekeziwe",
+  "memberProfileUploadFailed": "Ukulayishwa kwesithombe sephrofayela yelungu kuhlulekile. Sicela uzame futhi emuva kwesikhathi",
+  "pickFromGallery": "Khetha kugalari yezithombe",
+  "memberProfilePicture": "Isithombe Sephrofayela Yelungu",
+  "useCamera": "Sebenzisa Ikhamera",
+  "profileInstruction": "Sicela usethe isithombe sakho sephrofayela. Ungasebenzisa isithombe esikhona noma uthathe esisha ngekhamera.",
   "messageFromGeo": "Umlayezo ufikile uvela ku-$geo",
   "tapToReturn": "Thepha ukuze ubuyele ku-$geo",
   "geoRunning": "Isevisi ye-$geo iyasebenza.",

@@ -1,4 +1,8 @@
 {
+  "pickFromGallery": "Kies uit Fotogalery",
+  "memberProfilePicture": "Lid profielfoto",
+  "useCamera": "Gebruik kamera",
+  "profileInstruction": "Stel asseblief jou profielfoto op. Jy kan \u0027n bestaande foto gebruik of \u0027n nuwe een met die kamera neem.",
   "memberAddedChanged": "\u0027n Lid is bygevoeg of gewysig.",
   "locationRequestArrived": "\u0027n Versoek vir ligging het opgedaag.",
   "videoArrived": "\u0027n Videogreep van die veld het gekom.",
@@ -305,6 +309,9 @@
   "enterPassword": "Sleutel wagwoord in",
   "phoneAuth": "Telefoonverifikasie",
   "signInInstruction": "Meld asseblief aan met die toepaslike metode. Dit word aanbeveel om foonstawing te gebruik as jou toestel SMS-boodskappe kan aanvaar. As jou toestel nie SMS-boodskappe ondersteun nie, gebruik asseblief e-posverifikasie",
-  "emailAuth": "E-posverifikasie"
+  "emailAuth": "E-posverifikasie",
+  "memberProfileUploaded": "Lid profielfoto opgelaai en databasis opgedateer",
+  "memberProfileUploadFailed": "Oplaai van lidprofielfoto het misluk. Probeer asseblief weer later"
+
 
 }

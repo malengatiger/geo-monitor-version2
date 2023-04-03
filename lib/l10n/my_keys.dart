@@ -368,5 +368,12 @@ class MyKeys {
     hashMap["phoneAuth"] = "phoneAuth";
     hashMap["emailAuth"] = "emailAuth";
     hashMap["signInInstruction"] = "signInInstruction";
+
+    hashMap["memberProfilePicture"] = "memberProfilePicture";
+    hashMap["useCamera"] = "memberProfilePicture";
+    hashMap["pickFromGallery"] = "pickFromGallery";
+    hashMap["profileInstruction"] = "profileInstruction";
+    hashMap["memberProfileUploaded"] = "memberProfileUploaded";
+    hashMap["memberProfileUploadFailed"] = "memberProfileUploadFailed";
   }
 }
