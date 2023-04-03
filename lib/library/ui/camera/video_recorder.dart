@@ -72,7 +72,7 @@ class VideoRecorderState extends State<VideoRecorder>
       videoToBeUploaded,
       getCameraReady,
       recordingComplete,
-      durationText,
+      durationText, fileSavedWillUpload,
       recordingLimitReached,
       waitingToRecordVideo;
   SettingsModel? settingsModel;
@@ -118,6 +118,8 @@ class VideoRecorderState extends State<VideoRecorder>
       title = await translator.translate('recordVideo', settingsModel!.locale!);
       durationText = await translator.translate('duration', settingsModel!.locale!);
       fileSizeText = await translator.translate('fileSize', settingsModel!.locale!);
+      fileSavedWillUpload = await translator.translate('fileSavedWillUpload', settingsModel!.locale!);
+
     }
 
     setState(() {});

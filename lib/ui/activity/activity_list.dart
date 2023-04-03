@@ -212,11 +212,12 @@ class ActivityListState extends State<ActivityList>
       }
     });
 
-    subscription = fcmBloc.activityStream.listen((ActivityModel model) {
-      pp('$mm activityStream delivered activity data ... ${model.date!}');
-      _getData(false);
-      if (isActivityValid(model)) {
-        models.insert(0, model);
+    subscription = fcmBloc.activityStream.listen((ActivityModel model) async {
+      pp('$mm activityStream delivered activity data ... ${model.date!}, current models: ${models.length}');
+      if (models.isEmpty || models.length == 1) {
+        await _getData(true);
+      } else {
+        await _getData(false);
       }
       if (mounted) {
         setState(() {});

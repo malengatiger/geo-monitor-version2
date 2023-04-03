@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:geo_monitor/library/bloc/geo_uploader.dart';
+import 'package:geo_monitor/library/data/settings_model.dart';
 import 'package:image/image.dart' as img;
 import 'package:image_picker/image_picker.dart';
 import 'package:native_device_orientation/native_device_orientation.dart';
@@ -53,14 +54,26 @@ class PhotoHandlerState extends State<PhotoHandler>
   var polygons = <ProjectPolygon>[];
   var positions = <ProjectPosition>[];
   User? user;
+  String? fileSavedWillUpload;
+  String? totalByteCount, bytesTransferred;
+  String? fileUrl, thumbnailUrl, takePicture;
+  late SettingsModel sett;
 
   @override
   void initState() {
     _controller = AnimationController(vsync: this);
     super.initState();
+    _setTexts();
     _observeOrientation();
     _getData();
     _startPhoto();
+  }
+
+  Future _setTexts() async {
+    sett == await prefsOGx.getSettings();
+    fileSavedWillUpload = await translator.translate('fileSavedWillUpload', sett.locale!);
+    takePicture =
+    await translator.translate('takePicture', sett.locale!);
   }
 
   Future<void> _observeOrientation() async {
@@ -79,9 +92,7 @@ class PhotoHandlerState extends State<PhotoHandler>
       busy = true;
     });
     try {
-      var sett = await prefsOGx.getSettings();
-      takePicture =
-      await translator.translate('takePicture', sett.locale!);
+
       pp('$mm .......... getting project positions and polygons');
       user = await prefsOGx.getUser();
       polygons = await projectBloc.getProjectPolygons(
@@ -213,7 +224,8 @@ class PhotoHandlerState extends State<PhotoHandler>
     if (mounted) {
       showToast(
           context: context,
-          message: 'Picture file saved on device, size: $m MB',
+          message: fileSavedWillUpload == null?
+          'Picture file saved on device, size: $m MB': fileSavedWillUpload!,
           backgroundColor: Theme.of(context).primaryColor,
           textStyle: Styles.whiteSmall,
           toastGravity: ToastGravity.TOP,
@@ -266,10 +278,6 @@ class PhotoHandlerState extends State<PhotoHandler>
         'original file size: height: $heightOrig width: $widthOrig');
     return mFile;
   }
-
-  String? totalByteCount, bytesTransferred;
-  String? fileUrl, thumbnailUrl, takePicture;
-
 
   void _navigateToList() {
     Navigator.of(context).pop();

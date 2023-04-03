@@ -187,7 +187,7 @@ class LoadingCard extends StatelessWidget {
                   const SizedBox(
                     height: 24,
                   ),
-                  Text(loadingActivities, style: myTextStyleMedium(context),),
+                  Text(loadingActivities, style: myTextStyleSmall(context),),
                 ],
               ),
             ),
