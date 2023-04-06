@@ -1,4 +1,9 @@
 {
+  "downloadExampleFiles": "Ṣe igbasilẹ awọn faili apẹẹrẹ ọmọ ẹgbẹ",
+  "uploadMemberBatchFile": "Po si omo Faili",
+  "uploadInstruction": "Ọpọ awọn ọmọ ẹgbẹ le gbejade lati boya iwe kaunti ni ọna kika csv tabi faili json kan. O le ṣe igbasilẹ awọn faili apẹẹrẹ ni ọna kika kọọkan",
+  "memberUploadFailed": "Gbigbe faili ọmọ ẹgbẹ kuna, awọn ọmọ ẹgbẹ ko ṣẹda",
+  "pickMemberBatchFile": "Yan faili ọmọ ẹgbẹ fun ikojọpọ",
   "pickFromGallery": "Yan lati Ile-iṣẹ fọto",
   "memberProfilePicture": "Aworan Profaili omo egbe",
   "useCamera": "Lo Kamẹra",

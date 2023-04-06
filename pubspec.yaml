@@ -42,7 +42,7 @@ dependencies:
   uuid: ^3.0.7
   geocoding: ^2.0.5
   chewie: ^1.4.0
-  video_player: ^2.5.1
+#  video_player: ^2.6.1
   camera: ^0.10.3+2
   maps_toolkit: ^2.0.1
   focused_menu: ^1.0.5
@@ -98,6 +98,9 @@ dependencies:
   fl_chart: ^0.61.0
   flutter_background_service: ^2.4.6
   device_info_plus: ^8.1.0
+  webview_flutter: ^4.0.7
+#  zoom: ^1.0.3+5
+#  zoom_widget: ^2.0.1
 #  flutter_isolate: ^2.0.4
 #  intl_translation: ^0.18.0
 #  easy_localization: ^3.0.2-dev.5
@@ -105,6 +108,8 @@ dependencies:
   shared_preferences: ^2.0.20
 #  music_visualizer: ^1.0.2
   audioplayers: ^3.0.1
+
+#  flutter_zoom_sdk: ^1.1.0+4
 
 
 

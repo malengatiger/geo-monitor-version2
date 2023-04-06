@@ -58,3 +58,16 @@ Android phones
 
 https://bohatmx-dev-ed.develop.my.salesforce.com user: aubrey.og@geo.com
 khayaAndI#333_geo
+
+zoom client id: ezSg6VF5Rb2gRUS85tnc0w
+zoom : 7SqaMRef45vmqmcBzWlBHMlw9s8GjBot
+
+secret token: e649UgZlQI-rPiy7lk6xNg
+verification token: hAU0P6kVT7qx0oosfM-FIA
+
+dev:
+ezSg6VF5Rb2gRUS85tnc0w
+
+Share your locally developed app with others on your account for further testing.
+
+https://zoom.us/oauth/authorize?client_id=ezSg6VF5Rb2gRUS85tnc0w&response_type=code&redirect_uri=http%3A%2F%2Flocalhost%3A8080%2Fgeo%2Fv1%2Fredirect

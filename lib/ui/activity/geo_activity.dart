@@ -7,6 +7,7 @@ import 'package:geo_monitor/library/data/activity_model.dart';
 import 'package:geo_monitor/library/data/geofence_event.dart';
 import 'package:geo_monitor/library/data/location_response.dart';
 import 'package:geo_monitor/library/data/settings_model.dart';
+import 'package:geo_monitor/ui/activity/activity_list_og.dart';
 import 'package:responsive_builder/responsive_builder.dart';
 import 'package:universal_platform/universal_platform.dart';
 
@@ -23,7 +24,6 @@ import '../../library/data/user.dart';
 import '../../library/data/video.dart';
 import '../../library/functions.dart';
 import '../../library/generic_functions.dart';
-import 'activity_list.dart';
 
 class GeoActivity extends StatefulWidget {
   const GeoActivity({
@@ -175,7 +175,7 @@ class GeoActivityState extends State<GeoActivity>
               child: SizedBox(
                 width: widget.width,
                 child: ScreenTypeLayout(
-                  mobile: ActivityList(
+                  mobile: ActivityListOg(
                     project: widget.project,
                     user: widget.user,
                     onPhotoTapped: (photo) {
@@ -212,7 +212,7 @@ class GeoActivityState extends State<GeoActivity>
                     portrait: (context) {
                       return settings == null
                           ? const SizedBox()
-                          : ActivityList(
+                          : ActivityListOg(
                               user: widget.user,
                               project: widget.project,
                               onPhotoTapped: (photo) {
@@ -249,7 +249,7 @@ class GeoActivityState extends State<GeoActivity>
                     landscape: (context) {
                       return settings == null
                           ? const SizedBox()
-                          : ActivityList(
+                          : ActivityListOg(
                               user: widget.user,
                               project: widget.project,
                               onPhotoTapped: (photo) {

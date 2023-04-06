@@ -7,6 +7,7 @@ import 'package:geo_monitor/library/ui/maps/location_response_map.dart';
 import 'package:geo_monitor/library/ui/schedule/scheduler_mobile.dart';
 import 'package:geo_monitor/library/users/kill_user_page.dart';
 import 'package:geo_monitor/library/users/list/user_list_card.dart';
+import 'package:geo_monitor/library/users/user_batch_control.dart';
 import 'package:geo_monitor/ui/dashboard/user_dashboard.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -61,6 +62,7 @@ class UserListMobileState extends State<UserListMobile>
   }
 
   late StreamSubscription<User> _streamSubscription;
+  late StreamSubscription<List<User>> _usersStreamSubscription;
   late StreamSubscription<SettingsModel> settingsSubscriptionFCM;
 
   late StreamSubscription<LocationResponse> _locationResponseSubscription;
@@ -77,6 +79,9 @@ class UserListMobileState extends State<UserListMobile>
       if (mounted) {
         _getData(false);
       }
+    });
+    _usersStreamSubscription = organizationBloc.usersStream.listen((event) {
+      _getData(false);
     });
     _locationResponseSubscription = fcmBloc.locationResponseStream.listen((LocationResponse response) {
       pp('$mm LocationResponse just arrived: ${response.toJson()}');
@@ -220,6 +225,25 @@ class UserListMobileState extends State<UserListMobile>
             child: UserEditMain(user)));
   }
 
+  void navigateToUserBatchUpload(User? user) async {
+    if (user != null) {
+      if (user!.userType == UserType.fieldMonitor) {
+        if (user.userId != user.userId!) {
+          return;
+        }
+      }
+    }
+    await Navigator.push(
+        context,
+        PageTransition(
+            type: PageTransitionType.scale,
+            alignment: Alignment.topLeft,
+            duration: const Duration(seconds: 1),
+            child: const UserBatchControl()));
+
+    _getData(false);
+  }
+
   Future<void> navigateToKillPage(User user) async {
     await Navigator.push(
         context,
@@ -311,6 +335,15 @@ class UserListMobileState extends State<UserListMobile>
                           },
                         )
                       : const SizedBox(),
+            _showPlusIcon
+                ? IconButton(
+              icon: Icon(Icons.add,
+                  size: 20, color: Theme.of(context).primaryColor),
+              onPressed: () {
+                navigateToUserBatchUpload(null);
+              },
+            )
+                : const SizedBox(),
                   _showEditorIcon
                       ? IconButton(
                           icon: Icon(Icons.edit,

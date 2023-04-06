@@ -5,10 +5,12 @@ class Assets {
   static const String assetsAnalysisOptions = 'assets/analysis_options.png';
   static const String assetsAvatar = 'assets/avatar.png';
   static const String assetsBatman = 'assets/batman.png';
+  static const String assetsFilesPeople = 'assets/files/people.json';
   static const String assetsIntlEn = 'assets/intl_en.arb';
   static const String assetsVideo = 'assets/video.png';
   static const String assetsVideo2 = 'assets/video2.jpg';
   static const String assetsVideo3 = 'assets/video3.png';
+  static const String filesPeople = 'assets/files/people.csv';
   static const String geoMonitor = '.env';
   static const String introImg1 = 'assets/intro/img1.jpeg';
   static const String introImg2 = 'assets/intro/img2.jpeg';

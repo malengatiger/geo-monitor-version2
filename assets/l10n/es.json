@@ -1,4 +1,9 @@
 {
+  "downloadExampleFiles": "Descargar archivos de ejemplo de miembros",
+  "uploadMemberBatchFile": "Subir archivo de miembro",
+  "uploadInstruction": "Se pueden cargar varios miembros desde una hoja de cálculo en formato csv o un archivo json. Puede descargar archivos de ejemplo en cada formato",
+  "memberUploadFailed": "La carga del archivo de miembros falló, los miembros no se crearon",
+  "pickMemberBatchFile": "Elija el archivo de miembro para cargar",
   "pickFromGallery": "Elija de la galería de fotos",
   "memberProfilePicture": "Foto de perfil de miembro",
   "useCamera": "Usar cámara",

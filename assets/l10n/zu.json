@@ -1,4 +1,9 @@
 {
+  "downloadExampleFiles": "Landa amafayela ayisibonelo samalungu",
+  "uploadMemberBatchFile": "Layisha Ifayela Lelungu",
+  "uploadInstruction": "Amalungu amaningi angase alayishwe kusuka kuspredishithi ngefomethi ye-csv noma ifayela le-json. Ungalanda amafayela ayisibonelo ngefomethi ngayinye",
+  "memberUploadFailed": "Ukulayishwa Kwefayela Lelungu kuhlulekile, amalungu awadalwanga",
+  "pickMemberBatchFile": "Khetha ifayela leLungu ukuze ulilayishe",
   "memberProfileUploaded": "Isithombe sephrofayela yelungu silayishiwe futhi isizindalwazi sibuyekeziwe",
   "memberProfileUploadFailed": "Ukulayishwa kwesithombe sephrofayela yelungu kuhlulekile. Sicela uzame futhi emuva kwesikhathi",
   "pickFromGallery": "Khetha kugalari yezithombe",

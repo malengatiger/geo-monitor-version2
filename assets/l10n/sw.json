@@ -1,4 +1,9 @@
 {
+  "downloadExampleFiles": "Pakua faili za mfano za Mwanachama",
+  "uploadMemberBatchFile": "Pakia Faili ya Mwanachama",
+  "uploadInstruction": "Wanachama wengi wanaweza kupakiwa kutoka kwa lahajedwali katika umbizo la csv au faili ya json. Unaweza kupakua faili za mfano katika kila umbizo",
+  "memberUploadFailed": "Upakiaji wa Faili za Mwanachama umeshindwa, washiriki hawajaundwa",
+  "pickMemberBatchFile": "Chagua faili ya Mwanachama ili kupakiwa",
   "pickFromGallery": "Chagua kutoka kwa Matunzio ya Picha",
   "memberProfilePicture": "Picha ya Wasifu wa Mwanachama",
   "useCamera": "Tumia Kamera",

@@ -10,7 +10,7 @@ import 'package:geo_monitor/library/data/org_message.dart';
 import 'package:geo_monitor/library/data/settings_model.dart';
 import 'package:geo_monitor/library/ui/camera/video_player_mobile.dart';
 import 'package:geo_monitor/library/ui/maps/location_response_map.dart';
-import 'package:geo_monitor/ui/activity/activity_list.dart';
+import 'package:geo_monitor/ui/activity/activity_list_og.dart';
 import 'package:geo_monitor/ui/audio/audio_player_og.dart';
 import 'package:geo_monitor/ui/dashboard/user_dashboard.dart';
 import 'package:page_transition/page_transition.dart';
@@ -313,7 +313,7 @@ class GeoActivityMobileState extends State<GeoActivityMobile>
   @override
   Widget build(BuildContext context) {
     return SafeArea(
-      child: ActivityList(
+      child: ActivityListOg(
         user: widget.user,
         project: widget.project,
         onPhotoTapped: (photo) {

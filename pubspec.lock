@@ -77,10 +77,10 @@ packages:
     dependency: "direct main"
     description:
       name: at_gauges
-      sha256: c993d2e7836721e187b6d1a2eefc4a92b99b494fbe573ba0775e3a366453d20f
+      sha256: "3016bebcfda6056a4bffc5df55f57bd7752f938f965245a620177c55617c833d"
       url: "https://pub.dev"
     source: hosted
-    version: "1.0.1"
+    version: "1.0.2"
   audio_session:
     dependency: transitive
     description:
@@ -533,10 +533,10 @@ packages:
     dependency: "direct main"
     description:
       name: file_picker
-      sha256: d8e9ca7e5d1983365c277f12c21b4362df6cf659c99af146ad4d04eb33033013
+      sha256: "0d923fb610d0abf67f2149c3a50ef85f78bebecfc4d645719ca70bcf4abc788f"
       url: "https://pub.dev"
     source: hosted
-    version: "5.2.6"
+    version: "5.2.7"
   firebase_analytics:
     dependency: "direct main"
     description:
@@ -1089,10 +1089,10 @@ packages:
     dependency: "direct main"
     description:
       name: go_router
-      sha256: "6af43e0948b9f64a812afbb9ac3f76e2c8f5abe4efaba4188702a56af46b98c2"
+      sha256: dc9be8270090afe04464e8827df849a8f1041bc2c10cf854f01389bad19616d5
       url: "https://pub.dev"
     source: hosted
-    version: "6.5.2"
+    version: "6.5.3"
   google_api_headers:
     dependency: transitive
     description:
@@ -2155,29 +2155,29 @@ packages:
     source: hosted
     version: "2.1.4"
   video_player:
-    dependency: "direct main"
+    dependency: transitive
     description:
       name: video_player
-      sha256: "868a139229acb5018d22aded3eb9cb4767ff43a8216573c086b6c535a4957481"
+      sha256: de95f0e9405f29b5582573d4166132e71f83b3158aac14e8ee5767a54f4f1fbd
       url: "https://pub.dev"
     source: hosted
-    version: "2.6.0"
+    version: "2.6.1"
   video_player_android:
     dependency: transitive
     description:
       name: video_player_android
-      sha256: e7de6fabe5d96048cd8f4d710f25c3df84bb3cab8b22da6c082bd8f39e316984
+      sha256: a592048a711d5739d9cea2255d425779f138d41095b9149bda60ce4bc1af8871
       url: "https://pub.dev"
     source: hosted
-    version: "2.4.3"
+    version: "2.4.4"
   video_player_avfoundation:
     dependency: transitive
     description:
       name: video_player_avfoundation
-      sha256: "90468226c8687adf7b567d9bb42c25588783c4d30509af1fbd663b2dd049f700"
+      sha256: af308d08c672d5ff718c60127665249617c37a709cb8f0a18dd28a0360299b7c
       url: "https://pub.dev"
     source: hosted
-    version: "2.4.2"
+    version: "2.4.3"
   video_player_platform_interface:
     dependency: transitive
     description:
@@ -2190,10 +2190,10 @@ packages:
     dependency: transitive
     description:
       name: video_player_web
-      sha256: fb3bbeaf0302cb0c31340ebd6075487939aa1fe3b379d1a8784ef852b679940e
+      sha256: "44ce41424d104dfb7cf6982cc6b84af2b007a24d126406025bf40de5d481c74c"
       url: "https://pub.dev"
     source: hosted
-    version: "2.0.15"
+    version: "2.0.16"
   video_thumbnail:
     dependency: "direct main"
     description:
@@ -2258,6 +2258,38 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.3.0"
+  webview_flutter:
+    dependency: "direct main"
+    description:
+      name: webview_flutter
+      sha256: "47663d51a9061451aa3880a214ee9a65dcbb933b77bc44388e194279ab3ccaf6"
+      url: "https://pub.dev"
+    source: hosted
+    version: "4.0.7"
+  webview_flutter_android:
+    dependency: transitive
+    description:
+      name: webview_flutter_android
+      sha256: "5906c9aa8c88ed372b2ad3c88c942790b4fb16f73fdd1c0647b4d747d9cf5b3f"
+      url: "https://pub.dev"
+    source: hosted
+    version: "3.4.5"
+  webview_flutter_platform_interface:
+    dependency: transitive
+    description:
+      name: webview_flutter_platform_interface
+      sha256: "1939c39e2150fb4d30fd3cc59a891a49fed9935db53007df633ed83581b6117b"
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.1.0"
+  webview_flutter_wkwebview:
+    dependency: transitive
+    description:
+      name: webview_flutter_wkwebview
+      sha256: d601aba11ad8d4481e17a34a76fa1d30dee92dcbbe2c58b0df3120e9453099c7
+      url: "https://pub.dev"
+    source: hosted
+    version: "3.2.3"
   win32:
     dependency: transitive
     description:

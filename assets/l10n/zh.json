@@ -1,4 +1,9 @@
 {
+  "downloadExampleFiles": "下载成员示例文件",
+  "uploadMemberBatchFile": "上传会员文件",
+  "uploadInstruction": "可以从 csv 格式的电子表格或 json 文件上传多个成员。您可以下载每种格式的示例文件",
+  "memberUploadFailed": "成员文件上传失败，成员未创建",
+  "pickMemberBatchFile": "选择要上传的会员文件",
   "memberProfileUploaded": "上传会员资料图片并更新数据库",
   "memberProfileUploadFailed": "会员头像上传失败。请稍后再试",
 

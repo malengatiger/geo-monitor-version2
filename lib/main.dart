@@ -116,9 +116,7 @@ class GeoApp extends StatelessWidget {
               theme: themeBloc.getTheme(themeIndex).darkTheme,
               darkTheme: themeBloc.getTheme(themeIndex).darkTheme,
               themeMode: ThemeMode.dark,
-              // home:  AudioRecorder(onStop: (String path) {
-              //   pp('$mx audio recorder just stopped');
-              // },),
+              // home:  const WebViewer()
               home: AnimatedSplashScreen(
                 duration: 2000,
                 splash: const SplashWidget(),
@@ -133,7 +131,8 @@ class GeoApp extends StatelessWidget {
                 backgroundColor: Colors.pink.shade900,
               ),
             );
-          }),
+          },
+      ),
     );
   }
 }

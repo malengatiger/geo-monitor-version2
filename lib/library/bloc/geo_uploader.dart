@@ -8,6 +8,7 @@ import 'dart:ui';
 import 'package:geo_monitor/library/api/data_api.dart';
 import 'package:geo_monitor/library/api/prefs_og.dart';
 import 'package:geo_monitor/library/bloc/geo_exception.dart';
+import 'package:geo_monitor/library/bloc/organization_bloc.dart';
 import 'package:geo_monitor/library/bloc/photo_for_upload.dart';
 import 'package:geo_monitor/library/bloc/video_for_upload.dart';
 import 'package:geo_monitor/library/errors/error_handler.dart';
@@ -51,7 +52,7 @@ class GeoUploader {
       if (e is GeoException) {
         errorHandler.handleError(exception: e);
       }
-       await _retryUploads();
+      await _retryUploads();
     }
   }
 
@@ -98,12 +99,15 @@ class GeoUploader {
     int cnt = 0;
     final sett = await cacheManager.getSettings();
     final videoArrived =
-    await translator.translate('videoArrived', sett.locale!);
+        await translator.translate('videoArrived', sett.locale!);
     final messageFromGeo =
-    await translator.translate('messageFromGeo', sett.locale!);
+        await translator.translate('messageFromGeo', sett.locale!);
 
     for (var p in videos) {
-      var result = await _startVideoUpload(videoForUploading: p, videoArrived: videoArrived, messageFromGeo: messageFromGeo);
+      var result = await _startVideoUpload(
+          videoForUploading: p,
+          videoArrived: videoArrived,
+          messageFromGeo: messageFromGeo);
       if (result != null) {
         await cacheManager.removeUploadedVideo(video: p);
         cnt++;
@@ -125,12 +129,15 @@ class GeoUploader {
     int cnt = 0;
     final sett = await cacheManager.getSettings();
     final audioArrived =
-    await translator.translate('audioArrived', sett.locale!);
+        await translator.translate('audioArrived', sett.locale!);
     final messageFromGeo =
-    await translator.translate('messageFromGeo', sett.locale!);
+        await translator.translate('messageFromGeo', sett.locale!);
 
     for (var p in audios) {
-      var result = await _startAudioUpload(audioForUploading: p, messageFromGeo: messageFromGeo, audioArrived: audioArrived);
+      var result = await _startAudioUpload(
+          audioForUploading: p,
+          messageFromGeo: messageFromGeo,
+          audioArrived: audioArrived);
       if (result != null) {
         await cacheManager.removeUploadedAudio(audio: p);
         cnt++;
@@ -177,7 +184,8 @@ class GeoUploader {
       if (user == null) {
         pp('🔴🔴🔴🔴🔴🔴🔴🔴 user is null. WTF? 🔴🔴');
         final sett = await prefsOGx.getSettings();
-        final serverProblem = await translator.translate('serverProblem', sett.locale!);
+        final serverProblem =
+            await translator.translate('serverProblem', sett.locale!);
         throw serverProblem;
       } else {
         pp('$xx 🍐🍐🍐🍐🍐🍐The user is OK');
@@ -185,9 +193,9 @@ class GeoUploader {
 
       final sett = await cacheManager.getSettings();
       final photoArrived =
-      await translator.translate('photoArrived', sett!.locale!);
+          await translator.translate('photoArrived', sett!.locale!);
       final messageFromGeo =
-      await translator.translate('messageFromGeo', sett!.locale!);
+          await translator.translate('messageFromGeo', sett!.locale!);
 
       var mJson = json.encode(photoForUploading.toJson());
 
@@ -216,8 +224,11 @@ class GeoUploader {
     return null;
   }
 
-  Future<Video?> _startVideoUpload({required VideoForUpload videoForUploading, required String videoArrived,
-    required String messageFromGeo,}) async {
+  Future<Video?> _startVideoUpload({
+    required VideoForUpload videoForUploading,
+    required String videoArrived,
+    required String messageFromGeo,
+  }) async {
     user = await prefsOGx.getUser();
     try {
       String? url = await DataAPI.getUrl();
@@ -284,9 +295,34 @@ class GeoUploader {
     return null;
   }
 
-  Future<Audio?> _startAudioUpload({required AudioForUpload audioForUploading,
-      required String audioArrived,
-      required String messageFromGeo,}) async {
+  Future<List<User>> startUserBatchUpload(
+      {required String organizationId, required File file}) async {
+    String? url = await DataAPI.getUrl();
+    var token = await AppAuth.getAuthToken();
+    final sett = await prefsOGx.getSettings();
+    final tt = await translator.translate('messageFromGeo', sett.locale!);
+    final tm = await translator.translate('memberAddedChanged', sett.locale!);
+    var users = await Isolate.run(() async => await uploadUserFile(
+        organizationId: organizationId,
+        url: url!,
+        token: token!,
+        translatedTitle: tt,
+        translatedMessage: tm,
+        file: file));
+
+    if (users.isNotEmpty) {
+      await cacheManager.addUsers(users: users);
+      organizationBloc.userController.sink.add(users);
+    }
+
+    return users;
+  }
+
+  Future<Audio?> _startAudioUpload({
+    required AudioForUpload audioForUploading,
+    required String audioArrived,
+    required String messageFromGeo,
+  }) async {
     user = await prefsOGx.getUser();
     try {
       String? url = await DataAPI.getUrl();

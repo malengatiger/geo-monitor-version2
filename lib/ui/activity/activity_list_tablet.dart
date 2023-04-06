@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:geo_monitor/library/bloc/fcm_bloc.dart';
 import 'package:geo_monitor/library/bloc/organization_bloc.dart';
 import 'package:geo_monitor/library/data/location_request.dart';
-import 'package:geo_monitor/ui/activity/activity_list.dart';
 
 import '../../l10n/translation_handler.dart';
 import '../../library/api/prefs_og.dart';
@@ -25,6 +24,7 @@ import '../../library/data/video.dart';
 import '../../library/functions.dart';
 import '../../library/generic_functions.dart';
 import 'activity_header.dart';
+import 'activity_list_card.dart';
 import 'activity_stream_card.dart';
 
 class ActivityListTablet extends StatefulWidget {
@@ -228,6 +228,8 @@ class _ActivityListTabletState extends State<ActivityListTablet>
     return false;
   }
 
+  bool forceRefresh = false;
+  int numberOfActivities = 0;
   @override
   Widget build(BuildContext context) {
     pp('$mm ... build method starting .........................');
@@ -312,7 +314,6 @@ class _ActivityListTabletState extends State<ActivityListTablet>
         ),
       );
     }
-    final deviceType = getThisDeviceType();
     // WidgetsBinding.instance.addPostFrameCallback((_) {
     //   if (listScrollController.hasClients) {
     //     if (sortedAscending) {
@@ -335,10 +336,9 @@ class _ActivityListTabletState extends State<ActivityListTablet>
           width: widget.width,
           // height: height - 100,
           child: ActivityListCard(
-              models: models,
-              onTapped: _handleTappedActivity,
-              activityStrings: activityStrings!,
-              locale: sett!.locale!),
+            onTapped: _handleTappedActivity,
+
+          ),
         ),
         Positioned(
           child: SizedBox(
@@ -360,10 +360,12 @@ class _ActivityListTabletState extends State<ActivityListTablet>
                             prefix: prefix!,
                             suffix: suffix!,
                             onRefreshRequested: () {
-                              _getData(true);
+                             setState(() {
+                               forceRefresh = true;
+                             });
                             },
                             hours: sett!.activityStreamHours!,
-                            number: models.length,
+                            number: numberOfActivities,
                             onSortRequested: _sort,
                           ),
                   ),
@@ -426,5 +428,4 @@ class _ActivityListTabletState extends State<ActivityListTablet>
       widget.onOrgMessage(act.orgMessage!);
     }
   }
-
 }

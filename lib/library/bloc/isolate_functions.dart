@@ -9,6 +9,7 @@ import 'package:http/http.dart' as http;
 
 import '../data/audio.dart';
 import '../data/photo.dart';
+import '../data/user.dart';
 import '../data/video.dart';
 import '../functions.dart';
 import 'audio_for_upload.dart';
@@ -29,7 +30,6 @@ Future<Photo?> uploadPhotoFile(
     required String photoArrived,
     required String messageFromGeo,
     required double distance}) async {
-
   pp('$xx 🍐🍐🍐🍐🍐🍐 _uploadPhotoFile: objectName: $objectName url: $url');
 
   var map = json.decode(mJson);
@@ -174,6 +174,27 @@ Future<Video?> uploadVideoFile(
 
   var mVideo = await _addVideoToDatabase(video, url, token);
   return mVideo;
+}
+
+Future<List<User>> uploadUserFile({
+  required File file,
+  required String url,
+  required String token,
+  required String translatedTitle,
+  required String translatedMessage,
+  required String organizationId,
+}) async {
+  pp('\n\n$xx 🍐🍐🍐🍐🍐🍐 uploadUserFile ...');
+  var users = await _sendUserUploadRequest(
+      token: token,
+      url: url,
+      organizationId: organizationId,
+      file: file,
+      translatedTitle: translatedTitle,
+      translatedMessage: translatedMessage);
+
+  pp('\n$xx user batch file uploaded OK! 👋🏽👋🏽👋🏽👋🏽👋🏽 users: ${users.length}');
+  return users;
 }
 
 Future<Photo> _addPhotoToDatabase(Photo photo, String url, String token) async {
@@ -325,6 +346,84 @@ Future<String?> _sendUploadRequest(
   }
 
   return responseString;
+}
+
+Future<List<User>> _sendUserUploadRequest(
+    {required String token,
+    required String url,
+    required String translatedTitle,
+    required String translatedMessage,
+    required String organizationId,
+    required File file}) async {
+  Map<String, String> headers = {
+    'Content-type': 'application/json',
+    'Accept': 'application/json',
+    'Authorization': 'Bearer $token'
+  };
+
+  var mUrl = '${url}uploadMemberFile';
+  var request = http.MultipartRequest("POST", Uri.parse(mUrl));
+  request.fields["organizationId"] = organizationId;
+  request.fields["translatedTitle"] = translatedTitle;
+  request.fields["translatedMessage"] = translatedMessage;
+  var multiPartFile = await http.MultipartFile.fromPath("document", file.path);
+  request.files.add(multiPartFile);
+  request.headers.addAll(headers);
+  var users = <User>[];
+  String? responseData;
+  try {
+    var response = await request.send();
+    if (response.statusCode == 200) {
+      var bytes = await response.stream.toBytes();
+      responseData = String.fromCharCodes(bytes);
+
+      List result = jsonDecode(responseData);
+      for (var element in result) {
+        users.add(User.fromJson(element));
+      }
+      for (var value in users) {
+        pp('$xx user created from file: 🔵🔵 ${value.toJson()} 🔵🔵\n');
+      }
+    } else {
+      pp('\n\n$xx We have a problem, Boss! 🔴🔴🔴 statusCode: ${response.statusCode} '
+          '- $responseData');
+      throw GeoException(
+          message: 'Bad Request',
+          url: mUrl,
+          translationKey: 'serverProblem',
+          errorType: GeoException.httpException);
+    }
+  } on SocketException {
+    pp('$xx No Internet connection, really means that server cannot be reached 😑');
+    throw GeoException(
+        message: 'No Internet connection',
+        url: mUrl,
+        translationKey: 'networkProblem',
+        errorType: GeoException.socketException);
+  } on HttpException {
+    pp("$xx HttpException occurred 😱");
+    throw GeoException(
+        message: 'Server not around',
+        url: mUrl,
+        translationKey: 'serverProblem',
+        errorType: GeoException.httpException);
+  } on FormatException {
+    pp("$xx Bad response format 👎");
+    throw GeoException(
+        message: 'Bad response format',
+        url: mUrl,
+        translationKey: 'serverProblem',
+        errorType: GeoException.formatException);
+  } on TimeoutException {
+    pp("$xx GET Request has timed out in $timeOutInSeconds seconds 👎");
+    throw GeoException(
+        message: 'Request timed out',
+        url: mUrl,
+        translationKey: 'networkProblem',
+        errorType: GeoException.timeoutException);
+  }
+
+  return users;
 }
 
 Future<String?> getSignedUploadUrl(

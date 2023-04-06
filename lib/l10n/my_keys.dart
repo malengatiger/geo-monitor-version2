@@ -375,5 +375,11 @@ class MyKeys {
     hashMap["profileInstruction"] = "profileInstruction";
     hashMap["memberProfileUploaded"] = "memberProfileUploaded";
     hashMap["memberProfileUploadFailed"] = "memberProfileUploadFailed";
+
+    hashMap["uploadMemberBatchFile"] = "uploadMemberBatchFile";
+    hashMap["pickMemberBatchFile"] = "pickMemberBatchFile";
+    hashMap["memberUploadFailed"] = "memberUploadFailed";
+    hashMap["downloadExampleFiles"] = "downloadExampleFiles";
+    hashMap["uploadInstruction"] = "uploadInstruction";
   }
 }

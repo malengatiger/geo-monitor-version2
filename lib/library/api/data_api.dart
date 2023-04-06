@@ -263,7 +263,7 @@ class DataAPI {
     }
 
     if (mList.isNotEmpty) {
-      //await cacheManager.deleteActivityModels();
+      await cacheManager.deleteActivityModels();
       mList.sort((a, b) => b.date!.compareTo(a.date!));
       await cacheManager.addActivityModels(activities: mList);
       organizationBloc.activityController.sink.add(mList);

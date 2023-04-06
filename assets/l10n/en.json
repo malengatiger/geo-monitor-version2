@@ -1,4 +1,9 @@
 {
+  "downloadExampleFiles": "Download Member example files",
+  "uploadMemberBatchFile": "Upload Member File",
+  "uploadInstruction": "Multiple members may be uploaded from either a spreadsheet in csv format or a json file. You can download example files in each format",
+  "memberUploadFailed": "Member File upload failed, members not created",
+  "pickMemberBatchFile": "Pick Member file for upload",
   "pickFromGallery": "Pick from Photo Gallery",
   "memberProfilePicture": "Member Profile Picture",
   "useCamera": "Use Camera",

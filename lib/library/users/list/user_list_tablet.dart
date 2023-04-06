@@ -32,6 +32,7 @@ import '../../ui/maps_field_monitor/field_monitor_map_mobile.dart';
 import '../../ui/message/message_mobile.dart';
 import '../../ui/schedule/scheduler_mobile.dart';
 import '../kill_user_page.dart';
+import '../user_batch_control.dart';
 
 class UserListTablet extends StatefulWidget {
   const UserListTablet({
@@ -218,6 +219,26 @@ class _UserListTabletState extends State<UserListTablet> {
             child: UserDashboard(user: user)));
   }
 
+  void navigateToUserBatchUpload(User? user) async {
+    if (user != null) {
+      if (user!.userType == UserType.fieldMonitor) {
+        if (user.userId != user.userId!) {
+          return;
+        }
+      }
+    }
+    await Navigator.push(
+        context,
+        PageTransition(
+            type: PageTransitionType.scale,
+            alignment: Alignment.topLeft,
+            duration: const Duration(seconds: 1),
+            child: const UserBatchControl()));
+
+    _getData(false);
+  }
+
+
   void navigateToMessaging(User user) {
     Navigator.push(
         context,
@@ -364,6 +385,15 @@ class _UserListTabletState extends State<UserListTablet> {
                   Icons.add,
                   color: Theme.of(context).primaryColor,
                 )),
+            IconButton(
+                onPressed: () {
+                  navigateToUserBatchUpload(null);
+                },
+                icon: Icon(
+                  Icons.add,
+                  color: Theme.of(context).primaryColor,
+                )),
+
             IconButton(
                 onPressed: () {
                   _getData(true);

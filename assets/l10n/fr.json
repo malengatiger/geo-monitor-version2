@@ -1,4 +1,9 @@
 {
+  "downloadExampleFiles": "Télécharger les fichiers d\u0027exemple des membres",
+  "uploadMemberBatchFile": "Télécharger le fichier de membre",
+  "uploadInstruction": "Plusieurs membres peuvent être téléchargés à partir d\u0027une feuille de calcul au format csv ou d\u0027un fichier json. Vous pouvez télécharger des exemples de fichiers dans chaque format",
+  "memberUploadFailed": "Le téléchargement du fichier de membre a échoué, les membres n\u0027ont pas été créés",
+  "pickMemberBatchFile": "Choisissez le fichier de membre à télécharger",
   "pickFromGallery": "Choisissez parmi la galerie de photos",
   "memberProfilePicture": "Photo de profil du membre",
   "useCamera": "Utiliser l\u0027appareil photo",

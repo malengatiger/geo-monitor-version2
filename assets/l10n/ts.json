@@ -1,4 +1,9 @@
 {
+  "downloadExampleFiles": "Download tifayela ta xikombiso xa Xirho",
+  "uploadMemberBatchFile": "Layicha Fayili ya Xirho",
+  "uploadInstruction": "Swirho swo tala swi nga ha layicha ku suka eka xiphephana xa xiphephana hi xivumbeko xa csv kumbe fayili ya json. U nga kopa tifayela ta xikombiso hi xivumbeko xin’wana ni xin’wana",
+  "memberUploadFailed": "Ku layicha Fayili ya Xirho ku tsandzekile, swirho a swi endliwanga",
+  "pickMemberBatchFile": "Hlawula fayili ya Xirho leswaku u ta yi layicha",
   "pickFromGallery": "Hlawula eka Photo Gallery",
   "memberProfilePicture": "Xifaniso xa Profayile ya Xirho",
   "useCamera": "Tirhisa Khamera",

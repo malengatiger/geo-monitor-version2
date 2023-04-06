@@ -1,4 +1,9 @@
 {
+  "downloadExampleFiles": "Budata faịlụ atụ onye otu",
+  "uploadMemberBatchFile": "Bulite faịlụ otu",
+  "uploadInstruction": "Enwere ike bulite ọtụtụ ndị otu site na mpempe akwụkwọ n\u0027ụdị csv ma ọ bụ faịlụ json. Ị nwere ike ibudata faịlụ ihe atụ n\u0027ụdị ọ bụla",
+  "memberUploadFailed": "Nbulite faịlụ onye otu dara, emebeghị ndị otu",
+  "pickMemberBatchFile": "Họrọ faịlụ otu maka ibugo",
   "pickFromGallery": "Họrọ site na gallery foto",
   "memberProfilePicture": "Foto profaịlụ onye otu",
   "useCamera": "Jiri igwefoto",

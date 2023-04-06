@@ -222,11 +222,16 @@ class _UserListCardState extends State<UserListCard> {
                     itemCount: widget.users.length,
                     itemBuilder: (BuildContext context, int index) {
                       var mUser = widget.users.elementAt(index);
-                      var created = DateTime.parse(mUser.created!);
-                      var now = DateTime.now();
-                      var ms = now.millisecondsSinceEpoch -
-                          created.millisecondsSinceEpoch;
-                      var deltaHours = Duration(milliseconds: ms).inHours;
+                      DateTime? created;
+                      int deltaHours = 0;
+                      if (mUser.created != null) {
+                        created = DateTime.parse(mUser.created!);
+                        var now = DateTime.now();
+                        var ms = now.millisecondsSinceEpoch -
+                            created.millisecondsSinceEpoch;
+                        deltaHours = Duration(milliseconds: ms).inHours;
+                      }
+
                       return FocusedMenuHolder(
                         menuOffset: 20,
                         duration: const Duration(milliseconds: 300),
