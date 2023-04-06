@@ -110,10 +110,10 @@ class TabletList extends StatefulWidget {
   final Function(ActivityModel) onTapped;
 
   @override
-  State<TabletList> createState() => _TabletListState();
+  State<TabletList> createState() => TabletListState();
 }
 
-class _TabletListState extends State<TabletList> {
+class TabletListState extends State<TabletList> {
   ActivityStrings? activityStrings;
   SettingsModel? settings;
   @override
@@ -186,9 +186,12 @@ class _MobileListState extends State<MobileList> {
       appBar: AppBar(
         title: Text(title == null ? 'Activities' : title!),
       ),
-      body: ActivityListCard(
-              onTapped: _onTapped,
-            ),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: ActivityListCard(
+                onTapped: _onTapped,
+              ),
+      ),
     ));
   }
 }

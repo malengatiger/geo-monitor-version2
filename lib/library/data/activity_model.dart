@@ -64,6 +64,10 @@ class ActivityModel extends HiveObject {
   LocationResponse? locationResponse;
   @HiveField(20)
   String? userThumbnailUrl;
+  @HiveField(21)
+  String? userType;
+  @HiveField(22)
+  String? translatedUserType;
 
   ActivityModel({
     required this.activityModelId,
@@ -85,7 +89,10 @@ class ActivityModel extends HiveObject {
     required this.locationRequest,
     required this.user,
     required this.geofenceEvent,
-    required this.orgMessage, required this.userThumbnailUrl,
+    required this.orgMessage,
+    required this.userType,
+    required this.translatedUserType,
+    required this.userThumbnailUrl,
   });
 
   ActivityModel.fromJson(Map data) {

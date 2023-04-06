@@ -75,10 +75,7 @@ class _ActivityListCardState extends State<ActivityListCard> {
     pp('$mm ... getting activity data ... forceRefresh: $forceRefresh');
     try {
       settings = await prefsOGx.getSettings();
-      var hours = 12;
-      if (settings != null) {
-        hours = settings!.activityStreamHours!;
-      }
+      var hours = settings!.activityStreamHours!;
       pp('$mm ... get Activity (n hours) ... : $hours');
       if (widget.project != null) {
         activeType = projectActive;
@@ -91,6 +88,9 @@ class _ActivityListCardState extends State<ActivityListCard> {
         await _getOrganizationData(forceRefresh, hours);
       }
       sortActivitiesDescending(models);
+      for (var activity in models) {
+        //todo - translation here
+      }
       // widget.onRefreshed(models);
     } catch (e) {
       pp(e);
@@ -120,10 +120,14 @@ class _ActivityListCardState extends State<ActivityListCard> {
     if (models.isNotEmpty) {
       setState(() {});
     }
+    pp('$mm _getOrganizationData 1: ............ activities: ${models.length}');
+
     models = await organizationBloc.getOrganizationActivity(
         organizationId: settings!.organizationId!,
         hours: hours,
-        forceRefresh: forceRefresh);
+        forceRefresh: true);
+    pp('$mm _getOrganizationData 2 :............ activities: ${models.length}');
+
   }
 
   Future _getProjectData(bool forceRefresh, int hours) async {
@@ -163,6 +167,7 @@ class _ActivityListCardState extends State<ActivityListCard> {
 
   @override
   Widget build(BuildContext context) {
+    pp('$mm build: ...................... 🍎🍎 activities: ${models.length}');
     return Stack(
       children: [
         Column(
@@ -214,7 +219,8 @@ class _ActivityListCardState extends State<ActivityListCard> {
         busy
             ? Positioned(
                 bottom: 124,
-                left: 24, right: 24,
+                left: 24,
+                right: 24,
                 child: activityStrings == null
                     ? const SizedBox()
                     : LoadingCard(

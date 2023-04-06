@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:geo_monitor/library/cache_manager.dart';
 import 'package:geo_monitor/library/data/activity_model.dart';
 import 'package:geo_monitor/library/functions.dart';
 import 'package:geo_monitor/ui/activity/user_profile_card.dart';
 
 import '../../l10n/translation_handler.dart';
 import '../../library/api/prefs_og.dart';
+import '../../library/cache_manager.dart';
 import '../../library/data/activity_type_enum.dart';
 import '../../library/data/user.dart';
 import 'activity_cards.dart';
@@ -67,7 +67,7 @@ class ActivityStreamCardState extends State<ActivityStreamCard> {
 
   Widget _getUserAdded(Icon icon, String msg) {
     final dt = getFmtDate(widget.activityModel.date!, widget.locale);
-
+    pp('$mm _getUserAdded, msg: $msg');
     return activityUser == null
         ? const SizedBox()
         : Card(
@@ -125,6 +125,7 @@ class ActivityStreamCardState extends State<ActivityStreamCard> {
   }
 
   Widget _getGeneric(Icon icon, String msg, double height) {
+    pp('$mm _getGeneric, msg: $msg');
     return activityUser == null
         ? const SizedBox()
         : ThinCard(
@@ -144,6 +145,7 @@ class ActivityStreamCardState extends State<ActivityStreamCard> {
 
   Widget _getShortie(Icon icon, String msg) {
     final dt = getFmtDate(widget.activityModel.date!, widget.locale);
+    pp('$mm _getShortie, msg: $msg');
     return Card(
       shape: getRoundedBorder(radius: 16),
       elevation: 4,
@@ -188,8 +190,9 @@ class ActivityStreamCardState extends State<ActivityStreamCard> {
   Widget build(BuildContext context) {
     late Icon icon;
     late String message;
-
+    pp('$mm activityType: ${widget.activityModel.activityType}');
     switch (widget.activityModel.activityType!) {
+
       case ActivityType.projectAdded:
         icon = Icon(Icons.access_time, color: Theme.of(context).primaryColor);
         message = widget.activityStrings.projectAdded == null
@@ -274,7 +277,7 @@ class ActivityStreamCardState extends State<ActivityStreamCard> {
       default:
         return const SizedBox(
           width: 300,
-          child: Text('We got a Big Problem, Senor!'),
+          child: Text('We got a Really Big Problem, Senor!'),
         );
     }
   }
