@@ -8,7 +8,10 @@ class ActivityHeader extends StatelessWidget {
       {Key? key,
       required this.onRefreshRequested,
       required this.hours,
-      required this.number, required this.prefix, required this.suffix, required this.onSortRequested})
+      required this.number,
+      required this.prefix,
+      required this.suffix,
+      required this.onSortRequested})
       : super(key: key);
 
   final Function() onRefreshRequested;
@@ -27,13 +30,12 @@ class ActivityHeader extends StatelessWidget {
           },
           child: Row(
             children: [
-              SizedBox(width: 132,
-                child: Text(prefix,
+              SizedBox(
+                width: 128,
+                child: Text(
+                  prefix,
                   style: myTextStyleSmall(context),
                 ),
-              ),
-              const SizedBox(
-                width: 4,
               ),
               Text(
                 '$hours',
@@ -61,6 +63,8 @@ class ActivityHeader extends StatelessWidget {
               '$number',
               style: myTextStyleSmallBold(context),
             ),
+            badgeAnimation: const bd.BadgeAnimation.slide(
+                colorChangeAnimationDuration: Duration(milliseconds: 500)),
             badgeStyle: bd.BadgeStyle(
                 elevation: 8,
                 badgeColor: getRandomColor(),

@@ -17,6 +17,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.1.0"
+  adobe_xd:
+    dependency: "direct main"
+    description:
+      name: adobe_xd
+      sha256: "5d84fef3ded20dc0f4efe34e8bd4c0462d2d1539b5826a18f4247ddbf915ad44"
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.0.1"
   analyzer:
     dependency: transitive
     description:

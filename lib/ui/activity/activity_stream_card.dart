@@ -20,7 +20,7 @@ class ActivityStreamCard extends StatefulWidget {
       required this.thinMode,
       required this.width,
       required this.activityStrings,
-      required this.locale})
+      required this.locale, required this.translatedUserType})
       : super(key: key);
 
   final ActivityModel activityModel;
@@ -29,6 +29,7 @@ class ActivityStreamCard extends StatefulWidget {
   final double width;
   final ActivityStrings activityStrings;
   final String locale;
+  final String translatedUserType;
 
   @override
   ActivityStreamCardState createState() => ActivityStreamCardState();
@@ -54,9 +55,7 @@ class ActivityStreamCardState extends State<ActivityStreamCard> {
       activityUser =
       await cacheManager.getUserById(widget.activityModel.userId!);
     }
-    if (activityUser != null) {
-      translatedUserType = await getTranslatedUserType(activityUser!.userType!);
-    }
+
     setState(() {});
   }
 
@@ -67,7 +66,7 @@ class ActivityStreamCardState extends State<ActivityStreamCard> {
 
   Widget _getUserAdded(Icon icon, String msg) {
     final dt = getFmtDate(widget.activityModel.date!, widget.locale);
-    pp('$mm _getUserAdded, msg: $msg');
+    // pp('$mm _getUserAdded, msg: $msg');
     return activityUser == null
         ? const SizedBox()
         : Card(
@@ -125,7 +124,7 @@ class ActivityStreamCardState extends State<ActivityStreamCard> {
   }
 
   Widget _getGeneric(Icon icon, String msg, double height) {
-    pp('$mm _getGeneric, msg: $msg');
+    // pp('$mm _getGeneric, msg: $msg');
     return activityUser == null
         ? const SizedBox()
         : ThinCard(
@@ -145,7 +144,7 @@ class ActivityStreamCardState extends State<ActivityStreamCard> {
 
   Widget _getShortie(Icon icon, String msg) {
     final dt = getFmtDate(widget.activityModel.date!, widget.locale);
-    pp('$mm _getShortie, msg: $msg');
+    // pp('$mm _getShortie, msg: $msg');
     return Card(
       shape: getRoundedBorder(radius: 16),
       elevation: 4,
@@ -190,7 +189,7 @@ class ActivityStreamCardState extends State<ActivityStreamCard> {
   Widget build(BuildContext context) {
     late Icon icon;
     late String message;
-    pp('$mm activityType: ${widget.activityModel.activityType}');
+    // pp('$mm activityType: ${widget.activityModel.activityType}');
     switch (widget.activityModel.activityType!) {
 
       case ActivityType.projectAdded:

@@ -108,6 +108,7 @@ dependencies:
   shared_preferences: ^2.0.20
 #  music_visualizer: ^1.0.2
   audioplayers: ^3.0.1
+  adobe_xd: ^2.0.1
 
 #  flutter_zoom_sdk: ^1.1.0+4
 

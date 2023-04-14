@@ -38,11 +38,9 @@ class Initializer {
     FirebaseMessaging.instance.requestPermission();
     await AppAuth.listenToFirebaseAuthentication();
 
-    if (settings != null) {
-      heavyLifting(settings.numberOfDays!);
-      pp('$mx ${E.heartGreen}${E.heartGreen}}${E.heartGreen} '
-          'initializeGeo: App Settings are 🍎${settings.toJson()}🍎');
-    }
+    heavyLifting(settings.numberOfDays!);
+    pp('$mx ${E.heartGreen}${E.heartGreen}}${E.heartGreen} '
+        'initializeGeo: App Settings are 🍎${settings.toJson()}🍎');
   }
 
   void heavyLifting(int numberOfDays) {
@@ -59,7 +57,7 @@ class Initializer {
     pp('$mx organizationDataRefresh starting ........................');
     pp('$mx start delay of 30 seconds before data refresh ..............');
 
-    Future.delayed(const Duration(seconds: 30)).then((value) async {
+    Future.delayed(const Duration(seconds: 5)).then((value) async {
       pp('$mx start data refresh after delaying for 30 seconds');
       var settings = await prefsOGx.getSettings();
       dataRefresher.manageRefresh(numberOfDays: numberOfDays,

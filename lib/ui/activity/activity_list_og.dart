@@ -125,25 +125,25 @@ class TabletListState extends State<TabletList> {
   void _setTexts() async {
     settings = await prefsOGx.getSettings();
     activityStrings = await ActivityStrings.getTranslated();
+    setState(() {
+
+    });
   }
 
   onTapped(ActivityModel act) {
     pp(' 🍎 onTapped ... ${act.toJson()}');
     widget.onTapped(act);
   }
+
   @override
   Widget build(BuildContext context) {
     return OrientationLayoutBuilder(
         landscape: (context){
-          return activityStrings == null
-              ? const SizedBox()
-              : ActivityListCard(
+          return  ActivityListCard(
               onTapped: onTapped);
         },
         portrait: (context) {
-      return activityStrings == null
-          ? const SizedBox()
-          : ActivityListCard(
+      return  ActivityListCard(
               onTapped: onTapped);
     });
   }
@@ -172,7 +172,7 @@ class _MobileListState extends State<MobileList> {
   void _setTexts() async {
     settings = await prefsOGx.getSettings();
     activityStrings = await ActivityStrings.getTranslated();
-    title = await translator.translate('', settings!.locale!);
+    title = await translator.translate('projectActivities', settings!.locale!);
   }
 
   _onTapped(ActivityModel activity) async {
@@ -184,7 +184,7 @@ class _MobileListState extends State<MobileList> {
     return SafeArea(
         child: Scaffold(
       appBar: AppBar(
-        title: Text(title == null ? 'Activities' : title!),
+        title: Text(title == null ? 'Activities' : title!, style: myTextStyleSmall(context),),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),

@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:geo_monitor/library/cache_manager.dart';
 import 'package:geo_monitor/ui/activity/activity_header.dart';
 
 import '../../l10n/translation_handler.dart';
@@ -48,7 +49,7 @@ class _ActivityListCardState extends State<ActivityListCard> {
   var models = <ActivityModel>[];
   static const userActive = 0, projectActive = 1, orgActive = 2;
   late int activeType;
-  bool busy = false;
+  bool loading = false;
 
   @override
   void initState() {
@@ -68,11 +69,12 @@ class _ActivityListCardState extends State<ActivityListCard> {
   }
 
   Future _getData(bool forceRefresh) async {
-    pp('$mm ... getting activity data ... forceRefresh: $forceRefresh');
-    setState(() {
-      busy = true;
-    });
-    pp('$mm ... getting activity data ... forceRefresh: $forceRefresh');
+    if (mounted) {
+      setState(() {
+        loading = true;
+      });
+    }
+    pp('$mm ... getting activity data ... 🔵forceRefresh: $forceRefresh');
     try {
       settings = await prefsOGx.getSettings();
       var hours = settings!.activityStreamHours!;
@@ -88,15 +90,11 @@ class _ActivityListCardState extends State<ActivityListCard> {
         await _getOrganizationData(forceRefresh, hours);
       }
       sortActivitiesDescending(models);
-      for (var activity in models) {
-        //todo - translation here
-      }
-      // widget.onRefreshed(models);
     } catch (e) {
       pp(e);
       if (mounted) {
         setState(() {
-          busy = false;
+          loading = false;
         });
         showToast(
             backgroundColor: Theme.of(context).primaryColor,
@@ -109,25 +107,58 @@ class _ActivityListCardState extends State<ActivityListCard> {
     }
     if (mounted) {
       setState(() {
-        busy = false;
+        loading = false;
       });
+    }
+  }
+
+  Future<void> _translateUserTypes() async {
+    for (var activity in models) {
+      if (activity.userId != null) {
+        final activityUser = await cacheManager.getUserById(activity.userId!);
+        if (activityUser != null) {
+          final translatedUserType =
+          await getTranslatedUserType(activityUser.userType!);
+          activity.translatedUserType = translatedUserType;
+          pp('🍎 translated userType:, translatedUserType: $translatedUserType');
+        } else {
+          pp('🍎 activityUser not found in cache; activity: ${activity.toJson()}');
+          activity.translatedUserType = '';
+        }
+      } else if (activity.user != null){
+        final translatedUserType =
+        await getTranslatedUserType(activity.user!.userType!);
+        activity.translatedUserType = translatedUserType;
+      } else {
+        activity.translatedUserType = 'User type unknown';
+      }
     }
   }
 
   Future _getOrganizationData(bool forceRefresh, int hours) async {
     models = await organizationBloc.getCachedOrganizationActivity(
         organizationId: settings!.organizationId!, hours: hours);
+
     if (models.isNotEmpty) {
-      setState(() {});
+      await _translateUserTypes();
+      setState(() {
+        loading = false;
+      });
     }
     pp('$mm _getOrganizationData 1: ............ activities: ${models.length}');
-
+    await Future.delayed(const Duration(milliseconds: 200));
     models = await organizationBloc.getOrganizationActivity(
         organizationId: settings!.organizationId!,
         hours: hours,
         forceRefresh: true);
-    pp('$mm _getOrganizationData 2 :............ activities: ${models.length}');
 
+    pp('$mm _getOrganizationData 2 :............ activities: ${models.length}');
+    if (models.isNotEmpty) {
+      await _translateUserTypes();
+      setState(() {
+        loading = false;
+      });
+    }
   }
 
   Future _getProjectData(bool forceRefresh, int hours) async {
@@ -135,11 +166,19 @@ class _ActivityListCardState extends State<ActivityListCard> {
         projectId: widget.project!.projectId!,
         hours: hours,
         forceRefresh: forceRefresh);
+    if (models.isNotEmpty) {
+      await _translateUserTypes();
+      setState(() {});
+    }
   }
 
   Future _getUserData(bool forceRefresh, int hours) async {
     models = await userBloc.getUserActivity(
         userId: widget.user!.userId!, hours: hours, forceRefresh: forceRefresh);
+    if (models.isNotEmpty) {
+      await _translateUserTypes();
+      setState(() {});
+    }
   }
 
   void _listenToFCM() async {
@@ -167,7 +206,7 @@ class _ActivityListCardState extends State<ActivityListCard> {
 
   @override
   Widget build(BuildContext context) {
-    pp('$mm build: ...................... 🍎🍎 activities: ${models.length}');
+    pp('$mm build: ......... 🍎🍎 activities: ${models.length}');
     return Stack(
       children: [
         Column(
@@ -181,11 +220,16 @@ class _ActivityListCardState extends State<ActivityListCard> {
                   itemCount: models.length,
                   itemBuilder: (_, index) {
                     var act = models.elementAt(index);
+                    var type = '';
+                    if (act.translatedUserType != null) {
+                      type = act.translatedUserType!;
+                    }
                     return GestureDetector(
                       onTap: () {
                         widget.onTapped(act);
                       },
                       child: ActivityStreamCard(
+                        translatedUserType: type,
                         locale: settings!.locale!,
                         activityStrings: activityStrings!,
                         activityModel: act,
@@ -204,19 +248,21 @@ class _ActivityListCardState extends State<ActivityListCard> {
           shape: getRoundedBorder(radius: 16),
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 36.0, vertical: 20),
-            child: ActivityHeader(
-              hours: settings!.activityStreamHours!,
-              number: models.length,
-              prefix: prefix!,
-              suffix: suffix!,
-              onRefreshRequested: () {
-                _getData(true);
-              },
-              onSortRequested: () {},
-            ),
+            child: settings == null
+                ? const SizedBox()
+                : ActivityHeader(
+                    hours: settings!.activityStreamHours!,
+                    number: models.length,
+                    prefix: prefix!,
+                    suffix: suffix!,
+                    onRefreshRequested: () {
+                      _getData(true);
+                    },
+                    onSortRequested: () {},
+                  ),
           ),
         )),
-        busy
+        loading
             ? Positioned(
                 bottom: 124,
                 left: 24,

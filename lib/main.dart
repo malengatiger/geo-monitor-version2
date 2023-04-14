@@ -1,20 +1,16 @@
 import 'dart:async';
 
-import 'package:animated_splash_screen/animated_splash_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart' as fb;
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:geo_monitor/from_xd/xd_dashboard.dart';
 import 'package:geo_monitor/l10n/translation_handler.dart';
 import 'package:geo_monitor/library/data/settings_model.dart';
 import 'package:geo_monitor/library/functions.dart';
-import 'package:geo_monitor/splash/splash_page.dart';
-import 'package:geo_monitor/ui/dashboard/dashboard_main.dart';
-import 'package:geo_monitor/ui/intro/intro_main.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:hive_flutter/adapters.dart';
-import 'package:page_transition/page_transition.dart';
 import 'package:universal_platform/universal_platform.dart';
 
 import 'firebase_options.dart';
@@ -76,10 +72,10 @@ void main() async {
     pp('$mx $heartBlue translation service initialization started for locale👌 ${settings!.locale!}');
   }
 
-  await SystemChrome.setPreferredOrientations([
-    DeviceOrientation.portraitUp,
-    DeviceOrientation.portraitDown,
-  ]);
+  // await SystemChrome.setPreferredOrientations([
+  //   DeviceOrientation.portraitUp,
+  //   DeviceOrientation.portraitDown,
+  // ]);
 
   runApp(const GeoApp());
 }
@@ -113,23 +109,24 @@ class GeoApp extends StatelessWidget {
               scaffoldMessengerKey: rootScaffoldMessengerKey,
               debugShowCheckedModeBanner: false,
               title: 'Geo',
-              theme: themeBloc.getTheme(themeIndex).darkTheme,
-              darkTheme: themeBloc.getTheme(themeIndex).darkTheme,
-              themeMode: ThemeMode.dark,
-              // home:  const WebViewer()
-              home: AnimatedSplashScreen(
-                duration: 2000,
-                splash: const SplashWidget(),
-                animationDuration: const Duration(milliseconds: 2000),
-                curve: Curves.easeInCirc,
-                splashIconSize: 160.0,
-                nextScreen: fbAuthedUser == null
-                    ? const IntroMain()
-                    : const DashboardMain(),
-                splashTransition: SplashTransition.fadeTransition,
-                pageTransitionType: PageTransitionType.leftToRight,
-                backgroundColor: Colors.pink.shade900,
-              ),
+              theme: themeBloc.getTheme(themeIndex).lightTheme,
+              darkTheme: themeBloc.getTheme(themeIndex).lightTheme,
+              themeMode: ThemeMode.system,
+
+              home:  const XdDashboard()
+              // home: AnimatedSplashScreen(
+              //   duration: 2000,
+              //   splash: const SplashWidget(),
+              //   animationDuration: const Duration(milliseconds: 2000),
+              //   curve: Curves.easeInCirc,
+              //   splashIconSize: 160.0,
+              //   nextScreen: fbAuthedUser == null
+              //       ? const IntroMain()
+              //       : const DashboardMain(),
+              //   splashTransition: SplashTransition.fadeTransition,
+              //   pageTransitionType: PageTransitionType.leftToRight,
+              //   backgroundColor: Colors.pink.shade900,
+              // ),
             );
           },
       ),

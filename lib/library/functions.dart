@@ -57,6 +57,8 @@ Color getRandomColor() {
   return _colors.elementAt(index);
 }
 
+
+
 Color getRandomPastelColor() {
   _colors.clear();
   _colors.add(Colors.blue.shade50);
@@ -175,6 +177,13 @@ TextStyle myTextStyleMedium(BuildContext context) {
     fontWeight: FontWeight.normal,
   );
 }
+TextStyle myTextStyleSubtitle(BuildContext context) {
+  return GoogleFonts.roboto(
+    textStyle: Theme.of(context).textTheme.titleMedium,
+    fontWeight: FontWeight.w600, fontSize: 20,
+    color: const Color(0xFF424343),
+  );
+}
 
 TextStyle myTextStyleMediumGrey(BuildContext context) {
   return GoogleFonts.lato(
@@ -216,10 +225,16 @@ TextStyle myTextStyleMediumBoldGrey(BuildContext context) {
 }
 
 TextStyle myTextStyleLarge(BuildContext context) {
-  return GoogleFonts.lato(
-      textStyle: Theme.of(context).textTheme.bodyLarge,
-      fontWeight: FontWeight.w900,
-      fontSize: 20);
+  return GoogleFonts.roboto(
+      textStyle: Theme.of(context).textTheme.headlineLarge,
+      fontWeight: FontWeight.w900, color: const Color(0xFF424343),
+      fontSize: 34);
+}
+TextStyle myTextStyleHeader(BuildContext context) {
+  return GoogleFonts.roboto(
+      textStyle: Theme.of(context).textTheme.headlineLarge,
+      fontWeight: FontWeight.w900, color: const Color(0xFF424343),
+      fontSize: 34);
 }
 
 TextStyle myTextStyleLargePrimaryColor(BuildContext context) {
