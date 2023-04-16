@@ -9,12 +9,11 @@ dependencies:
   flutter:
     sdk: flutter
 
-#  flutter_cupertino_localizations: ^1.0.1
   localstorage: ^4.0.0+1
   cupertino_icons: ^1.0.5
   go_router: ^6.0.6
-  firebase_auth: ^4.2.6
-  firebase_messaging: ^14.2.2
+  firebase_auth: ^4.4.1
+  firebase_messaging: ^14.4.0
   firebase_core: ^2.5.0
   firebase_storage: ^11.0.11
   permission_handler: ^10.2.0
@@ -25,7 +24,7 @@ dependencies:
   flutter_google_places: ^0.3.0
   intl: ^0.17.0
   http: ^0.13.5
-  google_maps_flutter: ^2.2.3
+  google_maps_flutter: ^2.2.5
   google_maps_webservice: ^0.0.19
   autocomplete_textfield: ^2.0.1
   location: ^4.4.0
@@ -42,7 +41,6 @@ dependencies:
   uuid: ^3.0.7
   geocoding: ^2.0.5
   chewie: ^1.4.0
-#  video_player: ^2.6.1
   camera: ^0.10.3+2
   maps_toolkit: ^2.0.1
   focused_menu: ^1.0.5
@@ -54,7 +52,6 @@ dependencies:
   image_picker: ^0.8.6+4
   animations: ^2.0.7
   get: ^4.6.5
-  #  crypto: ^0.0.0
   hive: ^2.2.3
   fluttertoast: ^8.1.3
   georange: ^1.0.0
@@ -62,7 +59,7 @@ dependencies:
   firebase_ui_auth: ^1.1.9
   firebase_dynamic_links: ^5.0.12
   flex_color_scheme: ^6.1.2
-  flutter_riverpod: ^2.1.3
+  flutter_riverpod: ^2.3.4
   native_device_orientation: ^1.1.4
   google_maps_utils: ^1.5.0+0
   google_maps_cluster_manager: ^3.0.0+1
@@ -77,19 +74,18 @@ dependencies:
   animated_splash_screen: ^1.3.0
   font_awesome_flutter: ^10.4.0
   record: ^4.4.4
-  mic_stream: ^0.6.4
-  audio_waveforms: ^1.0.2
+  mic_stream: ^0.6.5
+  audio_waveforms: ^1.0.4
   just_audio: ^0.9.31
   restart_app: ^1.1.2
   flutter_rating_bar: ^4.0.1
   get_storage: ^2.1.1
   isolate_handler: ^1.0.2
   flutter_email_sender: ^5.2.0
-  file_picker: ^5.2.5
-#  open_filex: ^4.3.2
+  file_picker: ^5.2.9
   mime: ^1.0.4
   url_launcher: ^6.1.10
-  archive: ^3.3.6
+  archive: ^3.3.7
   lat_lng_to_timezone: ^0.2.0
   photo_view: ^0.14.0
   firebase_analytics: ^10.1.5
@@ -99,18 +95,9 @@ dependencies:
   flutter_background_service: ^2.4.6
   device_info_plus: ^8.1.0
   webview_flutter: ^4.0.7
-#  zoom: ^1.0.3+5
-#  zoom_widget: ^2.0.1
-#  flutter_isolate: ^2.0.4
-#  intl_translation: ^0.18.0
-#  easy_localization: ^3.0.2-dev.5
-#  easy_localization_loader: ^1.0.1+1
   shared_preferences: ^2.0.20
-#  music_visualizer: ^1.0.2
   audioplayers: ^3.0.1
   adobe_xd: ^2.0.1
-
-#  flutter_zoom_sdk: ^1.1.0+4
 
 
 
@@ -123,18 +110,10 @@ dev_dependencies:
   hive_generator:
   mockito:
 
-
-# For information on the generic Dart part of this file, see the
-# following page: https://dart.dev/tools/pub/pubspec
-
-# The following section is specific to Flutter packages.
 flutter:
 
-  # The following line ensures that the Material Icons font is
-  # included with your application, so that you can use the icons in
-  # the material Icons class.
   uses-material-design: true
-#  generate: true
+  #  generate: true
 
   assets:
     - assets/intro/
@@ -142,4 +121,3 @@ flutter:
     - assets/l10n/
     - assets/
     - .env
-

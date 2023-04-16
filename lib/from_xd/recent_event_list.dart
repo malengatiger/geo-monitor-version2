@@ -7,7 +7,10 @@ import '../library/functions.dart';
 import '../library/generic_functions.dart';
 
 class RecentEventList extends StatefulWidget {
-  const RecentEventList({Key? key}) : super(key: key);
+  const RecentEventList({Key? key, required this.onEventsAcquired, required this.onEventTapped}) : super(key: key);
+
+  final Function(int) onEventsAcquired;
+  final Function(ActivityModel) onEventTapped;
 
   @override
   RecentEventListState createState() => RecentEventListState();
@@ -18,6 +21,7 @@ class RecentEventListState extends State<RecentEventList>
   late AnimationController _controller;
   var activities = <ActivityModel>[];
   bool busy = false;
+
 
   @override
   void initState() {
@@ -32,12 +36,16 @@ class RecentEventListState extends State<RecentEventList>
     });
     try {
       final user = await prefsOGx.getUser();
-      activities = await organizationBloc.getCachedOrganizationActivity(organizationId: user!.organizationId!, hours: 300);
+      final sett = await prefsOGx.getSettings();
+      activities = await organizationBloc.getCachedOrganizationActivity(
+          organizationId: user!.organizationId!, hours: sett.activityStreamHours!);
       setState(() {
 
       });
-      activities = await organizationBloc.getOrganizationActivity(organizationId: user!.organizationId!, hours: 400, forceRefresh: true);
+      activities = await organizationBloc.getOrganizationActivity(
+          organizationId: user.organizationId!, hours: sett.activityStreamHours!, forceRefresh: true);
       pp('activities returned: ${activities.length}');
+      widget.onEventsAcquired(activities.length);
     } catch (e) {
       pp(e);
       if (mounted) {
@@ -49,6 +57,8 @@ class RecentEventListState extends State<RecentEventList>
       busy = false;
     });
   }
+
+
 
   @override
   void dispose() {
@@ -64,7 +74,11 @@ class RecentEventListState extends State<RecentEventList>
           itemCount: activities.length,
           itemBuilder: (_, index){
           final act = activities.elementAt(index);
-        return EventView(activity: act, height: 48, width: 168);
+        return GestureDetector(
+            onTap: () {
+              widget.onEventTapped(act);
+            },
+            child: EventView(activity: act, height: 48, width: 168));
       }),
     );
   }
@@ -94,7 +108,8 @@ class EventView extends StatelessWidget {
       width: width,
       child: Card(
         shape: getRoundedBorder(radius: 10),
-        elevation: 4,
+        // color: const Color(0xFFe1e4eb),
+        elevation: 2,
         child: Column(
           children: [
             Padding(
@@ -109,7 +124,7 @@ class EventView extends StatelessWidget {
                     child: Text(
                       '${activity.projectName}',
                       overflow: TextOverflow.ellipsis,
-                      style: myTextStyleSmall(context),
+                      style: myTextStyleSmallBlackBold(context),
                     ),
                   )
                 ],

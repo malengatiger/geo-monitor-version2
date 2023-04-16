@@ -118,10 +118,10 @@ class SettingsMobileState extends State<SettingsMobile>
       appBar: AppBar(
         title: Text(
           title == null ? 'Settings' : title!,
-          style: myTextStyleLarge(context),
+          style: myTextStyleMediumBold(context),
         ),
         bottom:  PreferredSize(
-          preferredSize: Size.fromHeight(showMonitorForm? 40: 8),
+          preferredSize: Size.fromHeight(showMonitorForm? 12: 8),
           child: const SizedBox(),
         ),
       ),

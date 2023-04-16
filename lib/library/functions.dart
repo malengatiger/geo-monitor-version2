@@ -19,11 +19,13 @@ import 'package:video_thumbnail/video_thumbnail.dart' as vt;
 import '../device_location/device_location_bloc.dart';
 import '../l10n/translation_handler.dart';
 import 'api/prefs_og.dart';
+import 'bloc/connection_check.dart';
 import 'cache_manager.dart';
 import 'data/activity_model.dart';
 import 'data/position.dart';
 import 'data/project_position.dart';
 import 'data/user.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart' as dot;
 
 List<String> logs = [];
 bool busy = false;
@@ -57,7 +59,14 @@ Color getRandomColor() {
   return _colors.elementAt(index);
 }
 
+bool checkIfDarkMode() {
+  final darkMode = WidgetsBinding.instance.window.platformBrightness;
+  if (darkMode == Brightness.dark) {
+    return true;
+  }
+  return false;
 
+}
 
 Color getRandomPastelColor() {
   _colors.clear();
@@ -100,14 +109,20 @@ Future<bool> isLocationValid(
 TextStyle myTextStyleSmall(BuildContext context) {
   return GoogleFonts.lato(
     textStyle: Theme.of(context).textTheme.bodySmall,
-    fontWeight: FontWeight.normal,
+  );
+}
+TextStyle myTextStyleSmallBlackBold(BuildContext context) {
+  return GoogleFonts.roboto(
+      textStyle: Theme.of(context).textTheme.bodySmall,
+      // fontWeight: FontWeight.w200,
+      color: Theme.of(context).primaryColor
   );
 }
 
 TextStyle myTextStyleSmallBold(BuildContext context) {
   return GoogleFonts.lato(
     textStyle: Theme.of(context).textTheme.bodySmall,
-    fontWeight: FontWeight.w900,
+    fontWeight: FontWeight.w600,
   );
 }
 
@@ -180,8 +195,8 @@ TextStyle myTextStyleMedium(BuildContext context) {
 TextStyle myTextStyleSubtitle(BuildContext context) {
   return GoogleFonts.roboto(
     textStyle: Theme.of(context).textTheme.titleMedium,
-    fontWeight: FontWeight.w600, fontSize: 20,
-    color: const Color(0xFF424343),
+    fontWeight: FontWeight.w600, fontSize: 16,
+
   );
 }
 
@@ -233,7 +248,7 @@ TextStyle myTextStyleLarge(BuildContext context) {
 TextStyle myTextStyleHeader(BuildContext context) {
   return GoogleFonts.roboto(
       textStyle: Theme.of(context).textTheme.headlineLarge,
-      fontWeight: FontWeight.w900, color: const Color(0xFF424343),
+      fontWeight: FontWeight.w900,
       fontSize: 34);
 }
 
@@ -885,6 +900,23 @@ pp(dynamic msg) {
       print('$time ==> $msg');
     }
   }
+}
+
+Future<String?> getUrl() async {
+
+    pp('🐤🐤🐤🐤 Getting url via .env settings');
+    String? status = dot.dotenv.env['CURRENT_STATUS'];
+    pp('🐤🐤🐤🐤 DataAPI: getUrl: Status from .env: $status');
+    String? url;
+    if (status == 'dev') {
+      url = dot.dotenv.env['DEV_URL'];
+      pp('Status of the app is  DEVELOPMENT 🌎 🌎 🌎 $url');
+      return url!;
+    } else {
+      url = dot.dotenv.env['PROD_URL'];
+      pp('Status of the app is PRODUCTION 🌎 🌎 🌎 $url');
+      return url!;
+    }
 }
 
 bool checkIfDateWithinRange(

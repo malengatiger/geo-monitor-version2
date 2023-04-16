@@ -1,13 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:geo_monitor/library/api/prefs_og.dart';
 import 'package:geo_monitor/library/bloc/organization_bloc.dart';
 
+import '../library/api/prefs_og.dart';
 import '../library/data/user.dart';
 import '../library/functions.dart';
 import '../library/generic_functions.dart';
 
 class UserList extends StatefulWidget {
-  const UserList({Key? key}) : super(key: key);
+  const UserList({Key? key, required this.onUsersAcquired, required this.onUserTapped}) : super(key: key);
+  final Function(int) onUsersAcquired;
+  final Function(User) onUserTapped;
 
   @override
   UserListState createState() => UserListState();
@@ -31,11 +33,12 @@ class UserListState extends State<UserList>
       busy = true;
     });
     try {
-      var user = await prefsOGx.getUser();
-      pp('${user!.toJson()}');
+      final user = await prefsOGx.getUser();
+      final sett = await prefsOGx.getSettings();
       users = await organizationBloc.getUsers(
-          organizationId: user.organizationId!, forceRefresh: true);
+          organizationId: user!.organizationId!, forceRefresh: true);
       pp('users found: ${users.length}');
+      widget.onUsersAcquired(users.length);
     } catch (e) {
       pp(e);
       if (mounted) {
@@ -63,7 +66,11 @@ class UserListState extends State<UserList>
           scrollDirection: Axis.horizontal,
           itemBuilder: (context, index) {
             final user = users.elementAt(index);
-            return UserView(user: user, height: 212, width: 242);
+            return GestureDetector(
+                onTap: () {
+                  widget.onUserTapped(user);
+                },
+                child: UserView(user: user, height: 212, width: 242));
           }),
     );
   }
@@ -82,7 +89,7 @@ class UserView extends StatelessWidget {
       width: width,
       child: Card(
         shape: getRoundedBorder(radius: 10),
-        elevation: 4,
+        elevation: 2,
         child: Column(
           children: [
             Padding(
@@ -91,7 +98,6 @@ class UserView extends StatelessWidget {
                 children: [
                   const Icon(
                     Icons.person_2_outlined,
-                    color: Colors.black,
                     size: 24,
                   ),
                   const SizedBox(
@@ -101,7 +107,7 @@ class UserView extends StatelessWidget {
                     child: Text(
                       '${user.name}',
                       overflow: TextOverflow.ellipsis,
-                      style: myTextStyleSmall(context),
+                      style: myTextStyleSmallBlackBold(context),
                     ),
                   )
                 ],

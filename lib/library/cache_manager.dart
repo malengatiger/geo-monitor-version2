@@ -1362,7 +1362,10 @@ class CacheManager {
 
   Future<List<AppError>> getAppErrors() async {
     final values = _appErrorBox?.values;
-    return values!.toList();
+    if (values != null) {
+      return values!.toList();
+    }
+    return [];
   }
   
 

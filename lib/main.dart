@@ -1,19 +1,25 @@
 import 'dart:async';
 
+import 'package:animated_splash_screen/animated_splash_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart' as fb;
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:geo_monitor/from_xd/xd_dashboard.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:geo_monitor/l10n/translation_handler.dart';
+import 'package:geo_monitor/library/api/data_api_og.dart';
 import 'package:geo_monitor/library/data/settings_model.dart';
 import 'package:geo_monitor/library/functions.dart';
+import 'package:geo_monitor/splash/splash_page.dart';
+import 'package:geo_monitor/ui/intro/intro_main.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:hive_flutter/adapters.dart';
+import 'package:page_transition/page_transition.dart';
 import 'package:universal_platform/universal_platform.dart';
 
 import 'firebase_options.dart';
+import 'from_xd/xd_dashboard.dart';
 import 'library/api/prefs_og.dart';
 import 'library/bloc/fcm_bloc.dart';
 import 'library/bloc/theme_bloc.dart';
@@ -77,15 +83,17 @@ void main() async {
   //   DeviceOrientation.portraitDown,
   // ]);
 
-  runApp(const GeoApp());
+  runApp(const ProviderScope(child: GeoApp()));
 }
-class GeoApp extends StatelessWidget {
+class GeoApp extends ConsumerWidget {
   const GeoApp({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    // Locale myLocale = Localizations.localeOf(context);
-    // pp('$mx 🌀🌀🌀🌀 Current Locale: $myLocale ...');
+  Widget build(BuildContext context, WidgetRef ref) {
+    final data = ref.watch(dataProvider);
+    pp('$mx 🌀🌀🌀🌀 RiverPod ref.watch: $data ...');
+
+    // data.map(data: data, error: error, loading: loading)
     return GestureDetector(
       onTap: () {
         pp('$mx 🌀🌀🌀🌀 Tap detected; should dismiss keyboard ...');
@@ -102,6 +110,7 @@ class GeoApp extends StatelessWidget {
               locale = snapshot.data!.locale;
               pp('${E.check}${E.check}${E.check} GeoApp: main: locale object received from stream: $locale}');
             }
+            data.getCountries();
             return MaterialApp(
               // localizationsDelegates: context.localizationDelegates,
               // supportedLocales: context.supportedLocales,
@@ -109,24 +118,24 @@ class GeoApp extends StatelessWidget {
               scaffoldMessengerKey: rootScaffoldMessengerKey,
               debugShowCheckedModeBanner: false,
               title: 'Geo',
-              theme: themeBloc.getTheme(themeIndex).lightTheme,
-              darkTheme: themeBloc.getTheme(themeIndex).lightTheme,
+              theme: getMyThemeLight(),
+              darkTheme:getMyThemeDark(),
               themeMode: ThemeMode.system,
 
-              home:  const XdDashboard()
-              // home: AnimatedSplashScreen(
-              //   duration: 2000,
-              //   splash: const SplashWidget(),
-              //   animationDuration: const Duration(milliseconds: 2000),
-              //   curve: Curves.easeInCirc,
-              //   splashIconSize: 160.0,
-              //   nextScreen: fbAuthedUser == null
-              //       ? const IntroMain()
-              //       : const DashboardMain(),
-              //   splashTransition: SplashTransition.fadeTransition,
-              //   pageTransitionType: PageTransitionType.leftToRight,
-              //   backgroundColor: Colors.pink.shade900,
-              // ),
+              // home:  const ComboAudio()
+              home: AnimatedSplashScreen(
+                duration: 2000,
+                splash: const SplashWidget(),
+                animationDuration: const Duration(milliseconds: 2000),
+                curve: Curves.easeInCirc,
+                splashIconSize: 160.0,
+                nextScreen: fbAuthedUser == null
+                    ? const IntroMain()
+                    : const DashboardKhaya(),
+                splashTransition: SplashTransition.fadeTransition,
+                pageTransitionType: PageTransitionType.leftToRight,
+                backgroundColor: Colors.pink.shade900,
+              ),
             );
           },
       ),

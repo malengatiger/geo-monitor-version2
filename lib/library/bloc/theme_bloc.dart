@@ -335,3 +335,38 @@ class LocaleAndTheme {
 
   LocaleAndTheme({required this.themeIndex, required this.locale});
 }
+
+ThemeData getMyThemeLight() {
+
+  final td = ThemeData(
+    indicatorColor: const Color(0xff00a6ed),
+    primaryColor: const Color(0xFF424343),
+    cardColor:  const Color(0xffe4e4e4),
+    scaffoldBackgroundColor: Colors.white,
+    appBarTheme:  const AppBarTheme(
+      backgroundColor: Colors.transparent,
+      actionsIconTheme: IconThemeData(color: Colors.black),
+    ),
+    brightness: Brightness.light,
+  );
+
+  return td;
+}
+ThemeData getMyThemeDark() {
+
+  final td = ThemeData(
+    indicatorColor: const Color(0xff00a6ed),
+    primaryColor: const Color(0xfff4f3ee),
+    cardColor:  const Color(0xff222222),
+    scaffoldBackgroundColor: Colors.black,
+    brightness: Brightness.dark,
+    appBarTheme:   AppBarTheme(
+      backgroundColor: Colors.black.withOpacity(0.6),
+      actionsIconTheme:  IconThemeData(color: Colors.white.withOpacity(0.4)),
+    ),
+  );
+
+  return td;
+}
+
+

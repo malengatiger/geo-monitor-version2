@@ -206,7 +206,7 @@ class SettingsFormMonitorState extends State<SettingsFormMonitor> {
                                   height: 48,
                                   width: 240,
                                   child: Container(
-                                    color: Theme.of(context).primaryColor,
+                                    color: Theme.of(context).primaryColorLight,
                                     child: Center(
                                       child: Padding(
                                         padding: const EdgeInsets.all(8.0),
@@ -427,11 +427,18 @@ class SettingsFormMonitorState extends State<SettingsFormMonitor> {
                 child: SizedBox(
                   height: 300,
                   child: ColorSchemePicker(
-                    onColorScheme: (index) {
+                    onColorScheme: (index) async {
                       currentThemeIndex = index;
                       themeBloc.changeToTheme(currentThemeIndex);
                       if (settingsModel != null) {
                         settingsModel!.themeIndex = currentThemeIndex;
+                        final msg =
+                            await translator.translate('messageFromGeo', settingsModel!.locale!);
+                        final msg2 =
+                        await translator.translate('settingsArrived', settingsModel!.locale!);
+                        final messageFromGeo = msg.replaceAll('\$geo', 'Gio');
+                        settingsModel!.translatedTitle = messageFromGeo;
+                        settingsModel!.translatedMessage = msg2;
                         prefsOGx.saveSettings(settingsModel!);
                       }
                       setState(() {

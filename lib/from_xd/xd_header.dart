@@ -25,13 +25,8 @@ class XdHeaderState extends State<XdHeader>
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(width: 54,
-      child: Row(
-        children: [
-          Image.asset('assets/gio.png', height: 54, width: 54,),
-
-        ],
-      ),
+    return SizedBox(width: 48,
+      child: Image.asset('assets/gio.png', height: 48, width: 48,),
     );
   }
 }

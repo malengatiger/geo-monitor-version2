@@ -100,8 +100,9 @@ class GeoUploader {
     final sett = await cacheManager.getSettings();
     final videoArrived =
         await translator.translate('videoArrived', sett.locale!);
-    final messageFromGeo =
-        await translator.translate('messageFromGeo', sett.locale!);
+    final msg =
+    await translator.translate('messageFromGeo', sett.locale!);
+    final messageFromGeo = msg.replaceAll('\$geo', 'Gio');
 
     for (var p in videos) {
       var result = await _startVideoUpload(
@@ -130,8 +131,9 @@ class GeoUploader {
     final sett = await cacheManager.getSettings();
     final audioArrived =
         await translator.translate('audioArrived', sett.locale!);
-    final messageFromGeo =
-        await translator.translate('messageFromGeo', sett.locale!);
+    final msg =
+    await translator.translate('messageFromGeo', sett.locale!);
+    final messageFromGeo = msg.replaceAll('\$geo', 'Gio');
 
     for (var p in audios) {
       var result = await _startAudioUpload(
@@ -193,9 +195,10 @@ class GeoUploader {
 
       final sett = await cacheManager.getSettings();
       final photoArrived =
-          await translator.translate('photoArrived', sett!.locale!);
-      final messageFromGeo =
-          await translator.translate('messageFromGeo', sett!.locale!);
+          await translator.translate('photoArrived', sett.locale!);
+      final msg =
+          await translator.translate('messageFromGeo', sett.locale!);
+      final messageFromGeo = msg.replaceAll('\$geo', 'Gio');
 
       var mJson = json.encode(photoForUploading.toJson());
 

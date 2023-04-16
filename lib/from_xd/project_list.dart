@@ -1,13 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:geo_monitor/library/api/prefs_og.dart';
 import 'package:geo_monitor/library/bloc/organization_bloc.dart';
 
+import '../library/api/prefs_og.dart';
 import '../library/data/project.dart';
 import '../library/functions.dart';
 import '../library/generic_functions.dart';
 
 class ProjectList extends StatefulWidget {
-  const ProjectList({Key? key}) : super(key: key);
+  const ProjectList({Key? key, required this.onProjectsAcquired, required this.onProjectTapped}) : super(key: key);
+  final Function(int) onProjectsAcquired;
+  final Function(Project) onProjectTapped;
 
   @override
   ProjectListState createState() => ProjectListState();
@@ -30,11 +32,12 @@ class ProjectListState extends State<ProjectList> with SingleTickerProviderState
       busy = true;
     });
     try {
-      var user = await prefsOGx.getUser();
-      pp('${user!.toJson()}');
+      final user = await prefsOGx.getUser();
+      final sett = await prefsOGx.getSettings();
       projects = await organizationBloc.getOrganizationProjects(
           organizationId: user!.organizationId!, forceRefresh: true);
       pp('projects found: ${projects.length}');
+      widget.onProjectsAcquired(projects.length);
     } catch (e) {
       pp(e);
       if (mounted) {
@@ -61,7 +64,11 @@ class ProjectListState extends State<ProjectList> with SingleTickerProviderState
           scrollDirection: Axis.horizontal,
           itemBuilder: (context, index) {
             final project = projects.elementAt(index);
-            return ProjectView(project: project, height: 212, width: 242);
+            return GestureDetector(
+                onTap: (){
+                  widget.onProjectTapped(project);
+                },
+                child: ProjectView(project: project, height: 212, width: 242));
           }),
     );
   }
@@ -83,7 +90,7 @@ class ProjectView extends StatelessWidget {
       width: width,
       child: Card(
         shape: getRoundedBorder(radius: 10),
-        elevation: 4,
+        elevation: 2,
         child: Column(
           children: [
             Padding(
@@ -92,8 +99,7 @@ class ProjectView extends StatelessWidget {
                 children: [
                   const Icon(
                     Icons.camera_alt_outlined,
-                    color: Colors.black,
-                    size: 24,
+                    size: 20,
                   ),
                   const SizedBox(
                     width: 8,
@@ -102,7 +108,7 @@ class ProjectView extends StatelessWidget {
                     child: Text(
                       '${project.name}',
                       overflow: TextOverflow.ellipsis,
-                      style: myTextStyleSmall(context),
+                      style: myTextStyleSmallBlackBold(context),
                     ),
                   )
                 ],

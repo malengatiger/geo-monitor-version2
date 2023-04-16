@@ -7,9 +7,9 @@ import 'package:geo_monitor/library/data/settings_model.dart';
 import 'package:geo_monitor/library/ui/settings/settings_form.dart';
 import 'package:geo_monitor/ui/auth/auth_registration_main.dart';
 import 'package:geo_monitor/ui/auth/auth_signin_main.dart';
-import 'package:geo_monitor/ui/dashboard/dashboard_main.dart';
 import 'package:page_transition/page_transition.dart';
 
+import '../../from_xd/xd_dashboard.dart';
 import '../../l10n/translation_handler.dart';
 import '../../library/api/prefs_og.dart';
 import '../../library/cache_manager.dart';
@@ -98,7 +98,7 @@ class IntroPageViewerPortraitState extends State<IntroPageViewerPortrait>
               type: PageTransitionType.scale,
               alignment: Alignment.topLeft,
               duration: const Duration(seconds: 2),
-              child: const DashboardMain()));
+              child: const DashboardKhaya()));
     } else {
       pp('User is null,  🔆 🔆 🔆 🔆 cannot navigate to Dashboard');
     }
