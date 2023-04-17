@@ -4,6 +4,7 @@ import 'dart:math';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart' as dot;
 import 'package:geo_monitor/library/data/project_polygon.dart';
 import 'package:geo_monitor/library/data/settings_model.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -19,13 +20,11 @@ import 'package:video_thumbnail/video_thumbnail.dart' as vt;
 import '../device_location/device_location_bloc.dart';
 import '../l10n/translation_handler.dart';
 import 'api/prefs_og.dart';
-import 'bloc/connection_check.dart';
 import 'cache_manager.dart';
 import 'data/activity_model.dart';
 import 'data/position.dart';
 import 'data/project_position.dart';
 import 'data/user.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart' as dot;
 
 List<String> logs = [];
 bool busy = false;
@@ -192,10 +191,18 @@ TextStyle myTextStyleMedium(BuildContext context) {
     fontWeight: FontWeight.normal,
   );
 }
+
 TextStyle myTextStyleSubtitle(BuildContext context) {
   return GoogleFonts.roboto(
     textStyle: Theme.of(context).textTheme.titleMedium,
-    fontWeight: FontWeight.w600, fontSize: 16,
+    fontWeight: FontWeight.w600, fontSize: 20,
+
+  );
+}
+TextStyle myTextStyleSubtitleSmall(BuildContext context) {
+  return GoogleFonts.roboto(
+    textStyle: Theme.of(context).textTheme.titleMedium,
+    fontWeight: FontWeight.w600, fontSize: 12,
 
   );
 }
@@ -900,6 +907,16 @@ pp(dynamic msg) {
       print('$time ==> $msg');
     }
   }
+}
+
+List<Image> getImages()  {
+  final images = <Image>[];
+  images.add(Image.asset('assets/projects/proj1.jpg'));
+  images.add(Image.asset('assets/projects/proj2.jpg'));
+  images.add(Image.asset('assets/projects/proj3.jpg'));
+  images.add(Image.asset('assets/projects/proj4.jpg'));
+  images.add(Image.asset('assets/projects/proj5.jpg'));
+  return images;
 }
 
 Future<String?> getUrl() async {

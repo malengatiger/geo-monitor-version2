@@ -17,6 +17,7 @@ void main() {
 
       // Use Mockito to return a successful response when it calls the
       // provided http.Client.
+      var url = 'http://192.168.86.230:8080/geo/v1/';
       when(client
           .get(Uri.parse('https://jsonplaceholder.typicode.com/albums/1')))
           .thenAnswer((_) async =>

@@ -1,74 +1,43 @@
-import 'package:flutter/material.dart';
-import 'package:geo_monitor/library/bloc/organization_bloc.dart';
+import 'dart:math';
 
-import '../library/api/prefs_og.dart';
+import 'package:flutter/material.dart';
+
 import '../library/data/project.dart';
 import '../library/functions.dart';
-import '../library/generic_functions.dart';
 
-class ProjectList extends StatefulWidget {
-  const ProjectList({Key? key, required this.onProjectsAcquired, required this.onProjectTapped}) : super(key: key);
-  final Function(int) onProjectsAcquired;
+
+
+class ProjectListView extends StatelessWidget{
+
+  final List<Project> projects;
   final Function(Project) onProjectTapped;
-
-  @override
-  ProjectListState createState() => ProjectListState();
-}
-
-class ProjectListState extends State<ProjectList> with SingleTickerProviderStateMixin {
-  late AnimationController _controller;
-  bool busy = false;
-  var projects = <Project>[];
-
-  @override
-  void initState() {
-    _controller = AnimationController(vsync: this);
-    super.initState();
-    _getData();
-  }
-
-  void _getData() async {
-    setState(() {
-      busy = true;
-    });
-    try {
-      final user = await prefsOGx.getUser();
-      final sett = await prefsOGx.getSettings();
-      projects = await organizationBloc.getOrganizationProjects(
-          organizationId: user!.organizationId!, forceRefresh: true);
-      pp('projects found: ${projects.length}');
-      widget.onProjectsAcquired(projects.length);
-    } catch (e) {
-      pp(e);
-      if (mounted) {
-        showToast(message: '$e', context: context);
-      }
-    }
-
-    setState(() {
-      busy = false;
-    });
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
+  const ProjectListView({super.key, required this.projects, required this.onProjectTapped,});
 
   @override
   Widget build(BuildContext context) {
+    final Random random = Random(DateTime.now().millisecondsSinceEpoch);
+    final images = getImages();
     return SizedBox(height: 220,
       child: ListView.builder(
           itemCount: projects.length,
           scrollDirection: Axis.horizontal,
           itemBuilder: (context, index) {
             final project = projects.elementAt(index);
+            Image image;
+            if (index < images.length) {
+              image = images.elementAt(index);
+            } else {
+              final m = random.nextInt(images.length - 1);
+              image = images.elementAt(m);
+
+            }
             return GestureDetector(
                 onTap: (){
-                  widget.onProjectTapped(project);
+                  onProjectTapped(project);
                 },
-                child: ProjectView(project: project, height: 212, width: 242));
+                child: ProjectView(
+                    image: image,
+                    project: project, height: 212, width: 242));
           }),
     );
   }
@@ -79,10 +48,11 @@ class ProjectView extends StatelessWidget {
       {Key? key,
       required this.project,
       required this.height,
-      required this.width})
+      required this.width, required this.image})
       : super(key: key);
   final Project project;
   final double height, width;
+  final Image image;
   @override
   Widget build(BuildContext context) {
     return SizedBox(
@@ -119,11 +89,7 @@ class ProjectView extends StatelessWidget {
             ),
             ClipRRect(
               borderRadius: BorderRadius.circular(10.0),
-              child: Image.asset(
-                'assets/xd1.jpg',
-                fit: BoxFit.cover,
-                height: height - 48,
-              ),
+              child: image
             )
           ],
         ),

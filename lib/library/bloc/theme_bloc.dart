@@ -343,6 +343,7 @@ ThemeData getMyThemeLight() {
     primaryColor: const Color(0xFF424343),
     cardColor:  const Color(0xffe4e4e4),
     scaffoldBackgroundColor: Colors.white,
+    canvasColor: const Color(0xFF424343),
     appBarTheme:  const AppBarTheme(
       backgroundColor: Colors.transparent,
       actionsIconTheme: IconThemeData(color: Colors.black),
@@ -358,6 +359,7 @@ ThemeData getMyThemeDark() {
     indicatorColor: const Color(0xff00a6ed),
     primaryColor: const Color(0xfff4f3ee),
     cardColor:  const Color(0xff222222),
+    canvasColor: const Color(0xffffb400),
     scaffoldBackgroundColor: Colors.black,
     brightness: Brightness.dark,
     appBarTheme:   AppBarTheme(

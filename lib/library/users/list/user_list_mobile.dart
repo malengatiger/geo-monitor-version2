@@ -80,30 +80,31 @@ class UserListMobileState extends State<UserListMobile>
         _getData(false);
       }
     });
-    _usersStreamSubscription = organizationBloc.usersStream.listen((event) {
-      _getData(false);
-    });
-    _locationResponseSubscription = fcmBloc.locationResponseStream.listen((LocationResponse response) {
+    // _usersStreamSubscription = organizationBloc.usersStream.listen((event) {
+    //   //_getData(false);
+    // });
+    _locationResponseSubscription =
+        fcmBloc.locationResponseStream.listen((LocationResponse response) {
       pp('$mm LocationResponse just arrived: ${response.toJson()}');
       if (mounted) {
         navigateToLocationResponse(response);
       }
     });
-
   }
 
   String? subTitle, title;
   Future _setTexts() async {
     var sett = await prefsOGx.getSettings();
     title = await translator.translate('organizationMembers', sett!.locale!);
-    subTitle = await translator.translate('administratorsMembers', sett!.locale!);
+    subTitle =
+        await translator.translate('administratorsMembers', sett!.locale!);
   }
+
   Future _getData(bool forceRefresh) async {
     setState(() {
       busy = true;
     });
     try {
-
       user = await prefsOGx.getUser();
       if (user!.userType == UserType.orgAdministrator ||
           user!.userType == UserType.orgExecutive) {
@@ -124,12 +125,11 @@ class UserListMobileState extends State<UserListMobile>
         if (e is GeoException) {
           var sett = await prefsOGx.getSettings();
           errorHandler.handleError(exception: e);
-          final msg = await translator.translate(e.geTranslationKey(), sett.locale!);
+          final msg =
+              await translator.translate(e.geTranslationKey(), sett.locale!);
           if (mounted) {
             showToast(
-                backgroundColor: Theme
-                    .of(context)
-                    .primaryColor,
+                backgroundColor: Theme.of(context).primaryColor,
                 textStyle: myTextStyleMedium(context),
                 padding: 16,
                 duration: const Duration(seconds: 10),
@@ -309,51 +309,40 @@ class UserListMobileState extends State<UserListMobile>
       child: Scaffold(
         key: _key,
         appBar: AppBar(
-          title: Text(title == null?
-            'Members': title!,
+          title: Text(
+            title == null ? 'Members' : title!,
             style: myTextStyleMedium(context),
           ),
-          actions: busy
-              ? []
-              : [
-                  IconButton(
-                    icon: Icon(
-                      Icons.refresh,
-                      size: 20,
-                      color: Theme.of(context).primaryColor,
-                    ),
-                    onPressed: () {
-                      _getData(true);
-                    },
-                  ),
-                  _showPlusIcon
-                      ? IconButton(
-                          icon: Icon(Icons.add,
-                              size: 20, color: Theme.of(context).primaryColor),
-                          onPressed: () {
-                            navigateToUserEdit(null);
-                          },
-                        )
-                      : const SizedBox(),
+          actions: [
+            IconButton(
+              icon: Icon(
+                Icons.refresh,
+                size: 20,
+                color: Theme.of(context).primaryColor,
+              ),
+              onPressed: () {
+                _getData(true);
+              },
+            ),
             _showPlusIcon
                 ? IconButton(
-              icon: Icon(Icons.add,
-                  size: 20, color: Theme.of(context).primaryColor),
-              onPressed: () {
-                navigateToUserBatchUpload(null);
-              },
-            )
+                    icon: Icon(Icons.add,
+                        size: 20, color: Theme.of(context).primaryColor),
+                    onPressed: () {
+                      navigateToUserBatchUpload(null);
+                    },
+                  )
                 : const SizedBox(),
-                  _showEditorIcon
-                      ? IconButton(
-                          icon: Icon(Icons.edit,
-                              size: 20, color: Theme.of(context).primaryColor),
-                          onPressed: () {
-                            navigateToUserEdit(user);
-                          },
-                        )
-                      : const SizedBox(),
-                ],
+            _showEditorIcon
+                ? IconButton(
+                    icon: Icon(Icons.edit,
+                        size: 20, color: Theme.of(context).primaryColor),
+                    onPressed: () {
+                      navigateToUserEdit(user);
+                    },
+                  )
+                : const SizedBox(),
+          ],
         ),
         body: Stack(
           children: [
@@ -364,57 +353,63 @@ class UserListMobileState extends State<UserListMobile>
                   const SizedBox(
                     height: 24,
                   ),
-                  user == null? const SizedBox(): Expanded(
-                    child: UserListCard(
-                      subTitle: subTitle == null?'Admins & Monitors': subTitle!,
-                      amInLandscape: true,
-                      users: users,
-                      avatarRadius: 20,
-                      deviceUser: user!,
-                      navigateToLocationRequest: (mUser) {
-                        _sendLocationRequest(mUser);
-                      },
-                      navigateToPhone: (mUser) {
-                        navigateToPhone(mUser);
-                      },
-                      navigateToMessaging: (user) {
-                        navigateToMessaging(user);
-                      },
-                      navigateToUserDashboard: (user) {
-                        navigateToUserDashboard(user);
-                      },
-                      navigateToUserEdit: (user) {
-                        navigateToUserEdit(user);
-                      },
-                      navigateToScheduler: (user) {
-                        navigateToScheduler(user);
-                      },
-                      navigateToKillPage: (user) {
-                        navigateToKillPage(user);
-                      },
-                      badgeTapped: () {
-                        _sort();
-                      },
-                    ),
-                  ),
+                  user == null
+                      ? const SizedBox()
+                      : Expanded(
+                          child: UserListCard(
+                            subTitle: subTitle == null
+                                ? 'Admins & Monitors'
+                                : subTitle!,
+                            amInLandscape: true,
+                            users: users,
+                            avatarRadius: 20,
+                            deviceUser: user!,
+                            navigateToLocationRequest: (mUser) {
+                              _sendLocationRequest(mUser);
+                            },
+                            navigateToPhone: (mUser) {
+                              navigateToPhone(mUser);
+                            },
+                            navigateToMessaging: (user) {
+                              navigateToMessaging(user);
+                            },
+                            navigateToUserDashboard: (user) {
+                              navigateToUserDashboard(user);
+                            },
+                            navigateToUserEdit: (user) {
+                              navigateToUserEdit(user);
+                            },
+                            navigateToScheduler: (user) {
+                              navigateToScheduler(user);
+                            },
+                            navigateToKillPage: (user) {
+                              navigateToKillPage(user);
+                            },
+                            badgeTapped: () {
+                              _sort();
+                            },
+                          ),
+                        ),
                 ],
               ),
             ),
-            busy? const Center(
-              child: Card(
-                child: Padding(
-                  padding: EdgeInsets.all(20.0),
-                  child: SizedBox(
-                    width: 16,
-                    height: 16,
-                    child: CircularProgressIndicator(
-                      strokeWidth: 4,
-                      backgroundColor: Colors.pink,
+            busy
+                ? const Center(
+                    child: Card(
+                      child: Padding(
+                        padding: EdgeInsets.all(20.0),
+                        child: SizedBox(
+                          width: 16,
+                          height: 16,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 4,
+                            backgroundColor: Colors.pink,
+                          ),
+                        ),
+                      ),
                     ),
-                  ),
-                ),
-              ),
-            ) : const SizedBox(),
+                  )
+                : const SizedBox(),
           ],
         ),
       ),

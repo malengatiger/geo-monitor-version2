@@ -120,4 +120,5 @@ flutter:
     - assets/mapicons/
     - assets/l10n/
     - assets/
+    - assets/projects/
     - .env

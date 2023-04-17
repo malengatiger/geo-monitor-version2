@@ -18,8 +18,8 @@ import 'package:hive_flutter/adapters.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:universal_platform/universal_platform.dart';
 
+import 'dashboard_khaya/xd_dashboard.dart';
 import 'firebase_options.dart';
-import 'from_xd/xd_dashboard.dart';
 import 'library/api/prefs_og.dart';
 import 'library/bloc/fcm_bloc.dart';
 import 'library/bloc/theme_bloc.dart';
@@ -110,7 +110,7 @@ class GeoApp extends ConsumerWidget {
               locale = snapshot.data!.locale;
               pp('${E.check}${E.check}${E.check} GeoApp: main: locale object received from stream: $locale}');
             }
-            data.getCountries();
+            //data.getCountries();
             return MaterialApp(
               // localizationsDelegates: context.localizationDelegates,
               // supportedLocales: context.supportedLocales,
