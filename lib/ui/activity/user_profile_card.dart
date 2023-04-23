@@ -12,68 +12,70 @@ class UserProfileCard extends StatelessWidget {
       this.userThumbUrl,
       this.elevation,
       required this.namePictureHorizontal,
-      this.userType})
+      this.userType, this.height})
       : super(key: key);
 
   final String userName;
   final String? userThumbUrl, userType;
   final double? padding, width, avatarRadius;
   final TextStyle? textStyle;
-  final double? elevation;
+  final double? elevation, height;
   final bool namePictureHorizontal;
 
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      width: width ?? 240,
+      width: width ?? 240, height: height ?? 80,
       child: Card(
-        elevation: elevation ?? 2.0,
+        elevation: elevation ?? 8.0,
         shape: getRoundedBorder(radius: 16),
         child: Padding(
           padding: EdgeInsets.all(padding ?? 8),
           child: namePictureHorizontal
-              ? SizedBox(height: userType == null? 60: 84,
+              ? SizedBox(height: userType == null? 12: 100,
                 child: Column(mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Row(mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          userThumbUrl == null
-                              ? const CircleAvatar(
-                                  radius: 8,
-                                )
-                              : CircleAvatar(
-                                  radius: avatarRadius ?? 24,
-                                  backgroundImage: NetworkImage(userThumbUrl!,),
-                                ),
-                          const SizedBox(
-                            width: 16,
-                          ),
-                          SizedBox(height: 36,
-                            child: Column(mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Flexible(
-                                  child: Text(
-                                    userName,
-                                    style: textStyle ?? myTextStyleSmall(context),
+                      Expanded(
+                        child: Row(mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            userThumbUrl == null
+                                ? const CircleAvatar(
+                                    radius: 8,
+                                  )
+                                : CircleAvatar(
+                                    radius: avatarRadius ?? 24,
+                                    backgroundImage: NetworkImage(userThumbUrl!,),
                                   ),
-                                ),
-                                userType == null
-                                    ? const SizedBox()
-                                    : Text(
-                                  userType!,
-                                  style: myTextStyleTiniest(context),
-                                ),
-                              ],
+                            const SizedBox(
+                              width: 16,
                             ),
-                          ),
-                        ],
+                            SizedBox(height: 48,
+                              child: Column(mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Flexible(
+                                    child: Text(
+                                      userName,
+                                      style: textStyle ?? myTextStyleSmall(context),
+                                    ),
+                                  ),
+                                  userType == null
+                                      ? const SizedBox()
+                                      : Text(
+                                    userType!,
+                                    style: myTextStyleTiniest(context),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
 
                     ],
                   ),
               )
               : SizedBox(
-                  height: 100,
+                  height: 80,
                   child: Column(
                     children: [
                       const SizedBox(
@@ -90,7 +92,7 @@ class UserProfileCard extends StatelessWidget {
                       const SizedBox(
                         height: 8,
                       ),
-                      SizedBox(height: 36,
+                      SizedBox(height: 16,
                         child: Column(
                           children: [
                             Flexible(

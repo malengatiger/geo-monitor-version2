@@ -6,6 +6,8 @@
   "pickMemberBatchFile": "选择要上传的会员文件",
   "memberProfileUploaded": "上传会员资料图片并更新数据库",
   "memberProfileUploadFailed": "会员头像上传失败。请稍后再试",
+  "recentEvents": "最近发生的事件",
+  "events": "事件",
 
   "pickFromGallery": "从照片库中选择",
   "memberProfilePicture": "会员头像",

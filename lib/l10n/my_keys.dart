@@ -11,6 +11,9 @@ class MyKeys {
   }
 
   static _buildMap() {
+
+    hashMap["events"] = "events";
+    hashMap["recentEvents"] = "recentEvents";
     hashMap["audioArrived"] = "audioArrived";
     hashMap["photoArrived"] = "photoArrived";
     hashMap["videoArrived"] = "videoArrived";

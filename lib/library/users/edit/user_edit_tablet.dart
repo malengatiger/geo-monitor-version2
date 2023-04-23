@@ -97,28 +97,27 @@ class UserEditTabletState extends State<UserEditTablet>
                           internalPadding: 24,
                           user: widget.user,
                         ): bd.Badge(
-                          child: bd.Badge(
-                            position:
-                                bd.BadgePosition.topStart(top: -12, start: -12),
-                            badgeStyle: bd.BadgeStyle(
-                                badgeColor: Theme.of(context).primaryColor,
-                                shape: bd.BadgeShape.square,
-                                elevation: 16),
-                            badgeContent: widget.user == null
-                                ? const SizedBox()
-                                : UserProfileCard(
-                                    userName: widget.user!.name!,
-                                    userThumbUrl: widget.user!.thumbnailUrl,
-                                    namePictureHorizontal: true,
-                                    elevation: 8,
-                                    textStyle: myTextStyleMediumBoldPrimaryColor(
-                                        context),
-                                  ),
-                            child: UserForm(
-                              width: width / 2,
-                              internalPadding: 24,
-                              user: widget.user,
-                            ),
+                          position:
+                              bd.BadgePosition.topStart(top: -48, start: -24),
+                          badgeStyle: const bd.BadgeStyle(
+                              badgeColor: Colors.transparent,
+                              shape: bd.BadgeShape.square,
+                              elevation: 16),
+                          badgeContent: widget.user == null
+                              ? const SizedBox()
+                              : UserProfileCard(
+                                  userName: widget.user!.name!,
+                                  userThumbUrl: widget.user!.thumbnailUrl,
+                                  namePictureHorizontal: true,
+                                  avatarRadius: 20,
+                                  elevation: 8,
+                                  textStyle: myTextStyleMedium(
+                                      context),
+                                ),
+                          child: UserForm(
+                            width: width / 2,
+                            internalPadding: 24,
+                            user: widget.user,
                           ),
                         ),
                       ),
@@ -144,24 +143,6 @@ class UserEditTabletState extends State<UserEditTablet>
                     ],
                   ),
                 ),
-                // widget.user?.thumbnailUrl == null
-                //     ? const Positioned(
-                //         left: 24,
-                //         top: 48,
-                //         child: CircleAvatar(
-                //           radius: 24,
-                //         ))
-                //     : Positioned(
-                //         left: 24,
-                //         top: 24,
-                //         child: GestureDetector(
-                //           onTap: _navigateToFullPhoto,
-                //           child: CircleAvatar(
-                //             radius: 24,
-                //             backgroundImage:
-                //                 NetworkImage(widget.user!.thumbnailUrl!),
-                //           ),
-                //         )),
               ],
             );
           },
@@ -169,14 +150,14 @@ class UserEditTabletState extends State<UserEditTablet>
             return Stack(
               children: [
                 Padding(
-                  padding: const EdgeInsets.all(48.0),
+                  padding: const EdgeInsets.all(16.0),
                   child: Row(
                     children: [
                       bd.Badge(
                         position:
-                        bd.BadgePosition.topStart(top: -28, start: -28),
-                        badgeStyle: bd.BadgeStyle(
-                            badgeColor: Theme.of(context).primaryColor,
+                        bd.BadgePosition.topStart(top: -28, start: -20),
+                        badgeStyle: const bd.BadgeStyle(
+                            badgeColor: Colors.transparent,
                             shape: bd.BadgeShape.square,
                             elevation: 16),
                         badgeContent: widget.user == null
@@ -186,7 +167,7 @@ class UserEditTabletState extends State<UserEditTablet>
                           userThumbUrl: widget.user!.thumbnailUrl,
                           namePictureHorizontal: true,
                           elevation: 8,
-                          textStyle: myTextStyleMediumPrimaryColor(
+                          textStyle: myTextStyleMedium(
                               context),
                         ),
                         child: UserForm(
@@ -195,6 +176,8 @@ class UserEditTabletState extends State<UserEditTablet>
                           user: widget.user,
                         ),
                       ),
+                      const SizedBox(width: 24,),
+
                       GeoActivity(
                           width: (width / 2) - 100,
                           thinMode: true,
@@ -214,25 +197,6 @@ class UserEditTabletState extends State<UserEditTablet>
                     ],
                   ),
                 ),
-                // widget.user?.thumbnailUrl == null
-                //     ? const Positioned(
-                //         left: 48,
-                //         top: 0,
-                //         child: CircleAvatar(
-                //           radius: 16,
-                //           backgroundColor: Colors.teal,
-                //         ))
-                //     : Positioned(
-                //         left: 20,
-                //         top: 0,
-                //         child: GestureDetector(
-                //           onTap: _navigateToFullPhoto,
-                //           child: CircleAvatar(
-                //             radius: 48,
-                //             backgroundImage:
-                //                 NetworkImage(widget.user!.thumbnailUrl!),
-                //           ),
-                //         )),
               ],
             );
           },

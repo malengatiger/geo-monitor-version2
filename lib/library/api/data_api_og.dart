@@ -11,6 +11,7 @@ import 'package:geo_monitor/library/data/location_request.dart';
 import 'package:geo_monitor/library/data/organization_registration_bag.dart';
 import 'package:geo_monitor/library/data/project_polygon.dart';
 import 'package:geo_monitor/library/data/project_summary.dart';
+import 'package:geo_monitor/library/emojis.dart';
 import 'package:http/http.dart' as http;
 
 import '../auth/app_auth.dart';
@@ -50,7 +51,7 @@ import 'prefs_og.dart';
 final http.Client client = http.Client();
 final dataProvider = Provider<DataApiDog>((ref) => DataApiDog(client));
 
-/// Handles all data requests to backend api
+/// Handles all data requests to backend api using Riverpod
 class DataApiDog {
   Map<String, String> headers = {
     'Content-type': 'application/json',
@@ -61,8 +62,6 @@ class DataApiDog {
     'Accept': 'application/zip',
   };
 
-  // String? activeURL;
-  // bool isDevelopmentStatus = true;
   late String url;
   static const timeOutInSeconds = 120;
   final http.Client client;
@@ -76,9 +75,14 @@ class DataApiDog {
     if (u != null) {
       url = u;
     }
-    pp("DataApiDog url: $url");
+
+    pp("${E.heartRed}${E.heartRed}${E.heartRed} RiverPod Provider DataApiDog init(): test request url: $url");
     final countries = await getCountries();
-    pp("DataApiDog countries: ${countries.length}");
+    pp("${E.heartRed}${E.heartRed}${E.heartRed} RiverPod Provider DataApiDog: countries found after test request: ${countries.length}");
+  }
+
+  String shoutOut() {
+    return '${E.heartRed}${E.heartRed}${E.heartRed} Hey! I am a RiverPod Provider for managing database data!';
   }
 
   Future<FieldMonitorSchedule> addFieldMonitorSchedule(

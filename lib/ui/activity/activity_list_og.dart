@@ -189,7 +189,9 @@ class _MobileListState extends State<MobileList> {
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: ActivityListCard(
-                onTapped: _onTapped,
+                onTapped: (act){
+                  _onTapped(act);
+                },
               ),
       ),
     ));

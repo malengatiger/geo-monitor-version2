@@ -21,7 +21,8 @@ class ThemeBloc {
   final StreamController<LocaleAndTheme> themeStreamController =
       StreamController.broadcast();
 
-  Stream<LocaleAndTheme> get localeAndThemeStream => themeStreamController.stream;
+  Stream<LocaleAndTheme> get localeAndThemeStream =>
+      themeStreamController.stream;
 
   final _rand = Random(DateTime.now().millisecondsSinceEpoch);
   int _themeIndex = 0;
@@ -31,13 +32,12 @@ class ThemeBloc {
   _initialize() async {
     settings = await prefsOGx.getSettings();
 
-      pp('$mm ThemeBloc: initialize:: adding index to stream ....theme index: ${settings!.themeIndex}');
-      Locale newLocale = Locale(settings!.locale!);
-      final m = LocaleAndTheme(themeIndex: settings!.themeIndex!,
-          locale: newLocale);
-      pp('$mm ThemeBloc: initialize: locale = ${m.locale.toString()}');
-      themeStreamController.sink.add(m);
-
+    pp('$mm ThemeBloc: initialize:: adding index to stream ....theme index: ${settings!.themeIndex}');
+    Locale newLocale = Locale(settings!.locale!);
+    final m =
+        LocaleAndTheme(themeIndex: settings!.themeIndex!, locale: newLocale);
+    pp('$mm ThemeBloc: initialize: locale = ${m.locale.toString()}');
+    themeStreamController.sink.add(m);
   }
 
   ThemeBag getTheme(int index) {
@@ -49,12 +49,12 @@ class ThemeBloc {
     pp('\n\n$mm changing to theme index: $_themeIndex');
     pp('$mm _setStream: setting stream .... to theme index: $_themeIndex');
     settings ??= await prefsOGx.getSettings();
-      settings!.themeIndex = _themeIndex;
-      await prefsOGx.saveSettings(settings!);
+    settings!.themeIndex = _themeIndex;
+    await prefsOGx.saveSettings(settings!);
 
     Locale newLocale = Locale(settings!.locale!);
-    final m = LocaleAndTheme(themeIndex: settings!.themeIndex!,
-        locale: newLocale);
+    final m =
+        LocaleAndTheme(themeIndex: settings!.themeIndex!, locale: newLocale);
     themeStreamController.sink.add(m);
   }
 
@@ -73,13 +73,13 @@ class ThemeBloc {
   }
 
   Future<void> _dance(int index, String locale, SettingsModel settings) async {
-      settings.themeIndex = index;
-      settings.locale = locale;
-      await prefsOGx.saveSettings(settings);
+    settings.themeIndex = index;
+    settings.locale = locale;
+    await prefsOGx.saveSettings(settings);
 
     Locale newLocale = Locale(settings.locale!);
-    final m = LocaleAndTheme(themeIndex: settings.themeIndex!,
-        locale: newLocale);
+    final m =
+        LocaleAndTheme(themeIndex: settings.themeIndex!, locale: newLocale);
     themeStreamController.sink.add(m);
   }
 
@@ -131,6 +131,8 @@ class SchemeUtil {
   static void _setThemes() {
     _themeBags.clear();
 
+    _themeBags.add(
+        ThemeBag(lightTheme: getMyThemeLight(), darkTheme: getMyThemeDark()));
     _themeBags.add(ThemeBag(
         lightTheme: FlexThemeData.light(scheme: FlexScheme.redWine),
         darkTheme: FlexThemeData.dark(scheme: FlexScheme.redWine)));
@@ -222,7 +224,6 @@ class SchemeUtil {
         lightTheme: FlexThemeData.light(scheme: FlexScheme.blueWhale),
         darkTheme: FlexThemeData.dark(scheme: FlexScheme.blueWhale)));
 
-
     _themeBags.add(ThemeBag(
         lightTheme: FlexThemeData.light(scheme: FlexScheme.ebonyClay),
         darkTheme: FlexThemeData.dark(scheme: FlexScheme.ebonyClay)));
@@ -234,6 +235,8 @@ class SchemeUtil {
     _themeBags.add(ThemeBag(
         lightTheme: FlexThemeData.light(scheme: FlexScheme.aquaBlue),
         darkTheme: FlexThemeData.dark(scheme: FlexScheme.aquaBlue)));
+
+
   }
 }
 
@@ -244,7 +247,49 @@ class ThemeBag {
   ThemeBag({required this.lightTheme, required this.darkTheme});
 }
 
-class CustomTheme {
+class LocaleAndTheme {
+  late int themeIndex;
+  late Locale locale;
+
+  LocaleAndTheme({required this.themeIndex, required this.locale});
+}
+
+ThemeData getMyThemeLight() {
+  final td = ThemeData(
+    indicatorColor: const Color(0xff00a6ed),
+    primaryColor: const Color(0xFF424343),
+    cardColor: const Color(0xffe4e4e4),
+    scaffoldBackgroundColor: Colors.white,
+    canvasColor: const Color(0xFF424343),
+    splashColor: const Color(0xFF424343),
+    appBarTheme: const AppBarTheme(
+      backgroundColor: Colors.transparent,
+      actionsIconTheme: IconThemeData(color: Colors.black),
+    ),
+    brightness: Brightness.light,
+  );
+
+  return td;
+}
+
+ThemeData getMyThemeDark() {
+  final td = ThemeData(
+    indicatorColor: const Color(0xff00a6ed),
+    primaryColor: const Color(0xfff4f3ee),
+    cardColor: const Color(0xff222222),
+    canvasColor: const Color(0xffffb400),
+    scaffoldBackgroundColor: Colors.black,
+    brightness: Brightness.dark,
+    splashColor: const Color(0xffffb400),
+    appBarTheme: AppBarTheme(
+      backgroundColor: Colors.black.withOpacity(0.6),
+      actionsIconTheme: IconThemeData(color: Colors.white.withOpacity(0.4)),
+    ),
+  );
+  return td;
+}
+
+class KhayaTheme {
   static const ColorScheme flexSchemeDark = ColorScheme(
     brightness: Brightness.dark,
     primary: Color(0xff9fc9ff),
@@ -324,51 +369,4 @@ class CustomTheme {
         // To use the Playground font, add GoogleFonts package and uncomment
         fontFamily: GoogleFonts.lato().fontFamily,
       );
-// If you do not have a themeMode switch, uncomment this line
-// to let the device system mode control the theme mode:
-// themeMode: ThemeMode.system,
 }
-
-class LocaleAndTheme {
-  late int themeIndex;
-  late Locale locale;
-
-  LocaleAndTheme({required this.themeIndex, required this.locale});
-}
-
-ThemeData getMyThemeLight() {
-
-  final td = ThemeData(
-    indicatorColor: const Color(0xff00a6ed),
-    primaryColor: const Color(0xFF424343),
-    cardColor:  const Color(0xffe4e4e4),
-    scaffoldBackgroundColor: Colors.white,
-    canvasColor: const Color(0xFF424343),
-    appBarTheme:  const AppBarTheme(
-      backgroundColor: Colors.transparent,
-      actionsIconTheme: IconThemeData(color: Colors.black),
-    ),
-    brightness: Brightness.light,
-  );
-
-  return td;
-}
-ThemeData getMyThemeDark() {
-
-  final td = ThemeData(
-    indicatorColor: const Color(0xff00a6ed),
-    primaryColor: const Color(0xfff4f3ee),
-    cardColor:  const Color(0xff222222),
-    canvasColor: const Color(0xffffb400),
-    scaffoldBackgroundColor: Colors.black,
-    brightness: Brightness.dark,
-    appBarTheme:   AppBarTheme(
-      backgroundColor: Colors.black.withOpacity(0.6),
-      actionsIconTheme:  IconThemeData(color: Colors.white.withOpacity(0.4)),
-    ),
-  );
-
-  return td;
-}
-
-

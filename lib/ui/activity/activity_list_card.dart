@@ -233,9 +233,9 @@ class _ActivityListCardState extends State<ActivityListCard> {
                         locale: settings!.locale!,
                         activityStrings: activityStrings!,
                         activityModel: act,
-                        frontPadding: 36,
+                        frontPadding: 24,
                         thinMode: true,
-                        width: 300,
+                        width: 300, avatarRadius: 16, namePictureHorizontal: true,
                       ),
                     );
                   }),

@@ -13,6 +13,8 @@
   "geoRunning": "$geo vukorhokeri bya tirha.",
   "memberProfileUploaded": "Xifaniso xa xivumbeko xa xirho xi layichiwile naswona database yi pfuxetiwile",
   "memberProfileUploadFailed": "Ku layicha xifaniso xa xivumbeko xa xirho ku tsandzekile. Hi kombela u ringeta nakambe endzhaku",
+  "recentEvents": "Swiendlakalo Swa Sweswinyana",
+  "events": "Swiendlakalo",
 
   "november": "Hukuri",
   "projects": "Tiphurojeke",

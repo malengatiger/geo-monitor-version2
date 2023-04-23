@@ -10,6 +10,8 @@
   "profileInstruction": "Configura tu foto de perfil. Puede usar una foto existente o tomar una nueva con la cámara.",
   "memberProfileUploaded": "Foto de perfil de miembro cargada y base de datos actualizada",
   "memberProfileUploadFailed": "Error al cargar la imagen de perfil del miembro. Por favor, inténtelo de nuevo más tarde",
+  "recentEvents": "Eventos recientes",
+  "events": "Eventos",
 
   "tapToReturn": "Toca para volver a $geo",
   "geoRunning": "El servicio $geo se está ejecutando.",

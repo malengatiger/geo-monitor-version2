@@ -8,7 +8,8 @@
   "memberProfilePicture": "Mitgliedsprofilbild",
   "useCamera": "Kamera verwenden",
   "profileInstruction": "Bitte richten Sie Ihr Profilbild ein. Sie können ein vorhandenes Foto verwenden oder ein neues mit der Kamera aufnehmen.",
-
+  "recentEvents": "Die jüngsten Ereignisse",
+  "events": "Veranstaltungen",
   "cancel": "Stornieren",
   "maxAudioLength": "Bitte geben Sie die maximale Audiolänge in Minuten ein",
   "Angola": "Angola",

@@ -1,4 +1,6 @@
 {
+  "recentEvents": "Recent Events",
+  "events": "Events",
   "downloadExampleFiles": "Download Member example files",
   "uploadMemberBatchFile": "Upload Member File",
   "uploadInstruction": "Multiple members may be uploaded from either a spreadsheet in csv format or a json file. You can download example files in each format",

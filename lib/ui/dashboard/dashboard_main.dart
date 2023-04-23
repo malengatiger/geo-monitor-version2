@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:geo_monitor/dashboard_khaya/xd_dashboard.dart';
 import 'package:geo_monitor/initializer.dart';
 import 'package:geo_monitor/library/api/prefs_og.dart';
 import 'package:geo_monitor/library/bloc/data_refresher.dart';
@@ -10,8 +11,6 @@ import '../../l10n/translation_handler.dart';
 import '../../library/data/user.dart';
 import '../../library/generic_functions.dart';
 import '../../library/geofence/the_great_geofencer.dart';
-import 'dashboard_mobile.dart';
-import 'dashboard_tablet.dart';
 
 class DashboardMain extends StatefulWidget {
   const DashboardMain({
@@ -32,7 +31,6 @@ class DashboardMainState extends State<DashboardMain>
   void initState() {
     super.initState();
     _initialize();
-    _getUser();
   }
 
   void _initialize() async {
@@ -50,7 +48,7 @@ class DashboardMainState extends State<DashboardMain>
       tapToReturn = tap.replaceAll('\$geo', 'Geo');
       pp('$mm initializingText: $initializingText');
       setState(() {});
-      await Future.delayed(const Duration(milliseconds: 2000));
+      await Future.delayed(const Duration(milliseconds: 100));
       await _getUser();
     } catch (e) {
       pp(e);
@@ -162,17 +160,13 @@ class DashboardMainState extends State<DashboardMain>
                 pp('$mm callback from WillStartForegroundTask fired! 🍎 WHY?');
               },
               child: ScreenTypeLayout(
-                mobile: const DashboardMobile(),
+                mobile: const DashboardKhaya(),
                 tablet: OrientationLayoutBuilder(
                   portrait: (context) {
-                    return DashboardTablet(
-                      user: user!,
-                    );
+                    return const DashboardKhaya();
                   },
                   landscape: (context) {
-                    return DashboardTablet(
-                      user: user!,
-                    );
+                    return const DashboardKhaya();
                   },
                 ),
               ),

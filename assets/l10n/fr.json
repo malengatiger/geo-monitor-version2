@@ -10,7 +10,8 @@
   "profileInstruction": "Veuillez configurer votre photo de profil. Vous pouvez utiliser une photo existante ou en prendre une nouvelle avec l\u0027appareil photo.",
   "memberProfileUploaded": "Photo de profil du membre téléchargée et base de données mise à jour",
   "memberProfileUploadFailed": "Le téléchargement de la photo de profil du membre a échoué. Veuillez réessayer plus tard",
-
+  "recentEvents": "Événements récents",
+  "events": "Événements",
   "messageFromGeo": "Le message est arrivé de $geo",
   "tapToReturn": "Appuyez pour revenir à $geo",
   "geoRunning": "Le service $geo est en cours d\u0027exécution.",

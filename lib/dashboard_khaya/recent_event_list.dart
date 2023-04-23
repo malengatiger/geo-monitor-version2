@@ -23,7 +23,7 @@ class RecentEventList extends StatelessWidget {
             ),
           )
         : SizedBox(
-            height: 64,
+            height: 60,
             child: ListView.builder(
                 scrollDirection: Axis.horizontal,
                 itemCount: activities.length,
@@ -33,7 +33,7 @@ class RecentEventList extends StatelessWidget {
                       onTap: () {
                         onEventTapped(act);
                       },
-                      child: EventView(activity: act, height: 60, width: 240));
+                      child: EventView(activity: act, height: 60, width: 248));
                 }),
           );
   }
@@ -79,7 +79,7 @@ class EventView extends StatelessWidget {
       typeName = 'Settings changed';
     }
 
-      final date = getFmtDate(activity.date!, 'en');
+      final date = getFmtDateShortWithSlash(activity.date!, 'en');
 
     return SizedBox(
       height: height,

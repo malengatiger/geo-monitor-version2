@@ -12,13 +12,13 @@ import 'package:geo_monitor/library/api/data_api_og.dart';
 import 'package:geo_monitor/library/data/settings_model.dart';
 import 'package:geo_monitor/library/functions.dart';
 import 'package:geo_monitor/splash/splash_page.dart';
+import 'package:geo_monitor/ui/dashboard/dashboard_main.dart';
 import 'package:geo_monitor/ui/intro/intro_main.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:hive_flutter/adapters.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:universal_platform/universal_platform.dart';
 
-import 'dashboard_khaya/xd_dashboard.dart';
 import 'firebase_options.dart';
 import 'library/api/prefs_og.dart';
 import 'library/bloc/fcm_bloc.dart';
@@ -91,9 +91,8 @@ class GeoApp extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final data = ref.watch(dataProvider);
-    pp('$mx 🌀🌀🌀🌀 RiverPod ref.watch: $data ...');
+    pp('$mx 🌀🌀🌀🌀 RiverPod ref.watch: ${data.shoutOut()} ...');
 
-    // data.map(data: data, error: error, loading: loading)
     return GestureDetector(
       onTap: () {
         pp('$mx 🌀🌀🌀🌀 Tap detected; should dismiss keyboard ...');
@@ -103,23 +102,20 @@ class GeoApp extends ConsumerWidget {
           stream: themeBloc.localeAndThemeStream,
           builder: (_, snapshot) {
             if (snapshot.hasData) {
-              pp('${E.check}${E.check}${E.check}${E.check}${E.check} '
-                  'main: theme index has changed to ${snapshot.data!.themeIndex}'
+              pp('${E.check}${E.check}${E.check}'
+                  'build: theme index has changed to ${snapshot.data!.themeIndex}'
                   '  and locale is ${snapshot.data!.locale.toString()}');
               themeIndex = snapshot.data!.themeIndex;
               locale = snapshot.data!.locale;
-              pp('${E.check}${E.check}${E.check} GeoApp: main: locale object received from stream: $locale}');
+              pp('${E.check}${E.check}${E.check} GeoApp: build: locale object received from stream: $locale');
             }
-            //data.getCountries();
             return MaterialApp(
-              // localizationsDelegates: context.localizationDelegates,
-              // supportedLocales: context.supportedLocales,
               locale: locale,
               scaffoldMessengerKey: rootScaffoldMessengerKey,
               debugShowCheckedModeBanner: false,
-              title: 'Geo',
-              theme: getMyThemeLight(),
-              darkTheme:getMyThemeDark(),
+              title: 'Gio',
+              theme: themeBloc.getTheme(themeIndex).lightTheme,
+              darkTheme:themeBloc.getTheme(themeIndex).darkTheme,
               themeMode: ThemeMode.system,
 
               // home:  const ComboAudio()
@@ -131,7 +127,7 @@ class GeoApp extends ConsumerWidget {
                 splashIconSize: 160.0,
                 nextScreen: fbAuthedUser == null
                     ? const IntroMain()
-                    : const DashboardKhaya(),
+                    : const DashboardMain(),
                 splashTransition: SplashTransition.fadeTransition,
                 pageTransitionType: PageTransitionType.leftToRight,
                 backgroundColor: Colors.pink.shade900,

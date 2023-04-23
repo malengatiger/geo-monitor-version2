@@ -970,6 +970,38 @@ String getFmtDate(String date, String locale) {
     return result;
   }
 }
+String getFmtDateShort(String date, String locale) {
+  initializeDateFormatting();
+  String mLocale = getValidLocale(locale);
+  Future.delayed(const Duration(milliseconds: 10));
+
+  DateTime now = DateTime.parse(date).toLocal();
+  final format = DateFormat("dd MM yyyy  HH:mm", mLocale);
+  final formatUS = DateFormat("MM dd yyyy  HH:mm", mLocale);
+  if (mLocale.contains('en_US')) {
+    final String result = formatUS.format(now);
+    return result;
+  } else {
+    final String result = format.format(now);
+    return result;
+  }
+}
+String getFmtDateShortWithSlash(String date, String locale) {
+  initializeDateFormatting();
+  String mLocale = getValidLocale(locale);
+  Future.delayed(const Duration(milliseconds: 10));
+
+  DateTime now = DateTime.parse(date).toLocal();
+  final format = DateFormat("dd/MM/yyyy  HH:mm", mLocale);
+  final formatUS = DateFormat("MM/dd/yyyy  HH:mm", mLocale);
+  if (mLocale.contains('en_US')) {
+    final String result = formatUS.format(now);
+    return result;
+  } else {
+    final String result = format.format(now);
+    return result;
+  }
+}
 
 String getValidLocale(String locale) {
   switch (locale) {

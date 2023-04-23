@@ -5,20 +5,22 @@ import 'package:flutter/material.dart';
 import '../library/data/project.dart';
 import '../library/functions.dart';
 
-
-
-class ProjectListView extends StatelessWidget{
-
+class ProjectListView extends StatelessWidget {
   final List<Project> projects;
   final Function(Project) onProjectTapped;
-  const ProjectListView({super.key, required this.projects, required this.onProjectTapped,});
+  const ProjectListView({
+    super.key,
+    required this.projects,
+    required this.onProjectTapped,
+  });
 
   @override
   Widget build(BuildContext context) {
     final Random random = Random(DateTime.now().millisecondsSinceEpoch);
     final images = getImages();
-    return SizedBox(height: 220,
-      child: ListView.builder(
+    return SizedBox(
+        height: 220,
+        child: ListView.builder(
           itemCount: projects.length,
           scrollDirection: Axis.horizontal,
           itemBuilder: (context, index) {
@@ -29,17 +31,11 @@ class ProjectListView extends StatelessWidget{
             } else {
               final m = random.nextInt(images.length - 1);
               image = images.elementAt(m);
-
             }
-            return GestureDetector(
-                onTap: (){
-                  onProjectTapped(project);
-                },
-                child: ProjectView(
-                    image: image,
-                    project: project, height: 212, width: 242));
-          }),
-    );
+            return ProjectView(
+                image: image, project: project, height: 212, width: 242);
+          },
+        ));
   }
 }
 
@@ -48,7 +44,8 @@ class ProjectView extends StatelessWidget {
       {Key? key,
       required this.project,
       required this.height,
-      required this.width, required this.image})
+      required this.width,
+      required this.image})
       : super(key: key);
   final Project project;
   final double height, width;
@@ -87,10 +84,7 @@ class ProjectView extends StatelessWidget {
             const SizedBox(
               height: 8,
             ),
-            ClipRRect(
-              borderRadius: BorderRadius.circular(10.0),
-              child: image
-            )
+            ClipRRect(borderRadius: BorderRadius.circular(10.0), child: image)
           ],
         ),
       ),

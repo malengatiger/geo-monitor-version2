@@ -20,7 +20,7 @@ class ActivityStreamCard extends StatefulWidget {
       required this.thinMode,
       required this.width,
       required this.activityStrings,
-      required this.locale, required this.translatedUserType})
+      required this.locale, required this.translatedUserType, required this.avatarRadius, required this.namePictureHorizontal})
       : super(key: key);
 
   final ActivityModel activityModel;
@@ -30,6 +30,8 @@ class ActivityStreamCard extends StatefulWidget {
   final ActivityStrings activityStrings;
   final String locale;
   final String translatedUserType;
+  final double avatarRadius;
+  final bool namePictureHorizontal;
 
   @override
   ActivityStreamCardState createState() => ActivityStreamCardState();
@@ -67,46 +69,52 @@ class ActivityStreamCardState extends State<ActivityStreamCard> {
   Widget _getUserAdded(Icon icon, String msg) {
     final dt = getFmtDate(widget.activityModel.date!, widget.locale);
     // pp('$mm _getUserAdded, msg: $msg');
+    final ori = MediaQuery.of(context).orientation;
+    var width = 128.0;
+    if (ori.name == 'landscape') {
+      width = 200;
+    }
     return activityUser == null
         ? const SizedBox()
         : Card(
             shape: getRoundedBorder(radius: 16),
             child: Padding(
-              padding: const EdgeInsets.all(16.0),
+              padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8),
               child: Column(
                 children: [
                   const SizedBox(
-                    height: 4,
+                    height: 8,
                   ),
-                  Padding(
-                    padding: const EdgeInsets.only(left: 0.0),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
-                        Text(
-                          dt,
-                          style: myTextStyleSmallPrimaryColor(context),
-                        ),
-                      ],
-                    ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      Text(
+                        dt,
+                        style: myTextStyleSmallPrimaryColor(context),
+                      ),
+                    ],
                   ),
                   const SizedBox(
-                    height: 4,
+                    height: 0,
                   ),
                   activityUser!.thumbnailUrl == null
                       ? const CircleAvatar(
                           radius: 16,
                         )
-                      : UserProfileCard(
-                          userName: widget.activityModel.userName!,
-                          padding: 2,
-                          elevation: 2,
-                          avatarRadius: 20.0,
-                          userType: translatedUserType == null
-                              ? activityUser!.userType!
-                              : translatedUserType!,
-                          userThumbUrl: widget.activityModel.userThumbnailUrl,
-                          namePictureHorizontal: false),
+                      : Row(mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          UserProfileCard(
+                              userName: widget.activityModel.userName!,
+                              padding: 2,
+                              elevation: 2,
+                              avatarRadius: widget.avatarRadius,
+                              userType: translatedUserType == null
+                                  ? activityUser!.userType!
+                                  : translatedUserType!,
+                              userThumbUrl: widget.activityModel.userThumbnailUrl,
+                              namePictureHorizontal: widget.namePictureHorizontal),
+                        ],
+                      ),
                   const SizedBox(
                     height: 4,
                   ),
@@ -115,7 +123,7 @@ class ActivityStreamCardState extends State<ActivityStreamCard> {
                     style: myTextStyleTiny(context),
                   ),
                   const SizedBox(
-                    height: 4,
+                    height: 0,
                   ),
                 ],
               ),

@@ -21,6 +21,11 @@ class ActivityHeader extends StatelessWidget {
   final String prefix, suffix;
   @override
   Widget build(BuildContext context) {
+    final ori = MediaQuery.of(context).orientation;
+    var width = 128.0;
+    if (ori.name == 'landscape') {
+      width = 200;
+    }
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: [
@@ -30,12 +35,12 @@ class ActivityHeader extends StatelessWidget {
           },
           child: Row(
             children: [
-              SizedBox(
-                width: 128,
-                child: Text(
-                  prefix,
-                  style: myTextStyleSmall(context),
-                ),
+              Text(
+                prefix,
+                style: myTextStyleSmall(context),
+              ),
+              const SizedBox(
+                width: 4,
               ),
               Text(
                 '$hours',
@@ -61,14 +66,15 @@ class ActivityHeader extends StatelessWidget {
           child: bd.Badge(
             badgeContent: Text(
               '$number',
-              style: myTextStyleSmallBold(context),
+              style: myTextStyleTiny(context),
             ),
             badgeAnimation: const bd.BadgeAnimation.slide(
                 colorChangeAnimationDuration: Duration(milliseconds: 500)),
             badgeStyle: bd.BadgeStyle(
                 elevation: 8,
+                borderRadius: BorderRadius.circular(2),
                 badgeColor: getRandomColor(),
-                padding: const EdgeInsets.all(16.0)),
+                padding: const EdgeInsets.all(12.0)),
           ),
         ),
       ],

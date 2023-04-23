@@ -10,6 +10,8 @@
   "profileInstruction": "Ndokumbira ugadzirise mufananidzo wako. Unogona kushandisa foto iripo kana kutora imwe nyowani nekamera.",
   "memberProfileUploaded": "Nhengo yepikicha yepikicha yakaiswa uye database yakagadziridzwa",
   "memberProfileUploadFailed": "Kukwidzwa kwepikicha yenhengo yakundikana. Ndapota edza zvakare gare gare",
+  "recentEvents": "Zvichangobva kuitika",
+  "events": "Zviitiko",
 
   "messageFromGeo": "Shoko rasvika kubva ku$geo",
   "tapToReturn": "Tinya kuti udzokere ku$geo",

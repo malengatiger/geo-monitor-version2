@@ -55,10 +55,10 @@ class Initializer {
     theGreatGeofencer.buildGeofences();
 
     pp('$mx organizationDataRefresh starting ........................');
-    pp('$mx start delay of 30 seconds before data refresh ..............');
+    pp('$mx start with delay of 5 seconds before data refresh ..............');
 
     Future.delayed(const Duration(seconds: 5)).then((value) async {
-      pp('$mx start data refresh after delaying for 30 seconds');
+      pp('$mx start data refresh after delaying for 5 seconds');
       var settings = await prefsOGx.getSettings();
       dataRefresher.manageRefresh(numberOfDays: numberOfDays,
           organizationId: settings.organizationId!,

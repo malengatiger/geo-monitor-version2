@@ -957,115 +957,121 @@ class ColorSchemePicker extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+
     var colors = <ColorBag>[
       ColorBag(
-        color: FlexColor.redWineDarkPrimary,
+        color: const Color(0xFF424343),
         index: 0,
       ),
       ColorBag(
-        color: FlexColor.barossaDarkPrimary,
+        color: FlexColor.redWineDarkPrimary,
         index: 1,
       ),
       ColorBag(
-        color: FlexColor.greenDarkPrimary,
+        color: FlexColor.barossaDarkPrimary,
         index: 2,
       ),
       ColorBag(
-        color: FlexColor.mallardGreenDarkPrimary,
+        color: FlexColor.greenDarkPrimary,
         index: 3,
       ),
       ColorBag(
-        color: FlexColor.mandyRedDarkPrimary,
+        color: FlexColor.mallardGreenDarkPrimary,
         index: 4,
       ),
       ColorBag(
-        color: FlexColor.redDarkPrimary,
+        color: FlexColor.mandyRedDarkPrimary,
         index: 5,
       ),
       ColorBag(
-        color: FlexColor.blueDarkPrimary,
+        color: FlexColor.redDarkPrimary,
         index: 6,
       ),
       ColorBag(
-        color: FlexColor.mangoDarkPrimary,
+        color: FlexColor.blueDarkPrimary,
         index: 7,
       ),
       ColorBag(
-        color: FlexColor.indigoDarkPrimary,
+        color: FlexColor.mangoDarkPrimary,
         index: 8,
       ),
       ColorBag(
-        color: FlexColor.deepBlueDarkPrimary,
+        color: FlexColor.indigoDarkPrimary,
         index: 9,
       ),
       ColorBag(
-        color: FlexColor.hippieBlueDarkPrimary,
+        color: FlexColor.deepBlueDarkPrimary,
         index: 10,
       ),
       ColorBag(
-        color: FlexColor.deepPurpleDarkPrimary,
+        color: FlexColor.hippieBlueDarkPrimary,
         index: 11,
       ),
       ColorBag(
-        color: FlexColor.espressoDarkPrimary,
+        color: FlexColor.deepPurpleDarkPrimary,
         index: 12,
       ),
       ColorBag(
-        color: FlexColor.barossaDarkPrimary,
+        color: FlexColor.espressoDarkPrimary,
         index: 13,
       ),
       ColorBag(
-        color: FlexColor.bigStoneDarkPrimary,
+        color: FlexColor.barossaDarkPrimary,
         index: 14,
       ),
       ColorBag(
-        color: FlexColor.damaskDarkPrimary,
+        color: FlexColor.bigStoneDarkPrimary,
         index: 15,
       ),
       ColorBag(
-        color: FlexColor.purpleBrownDarkPrimary,
+        color: FlexColor.damaskDarkPrimary,
         index: 16,
       ),
       ColorBag(
-        color: FlexColor.wasabiDarkPrimary,
+        color: FlexColor.purpleBrownDarkPrimary,
         index: 17,
       ),
       ColorBag(
-        color: FlexColor.rosewoodDarkPrimary,
+        color: FlexColor.wasabiDarkPrimary,
         index: 18,
       ),
       ColorBag(
-        color: FlexColor.sanJuanBlueDarkPrimary,
+        color: FlexColor.rosewoodDarkPrimary,
         index: 19,
       ),
       ColorBag(
-        color: FlexColor.amberDarkPrimary,
+        color: FlexColor.sanJuanBlueDarkPrimary,
         index: 20,
       ),
       ColorBag(
-        color: FlexColor.dellGenoaGreenDarkPrimary,
+        color: FlexColor.amberDarkPrimary,
         index: 21,
       ),
       ColorBag(
-        color: FlexColor.goldDarkPrimary,
+        color: FlexColor.dellGenoaGreenDarkPrimary,
         index: 22,
       ),
       ColorBag(
-        color: FlexColor.blueWhaleDarkPrimary,
+        color: FlexColor.goldDarkPrimary,
         index: 23,
       ),
       ColorBag(
-        color: FlexColor.ebonyClayDarkPrimary,
+        color: FlexColor.blueWhaleDarkPrimary,
         index: 24,
       ),
       ColorBag(
-        color: FlexColor.moneyDarkPrimary,
+        color: FlexColor.ebonyClayDarkPrimary,
         index: 25,
       ),
       ColorBag(
-        color: FlexColor.aquaBlueDarkPrimary,
+        color: FlexColor.moneyDarkPrimary,
         index: 26,
       ),
+      ColorBag(
+        color: FlexColor.aquaBlueDarkPrimary,
+        index: 27,
+      ),
+
     ];
 
     var itemElevation = 0.0;

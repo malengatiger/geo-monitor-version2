@@ -90,7 +90,7 @@ class SettingsTabletState extends State<SettingsTablet>
                 ),
               ),
               const SizedBox(
-                width: 24.0,
+                width: 2.0,
               ),
               GeoActivity(
                   width: (size.width / 2) - 20,
