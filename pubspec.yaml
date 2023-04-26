@@ -100,7 +100,6 @@ dependencies:
   adobe_xd: ^2.0.1
 
 
-
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -108,7 +107,7 @@ dev_dependencies:
   flutter_lints: ^2.0.1
   build_runner:
   hive_generator:
-  mockito:
+  mockito: ^5.4.0
 
 flutter:
 

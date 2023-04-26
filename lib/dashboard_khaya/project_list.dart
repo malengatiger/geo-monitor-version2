@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:responsive_builder/responsive_builder.dart';
 
 import '../library/data/project.dart';
 import '../library/functions.dart';
@@ -18,7 +19,7 @@ class ProjectListView extends StatelessWidget {
   Widget build(BuildContext context) {
     final Random random = Random(DateTime.now().millisecondsSinceEpoch);
     final images = getImages();
-    return SizedBox(
+    return ScreenTypeLayout(mobile: SizedBox(
         height: 220,
         child: ListView.builder(
           itemCount: projects.length,
@@ -35,7 +36,50 @@ class ProjectListView extends StatelessWidget {
             return ProjectView(
                 image: image, project: project, height: 212, width: 242);
           },
-        ));
+        )),
+    tablet: OrientationLayoutBuilder(portrait: (context){
+      return SizedBox(
+          height: 320,
+          child: ListView.builder(
+            itemCount: projects.length,
+            scrollDirection: Axis.horizontal,
+            itemBuilder: (context, index) {
+              final project = projects.elementAt(index);
+              Image image;
+              if (index < images.length) {
+                image = images.elementAt(index);
+              } else {
+                final m = random.nextInt(images.length - 1);
+                image = images.elementAt(m);
+              }
+              return ProjectView(
+                  image: image, project: project, height: 312, width: 312);
+            },
+          ));
+
+    },
+      landscape: (context){
+       return SizedBox(
+           height: 220,
+           child: ListView.builder(
+             itemCount: projects.length,
+             scrollDirection: Axis.horizontal,
+             itemBuilder: (context, index) {
+               final project = projects.elementAt(index);
+               Image image;
+               if (index < images.length) {
+                 image = images.elementAt(index);
+               } else {
+                 final m = random.nextInt(images.length - 1);
+                 image = images.elementAt(m);
+               }
+               return ProjectView(
+                   image: image, project: project, height: 212, width: 242);
+             },
+           ));
+      },
+    ),
+    );
   }
 }
 

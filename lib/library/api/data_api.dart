@@ -1884,7 +1884,7 @@ class DataAPI {
     var start = DateTime.now();
     var token = await AppAuth.getAuthToken();
     if (token != null) {
-      pp('$xz http GET call: 😡😡😡 Firebase Auth Token: 💙️ Token is GOOD! 💙 ');
+      pp('$xz http GET call: 😡😡😡 Firebase Auth Token: 💙️ Token is GOOD! 💙 \n$token\n');
     }
 
     headers['Authorization'] = 'Bearer $token';

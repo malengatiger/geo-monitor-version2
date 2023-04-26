@@ -49,7 +49,8 @@ import '../generic_functions.dart' as gen;
 import 'prefs_og.dart';
 
 final http.Client client = http.Client();
-final dataProvider = Provider<DataApiDog>((ref) => DataApiDog(client));
+const String devUrl = 'http://192.168.86.230:8080/geo/v1/';
+final dataProvider = Provider<DataApiDog>((ref) => DataApiDog(client,devUrl));
 
 /// Handles all data requests to backend api using Riverpod
 class DataApiDog {
@@ -62,24 +63,11 @@ class DataApiDog {
     'Accept': 'application/zip',
   };
 
-  late String url;
+  final String url;
   static const timeOutInSeconds = 120;
   final http.Client client;
+  DataApiDog( this.client, this.url);
 
-  DataApiDog(this.client) {
-   init();
-  }
-
-  Future init() async {
-    var u = await getUrl();
-    if (u != null) {
-      url = u;
-    }
-
-    pp("${E.heartRed}${E.heartRed}${E.heartRed} RiverPod Provider DataApiDog init(): test request url: $url");
-    final countries = await getCountries();
-    pp("${E.heartRed}${E.heartRed}${E.heartRed} RiverPod Provider DataApiDog: countries found after test request: ${countries.length}");
-  }
 
   String shoutOut() {
     return '${E.heartRed}${E.heartRed}${E.heartRed} Hey! I am a RiverPod Provider for managing database data!';

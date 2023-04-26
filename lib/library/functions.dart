@@ -886,7 +886,7 @@ SettingsModel getBaseSettings() {
 Future<String> getFCMMessageTitle() async {
   final sett = await cacheManager.getSettings();
   final m = await translator.translate('messageFromGeo', sett.locale!);
-  final messageFromGeo = m.replaceAll('\$geo', 'Geo');
+  final messageFromGeo = m.replaceAll('\$geo', 'Gio');
   return messageFromGeo;
 }
 Future<String> getFCMMessage(String key) async {
@@ -921,18 +921,24 @@ List<Image> getImages()  {
 
 Future<String?> getUrl() async {
 
-    pp('🐤🐤🐤🐤 Getting url via .env settings');
-    String? status = dot.dotenv.env['CURRENT_STATUS'];
-    pp('🐤🐤🐤🐤 DataAPI: getUrl: Status from .env: $status');
-    String? url;
-    if (status == 'dev') {
-      url = dot.dotenv.env['DEV_URL'];
-      pp('Status of the app is  DEVELOPMENT 🌎 🌎 🌎 $url');
-      return url!;
-    } else {
-      url = dot.dotenv.env['PROD_URL'];
-      pp('Status of the app is PRODUCTION 🌎 🌎 🌎 $url');
-      return url!;
+    pp('functions:getUrl 🐤🐤🐤🐤 Getting url via .env settings');
+    try {
+      String? status = dot.dotenv.env['CURRENT_STATUS'];
+      pp('functions:getUrl 🐤🐤🐤🐤 DataAPI: getUrl: Status from .env: $status');
+      String? url;
+      if (status == 'dev') {
+        url = dot.dotenv.env['DEV_URL'];
+        pp(
+            'functions:getUrl 🐤🐤🐤🐤 Status of the app is  DEVELOPMENT 🌎 🌎 🌎 $url');
+        return url!;
+      } else {
+        url = dot.dotenv.env['PROD_URL'];
+        pp('functions:getUrl 🐤🐤🐤🐤 Status of the app is PRODUCTION 🌎 🌎 🌎 $url');
+        return url!;
+      }
+    } catch (e) {
+      pp('DotEnv Error: $e - return dev url as hardcode');
+      return 'http://192.168.86.230:8080/geo/v1/';
     }
 }
 

@@ -107,9 +107,9 @@ class CloudStorageBloc {
       var dur = await audioPlayer.setUrl(url);
       final sett = await cacheManager.getSettings();
       final audioArrived =
-          await translator.translate('audioArrived', sett!.locale!);
+          await translator.translate('audioArrived', sett.locale!);
       final messageFromGeo =
-          await translator.translate('messageFromGeo', sett!.locale!);
+          await getFCMMessage('messageFromGeo');
 
       Audio audio = Audio(
           url: url,
@@ -209,9 +209,9 @@ class CloudStorageBloc {
       var user = await prefsOGx.getUser();
       final sett = await cacheManager.getSettings();
       final photoArrived =
-          await translator.translate('photoArrived', sett!.locale!);
+          await translator.translate('photoArrived', sett.locale!);
       final messageFromGeo =
-          await translator.translate('messageFromGeo', sett!.locale!);
+      await getFCMMessage('messageFromGeo');
 
       photo = Photo(
           url: url,

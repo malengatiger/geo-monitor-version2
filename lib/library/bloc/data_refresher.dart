@@ -46,7 +46,7 @@ class DataRefresher {
       required String? organizationId,
       required String? projectId,
       required String? userId}) async {
-    pp('\n\n\n$xx manageRefresh: inside Isolates: starting ... 🔵🔵🔵😡😡\n\n');
+    pp('\n\n\n$xx manageRefresh: will run inside Isolates: starting ... 🔵🔵🔵😡😡\n\n');
     var start = DateTime.now();
     if (numberOfDays == null) {
       var sett = await prefsOGx.getSettings();
@@ -152,6 +152,7 @@ class DataRefresher {
     // String? token;
     try {
       token = (await AppAuth.getAuthToken())!;
+      pp('$xx 🍎🍎🍎token: \n$token\n');
       startDate =
           DateTime.now()
               .subtract(Duration(days: numberOfDays))

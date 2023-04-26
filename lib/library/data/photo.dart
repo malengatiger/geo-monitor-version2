@@ -57,7 +57,7 @@ class Photo extends HiveObject {
       required this.userId,
       required this.userName,
       required this.projectPosition,
-      this.distanceFromProjectPosition,
+      required this.distanceFromProjectPosition,
       required this.projectId,
       required this.thumbnailUrl,
       required this.photoId,
